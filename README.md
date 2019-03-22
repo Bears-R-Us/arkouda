@@ -16,9 +16,10 @@ pip3 install jupyter
  * setup your CHPL_HOME env variable and source $CHPL_HOME/util/setchplenv.bash
  * compile arkouda_server.chpl
  * don't forget the --fast flag on the compile line
+ * need to use the -senableParScan config param on the compile line
  * you may also need to use -I to find zmq.h and -L to find libzmq.a
 ```bash
-chpl --fast arkouda_server.chpl
+chpl --fast -senableParScan arkouda_server.chpl
 ```
  * startup the arkouda_server
  * defaults to port 5555
