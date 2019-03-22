@@ -1,8 +1,18 @@
 # arkouda
 arkouda python/chapel package
 
- * requires chapel 1.18.0
+ * requires chapel 1.19.0
  * requires zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
+ * requires python 3.6 or greater
+```bash
+# it should be simple to get things going on a mac…
+brew install chapel
+brew install python3
+brew install zeromq
+pip3 install numpy
+pip3 install pandas
+pip3 install jupyter
+```
  * setup your CHPL_HOME env variable and source $CHPL_HOME/util/setchplenv.bash
  * compile arkouda_server.chpl
  * don't forget the --fast flag on the compile line
