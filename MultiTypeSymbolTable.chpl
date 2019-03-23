@@ -5,6 +5,7 @@ module MultiTypeSymbolTable
     use ServerErrorStrings;
     
     use MultiTypeSymEntry;
+    use Chapel118;
 
     // symbol table
     class SymTab
