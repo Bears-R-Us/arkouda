@@ -12,14 +12,14 @@ module OperatorMsg
 
     // parse and respond to binopvv message
     // vv == vector op vector
-    proc binopvvMsg(req_msg: string, st: borrowed SymTab): string {
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+    proc binopvvMsg(reqMsg: string, st: borrowed SymTab): string {
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var op = fields[2];
         var aname = fields[3];
         var bname = fields[4];
-        var rname = st.next_name();
+        var rname = st.nextName();
         if v {try! writeln("%s %s %s %s : %s".format(cmd,op,aname,bname,rname));try! stdout.flush();}
 
         var left: borrowed GenSymEntry = st.lookup(aname);
@@ -264,15 +264,15 @@ module OperatorMsg
 
     // parse and respond to binopvs message
     // vs == vector op scalar
-    proc binopvsMsg(req_msg: string, st: borrowed SymTab): string {
-        var rep_msg: string = ""; // response message
-        var fields = req_msg.split(); // split request into fields
+    proc binopvsMsg(reqMsg: string, st: borrowed SymTab): string {
+        var repMsg: string = ""; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var op = fields[2];
         var aname = fields[3];
         var dtype = str2dtype(fields[4]);
         var value = fields[5];
-        var rname = st.next_name();
+        var rname = st.nextName();
         if v {try! writeln("%s %s %s %s %s : %s".format(cmd,op,aname,dtype2str(dtype),value,rname));try! stdout.flush();}
 
         var left: borrowed GenSymEntry = st.lookup(aname);
@@ -514,15 +514,15 @@ module OperatorMsg
 
     // parse and respond to binopsv message
     // sv == scalar op vector
-    proc binopsvMsg(req_msg: string, st: borrowed SymTab): string {
-        var rep_msg: string = ""; // response message
-        var fields = req_msg.split(); // split request into fields
+    proc binopsvMsg(reqMsg: string, st: borrowed SymTab): string {
+        var repMsg: string = ""; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var op = fields[2];
         var dtype = str2dtype(fields[3]);
         var value = fields[4];
         var aname = fields[5];
-        var rname = st.next_name();
+        var rname = st.nextName();
         if v {try! writeln("%s %s %s %s %s : %s".format(cmd,op,dtype2str(dtype),value,aname,rname));try! stdout.flush();}
 
         var right: borrowed GenSymEntry = st.lookup(aname);
@@ -764,9 +764,9 @@ module OperatorMsg
 
     // parse and respond to opeqvv message
     // vector op= vector
-    proc opeqvvMsg(req_msg: string, st: borrowed SymTab): string {
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+    proc opeqvvMsg(reqMsg: string, st: borrowed SymTab): string {
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var op = fields[2];
         var aname = fields[3];
@@ -829,9 +829,9 @@ module OperatorMsg
 
     // parse and respond to opeqvs message
     // vector op= scalar
-    proc opeqvsMsg(req_msg: string, st: borrowed SymTab): string {
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+    proc opeqvsMsg(reqMsg: string, st: borrowed SymTab): string {
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var op = fields[2];
         var aname = fields[3];

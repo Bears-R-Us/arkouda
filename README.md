@@ -49,3 +49,29 @@ python3 ak_test.py
  * This also works fine from a jupyter notebook
  * there is an included Jupyter notebook called test_arkouda.ipynb
 
+### Naming conventions for code
+
+#### Python3
+ * camelCase for variable names
+```python
+printThreshold = 100
+```
+ * names with underscores for functions
+```python
+def print_it(x):
+    print(x)
+```
+#### Chapel
+ * camelCase for variable names and procedures
+```chapel
+var aX: [{0..#s}] real;
+proc printIt(x) {
+     writeln(x);
+}
+````
+ * CamelCase for Class names
+ ```chapel
+ class Foo: FooParent
+ {}
+ ```
+ 

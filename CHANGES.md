@@ -1,3 +1,9 @@
+### Changes in arkouda-0.0.6
+------------------------
+ * added toys/ subdir with some prototype sorting code
+ * 
+
+
 ### Changes in arkouda-0.0.5
 ------------------------
  * finally got a BlockDist to work properly -- thanks Brad ;-)
@@ -9,6 +15,9 @@
  * compiled with chapel 1.19 and cleaned up compilation warnings
  * substituted domain.contains() for domain.member()
  * fixed up parallel scans on bool arrays with int cast through a copy to int array (blah!)
+ * created github repo
+ * added backward compat code for 1.18
+ * added some prototype python arkouda/numpy check/test code
 
 
 ### Changes in arkouda-0.0.4

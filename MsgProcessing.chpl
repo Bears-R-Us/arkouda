@@ -14,15 +14,15 @@ module MsgProcessing
     use IndexingMsg;
     
     // parse, execute, and respond to create message
-    proc createMsg(req_msg: string, st: borrowed SymTab): string {
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+    proc createMsg(reqMsg: string, st: borrowed SymTab): string {
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var dtype = str2dtype(fields[2]);
         var size = try! fields[3]:int;
 
         // get next symbol name
-        var rname = st.next_name();
+        var rname = st.nextName();
         
         // if verbose print action
         if v {try! writeln("%s %s %i : %s".format(cmd,dtype2str(dtype),size,rname)); try! stdout.flush();}
@@ -33,9 +33,9 @@ module MsgProcessing
     }
 
     // parse, execute, and respond to delete message
-    proc deleteMsg(req_msg: string, st: borrowed SymTab): string {
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+    proc deleteMsg(reqMsg: string, st: borrowed SymTab): string {
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var name = fields[2];
         if v {try! writeln("%s %s".format(cmd,name));try! stdout.flush();}
@@ -45,9 +45,9 @@ module MsgProcessing
     }
 
     // info header only
-    proc infoMsg(req_msg: string, st: borrowed SymTab): string {
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+    proc infoMsg(reqMsg: string, st: borrowed SymTab): string {
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var name = fields[2];
         if v {try! writeln("%s %s".format(cmd,name));try! stdout.flush();}
@@ -56,9 +56,9 @@ module MsgProcessing
     }
     
     // dump info and values
-    proc dumpMsg(req_msg: string, st: borrowed SymTab): string {
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+    proc dumpMsg(reqMsg: string, st: borrowed SymTab): string {
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var name = fields[2];
         if v {try! writeln("%s %s".format(cmd,name));try! stdout.flush();}
@@ -68,31 +68,31 @@ module MsgProcessing
 
     // response to __str__ method in python
     // str convert array data to string
-    proc strMsg(req_msg: string, st: borrowed SymTab): string {
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+    proc strMsg(reqMsg: string, st: borrowed SymTab): string {
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var name = fields[2];
-        var print_thresh = try! fields[3]:int;
-        if v {try! writeln("%s %s %i".format(cmd,name,print_thresh));try! stdout.flush();}
-        return st.datastr(name,print_thresh);
+        var printThresh = try! fields[3]:int;
+        if v {try! writeln("%s %s %i".format(cmd,name,printThresh));try! stdout.flush();}
+        return st.datastr(name,printThresh);
     }
 
     // response to __repr__ method in python
     // repr convert array data to string
-    proc reprMsg(req_msg: string, st: borrowed SymTab): string {
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+    proc reprMsg(reqMsg: string, st: borrowed SymTab): string {
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var name = fields[2];
-        var print_thresh = try! fields[3]:int;
-        if v {try! writeln("%s %s %i".format(cmd,name,print_thresh));try! stdout.flush();}
-        return st.datarepr(name,print_thresh);
+        var printThresh = try! fields[3]:int;
+        if v {try! writeln("%s %s %i".format(cmd,name,printThresh));try! stdout.flush();}
+        return st.datarepr(name,printThresh);
     }
 
-    proc arangeMsg(req_msg: string, st: borrowed SymTab): string {
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+    proc arangeMsg(reqMsg: string, st: borrowed SymTab): string {
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var start = try! fields[2]:int;
         var stop = try! fields[3]:int;
@@ -100,7 +100,7 @@ module MsgProcessing
         // compute length
         var len = (stop - start + stride - 1) / stride;
         // get next symbol name
-        var rname = st.next_name();
+        var rname = st.nextName();
         if v {try! writeln("%s %i %i %i : %i , %s".format(cmd, start, stop, stride, len, rname));try! stdout.flush();}
         
         var t1 = getCurrentTime();
@@ -118,9 +118,9 @@ module MsgProcessing
         return try! "created " + st.attrib(rname);
     }            
 
-    proc linspaceMsg(req_msg: string, st: borrowed SymTab): string {
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+    proc linspaceMsg(reqMsg: string, st: borrowed SymTab): string {
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var start = try! fields[2]:real;
         var stop = try! fields[3]:real;
@@ -128,7 +128,7 @@ module MsgProcessing
         // compute stride
         var stride = (stop - start) / (len-1);
         // get next symbol name
-        var rname = st.next_name();
+        var rname = st.nextName();
         if v {try! writeln("%s %r %r %i : %r , %s".format(cmd, start, stop, len, stride, rname));try! stdout.flush();}
 
         var t1 = getCurrentTime();
@@ -149,15 +149,15 @@ module MsgProcessing
     }
 
     // histogram takes a pdarray and returns a pdarray with the histogram in it
-    proc histogramMsg(req_msg: string, st: borrowed SymTab): string {
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+    proc histogramMsg(reqMsg: string, st: borrowed SymTab): string {
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var name = fields[2];
         var bins = try! fields[3]:int;
         
         // get next symbol name
-        var rname = st.next_name();
+        var rname = st.nextName();
         if v {try! writeln("%s %s %i : %s".format(cmd, name, bins, rname));try! stdout.flush();}
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
@@ -166,44 +166,44 @@ module MsgProcessing
         select (gEnt.dtype) {
             when (DType.Int64) {
                 var e = toSymEntry(gEnt,int);
-                var a_min = min reduce e.a;
-                var a_max = max reduce e.a;
-                var bin_width:real = (a_max - a_min):real / bins:real;
-                if v {try! writeln("bin_width %r ".format(bin_width)); try! stdout.flush();}
+                var aMin = min reduce e.a;
+                var aMax = max reduce e.a;
+                var binWidth:real = (aMax - aMin):real / bins:real;
+                if v {try! writeln("binWidth %r ".format(binWidth)); try! stdout.flush();}
                 var hD = makeDistDom(bins);
-                var atomic_hist: [hD] atomic int;
+                var atomicHist: [hD] atomic int;
                 // count into atomic histogram
                 forall v in e.a {
-                    var v_bin = ((v - a_min) / bin_width):int;
-                    if v == a_max {v_bin = bins-1;}
+                    var vBin = ((v - aMin) / binWidth):int;
+                    if v == aMax {vBin = bins-1;}
                     //if (v_bin < 0) | (v_bin > (bins-1)) {try! writeln("OOB");try! stdout.flush();}
-                    atomic_hist[v_bin].add(1);
+                    atomicHist[vBin].add(1);
                 }
                 var hist = makeDistArray(bins,int);
                 // copy from atomic histogram to normal histogram
-                [(e,ae) in zip(hist, atomic_hist)] e = ae.read();
+                [(e,ae) in zip(hist, atomicHist)] e = ae.read();
                 if v {try! writeln("hist =",hist); try! stdout.flush();}
                 
                 st.addEntry(rname, new shared SymEntry(hist));
             }
             when (DType.Float64) {
                 var e = toSymEntry(gEnt,real);
-                var a_min = min reduce e.a;
-                var a_max = max reduce e.a;
-                var bin_width:real = (a_max - a_min):real / bins:real;
-                if v {try! writeln("bin_width %r ".format(bin_width)); try! stdout.flush();}
+                var aMin = min reduce e.a;
+                var aMax = max reduce e.a;
+                var binWidth:real = (aMax - aMin):real / bins:real;
+                if v {try! writeln("binWidth %r ".format(binWidth)); try! stdout.flush();}
                 var hD = makeDistDom(bins);
-                var atomic_hist: [hD] atomic int;
+                var atomicHist: [hD] atomic int;
                 // count into atomic histogram
                 forall v in e.a {
-                    var v_bin = ((v - a_min) / bin_width):int;
-                    if v == a_max {v_bin = bins-1;}
+                    var vBin = ((v - aMin) / binWidth):int;
+                    if v == aMax {vBin = bins-1;}
                     //if (v_bin < 0) | (v_bin > (bins-1)) {try! writeln("OOB");try! stdout.flush();}
-                    atomic_hist[v_bin].add(1);
+                    atomicHist[vBin].add(1);
                 }
                 var hist = makeDistArray(bins,int);
                 // copy from atomic histogram to normal histogram
-                [(e,ae) in zip(hist, atomic_hist)] e = ae.read();
+                [(e,ae) in zip(hist, atomicHist)] e = ae.read();
                 if v {try! writeln("hist =",hist); try! stdout.flush();}
                 
                 st.addEntry(rname, new shared SymEntry(hist));
@@ -216,15 +216,15 @@ module MsgProcessing
 
     // in1d takes two pdarray and returns a bool pdarray
     // with the "in"/contains for each element tested against the second pdarray
-    proc in1dMsg(req_msg: string, st: borrowed SymTab): string {
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+    proc in1dMsg(reqMsg: string, st: borrowed SymTab): string {
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var name = fields[2];
         var sname = fields[3];
 
         // get next symbol name
-        var rname = st.next_name();
+        var rname = st.nextName();
         if v {try! writeln("%s %s %s : %s".format(cmd, name, sname, rname));try! stdout.flush();}
 
         var gAr1: borrowed GenSymEntry = st.lookup(name);
@@ -249,14 +249,14 @@ module MsgProcessing
     }
 
     // unique take a pdarray and returns a pdarray with the unique values
-    proc uniqueMsg(req_msg: string, st: borrowed SymTab): string {
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+    proc uniqueMsg(reqMsg: string, st: borrowed SymTab): string {
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var name = fields[2];
 
         // get next symbol name
-        var rname = st.next_name();
+        var rname = st.nextName();
         if v {try! writeln("%s %s : %s".format(cmd, name, rname));try! stdout.flush();}
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
@@ -265,30 +265,30 @@ module MsgProcessing
         select (gEnt.dtype) {
             when (DType.Int64) {
                 var e = toSymEntry(gEnt,int);
-                var e_min:int = min reduce e.a;
-                var e_max:int = max reduce e.a;
+                var eMin:int = min reduce e.a;
+                var eMax:int = max reduce e.a;
 
                 // how many bins in histogram
-                var bins = e_max-e_min+1;
+                var bins = eMax-eMin+1;
                 if v {try! writeln("bins = %t".format(bins));}
 
                 var hD = makeDistDom(bins);
                 // atomic histogram
-                var atomic_hist: [hD] atomic int;
+                var atomicHist: [hD] atomic int;
                 // count into atomic histogram
                 forall v in e.a {
-                    var bin = v - e_min;
-                    if v == e_max {bin = bins-1;}
-                    atomic_hist[bin].add(1);
+                    var bin = v - eMin;
+                    if v == eMax {bin = bins-1;}
+                    atomicHist[bin].add(1);
                 }
                 var itruth = makeDistArray(bins,int);
                 // copy from atomic histogram to normal histogram
-                [(t,ae) in zip(itruth, atomic_hist)] t = (ae.read() != 0):int;
+                [(t,ae) in zip(itruth, atomicHist)] t = (ae.read() != 0):int;
                 // calc indices of the non-zero count elements
                 var iv: [hD] int = (+ scan itruth);
                 var pop = iv[iv.size-1];
                 var a = makeDistArray(pop, int);
-                [i in hD] if (itruth[i] == 1) {a[iv[i]-1] = i+e_min;}// iv[i]-1 for zero base index
+                [i in hD] if (itruth[i] == 1) {a[iv[i]-1] = i+eMin;}// iv[i]-1 for zero base index
                 st.addEntry(rname, new shared SymEntry(a));
             }
             otherwise {return notImplementedError("unique",gEnt.dtype);}
@@ -298,15 +298,15 @@ module MsgProcessing
     }
 
     // value_counts rtakes a pdarray and returns two pdarrays unique values and counts for each value
-    proc value_countsMsg(req_msg: string, st: borrowed SymTab): string {
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+    proc value_countsMsg(reqMsg: string, st: borrowed SymTab): string {
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var name = fields[2];
 
         // get next symbol name
-        var vname = st.next_name();
-        var cname = st.next_name();
+        var vname = st.nextName();
+        var cname = st.nextName();
         if v {try! writeln("%s %s : %s %s".format(cmd, name, vname, cname));try! stdout.flush();}
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
@@ -315,37 +315,37 @@ module MsgProcessing
         select (gEnt.dtype) {
             when (DType.Int64) {
                 var e = toSymEntry(gEnt,int);
-                var e_min:int = min reduce e.a;
-                var e_max:int = max reduce e.a;
+                var eMin:int = min reduce e.a;
+                var eMax:int = max reduce e.a;
 
                 // how many bins in histogram
-                var bins = e_max-e_min+1;
+                var bins = eMax-eMin+1;
                 if v {try! writeln("bins = %t".format(bins));}
 
                 var hD = makeDistDom(bins);
                 // atomic histogram
-                var atomic_hist: [hD] atomic int;
+                var atomicHist: [hD] atomic int;
                 // count into atomic histogram
                 forall v in e.a {
-                    var bin = v - e_min;
-                    if v == e_max {bin = bins-1;}
-                    atomic_hist[bin].add(1);
+                    var bin = v - eMin;
+                    if v == eMax {bin = bins-1;}
+                    atomicHist[bin].add(1);
                 }
                 var itruth = makeDistArray(bins,int);
                 // copy from atomic histogram to normal histogram
-                [(t,ae) in zip(itruth, atomic_hist)] t = (ae.read() != 0):int;
+                [(t,ae) in zip(itruth, atomicHist)] t = (ae.read() != 0):int;
                 // calc indices of the non-zero count elements
                 var iv: [hD] int = (+ scan itruth);
                 var pop = iv[iv.size-1];
-                var a_v = makeDistArray(pop, int);
-                var a_c = makeDistArray(pop, int);
+                var aV = makeDistArray(pop, int);
+                var aC = makeDistArray(pop, int);
                 [i in hD] if (itruth[i] == 1) {
-                    a_v[iv[i]-1] = i+e_min;
-                    a_c[iv[i]-1] = atomic_hist[i].read();
+                    aV[iv[i]-1] = i+eMin;
+                    aC[iv[i]-1] = atomicHist[i].read();
                         }// iv[i]-1 for zero base index
                 
-                st.addEntry(vname, new shared SymEntry(a_v));
-                st.addEntry(cname, new shared SymEntry(a_c));
+                st.addEntry(vname, new shared SymEntry(aV));
+                st.addEntry(cname, new shared SymEntry(aC));
             }
             otherwise {return notImplementedError("value_counts",gEnt.dtype);}
         }
@@ -354,9 +354,9 @@ module MsgProcessing
     }
 
     // sets all elements in array to a value (broadcast)
-    proc setMsg(req_msg: string, st: borrowed SymTab): string {
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+    proc setMsg(reqMsg: string, st: borrowed SymTab): string {
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var name = fields[2];
         var dtype = str2dtype(fields[3]);
@@ -371,14 +371,14 @@ module MsgProcessing
                 var val: int = try! value:int;
                 if v {try! writeln("%s %s to %t".format(cmd,name,val));try! stdout.flush();}
                 e.a = val;
-                rep_msg = try! "set %s to %t".format(name, val);
+                repMsg = try! "set %s to %t".format(name, val);
             }
             when (DType.Int64, DType.Float64) {
                 var e = toSymEntry(gEnt,int);
                 var val: real = try! value:real;
                 if v {try! writeln("%s %s to %t".format(cmd,name,val:int));try! stdout.flush();}
                 e.a = val:int;
-                rep_msg = try! "set %s to %t".format(name, val:int);
+                repMsg = try! "set %s to %t".format(name, val:int);
             }
             when (DType.Int64, DType.Bool) {
                 var e = toSymEntry(gEnt,int);
@@ -387,21 +387,21 @@ module MsgProcessing
                 var val: bool = try! value:bool;
                 if v {try! writeln("%s %s to %t".format(cmd,name,val:int));try! stdout.flush();}
                 e.a = val:int;
-                rep_msg = try! "set %s to %t".format(name, val:int);
+                repMsg = try! "set %s to %t".format(name, val:int);
             }
             when (DType.Float64, DType.Int64) {
                 var e = toSymEntry(gEnt,real);
                 var val: int = try! value:int;
                 if v {try! writeln("%s %s to %t".format(cmd,name,val:real));try! stdout.flush();}
                 e.a = val:real;
-                rep_msg = try! "set %s to %t".format(name, val:real);
+                repMsg = try! "set %s to %t".format(name, val:real);
             }
             when (DType.Float64, DType.Float64) {
                 var e = toSymEntry(gEnt,real);
                 var val: real = try! value:real;
                 if v {try! writeln("%s %s to %t".format(cmd,name,val));try! stdout.flush();}
                 e.a = val;
-                rep_msg = try! "set %s to %t".format(name, val);
+                repMsg = try! "set %s to %t".format(name, val);
             }
             when (DType.Float64, DType.Bool) {
                 var e = toSymEntry(gEnt,real);
@@ -410,21 +410,21 @@ module MsgProcessing
                 var val: bool = try! value:bool;
                 if v {try! writeln("%s %s to %t".format(cmd,name,val:real));try! stdout.flush();}
                 e.a = val:real;
-                rep_msg = try! "set %s to %t".format(name, val:real);
+                repMsg = try! "set %s to %t".format(name, val:real);
             }
             when (DType.Bool, DType.Int64) {
                 var e = toSymEntry(gEnt,bool);
                 var val: int = try! value:int;
                 if v {try! writeln("%s %s to %t".format(cmd,name,val:bool));try! stdout.flush();}
                 e.a = val:bool;
-                rep_msg = try! "set %s to %t".format(name, val:bool);
+                repMsg = try! "set %s to %t".format(name, val:bool);
             }
             when (DType.Bool, DType.Float64) {
                 var e = toSymEntry(gEnt,int);
                 var val: real = try! value:real;
                 if v {try! writeln("%s %s to %t".format(cmd,name,val:bool));try! stdout.flush();}
                 e.a = val:bool;
-                rep_msg = try! "set %s to %t".format(name, val:bool);
+                repMsg = try! "set %s to %t".format(name, val:bool);
             }
             when (DType.Bool, DType.Bool) {
                 var e = toSymEntry(gEnt,int);
@@ -433,24 +433,24 @@ module MsgProcessing
                 var val: bool = try! value:bool;
                 if v {try! writeln("%s %s to %t".format(cmd,name,val));try! stdout.flush();}
                 e.a = val;
-                rep_msg = try! "set %s to %t".format(name, val);
+                repMsg = try! "set %s to %t".format(name, val);
             }
             otherwise {return unrecognizedTypeError("set",fields[3]);}
         }
-        return rep_msg;
+        return repMsg;
     }
     
     // these ops are functions which take an array and produce and array
     // do scans fit here also? I think so... vector = scanop(vector)
     // parse and respond to efunc "elemental function" message
     // vector = efunc(vector)
-    proc efuncMsg(req_msg: string, st: borrowed SymTab): string {
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+    proc efuncMsg(reqMsg: string, st: borrowed SymTab): string {
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var efunc = fields[2];
         var name = fields[3];
-        var rname = st.next_name();
+        var rname = st.nextName();
         if v {try! writeln("%s %s %s : %s".format(cmd,efunc,name,rname));try! stdout.flush();}
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
@@ -536,9 +536,9 @@ module MsgProcessing
     // these functions take an array and produce a scalar
     // parse and respond to reduction message
     // scalar = reductionop(vector)
-    proc reductionMsg(req_msg: string, st: borrowed SymTab): string {
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+    proc reductionMsg(reqMsg: string, st: borrowed SymTab): string {
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var reductionop = fields[2];
         var name = fields[3];
