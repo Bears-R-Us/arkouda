@@ -54,6 +54,7 @@ proc main() {
         // parse requests, execute requests, format responses
         select cmd
         {
+	    when "readhdf"           {rep_msg = readhdfMsg(req_msg, st);}
             when "create"            {rep_msg = createMsg(req_msg, st);}
             when "delete"            {rep_msg = deleteMsg(req_msg, st);}
             when "binopvv"           {rep_msg = binopvvMsg(req_msg, st);}

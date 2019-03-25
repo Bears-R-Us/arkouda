@@ -12,6 +12,19 @@ module MsgProcessing
     use OperatorMsg;
     use RandMsg;
     use IndexingMsg;
+    use GenSymIO;
+
+    proc readhdfMsg(req_msg: string, st: borrowed SymTab): string {
+      var rep_msg: string;
+      // req_msg = "readhdf <dsetName> <filename1> <filename2> ..."
+      var fields = req_msg.split();
+      var cmd = fields[1];
+      var dsetName = fields[2];
+      var filenames = fields[3..];
+      var rname = st.next_name();
+      st.addEntry(rname, read_hdf_files(filenames, dsetName));
+      return try! "created " + st.attrib(rname);
+    }
     
     // parse, execute, and respond to create message
     proc createMsg(req_msg: string, st: borrowed SymTab): string {
