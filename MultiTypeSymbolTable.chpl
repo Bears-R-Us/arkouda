@@ -15,7 +15,7 @@ module MultiTypeSymbolTable
 
         // give out symbol names
         var nid = 0;
-        proc next_name():string {
+        proc nextName():string {
             nid += 1;
             return "id_"+ nid:string;
         }

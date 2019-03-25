@@ -5,10 +5,10 @@ module IndexingMsg
     use MultiTypeSymbolTable;
 
     // intIndex "a[int]" response to __getitem__(int)
-    proc intIndexMsg(req_msg: string, st: borrowed SymTab):string {
+    proc intIndexMsg(reqMsg: string, st: borrowed SymTab):string {
         var pn = "intIndex";
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var name = fields[2];
         var idx = try! fields[3]:int;
@@ -38,10 +38,10 @@ module IndexingMsg
     }
 
     // sliceIndex "a[slice]" response to __getitem__(slice)
-    proc sliceIndexMsg(req_msg: string, st: borrowed SymTab): string {
+    proc sliceIndexMsg(reqMsg: string, st: borrowed SymTab): string {
         var pn = "sliceIndex";
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var name = fields[2];
         var start = try! fields[3]:int;
@@ -58,7 +58,7 @@ module IndexingMsg
         else {slice = 1..0;}
 
         // get next symbol name
-        var rname = st.next_name();
+        var rname = st.nextName();
 
         if v {try! writeln("%s %s %i %i %i : %t , %s".format(cmd, name, start, stop, stride, slice, rname));try! stdout.flush();}
 
@@ -93,16 +93,16 @@ module IndexingMsg
     }
 
     // pdarrayIndex "a[pdarray]" response to __getitem__(pdarray)
-    proc pdarrayIndexMsg(req_msg: string, st: borrowed SymTab): string {
+    proc pdarrayIndexMsg(reqMsg: string, st: borrowed SymTab): string {
         var pn = "pdarrayIndex";
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var name = fields[2];
         var iname = fields[3];
 
         // get next symbol name
-        var rname = st.next_name();
+        var rname = st.nextName();
 
         if v {try! writeln("%s %s %s : %s".format(cmd, name, iname, rname));try! stdout.flush();}
 
@@ -117,10 +117,10 @@ module IndexingMsg
             when (DType.Int64, DType.Int64) {
                 var e = toSymEntry(gX,int);
                 var iv = toSymEntry(gIV,int);
-                var iv_min = min reduce iv.a;
-                var iv_max = max reduce iv.a;
-                if iv_min < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,iv_min);}
-                if iv_max >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,iv_min,e.size-1);}
+                var ivMin = min reduce iv.a;
+                var ivMax = max reduce iv.a;
+                if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
+                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
                 var a: [iv.aD] int;
                 [i in iv.aD] a[i] = e.a[iv.a[i]]; // bounds check iv[i] against e.aD?
                 st.addEntry(rname, new shared SymEntry(a));
@@ -139,10 +139,10 @@ module IndexingMsg
             when (DType.Float64, DType.Int64) {
                 var e = toSymEntry(gX,real);
                 var iv = toSymEntry(gIV,int);
-                var iv_min = min reduce iv.a;
-                var iv_max = max reduce iv.a;
-                if iv_min < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,iv_min);}
-                if iv_max >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,iv_min,e.size-1);}
+                var ivMin = min reduce iv.a;
+                var ivMax = max reduce iv.a;
+                if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
+                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
                 var a: [iv.aD] real;
                 [i in iv.aD] a[i] = e.a[iv.a[i]]; // bounds check iv[i] against e.aD?
                 st.addEntry(rname, new shared SymEntry(a));                
@@ -161,10 +161,10 @@ module IndexingMsg
             when (DType.Bool, DType.Int64) {
                 var e = toSymEntry(gX,bool);
                 var iv = toSymEntry(gIV,int);
-                var iv_min = min reduce iv.a;
-                var iv_max = max reduce iv.a;
-                if iv_min < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,iv_min);}
-                if iv_max >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,iv_min,e.size-1);}
+                var ivMin = min reduce iv.a;
+                var ivMax = max reduce iv.a;
+                if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
+                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
                 var a: [iv.aD] bool;
                 [i in iv.aD] a[i] = e.a[iv.a[i]];// bounds check iv[i] against e.aD?
                 st.addEntry(rname, new shared SymEntry(a));                
@@ -187,10 +187,10 @@ module IndexingMsg
     }
 
     // setIntIndexToValue "a[int] = value" response to __setitem__(int, value)
-    proc setIntIndexToValueMsg(req_msg: string, st: borrowed SymTab):string {
+    proc setIntIndexToValueMsg(reqMsg: string, st: borrowed SymTab):string {
         var pn = "setIntIndexToValue";
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var name = fields[2];
         var idx = try! fields[3]:int;
@@ -263,10 +263,10 @@ module IndexingMsg
 
 
     // setPdarrayIndexToValue "a[pdarray] = value" response to __setitem__(pdarray, value)
-    proc setPdarrayIndexToValueMsg(req_msg: string, st: borrowed SymTab):string {
+    proc setPdarrayIndexToValueMsg(reqMsg: string, st: borrowed SymTab):string {
         var pn = "setPdarrayIndexToValue";
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var name = fields[2];
         var iname = fields[3];
@@ -284,30 +284,30 @@ module IndexingMsg
             when (DType.Int64, DType.Int64, DType.Int64) {
                 var e = toSymEntry(gX,int);
                 var iv = toSymEntry(gIV,int);
-                var iv_min = min reduce iv.a;
-                var iv_max = max reduce iv.a;
-                if iv_min < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,iv_min);}
-                if iv_max >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,iv_min,e.size-1);}
+                var ivMin = min reduce iv.a;
+                var ivMax = max reduce iv.a;
+                if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
+                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
                 var val = try! value:int;
                 [i in iv.a] e.a[i] = val;
             }
             when (DType.Float64, DType.Int64, DType.Float64) {
                 var e = toSymEntry(gX,real);
                 var iv = toSymEntry(gIV,int);
-                var iv_min = min reduce iv.a;
-                var iv_max = max reduce iv.a;
-                if iv_min < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,iv_min);}
-                if iv_max >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,iv_min,e.size-1);}
+                var ivMin = min reduce iv.a;
+                var ivMax = max reduce iv.a;
+                if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
+                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
                 var val = try! value:real;
                 [i in iv.a] e.a[i] = val;
             }
             when (DType.Bool, DType.Int64, DType.Bool) {
                 var e = toSymEntry(gX,bool);
                 var iv = toSymEntry(gIV,int);
-                var iv_min = min reduce iv.a;
-                var iv_max = max reduce iv.a;
-                if iv_min < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,iv_min);}
-                if iv_max >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,iv_min,e.size-1);}
+                var ivMin = min reduce iv.a;
+                var ivMax = max reduce iv.a;
+                if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
+                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
                 value = value.replace("True","true");// chapel to python bool
                 value = value.replace("False","false");// chapel to python bool
                 var val = try! value:bool;
@@ -320,17 +320,17 @@ module IndexingMsg
     }
 
     // setPdarrayIndexToPdarray "a[pdarray] = pdarray" response to __setitem__(pdarray, pdarray)
-    proc setPdarrayIndexToPdarrayMsg(req_msg: string, st: borrowed SymTab):string {
+    proc setPdarrayIndexToPdarrayMsg(reqMsg: string, st: borrowed SymTab):string {
         var pn = "setPdarrayIndexToPdarray";
-        var rep_msg: string; // response message
-        var fields = req_msg.split(); // split request into fields
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         var name = fields[2];
         var iname = fields[3];
         var yname = fields[4];
 
         // get next symbol name
-        var rname = st.next_name();
+        var rname = st.nextName();
 
         var gX: borrowed GenSymEntry = st.lookup(name);
         if (gX == nil) {return unknownSymbolError(pn,name);}
@@ -347,31 +347,31 @@ module IndexingMsg
             when (DType.Int64, DType.Int64, DType.Int64) {
                 var e = toSymEntry(gX,int);
                 var iv = toSymEntry(gIV,int);
-                var iv_min = min reduce iv.a;
-                var iv_max = max reduce iv.a;
+                var ivMin = min reduce iv.a;
+                var ivMax = max reduce iv.a;
                 var y = toSymEntry(gY,int);
-                if iv_min < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,iv_min);}
-                if iv_max >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,iv_min,e.size-1);}
+                if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
+                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
                 [(i,v) in zip(iv.a,y.a)] e.a[i] = v;
             }
             when (DType.Float64, DType.Int64, DType.Float64) {
                 var e = toSymEntry(gX,real);
                 var iv = toSymEntry(gIV,int);
-                var iv_min = min reduce iv.a;
-                var iv_max = max reduce iv.a;
+                var ivMin = min reduce iv.a;
+                var ivMax = max reduce iv.a;
                 var y = toSymEntry(gY,real);
-                if iv_min < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,iv_min);}
-                if iv_max >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,iv_min,e.size-1);}
+                if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
+                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
                 [(i,v) in zip(iv.a,y.a)] e.a[i] = v;
             }
             when (DType.Bool, DType.Int64, DType.Bool) {
                 var e = toSymEntry(gX,bool);
                 var iv = toSymEntry(gIV,int);
-                var iv_min = min reduce iv.a;
-                var iv_max = max reduce iv.a;
+                var ivMin = min reduce iv.a;
+                var ivMax = max reduce iv.a;
                 var y = toSymEntry(gY,bool);
-                if iv_min < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,iv_min);}
-                if iv_max >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,iv_min,e.size-1);}
+                if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
+                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
                 [(i,v) in zip(iv.a,y.a)] e.a[i] = v;
             }
             otherwise {return notImplementedError(pn,

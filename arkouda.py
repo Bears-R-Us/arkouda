@@ -9,40 +9,40 @@ import os
 import subprocess
 
 # stuff for zmq connection
-psp_str = None
+pspStr = None
 context = None
 socket = None
-server_pid = None
+serverPid = None
 connected = False
 
 # verbose flag for arkouda module
-v_def_val = False
-v = v_def_val
+vDefVal = False
+v = vDefVal
 # threshold for __iter__() to limit comms to arkouda_server
-pdarray_iter_thresh_def_val = 100
-pdarray_iter_thresh = pdarray_iter_thresh_def_val
+pdarrayIterThreshDefVal = 100
+pdarrayIterThresh  = pdarrayIterThreshDefVal 
 
 # reset settings to default values
 def set_defaults():
-    global v, pdarray_iter_thresh
-    v = v_def_val
-    pdarray_iter_thresh = pdarray_iter_thresh_def_val
+    global v, vDefVal, pdarrayIterThresh, pdarrayIterThreshDefVal 
+    v = vDefVal
+    pdarrayIterThresh  = pdarrayIterThreshDefVal 
 
 # create context, request end of socket, and connect to it
 def connect(server = "localhost", port = 5555):
-    global v, context, socket, psp_str, server_pid, connected
+    global v, context, socket, pspStr, serverPid, connected
 
     if connected == False:
         print(zmq.zmq_version())
         
         # "protocol://server:port"
-        psp_str = "tcp://{}:{}".format(server,port)
-        print("psp = ",psp_str);
+        pspStr = "tcp://{}:{}".format(server,port)
+        print("psp = ",pspStr);
     
         # setup connection to arkouda server
         context = zmq.Context()
         socket = context.socket(zmq.REQ) # request end of the zmq connection
-        socket.connect(psp_str)
+        socket.connect(pspStr)
         connected = True
         
         #send the connect message
@@ -54,11 +54,11 @@ def connect(server = "localhost", port = 5555):
         message = socket.recv_string()
         if v: print("[Python] Received response: %s" % message)
 
-        print("connected to {}".format(psp_str))
+        print("connected to {}".format(pspStr))
 
 # message arkouda server to shutdown server
 def disconnect():
-    global v, context, socket, psp_str, connected
+    global v, context, socket, pspStr, connected
 
     if connected == True:
         # send disconnect message to server
@@ -67,14 +67,14 @@ def disconnect():
         socket.send_string(message)
         message = socket.recv_string()
         if v: print("[Python] Received response: %s" % message)
-        socket.disconnect(psp_str)
+        socket.disconnect(pspStr)
         connected = False
 
-        print("disconnected from {}".format(psp_str))
+        print("disconnected from {}".format(pspStr))
     
 # message arkouda server to shutdown server
 def shutdown():
-    global v, context, socket, psp_str, connected
+    global v, context, socket, pspStr, connected
     
     # send shutdown message to server
     message = "shutdown"
@@ -83,7 +83,7 @@ def shutdown():
     message = socket.recv_string()
     if v: print("[Python] Received response: %s" % message)
     connected = False
-    socket.disconnect(psp_str)
+    socket.disconnect(pspStr)
 
 # send message to arkouda server and check for server side error
 def generic_msg(message):
@@ -120,15 +120,17 @@ class pdarray:
         if connected:
             generic_msg("delete {}".format(self.name))
 
-    def __str__(self):
-        return generic_msg("str {} {}".format(self.name,pdarray_iter_thresh) )
+    def _str__(self):
+        global pdarrayIterThresh
+        return generic_msg("str {} {}".format(self.name,pdarrayIterThresh) )
         ## s = repr([e for e in self])
         ## s = s.replace(",","")
         ## s = s.replace("Ellipsis","...")
         ## return s
 
     def __repr__(self):
-        return generic_msg("repr {} {}".format(self.name,pdarray_iter_thresh))
+        global pdarrayIterTresh
+        return generic_msg("repr {} {}".format(self.name,pdarrayIterThresh))
         ## s = repr([e for e in self])
         ## s = s.replace("Ellipsis","...")
         ## s = "array(" + s + ")"
@@ -143,18 +145,18 @@ class pdarray:
             if self.size != other.size:
                 raise ValueError("size mismatch {} {}".format(self.size,other.size))
             msg = "binopvv {} {} {}".format(op, self.name, other.name)
-            rep_msg = generic_msg(msg)
-            return create_pdarray(rep_msg)
+            repMsg = generic_msg(msg)
+            return create_pdarray(repMsg)
         # pdarray binop int
         elif isinstance(other, int):
             msg = "binopvs {} {} {} {}".format(op, self.name, int64, other)
-            rep_msg = generic_msg(msg)
-            return create_pdarray(rep_msg)
+            repMsg = generic_msg(msg)
+            return create_pdarray(repMsg)
         # pdarray binop float
         elif isinstance(other, float):
             msg = "binopvs {} {} {} {}".format(op, self.name, float64, other)
-            rep_msg = generic_msg(msg)            
-            return create_pdarray(rep_msg)
+            repMsg = generic_msg(msg)            
+            return create_pdarray(repMsg)
         else:
             return NotImplemented
 
@@ -166,13 +168,13 @@ class pdarray:
         # int binop pdarray
         if isinstance(other, int):
             msg = "binopsv {} {} {} {}".format(op, int64, other, self.name)
-            rep_msg = generic_msg(msg)
-            return create_pdarray(rep_msg)
+            repMsg = generic_msg(msg)
+            return create_pdarray(repMsg)
         # float binop pdarray
         elif isinstance(other, float):
             msg = "binopsv {} {} {} {}".format(op, float64, other, self.name)
-            rep_msg = generic_msg(msg)            
-            return create_pdarray(rep_msg)
+            repMsg = generic_msg(msg)            
+            return create_pdarray(repMsg)
         else:
             return NotImplemented
 
@@ -338,8 +340,8 @@ class pdarray:
     def __getitem__(self, key):
         if isinstance(key, int):
             if (key >= 0 and key < self.size):
-                rep_msg = generic_msg("[int] {} {}".format(self.name, key))
-                fields = rep_msg.split()
+                repMsg = generic_msg("[int] {} {}".format(self.name, key))
+                fields = repMsg.split()
                 value = fields[2]
                 if self.dtype == int64:
                     return int(value)
@@ -358,17 +360,17 @@ class pdarray:
         if isinstance(key, slice):
             (start,stop,stride) = key.indices(self.size)
             if v: print(start,stop,stride)
-            rep_msg = generic_msg("[slice] {} {} {} {}".format(self.name, start, stop, stride))
-            return create_pdarray(rep_msg);
+            repMsg = generic_msg("[slice] {} {} {} {}".format(self.name, start, stop, stride))
+            return create_pdarray(repMsg);
         if isinstance(key, pdarray):
             if key.dtype == int64:
-                rep_msg = generic_msg("[pdarray] {} {}".format(self.name, key.name))
-                return create_pdarray(rep_msg);
+                repMsg = generic_msg("[pdarray] {} {}".format(self.name, key.name))
+                return create_pdarray(repMsg);
             elif key.dtype == bool: # remember bool is a string here blah!
                 if self.size != key.size:
                     raise ValueError("size mismatch {} {}".format(self.size,key.size))
-                rep_msg = generic_msg("[pdarray] {} {}".format(self.name, key.name))
-                return create_pdarray(rep_msg);
+                repMsg = generic_msg("[pdarray] {} {}".format(self.name, key.name))
+                return create_pdarray(repMsg);
             else:
                 raise TypeError("unsupported pdarray index type {}".format(key.dtype))
         else:
@@ -405,7 +407,8 @@ class pdarray:
 
     # needs better impl but ok for now
     def __iter__(self):
-        if (self.size <= pdarray_iter_thresh) or (self.size <= 6):
+        global pdarrayIterThresh
+        if (self.size <= pdarrayIterThresh) or (self.size <= 6):
             for i in range(0, self.size):
                 yield self[i]
         else:
@@ -447,8 +450,8 @@ AllSymbols = "__AllSymbols__"
 #   only after:
 #       all values have been checked by python module and server
 #       server has created pdarray already befroe this is called
-def create_pdarray(rep_msg):
-    fields = rep_msg.split()
+def create_pdarray(repMsg):
+    fields = repMsg.split()
     name = fields[1]
     dtype = fields[2]
     size = int(fields[3])
@@ -470,15 +473,15 @@ def zeros(size, dtype=float64):
     # check dtype for error
     if dtype not in DTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
-    rep_msg = generic_msg("create {} {}".format(dtype, size))
-    return create_pdarray(rep_msg)
+    repMsg = generic_msg("create {} {}".format(dtype, size))
+    return create_pdarray(repMsg)
 
 def ones(size, dtype=float64):
     # check dtype for error
     if dtype not in DTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
-    rep_msg = generic_msg("create {} {}".format(dtype, size))
-    a = create_pdarray(rep_msg)
+    repMsg = generic_msg("create {} {}".format(dtype, size))
+    a = create_pdarray(repMsg)
     a.fill(1)
     return a
 
@@ -496,43 +499,43 @@ def ones_like(pda):
 
 def arange(start, stop, stride):
     if isinstance(start, int) and isinstance(stop, int) and isinstance(stride, int):
-        rep_msg = generic_msg("arange {} {} {}".format(start, stop, stride))
-        return create_pdarray(rep_msg)
+        repMsg = generic_msg("arange {} {} {}".format(start, stop, stride))
+        return create_pdarray(repMsg)
     else:
         raise TypeError("start,stop,stride must be type int {} {} {}".format(start,stop,stride))
 
 def linspace(start, stop, length):
     if (isinstance(start, int) or isinstance(start, float)) and (isinstance(stop, int) or isinstance(stop, float)) and (isinstance(length, int) or isinstance(length, float)) :
-        rep_msg = generic_msg("linspace {} {} {}".format(start, stop, length))
-        return create_pdarray(rep_msg)
+        repMsg = generic_msg("linspace {} {} {}".format(start, stop, length))
+        return create_pdarray(repMsg)
     else:
         raise TypeError("start,stop,length must be type int or float {} {} {}".format(start,stop,length))
 
 def histogram(pda, bins=10):
     if isinstance(pda, pdarray) and isinstance(bins, int):
-        rep_msg = generic_msg("histogram {} {}".format(pda.name, bins))
-        return create_pdarray(rep_msg)
+        repMsg = generic_msg("histogram {} {}".format(pda.name, bins))
+        return create_pdarray(repMsg)
     else:
         raise TypeError("must be pdarray {} and bins must be an int {}".format(pda,bins))
 
 def in1d(pda1, pda2):
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
-        rep_msg = generic_msg("in1d {} {}".format(pda1.name, pda2.name))
-        return create_pdarray(rep_msg)
+        repMsg = generic_msg("in1d {} {}".format(pda1.name, pda2.name))
+        return create_pdarray(repMsg)
     else:
         raise TypeError("must be pdarray {} and bins must be an int {}".format(pda,bins))
 
 def unique(pda):
     if isinstance(pda, pdarray):
-        rep_msg = generic_msg("unique {}".format(pda.name))
-        return create_pdarray(rep_msg)
+        repMsg = generic_msg("unique {}".format(pda.name))
+        return create_pdarray(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
 def value_counts(pda):
     if isinstance(pda, pdarray):
-        rep_msg = generic_msg("value_counts {}".format(pda.name))
-        vc = rep_msg.split("+")
+        repMsg = generic_msg("value_counts {}".format(pda.name))
+        vc = repMsg.split("+")
         if v: print(vc)
         return [create_pdarray(vc[0]), create_pdarray(vc[1])]
     else:
@@ -543,50 +546,50 @@ def randint(low, high, size, dtype=int64):
     if dtype not in DTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
     if isinstance(low, int) and isinstance(high, int) and isinstance(size, int):
-        rep_msg = generic_msg("randint {} {} {} {}".format(low,high,size,dtype))
-        return create_pdarray(rep_msg)
+        repMsg = generic_msg("randint {} {} {} {}".format(low,high,size,dtype))
+        return create_pdarray(repMsg)
     else:
         raise TypeError("min,max,size must be int {} {} {}".format(low,high,size));
 
 def abs(pda):
     if isinstance(pda, pdarray):
-        rep_msg = generic_msg("efunc {} {}".format("abs", pda.name))
-        return create_pdarray(rep_msg)
+        repMsg = generic_msg("efunc {} {}".format("abs", pda.name))
+        return create_pdarray(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
 def log(pda):
     if isinstance(pda, pdarray):
-        rep_msg = generic_msg("efunc {} {}".format("log", pda.name))
-        return create_pdarray(rep_msg)
+        repMsg = generic_msg("efunc {} {}".format("log", pda.name))
+        return create_pdarray(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
 def exp(pda):
     if isinstance(pda, pdarray):
-        rep_msg = generic_msg("efunc {} {}".format("exp", pda.name))
-        return create_pdarray(rep_msg)
+        repMsg = generic_msg("efunc {} {}".format("exp", pda.name))
+        return create_pdarray(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
 def cumsum(pda):
     if isinstance(pda, pdarray):
-        rep_msg = generic_msg("efunc {} {}".format("cumsum", pda.name))
-        return create_pdarray(rep_msg)
+        repMsg = generic_msg("efunc {} {}".format("cumsum", pda.name))
+        return create_pdarray(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
 def cumprod(pda):
     if isinstance(pda, pdarray):
-        rep_msg = generic_msg("efunc {} {}".format("cumprod", pda.name))
-        return create_pdarray(rep_msg)
+        repMsg = generic_msg("efunc {} {}".format("cumprod", pda.name))
+        return create_pdarray(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
 def any(pda):
     if isinstance(pda, pdarray):
-        rep_msg = generic_msg("reduction {} {}".format("any", pda.name))
-        fields = rep_msg.split()
+        repMsg = generic_msg("reduction {} {}".format("any", pda.name))
+        fields = repMsg.split()
         dtype = fields[0]
         value = fields[1]
         val = None
@@ -599,8 +602,8 @@ def any(pda):
 
 def all(pda):
     if isinstance(pda, pdarray):
-        rep_msg = generic_msg("reduction {} {}".format("all", pda.name))
-        fields = rep_msg.split()
+        repMsg = generic_msg("reduction {} {}".format("all", pda.name))
+        fields = repMsg.split()
         dtype = fields[0]
         value = fields[1]
         val = None
@@ -613,8 +616,8 @@ def all(pda):
 
 def sum(pda):
     if isinstance(pda, pdarray):
-        rep_msg = generic_msg("reduction {} {}".format("sum", pda.name))
-        fields = rep_msg.split()
+        repMsg = generic_msg("reduction {} {}".format("sum", pda.name))
+        fields = repMsg.split()
         dtype = fields[0]
         value = fields[1]
         val = None
@@ -631,8 +634,8 @@ def sum(pda):
 
 def prod(pda):
     if isinstance(pda, pdarray):
-        rep_msg = generic_msg("reduction {} {}".format("prod", pda.name))
-        fields = rep_msg.split()
+        repMsg = generic_msg("reduction {} {}".format("prod", pda.name))
+        fields = repMsg.split()
         dtype = fields[0]
         value = fields[1]
         val = None

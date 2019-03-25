@@ -45,7 +45,7 @@ proc main() {
             break;
         }
 
-        var rep_msg: string;
+        var repMsg: string;
         
         // peel off the command
         var fields = req_msg.split(1);
@@ -54,39 +54,39 @@ proc main() {
         // parse requests, execute requests, format responses
         select cmd
         {
-	    when "readhdf"           {rep_msg = readhdfMsg(req_msg, st);}
-            when "create"            {rep_msg = createMsg(req_msg, st);}
-            when "delete"            {rep_msg = deleteMsg(req_msg, st);}
-            when "binopvv"           {rep_msg = binopvvMsg(req_msg, st);}
-            when "binopvs"           {rep_msg = binopvsMsg(req_msg, st);}
-            when "binopsv"           {rep_msg = binopsvMsg(req_msg, st);}
-            when "opeqvv"            {rep_msg = opeqvvMsg(req_msg, st);}
-            when "opeqvs"            {rep_msg = opeqvsMsg(req_msg, st);}
-            when "efunc"             {rep_msg = efuncMsg(req_msg, st);}
-            when "reduction"         {rep_msg = reductionMsg(req_msg, st);}
-            when "arange"            {rep_msg = arangeMsg(req_msg, st);}
-            when "linspace"          {rep_msg = linspaceMsg(req_msg, st);}
-            when "randint"           {rep_msg = randintMsg(req_msg, st);}
-            when "histogram"         {rep_msg = histogramMsg(req_msg, st);}
-            when "in1d"              {rep_msg = in1dMsg(req_msg, st);}
-            when "unique"            {rep_msg = uniqueMsg(req_msg, st);}
-            when "value_counts"      {rep_msg = value_countsMsg(req_msg, st);}
-            when "set"               {rep_msg = setMsg(req_msg, st);}
-            when "info"              {rep_msg = infoMsg(req_msg, st);}
-            when "dump"              {rep_msg = dumpMsg(req_msg, st);}
-            when "str"               {rep_msg = strMsg(req_msg, st);}
-            when "repr"              {rep_msg = reprMsg(req_msg, st);}
-            when "[int]"             {rep_msg = intIndexMsg(req_msg, st);}
-            when "[slice]"           {rep_msg = sliceIndexMsg(req_msg, st);}
-            when "[pdarray]"         {rep_msg = pdarrayIndexMsg(req_msg, st);}
-            when "[int]=val"         {rep_msg = setIntIndexToValueMsg(req_msg, st);}
-            when "[pdarray]=val"     {rep_msg = setPdarrayIndexToValueMsg(req_msg, st);}            
-            when "[pdarray]=pdarray" {rep_msg = setPdarrayIndexToPdarrayMsg(req_msg, st);}            
+	    when "readhdf"           {repMsg = readhdfMsg(req_msg, st);}
+            when "create"            {repMsg = createMsg(req_msg, st);}
+            when "delete"            {repMsg = deleteMsg(req_msg, st);}
+            when "binopvv"           {repMsg = binopvvMsg(req_msg, st);}
+            when "binopvs"           {repMsg = binopvsMsg(req_msg, st);}
+            when "binopsv"           {repMsg = binopsvMsg(req_msg, st);}
+            when "opeqvv"            {repMsg = opeqvvMsg(req_msg, st);}
+            when "opeqvs"            {repMsg = opeqvsMsg(req_msg, st);}
+            when "efunc"             {repMsg = efuncMsg(req_msg, st);}
+            when "reduction"         {repMsg = reductionMsg(req_msg, st);}
+            when "arange"            {repMsg = arangeMsg(req_msg, st);}
+            when "linspace"          {repMsg = linspaceMsg(req_msg, st);}
+            when "randint"           {repMsg = randintMsg(req_msg, st);}
+            when "histogram"         {repMsg = histogramMsg(req_msg, st);}
+            when "in1d"              {repMsg = in1dMsg(req_msg, st);}
+            when "unique"            {repMsg = uniqueMsg(req_msg, st);}
+            when "value_counts"      {repMsg = value_countsMsg(req_msg, st);}
+            when "set"               {repMsg = setMsg(req_msg, st);}
+            when "info"              {repMsg = infoMsg(req_msg, st);}
+            when "dump"              {repMsg = dumpMsg(req_msg, st);}
+            when "str"               {repMsg = strMsg(req_msg, st);}
+            when "repr"              {repMsg = reprMsg(req_msg, st);}
+            when "[int]"             {repMsg = intIndexMsg(req_msg, st);}
+            when "[slice]"           {repMsg = sliceIndexMsg(req_msg, st);}
+            when "[pdarray]"         {repMsg = pdarrayIndexMsg(req_msg, st);}
+            when "[int]=val"         {repMsg = setIntIndexToValueMsg(req_msg, st);}
+            when "[pdarray]=val"     {repMsg = setPdarrayIndexToValueMsg(req_msg, st);}            
+            when "[pdarray]=pdarray" {repMsg = setPdarrayIndexToPdarrayMsg(req_msg, st);}            
             when "connect" {
-                rep_msg = "connected to arkouda server tcp://*:%t".format(ServerPort);
+                repMsg = "connected to arkouda server tcp://*:%t".format(ServerPort);
             }
             when "disconnect" {
-                rep_msg = "disconnected from arkouda server tcp://*:%t".format(ServerPort);
+                repMsg = "disconnected from arkouda server tcp://*:%t".format(ServerPort);
             }
             otherwise {
                 if v {writeln("Error: unrecognized command: %s".format(req_msg)); try! stdout.flush();}
@@ -96,8 +96,8 @@ proc main() {
         // send responses
         // send count for now
         rep_count += 1;
-        if v {writeln("rep_msg:",rep_msg); try! stdout.flush();}
-        socket.send(rep_msg);
+        if v {writeln("repMsg:",repMsg); try! stdout.flush();}
+        socket.send(repMsg);
 
         // end timer for command processing
         if v{writeln("<<< ", cmd," took ", getCurrentTime() - t1,"sec"); try! stdout.flush();}
