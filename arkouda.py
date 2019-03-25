@@ -118,7 +118,7 @@ class pdarray:
     def __del__(self):
         global connected
         if connected:
-            generic_msg("delete {}".format(name))
+            generic_msg("delete {}".format(self.name))
 
     def __str__(self):
         return generic_msg("str {} {}".format(self.name,pdarray_iter_thresh) )

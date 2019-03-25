@@ -8,7 +8,7 @@ import importlib
 import numpy as np
 import math
 import gc
-
+import sys
 
 # In[2]:
 
@@ -19,14 +19,11 @@ import arkouda as ak
 # In[3]:
 
 
-importlib.reload(ak)
-
-
-# In[4]:
-
-
 ak.v = False
-ak.connect(server="localhost", port=5555)
+if len(sys.argv) > 1:
+    ak.connect(server=sys.argv[1], port=sys.argv[2])
+else:
+    ak.connect()
 
 
 # In[5]:
