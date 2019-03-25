@@ -21,7 +21,7 @@ module MsgProcessing
       var cmd = fields[1];
       var dsetName = fields[2];
       var filenames = fields[3..];
-      var rname = st.next_name();
+      var rname = st.nextName();
       st.addEntry(rname, read_hdf_files(filenames, dsetName));
       return try! "created " + st.attrib(rname);
     }
