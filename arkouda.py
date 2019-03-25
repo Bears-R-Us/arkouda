@@ -461,6 +461,10 @@ def create_pdarray(repMsg):
     if v: print("{} {} {} {} {} {}".format(name,dtype,size,ndim,shape,itemsize))
     return pdarray(name,dtype,size,ndim,shape,itemsize)
 
+def read_hdf(dsetName, filenames):
+    rep_msg = generic_msg("readhdf {} {}".format(dsetName, ' '.join(filenames)))
+    return create_pdarray(rep_msg)
+
 def array(a):
     print("array() not implemented yet!")
     return None
