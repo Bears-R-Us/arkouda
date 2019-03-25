@@ -96,9 +96,6 @@ def generic_msg(message):
     if (message.split())[0] == "Error:": raise RuntimeError(message)
     return message
 
-def delete_msg(name):
-    generic_msg("delete {}".format(name))
-
 # supported dtypes
 bool_ = type(True) # save bool type into bool_
 bool = "bool" # seems dangerous but numpy redefines bool also # how do you call bool() in this context?
@@ -121,7 +118,7 @@ class pdarray:
     def __del__(self):
         global connected
         if connected:
-            delete_msg(self.name)
+            generic_msg("delete {}".format(name))
 
     def __str__(self):
         return generic_msg("str {} {}".format(self.name,pdarray_iter_thresh) )
@@ -671,35 +668,11 @@ def dump(pda):
 ########################
 # a little quick testing
 if __name__ == "__main__":
-    startup()
+    v = True
+    connect()
 
-    # create and destroy 40 pdarray to stress a little
-    for i in range(40):
-        rep_msg = create_msg(int64, 10)
-        a = create_pdarray(rep_msg)
+    dump(AllSymbols)
 
-    dump(All)
-
-    create_msg("a",int64,10)
-    set_msg("a",int64, 1000)
-    
-    create_msg("b", int64, 11)
-    set_msg("b",float64, 10.5)
-    
-    # message arkouda server to create array
-    create_msg("c", float64, 11)
-    
-    # message arkouda server to dump symbol table
-    info(All)
-    dump(All)
-    
-    # delete arrays from symbol table
-    delete_msg("a")
-    delete_msg("b")
-    delete_msg("c")
-    # dump the table
-    dump(All)
-    
     # create some arrays and other things
     # and see the effect of the python __del__ method
     a = zeros(8, dtype=int64)
@@ -732,9 +705,9 @@ if __name__ == "__main__":
     # dump a specific array
     dump(a)
     
-    info(__AllSymbols__)
+    info(AllSymbols)
     
-    dump(__AllSymbols__)
+    dump(AllSymbols)
     
     # shutdown arkouda server
     shutdown()
