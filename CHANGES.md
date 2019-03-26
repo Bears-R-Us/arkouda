@@ -1,8 +1,9 @@
 ### Changes in arkouda-0.0.6
 ------------------------
  * added toys/ subdir with some prototype sorting code
- * 
-
+ * made some changes to make naming consistent in Python and Chapel code
+ * added initial HDF5 I/O
+ 
 
 ### Changes in arkouda-0.0.5
 ------------------------
@@ -69,25 +70,3 @@
  * add pdarray indexing b[] = a[iv[]],
    iv[] can be either int64 which does gather or bool which does a compress-out-false-indicies
 
-
-### ISSUES
-------
- * iv:pdarray:int64 = ak.argsort(pdarray)
-    returns an index vector which sorts the original pdarray
-    currently only needed for int64
-    CountingSort.chpl has a start at this
-
- * 1D Scans in 1.19.0 of bool array cast to int need a copy made to parallelize
-
- * add uint64 or decide to use uint64 or int64 only
-
- * add some more random pdarray generators
- * add array() to turn a list into an pdarray
- * add nd2pdarray to turn an ndarray into a pdarray
- * add simple I/O array-to-file and array-from-file
- * add more float and int binops
- * add more float and int opeq
- * add argmax(maxloc) and argmin(minloc) reductions
- * fix sorta broken implementation of bools (Python3 vs. Numpy behavior)
-    and bool is a type not a string like I have it (~ vs. not)
- * fix arange to behave like numpy
