@@ -116,7 +116,7 @@ print(b)
 
 
 ak.v = True
-ak.pdarray_iter_thresh = 1000
+ak.pdarrayIterThresh = 1000
 a = ak.arange(0,10,1)
 print(list(a))
 
@@ -632,8 +632,8 @@ print(ak.info(C),C)
 
 # turn off verbose messages from arkouda package
 ak.v = False
-# set pdarray_iter_thresh to 0 to only print the first 3 and last 3 of pdarray
-ak.pdarray_iter_thresh = 0
+# set pdarrayIterThresh to 0 to only print the first 3 and last 3 of pdarray
+ak.pdarrayIterThresh = 0
 a = ak.linspace(0,9,10)
 b = a<5
 print(a)
@@ -658,7 +658,7 @@ print(a)
 
 
 ak.v = False
-ak.pdarray_iter_thresh = 0
+ak.pdarrayIterThresh = 0
 
 a = ak.ones(10,ak.int64)
 b = a | 0xff
