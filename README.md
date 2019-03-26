@@ -7,7 +7,7 @@ arkouda python/chapel package
  * requires python 3.6 or greater
 ```bash
 # it should be simple to get things going on a mac…
-brew install chapel
+brew install chapel # needs to change because of HDF5 I/O
 brew install python3
 brew install zeromq
 pip3 install numpy
