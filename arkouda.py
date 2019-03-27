@@ -120,7 +120,7 @@ class pdarray:
         if connected:
             generic_msg("delete {}".format(self.name))
 
-    def _str__(self):
+    def __str__(self):
         global pdarrayIterThresh
         return generic_msg("str {} {}".format(self.name,pdarrayIterThresh) )
         ## s = repr([e for e in self])
@@ -460,7 +460,7 @@ AllSymbols = "__AllSymbols__"
 
 # creates pdarray object
 #   only after:
-#       all values have been checked by python module and server
+#       all values have been checked by python module and...
 #       server has created pdarray already befroe this is called
 def create_pdarray(repMsg):
     fields = repMsg.split()

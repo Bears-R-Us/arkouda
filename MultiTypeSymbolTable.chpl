@@ -127,7 +127,7 @@ module MultiTypeSymbolTable
                     {
                         var e = toSymEntry(u,int);
                         if e.size == 0 {s =  "[]";}
-                        else if e.size < thresh {
+                        else if e.size < thresh || e.size <= 6 {
                             s =  "[";
                             for i in 0..(e.size-2) {s += try! "%t ".format(e.a[i]);}
                             s += try! "%t]".format(e.a[e.size-1]);
@@ -143,7 +143,7 @@ module MultiTypeSymbolTable
                     {
                         var e = toSymEntry(u,real);
                         if e.size == 0 {s =  "[]";}
-                        else if e.size < thresh {
+                        else if e.size < thresh || e.size <= 6 {
                             s =  "[";
                             for i in 0..(e.size-2) {s += try! "%t ".format(e.a[i]);}
                             s += try! "%t]".format(e.a[e.size-1]);
@@ -159,7 +159,7 @@ module MultiTypeSymbolTable
                     {
                         var e = toSymEntry(u,bool);
                         if e.size == 0 {s =  "[]";}
-                        else if e.size < thresh {
+                        else if e.size < thresh || e.size <= 6 {
                             s =  "[";
                             for i in 0..(e.size-2) {s += try! "%t ".format(e.a[i]);}
                             s += try! "%t]".format(e.a[e.size-1]);
@@ -190,7 +190,7 @@ module MultiTypeSymbolTable
                     {
                         var e = toSymEntry(u,int);
                         if e.size == 0 {s =  "array([])";}
-                        else if e.size < thresh {
+                        else if e.size < thresh || e.size <= 6 {
                             s =  "array([";
                             for i in 0..(e.size-2) {s += try! "%t, ".format(e.a[i]);}
                             s += try! "%t])".format(e.a[e.size-1]);
@@ -206,7 +206,7 @@ module MultiTypeSymbolTable
                     {
                         var e = toSymEntry(u,real);
                         if e.size == 0 {s =  "array([])";}
-                        else if e.size < thresh {
+                        else if e.size < thresh || e.size <= 6 {
                             s =  "array([";
                             for i in 0..(e.size-2) {s += try! "%.17r, ".format(e.a[i]);}
                             s += try! "%.17r])".format(e.a[e.size-1]);
@@ -222,7 +222,7 @@ module MultiTypeSymbolTable
                     {
                         var e = toSymEntry(u,bool);
                         if e.size == 0 {s =  "array([])";}
-                        else if e.size < thresh {
+                        else if e.size < thresh || e.size <= 6 {
                             s =  "array([";
                             for i in 0..(e.size-2) {s += try! "%t, ".format(e.a[i]);}
                             s += try! "%t])".format(e.a[e.size-1]);
