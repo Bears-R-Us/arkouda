@@ -70,7 +70,7 @@ proc main() {
             when "histogram"         {repMsg = histogramMsg(reqMsg, st);}
             when "in1d"              {repMsg = in1dMsg(reqMsg, st);}
             when "unique"            {repMsg = uniqueMsg(reqMsg, st);}
-            when "value_counts"       {repMsg = value_countsMsg(reqMsg, st);}
+            when "value_counts"      {repMsg = value_countsMsg(reqMsg, st);}
             when "set"               {repMsg = setMsg(reqMsg, st);}
             when "info"              {repMsg = infoMsg(reqMsg, st);}
             when "dump"              {repMsg = dumpMsg(reqMsg, st);}
@@ -82,6 +82,8 @@ proc main() {
             when "[int]=val"         {repMsg = setIntIndexToValueMsg(reqMsg, st);}
             when "[pdarray]=val"     {repMsg = setPdarrayIndexToValueMsg(reqMsg, st);}            
             when "[pdarray]=pdarray" {repMsg = setPdarrayIndexToPdarrayMsg(reqMsg, st);}            
+            when "[slice]=val"       {repMsg = setSliceIndexToValueMsg(reqMsg, st);}            
+            when "[slice]=pdarray"   {repMsg = setSliceIndexToPdarrayMsg(reqMsg, st);}            
             when "connect" {
                 repMsg = "connected to arkouda server tcp://*:%t".format(ServerPort);
             }
