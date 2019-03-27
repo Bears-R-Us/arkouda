@@ -400,6 +400,18 @@ class pdarray:
                 generic_msg("[pdarray]=val {} {} {} {}".format(self.name,key.name,float64,value))
             elif isinstance(value, pdarray):
                 generic_msg("[pdarray]=pdarray {} {} {}".format(self.name,key.name,value.name))
+        elif isinstance(key, slice):
+            (start,stop,stride) = key.indices(self.size)
+            if v: print(start,stop,stride)
+            if isinstance(value, bool_): # we set bool_ = type(True) to test for bool
+                # remember bool is a string here blah!
+                generic_msg("[slice]=val {} {} {} {} {} {}".format(self.name,start,stop,stride,bool,value))
+            elif isinstance(value, int):
+                generic_msg("[slice]=val {} {} {} {} {} {}".format(self.name,start,stop,stride,int64,value))
+            elif isinstance(value, float):
+                generic_msg("[slice]=val {} {} {} {} {} {}".format(self.name,start,stop,stride,float64,value))
+            elif isinstance(value, pdarray):
+                generic_msg("[slice]=pdarray {} {} {} {} {}".format(self.name,start,stop,stride,value.name))
             else:
                 raise TypeError("unsupported value type")
         else:
