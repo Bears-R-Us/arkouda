@@ -585,7 +585,17 @@ module MsgProcessing
                     when "prod" {
                         var prod = * reduce e.a;
                         var val = prod:string;
-                        return try! "int64 %i".format(dtype2str(e.dtype), val);
+                        return try! "int64 %i".format(val);
+                    }
+                    when "argmin" {
+                        var (minVal, minLoc) = minloc reduce zip(e.a,e.aD);
+                        var val = minLoc:string;
+                        return try! "int64 %i".format(val);
+                    }
+                    when "argmax" {
+                        var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.aD);
+                        var val = maxLoc:string;
+                        return try! "int64 %i".format(val);
                     }
                     otherwise {return notImplementedError("reduction",reductionop,gEnt.dtype);}
                 }
@@ -615,6 +625,16 @@ module MsgProcessing
                         var prod = * reduce e.a;
                         var val = prod:string;
                         return try! "float64 %.17r".format(val);
+                    }
+                    when "argmin" {
+                        var (minVal, minLoc) = minloc reduce zip(e.a,e.aD);
+                        var val = minLoc:string;
+                        return try! "int64 %i".format(val);
+                    }
+                    when "argmax" {
+                        var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.aD);
+                        var val = maxLoc:string;
+                        return try! "int64 %i".format(val);
                     }
                     otherwise {return notImplementedError("reduction",reductionop,gEnt.dtype);}
                 }

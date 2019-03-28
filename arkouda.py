@@ -446,6 +446,10 @@ class pdarray:
         return sum(self)
     def prod(self):
         return prod(self)
+    def argmin(self):
+        return argmin(self)
+    def argmax(self):
+        return argmax(self)
     def unique(self):
         return unique(self)
     def value_counts(self):
@@ -647,6 +651,42 @@ def sum(pda):
 def prod(pda):
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("prod", pda.name))
+        fields = repMsg.split()
+        dtype = fields[0]
+        value = fields[1]
+        val = None
+        if dtype == int64: val = int(value)
+        elif dtype == float64: val = float(value)
+        elif dtype == bool: # remember bool is a string here blah!
+            if value == "True": val = True
+            elif value == "False": val = False
+            else: raise ValueError("unsupported value from server {}".format(value))
+        else: raise TypeError("unsupported dtype from server {}".format(dtype))
+        return val
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+
+def argmin(pda):
+    if isinstance(pda, pdarray):
+        repMsg = generic_msg("reduction {} {}".format("argmin", pda.name))
+        fields = repMsg.split()
+        dtype = fields[0]
+        value = fields[1]
+        val = None
+        if dtype == int64: val = int(value)
+        elif dtype == float64: val = float(value)
+        elif dtype == bool: # remember bool is a string here blah!
+            if value == "True": val = True
+            elif value == "False": val = False
+            else: raise ValueError("unsupported value from server {}".format(value))
+        else: raise TypeError("unsupported dtype from server {}".format(dtype))
+        return val
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+
+def argmax(pda):
+    if isinstance(pda, pdarray):
+        repMsg = generic_msg("reduction {} {}".format("argmax", pda.name))
         fields = repMsg.split()
         dtype = fields[0]
         value = fields[1]
