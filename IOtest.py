@@ -33,12 +33,12 @@ if __name__ == '__main__':
     badfilename = args.filenames[0] + '-should-not-exist-5473219431'
     try:
         ak.read_hdf(args.dsetName, args.filenames + [badfilename])
-    except e:
+    except RuntimeError as e:
         print(e)
     print("Testing bad dsetName...")
     try:
         ak.read_hdf(args.dsetName+'-not-a-dset', args.filenames)
-    except e:
+    except RuntimeError as e:
         print(e)
         
     ak.shutdown()

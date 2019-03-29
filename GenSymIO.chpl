@@ -14,18 +14,10 @@ module GenSymIO {
     var cmd = fields[1];
     var dsetName = fields[2];
     var filenames = fields[3..];
-    var dataclass: C_HDF5.H5T_INTEGER.type;
-    var firstname = true;
-    for fname in filenames {
+    var dclasses: [filenames.domain] C_HDF5.hid_t;
+    for (i, fname) in zip(filenames.domain, filenames) {
       try {
-	if firstname {
-	  var dataclass = get_dtype(fname, dsetName);
-	  firstname = false;
-	} else {
-	  if get_dtype(fname, dsetName) != dataclass {
-	    return try! "Error: unexpected dtype in dataset %s of file %s".format(dsetName, fname);
-	  }
-	}
+	dclasses[i] = get_dtype(fname, dsetName);
       } catch e: FileNotFoundError {
 	return try! "Error: file not found: %s".format(fname);
       } catch e: PermissionError {
@@ -34,7 +26,13 @@ module GenSymIO {
 	return try! "Error: dataset %s not found in file %s".format(dsetName, fname);
       } catch {
 	// Need a catch-all for non-throwing function
-	return "Error: unknown cause";
+	return try! "Error: unknown cause";
+      }
+    }
+    const dataclass = dclasses[dclasses.domain.first];
+    for (i, dc) in zip(dclasses.domain, dclasses) {
+      if dc != dataclass {
+	return try! "Error: inconsistent dtype in dataset %s of file %s".format(dsetName, filenames[i]);
       }
     }
     var (subdoms, len) = get_subdoms(filenames, dsetName);
