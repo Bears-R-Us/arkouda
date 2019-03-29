@@ -22,11 +22,24 @@ if __name__ == '__main__':
             ak.connect(port=args.port)
         else:
             ak.connect()
+    print("Reading files...")
     start = time.time()
     a = ak.read_hdf(args.dsetName, args.filenames)
     end = time.time()
     t = end - start
     print(a)
     print(f'{t:.2f} seconds ({8*a.size/t:.2e} bytes/sec)')
+    print("Testing bad filename...")
+    badfilename = args.filenames[0] + '-should-not-exist-5473219431'
+    try:
+        ak.read_hdf(args.dsetName, args.filenames + [badfilename])
+    except e:
+        print(e)
+    print("Testing bad dsetName...")
+    try:
+        ak.read_hdf(args.dsetName+'-not-a-dset', args.filenames)
+    except e:
+        print(e)
+        
     ak.shutdown()
     sys.exit()
