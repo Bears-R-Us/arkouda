@@ -21,8 +21,6 @@ module RandMsg
         var len = try! fields[4]:int;
         var dtype = str2dtype(fields[5]);
 
-        var seed = 241;
-        
         // get next symbol name
         var rname = st.nextName();
         
@@ -36,10 +34,12 @@ module RandMsg
                 writeln("alloc time = ",getCurrentTime() - t1,"sec"); try! stdout.flush();
                 
                 t1 = getCurrentTime();
-                // this is potentially clunky due to only one RandomStream
-                // need to do at least one for each locale maybe...
-                var R = new owned RandomStream(real, seed); R.getNext();
-                [e in a] e = (R.getNext() * (aMax - aMin) + aMin):int;
+                coforall loc in Locales {
+                    on loc {
+                        var R = new owned RandomStream(real); R.getNext();
+                        [i in a.localSubdomain()] a[i] = (R.getNext() * (aMax - aMin) + aMin):int;
+                    }
+                }
                 writeln("compute time = ",getCurrentTime() - t1,"sec"); try! stdout.flush();
                 
                 st.addEntry(rname, new shared SymEntry(a));
@@ -51,10 +51,12 @@ module RandMsg
                 writeln("alloc time = ",getCurrentTime() - t1,"sec"); try! stdout.flush();
                 
                 t1 = getCurrentTime();
-                // this is potentially clunky due to only one RandomStream
-                // need to do at least one for each locale maybe...
-                var R = new owned RandomStream(real, seed); R.getNext();
-                [e in a] e = ((R.getNext() * (aMax - aMin) + aMin):int):real;
+                coforall loc in Locales {
+                    on loc {
+                        var R = new owned RandomStream(real); R.getNext();
+                        [i in a.localSubdomain()] a[i] = ((R.getNext() * (aMax - aMin) + aMin):int):real;
+                    }
+                }
                 writeln("compute time = ",getCurrentTime() - t1,"sec"); try! stdout.flush();
                 
                 st.addEntry(rname, new shared SymEntry(a));                
@@ -66,11 +68,13 @@ module RandMsg
                 writeln("alloc time = ",getCurrentTime() - t1,"sec"); try! stdout.flush();
                 
                 t1 = getCurrentTime();
-                // this is potentially clunky due to only one RandomStream
-                // need to do at least one for each locale maybe...
-                var R = new owned RandomStream(real, seed); R.getNext();
-                [e in a] e = (R.getNext() >= 0.5);
-                writeln("compute time = ",getCurrentTime() - t1,"sec"); try! stdout.flush();
+                coforall loc in Locales {
+                    on loc {
+                        var R = new owned RandomStream(real); R.getNext();
+                        [i in a.localSubdomain()] a[i] = (R.getNext() >= 0.5);
+                    }
+                }
+                        writeln("compute time = ",getCurrentTime() - t1,"sec"); try! stdout.flush();
                 
                 st.addEntry(rname, new shared SymEntry(a));
             }            
