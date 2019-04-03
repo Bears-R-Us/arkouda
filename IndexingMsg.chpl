@@ -128,8 +128,7 @@ module IndexingMsg
             when (DType.Int64, DType.Bool) {
                 var e = toSymEntry(gX,int);
                 var truth = toSymEntry(gIV,bool);
-                var itruth: [truth.aD] int = truth.a:int; // make a copy of bools as ints blah!
-                var iv: [truth.aD] int = (+ scan itruth);
+                var iv: [truth.aD] int = (+ scan truth.a);
                 var pop = iv[iv.size-1];
                 if v {writeln("pop = ",pop,"last-scan = ",iv[iv.size-1]);try! stdout.flush();}
                 var a = makeDistArray(pop, int);
@@ -150,8 +149,7 @@ module IndexingMsg
             when (DType.Float64, DType.Bool) {
                 var e = toSymEntry(gX,real);
                 var truth = toSymEntry(gIV,bool);
-                var itruth: [truth.aD] int = truth.a:int; // make a copy of bools as ints blah!
-                var iv: [truth.aD] int = (+ scan itruth);
+                var iv: [truth.aD] int = (+ scan truth.a);
                 var pop = iv[iv.size-1];
                 if v {writeln("pop = ",pop,"last-scan = ",iv[iv.size-1]);try! stdout.flush();}
                 var a = makeDistArray(pop, real);
@@ -172,8 +170,7 @@ module IndexingMsg
             when (DType.Bool, DType.Bool) {
                 var e = toSymEntry(gX,bool);
                 var truth = toSymEntry(gIV,bool);
-                var itruth: [truth.aD] int = truth.a:int; // make a copy of bools as ints blah! to get around scan issue
-                var iv: [truth.aD] int = (+ scan itruth);
+                var iv: [truth.aD] int = (+ scan truth.a);
                 var pop = iv[iv.size-1];
                 if v {writeln("pop = ",pop,"last-scan = ",iv[iv.size-1]);try! stdout.flush();}
                 var a = makeDistArray(pop, bool);
