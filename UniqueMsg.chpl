@@ -203,7 +203,7 @@ module UniqueMsg
         // accumulate the uniq values into each locales domain of uniq values
         [val in a] if !uniqSet[here.id].contains(val) {uniqSet[here.id] += val;}
         var numUniq = + reduce [i in PrivateSpace]  uniqSet[i].size;
-        if v {try! writeln("num unique vals = %t".format(numUniq));try! stdout.flush();}
+        if v {try! writeln("num unique vals upper bound = %t".format(numUniq));try! stdout.flush();}
 
         // global assoc domain for global unique value set
         //var globalUniqSet: domain(int) dmapped Hashed(idxType=int);
@@ -367,3 +367,4 @@ module UniqueMsg
     }
 
 }
+

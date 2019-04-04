@@ -22,6 +22,9 @@ pip3 install jupyter
 ```bash
 chpl --fast -senableParScan arkouda_server.chpl
 ```
+```bash
+chpl --ccflags=-Wno-incompatible-pointer-types --cache-remote --fast -senableParScan arkouda_server.chpl
+```
  * startup the arkouda_server
  * defaults to port 5555
 ```bash
