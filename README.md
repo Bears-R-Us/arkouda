@@ -7,7 +7,7 @@ arkouda python/chapel package
  * requires python 3.6 or greater
 ```bash
 # it should be simple to get things going on a mac…
-# can use brew install chapel anymore
+# can't use brew install chapel anymore
 # need to build with export CHPL_LLVM=llvm
 # on my mac build chapel in my home directory with these settings...
 # I don't understand them all but they seem to work
