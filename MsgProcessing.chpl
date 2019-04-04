@@ -13,7 +13,8 @@ module MsgProcessing
     use OperatorMsg;
     use RandMsg;
     use IndexingMsg;
-
+    use UniqueMsg;
+    
     // parse, execute, and respond to create message
     proc createMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
