@@ -7,6 +7,7 @@
 import zmq
 import os
 import subprocess
+import json
 
 # stuff for zmq connection
 pspStr = None
@@ -478,7 +479,9 @@ def create_pdarray(repMsg):
     return pdarray(name,dtype,size,ndim,shape,itemsize)
 
 def read_hdf(dsetName, filenames):
-    rep_msg = generic_msg("readhdf {} {}".format(dsetName, ' '.join(filenames)))
+    if isinstance(filenames, str):
+        filenames = [filenames]
+    rep_msg = generic_msg("readhdf {} {:n} {}".format(dsetName, len(filenames), json.dumps(filenames)))
     return create_pdarray(rep_msg)
 
 def array(a):

@@ -1,51 +1,109 @@
-/* Compile line (for BlockDist, highly recommended):
-   chpl -M /path/to/arkouda -I/path/to/hdf/includes -L /path/to/hdf/libs -s MyDmap=1 
-*/
-
 module GenSymIO {
   use HDF5;
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
   use FileSystem;
-	
-  /* Testing Code */
-  /* use Time; */
   config const GenSymIO_DEBUG = false;
-  /* // Shell expression capturing files to be read */
-  /* config const globstr = ""; */
-  /* var testfiles = for f in glob(globstr) do f; */
-  /* // Name of HDF5 dataset to read */
-  /* config const testDset = ""; */
-  /* proc main() { */
-  /*   var timer = new Timer(); */
-  /*   writeln("Reading in ", testfiles.size, " files"); */
-  /*   timer.clear(); timer.start(); */
-  /*   var entry = read_hdf_files(testfiles, testDset); */
-  /*   timer.stop(); */
-  /*   describe(entry); */
-  /*   writeln(timer.elapsed(), " seconds\n"); */
-  /* } */
-	
-  /* proc describe(data: GenSymEntry) { */
-  /*   writeln("Array length: ", data.size); */
-  /*   writeln("Array dtype: ", data.dtype); */
-  /*   if data.dtype == DType.Int64 { */
-  /*     var entryInt = toSymEntry(data, int); */
-  /*     writeln("Sum = ", + reduce entryInt.a); */
-  /*     writeln("Head: ", entryInt.a[0..#5]); */
-  /*   } else if data.dtype == DType.Float64 { */
-  /*     var entryReal = toSymEntry(data, real); */
-  /*     writeln("Sum = ", + reduce entryReal.a); */
-  /*     writeln("Head: ", entryReal.a[0..#5]); */
-  /*   } else if data.dtype == DType.Bool { */
-  /*     var entryBool = toSymEntry(data, bool); */
-  /*     writeln("Sum = ", + reduce entryBool.a); */
-  /*     writeln("Head: ", entryBool.a[0..#5]); */
-  /*   } */
-  /* } */
-	
-  /* End Testing */
-	
+
+  class DatasetNotFoundError: Error { proc init() {} }
+
+  proc decode_json(json: string, size: int) throws {
+    var f = opentmp();
+    var w = f.writer();
+    w.write(json);
+    w.close();
+    var r = f.reader(start=0);
+    var array: [0..#size] string;
+    r.readf("%jt", array);
+    r.close();
+    f.close();
+    return array;
+  }
+  
+  proc readhdfMsg(reqMsg: string, st: borrowed SymTab): string {
+    var repMsg: string;
+    // reqMsg = "readhdf <dsetName> [<json_filenames>]"
+    var fields = reqMsg.split(3);
+    var cmd = fields[1];
+    var dsetName = fields[2];
+    var nfiles = try! fields[3]:int;
+    var jsonfiles = fields[4];
+    var filelist: [0..#nfiles] string;
+    try {
+      filelist = decode_json(jsonfiles, nfiles);
+    } catch {
+      return try! "Error: could not decode json filenames via tempfile (%i files: %s)".format(nfiles, jsonfiles);
+    }
+    var filedom = filelist.domain;
+    var filenames: [filedom] string;
+    if filelist.size == 1 {
+      var tmp = glob(filelist[0]);
+      filedom = tmp.domain;
+      filenames = tmp;
+    } else {
+      filenames = filelist;
+    }
+    var dclasses: [filenames.domain] C_HDF5.hid_t;
+    for (i, fname) in zip(filenames.domain, filenames) {
+      try {
+	dclasses[i] = get_dtype(fname, dsetName);
+      } catch e: FileNotFoundError {
+	return try! "Error: file not found: %s".format(fname);
+      } catch e: PermissionError {
+	return try! "Error: permission error on %s".format(fname);
+      } catch e: DatasetNotFoundError {
+	return try! "Error: dataset %s not found in file %s".format(dsetName, fname);
+      } catch {
+	// Need a catch-all for non-throwing function
+	return try! "Error: unknown cause";
+      }
+    }
+    const dataclass = dclasses[dclasses.domain.first];
+    for (i, dc) in zip(dclasses.domain, dclasses) {
+      if dc != dataclass {
+	return try! "Error: inconsistent dtype in dataset %s of file %s".format(dsetName, filenames[i]);
+      }
+    }
+    var (subdoms, len) = get_subdoms(filenames, dsetName);
+    var entry: shared GenSymEntry;
+    if dataclass == C_HDF5.H5T_INTEGER {
+      var entryInt = new shared SymEntry(len, int);
+      read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
+      entry = entryInt;
+    } else if dataclass == C_HDF5.H5T_FLOAT {
+      var entryReal = new shared SymEntry(len, real);
+      read_files_into_distributed_array(entryReal.a, subdoms, filenames, dsetName);
+      entry = entryReal;
+    } else {
+      return try! "Error: detected unhandled datatype code %i".format(dataclass);
+    }
+    var rname = st.nextName();
+    st.addEntry(rname, entry);
+    return try! "created " + st.attrib(rname);
+  }
+  
+  /* Get the class of the HDF5 datatype for the dataset. */
+  proc get_dtype(filename: string, dsetName: string) throws {
+    const READABLE = (S_IRUSR | S_IRGRP | S_IROTH);
+    if !exists(filename) {
+      throw new owned FileNotFoundError();
+    }
+    if !(getMode(filename) & READABLE) {
+      throw new owned PermissionError();
+    }
+    var file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, C_HDF5.H5P_DEFAULT);
+    if !C_HDF5.H5Lexists(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT) {
+      throw new owned DatasetNotFoundError();
+    }
+    var dset = C_HDF5.H5Dopen(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT);   
+    var datatype = C_HDF5.H5Dget_type(dset);
+    var dataclass = C_HDF5.H5Tget_class(datatype);
+    C_HDF5.H5Tclose(datatype);
+    C_HDF5.H5Dclose(dset);
+    C_HDF5.H5Fclose(file_id);
+    return dataclass;
+  }
+       
   /* Get the subdomains of the distributed array represented by each file, as well as the total length of the array. */
   proc get_subdoms(filenames: [?FD] string, dsetName: string) {
     var lengths: [FD] int;
@@ -72,37 +130,6 @@ module GenSymIO {
       offset += lengths[i];
     }
     return (subdoms, (+ reduce lengths));
-  }
-	
-  /* Get the class of the HDF5 datatype for the dataset. */
-  proc get_dtype(filename: string, dsetName: string) {
-    var file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, C_HDF5.H5P_DEFAULT);
-    var dset = C_HDF5.H5Dopen(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT);
-    var datatype = C_HDF5.H5Dget_type(dset);
-    var dataclass = C_HDF5.H5Tget_class(datatype);
-    C_HDF5.H5Tclose(datatype);
-    C_HDF5.H5Dclose(dset);
-    C_HDF5.H5Fclose(file_id);
-    return dataclass;
-  }
-	
-  proc read_hdf_files(filenames: [?FD] string, dsetName: string) {
-    var (subdoms, len) = get_subdoms(filenames, dsetName);
-    var dataclass = get_dtype(filenames[FD.first], dsetName);
-    var entry: shared GenSymEntry;
-    if dataclass == C_HDF5.H5T_INTEGER {
-      var entryInt = new shared SymEntry(len, int);
-      read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
-      entry = entryInt;
-    } else if dataclass == C_HDF5.H5T_FLOAT {
-      var entryReal = new shared SymEntry(len, real);
-      read_files_into_distributed_array(entryReal.a, subdoms, filenames, dsetName);
-      entry = entryReal;
-    } else {
-      // TODO: change this to a throw
-      halt("Unhandled type: ", dataclass);
-    }
-    return entry;
   }
 	
   /* This function gets called when A is a BlockDist array. */
