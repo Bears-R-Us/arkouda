@@ -9,10 +9,11 @@ module MsgProcessing
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
+
     use OperatorMsg;
     use RandMsg;
     use IndexingMsg;
-    
+
     // parse, execute, and respond to create message
     proc createMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
@@ -246,111 +247,6 @@ module MsgProcessing
         }
         
         return try! "created " + st.attrib(rname);
-    }
-
-    // unique take a pdarray and returns a pdarray with the unique values
-    proc uniqueMsg(reqMsg: string, st: borrowed SymTab): string {
-        var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
-
-        // get next symbol name
-        var rname = st.nextName();
-        if v {try! writeln("%s %s : %s".format(cmd, name, rname));try! stdout.flush();}
-
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError("unique",name);}
-
-        select (gEnt.dtype) {
-            when (DType.Int64) {
-                var e = toSymEntry(gEnt,int);
-                var eMin:int = min reduce e.a;
-                var eMax:int = max reduce e.a;
-
-                // how many bins in histogram
-                var bins = eMax-eMin+1;
-                if v {try! writeln("bins = %t".format(bins));}
-
-                var hD = makeDistDom(bins);
-                // atomic histogram
-                var atomicHist: [hD] atomic int;
-                // count into atomic histogram
-                forall v in e.a {
-                    var bin = v - eMin;
-                    if v == eMax {bin = bins-1;}
-                    atomicHist[bin].add(1);
-                }
-                var itruth = makeDistArray(bins,int);
-                // copy from atomic histogram to normal histogram
-                [(t,ae) in zip(itruth, atomicHist)] t = (ae.read() != 0):int;
-                // calc indices of the non-zero count elements
-                var iv: [hD] int = (+ scan itruth);
-                var pop = iv[iv.size-1];
-                var a = makeDistArray(pop, int);
-                [i in hD] if (itruth[i] == 1) {a[iv[i]-1] = i+eMin;}// iv[i]-1 for zero base index
-                st.addEntry(rname, new shared SymEntry(a));
-            }
-            otherwise {return notImplementedError("unique",gEnt.dtype);}
-        }
-        
-        return try! "created " + st.attrib(rname);
-    }
-
-    // value_counts rtakes a pdarray and returns two pdarrays unique values and counts for each value
-    proc value_countsMsg(reqMsg: string, st: borrowed SymTab): string {
-        var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
-
-        // get next symbol name
-        var vname = st.nextName();
-        var cname = st.nextName();
-        if v {try! writeln("%s %s : %s %s".format(cmd, name, vname, cname));try! stdout.flush();}
-
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError("value_counts",name);}
-
-        select (gEnt.dtype) {
-            when (DType.Int64) {
-                var e = toSymEntry(gEnt,int);
-                var eMin:int = min reduce e.a;
-                var eMax:int = max reduce e.a;
-
-                // how many bins in histogram
-                var bins = eMax-eMin+1;
-                if v {try! writeln("bins = %t".format(bins));}
-
-                var hD = makeDistDom(bins);
-                // atomic histogram
-                var atomicHist: [hD] atomic int;
-                // count into atomic histogram
-                forall v in e.a {
-                    var bin = v - eMin;
-                    if v == eMax {bin = bins-1;}
-                    atomicHist[bin].add(1);
-                }
-                var itruth = makeDistArray(bins,int);
-                // copy from atomic histogram to normal histogram
-                [(t,ae) in zip(itruth, atomicHist)] t = (ae.read() != 0):int;
-                // calc indices of the non-zero count elements
-                var iv: [hD] int = (+ scan itruth);
-                var pop = iv[iv.size-1];
-                var aV = makeDistArray(pop, int);
-                var aC = makeDistArray(pop, int);
-                [i in hD] if (itruth[i] == 1) {
-                    aV[iv[i]-1] = i+eMin;
-                    aC[iv[i]-1] = atomicHist[i].read();
-                        }// iv[i]-1 for zero base index
-                
-                st.addEntry(vname, new shared SymEntry(aV));
-                st.addEntry(cname, new shared SymEntry(aC));
-            }
-            otherwise {return notImplementedError("value_counts",gEnt.dtype);}
-        }
-        
-        return try! "created " + st.attrib(vname) + " +created " + st.attrib(cname);
     }
 
     // sets all elements in array to a value (broadcast)

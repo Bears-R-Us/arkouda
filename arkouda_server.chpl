@@ -35,7 +35,7 @@ proc main() {
         var t1 = getCurrentTime();
 
         reqCount += 1;
-        if v {writeln("received: ", reqMsg); try! stdout.flush();}
+        if v {writeln("reqMsg: ", reqMsg); try! stdout.flush();}
 
         // shutdown server
         if reqMsg == "shutdown" {

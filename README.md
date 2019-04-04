@@ -7,7 +7,7 @@ arkouda python/chapel package
  * requires python 3.6 or greater
 ```bash
 # it should be simple to get things going on a mac…
-brew install chapel # needs to change because of HDF5 I/O
+brew install chapel # needs to change because of HDF5 I/O which needs a build with export CHPL_LLVM=llvm
 brew install python3
 brew install zeromq
 pip3 install numpy
@@ -21,6 +21,9 @@ pip3 install jupyter
  * you may also need to use -I to find zmq.h and -L to find libzmq.a
 ```bash
 chpl --fast -senableParScan arkouda_server.chpl
+```
+```bash
+chpl --ccflags=-Wno-incompatible-pointer-types --cache-remote --fast -senableParScan arkouda_server.chpl
 ```
  * startup the arkouda_server
  * defaults to port 5555
