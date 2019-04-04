@@ -6,14 +6,43 @@ module GenSymIO {
   config const GenSymIO_DEBUG = false;
 
   class DatasetNotFoundError: Error { proc init() {} }
+
+  proc decode_json(json: string, size: int) throws {
+    var f = opentmp();
+    var w = f.writer();
+    w.write(json);
+    w.close();
+    var r = f.reader(start=0);
+    var array: [0..#size] string;
+    r.readf("%jt", array);
+    r.close();
+    f.close();
+    return array;
+  }
   
   proc readhdfMsg(reqMsg: string, st: borrowed SymTab): string {
-    var rep_msg: string;
-    // req_msg = "readhdf <dsetName> <filename1> <filename2> ..."
-    var fields = reqMsg.split();
+    var repMsg: string;
+    // reqMsg = "readhdf <dsetName> [<json_filenames>]"
+    var fields = reqMsg.split(3);
     var cmd = fields[1];
     var dsetName = fields[2];
-    var filenames = fields[3..];
+    var nfiles = try! fields[3]:int;
+    var jsonfiles = fields[4];
+    var filelist: [0..#nfiles] string;
+    try {
+      filelist = decode_json(jsonfiles, nfiles);
+    } catch {
+      return try! "Error: could not decode json filenames via tempfile (%i files: %s)".format(nfiles, jsonfiles);
+    }
+    var filedom = filelist.domain;
+    var filenames: [filedom] string;
+    if filelist.size == 1 {
+      var tmp = glob(filelist[0]);
+      filedom = tmp.domain;
+      filenames = tmp;
+    } else {
+      filenames = filelist;
+    }
     var dclasses: [filenames.domain] C_HDF5.hid_t;
     for (i, fname) in zip(filenames.domain, filenames) {
       try {
