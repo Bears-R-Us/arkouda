@@ -20,7 +20,7 @@ module UniqueMsg
     use ServerErrorStrings;
 
     use PrivateDist;
-    use HashedDist;
+    //use HashedDist;
 
     // thresholds for different unique counting algorithms
     var sBins = 2**10; // small-range maybe for using reduce intents on forall loops
@@ -141,7 +141,7 @@ module UniqueMsg
         var uniqSet: [PrivateSpace] domain(int);
 
         // accumulate the uniq values into each locales domain of uniq values
-        [val in a] uniqSet[here.id] += val;
+        [val in a] if !uniqSet[here.id].contains(val) {uniqSet[here.id] += val;}
 
         // how many bins in histogram
         var bins = aMax-aMin+1;
@@ -201,22 +201,26 @@ module UniqueMsg
         var uniqSet: [PrivateSpace] domain(int);
 
         // accumulate the uniq values into each locales domain of uniq values
-        [val in a] uniqSet[here.id] += val;
+        [val in a] if !uniqSet[here.id].contains(val) {uniqSet[here.id] += val;}
+        var numUniq = + reduce [i in PrivateSpace]  uniqSet[i].size;
+        if v {try! writeln("num unique vals = %t".format(numUniq));try! stdout.flush();}
 
         // global assoc domain for global unique value set
-        var globalUniqSet: domain(int) dmapped Hashed(idxType=int);
-
+        //var globalUniqSet: domain(int) dmapped Hashed(idxType=int);
+        var globalUniqSet: domain(int);
+        
         // efectively +reduce(union-reduction) private uniqSet domians to get global uniqSet
         // what I really want is:
-        // [i in PrivateSpace] globalUniqSet += uniqSet[i];
+        //[i in PrivateSpace] globalUniqSet += uniqSet[i];
         // or maybe even...
-        // for i in PrivateSpace {globalUniqSet += uniqSet[i];}
-        // ok, well this...
-        for loc in Locales { on loc {
-                for val in uniqSet[here.id] {globalUniqSet += val;}
-            }
-        }
-        
+        for i in PrivateSpace {globalUniqSet += uniqSet[i];}
+        // ok, well this... only one that works for HashedDist Assoc Domain
+        //for loc in Locales { on loc {
+        //         for val in uniqSet[here.id] {globalUniqSet += val;}
+        //     }
+        // }
+        if v {try! writeln("num unique vals = %t".format(globalUniqSet.size));try! stdout.flush();}
+
         // allocate global uniqCounts over global set of uniq values
         var globalUniqCounts: [globalUniqSet] atomic int;
         
@@ -281,19 +285,22 @@ module UniqueMsg
                 
                 // how many bins in histogram
                 var bins = eMax-eMin+1;
-                if v {try! writeln("bins = %t".format(bins));}
+                if v {try! writeln("bins = %t".format(bins));try! stdout.flush();}
 
                 if (bins <= mBins) {
+                    if v {try! writeln("bins <= %t".format(mBins));try! stdout.flush();}
                     var (aV,aC) = uniquePerLocHistGlobHist(e.a, eMin, eMax);
                     st.addEntry(vname, new shared SymEntry(aV));
                     if returnCounts {st.addEntry(cname, new shared SymEntry(aC));}
                 }
                 else if (bins <= lBins) {
+                    if v {try! writeln("bins <= %t".format(lBins));try! stdout.flush();}
                     var (aV,aC) = uniquePerLocAssocGlobHist(e.a, eMin, eMax);
                     st.addEntry(vname, new shared SymEntry(aV));
                     if returnCounts {st.addEntry(cname, new shared SymEntry(aC));}
                 }
                 else {
+                    if v {try! writeln("bins = %t".format(bins));try! stdout.flush();}
                     var (aV,aC) = uniquePerLocAssocGlobAssoc(e.a, eMin, eMax);
                     st.addEntry(vname, new shared SymEntry(aV));
                     if returnCounts {st.addEntry(cname, new shared SymEntry(aC));}
@@ -332,19 +339,22 @@ module UniqueMsg
 
                 // how many bins in histogram
                 var bins = eMax-eMin+1;
-                if v {try! writeln("bins = %t".format(bins));}
+                if v {try! writeln("bins = %t".format(bins));try! stdout.flush();}
 
                 if (bins <= mBins) {
+                    if v {try! writeln("bins <= %t".format(mBins));try! stdout.flush();}
                     var (aV,aC) = uniquePerLocHistGlobHist(e.a, eMin, eMax);
                     st.addEntry(vname, new shared SymEntry(aV));
                     st.addEntry(cname, new shared SymEntry(aC));
                 }
                 else if (bins <= lBins) {
+                    if v {try! writeln("bins <= %t".format(lBins));try! stdout.flush();}
                     var (aV,aC) = uniquePerLocAssocGlobHist(e.a, eMin, eMax);
                     st.addEntry(vname, new shared SymEntry(aV));
                     st.addEntry(cname, new shared SymEntry(aC));
                 }
                 else {
+                    if v {try! writeln("bins = %t".format(bins));try! stdout.flush();}
                     var (aV,aC) = uniquePerLocAssocGlobAssoc(e.a, eMin, eMax);
                     st.addEntry(vname, new shared SymEntry(aV));
                     st.addEntry(cname, new shared SymEntry(aC));
