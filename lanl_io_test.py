@@ -23,9 +23,9 @@ ak.set_defaults()
 ak.v = False
 if len(sys.argv) > 1:
     ak.connect(server=sys.argv[1], port=sys.argv[2])
-    hdffiles = [sys.argv[3]]
+    hdffiles = [sys.argv[3:]]
 else:
-    print("usage: lanl_io_test server port file")
+    print("usage: lanl_io_test server port files...")
     sys.exit(1)
 
 fields = ['srcIP', 'dstIP', 'srcPort', 'dstPort', 'start']
