@@ -3,6 +3,9 @@
  * added toys/ subdir with some prototype sorting code
  * made some changes to make naming consistent in Python and Chapel code
  * added initial HDF5 I/O
+ * added a[slice] = value indexing
+ * added a[slice] = pdarray indexing
+ * added initial ak.argmin/ak.argmax functionality
  
 
 ### Changes in arkouda-0.0.5

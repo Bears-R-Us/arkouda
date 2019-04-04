@@ -450,8 +450,8 @@ class pdarray:
         return argmin(self)
     def argmax(self):
         return argmax(self)
-    def unique(self):
-        return unique(self)
+    def unique(self, return_counts=False):
+        return unique(self, return_counts)
     def value_counts(self):
         return value_counts(self)
 
@@ -541,10 +541,15 @@ def in1d(pda1, pda2):
     else:
         raise TypeError("must be pdarray {} and bins must be an int {}".format(pda,bins))
 
-def unique(pda):
+def unique(pda, return_counts=False):
     if isinstance(pda, pdarray):
-        repMsg = generic_msg("unique {}".format(pda.name))
-        return create_pdarray(repMsg)
+        repMsg = generic_msg("unique {} {}".format(pda.name, return_counts))
+        if return_counts:
+            vc = repMsg.split("+")
+            if v: print(vc)
+            return create_pdarray(vc[0]), create_pdarray(vc[1])
+        else:
+            return create_pdarray(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
@@ -553,7 +558,7 @@ def value_counts(pda):
         repMsg = generic_msg("value_counts {}".format(pda.name))
         vc = repMsg.split("+")
         if v: print(vc)
-        return [create_pdarray(vc[0]), create_pdarray(vc[1])]
+        return create_pdarray(vc[0]), create_pdarray(vc[1])
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
