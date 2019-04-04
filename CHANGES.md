@@ -6,6 +6,7 @@
  * added a[slice] = value indexing
  * added a[slice] = pdarray indexing
  * added initial ak.argmin/ak.argmax functionality
+ * added some different optomizations and optional return of the counts from ak.unique
  
 
 ### Changes in arkouda-0.0.5
