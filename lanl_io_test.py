@@ -1,49 +1,60 @@
 #!/usr/bin/env python3
 
-import importlib
-import sys, time
-from glob import glob
+import sys, time, argparse
 import arkouda as ak
 
-ak.set_defaults()
-ak.v = False
-if len(sys.argv) > 1:
-    ak.connect(server=sys.argv[1], port=sys.argv[2])
-    hdffiles = sys.argv[3]
-else:
-    print("usage: lanl_io_test server port file")
-    sys.exit(1)
+if __name__ == '__main__':
+    ak.v = False
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--server', default=None)
+    parser.add_argument('--port', default=None)
+    parser.add_argument('hdffiles', nargs='+')
 
-fields = ['srcIP', 'dstIP', 'srcPort', 'dstPort', 'start']
+    args = parser.parse_args()
 
-nfDF = {field: ak.read_hdf(field, hdffiles) for field in fields}
+    ak.set_defaults()
+    ak.v = False
+    if args.server is not None:
+        if args.port is not None:
+            ak.connect(server=args.server, port=args.port)
+        else:
+            ak.connect(server=args.server)
+    else:
+        if args.port is not None:
+            ak.connect(port=args.port)
+        else:
+            ak.connect()
 
-print(nfDF['start'])
-print(nfDF['srcIP'])
-print(nfDF['dstIP'])
-print(nfDF['srcPort'])
-print(nfDF['dstPort'])
-print(nfDF)
+    if len(args.hdffiles) == 0:
+        print("usage: {} [--server server] [--port port] hdffiles ".format(sys.argv[0]))
 
-print(ak.info(ak.AllSymbols))
-
-u,c = nfDF['srcIP'].unique(return_counts=True)
-print(u.size,u)
-print(c.size,c)
-
-u,c = nfDF['dstIP'].unique(return_counts=True)
-print(u.size,u)
-print(c.size,c)
-
-u,c = nfDF['srcPort'].unique(return_counts=True)
-print(u.size,u)
-print(c.size,c)
-
-u,c = nfDF['dstPort'].unique(return_counts=True)
-print(u.size,u)
-print(c.size,c)
-
-ak.shutdown()
-
-
-
+    fields = ['srcIP', 'dstIP', 'srcPort', 'dstPort', 'start']
+    
+    nfDF = {field: ak.read_hdf(field, args.hdffiles) for field in fields}
+    
+    print(nfDF['start'])
+    print(nfDF['srcIP'])
+    print(nfDF['dstIP'])
+    print(nfDF['srcPort'])
+    print(nfDF['dstPort'])
+    print(nfDF)
+    
+    print(ak.info(ak.AllSymbols))
+    
+    u,c = nfDF['srcIP'].unique(return_counts=True)
+    print(u.size,u)
+    print(c.size,c)
+    
+    u,c = nfDF['dstIP'].unique(return_counts=True)
+    print(u.size,u)
+    print(c.size,c)
+    
+    u,c = nfDF['srcPort'].unique(return_counts=True)
+    print(u.size,u)
+    print(c.size,c)
+    
+    u,c = nfDF['dstPort'].unique(return_counts=True)
+    print(u.size,u)
+    print(c.size,c)
+    
+    ak.shutdown()
