@@ -7,7 +7,7 @@
 import zmq
 import os
 import subprocess
-import json
+import json, struct
 
 # stuff for zmq connection
 pspStr = None
@@ -87,12 +87,18 @@ def shutdown():
     socket.disconnect(pspStr)
 
 # send message to arkouda server and check for server side error
-def generic_msg(message):
+def generic_msg(message, send_bytes=False, recv_bytes=False):
     global v, context, socket
-    if v: print("[Python] Sending request: %s" % message)
-    socket.send_string(message)
-    message = socket.recv_string()
-    if v: print("[Python] Received response: %s" % message)
+    if send_bytes:
+        socket.send(message)
+    else:
+        if v: print("[Python] Sending request: %s" % message)
+        socket.send_string(message)
+    if recv_bytes:
+        message = socket.recv()
+    else:
+        message = socket.recv_string()
+        if v: print("[Python] Received response: %s" % message)
     # raise errors sent back from the server
     if (message.split())[0] == "Error:": raise RuntimeError(message)
     return message
@@ -457,7 +463,9 @@ class pdarray:
         return value_counts(self)
 
     def to_ndarray(self):
-        pass
+        #rep_msg = generic_msg("tondarray {}".format(self.name), recv_bytes=True)
+        raise NotImplementedError
+        
 # flag to info and dump all arrays from arkouda server
 AllSymbols = "__AllSymbols__"
 
@@ -497,8 +505,9 @@ def array(a):
         print("Unhandled dtype {}".format(a.dtype))
         return None
     size = a.shape[0]
-    fmt = "<{:n}{}".format(size, codes[a.dtype.name])
-    rep_msg = "array {} {:n} ".format(a.dtype.name, size).encode() + struct.pack(fmt, *a)
+    fmt = ">{:n}{}".format(size, codes[a.dtype.name])
+    req_msg = "array {} {:n} ".format(a.dtype.name, size).encode() + struct.pack(fmt, *a)
+    rep_msg = generic_msg(req_msg, send_bytes=True)
     return create_pdarray(rep_msg)
 
 def zeros(size, dtype=float64):
