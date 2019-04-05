@@ -56,6 +56,7 @@ proc main() {
         select cmd
         {
 	    when "readhdf"           {repMsg = readhdfMsg(reqMsg, st);}
+	    when "array"             {repMsg = arrayMsg(reqMsg, st);}
             when "create"            {repMsg = createMsg(reqMsg, st);}
             when "delete"            {repMsg = deleteMsg(reqMsg, st);}
             when "binopvv"           {repMsg = binopvvMsg(reqMsg, st);}

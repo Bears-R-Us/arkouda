@@ -456,6 +456,8 @@ class pdarray:
     def value_counts(self):
         return value_counts(self)
 
+    def to_ndarray(self):
+        pass
 # flag to info and dump all arrays from arkouda server
 AllSymbols = "__AllSymbols__"
 
@@ -485,8 +487,19 @@ def read_hdf(dsetName, filenames):
     return create_pdarray(rep_msg)
 
 def array(a):
-    print("array() not implemented yet!")
-    return None
+    if a.ndim != 1:
+        print("Only rank-1 arrays supported")
+        return None
+    codes = {'int64': 'q',
+             'float64': 'd',
+             'bool': '?'}
+    if a.dtype.name not in codes:
+        print("Unhandled dtype {}".format(a.dtype))
+        return None
+    size = a.shape[0]
+    fmt = "<{:n}{}".format(size, codes[a.dtype.name])
+    rep_msg = "array {} {:n} ".format(a.dtype.name, size).encode() + struct.pack(fmt, *a)
+    return create_pdarray(rep_msg)
 
 def zeros(size, dtype=float64):
     # check dtype for error

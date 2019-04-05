@@ -5,6 +5,43 @@ module GenSymIO {
   use FileSystem;
   config const GenSymIO_DEBUG = false;
 
+  proc arrayMsg(reqMsg: string, st: borrowed SymTab): string {
+    var repMsg: string;
+    var fields = reqMsg.split(3);
+    var cmd = fields[1];
+    var dtype = str2dtype(fields[2]);
+    var size = try! fields[3]:int;
+    var data = fields[4];
+    var tmpf = openmem();
+    var tmpw = tmpf.writer(kind=iolittle);
+    tmpw.write(data);
+    tmpw.close();
+    var tmpr = tmpf.reader(kind=iolittle, start=0);
+    var entry: shared GenSymEntry;
+    if dtype == DType.Int64 {
+      var entryInt = new shared SymEntry(size, int);
+      tmpr.read(entryInt.a);
+      entry = entryInt;
+    } else if dtype == DType.Float64 {
+      var entryReal = new shared SymEntry(size, real);
+      tmpr.read(entryReal.a);
+      entry = entryReal;
+    } else if dtype == DType.Bool {
+      var entryBool = new shared SymEntry(size, bool);
+      tmpr.read(entryBool.a);
+      entry = entryBool;
+    } else {
+      tmpr.close();
+      tmpf.close();
+      return try! "Error: Unhandled data type %s".format(fields[2]);
+    }
+    tmpr.close();
+    tmpf.close();
+    var rname = st.nextName();
+    st.addEntry(rname, entry);
+    return try! "created " + st.attrib(rname);
+  }
+
   class DatasetNotFoundError: Error { proc init() {} }
 
   proc decode_json(json: string, size: int) throws {
