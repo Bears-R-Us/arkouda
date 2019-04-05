@@ -7,7 +7,7 @@
  * added a[slice] = pdarray indexing
  * added initial ak.argmin/ak.argmax functionality
  * added some different optimizations and optional return of the counts from ak.unique
- 
+ * added more error handling to GenSymIO (HDF5 I/O)
 
 ### Changes in arkouda-0.0.5
 ------------------------

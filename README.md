@@ -7,7 +7,26 @@ arkouda python/chapel package
  * requires python 3.6 or greater
 ```bash
 # it should be simple to get things going on a mac…
-brew install chapel # needs to change because of HDF5 I/O which needs a build with export CHPL_LLVM=llvm
+# can't use brew install chapel anymore
+# need to build with export CHPL_LLVM=llvm
+# on my mac build chapel in my home directory with these settings...
+# I don't understand them all but they seem to work
+export CHPL_HOME=~/chapel/chapel-1.19.0
+source $CHPL_HOME/util/setchplenv.bash
+export CHPL_COMM=gasnet
+export CHPL_GASNET_CFG_OPTIONS=--disable-ibv
+export CHPL_TARGET_CPU=native
+export GASNET_SPAWNFN=L
+export GASNET_ROUTE_OUTPUT=0
+export GASNET_QUIET=Y
+export GASNET_MASTERIP=127.0.0.1
+# Set these to help with oversubscription...
+export QT_AFFINITY=no
+export CHPL_QTHREAD_ENABLE_OVERSUBSCRIPTION=1
+export CHPL_LLVM=llvm
+cd $CHPL_HOME
+make
+# you can also install these other packages with brew
 brew install python3
 brew install zeromq
 pip3 install numpy
