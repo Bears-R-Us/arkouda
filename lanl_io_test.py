@@ -1,23 +1,9 @@
 #!/usr/bin/env python3
-# coding: utf-8
-
-# In[13]:
-
 
 import importlib
 import sys, time
 from glob import glob
 import arkouda as ak
-
-
-# In[14]:
-
-
-importlib.reload(ak)
-
-
-# In[15]:
-
 
 ak.set_defaults()
 ak.v = False
