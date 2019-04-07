@@ -4,4 +4,6 @@ sort_toy
 sort_toy_real
 brad_countingsort
 brad_countingsort_real
+fft-mpi
+fft-mpi_real
 *.~*
