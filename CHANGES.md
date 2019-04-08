@@ -1,3 +1,10 @@
+### Changes in arkouda-0.0.7
+------------------------
+ * fixed multi-file/multi-treaded bug in HDF5 I/O
+ * improved HDF5 I/O error handling + glob filenames
+ * added initial versions of ak.array() and pdarray.to_ndarray()
+ * 
+
 ### Changes in arkouda-0.0.6
 ------------------------
  * added toys/ subdir with some prototype sorting code
