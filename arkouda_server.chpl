@@ -78,6 +78,7 @@ proc main() {
             when "dump"              {repMsg = dumpMsg(reqMsg, st);}
             when "str"               {repMsg = strMsg(reqMsg, st);}
             when "repr"              {repMsg = reprMsg(reqMsg, st);}
+	    when "tondarray"         {repMsg = tondarrayMsg(reqMsg, st);}
             when "[int]"             {repMsg = intIndexMsg(reqMsg, st);}
             when "[slice]"           {repMsg = sliceIndexMsg(reqMsg, st);}
             when "[pdarray]"         {repMsg = pdarrayIndexMsg(reqMsg, st);}
@@ -100,7 +101,14 @@ proc main() {
         // send responses
         // send count for now
         repCount += 1;
-        if v {writeln("repMsg:",repMsg); try! stdout.flush();}
+        if v {
+	  if repMsg.length > 70 {
+	    writeln("repMsg:", repMsg[1..70]);
+	  } else {
+	    writeln("repMsg:",repMsg);
+	  }
+	  try! stdout.flush();
+	}
         socket.send(repMsg);
 
         // end timer for command processing

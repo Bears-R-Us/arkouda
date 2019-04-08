@@ -61,23 +61,31 @@ module GenSymIO {
     var tmpf: file;
     try {
       tmpf = openmem();
-      var tmpw = tmpf.writer(kind=iolittle);
-      tmpw.write(entry.a);
+      var tmpw = tmpf.writer(kind=iobig);
+      if entry.dtype == DType.Int64 {
+	tmpw.write(toSymEntry(entry, int).a);
+      } else if entry.dtype == DType.Float64 {
+	tmpw.write(toSymEntry(entry, real).a);
+      } else if entry.dtype == DType.Bool {
+	tmpw.write(toSymEntry(entry, bool).a);
+      } else {
+	return try! "Error: Unhandled dtype %s".format(entry.dtype);
+      }
       tmpw.close();
     } catch {
-      tmpf.close();
+      try! tmpf.close();
       return "Error: Unable to write SymEntry to memory buffer";
     }
     try {
-      var tmpr = tmpf.reader(kind=iolittle, start=0);
+      var tmpr = tmpf.reader(kind=iobig, start=0);
       tmpr.readstring(arraystr);
       tmpr.close();
       tmpf.close();
     } catch {
       return "Error: Unable to copy array from memory buffer to string";
     }
-    var repMsg = try! "Array: %i".format(arraystr.length) + arraystr;
-    return repMsg;
+    //var repMsg = try! "Array: %i".format(arraystr.length) + arraystr;
+    return arraystr;
   }
 
   class DatasetNotFoundError: Error { proc init() {} }

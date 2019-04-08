@@ -8,6 +8,7 @@ import zmq
 import os
 import subprocess
 import json, struct
+import numpy as np
 
 # stuff for zmq connection
 pspStr = None
@@ -21,7 +22,11 @@ vDefVal = False
 v = vDefVal
 # threshold for __iter__() to limit comms to arkouda_server
 pdarrayIterThreshDefVal = 100
-pdarrayIterThresh  = pdarrayIterThreshDefVal 
+pdarrayIterThresh  = pdarrayIterThreshDefVal
+maxTransferBytes = 2**30
+structDtypeCodes = {'int64': 'q',
+                    'float64': 'd',
+                    'bool': '?'}
 
 # reset settings to default values
 def set_defaults():
@@ -96,11 +101,12 @@ def generic_msg(message, send_bytes=False, recv_bytes=False):
         socket.send_string(message)
     if recv_bytes:
         message = socket.recv()
+        if message.startswith(b"Error:"): raise RuntimeError(message.decode())
     else:
         message = socket.recv_string()
         if v: print("[Python] Received response: %s" % message)
-    # raise errors sent back from the server
-    if (message.split())[0] == "Error:": raise RuntimeError(message)
+        # raise errors sent back from the server
+        if message.startswith("Error:"): raise RuntimeError(message)
     return message
 
 # supported dtypes
@@ -463,8 +469,14 @@ class pdarray:
         return value_counts(self)
 
     def to_ndarray(self):
-        #rep_msg = generic_msg("tondarray {}".format(self.name), recv_bytes=True)
-        raise NotImplementedError
+        arraybytes = self.size * self.itemsize
+        if arraybytes > maxTransferBytes:
+            raise RuntimeError("Array exceeds allowed size for transfer. Increase ak.maxTransferBytes to allow")
+        rep_msg = generic_msg("tondarray {}".format(self.name), recv_bytes=True)
+        if len(rep_msg) != self.size*self.itemsize:
+            raise RuntimeError("Expected {} bytes but received {}".format(self.size*self.itemsize, len(rep_msg)))
+        fmt = '>{:n}{}'.format(self.size, structDtypeCodes[self.dtype])
+        return np.array(struct.unpack(fmt, rep_msg))
         
 # flag to info and dump all arrays from arkouda server
 AllSymbols = "__AllSymbols__"
@@ -498,14 +510,13 @@ def array(a):
     if a.ndim != 1:
         print("Only rank-1 arrays supported")
         return None
-    codes = {'int64': 'q',
-             'float64': 'd',
-             'bool': '?'}
-    if a.dtype.name not in codes:
+    if a.dtype.name not in structDtypeCodes:
         print("Unhandled dtype {}".format(a.dtype))
         return None
     size = a.shape[0]
-    fmt = ">{:n}{}".format(size, codes[a.dtype.name])
+    if size > maxTransferBytes:
+        raise RuntimeError("Array exceeds allowed transfer size. Increase ak.maxTransferBytes to allow")
+    fmt = ">{:n}{}".format(size, structDtypeCodes[a.dtype.name])
     req_msg = "array {} {:n} ".format(a.dtype.name, size).encode() + struct.pack(fmt, *a)
     rep_msg = generic_msg(req_msg, send_bytes=True)
     return create_pdarray(rep_msg)
