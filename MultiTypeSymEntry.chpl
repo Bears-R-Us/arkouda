@@ -18,6 +18,13 @@ module MultiTypeSymEntry
       return DType.UNDEF; // undefined type
     }
 
+    proc dtypeSize(dt: DType): int {
+      if (dt == DType.Int64) { return 8; }
+      if (dt == DType.Float64) { return 8; }
+      if (dt == DType.Bool) { return 1; }
+      return 0;
+    }
+
     // turns a dtype string in pythonland into a DType
     proc str2dtype(dstr:string): DType {
         if dstr == "int64" {return DType.Int64;}
@@ -86,15 +93,16 @@ module MultiTypeSymEntry
     class GenSymEntry
     {
         var dtype: DType; // answer to numpy dtype
+        var itemsize: int; // answer to numpy itemsize = num bytes per elt
         var size: int = 0; // answer to numpy size == num elts
         var ndim: int = 1; // answer to numpy ndim == 1-axis for now
         var shape: 1*int = (0,); // answer to numpy shape == 1*int tuple
-        var itemsize: int = 8; // answer to numpy itemsize = num bytes per elt
         
         // not sure yet how to implement numpy data() function
 
         proc init(type etype, len: int = 0) {
             this.dtype = whichDtype(etype);
+	    this.itemsize = dtypeSize(this.dtype);
             this.size = len;
             this.shape = (len,);
         }

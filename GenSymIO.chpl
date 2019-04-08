@@ -5,6 +5,89 @@ module GenSymIO {
   use FileSystem;
   config const GenSymIO_DEBUG = false;
 
+  proc arrayMsg(reqMsg: string, st: borrowed SymTab): string {
+    var repMsg: string;
+    var fields = reqMsg.split(3);
+    var cmd = fields[1];
+    var dtype = str2dtype(fields[2]);
+    var size = try! fields[3]:int;
+    var data = fields[4];
+    var tmpf:file; 
+    try {
+      tmpf = openmem();
+      var tmpw = tmpf.writer(kind=iobig);
+      tmpw.write(data);
+      try! tmpw.close();
+    } catch {
+      return "Error: Could not write to memory buffer";
+    }
+    var entry: shared GenSymEntry;
+    try {
+      var tmpr = tmpf.reader(kind=iobig, start=0);
+      if dtype == DType.Int64 {
+	var entryInt = new shared SymEntry(size, int);
+	tmpr.read(entryInt.a);
+	tmpr.close(); tmpf.close();
+	entry = entryInt;
+      } else if dtype == DType.Float64 {
+	var entryReal = new shared SymEntry(size, real);
+	tmpr.read(entryReal.a);
+	tmpr.close(); tmpf.close();
+	entry = entryReal;
+      } else if dtype == DType.Bool {
+	var entryBool = new shared SymEntry(size, bool);
+	tmpr.read(entryBool.a);
+	tmpr.close(); tmpf.close();
+	entry = entryBool;
+      } else {
+	tmpr.close();
+	tmpf.close();
+	return try! "Error: Unhandled data type %s".format(fields[2]);
+      }
+      tmpr.close();
+      tmpf.close();
+    } catch {
+      return "Error: Could not read from memory buffer into SymEntry";
+    }
+    var rname = st.nextName();
+    st.addEntry(rname, entry);
+    return try! "created " + st.attrib(rname);
+  }
+
+  proc tondarrayMsg(reqMsg: string, st: borrowed SymTab): string {
+    var arraystr: string;
+    var fields = reqMsg.split();
+    var entry = st.lookup(fields[2]);
+    var tmpf: file;
+    try {
+      tmpf = openmem();
+      var tmpw = tmpf.writer(kind=iobig);
+      if entry.dtype == DType.Int64 {
+	tmpw.write(toSymEntry(entry, int).a);
+      } else if entry.dtype == DType.Float64 {
+	tmpw.write(toSymEntry(entry, real).a);
+      } else if entry.dtype == DType.Bool {
+	tmpw.write(toSymEntry(entry, bool).a);
+      } else {
+	return try! "Error: Unhandled dtype %s".format(entry.dtype);
+      }
+      tmpw.close();
+    } catch {
+      try! tmpf.close();
+      return "Error: Unable to write SymEntry to memory buffer";
+    }
+    try {
+      var tmpr = tmpf.reader(kind=iobig, start=0);
+      tmpr.readstring(arraystr);
+      tmpr.close();
+      tmpf.close();
+    } catch {
+      return "Error: Unable to copy array from memory buffer to string";
+    }
+    //var repMsg = try! "Array: %i".format(arraystr.length) + arraystr;
+    return arraystr;
+  }
+
   class DatasetNotFoundError: Error { proc init() {} }
 
   proc decode_json(json: string, size: int) throws {
