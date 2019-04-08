@@ -23,7 +23,8 @@ v = vDefVal
 # threshold for __iter__() to limit comms to arkouda_server
 pdarrayIterThreshDefVal = 100
 pdarrayIterThresh  = pdarrayIterThreshDefVal
-maxTransferBytes = 2**30
+maxTransferBytesDefVal = 2**30
+maxTransferBytes = maxTransferBytesDefVal
 structDtypeCodes = {'int64': 'q',
                     'float64': 'd',
                     'bool': '?'}
@@ -32,7 +33,9 @@ structDtypeCodes = {'int64': 'q',
 def set_defaults():
     global v, vDefVal, pdarrayIterThresh, pdarrayIterThreshDefVal 
     v = vDefVal
-    pdarrayIterThresh  = pdarrayIterThreshDefVal 
+    pdarrayIterThresh  = pdarrayIterThreshDefVal
+    maxTransferBytes = maxTransferBytesDefVal
+
 
 # create context, request end of socket, and connect to it
 def connect(server = "localhost", port = 5555):
@@ -507,12 +510,14 @@ def read_hdf(dsetName, filenames):
     return create_pdarray(rep_msg)
 
 def array(a):
+    try:
+        a = np.array(a)
+    catch:
+        raise TypeError("Argument must be array-like")
     if a.ndim != 1:
-        print("Only rank-1 arrays supported")
-        return None
+        raise RuntimeError("Only rank-1 arrays supported")
     if a.dtype.name not in structDtypeCodes:
-        print("Unhandled dtype {}".format(a.dtype))
-        return None
+        raise RuntimeError("Unhandled dtype {}".format(a.dtype))
     size = a.shape[0]
     if size > maxTransferBytes:
         raise RuntimeError("Array exceeds allowed transfer size. Increase ak.maxTransferBytes to allow")
