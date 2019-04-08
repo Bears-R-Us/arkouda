@@ -57,4 +57,6 @@ if __name__ == '__main__':
     print(u.size,u)
     print(c.size,c)
     
-    ak.shutdown()
+    #ak.shutdown()
+    #ak.disconnect()
+    
