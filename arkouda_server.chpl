@@ -35,10 +35,10 @@ proc main() {
         var t1 = getCurrentTime();
 
         reqCount += 1;
-        if v {writeln("reqMsg: ", reqMsg); try! stdout.flush();}
 
         // shutdown server
         if reqMsg == "shutdown" {
+            if v {writeln("reqMsg: ", reqMsg); try! stdout.flush();}
             shutdownServer = true;
             repCount += 1;
             socket.send("shutdown server (%i req)".format(repCount));
@@ -51,7 +51,18 @@ proc main() {
         // peel off the command
         var fields = reqMsg.split(1);
         var cmd = fields[1];
-        if v {writeln(">>> ",cmd); try! stdout.flush();}
+        
+        if v {
+            if reqMsg.length > 70 {
+                writeln("reqMsg: ", reqMsg[1..70]);
+            }
+            else {
+                writeln("reqMsg: ", reqMsg);
+            }
+            writeln(">>> ",cmd);
+            try! stdout.flush();
+        }
+
         // parse requests, execute requests, format responses
         select cmd
         {
