@@ -512,7 +512,7 @@ def read_hdf(dsetName, filenames):
 def array(a):
     try:
         a = np.array(a)
-    catch:
+    except:
         raise TypeError("Argument must be array-like")
     if a.ndim != 1:
         raise RuntimeError("Only rank-1 arrays supported")

@@ -53,8 +53,8 @@ proc main() {
         var cmd = fields[1];
         
         if v {
-            if reqMsg.length > 70 {
-                writeln("reqMsg: ", reqMsg[1..70]);
+            if cmd == "array" { // has binary data in it's payload
+                writeln("reqMsg: ", cmd, " <binary-data>");
             }
             else {
                 writeln("reqMsg: ", reqMsg);
@@ -113,8 +113,8 @@ proc main() {
         // send count for now
         repCount += 1;
         if v {
-	  if repMsg.length > 70 {
-	    writeln("repMsg:", repMsg[1..70]);
+	  if cmd == "tondarray" {
+              writeln("repMsg:"," <binary-data>");
 	  } else {
 	    writeln("repMsg:",repMsg);
 	  }
