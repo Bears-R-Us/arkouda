@@ -12,8 +12,8 @@ module UniqueMsg
 {
     use ServerConfig;
     
-    use Time;
-    use Math;
+    use Time only;
+    use Math only;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;

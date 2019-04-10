@@ -3,8 +3,8 @@ module MsgProcessing
 {
     use ServerConfig;
 
-    use Time;
-    use Math;
+    use Time only;
+    use Math only;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -105,16 +105,16 @@ module MsgProcessing
         var rname = st.nextName();
         if v {try! writeln("%s %i %i %i : %i , %s".format(cmd, start, stop, stride, len, rname));try! stdout.flush();}
         
-        var t1 = getCurrentTime();
+        var t1 = Time.getCurrentTime();
         var aD = makeDistDom(len);
         var a = makeDistArray(len, int);
-        writeln("alloc time = ",getCurrentTime() - t1,"sec"); try! stdout.flush();
+        writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
 
-        t1 = getCurrentTime();
+        t1 = Time.getCurrentTime();
         forall i in aD {
             a[i] = start + (i * stride);
         }
-        writeln("compute time = ",getCurrentTime() - t1,"sec"); try! stdout.flush();
+        writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
 
         st.addEntry(rname, new shared SymEntry(a));
         return try! "created " + st.attrib(rname);
@@ -133,18 +133,18 @@ module MsgProcessing
         var rname = st.nextName();
         if v {try! writeln("%s %r %r %i : %r , %s".format(cmd, start, stop, len, stride, rname));try! stdout.flush();}
 
-        var t1 = getCurrentTime();
+        var t1 = Time.getCurrentTime();
         var aD = makeDistDom(len);
         var a = makeDistArray(len, real);
-        writeln("alloc time = ",getCurrentTime() - t1,"sec"); try! stdout.flush();
+        writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
 
-        t1 = getCurrentTime();
+        t1 = Time.getCurrentTime();
         forall i in aD {
             a[i] = start + (i * stride);
         }
         a[0] = start;
         a[len-1] = stop;
-        writeln("compute time = ",getCurrentTime() - t1,"sec"); try! stdout.flush();
+        writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
 
         st.addEntry(rname, new shared SymEntry(a));
         return try! "created " + st.attrib(rname);
@@ -359,15 +359,15 @@ module MsgProcessing
                 select efunc
                 {
                     when "abs" {
-                        var a = abs(e.a);
+                        var a = Math.abs(e.a);
                         st.addEntry(rname, new shared SymEntry(a));
                     }
                     when "log" {
-                        var a = log(e.a);
+                        var a = Math.log(e.a);
                         st.addEntry(rname, new shared SymEntry(a));
                     }
                     when "exp" {
-                        var a = exp(e.a);
+                        var a = Math.exp(e.a);
                         st.addEntry(rname, new shared SymEntry(a));
                     }
                     when "cumsum" {
@@ -386,15 +386,15 @@ module MsgProcessing
                 select efunc
                 {
                     when "abs" {
-                        var a = abs(e.a);
+                        var a = Math.abs(e.a);
                         st.addEntry(rname, new shared SymEntry(a));
                     }
                     when "log" {
-                        var a = log(e.a);
+                        var a = Math.log(e.a);
                         st.addEntry(rname, new shared SymEntry(a));
                     }
                     when "exp" {
-                        var a = exp(e.a);
+                        var a = Math.exp(e.a);
                         st.addEntry(rname, new shared SymEntry(a));
                     }
                     when "cumsum" {

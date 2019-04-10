@@ -2,9 +2,9 @@ module RandMsg
 {
     use ServerConfig;
     
-    use Time;
-    use Math;
-    use Random;
+    use Time only;
+    use Math only;
+    use Random; // include everything from Random
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -28,53 +28,53 @@ module RandMsg
         if v {try! writeln("%s %i %i %i %s : %s".format(cmd,aMin,aMax,len,dtype2str(dtype),rname)); try! stdout.flush();}
         select (dtype) {
             when (DType.Int64) {                
-                var t1 = getCurrentTime();
+                var t1 = Time.getCurrentTime();
                 var aD = makeDistDom(len);
                 var a = makeDistArray(len, int);
-                writeln("alloc time = ",getCurrentTime() - t1,"sec"); try! stdout.flush();
+                writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
                 
-                t1 = getCurrentTime();
+                t1 = Time.getCurrentTime();
                 coforall loc in Locales {
                     on loc {
                         var R = new owned RandomStream(real); R.getNext();
                         [i in a.localSubdomain()] a[i] = (R.getNext() * (aMax - aMin) + aMin):int;
                     }
                 }
-                writeln("compute time = ",getCurrentTime() - t1,"sec"); try! stdout.flush();
+                writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
                 
                 st.addEntry(rname, new shared SymEntry(a));
             }
             when (DType.Float64) {
-                var t1 = getCurrentTime();
+                var t1 = Time.getCurrentTime();
                 var aD = makeDistDom(len);
                 var a = makeDistArray(len, real);
-                writeln("alloc time = ",getCurrentTime() - t1,"sec"); try! stdout.flush();
+                writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
                 
-                t1 = getCurrentTime();
+                t1 = Time.getCurrentTime();
                 coforall loc in Locales {
                     on loc {
                         var R = new owned RandomStream(real); R.getNext();
                         [i in a.localSubdomain()] a[i] = ((R.getNext() * (aMax - aMin) + aMin):int):real;
                     }
                 }
-                writeln("compute time = ",getCurrentTime() - t1,"sec"); try! stdout.flush();
+                writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
                 
                 st.addEntry(rname, new shared SymEntry(a));                
             }
             when (DType.Bool) {
-                var t1 = getCurrentTime();
+                var t1 = Time.getCurrentTime();
                 var aD = makeDistDom(len);
                 var a = makeDistArray(len, bool);
-                writeln("alloc time = ",getCurrentTime() - t1,"sec"); try! stdout.flush();
+                writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
                 
-                t1 = getCurrentTime();
+                t1 = Time.getCurrentTime();
                 coforall loc in Locales {
                     on loc {
                         var R = new owned RandomStream(real); R.getNext();
                         [i in a.localSubdomain()] a[i] = (R.getNext() >= 0.5);
                     }
                 }
-                        writeln("compute time = ",getCurrentTime() - t1,"sec"); try! stdout.flush();
+                        writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
                 
                 st.addEntry(rname, new shared SymEntry(a));
             }            

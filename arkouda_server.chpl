@@ -4,8 +4,9 @@
 //
 use ServerConfig;
 
-use Time;
-use ZMQ;
+use Time only;
+use ZMQ only;
+
 use MultiTypeSymbolTable;
 use MultiTypeSymEntry;
 use MsgProcessing;
@@ -21,7 +22,7 @@ proc main() {
     var shutdownServer = false;
 
     // create and connect ZMQ socket
-    var context: Context;
+    var context: ZMQ.Context;
     var socket = context.socket(ZMQ.REP);
     socket.bind("tcp://*:%t".format(ServerPort));
 
@@ -32,7 +33,7 @@ proc main() {
         var reqMsg = socket.recv(string);
 
         // start timer for command processing
-        var t1 = getCurrentTime();
+        var t1 = Time.getCurrentTime();
 
         reqCount += 1;
 
@@ -123,7 +124,7 @@ proc main() {
         socket.send(repMsg);
 
         // end timer for command processing
-        if v{writeln("<<< ", cmd," took ", getCurrentTime() - t1,"sec"); try! stdout.flush();}
+        if v{writeln("<<< ", cmd," took ", Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
     }
 
     writeln("requests = ",reqCount," responseCount = ",repCount);
