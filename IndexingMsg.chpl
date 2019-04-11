@@ -276,33 +276,37 @@ module IndexingMsg
         var gIV: borrowed GenSymEntry = st.lookup(iname);
         if (gIV == nil) {return unknownSymbolError(pn,iname);}
 
-        proc idxToValHelper(type Xtype, type IVtype, type dtype) {
+        proc idxToValHelper(type Xtype, type IVtype, type dtype): string {
             var e = toSymEntry(gX,Xtype);
             var iv = toSymEntry(gIV,IVtype);
             var ivMin = min reduce iv.a;
             var ivMax = max reduce iv.a;
             if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
             if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
+            if isBool(dtype) {
+                value = value.replace("True","true"); // chapel to python bool
+                value = value.replace("False","false"); // chapel to python bool
+            }
             var val = try! value:dtype;
             [i in iv.a] e.a[i] = val;
+            return try! "%s success".format(pn);
         }
         
         // add check for IV to be dtype of int64 or bool
 
         select(gX.dtype, gIV.dtype, dtype) {
             when (DType.Int64, DType.Int64, DType.Int64) {
-              idxToValHelper(int, int, int);
+              return idxToValHelper(int, int, int);
             }
             when (DType.Float64, DType.Int64, DType.Float64) {
-              idxToValHelper(real, int, real);
+              return idxToValHelper(real, int, real);
             }
             when (DType.Bool, DType.Int64, DType.Bool) {
-              idxToValHelper(bool, int, bool);
+              return idxToValHelper(bool, int, bool);
             }
             otherwise {return notImplementedError(pn,
                                                   "("+dtype2str(gX.dtype)+","+dtype2str(gIV.dtype)+","+dtype2str(dtype)+")");}
         }
-        return try! "%s success".format(pn);
     }
 
     // setPdarrayIndexToPdarray "a[pdarray] = pdarray" response to __setitem__(pdarray, pdarray)
