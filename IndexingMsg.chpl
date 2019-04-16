@@ -65,27 +65,23 @@ module IndexingMsg
         var gEnt: borrowed GenSymEntry = st.lookup(name);
         if (gEnt == nil) {return unknownSymbolError(pn,name);}
 
+        proc sliceHelper(type t) {
+          var e = toSymEntry(gEnt,t);
+          var aD = makeDistDom(slice.size);
+          var a = makeDistArray(slice.size, t);
+          [(i,j) in zip(0..#slice.size, slice)] a[i] = e.a[j];
+          st.addEntry(rname, new shared SymEntry(a));
+        }
+
         select(gEnt.dtype) {
             when (DType.Int64) {
-                var e = toSymEntry(gEnt,int);
-                var aD = makeDistDom(slice.size);
-                var a = makeDistArray(slice.size, int);
-                [(i,j) in zip(0..#slice.size, slice)] a[i] = e.a[j];
-                st.addEntry(rname, new shared SymEntry(a));
+                sliceHelper(int);
             }
             when (DType.Float64) {
-                var e = toSymEntry(gEnt,real);
-                var aD = makeDistDom(slice.size);
-                var a = makeDistArray(slice.size, real);
-                [(i,j) in zip(0..#slice.size, slice)] a[i] = e.a[j];                
-                st.addEntry(rname, new shared SymEntry(a));                
+                sliceHelper(real);
             }
             when (DType.Bool) {
-                var e = toSymEntry(gEnt,bool);
-                var aD = makeDistDom(slice.size);
-                var a = makeDistArray(slice.size, bool);
-                [(i,j) in zip(0..#slice.size, slice)] a[i] = e.a[j];                
-                st.addEntry(rname, new shared SymEntry(a));                
+                sliceHelper(bool);
             }
             otherwise {return notImplementedError(pn,dtype2str(gEnt.dtype));}
         }
