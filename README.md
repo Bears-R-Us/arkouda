@@ -1,4 +1,6 @@
-# arkouda
+# Arkouda
+# _REMEMBER_: this is not yet open source software... we are currently seeking approval to open source Arkouda
+
 arkouda python/chapel package
 
  * requires chapel 1.19.0
