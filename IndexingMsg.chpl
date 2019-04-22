@@ -65,27 +65,23 @@ module IndexingMsg
         var gEnt: borrowed GenSymEntry = st.lookup(name);
         if (gEnt == nil) {return unknownSymbolError(pn,name);}
 
+        proc sliceHelper(type t) {
+          var e = toSymEntry(gEnt,t);
+          var aD = makeDistDom(slice.size);
+          var a = makeDistArray(slice.size, t);
+          [(i,j) in zip(0..#slice.size, slice)] a[i] = e.a[j];
+          st.addEntry(rname, new shared SymEntry(a));
+        }
+
         select(gEnt.dtype) {
             when (DType.Int64) {
-                var e = toSymEntry(gEnt,int);
-                var aD = makeDistDom(slice.size);
-                var a = makeDistArray(slice.size, int);
-                [(i,j) in zip(0..#slice.size, slice)] a[i] = e.a[j];
-                st.addEntry(rname, new shared SymEntry(a));
+                sliceHelper(int);
             }
             when (DType.Float64) {
-                var e = toSymEntry(gEnt,real);
-                var aD = makeDistDom(slice.size);
-                var a = makeDistArray(slice.size, real);
-                [(i,j) in zip(0..#slice.size, slice)] a[i] = e.a[j];                
-                st.addEntry(rname, new shared SymEntry(a));                
+                sliceHelper(real);
             }
             when (DType.Bool) {
-                var e = toSymEntry(gEnt,bool);
-                var aD = makeDistDom(slice.size);
-                var a = makeDistArray(slice.size, bool);
-                [(i,j) in zip(0..#slice.size, slice)] a[i] = e.a[j];                
-                st.addEntry(rname, new shared SymEntry(a));                
+                sliceHelper(bool);
             }
             otherwise {return notImplementedError(pn,dtype2str(gEnt.dtype));}
         }
@@ -276,45 +272,37 @@ module IndexingMsg
         var gIV: borrowed GenSymEntry = st.lookup(iname);
         if (gIV == nil) {return unknownSymbolError(pn,iname);}
 
-        // add check for IV to be dtype of int64 or bool
+        proc idxToValHelper(type Xtype, type IVtype, type dtype): string {
+            var e = toSymEntry(gX,Xtype);
+            var iv = toSymEntry(gIV,IVtype);
+            var ivMin = min reduce iv.a;
+            var ivMax = max reduce iv.a;
+            if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
+            if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
+            if isBool(dtype) {
+                value = value.replace("True","true"); // chapel to python bool
+                value = value.replace("False","false"); // chapel to python bool
+            }
+            var val = try! value:dtype;
+            [i in iv.a] e.a[i] = val;
+            return try! "%s success".format(pn);
+        }
         
+        // add check for IV to be dtype of int64 or bool
+
         select(gX.dtype, gIV.dtype, dtype) {
             when (DType.Int64, DType.Int64, DType.Int64) {
-                var e = toSymEntry(gX,int);
-                var iv = toSymEntry(gIV,int);
-                var ivMin = min reduce iv.a;
-                var ivMax = max reduce iv.a;
-                if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
-                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
-                var val = try! value:int;
-                [i in iv.a] e.a[i] = val;
+              return idxToValHelper(int, int, int);
             }
             when (DType.Float64, DType.Int64, DType.Float64) {
-                var e = toSymEntry(gX,real);
-                var iv = toSymEntry(gIV,int);
-                var ivMin = min reduce iv.a;
-                var ivMax = max reduce iv.a;
-                if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
-                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
-                var val = try! value:real;
-                [i in iv.a] e.a[i] = val;
+              return idxToValHelper(real, int, real);
             }
             when (DType.Bool, DType.Int64, DType.Bool) {
-                var e = toSymEntry(gX,bool);
-                var iv = toSymEntry(gIV,int);
-                var ivMin = min reduce iv.a;
-                var ivMax = max reduce iv.a;
-                if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
-                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
-                value = value.replace("True","true");// chapel to python bool
-                value = value.replace("False","false");// chapel to python bool
-                var val = try! value:bool;
-                [i in iv.a] e.a[i] = val;
+              return idxToValHelper(bool, int, bool);
             }
             otherwise {return notImplementedError(pn,
                                                   "("+dtype2str(gX.dtype)+","+dtype2str(gIV.dtype)+","+dtype2str(dtype)+")");}
         }
-        return try! "%s success".format(pn);
     }
 
     // setPdarrayIndexToPdarray "a[pdarray] = pdarray" response to __setitem__(pdarray, pdarray)
