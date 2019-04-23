@@ -53,6 +53,10 @@ module OperatorMsg
                         var a = l.a / r.a;
                         st.addEntry(rname, new shared SymEntry(a));                        
                     }
+		    when "%" { // modulo
+		        var a = l.a % r.a;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
                     when "<" {
                         var a = l.a < r.a;
                         st.addEntry(rname, new shared SymEntry(a));                        
@@ -256,6 +260,101 @@ module OperatorMsg
                     otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
                 }
             }
+	    when (DType.Bool, DType.Bool) {
+	        var l = toSymEntry(left, bool);
+		var r = toSymEntry(right, bool);
+		select op {
+		    when "|" {
+		        var a = l.a | r.a;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "&" {
+		        var a = l.a & r.a;
+		        st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "^" {
+		        var a = l.a ^ r.a;
+		        st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
+		}
+	    }
+	    when (DType.Bool, DType.Int64) {
+	        var l = toSymEntry(left, bool);
+		var r = toSymEntry(right, int);
+		select op {
+		    when "+" {
+		        var a = l.a:int + r.a;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "-" {
+		        var a = l.a:int - r.a;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "*" {
+		        var a = l.a:int * r.a;
+		        st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
+		}
+	    }
+	    when (DType.Int64, DType.Bool) {
+	        var l = toSymEntry(left, int);
+		var r = toSymEntry(right, bool);
+		select op {
+		    when "+" {
+		        var a = l.a + r.a:int;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "-" {
+		        var a = l.a - r.a:int;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "*" {
+		        var a = l.a * r.a:int;
+		        st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
+		}
+	    }
+	    when (DType.Bool, DType.Float64) {
+	        var l = toSymEntry(left, bool);
+		var r = toSymEntry(right, real);
+		select op {
+		    when "+" {
+		        var a = l.a:real + r.a;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "-" {
+		        var a = l.a:real - r.a;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "*" {
+		        var a = l.a:real * r.a;
+		        st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
+		}
+	    }
+	    when (DType.Float64, DType.Bool) {
+	        var l = toSymEntry(left, real);
+		var r = toSymEntry(right, bool);
+		select op {
+		    when "+" {
+		        var a = l.a + r.a:real;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "-" {
+		        var a = l.a - r.a:real;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "*" {
+		        var a = l.a * r.a:real;
+		        st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
+		}
+	    }
             otherwise {return unrecognizedTypeError("binopvv",
                                                     "("+dtype2str(left.dtype)+","+dtype2str(right.dtype)+")");}
         }
@@ -303,6 +402,10 @@ module OperatorMsg
                         var a = l.a / val;
                         st.addEntry(rname, new shared SymEntry(a));
                     }
+		    when "%" { // modulo
+		        var a = l.a % val;
+			st.addEntry(rname, new shared SymEntry(a));
+		    } 
                     when "<" {
                         var a = l.a < val;
                         st.addEntry(rname, new shared SymEntry(a));
@@ -506,6 +609,101 @@ module OperatorMsg
                     otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
                 }
             }
+	    when (DType.Bool, DType.Bool) {
+	        var l = toSymEntry(left, bool);
+		var val = try! value:bool;
+		select op {
+		    when "|" {
+		        var a = l.a | val;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "&" {
+		        var a = l.a & val;
+		        st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "^" {
+		        var a = l.a ^ val;
+		        st.addEntry(rname, new shared SymEntry(a));
+		    }
+                    otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
+		}
+	    }
+	    when (DType.Bool, DType.Int64) {
+	        var l = toSymEntry(left, bool);
+		var val = try! value:int;
+		select op {
+		    when "+" {
+		      var a = l.a:int + val;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "-" {
+		      var a = l.a:int - val;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "*" {
+		      var a = l.a:int * val;
+		        st.addEntry(rname, new shared SymEntry(a));
+		    }
+                    otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
+		}
+	    }
+	    when (DType.Int64, DType.Bool) {
+	        var l = toSymEntry(left, int);
+		var val = try! value:bool;
+		select op {
+		    when "+" {
+		      var a = l.a + val:int;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "-" {
+		      var a = l.a - val:int;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "*" {
+		      var a = l.a * val:int;
+		        st.addEntry(rname, new shared SymEntry(a));
+		    }
+                    otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
+		}
+	    }
+	    when (DType.Bool, DType.Float64) {
+	        var l = toSymEntry(left, bool);
+		var val = try! value:real;
+		select op {
+		    when "+" {
+		      var a = l.a:real + val;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "-" {
+		      var a = l.a:real - val;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "*" {
+		      var a = l.a:real * val;
+		        st.addEntry(rname, new shared SymEntry(a));
+		    }
+                    otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
+		}
+	    }
+	    when (DType.Float64, DType.Bool) {
+	        var l = toSymEntry(left, real);
+		var val = try! value:bool;
+		select op {
+		    when "+" {
+		      var a = l.a + val:real;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "-" {
+		      var a = l.a - val:real;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "*" {
+		      var a = l.a * val:real;
+		        st.addEntry(rname, new shared SymEntry(a));
+		    }
+                    otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
+		}
+	    }
             otherwise {return unrecognizedTypeError("binopvs",
                                                     "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");}
         }
@@ -553,6 +751,10 @@ module OperatorMsg
                         var a = val / r.a;
                         st.addEntry(rname, new shared SymEntry(a));
                     }
+		    when "%" { // modulo
+		        var a = val % r.a;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
                     when "<" {
                         var a = val < r.a;
                         st.addEntry(rname, new shared SymEntry(a));
@@ -756,6 +958,101 @@ module OperatorMsg
                     otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
                 }
             }
+	    when (DType.Bool, DType.Bool) {
+		var val = try! value:bool;
+		var r = toSymEntry(right, bool);
+		select op {
+		    when "|" {
+		        var a = val | r.a;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "&" {
+		        var a = val & r.a;
+		        st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "^" {
+		        var a = val ^ r.a;
+		        st.addEntry(rname, new shared SymEntry(a));
+		    }
+                    otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
+		}
+	    }
+	    when (DType.Bool, DType.Int64) {
+		var val = try! value:bool;
+		var r = toSymEntry(right, int);
+		select op {
+		    when "+" {
+		      var a = val:int + r.a;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "-" {
+		      var a = val:int - r.a;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "*" {
+		      var a = val:int * r.a;
+		        st.addEntry(rname, new shared SymEntry(a));
+		    }
+                    otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
+		}
+	    }
+	    when (DType.Int64, DType.Bool) {
+		var val = try! value:int;
+		var r = toSymEntry(right, bool);
+		select op {
+		    when "+" {
+		      var a = val + r.a:int;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "-" {
+		      var a = val - r.a:int;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "*" {
+		      var a = val * r.a:int;
+		        st.addEntry(rname, new shared SymEntry(a));
+		    }
+                    otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
+		}
+	    }
+	    when (DType.Bool, DType.Float64) {
+		var val = try! value:bool;
+		var r = toSymEntry(right, real);
+		select op {
+		    when "+" {
+		      var a = val:real + r.a;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "-" {
+		      var a = val:real - r.a;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "*" {
+		      var a = val:real * r.a;
+		        st.addEntry(rname, new shared SymEntry(a));
+		    }
+                    otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
+		}
+	    }
+	    when (DType.Float64, DType.Bool) {
+		var val = try! value:real;
+		var r = toSymEntry(right, bool);
+		select op {
+		    when "+" {
+		      var a = val + r.a:real;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "-" {
+		      var a = val - r.a:real;
+			st.addEntry(rname, new shared SymEntry(a));
+		    }
+		    when "*" {
+		      var a = val * r.a:real;
+		        st.addEntry(rname, new shared SymEntry(a));
+		    }
+                    otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
+		}
+	    }
             otherwise {return unrecognizedTypeError("binopsv",
                                                     "("+dtype2str(dtype)+","+dtype2str(right.dtype)+")");}
         }
@@ -821,6 +1118,39 @@ module OperatorMsg
                     otherwise {return notImplementedError("opeqvv",left.dtype,op,right.dtype);}
                 }
             }
+	    when (DType.Bool, DType.Bool) {
+	        var l = toSymEntry(left, bool);
+		var r = toSymEntry(right, bool);
+		select op
+		{
+		    when "|=" {l.a |= r.a;}
+		    when "&=" {l.a &= r.a;}
+		    when "^=" {l.a ^= r.a;}
+		    otherwise {return notImplementedError("opeqvv",left.dtype,op,right.dtype);}
+		}
+	    }
+	    when (DType.Int64, DType.Bool) {
+	        var l = toSymEntry(left, int);
+		var r = toSymEntry(right, bool);
+		select op
+		{ 
+		    when "+=" {l.a += r.a:int;}
+		    when "-=" {l.a -= r.a:int;}
+		    when "*=" {l.a *= r.a:int;}
+  		    otherwise {return notImplementedError("opeqvv",left.dtype,op,right.dtype);}
+		}
+	    }
+	    when (DType.Float64, DType.Bool) {
+	        var l = toSymEntry(left, real);
+		var r = toSymEntry(right, bool);
+		select op
+		{
+		    when "+=" {l.a += r.a:real;}
+		    when "-=" {l.a -= r.a:real;}
+		    when "*=" {l.a *= r.a:real;}
+  		    otherwise {return notImplementedError("opeqvv",left.dtype,op,right.dtype);}
+		}
+	    }
             otherwise {return unrecognizedTypeError("opeqvv",
                                                     "("+dtype2str(left.dtype)+","+dtype2str(right.dtype)+")");}
         }
@@ -886,7 +1216,27 @@ module OperatorMsg
                     otherwise {return notImplementedError("opeqvs",left.dtype,op,dtype);}
                 }
             }
-            otherwise {return unrecognizedTypeError("opeqvv",
+	    when (DType.Int64, DType.Bool) {
+	        var l = toSymEntry(left, int);
+		var val = try! value: bool;
+		select op {
+		    when "+=" {l.a += val:int;}
+		    when "-=" {l.a -= val:int;}
+		    when "*=" {l.a *= val:int;}
+		    otherwise {return notImplementedError("opeqvs",left.dtype,op,dtype);}
+		}
+	    }
+	    when (DType.Float64, DType.Bool) {
+	        var l = toSymEntry(left, real);
+		var val = try! value: bool;
+		select op {
+		    when "+=" {l.a += val:real;}
+		    when "-=" {l.a -= val:real;}
+		    when "*=" {l.a *= val:real;}
+		    otherwise {return notImplementedError("opeqvs",left.dtype,op,dtype);}
+		}
+	    }
+            otherwise {return unrecognizedTypeError("opeqvs",
                                                     "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");}
         }
         return "opeqvs success";

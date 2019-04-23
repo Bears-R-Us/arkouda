@@ -452,6 +452,16 @@ module MsgProcessing
                         var val = prod:string;
                         return try! "int64 %i".format(val);
                     }
+		    when "min" {
+		        var minVal = min reduce e.a;
+			var val = minVal:string;
+			return try! "int64 %i".format(val);
+		    }
+		    when "max" {
+		        var maxVal = max reduce e.a;
+			var val = maxVal:string;
+			return try! "int64 %i".format(val);
+		    }
                     when "argmin" {
                         var (minVal, minLoc) = minloc reduce zip(e.a,e.aD);
                         var val = minLoc:string;
@@ -489,6 +499,16 @@ module MsgProcessing
                     when "prod" {
                         var prod = * reduce e.a;
                         var val = prod:string;
+                        return try! "float64 %.17r".format(val);
+                    }
+		    when "min" {
+                        var minVal = min reduce e.a;
+                        var val = minVal:string;
+                        return try! "float64 %.17r".format(val);
+                    }
+		    when "max" {
+                        var maxVal = max reduce e.a;
+                        var val = maxVal:string;
                         return try! "float64 %.17r".format(val);
                     }
                     when "argmin" {
@@ -530,6 +550,16 @@ module MsgProcessing
                         var val = prod:string;
                         return try! "int64 %i".format(val);
                     }
+		    when "min" {
+		        var val:string;
+			if (& reduce e.a) { val = "True"; } else { val = "False"; }
+			return try! "bool %s".format(val);
+		    }
+		    when "max" {
+		        var val:string;
+			if (| reduce e.a) { val = "True"; } else { val = "False"; }
+			return try! "bool %s".format(val);
+		    }
                     otherwise {return notImplementedError("reduction",reductionop,gEnt.dtype);}
                 }
             }
