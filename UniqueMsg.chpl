@@ -32,8 +32,7 @@ module UniqueMsg
     }
     
     proc +=(X: [?D] int, Y: [D] atomic int) {
-        forall i in D do 
-            X[i] += Y[i].read();
+        [i in D] {X[i] += Y[i].read();}
     }
 
     // unique with global histogram
