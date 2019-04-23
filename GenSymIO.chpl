@@ -300,5 +300,33 @@ module GenSymIO {
     var stride = max(d1.stride, d2.stride);
     return {low..high by stride};
   }
+
+  proc tohdfMsg(reqMsg, st: borrowed SymTab): string {
+    // reqMsg = "tohdf <arrayName> <dsetName> <mode> [<json_filename>]"
+    var fields = reqMsg.split(4);
+    var cmd = fields[1];
+    var arrayName = fields[2];
+    var dsetName = fields[3];
+    var mode = try! fields[4]: int;
+    var jsonfile = fields[5];
+    var filename: string;
+    try {
+      filename = decode_json(jsonfile, 1)[0];
+    } catch {
+      return try! "Error: could not decode json filenames via tempfile (%i files: %s)".format(1, jsonfile);
+    }
+    var entry = st.lookup(arrayName);
+    var file_id: C_HDF5.hid_t;
+    if (mode == 1) || !exists(filename) {
+      file_id = C_HDF5.H5Fcreate(filename.c_str(), C_HDF5.H5F_ACC_TRUNC, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+    } else {
+      file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
+    }
+    var dims: [0..#1] C_HDF5.hsize_t;
+    dims[0] = entry.size: C_HDF5.hsize_t;
+    C_HDF5.HDF5_WAR.H5LTmake_dataset_WAR(file_id, dsetName.c_str(), 1, c_ptrTo(dims), getHDF5Type(entry.a.eltType), c_ptrTo(entry.a));
+    C_HDF5.H5Fclose(file_id);
+    return "wrote array to file";
+  }
 }
 

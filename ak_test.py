@@ -14,6 +14,12 @@ if len(sys.argv) > 1:
 else:
     ak.connect()
 
+a = ak.arange(0, 10, 1)
+b = np.linspace(10, 20, 10)
+c = ak.array(b)
+d = a + c
+e = d.to_ndarray()
+    
 a = ak.ones(10)
 a[::2] = 0
 print(a)

@@ -480,6 +480,16 @@ class pdarray:
             raise RuntimeError("Expected {} bytes but received {}".format(self.size*self.itemsize, len(rep_msg)))
         fmt = '>{:n}{}'.format(self.size, structDtypeCodes[self.dtype])
         return np.array(struct.unpack(fmt, rep_msg))
+
+    def to_hdf(self, dsetName, filename, mode='append'):
+        if mode.lower() in 'truncate':
+            modenum = 1
+        else:
+            modenum = 0
+        rep_msg = generic_msg("tohdf {} {} {} {}".format(self.name, dsetName, modenum, json.dumps([filename])))
+
+    def save(self, filename):
+        self.to_hdf('array', filename, mode='truncate')
         
 # flag to info and dump all arrays from arkouda server
 AllSymbols = "__AllSymbols__"
@@ -509,7 +519,13 @@ def read_hdf(dsetName, filenames):
     rep_msg = generic_msg("readhdf {} {:n} {}".format(dsetName, len(filenames), json.dumps(filenames)))
     return create_pdarray(rep_msg)
 
+def load(filename):
+    rep_msg = generic_msg("readhdf array 1 {}".format(json.dumps([filename])))
+    return create_pdarray(rep_msg)
+
 def array(a):
+    if isinstance(a, pdarray):
+        return a
     try:
         a = np.array(a)
     except:
