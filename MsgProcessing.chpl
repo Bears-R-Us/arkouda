@@ -221,8 +221,43 @@ module MsgProcessing
                 var ar2 = toSymEntry(gAr2,int);
 
                 var truth = makeDistArray(ar1.size, bool);
-                [(a,t) in zip(ar1.a,truth)] t = | reduce (a == ar2.a);
-                
+
+                // things to do...
+                // if ar2 is big for some value of big... call unique on ar2 first
+
+                if (ar1.size <= ar2.size) {
+                    if v {try! writeln("%t <= %t".format(ar1.size, ar2.size));try! stdout.flush();}
+                    // forward-way reduction per element of ar1 over ar2
+                    // causes every elt in ar1 to be broadcast/communicated over ar2
+
+                    [(elt,t) in zip(ar1.a,truth)] t = | reduce (elt == ar2.a);
+
+                }
+                else {
+                    if v {try! writeln("%t > %t".format(ar1.size, ar2.size));try! stdout.flush();}
+                    // reverse-way serial-or-reduce for each elt in ar2 over ar1
+                    // causes every elt in ar2 to be broadcast/communicated over ar1
+
+                    for elt in ar2.a {truth |= (ar1.a == elt);}
+
+                    /* var limit = 10**5; */
+                    /* if ar2.size < limit { */
+                    /*     if v {try! writeln("%t < %t".format(ar2.size,limit));try! stdout.flush();} */
+                    /*     coforall loc in Locales { */
+                    /*         on loc { */
+                    /*             var loc_ar2 = ar2.a; */
+                    /*             forall i in truth.localSubdomain() { */
+                    /*                 for elt in loc_ar2 { */
+                    /*                     truth[i] |= (ar1.a[i] == elt); */
+                    /*                 } */
+                    /*             } */
+                    /*         } */
+                    /*     } */
+                    /* } */
+                    /* else { */
+                    /*     for elt in ar2.a {truth |= (ar1.a == elt);} */
+                    /* } */
+                }
                 st.addEntry(rname, new shared SymEntry(truth));
             }
             otherwise {return notImplementedError("in1d",gAr1.dtype,"in",gAr2.dtype);}
