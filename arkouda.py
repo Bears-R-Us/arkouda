@@ -379,26 +379,14 @@ class pdarray:
     def __ixor__(self, other):
         return self.opeq(other, "^=")
 
-    def parse_single_value(self, value):
-        if self.dtype == np.bool:
-            if value == "True":
-                val = True
-            elif value == "False":
-                val = False
-            else:
-                raise ValueError("unsupported value from server {}".format(value))
-        else:
-            val = self.dtype.type(value)
-        return val
-    
     # overload a[] to treat like list
     def __getitem__(self, key):
         if isinstance(key, int):
             if (key >= 0 and key < self.size):
                 repMsg = generic_msg("[int] {} {}".format(self.name, key))
                 fields = repMsg.split()
-                value = fields[2]
-                return self.parse_single_value(value)
+                # value = fields[2]
+                return parse_single_value(' '.join(fields[1:]))
             else:
                 raise IndexError("[int] {} is out of bounds with size {}".format(key,self.size))
         if isinstance(key, slice):
@@ -505,6 +493,24 @@ def create_pdarray(repMsg):
     itemsize = int(fields[6])
     if v: print("{} {} {} {} {} {}".format(name,dtype,size,ndim,shape,itemsize))
     return pdarray(name,dtype,size,ndim,shape,itemsize)
+
+def parse_single_value(msg):
+        dtype, value = msg.split()
+        try:
+            return np.dtype(dtype).type(value)
+        except:
+            raise ValueError("unsupported value from server {} {}".format(dtype, value))
+        # if self.dtype == np.bool:
+        #     if value == "True":
+        #         val = True
+        #     elif value == "False":
+        #         val = False
+        #     else:
+        #         raise ValueError("unsupported value from server {}".format(value))
+        # else:
+        #     val = self.dtype.type(value)
+        # return val
+    
 
 def read_hdf(dsetName, filenames):
     if isinstance(filenames, str):
@@ -662,56 +668,56 @@ def cumprod(pda):
 def any(pda):
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("any", pda.name))
-        return pda.parse_single_value(repMsg)
+        return parse_single_value(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
 def all(pda):
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("all", pda.name))
-        return pda.parse_single_value(repMsg)
+        return parse_single_value(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
     
 def sum(pda):
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("sum", pda.name))
-        return pda.parse_single_value(repMsg)
+        return parse_single_value(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
 def prod(pda):
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("prod", pda.name))
-        return pda.parse_single_value(repMsg)
+        return parse_single_value(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
 def min(pda):
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("min", pda.name))
-        return pda.parse_single_value(repMsg)
+        return parse_single_value(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
 def max(pda):
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("max", pda.name))
-        return pda.parse_single_value(repMsg)
+        return parse_single_value(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
     
 def argmin(pda):
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("argmin", pda.name))
-        return pda.parse_single_value(repMsg)
+        return parse_single_value(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
 def argmax(pda):
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("argmax", pda.name))
-        return pda.parse_single_value(repMsg)
+        return parse_single_value(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
