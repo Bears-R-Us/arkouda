@@ -340,7 +340,7 @@ module MsgProcessing
                 repMsg = try! "set %s to %t".format(name, val:bool);
             }
             when (DType.Bool, DType.Bool) {
-                var e = toSymEntry(gEnt,int);
+                var e = toSymEntry(gEnt,bool);
                 value = value.replace("True","true");
                 value = value.replace("False","false");
                 var val: bool = try! value:bool;

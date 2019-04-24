@@ -116,6 +116,9 @@ structDtypeCodes = {'int64': 'q',
 DTypes = frozenset(structDtypeCodes.keys())
 NUMBER_FORMAT_STRINGS = {'int64': '{:n}',
                          'float64': '{:.17f}'}
+bool = np.bool
+int64 = np.int64
+float64 = np.float64
 
 def check_np_dtype(dt):
     if dt.name not in DTypes:
@@ -167,7 +170,7 @@ class pdarray:
         except:
             raise TypeError("Unable to convert {} to {}".format(other, self.dtype.name))
         if self.dtype == np.bool:
-            return str(other).lower()
+            return str(other)
         fmt = NUMBER_FORMAT_STRINGS[self.dtype.name]
         return fmt.format(other)
         
@@ -430,7 +433,7 @@ class pdarray:
             if isinstance(value, pdarray):
                 generic_msg("[slice]=pdarray {} {} {} {} {}".format(self.name,start,stop,stride,value.name))
             else:
-                generic_msg("[slice]=val {} {} {} {} {}".format(self.name, start, stop, stride, self.dtype.name, self.format_other(value)))
+                generic_msg("[slice]=val {} {} {} {} {} {}".format(self.name, start, stop, stride, self.dtype.name, self.format_other(value)))
         else:
             return NotImplemented
 
