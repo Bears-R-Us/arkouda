@@ -15,6 +15,7 @@ module MsgProcessing
     use IndexingMsg;
     use UniqueMsg;
     use In1dMsg;
+    use HistogramMsg;
     
     // parse, execute, and respond to create message
     proc createMsg(reqMsg: string, st: borrowed SymTab): string {
@@ -148,53 +149,6 @@ module MsgProcessing
         writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
 
         st.addEntry(rname, new shared SymEntry(a));
-        return try! "created " + st.attrib(rname);
-    }
-
-    // histogram takes a pdarray and returns a pdarray with the histogram in it
-    proc histogramMsg(reqMsg: string, st: borrowed SymTab): string {
-        var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
-        var bins = try! fields[3]:int;
-        
-        // get next symbol name
-        var rname = st.nextName();
-        if v {try! writeln("%s %s %i : %s".format(cmd, name, bins, rname));try! stdout.flush();}
-
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError("histogram",name);}
-
-        proc histogramHelper(type t) {
-          var e = toSymEntry(gEnt,t);
-          var aMin = min reduce e.a;
-          var aMax = max reduce e.a;
-          var binWidth:real = (aMax - aMin):real / bins:real;
-          if v {try! writeln("binWidth %r ".format(binWidth)); try! stdout.flush();}
-          var hD = makeDistDom(bins);
-          var atomicHist: [hD] atomic int;
-          // count into atomic histogram
-          forall v in e.a {
-            var vBin = ((v - aMin) / binWidth):int;
-            if v == aMax {vBin = bins-1;}
-            //if (v_bin < 0) | (v_bin > (bins-1)) {try! writeln("OOB");try! stdout.flush();}
-            atomicHist[vBin].add(1);
-          }
-          var hist = makeDistArray(bins,int);
-          // copy from atomic histogram to normal histogram
-          [(e,ae) in zip(hist, atomicHist)] e = ae.read();
-          if v {try! writeln("hist =",hist); try! stdout.flush();}
-
-          st.addEntry(rname, new shared SymEntry(hist));
-        }
-
-        select (gEnt.dtype) {
-            when (DType.Int64) do histogramHelper(int);
-            when (DType.Float64) do histogramHelper(real);
-            otherwise {return notImplementedError("histogram",gEnt.dtype);}
-        }
-        
         return try! "created " + st.attrib(rname);
     }
 
