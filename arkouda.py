@@ -8,7 +8,6 @@ import zmq
 import os
 import subprocess
 import json, struct
-import h5py
 import numpy as np
 
 # stuff for zmq connection
@@ -458,10 +457,6 @@ class pdarray:
         return argmin(self)
     def argmax(self):
         return argmax(self)
-    def unique(self, return_counts=False):
-        return unique(self, return_counts)
-    def value_counts(self):
-        return value_counts(self)
 
     def to_ndarray(self):
         arraybytes = self.size * self.dtype.itemsize
@@ -472,20 +467,6 @@ class pdarray:
             raise RuntimeError("Expected {} bytes but received {}".format(self.size*self.dtype.itemsize, len(rep_msg)))
         fmt = '>{:n}{}'.format(self.size, structDtypeCodes[self.dtype.name])
         return np.array(struct.unpack(fmt, rep_msg))
-
-    def to_hdf(self, dsetName, filename, mode='append'):
-        if not isinstance(dsetName, str):
-            raise TypeError("dsetName must be str")
-        if not isinstance(filename, str):
-            raise TypeError("filename must be str")
-        if mode.lower() in 'truncate':
-            modenum = 1
-        else:
-            modenum = 0
-        rep_msg = generic_msg("tohdf {} {} {} {}".format(self.name, dsetName, modenum, json.dumps([filename])))
-
-    def save(self, filename):
-        self.to_hdf('array', filename, mode='truncate')
         
 # flag to info and dump all arrays from arkouda server
 AllSymbols = "__AllSymbols__"
@@ -523,26 +504,12 @@ def parse_single_value(msg):
         return dtype.type(value)
     except:
         raise ValueError("unsupported value from server {} {}".format(dtype.name, value))
+    
 
 def read_hdf(dsetName, filenames):
     if isinstance(filenames, str):
         filenames = [filenames]
     rep_msg = generic_msg("readhdf {} {:n} {}".format(dsetName, len(filenames), json.dumps(filenames)))
-    return create_pdarray(rep_msg)
-
-def get_dataset_names(filename):
-    '''Get the names of datasets contained in an HDF5 file.'''
-    with h5py.File(filename, 'r') as f:
-        return list(f.keys())
-
-def read_all_hdf(filenames):
-    if isinstance(filenames, str):
-        filenames = [filenames]
-    datasets = get_dataset_names(filenames[0])
-    return {d: read_hdf(d) for d in datasets}
-
-def load(filename):
-    rep_msg = generic_msg("readhdf array 1 {}".format(json.dumps([filename])))
     return create_pdarray(rep_msg)
 
 def array(a):
