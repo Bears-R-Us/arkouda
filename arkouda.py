@@ -457,10 +457,6 @@ class pdarray:
         return argmin(self)
     def argmax(self):
         return argmax(self)
-    def unique(self, return_counts=False):
-        return unique(self, return_counts)
-    def value_counts(self):
-        return value_counts(self)
 
     def to_ndarray(self):
         arraybytes = self.size * self.dtype.itemsize
