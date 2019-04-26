@@ -495,21 +495,19 @@ def create_pdarray(repMsg):
     return pdarray(name,dtype,size,ndim,shape,itemsize)
 
 def parse_single_value(msg):
-        dtype, value = msg.split()
-        try:
-            return np.dtype(dtype).type(value)
-        except:
-            raise ValueError("unsupported value from server {} {}".format(dtype, value))
-        # if self.dtype == np.bool:
-        #     if value == "True":
-        #         val = True
-        #     elif value == "False":
-        #         val = False
-        #     else:
-        #         raise ValueError("unsupported value from server {}".format(value))
-        # else:
-        #     val = self.dtype.type(value)
-        # return val
+    dtname, value = msg.split()
+    dtype = np.dtype(dtname)
+    if dtype == np.bool:
+        if value == "True":
+            return np.bool(True)
+        elif value == "False":
+            return np.bool(False)
+        else:
+            raise ValueError("unsupported value from server {} {}".format(dtype.name, value))
+    try:
+        return dtype.type(value)
+    except:
+        raise ValueError("unsupported value from server {} {}".format(dtype.name, value))
     
 
 def read_hdf(dsetName, filenames):
