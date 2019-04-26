@@ -2,6 +2,7 @@ module GenSymIO {
   use HDF5;
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
+  use ServerErrorStrings;
   use FileSystem;
   config const GenSymIO_DEBUG = false;
 
@@ -89,6 +90,7 @@ module GenSymIO {
   }
 
   class DatasetNotFoundError: Error { proc init() {} }
+  class NotHDF5FileError: Error { proc init() {} }
 
   proc decode_json(json: string, size: int) throws {
     var f = opentmp();
@@ -121,6 +123,9 @@ module GenSymIO {
     var filenames: [filedom] string;
     if filelist.size == 1 {
       var tmp = glob(filelist[0]);
+      if tmp.size == 0 {
+	return try! "Error: no files matching %s".format(filelist[0]);
+      }
       filedom = tmp.domain;
       filenames = tmp;
     } else {
@@ -136,6 +141,8 @@ module GenSymIO {
 	return try! "Error: permission error on %s".format(fname);
       } catch e: DatasetNotFoundError {
 	return try! "Error: dataset %s not found in file %s".format(dsetName, fname);
+      } catch e: NotHDF5FileError {
+	return try! "Error: cannot open as HDF5 file %s".format(fname);
       } catch {
 	// Need a catch-all for non-throwing function
 	return try! "Error: unknown cause";
@@ -147,7 +154,15 @@ module GenSymIO {
 	return try! "Error: inconsistent dtype in dataset %s of file %s".format(dsetName, filenames[i]);
       }
     }
-    var (subdoms, len) = get_subdoms(filenames, dsetName);
+    var subdoms: [filenames.domain] domain(1);
+    var len: int;
+    try {
+      (subdoms, len) = get_subdoms(filenames, dsetName);
+    } catch e: HDF5RankError {
+      return notImplementedError("readhdf", try! "Rank %i arrays".format(e.rank));
+    } catch {
+      return try! "Error: unknown cause";
+    }
     var entry: shared GenSymEntry;
     if dataclass == C_HDF5.H5T_INTEGER {
       var entryInt = new shared SymEntry(len, int);
@@ -175,6 +190,9 @@ module GenSymIO {
       throw new owned PermissionError();
     }
     var file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, C_HDF5.H5P_DEFAULT);
+    if file_id < 0 { // HF5open returns negative value on failure
+      throw new owned NotHDF5FileError();
+    }
     if !C_HDF5.H5Lexists(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT) {
       throw new owned DatasetNotFoundError();
     }
@@ -186,9 +204,15 @@ module GenSymIO {
     C_HDF5.H5Fclose(file_id);
     return dataclass;
   }
-       
+
+  class HDF5RankError: Error {
+    var rank: int;
+    var filename: string;
+    var dsetName: string;
+  }
+  
   /* Get the subdomains of the distributed array represented by each file, as well as the total length of the array. */
-  proc get_subdoms(filenames: [?FD] string, dsetName: string) {
+  proc get_subdoms(filenames: [?FD] string, dsetName: string) throws {
     var lengths: [FD] int;
     for (i, filename) in zip(FD, filenames) {
       var file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, C_HDF5.H5P_DEFAULT);
@@ -198,7 +222,8 @@ module GenSymIO {
       C_HDF5.H5LTget_dataset_ndims(file_id, dsetName.c_str(), dsetRank);
       if dsetRank != 1 {
 	// TODO: change this to a throw
-	halt("Expected 1D array, got rank " + dsetRank);
+	// halt("Expected 1D array, got rank " + dsetRank);
+	throw new owned HDF5RankError(dsetRank, filename, dsetName);
       }
       // Read array length into dims[0]
       C_HDF5.HDF5_WAR.H5LTget_dataset_info_WAR(file_id, dsetName.c_str(), c_ptrTo(dims), nil, nil);
@@ -317,16 +342,53 @@ module GenSymIO {
     }
     var entry = st.lookup(arrayName);
     var file_id: C_HDF5.hid_t;
-    if (mode == 1) || !exists(filename) {
-      file_id = C_HDF5.H5Fcreate(filename.c_str(), C_HDF5.H5F_ACC_TRUNC, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
-    } else {
-      file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
+    try {
+      if (mode == 1) || !exists(filename) {
+	file_id = C_HDF5.H5Fcreate(filename.c_str(), C_HDF5.H5F_ACC_TRUNC, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+      } else {
+	file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
+      }
+      if file_id < 0 {
+	return try! "Error: cannot open as HDF5 file %s".format(filename);
+      }
+    } catch {
+      return try! "Error: unable to access %s".format(filename);
     }
     var dims: [0..#1] C_HDF5.hsize_t;
     dims[0] = entry.size: C_HDF5.hsize_t;
-    C_HDF5.HDF5_WAR.H5LTmake_dataset_WAR(file_id, dsetName.c_str(), 1, c_ptrTo(dims), getHDF5Type(entry.a.eltType), c_ptrTo(entry.a));
+    select entry.dtype {
+      when DType.Int64 {
+	var e = toSymEntry(entry, int);
+	C_HDF5.HDF5_WAR.H5LTmake_dataset_WAR(file_id, dsetName.c_str(), 1, c_ptrTo(dims), getHDF5Type(e.a.eltType), c_ptrTo(e.a));
+      }
+      when DType.Float64 {
+	var e = toSymEntry(entry, real);
+	C_HDF5.HDF5_WAR.H5LTmake_dataset_WAR(file_id, dsetName.c_str(), 1, c_ptrTo(dims), getHDF5Type(e.a.eltType), c_ptrTo(e.a));
+      }
+      when DType.Bool {
+	var e = toSymEntry(entry, bool);
+	C_HDF5.HDF5_WAR.H5LTmake_dataset_WAR(file_id, dsetName.c_str(), 1, c_ptrTo(dims), getHDF5Type(e.a.eltType), c_ptrTo(e.a));
+      }
+      otherwise {
+	C_HDF5.H5Fclose(file_id);
+	return unrecognizedTypeError("tohdf", dtype2str(entry.dtype));
+      }
+    }
     C_HDF5.H5Fclose(file_id);
     return "wrote array to file";
   }
+
+  /* config const command_file = "test_command"; */
+  /* proc main() { */
+  /*   var f = try! open(command_file, iomode.r); */
+  /*   var r = try! f.reader(); */
+  /*   var command: string; */
+  /*   try! r.readstring(command); */
+  /*   try! r.close(); */
+  /*   try! f.close(); */
+  /*   writeln(command); */
+  /*   var st = new owned SymTab(); */
+  /*   writeln(readhdfMsg(command, st)); */
+  /* } */
 }
 

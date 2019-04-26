@@ -8,6 +8,7 @@ import zmq
 import os
 import subprocess
 import json, struct
+import h5py
 import numpy as np
 
 # stuff for zmq connection
@@ -473,6 +474,10 @@ class pdarray:
         return np.array(struct.unpack(fmt, rep_msg))
 
     def to_hdf(self, dsetName, filename, mode='append'):
+        if not isinstance(dsetName, str):
+            raise TypeError("dsetName must be str")
+        if not isinstance(filename, str):
+            raise TypeError("filename must be str")
         if mode.lower() in 'truncate':
             modenum = 1
         else:
@@ -505,28 +510,36 @@ def create_pdarray(repMsg):
     return pdarray(name,dtype,size,ndim,shape,itemsize)
 
 def parse_single_value(msg):
-        dtype, value = msg.split()
-        try:
-            return np.dtype(dtype).type(value)
-        except:
-            raise ValueError("unsupported value from server {} {}".format(dtype, value))
-        # if self.dtype == np.bool:
-        #     if value == "True":
-        #         val = True
-        #     elif value == "False":
-        #         val = False
-        #     else:
-        #         raise ValueError("unsupported value from server {}".format(value))
-        # else:
-        #     val = self.dtype.type(value)
-        # return val
-    
+    dtname, value = msg.split()
+    dtype = np.dtype(dtname)
+    if dtype == np.bool:
+        if value == "True":
+            return np.bool(True)
+        elif value == "False":
+            return np.bool(False)
+        else:
+            raise ValueError("unsupported value from server {} {}".format(dtype.name, value))
+    try:
+        return dtype.type(value)
+    except:
+        raise ValueError("unsupported value from server {} {}".format(dtype.name, value))
 
 def read_hdf(dsetName, filenames):
     if isinstance(filenames, str):
         filenames = [filenames]
     rep_msg = generic_msg("readhdf {} {:n} {}".format(dsetName, len(filenames), json.dumps(filenames)))
     return create_pdarray(rep_msg)
+
+def get_dataset_names(filename):
+    '''Get the names of datasets contained in an HDF5 file.'''
+    with h5py.File(filename, 'r') as f:
+        return list(f.keys())
+
+def read_all_hdf(filenames):
+    if isinstance(filenames, str):
+        filenames = [filenames]
+    datasets = get_dataset_names(filenames[0])
+    return {d: read_hdf(d) for d in datasets}
 
 def load(filename):
     rep_msg = generic_msg("readhdf array 1 {}".format(json.dumps([filename])))
