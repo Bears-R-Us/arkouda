@@ -210,7 +210,7 @@ class pdarray:
             other = self.dtype.type(other)
         except: # Can't cast other as dtype of pdarray
             return NotImplemented
-        msg = "binopvs {} {} {} {}".format(op, self.dtype.name, self.format_other(other), self.name)
+        msg = "binopsv {} {} {} {}".format(op, self.dtype.name, self.format_other(other), self.name)
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
