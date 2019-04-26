@@ -14,6 +14,8 @@ module MsgProcessing
     use RandMsg;
     use IndexingMsg;
     use UniqueMsg;
+    use In1dMsg;
+    use HistogramMsg;
     
     // parse, execute, and respond to create message
     proc createMsg(reqMsg: string, st: borrowed SymTab): string {
@@ -150,87 +152,6 @@ module MsgProcessing
         return try! "created " + st.attrib(rname);
     }
 
-    // histogram takes a pdarray and returns a pdarray with the histogram in it
-    proc histogramMsg(reqMsg: string, st: borrowed SymTab): string {
-        var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
-        var bins = try! fields[3]:int;
-        
-        // get next symbol name
-        var rname = st.nextName();
-        if v {try! writeln("%s %s %i : %s".format(cmd, name, bins, rname));try! stdout.flush();}
-
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError("histogram",name);}
-
-        proc histogramHelper(type t) {
-          var e = toSymEntry(gEnt,t);
-          var aMin = min reduce e.a;
-          var aMax = max reduce e.a;
-          var binWidth:real = (aMax - aMin):real / bins:real;
-          if v {try! writeln("binWidth %r ".format(binWidth)); try! stdout.flush();}
-          var hD = makeDistDom(bins);
-          var atomicHist: [hD] atomic int;
-          // count into atomic histogram
-          forall v in e.a {
-            var vBin = ((v - aMin) / binWidth):int;
-            if v == aMax {vBin = bins-1;}
-            //if (v_bin < 0) | (v_bin > (bins-1)) {try! writeln("OOB");try! stdout.flush();}
-            atomicHist[vBin].add(1);
-          }
-          var hist = makeDistArray(bins,int);
-          // copy from atomic histogram to normal histogram
-          [(e,ae) in zip(hist, atomicHist)] e = ae.read();
-          if v {try! writeln("hist =",hist); try! stdout.flush();}
-
-          st.addEntry(rname, new shared SymEntry(hist));
-        }
-
-        select (gEnt.dtype) {
-            when (DType.Int64) do histogramHelper(int);
-            when (DType.Float64) do histogramHelper(real);
-            otherwise {return notImplementedError("histogram",gEnt.dtype);}
-        }
-        
-        return try! "created " + st.attrib(rname);
-    }
-
-    // in1d takes two pdarray and returns a bool pdarray
-    // with the "in"/contains for each element tested against the second pdarray
-    proc in1dMsg(reqMsg: string, st: borrowed SymTab): string {
-        var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
-        var sname = fields[3];
-
-        // get next symbol name
-        var rname = st.nextName();
-        if v {try! writeln("%s %s %s : %s".format(cmd, name, sname, rname));try! stdout.flush();}
-
-        var gAr1: borrowed GenSymEntry = st.lookup(name);
-        if (gAr1 == nil) {return unknownSymbolError("in1d",name);}
-        var gAr2: borrowed GenSymEntry = st.lookup(sname);
-        if (gAr2 == nil) {return unknownSymbolError("in1d",sname);}
-
-        select (gAr1.dtype, gAr2.dtype) {
-            when (DType.Int64, DType.Int64) {
-                var ar1 = toSymEntry(gAr1,int);
-                var ar2 = toSymEntry(gAr2,int);
-
-                var truth = makeDistArray(ar1.size, bool);
-                [(a,t) in zip(ar1.a,truth)] t = | reduce (a == ar2.a);
-                
-                st.addEntry(rname, new shared SymEntry(truth));
-            }
-            otherwise {return notImplementedError("in1d",gAr1.dtype,"in",gAr2.dtype);}
-        }
-        
-        return try! "created " + st.attrib(rname);
-    }
-
     // sets all elements in array to a value (broadcast)
     proc setMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
@@ -305,7 +226,7 @@ module MsgProcessing
                 repMsg = try! "set %s to %t".format(name, val:bool);
             }
             when (DType.Bool, DType.Bool) {
-                var e = toSymEntry(gEnt,int);
+                var e = toSymEntry(gEnt,bool);
                 value = value.replace("True","true");
                 value = value.replace("False","false");
                 var val: bool = try! value:bool;
@@ -452,6 +373,16 @@ module MsgProcessing
                         var val = prod:string;
                         return try! "int64 %i".format(val);
                     }
+		    when "min" {
+		        var minVal = min reduce e.a;
+			var val = minVal:string;
+			return try! "int64 %i".format(val);
+		    }
+		    when "max" {
+		        var maxVal = max reduce e.a;
+			var val = maxVal:string;
+			return try! "int64 %i".format(val);
+		    }
                     when "argmin" {
                         var (minVal, minLoc) = minloc reduce zip(e.a,e.aD);
                         var val = minLoc:string;
@@ -489,6 +420,16 @@ module MsgProcessing
                     when "prod" {
                         var prod = * reduce e.a;
                         var val = prod:string;
+                        return try! "float64 %.17r".format(val);
+                    }
+		    when "min" {
+                        var minVal = min reduce e.a;
+                        var val = minVal:string;
+                        return try! "float64 %.17r".format(val);
+                    }
+		    when "max" {
+                        var maxVal = max reduce e.a;
+                        var val = maxVal:string;
                         return try! "float64 %.17r".format(val);
                     }
                     when "argmin" {
@@ -530,6 +471,16 @@ module MsgProcessing
                         var val = prod:string;
                         return try! "int64 %i".format(val);
                     }
+		    when "min" {
+		        var val:string;
+			if (& reduce e.a) { val = "True"; } else { val = "False"; }
+			return try! "bool %s".format(val);
+		    }
+		    when "max" {
+		        var val:string;
+			if (| reduce e.a) { val = "True"; } else { val = "False"; }
+			return try! "bool %s".format(val);
+		    }
                     otherwise {return notImplementedError("reduction",reductionop,gEnt.dtype);}
                 }
             }

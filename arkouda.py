@@ -25,9 +25,6 @@ pdarrayIterThreshDefVal = 100
 pdarrayIterThresh  = pdarrayIterThreshDefVal
 maxTransferBytesDefVal = 2**30
 maxTransferBytes = maxTransferBytesDefVal
-structDtypeCodes = {'int64': 'q',
-                    'float64': 'd',
-                    'bool': '?'}
 
 # reset settings to default values
 def set_defaults():
@@ -113,11 +110,26 @@ def generic_msg(message, send_bytes=False, recv_bytes=False):
     return message
 
 # supported dtypes
-bool_ = type(True) # save bool type into bool_
-bool = "bool" # seems dangerous but numpy redefines bool also # how do you call bool() in this context?
-int64 = "int64"
-float64 = "float64"
-DTypes = frozenset([int64, float64, bool]) # remember bool is a string here blah!
+structDtypeCodes = {'int64': 'q',
+                    'float64': 'd',
+                    'bool': '?'}
+DTypes = frozenset(structDtypeCodes.keys())
+NUMBER_FORMAT_STRINGS = {'int64': '{:n}',
+                         'float64': '{:.17f}'}
+bool = np.bool
+int64 = np.int64
+float64 = np.float64
+
+def check_np_dtype(dt):
+    if dt.name not in DTypes:
+        raise TypeError("Unsupported type: {}".format(dt))
+
+def translate_np_dtype(dt):
+    check_np_dtype(dt)
+    trans = {'i': 'int', 'f': 'float', 'b': 'bool'}
+    kind = trans[dt.kind]
+    return kind, dt.itemsize
+
 BinOps = frozenset(["+", "-", "*", "/", "//", "<", ">", "<=", ">=", "!=", "==", "&", "|", "^", "<<", ">>"])
 OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", "<<=", ">>="])
 
@@ -125,7 +137,7 @@ OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", "<<=", ">>
 class pdarray:
     def __init__(self, name, dtype, size, ndim, shape, itemsize):
         self.name = name
-        self.dtype = dtype
+        self.dtype = np.dtype(dtype)
         self.size = size
         self.ndim = ndim
         self.shape = shape
@@ -152,6 +164,16 @@ class pdarray:
         ## s = "array(" + s + ")"
         ## return s
 
+    def format_other(self, other):
+        try:
+            other = self.dtype.type(other)
+        except:
+            raise TypeError("Unable to convert {} to {}".format(other, self.dtype.name))
+        if self.dtype == np.bool:
+            return str(other)
+        fmt = NUMBER_FORMAT_STRINGS[self.dtype.name]
+        return fmt.format(other)
+        
     # binary operators
     def binop(self, other, op):
         if op not in BinOps:
@@ -163,36 +185,34 @@ class pdarray:
             msg = "binopvv {} {} {}".format(op, self.name, other.name)
             repMsg = generic_msg(msg)
             return create_pdarray(repMsg)
-        # pdarray binop int
-        elif isinstance(other, int):
-            msg = "binopvs {} {} {} {}".format(op, self.name, int64, other)
-            repMsg = generic_msg(msg)
-            return create_pdarray(repMsg)
-        # pdarray binop float
-        elif isinstance(other, float):
-            msg = "binopvs {} {} {} {}".format(op, self.name, float64, other)
-            repMsg = generic_msg(msg)            
-            return create_pdarray(repMsg)
-        else:
+        # pdarray binop array-like is not implemented
+        if hasattr(other, '__len__'): 
             return NotImplemented
+        # pdarray binop scalar
+        try:
+            other = self.dtype.type(other)
+        except: # Can't cast other as dtype of pdarray
+            return NotImplemented
+        msg = "binopvs {} {} {} {}".format(op, self.name, self.dtype.name, self.format_other(other))
+        repMsg = generic_msg(msg)
+        return create_pdarray(repMsg)
 
     # reverse binary operators
     # pdarray binop pdarray: taken care of by binop function
     def r_binop(self, other, op):
         if op not in BinOps:
             raise ValueError("bad operator {}".format(op))
-        # int binop pdarray
-        if isinstance(other, int):
-            msg = "binopsv {} {} {} {}".format(op, int64, other, self.name)
-            repMsg = generic_msg(msg)
-            return create_pdarray(repMsg)
-        # float binop pdarray
-        elif isinstance(other, float):
-            msg = "binopsv {} {} {} {}".format(op, float64, other, self.name)
-            repMsg = generic_msg(msg)            
-            return create_pdarray(repMsg)
-        else:
+        # pdarray binop array-like is not implemented
+        if hasattr(other, '__len__'): 
             return NotImplemented
+        # pdarray binop scalar
+        try:
+            other = self.dtype.type(other)
+        except: # Can't cast other as dtype of pdarray
+            return NotImplemented
+        msg = "binopsv {} {} {} {}".format(op, self.dtype.name, self.format_other(other), self.name)
+        repMsg = generic_msg(msg)
+        return create_pdarray(repMsg)
 
     # overload + for pdarray, other can be {pdarray, int, float}
     def __add__(self, other):
@@ -228,6 +248,12 @@ class pdarray:
 
     def __rfloordiv__(self, other):
         return self.r_binop(other, "//")
+
+    def __mod__(self, other):
+        return self.binop(other, "%")
+
+    def __rmod__(self, other):
+        return self.r_binop(other, "%")
 
     # overload << for pdarray, other can be {pdarray, int}
     def __lshift__(self, other):
@@ -301,16 +327,17 @@ class pdarray:
                 raise ValueError("size mismatch {} {}".format(self.size,other.size))
             generic_msg("opeqvv {} {} {}".format(op, self.name, other.name))
             return self
-        # pdarray op= int
-        elif isinstance(other, int):
-            generic_msg("opeqvs {} {} {}".format(op, self.name, int64, other))
-            return self
-        # pdarray op= float
-        elif isinstance(other, float):
-            generic_msg("opeqvs {} {} {}".format(op, self.name, float64, other))
-            return self
-        else:
+        # pdarray op= array-like is not implemented
+        if hasattr(other, '__len__'): 
             return NotImplemented
+        # pdarray binop scalar
+        try:
+            other = self.dtype.type(other)
+        except: # Can't cast other as dtype of pdarray
+            return NotImplemented
+        msg = "opeqvs {} {} {} {}".format(op, self.name, self.dtype.name, self.format_other(other))
+        generic_msg(msg)
+        return self
 
     # overload += pdarray, other can be {pdarray, int, float}
     def __iadd__(self, other):
@@ -358,19 +385,8 @@ class pdarray:
             if (key >= 0 and key < self.size):
                 repMsg = generic_msg("[int] {} {}".format(self.name, key))
                 fields = repMsg.split()
-                value = fields[2]
-                if self.dtype == int64:
-                    return int(value)
-                elif self.dtype == float64:
-                    return float(value)
-                elif self.dtype == bool: # remember bool is a string here blah!
-                    val = False
-                    if value == "True": val = True
-                    elif value == "False": val = False
-                    else: ValueError("unsupported value from server {}".format(value))
-                    return val
-                else:
-                    raise TypeError("unsupported value type from server {}".format(self.dtype))
+                # value = fields[2]
+                return parse_single_value(' '.join(fields[1:]))
             else:
                 raise IndexError("[int] {} is out of bounds with size {}".format(key,self.size))
         if isinstance(key, slice):
@@ -379,57 +395,33 @@ class pdarray:
             repMsg = generic_msg("[slice] {} {} {} {}".format(self.name, start, stop, stride))
             return create_pdarray(repMsg);
         if isinstance(key, pdarray):
-            if key.dtype == int64:
-                repMsg = generic_msg("[pdarray] {} {}".format(self.name, key.name))
-                return create_pdarray(repMsg);
-            elif key.dtype == bool: # remember bool is a string here blah!
-                if self.size != key.size:
-                    raise ValueError("size mismatch {} {}".format(self.size,key.size))
-                repMsg = generic_msg("[pdarray] {} {}".format(self.name, key.name))
-                return create_pdarray(repMsg);
-            else:
+            kind, itemsize = translate_np_dtype(key.dtype)
+            if kind not in ("bool", "int"):
                 raise TypeError("unsupported pdarray index type {}".format(key.dtype))
+            if kind == "bool" and self.size != key.size:
+                raise ValueError("size mismatch {} {}".format(self.size,key.size))
+            repMsg = generic_msg("[pdarray] {} {}".format(self.name, key.name))
         else:
             return NotImplemented
 
     def __setitem__(self, key, value):
         if isinstance(key, int):
             if (key >= 0 and key < self.size):
-                if isinstance(value, bool_): # we set bool_ = type(True) to test for bool
-                    # remember bool is a string here blah!
-                    generic_msg("[int]=val {} {} {} {}".format(self.name,key,bool,value))
-                elif isinstance(value, int):
-                    generic_msg("[int]=val {} {} {} {}".format(self.name,key,int64,value))
-                elif isinstance(value, float):
-                    generic_msg("[int]=val {} {} {} {}".format(self.name,key,float64,value))
-                else:
-                    raise TypeError("unsupported value type")
+                generic_msg("[int]=val {} {} {} {}".format(self.name, key, self.dtype.name, self.format_other(value)))
             else:
                 raise IndexError("index {} is out of bounds with size {}".format(key,self.size))
         elif isinstance(key, pdarray):
-            if isinstance(value, bool_): # we set bool_ = type(True) to test for bool
-                # remember bool is a string here blah!
-                generic_msg("[pdarray]=val {} {} {} {}".format(self.name,key.name,bool,value))
-            elif isinstance(value, int):
-                generic_msg("[pdarray]=val {} {} {} {}".format(self.name,key.name,int64,value))
-            elif isinstance(value, float):
-                generic_msg("[pdarray]=val {} {} {} {}".format(self.name,key.name,float64,value))
-            elif isinstance(value, pdarray):
+            if isinstance(value, pdarray):
                 generic_msg("[pdarray]=pdarray {} {} {}".format(self.name,key.name,value.name))
+            else:
+                generic_msg("[pdarray]=val {} {} {} {}".format(self.name, key.name, self.dtype.name, self.format_other(value)))
         elif isinstance(key, slice):
             (start,stop,stride) = key.indices(self.size)
             if v: print(start,stop,stride)
-            if isinstance(value, bool_): # we set bool_ = type(True) to test for bool
-                # remember bool is a string here blah!
-                generic_msg("[slice]=val {} {} {} {} {} {}".format(self.name,start,stop,stride,bool,value))
-            elif isinstance(value, int):
-                generic_msg("[slice]=val {} {} {} {} {} {}".format(self.name,start,stop,stride,int64,value))
-            elif isinstance(value, float):
-                generic_msg("[slice]=val {} {} {} {} {} {}".format(self.name,start,stop,stride,float64,value))
-            elif isinstance(value, pdarray):
+            if isinstance(value, pdarray):
                 generic_msg("[slice]=pdarray {} {} {} {} {}".format(self.name,start,stop,stride,value.name))
             else:
-                raise TypeError("unsupported value type")
+                generic_msg("[slice]=val {} {} {} {} {} {}".format(self.name, start, stop, stride, self.dtype.name, self.format_other(value)))
         else:
             return NotImplemented
 
@@ -447,12 +439,7 @@ class pdarray:
                 yield self[i]
             
     def fill(self, value):
-        # error check and set dtype
-        if isinstance(value, int): dtype = int64
-        elif isinstance(value, float): dtype = float64
-        elif isinstance(value, bool_): dtype = bool # remember bool is a string here blah! test with bool_
-        else: raise TypeError("unsupported value type {}".format(type(value)))
-        generic_msg("set {} {} {}".format(self.name, dtype, value))
+        generic_msg("set {} {} {}".format(self.name, self.dtype.name, self.format_other(value)))
 
     def any(self):
         return any(self)
@@ -462,6 +449,10 @@ class pdarray:
         return sum(self)
     def prod(self):
         return prod(self)
+    def min(self):
+        return min(self)
+    def max(self):
+        return max(self)
     def argmin(self):
         return argmin(self)
     def argmax(self):
@@ -472,13 +463,13 @@ class pdarray:
         return value_counts(self)
 
     def to_ndarray(self):
-        arraybytes = self.size * self.itemsize
+        arraybytes = self.size * self.dtype.itemsize
         if arraybytes > maxTransferBytes:
             raise RuntimeError("Array exceeds allowed size for transfer. Increase ak.maxTransferBytes to allow")
         rep_msg = generic_msg("tondarray {}".format(self.name), recv_bytes=True)
-        if len(rep_msg) != self.size*self.itemsize:
-            raise RuntimeError("Expected {} bytes but received {}".format(self.size*self.itemsize, len(rep_msg)))
-        fmt = '>{:n}{}'.format(self.size, structDtypeCodes[self.dtype])
+        if len(rep_msg) != self.size*self.dtype.itemsize:
+            raise RuntimeError("Expected {} bytes but received {}".format(self.size*self.dtype.itemsize, len(rep_msg)))
+        fmt = '>{:n}{}'.format(self.size, structDtypeCodes[self.dtype.name])
         return np.array(struct.unpack(fmt, rep_msg))
 
     def to_hdf(self, dsetName, filename, mode='append'):
@@ -513,6 +504,24 @@ def create_pdarray(repMsg):
     if v: print("{} {} {} {} {} {}".format(name,dtype,size,ndim,shape,itemsize))
     return pdarray(name,dtype,size,ndim,shape,itemsize)
 
+def parse_single_value(msg):
+        dtype, value = msg.split()
+        try:
+            return np.dtype(dtype).type(value)
+        except:
+            raise ValueError("unsupported value from server {} {}".format(dtype, value))
+        # if self.dtype == np.bool:
+        #     if value == "True":
+        #         val = True
+        #     elif value == "False":
+        #         val = False
+        #     else:
+        #         raise ValueError("unsupported value from server {}".format(value))
+        # else:
+        #     val = self.dtype.type(value)
+        # return val
+    
+
 def read_hdf(dsetName, filenames):
     if isinstance(filenames, str):
         filenames = [filenames]
@@ -532,7 +541,7 @@ def array(a):
         raise TypeError("Argument must be array-like")
     if a.ndim != 1:
         raise RuntimeError("Only rank-1 arrays supported")
-    if a.dtype.name not in structDtypeCodes:
+    if a.dtype.name not in DTypes:
         raise RuntimeError("Unhandled dtype {}".format(a.dtype))
     size = a.shape[0]
     if size > maxTransferBytes:
@@ -542,18 +551,22 @@ def array(a):
     rep_msg = generic_msg(req_msg, send_bytes=True)
     return create_pdarray(rep_msg)
 
-def zeros(size, dtype=float64):
+def zeros(size, dtype=np.float64):
+    dtype = np.dtype(dtype) # normalize dtype
     # check dtype for error
-    if dtype not in DTypes:
+    if dtype.name not in DTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
-    repMsg = generic_msg("create {} {}".format(dtype, size))
+    kind, itemsize = translate_np_dtype(dtype)
+    repMsg = generic_msg("create {} {}".format(dtype.name, size))
     return create_pdarray(repMsg)
 
-def ones(size, dtype=float64):
+def ones(size, dtype=np.float64):
+    dtype = np.dtype(dtype) # normalize dtype
     # check dtype for error
-    if dtype not in DTypes:
+    if dtype.name not in DTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
-    repMsg = generic_msg("create {} {}".format(dtype, size))
+    kind, itemsize = translate_np_dtype(dtype)
+    repMsg = generic_msg("create {} {}".format(dtype.name, size))
     a = create_pdarray(repMsg)
     a.fill(1)
     return a
@@ -619,12 +632,14 @@ def value_counts(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def randint(low, high, size, dtype=int64):
+def randint(low, high, size, dtype=np.int64):
+    dtype = np.dtype(dtype) # normalize dtype
     # check dtype for error
-    if dtype not in DTypes:
+    if dtype.name not in DTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
     if isinstance(low, int) and isinstance(high, int) and isinstance(size, int):
-        repMsg = generic_msg("randint {} {} {} {}".format(low,high,size,dtype))
+        kind, itemsize = translate_np_dtype(dtype)
+        repMsg = generic_msg("randint {} {} {} {}".format(low,high,size,dtype.name))
         return create_pdarray(repMsg)
     else:
         raise TypeError("min,max,size must be int {} {} {}".format(low,high,size));
@@ -667,100 +682,56 @@ def cumprod(pda):
 def any(pda):
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("any", pda.name))
-        fields = repMsg.split()
-        dtype = fields[0]
-        value = fields[1]
-        val = None
-        if value == "True": val = True
-        elif value == "False": val = False
-        else: ValueError("unsupported value from server {}".format(value))
-        return val
+        return parse_single_value(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
 def all(pda):
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("all", pda.name))
-        fields = repMsg.split()
-        dtype = fields[0]
-        value = fields[1]
-        val = None
-        if value == "True": val = True
-        elif value == "False": val = False
-        else: ValueError("unsupported value from server {}".format(value))
-        return val
+        return parse_single_value(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
-
+    
 def sum(pda):
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("sum", pda.name))
-        fields = repMsg.split()
-        dtype = fields[0]
-        value = fields[1]
-        val = None
-        if dtype == int64: val = int(value)
-        elif dtype == float64: val = float(value)
-        elif dtype == bool: # remember bool is a string here blah!
-            if value == "True": val = True
-            elif value == "False": val = False
-            else: raise ValueError("unsupported value from server {}".format(value))
-        else: raise TypeError("unsupported dtype from server {}".format(dtype))
-        return val
+        return parse_single_value(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
 def prod(pda):
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("prod", pda.name))
-        fields = repMsg.split()
-        dtype = fields[0]
-        value = fields[1]
-        val = None
-        if dtype == int64: val = int(value)
-        elif dtype == float64: val = float(value)
-        elif dtype == bool: # remember bool is a string here blah!
-            if value == "True": val = True
-            elif value == "False": val = False
-            else: raise ValueError("unsupported value from server {}".format(value))
-        else: raise TypeError("unsupported dtype from server {}".format(dtype))
-        return val
+        return parse_single_value(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
+def min(pda):
+    if isinstance(pda, pdarray):
+        repMsg = generic_msg("reduction {} {}".format("min", pda.name))
+        return parse_single_value(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+
+def max(pda):
+    if isinstance(pda, pdarray):
+        repMsg = generic_msg("reduction {} {}".format("max", pda.name))
+        return parse_single_value(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+    
 def argmin(pda):
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("argmin", pda.name))
-        fields = repMsg.split()
-        dtype = fields[0]
-        value = fields[1]
-        val = None
-        if dtype == int64: val = int(value)
-        elif dtype == float64: val = float(value)
-        elif dtype == bool: # remember bool is a string here blah!
-            if value == "True": val = True
-            elif value == "False": val = False
-            else: raise ValueError("unsupported value from server {}".format(value))
-        else: raise TypeError("unsupported dtype from server {}".format(dtype))
-        return val
+        return parse_single_value(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
 def argmax(pda):
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("argmax", pda.name))
-        fields = repMsg.split()
-        dtype = fields[0]
-        value = fields[1]
-        val = None
-        if dtype == int64: val = int(value)
-        elif dtype == float64: val = float(value)
-        elif dtype == bool: # remember bool is a string here blah!
-            if value == "True": val = True
-            elif value == "False": val = False
-            else: raise ValueError("unsupported value from server {}".format(value))
-        else: raise TypeError("unsupported dtype from server {}".format(dtype))
-        return val
+        return parse_single_value(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
@@ -796,11 +767,11 @@ if __name__ == "__main__":
 
     # create some arrays and other things
     # and see the effect of the python __del__ method
-    a = zeros(8, dtype=int64)
+    a = zeros(8, dtype=np.int64)
     a = zeros(10) # defaults to float64
     b = ones(8) # defaults to float64
-    a = ones(8,int64)
-    c = a + b + ones(8,dtype=int64)
+    a = ones(8,np.int64)
+    c = a + b + ones(8,dtype=np.int64)
     d = arange(1,10,2)
     e = arange(10, 30, 5)
     f = linspace(0, 2, 9)
@@ -816,7 +787,7 @@ if __name__ == "__main__":
     # check out assignment
     z = a
     print(z.name,a.name)
-    a = ones(10,dtype=int64)
+    a = ones(10,dtype=np.int64)
     print(z.name,a.name)
     
     # fill an array with a value
