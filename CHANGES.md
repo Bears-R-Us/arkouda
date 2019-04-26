@@ -3,6 +3,10 @@
  * fixed multi-file/multi-treaded bug in HDF5 I/O
  * improved HDF5 I/O error handling + glob filenames
  * added initial versions of ak.array() and pdarray.to_ndarray()
+ * refactored histogram and some other procedures using helper nested procedures
+ * added more operators for bool
+ * added min and max reductions
+ * optimized ak.int1d()
  * 
 
 ### Changes in arkouda-0.0.6
