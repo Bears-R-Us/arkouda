@@ -341,33 +341,20 @@ module GenSymIO {
       return try! "Error: could not decode json filenames via tempfile (%i files: %s)".format(1, jsonfile);
     }
     var entry = st.lookup(arrayName);
-    var file_id: C_HDF5.hid_t;
-    try {
-      if (mode == 1) || !exists(filename) {
-	file_id = C_HDF5.H5Fcreate(filename.c_str(), C_HDF5.H5F_ACC_TRUNC, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
-      } else {
-	file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
-      }
-      if file_id < 0 {
-	return try! "Error: cannot open as HDF5 file %s".format(filename);
-      }
-    } catch {
-      return try! "Error: unable to access %s".format(filename);
-    }
-    var dims: [0..#1] C_HDF5.hsize_t;
-    dims[0] = entry.size: C_HDF5.hsize_t;
+    
     select entry.dtype {
       when DType.Int64 {
 	var e = toSymEntry(entry, int);
-	C_HDF5.HDF5_WAR.H5LTmake_dataset_WAR(file_id, dsetName.c_str(), 1, c_ptrTo(dims), getHDF5Type(e.a.eltType), c_ptrTo(e.a));
+	//C_HDF5.HDF5_WAR.H5LTmake_dataset_WAR(file_id, dsetName.c_str(), 1, c_ptrTo(dims), getHDF5Type(e.a.eltType), c_ptrTo(e.a));
+	write1DDistArray(file_id, dsetName, e.a);
       }
       when DType.Float64 {
 	var e = toSymEntry(entry, real);
-	C_HDF5.HDF5_WAR.H5LTmake_dataset_WAR(file_id, dsetName.c_str(), 1, c_ptrTo(dims), getHDF5Type(e.a.eltType), c_ptrTo(e.a));
+	write1DDistArray(file_id, dsetName, e.a);
       }
       when DType.Bool {
 	var e = toSymEntry(entry, bool);
-	C_HDF5.HDF5_WAR.H5LTmake_dataset_WAR(file_id, dsetName.c_str(), 1, c_ptrTo(dims), getHDF5Type(e.a.eltType), c_ptrTo(e.a));
+	write1DDistArray(file_id, dsetName, e.a);
       }
       otherwise {
 	C_HDF5.H5Fclose(file_id);
@@ -377,6 +364,62 @@ module GenSymIO {
     C_HDF5.H5Fclose(file_id);
     return "wrote array to file";
   }
+
+  proc write1DDistArray(filename, mode, dsetName, A) throws {
+    // Create the file and allocate the dataset on the master thread
+    var file_id: C_HDF5.hid_t;
+    if (mode == 1) || !exists(filename) {
+      file_id = C_HDF5.H5Fcreate(filename.c_str(), C_HDF5.H5F_ACC_TRUNC, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+    } else {
+      file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
+    }
+    if file_id < 0 { // Negative file_id means error
+      throw new owned FileNotFoundError();
+    }
+    var dims: [0..#1] C_HDF5.hsize_t;
+    dims[0] = A.size: C_HDF5.hsize_t;
+    var masterDataspace = H5Screate_simple(1, c_ptrTo(dims), nil);
+    var dataset = H5Dcreate2(file_id, dsetName.c_str(), getHDF5Type(A.eltType),
+			     masterDataspace, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT,
+			     C_HDF5.H5P_DEFAULT);
+    C_HDF5.H5Dclose(dataset);
+    C_HDF5.H5Sclose(masterDataspace);
+    C_HDF5.H5Fclose(file_id);
+    // Write each locale's chunk to the file
+    coforall loc in A.targetLocales() do on loc {
+	// Each locale opens the file and dataset separately
+	var locFile = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
+	var locDset = C_HDF5.H5Dopen(locFile, dsetName.c_str(), C_HDF5.H5P_DEFAULT);
+	for locDom in A.localSubdomains() {
+	  var dataspace = C_HDF5.H5Dget_space(locDset);
+	  // offset to location in file to write
+	  var dsetOffset = [(locDom.start - A.domain.low): C_HDF5.hsize_t];
+	  var dsetStride = [locDom.stride: C_HDF5.hsize_t];
+	  var dsetCount = [locDom.size: C_HDF5.hsize_t];
+	  C_HDF5.H5Sselect_hyperslab(dataspace, C_HDF5.H5S_SELECT_SET,
+				     c_ptrTo(dsetOffset), c_ptrTo(dsetStride),
+				     c_ptrTo(dsetCount), nil);
+	  // offset to array in memory to read (will always be zero)
+	  var memOffset = [0: C_HDF5.hsize_t];
+	  var memStride = [1: C_HDF5.hsize_t];
+	  var memCount = [locDom.size: C_HDF5.hsize_t];
+	  var memspace = C_HDF5.H5Screate_simple(1, c_ptrTo(memCount), nil);
+	  C_HDF5.H5Sselect_hyperslab(memspace, C_HDF5.H5S_SELECT_SET,
+				     c_ptrTo(memOffset), c_ptrTo(memStride),
+				     c_ptrTo(memCount), nil);
+	  local {
+	    C_HDF5.H5Dwrite(locDset, getHDF5Type(A.eltType), memspace, dataspace,
+			    C_HDF5.H5P_DEFAULT, c_ptrTo(A.localSlice(locDom)));
+	  }
+	  C_HDF5.H5Sclose(memspace);
+	  C_HDF5.H5Sclose(dataspace);
+	}
+	C_HDF5.H5Dclose(locDset);
+	C_HDF5.H5Sclose(locFile);
+      }
+  }
+    
+}
 
   /* config const command_file = "test_command"; */
   /* proc main() { */
@@ -390,5 +433,5 @@ module GenSymIO {
   /*   var st = new owned SymTab(); */
   /*   writeln(readhdfMsg(command, st)); */
   /* } */
-}
+
 
