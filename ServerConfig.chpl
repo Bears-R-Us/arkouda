@@ -7,7 +7,7 @@ module ServerConfig
     config const ServerPort = 5555;
 
     // arkouda version
-    config param arkoudaVersion = "0.0.7pre";
+    config param arkoudaVersion = "0.0.7";
 
     // configure MyDmap on compile line by "-s MyDmap=0" or "-s MyDmap=1"
     // 0 = Cyclic, 1 = Block, Cyclic may not work now haven't tested it in a while
