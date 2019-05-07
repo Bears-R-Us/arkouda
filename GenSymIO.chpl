@@ -4,6 +4,7 @@ module GenSymIO {
   use MultiTypeSymEntry;
   use ServerErrorStrings;
   use FileSystem;
+  use Sort;
   config const GenSymIO_DEBUG = false;
 
   proc arrayMsg(reqMsg: string, st: borrowed SymTab): string {
@@ -126,6 +127,8 @@ module GenSymIO {
       if tmp.size == 0 {
 	return try! "Error: no files matching %s".format(filelist[0]);
       }
+      // Glob returns filenames in weird order. Sort for consistency
+      sort(tmp);
       filedom = tmp.domain;
       filenames = tmp;
     } else {
@@ -385,24 +388,32 @@ module GenSymIO {
       prefix = ".".join(fields[1..fields.size-1]);
       extension = "." + fields[fields.size];
     }
-    coforall loc in A.targetLocales() do on loc {
-	var myFilename = try! "%s_%s%s".format(prefix, loc:string, extension);
+    var filenames: [0..#A.targetLocales().size] string;
+    for loc in 0..#A.targetLocales().size {
+	// when done with a coforall over locales, only locale 0's file gets created correctly.
+	// The other locales' files have corrupted headers.
+	filenames[loc] = try! "%s_LOCALE%s%s".format(prefix, loc:string, extension);
 	var file_id: C_HDF5.hid_t;
 	if (mode == 1) || !exists(filename) { // truncate
-	  file_id = C_HDF5.H5Fcreate(myFilename.c_str(), C_HDF5.H5F_ACC_TRUNC, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+	  file_id = C_HDF5.H5Fcreate(filenames[loc].c_str(), C_HDF5.H5F_ACC_TRUNC, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
 	} else { // append
-	  file_id = C_HDF5.H5Fopen(myFilename.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
+	  file_id = C_HDF5.H5Fopen(filenames[loc].c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
 	}
 	if file_id < 0 { // Negative file_id means error
 	  throw new owned FileNotFoundError();
 	}
+	C_HDF5.H5Fclose(file_id);
+    }
+    coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) do on loc {
+	const myFilename = filenames[idx];
+	var myFileID = C_HDF5.H5Fopen(myFilename.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
 	const locDom = A.localSubdomain();
 	var dims: [0..#1] C_HDF5.hsize_t;
 	dims[0] = locDom.size: C_HDF5.hsize_t;
 	var myDsetName = "/" + dsetName;
 	
 	use C_HDF5.HDF5_WAR;
-	H5LTmake_dataset_WAR(file_id, myDsetName.c_str(), 1, c_ptrTo(dims),
+	H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
 			     getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
 	
 	/* var dataspace = C_HDF5.H5Screate_simple(1, c_ptrTo(dims), nil); */
@@ -433,7 +444,7 @@ module GenSymIO {
 	/* C_HDF5.H5Sclose(memspace); */
 	/* C_HDF5.H5Sclose(dataspace); */
 	/* C_HDF5.H5Dclose(dataset); */
-	C_HDF5.H5Sclose(file_id);
+	C_HDF5.H5Fclose(myFileID);
       }
   }
     
