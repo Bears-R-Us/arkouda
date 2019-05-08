@@ -92,6 +92,7 @@ module GenSymIO {
 
   class DatasetNotFoundError: Error { proc init() {} }
   class NotHDF5FileError: Error { proc init() {} }
+  class MismatchedAppendError: Error { proc init() {} }
 
   proc decode_json(json: string, size: int) throws {
     var f = opentmp();
@@ -104,6 +105,35 @@ module GenSymIO {
     r.close();
     f.close();
     return array;
+  }
+
+  proc lshdfMsg(reqMsg: string, st: borrowed SymTab): string {
+    // reqMsg: "lshdf [<json_filename>]"
+    use Spawn;
+    var repMsg: string;
+    var fields = reqMsg.split(1);
+    var cmd = fields[1];
+    var jsonfile = fields[2];
+    var filename: string;
+    try {
+      filename = decode_json(jsonfile, 1)[0];
+    } catch {
+      return try! "Error: could not decode json filenames via tempfile (%i files: %s)".format(1, jsonfile);
+    }
+    var exitCode: int;
+    try {
+      var sub = spawn(["h5ls", filename], stdout=PIPE);
+      sub.stdout.readstring(repMsg);
+      sub.wait();
+      exitCode = sub.exit_status;
+    } catch {
+      return "Error: failed to spawn process and read output";
+    }
+    if exitCode != 0 {
+      return try! "Error: %s".format(repMsg);
+    } else {
+      return repMsg;
+    }
   }
   
   proc readhdfMsg(reqMsg: string, st: borrowed SymTab): string {
@@ -124,11 +154,14 @@ module GenSymIO {
     var filenames: [filedom] string;
     if filelist.size == 1 {
       var tmp = glob(filelist[0]);
+      if GenSymIO_DEBUG {
+	writeln(try! "glob expanded %s to %i files".format(filelist[0], tmp.size));
+      }
       if tmp.size == 0 {
 	return try! "Error: no files matching %s".format(filelist[0]);
       }
       // Glob returns filenames in weird order. Sort for consistency
-      sort(tmp);
+      // sort(tmp);
       filedom = tmp.domain;
       filenames = tmp;
     } else {
@@ -157,6 +190,9 @@ module GenSymIO {
 	return try! "Error: inconsistent dtype in dataset %s of file %s".format(dsetName, filenames[i]);
       }
     }
+    if GenSymIO_DEBUG {
+      writeln("Verified all dtypes across files");
+    }
     var subdoms: [filenames.domain] domain(1);
     var len: int;
     try {
@@ -166,13 +202,22 @@ module GenSymIO {
     } catch {
       return try! "Error: unknown cause";
     }
+    if GenSymIO_DEBUG {
+      writeln("Got subdomains and total length");
+    }
     var entry: shared GenSymEntry;
     if dataclass == C_HDF5.H5T_INTEGER {
       var entryInt = new shared SymEntry(len, int);
+      if GenSymIO_DEBUG {
+	writeln("Initialized int entry"); try! stdout.flush();
+      }
       read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
       entry = entryInt;
     } else if dataclass == C_HDF5.H5T_FLOAT {
       var entryReal = new shared SymEntry(len, real);
+      if GenSymIO_DEBUG {
+	writeln("Initialized float entry"); try! stdout.flush();
+      }
       read_files_into_distributed_array(entryReal.a, subdoms, filenames, dsetName);
       entry = entryReal;
     } else {
@@ -246,8 +291,8 @@ module GenSymIO {
   /* This function gets called when A is a BlockDist array. */
   proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), filenames: [FD] string, dsetName: string) where (MyDmap == 1) {
     if GenSymIO_DEBUG {
-      writeln("entry.a.targetLocales() = ", A.targetLocales());
-      writeln("Filedomains: ", filedomains);
+      writeln("entry.a.targetLocales() = ", A.targetLocales()); try! stdout.flush();
+      writeln("Filedomains: ", filedomains); try! stdout.flush();
     }
     coforall loc in A.targetLocales() do on loc {
 	// Create local copies of args
@@ -344,20 +389,21 @@ module GenSymIO {
       return try! "Error: could not decode json filenames via tempfile (%i files: %s)".format(1, jsonfile);
     }
     var entry = st.lookup(arrayName);
+    var warnFlag: bool;
     try {
     select entry.dtype {
       when DType.Int64 {
 	var e = toSymEntry(entry, int);
 	//C_HDF5.HDF5_WAR.H5LTmake_dataset_WAR(file_id, dsetName.c_str(), 1, c_ptrTo(dims), getHDF5Type(e.a.eltType), c_ptrTo(e.a));
-	write1DDistArray(filename, mode, dsetName, e.a);
+	warnFlag = write1DDistArray(filename, mode, dsetName, e.a);
       }
       when DType.Float64 {
 	var e = toSymEntry(entry, real);
-	write1DDistArray(filename, mode, dsetName, e.a);
+	warnFlag = write1DDistArray(filename, mode, dsetName, e.a);
       }
       when DType.Bool {
 	var e = toSymEntry(entry, bool);
-	write1DDistArray(filename, mode, dsetName, e.a);
+	warnFlag = write1DDistArray(filename, mode, dsetName, e.a);
       }
       otherwise {
 	return unrecognizedTypeError("tohdf", dtype2str(entry.dtype));
@@ -365,10 +411,16 @@ module GenSymIO {
     }
     } catch e: FileNotFoundError {
       return try! "Error: unable to open file for writing: %s".format(filename);
+    } catch e: MismatchedAppendError {
+      return "Error: appending to existing files must be done with the same number of locales. Try saving with a different directory or filename prefix?";
     } catch {
       return "Error: problem writing to file";
     }
-    return "wrote array to file";
+    if warnFlag {
+      return "Warning: possibly overwriting existing files matching filename pattern";
+    } else {
+      return "wrote array to file";
+    }
   }
 
   proc write1DDistArray(filename, mode, dsetName, A) throws {
@@ -378,6 +430,7 @@ module GenSymIO {
        <dsetName> will be created in each. Strongly recommend only using 
        append mode to write arrays with the same domain. */
 
+    var warnFlag = false;
     const fields = filename.split(".");
     var prefix:string;
     var extension:string;
@@ -389,23 +442,43 @@ module GenSymIO {
       extension = "." + fields[fields.size];
     }
     var filenames: [0..#A.targetLocales().size] string;
-    for loc in 0..#A.targetLocales().size {
+    for i in 0..#A.targetLocales().size {
+      filenames[i] = try! "%s_LOCALE%s%s".format(prefix, i:string, extension);
+    }
+    var matchingFilenames = glob(try! "%s_LOCALE*%s".format(prefix, extension));
+    // if appending, make sure number of files hasn't changed and all are present
+    if (mode == 1) {
+      var allexist = true;
+      for f in filenames {
+	allexist &= try! exists(f);
+      }
+      if !allexist || (matchingFilenames.size != filenames.size) {
+	throw new owned MismatchedAppendError();
+      }
+    } else { // if truncating, create new file per locale
+      if matchingFilenames.size > 0 {
+	warnFlag = true;
+      }
+      for loc in 0..#A.targetLocales().size {
 	// when done with a coforall over locales, only locale 0's file gets created correctly.
 	// The other locales' files have corrupted headers.
-	filenames[loc] = try! "%s_LOCALE%s%s".format(prefix, loc:string, extension);
+	//filenames[loc] = try! "%s_LOCALE%s%s".format(prefix, loc:string, extension);
 	var file_id: C_HDF5.hid_t;
-	if (mode == 1) || !exists(filename) { // truncate
-	  file_id = C_HDF5.H5Fcreate(filenames[loc].c_str(), C_HDF5.H5F_ACC_TRUNC, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
-	} else { // append
-	  file_id = C_HDF5.H5Fopen(filenames[loc].c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
+	if GenSymIO_DEBUG {
+	  writeln("Creating or truncating file");
 	}
+	file_id = C_HDF5.H5Fcreate(filenames[loc].c_str(), C_HDF5.H5F_ACC_TRUNC, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
 	if file_id < 0 { // Negative file_id means error
 	  throw new owned FileNotFoundError();
 	}
 	C_HDF5.H5Fclose(file_id);
+      } 
     }
     coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) do on loc {
 	const myFilename = filenames[idx];
+	if GenSymIO_DEBUG {
+	  writeln(try! "%s exists? %t".format(myFilename, exists(myFilename)));
+	}
 	var myFileID = C_HDF5.H5Fopen(myFilename.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
 	const locDom = A.localSubdomain();
 	var dims: [0..#1] C_HDF5.hsize_t;
@@ -415,52 +488,9 @@ module GenSymIO {
 	use C_HDF5.HDF5_WAR;
 	H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
 			     getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
-	
-	/* var dataspace = C_HDF5.H5Screate_simple(1, c_ptrTo(dims), nil); */
-	/* var dataset = C_HDF5.H5Dcreate2(file_id, myDsetName.c_str(), getHDF5Type(A.eltType), */
-	/* 				dataspace, C_HDF5.H5P_DEFAULT, */
-	/* 				C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT); */
-	/* C_HDF5.H5Dwrite(dataset, getHDF5Type(A.eltType), C_HDF5.H5S_ALL, C_HDF5.H5S_ALL, C_HDF5.H5P_DEFAULT, c_ptrTo(A.localSlice(locDom))); */
-	
-	/* // offset to location in file to write (will always be zero) */
-	/* var dsetOffset = [0: C_HDF5.hsize_t]; */
-	/* var dsetStride = [locDom.stride: C_HDF5.hsize_t]; */
-	/* var dsetCount = [locDom.size: C_HDF5.hsize_t]; */
-	/* C_HDF5.H5Sselect_hyperslab(dataspace, C_HDF5.H5S_SELECT_SET, */
-	/* 			   c_ptrTo(dsetOffset), c_ptrTo(dsetStride), */
-	/* 			   c_ptrTo(dsetCount), nil); */
-	/* // offset to array in memory to read (will always be zero) */
-	/* var memOffset = [0: C_HDF5.hsize_t]; */
-	/* var memStride = [1: C_HDF5.hsize_t]; */
-	/* var memCount = [locDom.size: C_HDF5.hsize_t]; */
-	/* var memspace = C_HDF5.H5Screate_simple(1, c_ptrTo(memCount), nil); */
-	/* C_HDF5.H5Sselect_hyperslab(memspace, C_HDF5.H5S_SELECT_SET, */
-	/* 			   c_ptrTo(memOffset), c_ptrTo(memStride), */
-	/* 			   c_ptrTo(memCount), nil); */
-	/* local { */
-	/*   C_HDF5.H5Dwrite(dataset, getHDF5Type(A.eltType), memspace, dataspace, */
-	/* 		  C_HDF5.H5P_DEFAULT, c_ptrTo(A.localSlice(locDom))); */
-	/* } */
-	/* C_HDF5.H5Sclose(memspace); */
-	/* C_HDF5.H5Sclose(dataspace); */
-	/* C_HDF5.H5Dclose(dataset); */
 	C_HDF5.H5Fclose(myFileID);
       }
+    return warnFlag;
   }
     
 }
-
-  /* config const command_file = "test_command"; */
-  /* proc main() { */
-  /*   var f = try! open(command_file, iomode.r); */
-  /*   var r = try! f.reader(); */
-  /*   var command: string; */
-  /*   try! r.readstring(command); */
-  /*   try! r.close(); */
-  /*   try! f.close(); */
-  /*   writeln(command); */
-  /*   var st = new owned SymTab(); */
-  /*   writeln(readhdfMsg(command, st)); */
-  /* } */
-
-

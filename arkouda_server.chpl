@@ -14,7 +14,6 @@ use GenSymIO;
 
 proc main() {
     writeln("arkouda server version = ",arkoudaVersion); try! stdout.flush();
-    writeln("zeromq server on port %t".format(ServerPort)); try! stdout.flush();
     writeln("zeromq version = ", ZMQ.version); try! stdout.flush();
     writeln("makeDistDom.type = ", (makeDistDom(10).type):string); try! stdout.flush();
 
@@ -25,6 +24,7 @@ proc main() {
     var context: ZMQ.Context;
     var socket = context.socket(ZMQ.REP);
     socket.bind("tcp://*:%t".format(ServerPort));
+    writeln("server listening on %s:%t".format(get_hostname(), ServerPort)); try! stdout.flush();
 
     var reqCount: int = 0;
     var repCount: int = 0;
@@ -67,6 +67,7 @@ proc main() {
         // parse requests, execute requests, format responses
         select cmd
         {
+	    when "lshdf"             {repMsg = lshdfMsg(reqMsg, st);}
 	    when "readhdf"           {repMsg = readhdfMsg(reqMsg, st);}
 	    when "tohdf"             {repMsg = tohdfMsg(reqMsg, st);}
 	    when "array"             {repMsg = arrayMsg(reqMsg, st);}
@@ -129,4 +130,13 @@ proc main() {
     }
 
     writeln("requests = ",reqCount," responseCount = ",repCount);
+}
+
+proc get_hostname(): string {
+  use Spawn;
+  var sub = spawn(["hostname"], stdout=PIPE);
+  var hostname: string;
+  sub.stdout.readstring(hostname);
+  sub.wait();
+  return hostname.strip();
 }
