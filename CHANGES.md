@@ -7,7 +7,6 @@
  * added more operators for bool
  * added min and max reductions
  * optimized ak.int1d()
- * 
 
 ### Changes in arkouda-0.0.6
 ------------------------
