@@ -528,6 +528,14 @@ def read_hdf(dsetName, filenames):
     rep_msg = generic_msg("readhdf {} {:n} {}".format(dsetName, len(filenames), json.dumps(filenames)))
     return create_pdarray(rep_msg)
 
+def read_all(datasets, filenames):
+    if isinstance(datasets, str):
+        datasets = [datasets]
+    nonexistent = set(datasets) - set(get_datasets(filenames[0]))
+    if len(nonexistent) > 0:
+        raise ValueError("Dataset(s) not found: {}".format(nonexistent))
+    return {dset:read_hdf(dset, filenames) for dset in datasets}
+
 def load(path_prefix, dataset='array'):
     '''Load a pdarray previously saved with .save(<path_prefix>). If <dataset> is supplied, it must match the name used to save the pdarray.
     '''

@@ -133,10 +133,26 @@ proc main() {
 }
 
 proc get_hostname(): string {
+  /* The right way to do this is by reading the hostname from stdout, but that 
+     causes a segfault in a multilocale setting. So we have to use a temp file, 
+     but we can't use opentmp, because we need the name and the .path attribute 
+     is not the true name. */
   use Spawn;
-  var sub = spawn(["hostname"], stdout=PIPE);
-  var hostname: string;
-  sub.stdout.readstring(hostname);
+  use IO;
+  use FileSystem;
+  const tmpfile = '/tmp/arkouda.hostname';
+  if exists(tmpfile) {
+    remove(tmpfile);
+  }
+  var cmd = "hostname > \"%s\"".format(tmpfile);
+  var sub = spawnshell(cmd);
   sub.wait();
+  var hostname: string;
+  var f = open(tmpfile, iomode.r);
+  var r = f.reader();
+  r.readstring(hostname);
+  r.close();
+  f.close();
+  remove(tmpfile);
   return hostname.strip();
 }

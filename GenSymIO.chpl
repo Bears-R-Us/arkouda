@@ -110,6 +110,7 @@ module GenSymIO {
   proc lshdfMsg(reqMsg: string, st: borrowed SymTab): string {
     // reqMsg: "lshdf [<json_filename>]"
     use Spawn;
+    const tmpfile = "/tmp/arkouda.lshdf.output";
     var repMsg: string;
     var fields = reqMsg.split(1);
     var cmd = fields[1];
@@ -122,13 +123,24 @@ module GenSymIO {
     }
     var exitCode: int;
     try {
-      var sub = spawn(["h5ls", filename], stdout=PIPE);
-      sub.stdout.readstring(repMsg);
+      if exists(tmpfile) {
+	remove(tmpfile);
+      }
+      var cmd = try! "h5ls \"%s\" > \"%s\"".format(filename, tmpfile);
+      var sub = spawnshell(cmd);
+      // sub.stdout.readstring(repMsg);
       sub.wait();
       exitCode = sub.exit_status;
+      var f = open(tmpfile, iomode.r);
+      var r = f.reader(start=0);
+      r.readstring(repMsg);
+      r.close();
+      f.close();
+      remove(tmpfile);
     } catch {
       return "Error: failed to spawn process and read output";
     }
+    
     if exitCode != 0 {
       return try! "Error: %s".format(repMsg);
     } else {
