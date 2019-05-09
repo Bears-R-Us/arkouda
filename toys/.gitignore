@@ -1,9 +1,8 @@
 toy_countSort
-toy_countSort_real
 sort_toy
-sort_toy_real
 brad_countingsort
-brad_countingsort_real
+double-dispatch
+fntable
 fft-mpi
-fft-mpi_real
+*_real
 *.~*

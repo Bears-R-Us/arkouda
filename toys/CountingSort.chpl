@@ -5,15 +5,6 @@ module CountingSort
     // module level verbose flag
     var v = true;
     
-    proc a_stats(a: [?D] int): (int,int,real,real,real) {
-        var a_min:int = min reduce a;
-        var a_max:int = max reduce a;
-        var a_mean:real = (+ reduce a:real) / a.size:real;
-        var a_vari:real = (+ reduce (a:real **2) / a.size:real) - a_mean**2;
-        var a_std:real = sqrt(a_vari);
-        return (a_min,a_max,a_mean,a_vari,a_std);
-    }
-
     // do a counting sort on a (an array of integers)
     // returns iv an array of indices that would sort the array original array
     proc argCountSort(a: [?D] int): [D] int {
@@ -21,7 +12,7 @@ module CountingSort
         var iv: [D] int;
 
         // stats on input array
-        var (a_min,a_max,a_mean,a_vari,a_std) = a_stats(a);
+        var (a_min,a_max,a_mean,a_vari,a_std) = aStats(a);
         if v {try! writeln("a_min = %t a_max = %t a_mean = %t \na_vari = %t a_std = %t".format(
                                a_min,a_max,a_mean,a_vari,a_std));}
 

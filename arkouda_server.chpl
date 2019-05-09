@@ -98,7 +98,8 @@ proc main() {
             when "[pdarray]=val"     {repMsg = setPdarrayIndexToValueMsg(reqMsg, st);}            
             when "[pdarray]=pdarray" {repMsg = setPdarrayIndexToPdarrayMsg(reqMsg, st);}            
             when "[slice]=val"       {repMsg = setSliceIndexToValueMsg(reqMsg, st);}            
-            when "[slice]=pdarray"   {repMsg = setSliceIndexToPdarrayMsg(reqMsg, st);}            
+            when "[slice]=pdarray"   {repMsg = setSliceIndexToPdarrayMsg(reqMsg, st);}
+            when "argsort"           {repMsg = argsortMsg(reqMsg, st);}
             when "connect" {
                 repMsg = "connected to arkouda server tcp://*:%t".format(ServerPort);
             }

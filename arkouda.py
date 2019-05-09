@@ -401,6 +401,7 @@ class pdarray:
             if kind == "bool" and self.size != key.size:
                 raise ValueError("size mismatch {} {}".format(self.size,key.size))
             repMsg = generic_msg("[pdarray] {} {}".format(self.name, key.name))
+            return create_pdarray(repMsg);
         else:
             return NotImplemented
 
@@ -624,6 +625,13 @@ def randint(low, high, size, dtype=np.int64):
     else:
         raise TypeError("min,max,size must be int {} {} {}".format(low,high,size));
 
+def argsort(pda):
+    if isinstance(pda, pdarray):
+        repMsg = generic_msg("argsort {}".format(pda.name))
+        return create_pdarray(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+
 def abs(pda):
     if isinstance(pda, pdarray):
         repMsg = generic_msg("efunc {} {}".format("abs", pda.name))
@@ -673,6 +681,13 @@ def all(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
     
+def is_sorted(pda):
+    if isinstance(pda, pdarray):
+        repMsg = generic_msg("reduction {} {}".format("is_sorted", pda.name))
+        return parse_single_value(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+
 def sum(pda):
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("sum", pda.name))

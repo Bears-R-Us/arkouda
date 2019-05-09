@@ -131,16 +131,18 @@ module UniqueMsg
         return (aV, aC);
     }
 
-    // use when unique value vary over a wide range and and are sparse
+    // use when unique values vary over a wide range and and are sparse
     // unique with per-locale assoc domains and arrays
     // global unique value histogram
     proc uniquePerLocAssocGlobHist(a: [?aD] int, aMin: int, aMax: int) {
 
         // per locale assoc domain of int to hold uniq values
         var uniqSet: [PrivateSpace] domain(int);
-
+        [i in PrivateSpace] uniqSet[i].requestCapacity(100_000);
+        
         // accumulate the uniq values into each locales domain of uniq values
-        [val in a] if !uniqSet[here.id].contains(val) {uniqSet[here.id] += val;}
+        //[val in a] if !uniqSet[here.id].contains(val) {uniqSet[here.id] += val;}
+        [val in a] uniqSet[here.id] += val;
 
         // how many bins in histogram
         var bins = aMax-aMin+1;
@@ -198,15 +200,18 @@ module UniqueMsg
 
         // per locale assoc domain of int to hold uniq values
         var uniqSet: [PrivateSpace] domain(int);
+        [i in PrivateSpace] uniqSet[i].requestCapacity(100_000);
 
         // accumulate the uniq values into each locales domain of uniq values
-        [val in a] if !uniqSet[here.id].contains(val) {uniqSet[here.id] += val;}
+        //[val in a] if !uniqSet[here.id].contains(val) {uniqSet[here.id] += val;}
+        [val in a] uniqSet[here.id] += val;
         var numUniq = + reduce [i in PrivateSpace]  uniqSet[i].size;
         if v {try! writeln("num unique vals upper bound = %t".format(numUniq));try! stdout.flush();}
 
         // global assoc domain for global unique value set
         //var globalUniqSet: domain(int) dmapped Hashed(idxType=int);
         var globalUniqSet: domain(int);
+        globalUniqSet.requestCapacity(100_000);
         
         // efectively +reduce(union-reduction) private uniqSet domians to get global uniqSet
         // what I really want is:
@@ -315,8 +320,9 @@ module UniqueMsg
         return s;
     }
     
-    // value_counts rtakes a pdarray and returns two pdarrays unique values and counts for each value
+    // value_counts takes a pdarray and returns two pdarrays unique values and counts for each value
     proc value_countsMsg(reqMsg: string, st: borrowed SymTab): string {
+        var pn = "value_counts";
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -328,7 +334,7 @@ module UniqueMsg
         if v {try! writeln("%s %s : %s %s".format(cmd, name, vname, cname));try! stdout.flush();}
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError("value_counts",name);}
+        if (gEnt == nil) {return unknownSymbolError(pn,name);}
 
         select (gEnt.dtype) {
             when (DType.Int64) {
@@ -359,7 +365,7 @@ module UniqueMsg
                     st.addEntry(cname, new shared SymEntry(aC));
                 }
             }
-            otherwise {return notImplementedError("value_counts",gEnt.dtype);}
+            otherwise {return notImplementedError(pn,gEnt.dtype);}
         }
         
         return try! "created " + st.attrib(vname) + " +created " + st.attrib(cname);
