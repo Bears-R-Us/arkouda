@@ -14,7 +14,6 @@ use GenSymIO;
 
 proc main() {
     writeln("arkouda server version = ",arkoudaVersion); try! stdout.flush();
-    writeln("zeromq server on port %t".format(ServerPort)); try! stdout.flush();
     writeln("zeromq version = ", ZMQ.version); try! stdout.flush();
     writeln("makeDistDom.type = ", (makeDistDom(10).type):string); try! stdout.flush();
 
@@ -25,6 +24,7 @@ proc main() {
     var context: ZMQ.Context;
     var socket = context.socket(ZMQ.REP);
     socket.bind("tcp://*:%t".format(ServerPort));
+    writeln("server listening on %s:%t".format(get_hostname(), ServerPort)); try! stdout.flush();
 
     var reqCount: int = 0;
     var repCount: int = 0;
@@ -67,7 +67,9 @@ proc main() {
         // parse requests, execute requests, format responses
         select cmd
         {
+	    when "lshdf"             {repMsg = lshdfMsg(reqMsg, st);}
 	    when "readhdf"           {repMsg = readhdfMsg(reqMsg, st);}
+	    when "tohdf"             {repMsg = tohdfMsg(reqMsg, st);}
 	    when "array"             {repMsg = arrayMsg(reqMsg, st);}
             when "create"            {repMsg = createMsg(reqMsg, st);}
             when "delete"            {repMsg = deleteMsg(reqMsg, st);}
@@ -129,4 +131,29 @@ proc main() {
     }
 
     writeln("requests = ",reqCount," responseCount = ",repCount);
+}
+
+proc get_hostname(): string {
+  /* The right way to do this is by reading the hostname from stdout, but that 
+     causes a segfault in a multilocale setting. So we have to use a temp file, 
+     but we can't use opentmp, because we need the name and the .path attribute 
+     is not the true name. */
+  use Spawn;
+  use IO;
+  use FileSystem;
+  const tmpfile = '/tmp/arkouda.hostname';
+  if exists(tmpfile) {
+    remove(tmpfile);
+  }
+  var cmd = "hostname > \"%s\"".format(tmpfile);
+  var sub = spawnshell(cmd);
+  sub.wait();
+  var hostname: string;
+  var f = open(tmpfile, iomode.r);
+  var r = f.reader();
+  r.readstring(hostname);
+  r.close();
+  f.close();
+  remove(tmpfile);
+  return hostname.strip();
 }

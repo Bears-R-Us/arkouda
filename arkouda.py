@@ -7,6 +7,7 @@
 import zmq
 import os
 import subprocess
+import warnings
 import json, struct
 import numpy as np
 
@@ -102,11 +103,13 @@ def generic_msg(message, send_bytes=False, recv_bytes=False):
     if recv_bytes:
         message = socket.recv()
         if message.startswith(b"Error:"): raise RuntimeError(message.decode())
+        elif message.startswith(b"Warning:"): warnings.warn(message)
     else:
         message = socket.recv_string()
         if v: print("[Python] Received response: %s" % message)
         # raise errors sent back from the server
         if message.startswith("Error:"): raise RuntimeError(message)
+        elif message.startswith("Warning:"): warnings.warn(message)
     return message
 
 # supported dtypes
@@ -468,6 +471,13 @@ class pdarray:
             raise RuntimeError("Expected {} bytes but received {}".format(self.size*self.dtype.itemsize, len(rep_msg)))
         fmt = '>{:n}{}'.format(self.size, structDtypeCodes[self.dtype.name])
         return np.array(struct.unpack(fmt, rep_msg))
+
+    def save(self, prefix_path, dataset='array', mode='truncate'):
+        if mode.lower() == 'append':
+            m = 1
+        else:
+            m = 0
+        rep_msg = generic_msg("tohdf {} {} {} {}".format(self.name, dataset, m, json.dumps([prefix_path])))
         
 # flag to info and dump all arrays from arkouda server
 AllSymbols = "__AllSymbols__"
@@ -505,13 +515,68 @@ def parse_single_value(msg):
         return dtype.type(value)
     except:
         raise ValueError("unsupported value from server {} {}".format(dtype.name, value))
-    
+
+def ls_hdf(filename):
+    '''Return the string output of `h5ls <filename>` from the server.
+    '''
+    return generic_msg("lshdf {}".format(json.dumps([filename])))
 
 def read_hdf(dsetName, filenames):
+    '''Read a single dataset named <dsetName> from all HDF5 files in <filenames>. If <filenames> is a string, it will be interpreted as a glob expression (a single filename is a valid glob expression, so it will work). Returns a pdarray.
+    '''
     if isinstance(filenames, str):
         filenames = [filenames]
     rep_msg = generic_msg("readhdf {} {:n} {}".format(dsetName, len(filenames), json.dumps(filenames)))
     return create_pdarray(rep_msg)
+
+def read_all(datasets, filenames):
+    if isinstance(datasets, str):
+        datasets = [datasets]
+    nonexistent = set(datasets) - set(get_datasets(filenames[0]))
+    if len(nonexistent) > 0:
+        raise ValueError("Dataset(s) not found: {}".format(nonexistent))
+    return {dset:read_hdf(dset, filenames) for dset in datasets}
+
+def load(path_prefix, dataset='array'):
+    '''Load a pdarray previously saved with .save(<path_prefix>). If <dataset> is supplied, it must match the name used to save the pdarray.
+    '''
+    prefix, extension = os.path.splitext(path_prefix)
+    globstr = "{}_LOCALE*{}".format(prefix, extension)
+    return read_hdf(dataset, globstr)
+
+def get_datasets(filename):
+    '''Return the list of dataset names contained in the HDF5 file <filename>.
+    '''
+    rep_msg = ls_hdf(filename)
+    datasets = [line.split()[0] for line in rep_msg.splitlines()]
+    return datasets
+            
+def load_all(path_prefix):
+    prefix, extension = os.path.splitext(path_prefix)
+    firstname = "{}_LOCALE0{}".format(prefix, extension)
+    return {dataset: load(path_prefix, dataset=dataset) for dataset in get_datasets(firstname)}
+
+def save_all(columns, path_prefix, names=None, mode='truncate'):
+    '''Save all pdarrays in <columns> to files under <path_prefix>. Arkouda will create one file per locale but will keep pdarrays together in the same file as datasets called <names>. If <names> is not supplied and <columns> is a dict, arkouda will try to use the keys as dataset names; otherwise, dataset names are 0-up integers. By default, any existing files at <path_prefix> will be overwritten, unless the user supplies 'append' for the <mode>, in which case arkouda will attempt to add <columns> as new datasets to existing files.
+    '''
+    if names is not None and len(names) != len(columns):
+        raise ValueError("Number of names does not match number of columns")
+    if isinstance(columns, dict):
+        pdarrays = columns.values()
+        if names is None:
+            names = columns.keys()
+    elif isinstance(columns, list):
+        pdarrays = columns
+        if names is None:
+            names = range(len(columns))
+    first_iter = True
+    for arr, name in zip(pdarrays, names):
+        # Append all pdarrays to existing files as new datasets EXCEPT the first one, and only if user requests truncation
+        if mode.lower != 'append' and first_iter:
+            arr.save(path_prefix, dataset=name, mode='truncate')
+            first_iter = False
+        else:
+            arr.save(path_prefix, dataset=name, mode='append')
 
 def array(a):
     if isinstance(a, pdarray):
