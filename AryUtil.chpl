@@ -17,11 +17,11 @@ module AryUtil
         return truth;
     }
 
-    proc isSorted1(A:[?D] ?t): bool {
+    proc isSorted_1(A:[?D] ?t): bool {
         return (& reduce ([i in {D.low .. D.high-1}] A[i] <= A[i+1])); 
     }
 
-    proc isSorted3(A:[?D] ?t): bool {
+    proc isSorted_3(A:[?D] ?t): bool {
         var truth: [D] bool;
         truth[D.high] = true;
         [i in {D.low .. D.high-1}] truth[i] = A[i] <= A[i+1];
