@@ -9,23 +9,14 @@ module AryUtil
     }
 
     proc isSorted(A:[?D] ?t): bool {
-        var truth: bool;
-        truth = true;
-        forall i in {D.low .. D.high-1} with (& reduce truth) {
-            truth &= (A[i] <= A[i+1]);
+        var sorted: bool;
+        sorted = true;
+        forall (a,i) in zip(A,D) with (&& reduce sorted) {
+            if i > D.low {
+                sorted &&= (A[i-1] <= a);
+            }
         }
-        return truth;
-    }
-
-    proc isSorted_1(A:[?D] ?t): bool {
-        return (& reduce ([i in {D.low .. D.high-1}] A[i] <= A[i+1])); 
-    }
-
-    proc isSorted_3(A:[?D] ?t): bool {
-        var truth: [D] bool;
-        truth[D.high] = true;
-        [i in {D.low .. D.high-1}] truth[i] = A[i] <= A[i+1];
-        return (& reduce truth); 
+        return sorted;
     }
 
     proc aStats(a: [?D] int): (int,int,real,real,real) {

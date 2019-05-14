@@ -83,7 +83,7 @@ module ArgSortMsg
         [(ae,e) in zip(atomic_pos, starts)] ae.write(e);
 
         // permute index vector
-        for (e,i) in zip(a,a.domain) {
+        forall (e,i) in zip(a,aD) {
             var pos = atomic_pos[e-aMin].fetchAdd(1);// get position to deposit element
             iv[pos] = i;
         }
@@ -146,7 +146,7 @@ module ArgSortMsg
     /*     [(ae,e) in zip(atomic_pos, starts)] ae.write(e); */
 
     /*     // permute index vector */
-    /*     for (e,i) in zip(a,a.domain) { */
+    /*     for (e,i) in zip(a,aD) { */
     /*         var pos = atomic_pos[e].fetchAdd(1);// get position to deposit element */
     /*         iv[pos] = i; */
     /*     } */
