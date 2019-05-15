@@ -46,14 +46,26 @@ module OperatorMsg
                         st.addEntry(rname, new shared SymEntry(a));
                     }
                     when "/" { // truediv
+		        // Chapel will halt if any element of r.a is zero
+		        if || reduce (r.a == 0) {
+			  return "Error: Attempt to divide by zero";
+			}
                         var a = l.a:real / r.a:real;
                         st.addEntry(rname, new shared SymEntry(a));
                     } 
                     when "//" { // floordiv
+		        // Chapel will halt if any element of r.a is zero
+		        if || reduce (r.a == 0) {
+			  return "Error: Attempt to divide by zero";
+			}
                         var a = l.a / r.a;
                         st.addEntry(rname, new shared SymEntry(a));                        
                     }
 		    when "%" { // modulo
+		        // Chapel will halt if any element of r.a is zero
+		        if || reduce (r.a == 0) {
+			  return "Error: Attempt to compute a modulus by zero";
+			}
 		        var a = l.a % r.a;
 			st.addEntry(rname, new shared SymEntry(a));
 		    }
@@ -395,14 +407,26 @@ module OperatorMsg
                         st.addEntry(rname, new shared SymEntry(a));
                     }
                     when "/" { // truediv
+		        // Chapel will halt if val is zero
+		        if (val == 0) {
+			  return "Error: Attempt to divide by zero";
+			}
                         var a = l.a:real / val:real;
                         st.addEntry(rname, new shared SymEntry(a));
                     } 
                     when "//" { // floordiv
+		        // Chapel will halt if any element of r.a is zero
+		        if (val == 0) {
+			  return "Error: Attempt to divide by zero";
+			}
                         var a = l.a / val;
                         st.addEntry(rname, new shared SymEntry(a));
                     }
 		    when "%" { // modulo
+		      // Chapel will halt if val is zero
+		      if (val == 0) {
+			return "Error: Attempt to compute a modulus by zero";
+		      }
 		        var a = l.a % val;
 			st.addEntry(rname, new shared SymEntry(a));
 		    } 
@@ -611,7 +635,7 @@ module OperatorMsg
             }
 	    when (DType.Bool, DType.Bool) {
 	        var l = toSymEntry(left, bool);
-		var val = try! value:bool;
+		var val = try! value.toLower():bool;
 		select op {
 		    when "|" {
 		        var a = l.a | val;
@@ -649,7 +673,7 @@ module OperatorMsg
 	    }
 	    when (DType.Int64, DType.Bool) {
 	        var l = toSymEntry(left, int);
-		var val = try! value:bool;
+		var val = try! value.toLower():bool;
 		select op {
 		    when "+" {
 		      var a = l.a + val:int;
@@ -687,7 +711,7 @@ module OperatorMsg
 	    }
 	    when (DType.Float64, DType.Bool) {
 	        var l = toSymEntry(left, real);
-		var val = try! value:bool;
+		var val = try! value.toLower():bool;
 		select op {
 		    when "+" {
 		      var a = l.a + val:real;
@@ -744,14 +768,26 @@ module OperatorMsg
                         st.addEntry(rname, new shared SymEntry(a));
                     }
                     when "/" { // truediv
+		        // Chapel will halt if any element of r.a is zero
+		        if || reduce (r.a == 0) {
+			  return "Error: Attempt to divide by zero";
+			}
                         var a =  val:real / r.a:real;
                         st.addEntry(rname, new shared SymEntry(a));
                     } 
                     when "//" { // floordiv
+		        // Chapel will halt if any element of r.a is zero
+		        if || reduce (r.a == 0) {
+			  return "Error: Attempt to divide by zero";
+			}
                         var a = val / r.a;
                         st.addEntry(rname, new shared SymEntry(a));
                     }
 		    when "%" { // modulo
+		        // Chapel will halt if any element of r.a is zero
+		        if || reduce (r.a == 0) {
+			  return "Error: Attempt to compute a modulus by zero";
+			}
 		        var a = val % r.a;
 			st.addEntry(rname, new shared SymEntry(a));
 		    }
@@ -812,11 +848,11 @@ module OperatorMsg
                         st.addEntry(rname, new shared SymEntry(a));
                     }
                     when "-" {
-                        var a = val - r.a - val;
+                        var a = val - r.a;
                         st.addEntry(rname, new shared SymEntry(a));
                     }
                     when "*" {
-                        var a = val * r.a * val;
+                        var a = val * r.a;
                         st.addEntry(rname, new shared SymEntry(a));
                     }
                     when "/" { // truediv
@@ -959,7 +995,7 @@ module OperatorMsg
                 }
             }
 	    when (DType.Bool, DType.Bool) {
-		var val = try! value:bool;
+	        var val = try! value.toLower():bool;
 		var r = toSymEntry(right, bool);
 		select op {
 		    when "|" {
@@ -978,7 +1014,7 @@ module OperatorMsg
 		}
 	    }
 	    when (DType.Bool, DType.Int64) {
-		var val = try! value:bool;
+	        var val = try! value.toLower():bool;
 		var r = toSymEntry(right, int);
 		select op {
 		    when "+" {
@@ -1016,7 +1052,7 @@ module OperatorMsg
 		}
 	    }
 	    when (DType.Bool, DType.Float64) {
-		var val = try! value:bool;
+	        var val = try! value.toLower():bool;
 		var r = toSymEntry(right, real);
 		select op {
 		    when "+" {

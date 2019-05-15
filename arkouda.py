@@ -117,7 +117,8 @@ structDtypeCodes = {'int64': 'q',
                     'float64': 'd',
                     'bool': '?'}
 DTypes = frozenset(structDtypeCodes.keys())
-NUMBER_FORMAT_STRINGS = {'int64': '{:n}',
+NUMBER_FORMAT_STRINGS = {'bool': '{}',
+                         'int64': '{:n}',
                          'float64': '{:.17f}'}
 bool = np.bool
 int64 = np.int64
@@ -133,7 +134,17 @@ def translate_np_dtype(dt):
     kind = trans[dt.kind]
     return kind, dt.itemsize
 
-BinOps = frozenset(["+", "-", "*", "/", "//", "<", ">", "<=", ">=", "!=", "==", "&", "|", "^", "<<", ">>"])
+def resolve_scalar_dtype(val):
+    if isinstance(val, bool) or (hasattr(val, 'dtype') and val.dtype.kind == 'b'):
+        return 'bool'
+    elif isinstance(val, int) or (hasattr(val, 'dtype') and val.dtype.kind == 'i'):
+        return 'int64'
+    elif isinstance(val, float) or (hasattr(val, 'dtype') and val.dtype.kind == 'f'):
+        return 'float64'
+    else:
+        raise TypeError("Unhandled scalar type: {} (value = {})".format(type(val), val))
+
+BinOps = frozenset(["+", "-", "*", "/", "//", "%", "<", ">", "<=", ">=", "!=", "==", "&", "|", "^", "<<", ">>"])
 OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", "<<=", ">>="])
 
 # class for the pdarray
@@ -192,11 +203,8 @@ class pdarray:
         if hasattr(other, '__len__'): 
             return NotImplemented
         # pdarray binop scalar
-        try:
-            other = self.dtype.type(other)
-        except: # Can't cast other as dtype of pdarray
-            return NotImplemented
-        msg = "binopvs {} {} {} {}".format(op, self.name, self.dtype.name, self.format_other(other))
+        dt = resolve_scalar_dtype(other)
+        msg = "binopvs {} {} {} {}".format(op, self.name, dt, NUMBER_FORMAT_STRINGS[dt].format(other))
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
@@ -209,11 +217,8 @@ class pdarray:
         if hasattr(other, '__len__'): 
             return NotImplemented
         # pdarray binop scalar
-        try:
-            other = self.dtype.type(other)
-        except: # Can't cast other as dtype of pdarray
-            return NotImplemented
-        msg = "binopsv {} {} {} {}".format(op, self.dtype.name, self.format_other(other), self.name)
+        dt = resolve_scalar_dtype(other)
+        msg = "binopsv {} {} {} {}".format(op, dt, NUMBER_FORMAT_STRINGS[dt].format(other), self.name)
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
@@ -334,6 +339,7 @@ class pdarray:
         if hasattr(other, '__len__'): 
             return NotImplemented
         # pdarray binop scalar
+        # opeq requires scalar to be cast as pdarray dtype
         try:
             other = self.dtype.type(other)
         except: # Can't cast other as dtype of pdarray
@@ -384,7 +390,7 @@ class pdarray:
 
     # overload a[] to treat like list
     def __getitem__(self, key):
-        if isinstance(key, int):
+        if isinstance(key, int) or (hasattr(key, 'shape') and key.shape == () and key.dtype.kind in 'ui'):
             if (key >= 0 and key < self.size):
                 repMsg = generic_msg("[int] {} {}".format(self.name, key))
                 fields = repMsg.split()
@@ -529,12 +535,18 @@ def read_hdf(dsetName, filenames):
     rep_msg = generic_msg("readhdf {} {:n} {}".format(dsetName, len(filenames), json.dumps(filenames)))
     return create_pdarray(rep_msg)
 
-def read_all(datasets, filenames):
-    if isinstance(datasets, str):
-        datasets = [datasets]
-    nonexistent = set(datasets) - set(get_datasets(filenames[0]))
-    if len(nonexistent) > 0:
-        raise ValueError("Dataset(s) not found: {}".format(nonexistent))
+def read_all(filenames, datasets=None):
+    if isinstance(filenames, str):
+        filenames = [filenames]
+    alldatasets = get_datasets(filenames[0])
+    if datasets is None:
+        datasets = alldatasets
+    else: # ensure dataset(s) exist
+        if isinstance(datasets, str):
+            datasets = [datasets]
+        nonexistent = set(datasets) - set(get_datasets(filenames[0]))
+        if len(nonexistent) > 0:
+            raise ValueError("Dataset(s) not found: {}".format(nonexistent))
     return {dset:read_hdf(dset, filenames) for dset in datasets}
 
 def load(path_prefix, dataset='array'):
