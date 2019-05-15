@@ -178,15 +178,15 @@ class pdarray:
         ## s = "array(" + s + ")"
         ## return s
 
-    # def format_other(self, other):
-    #     try:
-    #         other = self.dtype.type(other)
-    #     except:
-    #         raise TypeError("Unable to convert {} to {}".format(other, self.dtype.name))
-    #     if self.dtype == np.bool:
-    #         return str(other)
-    #     fmt = NUMBER_FORMAT_STRINGS[self.dtype.name]
-    #     return fmt.format(other)
+    def format_other(self, other):
+        try:
+            other = self.dtype.type(other)
+        except:
+            raise TypeError("Unable to convert {} to {}".format(other, self.dtype.name))
+        if self.dtype == np.bool:
+            return str(other)
+        fmt = NUMBER_FORMAT_STRINGS[self.dtype.name]
+        return fmt.format(other)
         
     # binary operators
     def binop(self, other, op):
