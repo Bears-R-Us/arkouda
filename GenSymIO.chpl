@@ -121,6 +121,15 @@ module GenSymIO {
     } catch {
       return try! "Error: could not decode json filenames via tempfile (%i files: %s)".format(1, jsonfile);
     }
+    // Attempt to interpret filename as a glob expression and ls the first result
+    var tmp = glob(filename);
+    if GenSymIO_DEBUG {
+      writeln(try! "glob expanded %s to %i files".format(filename, tmp.size));
+    }
+    if tmp.size <= 0 {
+      return try! "Error: no files matching %s".format(filename);
+    }
+    filename = tmp[tmp.domain.first];
     var exitCode: int;
     try {
       if exists(tmpfile) {
