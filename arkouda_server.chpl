@@ -79,6 +79,10 @@ proc main() {
             when "opeqvv"            {repMsg = opeqvvMsg(reqMsg, st);}
             when "opeqvs"            {repMsg = opeqvsMsg(reqMsg, st);}
             when "efunc"             {repMsg = efuncMsg(reqMsg, st);}
+	    when "efunc3vv"          {repMsg = efunc3vvMsg(reqMsg, st);}
+	    when "efunc3vs"          {repMsg = efunc3vsMsg(reqMsg, st);}
+	    when "efunc3sv"          {repMsg = efunc3svMsg(reqMsg, st);}
+	    when "efunc3ss"          {repMsg = efunc3ssMsg(reqMsg, st);}
             when "reduction"         {repMsg = reductionMsg(reqMsg, st);}
             when "arange"            {repMsg = arangeMsg(reqMsg, st);}
             when "linspace"          {repMsg = linspaceMsg(reqMsg, st);}
