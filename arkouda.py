@@ -135,14 +135,17 @@ def translate_np_dtype(dt):
     return kind, dt.itemsize
 
 def resolve_scalar_dtype(val):
+    '''Try to infer what dtype arkouda_server should treat <val> as.'''
     if isinstance(val, bool) or (hasattr(val, 'dtype') and val.dtype.kind == 'b'):
         return 'bool'
-    elif isinstance(val, int) or (hasattr(val, 'dtype') and val.dtype.kind == 'i'):
+    elif isinstance(val, int) or (hasattr(val, 'dtype') and val.dtype.kind in 'ui'):
         return 'int64'
     elif isinstance(val, float) or (hasattr(val, 'dtype') and val.dtype.kind == 'f'):
         return 'float64'
+    elif hasattr(val, 'dtype'):
+        return dtype.name
     else:
-        raise TypeError("Unhandled scalar type: {} (value = {})".format(type(val), val))
+        return str(type(val))
 
 BinOps = frozenset(["+", "-", "*", "/", "//", "%", "<", ">", "<=", ">=", "!=", "==", "&", "|", "^", "<<", ">>"])
 OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", "<<=", ">>="])
@@ -204,6 +207,8 @@ class pdarray:
             return NotImplemented
         # pdarray binop scalar
         dt = resolve_scalar_dtype(other)
+        if dt not in DTypes:
+            raise TypeError("Unhandled scalar type: {} ({})".format(other, dt))
         msg = "binopvs {} {} {} {}".format(op, self.name, dt, NUMBER_FORMAT_STRINGS[dt].format(other))
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
@@ -218,6 +223,8 @@ class pdarray:
             return NotImplemented
         # pdarray binop scalar
         dt = resolve_scalar_dtype(other)
+        if dt not in DTypes:
+            raise TypeError("Unhandled scalar type: {} ({})".format(other, dt))
         msg = "binopsv {} {} {} {}".format(op, dt, NUMBER_FORMAT_STRINGS[dt].format(other), self.name)
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
@@ -390,7 +397,7 @@ class pdarray:
 
     # overload a[] to treat like list
     def __getitem__(self, key):
-        if isinstance(key, int) or (hasattr(key, 'shape') and key.shape == () and key.dtype.kind in 'ui'):
+        if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
             if (key >= 0 and key < self.size):
                 repMsg = generic_msg("[int] {} {}".format(self.name, key))
                 fields = repMsg.split()
@@ -806,6 +813,58 @@ def argmax(pda):
         return parse_single_value(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
+
+def where(condition, A, B):
+    if not isinstance(condition, pdarray):
+        raise TypeError("must be pdarray {}".format(condition))
+    if isinstance(A, pdarray) and isinstance(B, pdarray):
+        repMsg = generic_msg("efunc3vv {} {} {} {}".format("where",
+                                                           condition.name,
+                                                           A.name,
+                                                           B.name))
+    # For scalars, try to convert it to the array's dtype
+    elif isinstance(A, pdarray) and np.isscalar(B):
+        repMsg = generic_msg("efunc3vs {} {} {} {} {}".format("where",
+                                                              condition.name,
+                                                              A.name,
+                                                              A.dtype.name,
+                                                              A.format_other(B)))
+    elif isinstance(B, pdarray) and np.isscalar(A):
+        repMsg = generic_msg("efunc3sv {} {} {} {} {}".format("where",
+                                                              condition.name,
+                                                              B.dtype.name,
+                                                              B.format_other(A),
+                                                              B.name))
+    elif np.isscalar(A) and np.isscalar(B):
+        # Scalars must share a common dtype (or be cast)
+        dtA = resolve_scalar_dtype(A)
+        dtB = resolve_scalar_dtype(B)
+        # Make sure at least one of the dtypes is supported
+        if not (dtA in DTypes or dtB in DTypes):
+            raise TypeError("Not implemented for scalar types {} and {}".format(dtA, dtB))
+        # If the dtypes are the same, do not cast
+        if dtA == dtB:
+            dt = dtA
+        # If the dtypes are different, try casting one direction then the other
+        elif dtB in DTypes and np.can_cast(A, dtB):
+            A = np.dtype(dtB).type(A)
+            dt = dtB
+        elif dtA in DTypes and np.can_cast(B, dtA):
+            B = np.dtype(dtA).type(B)
+            dt = dtA
+        # Cannot safely cast
+        else:
+            raise TypeError("Cannot cast between scalars {} and {} to supported dtype".format(A, B))
+        repMsg = generic_msg("efunc3ss {} {} {} {} {} {}".format("where",
+                                                                 condition.name,
+                                                                 dt,
+                                                                 A,
+                                                                 dt,
+                                                                 B))
+    return create_pdarray(repMsg)
+                             
+            
+    
 
 # functions which query the server for information
 def info(pda):
