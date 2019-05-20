@@ -1,6 +1,13 @@
+### changes in arkouda-0.0.8
+------------------------
+ * added initial ak.argsort functionality
+ * added initial ak.is_sorted functionality
+ * added unit test to tests directory for ak.argsort
+ * 
+
 ### Changes in arkouda-0.0.7
 ------------------------
- * fixed multi-file/multi-treaded bug in HDF5 I/O
+ * fixed multi-file/multi-threaded bug in HDF5 I/O
  * improved HDF5 I/O error handling + glob filenames
  * added initial versions of ak.array() and pdarray.to_ndarray()
  * refactored histogram and some other procedures using helper nested procedures

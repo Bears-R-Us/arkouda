@@ -763,7 +763,7 @@ proc main() {
   randomtest(1000);
   randomtest(10000);
   randomtest(100000);
-  //randomtest(1000000);
-  //randomtest(10000000);
-  //randomtest(100000000);
+  randomtest(1000000);
+  randomtest(10000000);
+  randomtest(100000000);
 }
