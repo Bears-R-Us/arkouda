@@ -84,6 +84,8 @@ proc main() {
 	    when "efunc3sv"          {repMsg = efunc3svMsg(reqMsg, st);}
 	    when "efunc3ss"          {repMsg = efunc3ssMsg(reqMsg, st);}
             when "reduction"         {repMsg = reductionMsg(reqMsg, st);}
+  	    when "countReduction"    {repMsg = countReductionMsg(reqMsg, st);}
+	    when "segmentedReduction"{repMsg = segmentedReductionMsg(reqMsg, st);}
             when "arange"            {repMsg = arangeMsg(reqMsg, st);}
             when "linspace"          {repMsg = linspaceMsg(reqMsg, st);}
             when "randint"           {repMsg = randintMsg(reqMsg, st);}

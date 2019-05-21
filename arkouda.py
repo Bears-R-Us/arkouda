@@ -864,8 +864,74 @@ def where(condition, A, B):
     return create_pdarray(repMsg)
                              
             
-    
+class GroupBy:
+    Reductions = frozenset(['sum', 'prod', 'mean',
+                            'min', 'max', 'argmin', 'argmax',
+                            'num_unique', 'any', 'all'])
+    def __init__(self, keys):
+        '''Group <keys> by value, usually in preparation for grouping and aggregating the values of another array via the .aggregate() method. Return a GroupBy object that stores the information for how to group values.
+        '''
+        if not isinstance(keys, pdarray):
+            raise TypeError("Argument must be a pdarray")
+        self.keys = keys
+        self.permutation = keys.argsort()
+        self.segments, self.unique_keys = self.find_segments()
+            
+    def find_segments(self):
+        reqMsg = "findSegments {} {}".format(self.keys.name, self.permutation.name)
+        repMsg = generic_msg(reqMsg)
+        segAttr, uniqAttr = repMsg.split("+")
+        if v: print(segAttr, uniqAttr)
+        return create_pdarray(segAttr), create_pdarray(uniqAttr)
 
+    def count(self):
+        '''Return the number of elements in each group, i.e. the number of times each key occurs.
+        '''
+        reqMsg = "countReduction {} {}".format(self.segments.name, self.keys.size)
+        repMsg = generic_msg(reqMsg)
+        if v: print(repMsg)
+        return self.unique_keys, create_pdarray(repMsg)
+        
+    def aggregate(self, values, operator):
+        '''Using the grouping implied by self.keys, group <values> and reduce each group with <operator>. The result is one aggregate value per key, so the function returns the pdarray of keys and the pdarray of aggregate values.
+        '''
+        if not isinstance(values, pdarray):
+            raise TypeError("<values> must be a pdarray")
+        if values.size != self.keys.size:
+            raise ValueError("Attempt to group array using key array of different length")
+        if operator not in self.Reductions:
+            raise ValueError("Unsupported reduction: {}\nMust be one of {}".format(operator, self.Reductions))
+        permuted_values = values[self.permutation]
+        reqMsg = "segmentedReduction {} {} {}".format(permuted_values.name,
+                                                      self.segments.name,
+                                                      operator)
+        repMsg = generic_msg(reqMsg)
+        if v: print(repMsg)
+        return self.unique_keys, create_pdarray(repMsg)
+
+    def sum(self, values):
+        return self.aggregate(values, "sum")
+    def prod(self, values):
+        return self.aggregate(values, "prod")
+    def mean(self, values):
+        return self.aggregate(values, "mean")
+    def min(self, values):
+        return self.aggregate(values, "min")
+    def max(self, values):
+        return self.aggregate(values, "max")
+    def argmin(self, values):
+        return self.aggregate(values, "argmin")
+    def argmax(self, values):
+        return self.aggregate(values, "argmax")
+    def num_unique(self, values):
+        return self.aggregate(values, "num_unique")
+    def any(self, values):
+        return self.aggregate(values, "any")
+    def all(self, values):
+        return self.aggregate(values, "all")
+
+    
+    
 # functions which query the server for information
 def info(pda):
     if isinstance(pda, pdarray):
