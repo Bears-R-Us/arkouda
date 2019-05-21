@@ -3,6 +3,8 @@
  * added initial ak.argsort functionality
  * added initial ak.is_sorted functionality
  * added unit test to tests directory for ak.argsort
+ * optimized argsort
+ * added ak.where
  * 
 
 ### Changes in arkouda-0.0.7

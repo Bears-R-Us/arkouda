@@ -16,8 +16,6 @@ module ArgSortMsg
 
     use AryUtil;
     
-    use PrivateDist;
-
     // thresholds for different sized sorts
     var lgSmall = 10;
     var small = 2**lgSmall;
@@ -88,76 +86,99 @@ module ArgSortMsg
             iv[pos] = i;
         }
         
-        // check counts against ends
-        if v {[(ae,e) in zip(atomic_pos,ends)]
-                if ae.read() != e {writeln("mismatch in atomic counts!!!");}}
-        
         // return the index vector
         return iv;
     }
 
-    /* // do a counting sort on a (an array of integers) */
-    /* // returns iv an array of indices that would sort the array original array */
-    /* proc argCountSortLocHistGlobHist(a: [?D] int, aMin: int, aMax: int): [D] int { */
-    /*     // index vector to hold permutation */
-    /*     var iv: [D] int; */
+    // do a counting sort on a (an array of integers)
+    // returns iv an array of indices that would sort the array original array
+    proc argCountSortLocHistGlobHist(a: [?aD] int, aMin: int, aMax: int): [aD] int {
+        // index vector to hold permutation
+        var iv: [aD] int;
 
-    /*     // how many bins in histogram */
-    /*     var a_nvals = aMax-aMin+1; */
-    /*     if v {try! writeln("a_nvals = %t".format(a_nvals));} */
+        // how many bins in histogram
+        var bins = aMax-aMin+1;
+        if v {try! writeln("bins = %t".format(bins));}
 
-    /*     // perf improvement: what is a better strategy */
-    /*     //     below a threshold on buckets */
-    /*     //     use second dim on locales??? then + reduce across locales */
-    /*     //     can we keep all atomics local??? I think so... */
-    /*     //     var hD = {a_min..a_max} dmapped Replicated();// look at primer */
-    /*     //     add up values from other locales into this locale's hist */
-    /*     //     coforall loc in Locales { on loc {...;} } */
-    /*     //     calc ends and starts per locale */
-    /*     //     etc... */
+        // perf improvement: what is a better strategy
+        //     below a threshold on buckets
+        //     use second dim on locales??? then + reduce across locales
+        //     can we keep all atomics local??? I think so...
+        //     var hD = {a_min..a_max} dmapped Replicated();// look at primer
+        //     add up values from other locales into this locale's hist
+        //     coforall loc in Locales { on loc {...;} }
+        //     calc ends and starts per locale
+        //     etc...
 
-    /*     // histogram domain size should be equal to a_nvals */
-    /*     var hD: domain(1) = {aMin..aMax}; */
+        // create a global count array to scan
+        var globalCounts = makeDistArray(bins * numLocales, int);
 
-    /*     // atomic histogram */
-    /*     var atomicHist: [PrivateSpace] [hD] atomic int; */
+        coforall loc in Locales {
+            on loc {
+                // histogram domain size should be equal to bins
+                var hD = {0..#bins};
 
-    /*     // count number of each value into atomic histogram */
-    /*     [e in a] atomicHist[here.id][e].add(1); */
+                // atomic histogram
+                var atomicHist: [hD] atomic int;
+
+                // count number of each value into local atomic histogram
+                [i in a.localSubdomain()] atomicHist[a[i]-aMin].add(1);
+
+                // put counts into globalCounts array
+                [i in hD] globalCounts[i * numLocales + here.id] = atomicHist[i].read();
+            }
+        }
+
+        // scan globalCounts to get bucket ends on each locale
+        var globalEnds: [globalCounts.domain] int = + scan globalCounts;
+        if v {printAry("globalCounts =",globalCounts);}
+        if v {printAry("globalEnds =",globalEnds);}
         
-    /*     // global histogram for value-bucket sizes */
-    /*     var globHist: [hD] int = + reduce [i in PrivateSpace] atomicHist[i]; */
+        coforall loc in Locales {
+            on loc {
+                // histogram domain size should be equal to bins
+                var hD = {0..#bins};
+                var localCounts: [hD] int;
+                [i in hD] localCounts[i] = globalCounts[i * numLocales + here.id];
+                var localEnds: [hD] int = + scan localCounts;
+                
+                // atomic histogram
+                var atomicHist: [hD] atomic int;
 
-    /*     // calc global starts and ends of value-buckets */
-    /*     var globEnds: [hD] int = + scan globHist; */
-    /*     if v {printAry("globEnds =",globEnds);} */
-    /*     var globStarts: [hD] int = globEnds - globHist; */
-    /*     if v {printAry("globStarts =", globStarts);} */
+                // local storage to sort into
+                var localBuffer: [0..#(a.localSubdomain().size)] int;
 
-    /*     // calc per locale value-bucket ends and starts */
-    /*     // + scan across locales */
-        
-        
-    /*     //....... */
-        
-    /*     // atomic position in output array for buckets */
-    /*     var atomic_pos: [hD] atomic int; */
-    /*     // copy in start positions */
-    /*     [(ae,e) in zip(atomic_pos, starts)] ae.write(e); */
+                // put locale-bucket-ends into atomic hist
+                [i in hD] atomicHist[i].write(localEnds[i] - localCounts[i]);
+                
+                // get position in localBuffer of each element and place it there
+                // counting up to local-bucket-end
+                [idx in a.localSubdomain()] {
+                    var pos = atomicHist[a[idx]-aMin].fetchAdd(1); // local pos in localBuffer
+                    localBuffer[pos] = idx; // should be local pos and global idx
+                }
 
-    /*     // permute index vector */
-    /*     for (e,i) in zip(a,aD) { */
-    /*         var pos = atomic_pos[e].fetchAdd(1);// get position to deposit element */
-    /*         iv[pos] = i; */
-    /*     } */
-
-    /*     // check counts against ends */
-    /*     if v {[(ae,e) in zip(atomic_pos,ends)] */
-    /*             if ae.read() != e {writeln("mismatch in atomic counts!!!");}} */
+                // move blocks to output array
+                [i in hD] {
+                    var gEnd = globalEnds[i * numLocales + here.id];
+                    var gHigh = gEnd - 1;
+                    var gLow =  gEnd - localCounts[i];
+                    var lHigh = localEnds[i] - 1;
+                    var lLow = localEnds[i] - localCounts[i];
+                    if (gLow..gHigh).size != (lLow..lHigh).size {
+                        writeln(gLow..gHigh, " ", lLow..lHigh);
+                        writeln((gLow..gHigh).size, " != ", (lLow..lHigh).size);
+                        try! stdout.flush();
+                        exit(1);
+                    }
+                    if localCounts[i] > 0 {iv[gLow..gHigh] = localBuffer[lLow..lHigh];}
+                }
+            }
+        }
         
-    /*     // return the index vector */
-    /*     return iv; */
-    /* } */
+        // return the index vector
+        return iv;
+    }
 
     // argsort takes pdarray and returns an index vector iv which sorts the array
     proc argsortMsg(reqMsg: string, st: borrowed SymTab): string {
@@ -186,7 +207,7 @@ module ArgSortMsg
 
                 if (bins <= mBins) {
                     if v {try! writeln("%t <= %t".format(bins, mBins));try! stdout.flush();}
-                    var iv = argCountSortGlobHist(e.a, eMin, eMax);
+                    var iv = argCountSortLocHistGlobHist(e.a, eMin, eMax);
                     st.addEntry(ivname, new shared SymEntry(iv));
                 }
                 else {
