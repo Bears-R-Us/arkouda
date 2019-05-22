@@ -17,7 +17,10 @@ module ArgSortMsg
     use AryUtil;
     
     use PrivateDist;
-    
+
+    // experimental
+    use UnorderedCopy;
+
     // thresholds for different sized sorts
     var lgSmall = 10;
     var small = 2**lgSmall;
@@ -326,18 +329,18 @@ module ArgSortMsg
             on loc {
                 localEnds[here.id] = + scan localCounts[here.id];
 
-                // put locale-bucket-ends into atomic hist
+                // put locale-subbin-starts into atomic hist
                 [i in hD] atomicHist[here.id][i].write(globalEnds[i * numLocales + here.id] - localCounts[here.id][i]);
-                
-                // get position in localBuffer of each element and place it there
-                // counting up to local-bucket-end
+
+                // fetch-and-inc to get per-locale-subbin-position
+                // and directly write index to output array
                 [idx in a.localSubdomain()] {
                     var pos = atomicHist[here.id][a[idx]-aMin].fetchAdd(1); // local pos in localBuffer
-                    iv[pos] = idx; // should be local pos and global idx
+                    unorderedCopy(iv[pos],idx); // should be global pos and global idx
                 }
             }
         }
-        if v {writeln("done sort locally and move segments time = ",Time.getCurrentTime() - t1);try! stdout.flush();}
+        if v {writeln("done move  time = ",Time.getCurrentTime() - t1);try! stdout.flush();}
         
         // return the index vector
         return iv;
