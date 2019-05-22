@@ -874,7 +874,7 @@ class GroupBy:
         if not isinstance(keys, pdarray):
             raise TypeError("Argument must be a pdarray")
         self.keys = keys
-        self.permutation = keys.argsort()
+        self.permutation = argsort(keys)
         self.segments, self.unique_keys = self.find_segments()
             
     def find_segments(self):

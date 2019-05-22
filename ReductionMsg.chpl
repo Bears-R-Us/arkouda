@@ -199,11 +199,11 @@ module ReductionMsg
 	if (i < segments.aD.high) {
 	  high = segments.a[i+1] - 1;
 	} else {
-	  high = size;
+	  high = size - 1;
 	}
 	c = high - low + 1;
       }
-      st.addEntry(new shared SymEntry(counts));
+      st.addEntry(rname, new shared SymEntry(counts));
       return try! "created " + st.attrib(rname);
     }
 
@@ -300,15 +300,15 @@ module ReductionMsg
 	var values = toSymEntry(gVal, bool);
 	select operator {
 	  when "sum" {
-	    var res = segSum(values.a:int, segments.a);
+	    var res = segSum(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "any" {
-	    var res = segAll(values.a, segments.a);
+	    var res = segAny(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "all" {
-	    var res = segAny(values.a, segments.a);
+	    var res = segAll(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "mean" {
@@ -333,6 +333,20 @@ module ReductionMsg
 	  high = values.domain.high;
 	}
 	r = + reduce values[low..high];
+      }
+      return res;
+    }
+
+    proc segSum(values:[] bool, segments:[?D] int): [D] int {
+      var res: [D] int;
+      forall (r, low, i) in zip(res, segments, D) {
+	var high: int;
+	if (i < D.high) {
+	  high = segments[i+1] - 1;
+	} else {
+	  high = values.domain.high;
+	}
+	r = + reduce (values[low..high]:int);
       }
       return res;
     }
@@ -403,7 +417,8 @@ module ReductionMsg
 	  high = values.domain.high;
 	}
 	var segment: subdomain(values.domain) = values.domain[low..high];
-	var (minVal, r) = minloc reduce zip(values[segment],segment);
+	var (minVal, minInd) = minloc reduce zip(values[segment],segment);
+	r = minInd;
       }
       return res;
     }
@@ -418,7 +433,8 @@ module ReductionMsg
 	  high = values.domain.high;
 	}
 	var segment: subdomain(values.domain) = values.domain[low..high];
-	var (minVal, r) = maxloc reduce zip(values[segment],segment);
+	var (maxVal, maxInd) = maxloc reduce zip(values[segment],segment);
+	r = maxInd;
       }
       return res;
     }
