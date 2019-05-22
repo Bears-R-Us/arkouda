@@ -1,5 +1,7 @@
 arkouda_server
 arkouda_server_real
+#*#
+.#*
 *.~*
 __pycache__/
 .ipynb_checkpoints/
