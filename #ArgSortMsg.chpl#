@@ -272,7 +272,7 @@ module ArgSortMsg
     // do a counting sort on a (an array of integers)
     // returns iv an array of indices that would sort the array original array
     // PD = PrivateDist
-    //DW = Direct Write into output array
+    // DW = Direct Write into output array
     proc argCountSortLocHistGlobHistPDDW(a: [?aD] int, aMin: int, aMax: int): [aD] int {
         // index vector to hold permutation
         var iv: [aD] int;

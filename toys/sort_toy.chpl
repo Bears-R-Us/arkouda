@@ -1,6 +1,6 @@
 use Random;
 use Sort;
-use CyclicDist;
+use BlockDist;
 
 config const N = 10;
 
@@ -17,7 +17,7 @@ var comp : MyComparator;
 
 var R = new owned RandomStream(real, 241); R.getNext();
 
-var D = {0..#N} dmapped Cyclic(startIdx=0);
+var D = newBlockDom({0..#N});
 var A: [D] real;
 for a in A { a = R.getNext(); }
 print_ary("A = ",A);
