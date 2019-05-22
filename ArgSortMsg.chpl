@@ -230,12 +230,12 @@ module ArgSortMsg
             on loc {
                 localEnds[here.id] = + scan localCounts[here.id];
 
-                // local storage to sort into
-                var localBuffer: [0..#(a.localSubdomain().size)] int;
-
                 // put locale-bucket-ends into atomic hist
                 [i in hD] atomicHist[here.id][i].write(localEnds[here.id][i] - localCounts[here.id][i]);
                 
+                // local storage to sort into
+                var localBuffer: [0..#(a.localSubdomain().size)] int;
+
                 // get position in localBuffer of each element and place it there
                 // counting up to local-bucket-end
                 [idx in a.localSubdomain()] {
@@ -266,10 +266,11 @@ module ArgSortMsg
         return iv;
     }
     
-    
     // do a counting sort on a (an array of integers)
     // returns iv an array of indices that would sort the array original array
-    proc argCountSortLocHistGlobHistPerLocSerial(a: [?aD] int, aMin: int, aMax: int): [aD] int {
+    // PD = PrivateDist
+    //DW = Direct Write into output array
+    proc argCountSortLocHistGlobHistPDDW(a: [?aD] int, aMin: int, aMax: int): [aD] int {
         // index vector to hold permutation
         var iv: [aD] int;
 
@@ -277,92 +278,71 @@ module ArgSortMsg
         var bins = aMax-aMin+1;
         if v {try! writeln("bins = %t".format(bins));}
 
-        // perf improvement: what is a better strategy
-        //     below a threshold on buckets
-        //     use second dim on locales??? then + reduce across locales
-        //     can we keep all atomics local??? I think so...
-        //     var hD = {a_min..a_max} dmapped Replicated();// look at primer
-        //     add up values from other locales into this locale's hist
-        //     coforall loc in Locales { on loc {...;} }
-        //     calc ends and starts per locale
-        //     etc...
-
         // create a global count array to scan
         var globalCounts = makeDistArray(bins * numLocales, int);
 
+        // histogram domain size should be equal to bins
+        var hD = {0..#bins};
+        
+        // atomic histogram
+        var atomicHist: [PrivateSpace] [hD] atomic int;
+        
+        // start timer
+        var t1 = Time.getCurrentTime();
+        // count number of each value into local atomic histogram
+        [val in a] atomicHist[here.id][val-aMin].add(1);
+        if v {writeln("done atomicHist time = ",Time.getCurrentTime() - t1);try! stdout.flush();}
+
+        // start timer
+        t1 = Time.getCurrentTime();
         coforall loc in Locales {
             on loc {
-                // histogram domain size should be equal to bins
-                var hD = {0..#bins};
-
-                // atomic histogram
-                var hist: [hD] int;
-
-                // count number of each value into local atomic histogram
-                for i in a.localSubdomain() {
-                    hist[a[i]-aMin] += 1;
-                }
                 // put counts into globalCounts array
-                for i in hD {
-                    globalCounts[i * numLocales + here.id] = hist[i];
-                }
+                [i in hD] globalCounts[i * numLocales + here.id] = atomicHist[here.id][i].read();
             }
         }
+        if v {writeln("done copy to globalCounts time = ",Time.getCurrentTime() - t1);try! stdout.flush();}
 
         // scan globalCounts to get bucket ends on each locale
         var globalEnds: [globalCounts.domain] int = + scan globalCounts;
         if v {printAry("globalCounts =",globalCounts);try! stdout.flush();}
         if v {printAry("globalEnds =",globalEnds);try! stdout.flush();}
+
+        var localCounts: [PrivateSpace] [hD] int;
+        var localEnds: [PrivateSpace] [hD] int;
         
+        // start timer
+        t1 = Time.getCurrentTime();
         coforall loc in Locales {
             on loc {
-                // histogram domain size should be equal to bins
-                var hD = {0..#bins};
-                var localCounts: [hD] int;
-                [i in hD] localCounts[i] = globalCounts[i * numLocales + here.id];
-                var localEnds: [hD] int = + scan localCounts;
-                
-                // atomic histogram
-                var hist: [hD] int;
-
-                // local storage to sort into
-                var localBuffer: [0..#(a.localSubdomain().size)] int;
+                [i in hD] localCounts[here.id][i] = globalCounts[i * numLocales + here.id];
+            }
+        }
+        if v {writeln("done copy back to localCounts time = ",Time.getCurrentTime() - t1);try! stdout.flush();}
+        
+        // start timer
+        t1 = Time.getCurrentTime();
+        coforall loc in Locales {
+            on loc {
+                localEnds[here.id] = + scan localCounts[here.id];
 
                 // put locale-bucket-ends into atomic hist
-                for i in hD {
-                    hist[i] = localEnds[i] - localCounts[i];
-                }
+                [i in hD] atomicHist[here.id][i].write(globalEnds[i * numLocales + here.id] - localCounts[here.id][i]);
                 
                 // get position in localBuffer of each element and place it there
                 // counting up to local-bucket-end
-                for idx in a.localSubdomain() {
-                    var pos = hist[a[idx]-aMin]; // local pos in localBuffer
-                    hist[a[idx]-aMin] += 1; // increment position
-                    localBuffer[pos] = idx; // should be local pos and global idx
-                }
-
-                // move blocks to output array
-                for i in hD {
-                    var gEnd = globalEnds[i * numLocales + here.id];
-                    var gHigh = gEnd - 1;
-                    var gLow =  gEnd - localCounts[i];
-                    var lHigh = localEnds[i] - 1;
-                    var lLow = localEnds[i] - localCounts[i];
-                    if (gLow..gHigh).size != (lLow..lHigh).size {
-                        writeln(gLow..gHigh, " ", lLow..lHigh);
-                        writeln((gLow..gHigh).size, " != ", (lLow..lHigh).size);
-                        try! stdout.flush();
-                        exit(1);
-                    }
-                    if localCounts[i] > 0 {iv[gLow..gHigh] = localBuffer[lLow..lHigh];}
+                [idx in a.localSubdomain()] {
+                    var pos = atomicHist[here.id][a[idx]-aMin].fetchAdd(1); // local pos in localBuffer
+                    iv[pos] = idx; // should be local pos and global idx
                 }
             }
         }
+        if v {writeln("done sort locally and move segments time = ",Time.getCurrentTime() - t1);try! stdout.flush();}
         
         // return the index vector
         return iv;
     }
-
+    
     // argsort takes pdarray and returns an index vector iv which sorts the array
     proc argsortMsg(reqMsg: string, st: borrowed SymTab): string {
         var pn = "argsort";
@@ -390,7 +370,7 @@ module ArgSortMsg
 
                 if (bins <= mBins) {
                     if v {try! writeln("%t <= %t".format(bins, mBins));try! stdout.flush();}
-                    var iv = argCountSortLocHistGlobHistPD(e.a, eMin, eMax);
+                    var iv = argCountSortLocHistGlobHistPDDW(e.a, eMin, eMax);
                     st.addEntry(ivname, new shared SymEntry(iv));
                 }
                 else {
