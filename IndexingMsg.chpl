@@ -121,9 +121,10 @@ module IndexingMsg
                 if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
                 if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
                 var a: [iv.aD] int;
+                //[i in iv.aD] a[i] = e.a[iv.a[i]]; // bounds check iv[i] against e.aD?
+                //[(a1,idx) in zip(a,iv.a)] a1 = a2[idx]; // bounds check iv[i] against e.aD?
                 ref a2 = e.a;
                 ref iva = iv.a;
-                //[(a1,idx) in zip(a,iva)] a1 = a2[idx]; // bounds check iv[i] against e.aD?
                 [(a1,idx) in zip(a,iva)] unorderedCopy(a1,a2[idx]); // bounds check iv[i] against e.aD?
                 st.addEntry(rname, new shared SymEntry(a));
             }
@@ -149,7 +150,7 @@ module IndexingMsg
                 //[i in iv.aD] a[i] = e.a[iv.a[i]]; // bounds check iv[i] against e.aD?
                 ref a2 = e.a;
                 ref iva = iv.a;
-                [(a1,idx) in zip(a,iva)] unorderedCopy(a1,a2[idx]); // bounds check iv[i] against e.aD?                
+                [(a1,idx) in zip(a,iva)] unorderedCopy(a1,a2[idx]); // bounds check iv[i] against e.aD?
                 st.addEntry(rname, new shared SymEntry(a));
             }
             when (DType.Float64, DType.Bool) {
@@ -174,7 +175,7 @@ module IndexingMsg
                 [i in iv.aD] a[i] = e.a[iv.a[i]];// bounds check iv[i] against e.aD?
                 //ref a2 = e.a;
                 //ref iva = iv.a;
-                //[(a1,idx) in zip(a,iva)] unorderedCopy(a1,a2[idx]); // bounds check iv[i] against e.aD?                
+                //[(a1,idx) in zip(a,iva)] unorderedCopy(a1,a2[idx]); // bounds check iv[i] against e.aD?
                 st.addEntry(rname, new shared SymEntry(a));
             }
             when (DType.Bool, DType.Bool) {
