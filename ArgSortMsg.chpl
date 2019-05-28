@@ -177,7 +177,9 @@ module ArgSortMsg
     
     // do a counting sort on a (an array of integers)
     // returns iv an array of indices that would sort the array original array
-    proc argCountSortLocHistGlobHistPD(a: [?aD] int, aMin: int, aMax: int): [aD] int {
+    // PD == PrivateDist
+    // IW == Indirect write to local array then block copy to output array
+    proc argCountSortLocHistGlobHistPDIW(a: [?aD] int, aMin: int, aMax: int): [aD] int {
         // index vector to hold permutation
         var iv: [aD] int;
 
@@ -312,7 +314,6 @@ module ArgSortMsg
         if v {printAry("globalEnds =",globalEnds);try! stdout.flush();}
 
         var localCounts: [PrivateSpace] [hD] int;
-        var localEnds: [PrivateSpace] [hD] int;
         
         // start timer
         t1 = Time.getCurrentTime();
@@ -327,21 +328,30 @@ module ArgSortMsg
         t1 = Time.getCurrentTime();
         coforall loc in Locales {
             on loc {
-                localEnds[here.id] = + scan localCounts[here.id];
-
+                // put locale-subbin-starts into atomic hist
+                [i in hD] atomicHist[here.id][i].write(globalEnds[i * numLocales + here.id] - localCounts[here.id][i]);
+            }
+        }
+        if v {writeln("done init atomic counts time = ",Time.getCurrentTime() - t1);try! stdout.flush();}
+        
+        // start timer
+        t1 = Time.getCurrentTime();
+        coforall loc in Locales {
+            on loc {
                 // put locale-subbin-starts into atomic hist
                 [i in hD] atomicHist[here.id][i].write(globalEnds[i * numLocales + here.id] - localCounts[here.id][i]);
 
                 // fetch-and-inc to get per-locale-subbin-position
                 // and directly write index to output array
-                [idx in a.localSubdomain()] {
+                forall idx in a.localSubdomain() {
+                    var idxCopy = idx;
                     var pos = atomicHist[here.id][a[idx]-aMin].fetchAdd(1); // local pos in localBuffer
-                    unorderedCopy(iv[pos],idx); // iv[pos] = idx; // should be global pos and global idx
+                    unorderedCopy(iv[pos],idxCopy); // iv[pos] = idx; // should be global pos and global idx
                 }
             }
         }
-        if v {writeln("done move  time = ",Time.getCurrentTime() - t1);try! stdout.flush();}
-        
+        if v {writeln("done move time = ",Time.getCurrentTime() - t1);try! stdout.flush();}
+
         // return the index vector
         return iv;
     }

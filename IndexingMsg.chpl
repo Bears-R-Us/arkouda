@@ -134,7 +134,8 @@ module IndexingMsg
                 var pop = iv[iv.size-1];
                 if v {writeln("pop = ",pop,"last-scan = ",iv[iv.size-1]);try! stdout.flush();}
                 var a = makeDistArray(pop, int);
-                [i in e.aD] if (truth.a[i] == true) {a[iv[i]-1] = e.a[i];}// iv[i]-1 for zero base index
+                //[i in e.aD] if (truth.a[i] == true) {a[iv[i]-1] = e.a[i];}// iv[i]-1 for zero base index
+                [i in e.aD] if (truth.a[i] == true) {unorderedCopy(a[iv[i]-1], e.a[i]);}// iv[i]-1 for zero base index
                 st.addEntry(rname, new shared SymEntry(a));
             }
             when (DType.Float64, DType.Int64) {
@@ -158,7 +159,8 @@ module IndexingMsg
                 var pop = iv[iv.size-1];
                 if v {writeln("pop = ",pop,"last-scan = ",iv[iv.size-1]);try! stdout.flush();}
                 var a = makeDistArray(pop, real);
-                [i in e.aD] if (truth.a[i] == true) {a[iv[i]-1] = e.a[i];}// iv[i]-1 for zero base index
+                //[i in e.aD] if (truth.a[i] == true) {a[iv[i]-1] = e.a[i];}// iv[i]-1 for zero base index
+                [i in e.aD] if (truth.a[i] == true) {unorderedCopy(a[iv[i]-1], e.a[i]);}// iv[i]-1 for zero base index
                 st.addEntry(rname, new shared SymEntry(a));
             }
             when (DType.Bool, DType.Int64) {
@@ -170,6 +172,9 @@ module IndexingMsg
                 if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
                 var a: [iv.aD] bool;
                 [i in iv.aD] a[i] = e.a[iv.a[i]];// bounds check iv[i] against e.aD?
+                //ref a2 = e.a;
+                //ref iva = iv.a;
+                //[(a1,idx) in zip(a,iva)] unorderedCopy(a1,a2[idx]); // bounds check iv[i] against e.aD?                
                 st.addEntry(rname, new shared SymEntry(a));
             }
             when (DType.Bool, DType.Bool) {
@@ -180,6 +185,7 @@ module IndexingMsg
                 if v {writeln("pop = ",pop,"last-scan = ",iv[iv.size-1]);try! stdout.flush();}
                 var a = makeDistArray(pop, bool);
                 [i in e.aD] if (truth.a[i] == true) {a[iv[i]-1] = e.a[i];}// iv[i]-1 for zero base index
+                //[i in e.aD] if (truth.a[i] == true) {unorderedCopy(a[iv[i]-1], e.a[i]);}// iv[i]-1 for zero base index
                 st.addEntry(rname, new shared SymEntry(a));
             }
             otherwise {return notImplementedError(pn,
