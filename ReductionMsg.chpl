@@ -219,6 +219,48 @@ module ReductionMsg
       return try! "created " + st.attrib(rname);
     }
 
+    proc countLocalRdxMsg(reqMsg: string, st: borrowed SymTab): string {
+      // reqMsg: countLocalRdx segments
+      // segments.size = numLocales * numKeys
+      var fields = reqMsg.split();
+      var cmd = fields[1];
+      var segments_name = fields[2]; // segment offsets
+      var size = try! fields[3]:int; // size of original keys array
+      var rname = st.nextName();
+      if v {try! writeln("%s %s %s".format(cmd,segments_name, size));try! stdout.flush();}
+
+      var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
+      if (gSeg == nil) {return unknownSymbolError("segmentedReduction",segments_name);}
+      var segments = toSymEntry(gSeg, int);
+      if (segments == nil) {return "Error: array of segment offsets must be int dtype";}
+      var origSubdomains = makeDistDom(size);
+      var numKeys:int = segments.size / numLocales;
+      var localCounts: [segments.aD] int;
+      coforall loc in Locales {
+	on loc {
+	  var myHigh = origSubdomains.localSubdomain().high;
+	  var myDom = segments.a.localSubdomain();
+	  ref mySeg = segments.a[myDom];
+	  
+	  forall (i, low, c) in zip(myDom, mySeg, localCounts[myDom]) {
+	    var high: int;
+	    if (i < myDom.high) {
+	      high = mySeg[i+1] - 1;
+	    } else {
+	      high = myHigh - 1;
+	    }
+	    c = high - low + 1;
+	  }
+	}
+      }
+      var counts = makeDistArray(numKeys, int);
+      forall i in counts.domain {
+	counts[i] = + reduce localCounts[i.. by numLocales];
+      }
+      st.addEntry(rname, new shared SymEntry(counts));
+      return try! "created " + st.attrib(rname);
+    }
+
     proc segmentedReductionMsg(reqMsg: string, st: borrowed SymTab): string {
       // reqMsg: segmentedReduction values segments operator
       var fields = reqMsg.split();
@@ -335,6 +377,39 @@ module ReductionMsg
       return try! "created " + st.attrib(rname);
     }
 
+    proc segmentedLocalRdxMsg(reqMsg: string, st: borrowed SymTab): string {
+      // reqMsg: segmentedReduction values segments operator
+      var fields = reqMsg.split();
+      var cmd = fields[1];
+      var values_name = fields[2];   // segmented array of values to be reduced
+      var segments_name = fields[3]; // segment offsets
+      var operator = fields[4];      // reduction operator
+      var rname = st.nextName();
+      if v {try! writeln("%s %s %s %s".format(cmd,values_name,segments_name,operator));try! stdout.flush();}
+
+      var gVal: borrowed GenSymEntry = st.lookup(values_name);
+      if (gVal == nil) {return unknownSymbolError("segmentedReduction",values_name);}
+      var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
+      if (gSeg == nil) {return unknownSymbolError("segmentedReduction",segments_name);}
+      var segments = toSymEntry(gSeg, int);
+      if (segments == nil) {return "Error: array of segment offsets must be int dtype";}
+      select (gVal.dtype) {
+      when (DType.Int64) {
+	var values = toSymEntry(gVal, int);
+	select operator {
+	  when "sum" {
+	    var res = perLocSum(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  otherwise {return notImplementedError("segmentedReduction",operator,gVal.dtype);}
+	  }
+      }
+      otherwise {return unrecognizedTypeError("segmentedReduction", dtype2str(gVal.dtype));}
+      }
+      return try! "created " + st.attrib(rname);
+    }
+	  
+
     proc segSum(values:[] ?t, segments:[?D] int): [D] t {
       var res: [D] t;
       forall (r, low, i) in zip(res, segments, D) {
@@ -345,6 +420,21 @@ module ReductionMsg
 	  high = values.domain.high;
 	}
 	r = + reduce values[low..high];
+      }
+      return res;
+    }
+
+    proc perLocSum(values:[] ?t, segments:[?D] int): [] t {
+      var localSums: [D] int;
+      coforall loc in Locales {
+	on loc {
+	  localSums[D.localSubdomain()] = segSum(values[values.localSubdomain()], segments[D.localSubdomain()]);
+	}
+      }
+      var numKeys:int = segments.size / numLocales;
+      var res = makeDistArray(numKeys, int);
+      forall i in res.domain {
+	res[i] = + reduce localSums[i.. by numLocales];
       }
       return res;
     }
