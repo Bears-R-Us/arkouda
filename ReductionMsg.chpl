@@ -180,5 +180,317 @@ module ReductionMsg
         }
     }
 
+    proc countReductionMsg(reqMsg: string, st: borrowed SymTab): string {
+      // reqMsg: segmentedReduction values segments operator
+      var fields = reqMsg.split();
+      var cmd = fields[1];
+      var segments_name = fields[2]; // segment offsets
+      var size = try! fields[3]:int;
+      var rname = st.nextName();
+      if v {try! writeln("%s %s %s".format(cmd,segments_name, size));try! stdout.flush();}
+
+      var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
+      if (gSeg == nil) {return unknownSymbolError("segmentedReduction",segments_name);}
+      var segments = toSymEntry(gSeg, int);
+      if (segments == nil) {return "Error: array of segment offsets must be int dtype";}
+      var counts:[segments.aD] int;
+      forall (c, low, i) in zip(counts, segments.a, segments.aD) {
+	var high: int;
+	if (i < segments.aD.high) {
+	  high = segments.a[i+1] - 1;
+	} else {
+	  high = size - 1;
+	}
+	c = high - low + 1;
+      }
+      st.addEntry(rname, new shared SymEntry(counts));
+      return try! "created " + st.attrib(rname);
+    }
+
+    proc segmentedReductionMsg(reqMsg: string, st: borrowed SymTab): string {
+      // reqMsg: segmentedReduction values segments operator
+      var fields = reqMsg.split();
+      var cmd = fields[1];
+      var values_name = fields[2];   // segmented array of values to be reduced
+      var segments_name = fields[3]; // segment offsets
+      var operator = fields[4];      // reduction operator
+      var rname = st.nextName();
+      if v {try! writeln("%s %s %s %s".format(cmd,values_name,segments_name,operator));try! stdout.flush();}
+
+      var gVal: borrowed GenSymEntry = st.lookup(values_name);
+      if (gVal == nil) {return unknownSymbolError("segmentedReduction",values_name);}
+      var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
+      if (gSeg == nil) {return unknownSymbolError("segmentedReduction",segments_name);}
+      var segments = toSymEntry(gSeg, int);
+      if (segments == nil) {return "Error: array of segment offsets must be int dtype";}
+      select (gVal.dtype) {
+      when (DType.Int64) {
+	var values = toSymEntry(gVal, int);
+	select operator {
+	  when "sum" {
+	    var res = segSum(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "prod" {
+	    var res = segProduct(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "mean" {
+	    var res = segMean(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "min" {
+	    var res = segMin(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "max" {
+	    var res = segMax(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "argmin" {
+	    var res = segArgmin(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "argmax" {
+	    var res = segArgmax(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "num_unique" {
+	    var res = segNumUnique(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  otherwise {return notImplementedError("segmentedReduction",operator,gVal.dtype);}
+	  }
+      }
+      when (DType.Float64) {
+	var values = toSymEntry(gVal, real);
+	select operator {
+	  when "sum" {
+	    var res = segSum(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "prod" {
+	    var res = segProduct(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "mean" {
+	    var res = segMean(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "min" {
+	    var res = segMin(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "max" {
+	    var res = segMax(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "argmin" {
+	    var res = segArgmin(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "argmax" {
+	    var res = segArgmax(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  otherwise {return notImplementedError("segmentedReduction",operator,gVal.dtype);}
+	  }
+      }
+      when (DType.Bool) {
+	var values = toSymEntry(gVal, bool);
+	select operator {
+	  when "sum" {
+	    var res = segSum(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "any" {
+	    var res = segAny(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "all" {
+	    var res = segAll(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "mean" {
+	    var res = segMean(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  otherwise {return notImplementedError("segmentedReduction",operator,gVal.dtype);}
+	  }
+      }
+      otherwise {return unrecognizedTypeError("segmentedReduction", dtype2str(gVal.dtype));}
+      }
+      return try! "created " + st.attrib(rname);
+    }
+
+    proc segSum(values:[] ?t, segments:[?D] int): [D] t {
+      var res: [D] t;
+      forall (r, low, i) in zip(res, segments, D) {
+	var high: int;
+	if (i < D.high) {
+	  high = segments[i+1] - 1;
+	} else {
+	  high = values.domain.high;
+	}
+	r = + reduce values[low..high];
+      }
+      return res;
+    }
+
+    proc segSum(values:[] bool, segments:[?D] int): [D] int {
+      var res: [D] int;
+      forall (r, low, i) in zip(res, segments, D) {
+	var high: int;
+	if (i < D.high) {
+	  high = segments[i+1] - 1;
+	} else {
+	  high = values.domain.high;
+	}
+	r = + reduce (values[low..high]:int);
+      }
+      return res;
+    }
+
+    proc segProduct(values:[] ?t, segments:[?D] int): [D] t {
+      var res: [D] t;
+      forall (r, low, i) in zip(res, segments, D) {
+	var high: int;
+	if (i < D.high) {
+	  high = segments[i+1] - 1;
+	} else {
+	  high = values.domain.high;
+	}
+	r = * reduce values[low..high];
+      }
+      return res;
+    }
+
+    proc segMean(values:[] ?t, segments:[?D] int): [D] real {
+      var res: [D] real;
+      forall (r, low, i) in zip(res, segments, D) {
+	var high: int;
+	if (i < D.high) {
+	  high = segments[i+1] - 1;
+	} else {
+	  high = values.domain.high;
+	}
+	r = (+ reduce values[low..high]):real / (high - low + 1):real;
+      }
+      return res;
+    }
+
+    proc segMin(values:[] ?t, segments:[?D] int): [D] t {
+      var res: [D] t;
+      forall (r, low, i) in zip(res, segments, D) {
+	var high: int;
+	if (i < D.high) {
+	  high = segments[i+1] - 1;
+	} else {
+	  high = values.domain.high;
+	}
+	r = min reduce values[low..high];
+      }
+      return res;
+    }
+
+    proc segMax(values:[] ?t, segments:[?D] int): [D] t {
+      var res: [D] t;
+      forall (r, low, i) in zip(res, segments, D) {
+	var high: int;
+	if (i < D.high) {
+	  high = segments[i+1] - 1;
+	} else {
+	  high = values.domain.high;
+	}
+	r = max reduce values[low..high];
+      }
+      return res;
+    }
+
+    proc segArgmin(values:[] ?t, segments:[?D] int): [D] int {
+      var res: [D] int;
+      forall (r, low, i) in zip(res, segments, D) {
+	var high: int;
+	if (i < D.high) {
+	  high = segments[i+1] - 1;
+	} else {
+	  high = values.domain.high;
+	}
+	var segment: subdomain(values.domain) = values.domain[low..high];
+	var (minVal, minInd) = minloc reduce zip(values[segment],segment);
+	r = minInd;
+      }
+      return res;
+    }
+
+    proc segArgmax(values:[] ?t, segments:[?D] int): [D] int {
+      var res: [D] int;
+      forall (r, low, i) in zip(res, segments, D) {
+	var high: int;
+	if (i < D.high) {
+	  high = segments[i+1] - 1;
+	} else {
+	  high = values.domain.high;
+	}
+	var segment: subdomain(values.domain) = values.domain[low..high];
+	var (maxVal, maxInd) = maxloc reduce zip(values[segment],segment);
+	r = maxInd;
+      }
+      return res;
+    }
+
+    proc segAny(values:[] bool, segments:[?D] int): [D] bool {
+      var res: [D] bool;
+      forall (r, low, i) in zip(res, segments, D) {
+	var high: int;
+	if (i < D.high) {
+	  high = segments[i+1] - 1;
+	} else {
+	  high = values.domain.high;
+	}
+	r = || reduce values[low..high];
+      }
+      return res;
+    }
+
+    proc segAll(values:[] bool, segments:[?D] int): [D] bool {
+      var res: [D] bool;
+      forall (r, low, i) in zip(res, segments, D) {
+	var high: int;
+	if (i < D.high) {
+	  high = segments[i+1] - 1;
+	} else {
+	  high = values.domain.high;
+	}
+	r = && reduce values[low..high];
+      }
+      return res;
+    }
+
+    proc segNumUnique(values:[] int, segments:[?D] int): [D] int {
+      var res: [D] int;
+      forall (r, low, i) in zip(res, segments, D) {
+	var high: int;
+	if (i < D.high) {
+	  high = segments[i+1] - 1;
+	} else {
+	  high = values.domain.high;
+	}
+	var unique: domain(int);
+	var domLock$:sync bool = true;
+	forall v in values[low..high] with (ref unique, ref domLock$) {
+	  if !unique.contains(v) {
+	    domLock$;
+	    if !unique.contains(v) {
+	      unique += v;
+	    }
+	    domLock$ = true;
+	  }
+	}
+	r = unique.size;
+      }
+      return res;
+    }
+      
 }
 
