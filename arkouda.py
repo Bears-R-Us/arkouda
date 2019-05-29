@@ -868,17 +868,25 @@ class GroupBy:
     Reductions = frozenset(['sum', 'prod', 'mean',
                             'min', 'max', 'argmin', 'argmax',
                             'num_unique', 'any', 'all'])
-    def __init__(self, keys):
+    def __init__(self, keys, per_locale=True):
         '''Group <keys> by value, usually in preparation for grouping and aggregating the values of another array via the .aggregate() method. Return a GroupBy object that stores the information for how to group values.
         '''
         if not isinstance(keys, pdarray):
             raise TypeError("Argument must be a pdarray")
+        self.per_locale = per_locale
         self.keys = keys
-        self.permutation = argsort(keys)
+        if per_locale:
+            self.permutation = local_argsort(keys)
+        else:
+            self.permutation = argsort(keys)
         self.segments, self.unique_keys = self.find_segments()
             
     def find_segments(self):
-        reqMsg = "findSegments {} {}".format(self.keys.name, self.permutation.name)
+        if self.per_locale:
+            cmd = "findLocalSegments"
+        else:
+            cmd = "findSegments"
+        reqMsg = "{} {} {}".format(cmd, self.keys.name, self.permutation.name)
         repMsg = generic_msg(reqMsg)
         segAttr, uniqAttr = repMsg.split("+")
         if v: print(segAttr, uniqAttr)
@@ -887,7 +895,11 @@ class GroupBy:
     def count(self):
         '''Return the number of elements in each group, i.e. the number of times each key occurs.
         '''
-        reqMsg = "countReduction {} {}".format(self.segments.name, self.keys.size)
+        if self.per_locale:
+            cmd = "countLocalRdx"
+        else:
+            cmd = "countReduction"
+        reqMsg = "{} {} {}".format(cmd, self.segments.name, self.keys.size)
         repMsg = generic_msg(reqMsg)
         if v: print(repMsg)
         return self.unique_keys, create_pdarray(repMsg)
@@ -902,9 +914,14 @@ class GroupBy:
         if operator not in self.Reductions:
             raise ValueError("Unsupported reduction: {}\nMust be one of {}".format(operator, self.Reductions))
         permuted_values = values[self.permutation]
-        reqMsg = "segmentedReduction {} {} {}".format(permuted_values.name,
-                                                      self.segments.name,
-                                                      operator)
+        if self.per_locale:
+            cmd = "segmentedLocalRdx"
+        else:
+            cmd = "segmentedReduction"
+        reqMsg = "{} {} {} {}".format(cmd,
+                                      permuted_values.name,
+                                      self.segments.name,
+                                      operator)
         repMsg = generic_msg(reqMsg)
         if v: print(repMsg)
         return self.unique_keys, create_pdarray(repMsg)

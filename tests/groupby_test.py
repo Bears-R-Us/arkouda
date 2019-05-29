@@ -35,6 +35,22 @@ def run_test():
     tests = 0
     failures = 0
     not_impl = 0
+    print(f"Doing .count()")
+    tests += 1
+    pdkeys, pdvals = groupby_to_arrays(df, 'keys', 'int64', 'count')
+    print("Pandas:")
+    print(pdkeys)
+    print(pdvals)
+    akkeys, akvals = akg.count()
+    print("Arkouda:")
+    print(akkeys)
+    print(akvals)
+    if not np.allclose(pdkeys, akkeys):
+        print(f"Different keys")
+        failures += 1
+    elif not np.allclose(pdvals, akvals):
+        print(f"Different values")
+        failures += 1
     for vname in ('int64', 'float64', 'bool'):
         for op in ak.GroupBy.Reductions:
             print(f"\nDoing aggregate({vname}, {op})")
