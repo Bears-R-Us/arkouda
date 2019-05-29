@@ -3,19 +3,19 @@
 import arkouda as ak
 import numpy as np
 import pandas as pd
-SIZE = 20
-GROUPS = 3
+SIZE = 1000
+GROUPS = 11
 
-## Need this monkey-patch until Mike implements find_segments in chapel
-def find_segments(self):
-    perm_keys = self.keys[self.permutation].to_ndarray()
-    steps = np.hstack((np.array([True]), perm_keys[:-1]!=perm_keys[1:]))
-    segments = np.arange(0, perm_keys.size)[steps]
-    unique_keys = perm_keys[steps]
-    return ak.array(segments), ak.array(unique_keys)
+## ## Need this monkey-patch until Mike implements find_segments in chapel
+## def find_segments(self):
+##     perm_keys = self.keys[self.permutation].to_ndarray()
+##     steps = np.hstack((np.array([True]), perm_keys[:-1]!=perm_keys[1:]))
+##     segments = np.arange(0, perm_keys.size)[steps]
+##     unique_keys = perm_keys[steps]
+##     return ak.array(segments), ak.array(unique_keys)
 
-ak.GroupBy.find_segments = find_segments
-## End monkey patch
+## ak.GroupBy.find_segments = find_segments
+## ## End monkey patch
 
 def groupby_to_arrays(df, kname, vname, op):
     g = df.groupby(kname)[vname]
