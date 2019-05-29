@@ -119,7 +119,7 @@ module IndexingMsg
                 var ivMin = min reduce iv.a;
                 var ivMax = max reduce iv.a;
                 if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
-                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
+                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);}
                 var a: [iv.aD] int;
                 //[i in iv.aD] a[i] = e.a[iv.a[i]]; // bounds check iv[i] against e.aD?
                 //[(a1,idx) in zip(a,iv.a)] a1 = a2[idx]; // bounds check iv[i] against e.aD?
@@ -145,7 +145,7 @@ module IndexingMsg
                 var ivMin = min reduce iv.a;
                 var ivMax = max reduce iv.a;
                 if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
-                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
+                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);}
                 var a: [iv.aD] real;
                 //[i in iv.aD] a[i] = e.a[iv.a[i]]; // bounds check iv[i] against e.aD?
                 ref a2 = e.a;
@@ -170,7 +170,7 @@ module IndexingMsg
                 var ivMin = min reduce iv.a;
                 var ivMax = max reduce iv.a;
                 if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
-                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
+                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);}
                 var a: [iv.aD] bool;
                 [i in iv.aD] a[i] = e.a[iv.a[i]];// bounds check iv[i] against e.aD?
                 //ref a2 = e.a;
@@ -294,7 +294,7 @@ module IndexingMsg
             var ivMin = min reduce iv.a;
             var ivMax = max reduce iv.a;
             if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
-            if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
+            if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);}
             if isBool(dtype) {
                 value = value.replace("True","true"); // chapel to python bool
                 value = value.replace("False","false"); // chapel to python bool
@@ -352,7 +352,7 @@ module IndexingMsg
                 var ivMax = max reduce iv.a;
                 var y = toSymEntry(gY,int);
                 if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
-                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
+                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);}
                 [(i,v) in zip(iv.a,y.a)] e.a[i] = v;
             }
             when (DType.Float64, DType.Int64, DType.Float64) {
@@ -362,7 +362,7 @@ module IndexingMsg
                 var ivMax = max reduce iv.a;
                 var y = toSymEntry(gY,real);
                 if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
-                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
+                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);}
                 [(i,v) in zip(iv.a,y.a)] e.a[i] = v;
             }
             when (DType.Bool, DType.Int64, DType.Bool) {
@@ -372,7 +372,7 @@ module IndexingMsg
                 var ivMax = max reduce iv.a;
                 var y = toSymEntry(gY,bool);
                 if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
-                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
+                if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);}
                 [(i,v) in zip(iv.a,y.a)] e.a[i] = v;
             }
             otherwise {return notImplementedError(pn,

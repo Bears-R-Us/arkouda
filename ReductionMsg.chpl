@@ -79,6 +79,18 @@ module ReductionMsg
                         if sorted {val = "True";} else {val = "False";}
                         return try! "bool %s".format(val);
                     }
+		    when "is_locally_sorted" {
+		      var locSorted: [LocaleSpace] bool;
+		      coforall loc in Locales {
+			on loc {
+			  ref myA = e.a[e.a.localSubdomain()];
+			  locSorted[here.id] = isSorted(myA);
+			}
+		      }
+		      var val: string;
+		      if (& reduce locSorted) {val = "True";} else {val = "False";}
+		      return try! "bool %s".format(val);
+		    }
                     otherwise {return notImplementedError("reduction",reductionop,gEnt.dtype);}
                 }
             }
