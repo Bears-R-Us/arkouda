@@ -20,6 +20,7 @@ module MsgProcessing
     use HistogramMsg;
     use ArgSortMsg;
     use ReductionMsg;
+    use FindSegmentsMsg;
     
     // parse, execute, and respond to create message
     proc createMsg(reqMsg: string, st: borrowed SymTab): string {

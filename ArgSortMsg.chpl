@@ -338,9 +338,6 @@ module ArgSortMsg
         t1 = Time.getCurrentTime();
         coforall loc in Locales {
             on loc {
-                // put locale-subbin-starts into atomic hist
-                [i in hD] atomicHist[here.id][i].write(globalEnds[i * numLocales + here.id] - localCounts[here.id][i]);
-
                 // fetch-and-inc to get per-locale-subbin-position
                 // and directly write index to output array
                 forall idx in a.localSubdomain() {
