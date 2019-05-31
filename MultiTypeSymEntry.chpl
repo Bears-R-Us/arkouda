@@ -77,7 +77,7 @@ module MultiTypeSymEntry
     // cast the symbol entry of the right type and return it
     // blah too much type inference still for my taste
     inline proc toSymEntry(gse: borrowed GenSymEntry, type etype) {
-        return gse: SymEntry(etype, makeDistDomType(gse.size));
+        return gse: SymEntry(etype);
     }
 
     // 1.18 version
@@ -116,8 +116,9 @@ module MultiTypeSymEntry
         // etype is different from dtype (chapel vs numpy)
         type etype;
 
-        // aD which is suppose to hold the domain is now a completely generic field
-        var aD;
+        // 'aD' is the distributed domain for 'a' whose value and type
+        // are defined by makeDistDom() to support varying distributions
+        var aD: makeDistDom(size).type;
         var a: [aD] etype;
         
         // this one takes length and element type
