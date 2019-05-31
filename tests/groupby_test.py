@@ -56,6 +56,8 @@ def run_test():
     print(pdkeys)
     print(pdvals)
     akkeys, akvals = akg.count()
+    akkeys = akkeys.to_ndarray()
+    akvals = akvals.to_ndarray()
     print("Arkouda:")
     print(akkeys)
     print(akvals)
