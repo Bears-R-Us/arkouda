@@ -31,7 +31,7 @@ def run_test():
     d = {'keys':keys, 'int64':i, 'float64':f, 'bool':b}
     df = pd.DataFrame(d)
     akdf = {k:ak.array(v) for k, v in d.items()}
-    akg = ak.GroupBy(akdf['keys'])
+    akg = ak.GroupBy(akdf['keys'], False)
     tests = 0
     failures = 0
     not_impl = 0
@@ -42,6 +42,8 @@ def run_test():
     print(pdkeys)
     print(pdvals)
     akkeys, akvals = akg.count()
+    akkeys = akkeys.to_ndarray()
+    akvals = akvals.to_ndarray()
     print("Arkouda:")
     print(akkeys)
     print(akvals)
