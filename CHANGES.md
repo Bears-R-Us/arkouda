@@ -1,11 +1,13 @@
-### changes in arkouda-0.0.8
+### Changes in arkouda-0.0.8
 ------------------------
  * added initial ak.argsort functionality
  * added initial ak.is_sorted functionality
  * added unit test to tests directory for ak.argsort
  * optimized argsort
  * added ak.where
- * 
+ * opt some a[pdarray] gather-indexing
+ * added initial ak.GroupBy functionality
+ *
 
 ### Changes in arkouda-0.0.7
 ------------------------

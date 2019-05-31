@@ -73,7 +73,8 @@ module IndexingMsg
           var aD = makeDistDom(slice.size);
           var a = makeDistArray(slice.size, t);
           ref ea = e.a;
-          [(i,j) in zip(aD, slice)] a[i] = ea[j];
+          [(elt,j) in zip(a, slice)] elt = ea[j];
+          //[(elt,j) in zip(a, slice)] unorderedCopy(elt,ea[j]);
           st.addEntry(rname, new shared SymEntry(a));
         }
 

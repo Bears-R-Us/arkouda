@@ -57,9 +57,9 @@ module FindSegmentsMsg
                 var ukeys = makeDistArray(pop, int);
 
                 // segment position... 1-based needs to be converted to 0-based because of inclusive-scan
-                // where ever a segment break is... that index is a segment start index
+                // where ever a segment break (true value) is... that index is a segment start index
                 [i in truth.domain] if (truth[i] == true) {var idx = i; unorderedCopy(segs[iv[i]-1], idx);}
-                // pull out the first key in each segment as a unique value
+                // pull out the first key in each segment as a unique key
                 [i in segs.domain] ukeys[i] = sorted[segs[i]];
                 
                 st.addEntry(sname, new shared SymEntry(segs));

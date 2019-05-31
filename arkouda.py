@@ -868,7 +868,7 @@ class GroupBy:
     Reductions = frozenset(['sum', 'prod', 'mean',
                             'min', 'max', 'argmin', 'argmax',
                             'num_unique', 'any', 'all'])
-    def __init__(self, keys, per_locale=True):
+    def __init__(self, keys, per_locale=False):
         '''Group <keys> by value, usually in preparation for grouping and aggregating the values of another array via the .aggregate() method. Return a GroupBy object that stores the information for how to group values.
         '''
         if not isinstance(keys, pdarray):
