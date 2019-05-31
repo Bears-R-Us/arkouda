@@ -716,6 +716,13 @@ def argsort(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
+def local_argsort(pda):
+    if isinstance(pda, pdarray):
+        repMsg = generic_msg("localArgsort {}".format(pda.name))
+        return create_pdarray(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+
 def abs(pda):
     if isinstance(pda, pdarray):
         repMsg = generic_msg("efunc {} {}".format("abs", pda.name))
