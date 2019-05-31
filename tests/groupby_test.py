@@ -40,8 +40,21 @@ ak.GroupBy.find_segments = find_segments
 ## End monkey patch
 
 def groupby_to_arrays(df, kname, vname, op):
+    # if op == 'argmin':
+    #     keys = np.unique(df[kname].values)
+    #     argmins = []
+    #     for k in keys:
+    #         argmins.append(np.where(df[kname] == k, df[vname], np.inf).argmin())
+    #     return keys, np.array(argmins)
+    # elif op == 'argmax':
+    #     keys = np.unique(df[kname].values)
+    #     argmaxes = []
+    #     for k in keys:
+    #         argmaxes.append(np.where(df[kname] == k, df[vname], -np.inf).argmax())
+    #     return keys, np.argmax(argmaxes)
+    # else:
     g = df.groupby(kname)[vname]
-    agg = g.aggregate(op)
+    agg = g.aggregate(op.replace('arg', 'idx'))
     return agg.index.values, agg.values
 
 

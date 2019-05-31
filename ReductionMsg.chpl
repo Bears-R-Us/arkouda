@@ -319,7 +319,7 @@ module ReductionMsg
 	    var res = segArgmax(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
-	  when "num_unique" {
+	  when "nunique" {
 	    var res = segNumUnique(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
@@ -409,6 +409,90 @@ module ReductionMsg
 	select operator {
 	  when "sum" {
 	    var res = perLocSum(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "prod" {
+	    var res = perLocProduct(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "mean" {
+	    var res = perLocMean(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "min" {
+	    var res = perLocMin(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "max" {
+	    var res = perLocMax(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "argmin" {
+	    var res = perLocArgmin(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "argmax" {
+	    var res = perLocArgmax(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "num_unique" {
+	    var res = perLocNumUnique(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  otherwise {return notImplementedError("segmentedReduction",operator,gVal.dtype);}
+	  }
+      }
+      when (DType.Float64) {
+	var values = toSymEntry(gVal, real);
+	select operator {
+	  when "sum" {
+	    var res = perLocSum(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "prod" {
+	    var res = perLocProduct(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "mean" {
+	    var res = perLocMean(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "min" {
+	    var res = perLocMin(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "max" {
+	    var res = perLocMax(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "argmin" {
+	    var res = perLocArgmin(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "argmax" {
+	    var res = perLocArgmax(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  otherwise {return notImplementedError("segmentedReduction",operator,gVal.dtype);}
+	  }
+      }
+      when (DType.Bool) {
+	var values = toSymEntry(gVal, bool);
+	select operator {
+	  when "sum" {
+	    var res = perLocSum(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "any" {
+	    var res = perLocAny(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "all" {
+	    var res = perLocAll(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(res));
+	  }
+	  when "mean" {
+	    var res = perLocMean(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  otherwise {return notImplementedError("segmentedReduction",operator,gVal.dtype);}
@@ -614,12 +698,12 @@ module ReductionMsg
 	}
       }
       var numKeys:int = segments.size / numLocales;
-      var res = makeDistArray(numKeys, t);
+      var res = makeDistArray(numKeys, int);
       forall i in res.domain {
 	var minVals = [ind in localArgmins[i.. by numKeys]] if (ind == -1) then max(t) else values[ind];
 	var (globalMin, globalMinInd) = minloc reduce zip(minVals,
 							  localArgmins[i.. by numKeys]);
-	res[i] = localArgmins[globalMinInd];
+	res[i] = globalMinInd;
       }
       return res;
     }
@@ -652,12 +736,12 @@ module ReductionMsg
 	}
       }
       var numKeys:int = segments.size / numLocales;
-      var res = makeDistArray(numKeys, t);
+      var res = makeDistArray(numKeys, int);
       forall i in res.domain {
-	var maxVals = [ind in localArgmaxes[i.. by numKeys]] if (i == -1) then min(t) else values[ind];
+	var maxVals = [ind in localArgmaxes[i.. by numKeys]] if (ind == -1) then min(t) else values[ind];
 	var (globalMax, globalMaxInd) = maxloc reduce zip(maxVals,
 							  localArgmaxes[i.. by numKeys]);
-	res[i] = localArgmaxes[globalMaxInd];
+	res[i] = globalMaxInd;
       }
       return res;
     }
@@ -684,7 +768,7 @@ module ReductionMsg
 	}
       }
       var numKeys:int = segments.size / numLocales;
-      var res = makeDistArray(numKeys, real);
+      var res = makeDistArray(numKeys, bool);
       forall i in res.domain {
 	res[i] = || reduce localAny[i.. by numKeys];
       }
@@ -713,7 +797,7 @@ module ReductionMsg
 	}
       }
       var numKeys:int = segments.size / numLocales;
-      var res = makeDistArray(numKeys, real);
+      var res = makeDistArray(numKeys, bool);
       forall i in res.domain {
 	res[i] = && reduce localAll[i.. by numKeys];
       }
