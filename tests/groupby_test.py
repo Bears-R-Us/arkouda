@@ -18,12 +18,9 @@ def find_segments(self):
         steps[0::len(perm_keys)//numLocales] = True
         offsets = np.arange(0, len(perm_keys))[steps]
         keyvals = perm_keys[steps]
-        ind = 0
-        segments = np.zeros(len(unique_keys)*numLocales, dtype='int64')
+        segments = -np.ones(len(unique_keys)*numLocales, dtype='int64')
         for o, k in zip(offsets, keyvals):
-            while (ind % len(unique_keys)) <= k2i[k]:
-                segments[ind] = o
-                ind += 1
+            segments[k2i[k]] = o
         return ak.array(segments), ak.array(unique_keys)
     else:
         return old_find_segments(self)
