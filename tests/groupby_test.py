@@ -12,15 +12,26 @@ def find_segments(self):
     if self.per_locale:
         global numLocales
         perm_keys = self.keys[self.permutation].to_ndarray()
-        unique_keys = np.unique(perm_keys).sort()
-        k2i = {k:i for i, k in enumerate(unique_keys)}      
-        steps = np.hstack((np.array([True]), perm_keys[:-1]!=perm_keys[1:]))
-        steps[0::len(perm_keys)//numLocales] = True
-        offsets = np.arange(0, len(perm_keys))[steps]
-        keyvals = perm_keys[steps]
-        segments = -np.ones(len(unique_keys)*numLocales, dtype='int64')
-        for o, k in zip(offsets, keyvals):
-            segments[k2i[k]] = o
+        unique_keys = np.unique(perm_keys)
+        unique_keys.sort()
+        perm_keys = perm_keys.reshape((numLocales, -1))
+        k2i = {k:i for i, k in enumerate(unique_keys)}
+        segments = -np.ones(len(unique_keys)*numLocales, dtype='int64').reshape((numLocales, -1))
+        for loc in range(numLocales):
+            steps = np.hstack((np.array([True]), perm_keys[loc, :-1]!=perm_keys[loc, 1:]))
+            # steps[0::len(perm_keys)//numLocales] = True
+            start = loc * perm_keys.shape[1]
+            offsets = np.arange(start, start + perm_keys.shape[1])[steps]
+            keyvals = perm_keys[loc, :][steps]
+            for o, k in zip(offsets, keyvals):
+                segments[loc, k2i[k]] = o
+        segments = segments.flatten()
+        last = self.keys.size
+        for i in range(len(segments)-1, -1, -1):
+            if segments[i] == -1:
+                segments[i] = last
+            else:
+                last = segments[i]
         return ak.array(segments), ak.array(unique_keys)
     else:
         return old_find_segments(self)
@@ -34,7 +45,9 @@ def groupby_to_arrays(df, kname, vname, op):
     return agg.index.values, agg.values
 
 
-def run_test():
+def run_test(num_locales):
+    global numLocales
+    numLocales = num_locales
     keys = np.random.randint(0, GROUPS, SIZE)
     i = np.random.randint(0, SIZE//GROUPS, SIZE)
     f = np.random.randn(SIZE)
@@ -42,7 +55,7 @@ def run_test():
     d = {'keys':keys, 'int64':i, 'float64':f, 'bool':b}
     df = pd.DataFrame(d)
     akdf = {k:ak.array(v) for k, v in d.items()}
-    akg = ak.GroupBy(akdf['keys'])
+    akg = ak.GroupBy(akdf['keys'], num_locales > 0)
     tests = 0
     failures = 0
     not_impl = 0
@@ -102,8 +115,8 @@ def run_test():
 
 if __name__ == '__main__':
     import sys
-    if len(sys.argv) != 3:
-        print(f"Usage: {sys.argv[0]} <server> <port>")
+    if len(sys.argv) != 4:
+        print(f"Usage: {sys.argv[0]} <server> <port> <per_locale_mode=0|1>")
     ak.connect(sys.argv[1], int(sys.argv[2]))
-    run_test()
+    run_test(int(sys.argv[3]))
     sys.exit()
