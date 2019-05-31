@@ -244,7 +244,9 @@ module ReductionMsg
 	  
 	  forall (i, low, c) in zip(myDom, mySeg, localCounts[myDom]) {
 	    var high: int;
-	    if (i < myDom.high) {
+	    if (i == -1) {
+	      continue; // segment offset of -1 means key not present on this locale
+	    } else if (i < myDom.high) {
 	      high = mySeg[i+1] - 1;
 	    } else {
 	      high = myHigh - 1;
