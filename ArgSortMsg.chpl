@@ -262,7 +262,7 @@ module ArgSortMsg
                         try! stdout.flush();
                         exit(1);
                     }
-                    if localCounts[i] > 0 {iv[gLow..gHigh] = localBuffer[lLow..lHigh];}
+                    if localCounts[here.id][i] > 0 {iv[gLow..gHigh] = localBuffer[lLow..lHigh];}
                 }
             }
         }

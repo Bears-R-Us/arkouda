@@ -757,7 +757,7 @@ proc randomtest(n:int) {
   writeln("Done Verifying");
 }
 
-proc argsortDRS(a: [?aD] int): [aD] int {
+proc argsortDRS(a: [?aD] int, aMin: int, aMax: int): [aD] int {
 
     var n = a.size;
     
@@ -778,47 +778,73 @@ proc argsortDRS(a: [?aD] int): [aD] int {
     msbRadixSortWithScratchSpace(0, n-1,
                                  dst, src,
                                  comp,
-                                 0, max(int));
+                                 aMin, aMax);
     timer.stop();
     
     if timing {
         writeln("Sorted ", n, " elements in ", timer.elapsed(), " seconds",
-                " (", 8.0*n/timer.elapsed()/1024.0/1024.0, " MiB/s");
+                " (", 8.0*n/timer.elapsed()/1024.0/1024.0, " MiB/s)");
     }
 
     var iv: [aD] int = [(e,i) in dst] i;
 
     return iv;
 }
-    
-proc test_argsort(n:int) {
-    const blockDom = newBlockDom({0..#n});
-    var a: [blockDom] int;
-    var seed = SeedGenerator.oddCurrentTime;
-    fillRandom(a, seed);
-    var localCopy:[0..#n] int = a; 
 
-    var iv = argsortDRS(a);
+// fill a with integers from interval aMin..(aMax-1)
+proc fillRandInt(a: [?aD] int, aMin: int, aMax: int) {
     
-    var sorted: [a.domain] int = a[iv];
-
-    writeln("Verifying");
-    Sort.sort(localCopy);
-    assert(Sort.isSorted(localCopy));
-    forall i in 0..#n {
-        if localCopy[i] != sorted[i] {
-            writeln("Sorting error in randomtest seed=", seed, " n=", n,
-                    " element ", i, " in incorrect order");
-            halt("failure");
+    var t1 = Time.getCurrentTime();
+    coforall loc in Locales {
+        on loc {
+            var R = new owned RandomStream(real); R.getNext();
+            [i in a.localSubdomain()] a[i] = (R.getNext() * (aMax - aMin) + aMin):int;
         }
     }
-    writeln("Done Verifying");
-} 
+    writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+    
+}
+proc isSorted(A:[?D] ?t): bool {
+    var sorted: bool;
+    sorted = true;
+    forall (a,i) in zip(A,D) with (&& reduce sorted) {
+        if i > D.low {
+            sorted &&= (A[i-1] <= a);
+        }
+    }
+    return sorted;
+}
+
+proc test_argsort(n: int, nVals: int) {
+    const blockDom = newBlockDom({0..#n});
+    var a: [blockDom] int;
+
+    var aMin = 0;
+    var aMax = nVals-1;
+    writeln((n, nVals));
+    // fill an array with random ints from a range
+    fillRandInt(a, aMin, aMax+1);
+
+    var localCopy:[0..#n] int = a;
+
+    writeln(">>> argsortDRS");
+    var t1 = Time.getCurrentTime();
+    // returns a perm vector
+    var iv = argsortDRS(a, aMin, aMax);
+    writeln("sort time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+
+    // permute into sorted order
+    var sorted: [a.domain] int = a[iv];
+
+    // check to see if we successfully sorted a
+    writeln("<<< isSorted = ", isSorted(sorted));
+}
 
 config const N = 1000;
+config const NVALS = 8192;
 
 proc main() {
-    test_argsort(N);
+    test_argsort(N, NVALS);
     //randomtest(10);
     //randomtest(100);
     //randomtest(1000);
