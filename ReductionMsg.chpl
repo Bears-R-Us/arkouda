@@ -257,7 +257,7 @@ module ReductionMsg
 	    if (i < myDom.high) {
 	      high = mySeg[i+1] - 1;
 	    } else {
-	      high = myHigh - 1;
+	      high = myHigh;
 	    }
 	    c = high - low + 1;
 	  }
