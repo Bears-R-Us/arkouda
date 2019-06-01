@@ -125,7 +125,7 @@ module MultiTypeSymEntry
             super.init(etype, len);
             this.etype = etype;
             this.aD = makeDistDom(len);
-            this.a = makeDistArray(len, etype);
+            // this.a uses default initialization
         }
 
         // this one takes an array of a type
