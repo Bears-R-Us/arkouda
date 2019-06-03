@@ -504,93 +504,105 @@ module ReductionMsg
     }
 	  
 
-    proc segSum(values:[] ?t, segments:[?D] int): [D] t {
+    proc segSum(values:[] ?t, segments:[?D] int): ([D] int, [D] t) {
       var res: [D] t;
-      forall (r, low, i) in zip(res, segments, D) {
+      var count: [D] int;
+      forall (r, c, low, i) in zip(res, count, segments, D) {
 	var high: int;
 	if (i < D.high) {
 	  high = segments[i+1] - 1;
 	} else {
 	  high = values.domain.high;
 	}
+	c = high - low + 1;
 	r = + reduce values[low..high];
       }
-      return res;
+      return (count, res);
     }
 
     proc perLocSum(values:[] ?t, segments:[?D] int): [] t {
-      var localSums: [D] t;
+      var numKeys:int = segments.size / numLocales;
+      var keyDom = makeDistDom(numKeys);
+      var res: [keyDom] atomic t;
       coforall loc in Locales {
 	on loc {
-	  localSums[D.localSubdomain()] = segSum(values[values.localSubdomain()], segments[D.localSubdomain()]);
+	  var (myCounts, myVals) = segSum(values[values.localSubdomain()], segments[D.localSubdomain()]);
+	  forall (c, v, i) in zip(myCounts, myVals, 0..#numKeys) {
+	    if (c > 0) {
+	      res[i].add(v);
+	    }
+	  }
 	}
       }
-      var numKeys:int = segments.size / numLocales;
-      var res = makeDistArray(numKeys, t);
-      forall i in res.domain {
-	res[i] = + reduce localSums[i.. by numKeys];
-      }
-      return res;
+      return [v in res] v.read();
     }
 
-    proc segSum(values:[] bool, segments:[?D] int): [D] int {
+    proc segSum(values:[] bool, segments:[?D] int): ([D] int, [D] int) {
+      var count: [D] int;
       var res: [D] int;
-      forall (r, low, i) in zip(res, segments, D) {
+      forall (r, c, low, i) in zip(res, count, segments, D) {
 	var high: int;
 	if (i < D.high) {
 	  high = segments[i+1] - 1;
 	} else {
 	  high = values.domain.high;
 	}
+	c = high - low + 1;
 	r = + reduce (values[low..high]:int);
       }
-      return res;
+      return (count, res);
     }
 
     proc perLocSum(values:[] bool, segments:[?D] int): [] int {
-      var localSums: [D] int;
+      var numKeys:int = segments.size / numLocales;
+      var keyDom = makeDistDom(numKeys);
+      var res: [keyDom] atomic int;
       coforall loc in Locales {
 	on loc {
-	  localSums[D.localSubdomain()] = segSum(values[values.localSubdomain()], segments[D.localSubdomain()]);
+	  var (myCounts, myVals) = segSum(values[values.localSubdomain()], segments[D.localSubdomain()]);
+	  forall (c, v, i) in zip(myCounts, myVals, 0..#numKeys) {
+	    if (c > 0) {
+	      res[i].add(v);
+	    }
+	  }
 	}
       }
-      var numKeys:int = segments.size / numLocales;
-      var res = makeDistArray(numKeys, int);
-      forall i in res.domain {
-	res[i] = + reduce localSums[i.. by numKeys];
-      }
-      return res;
+      return [v in res] v.read();
     }
-
-    proc segProduct(values:[], segments:[?D] int): [D] real {
+    
+    proc segProduct(values:[], segments:[?D] int): ([D] int, [D] real) {
+      var count: [D] int;
       var res: [D] real;
-      forall (r, low, i) in zip(res, segments, D) {
+      forall (r, c, low, i) in zip(res, count, segments, D) {
 	var high: int;
 	if (i < D.high) {
 	  high = segments[i+1] - 1;
 	} else {
 	  high = values.domain.high;
 	}
+	c = high - low + 1;
 	r = * reduce values[low..high]:real;
       }
-      return res;
+      return (count, res);
     }
 
-    proc perLocProduct(values:[], segments:[?D] int): [] real {
-      var localProducts: [D] real;
+    proc perLocProduct(values:[] ?t, segments:[?D] int): [] real {
+      var numKeys:int = segments.size / numLocales;
+      var keyDom = makeDistDom(numKeys);
+      var res: [keyDom] atomic real;
       coforall loc in Locales {
 	on loc {
-	  localProducts[D.localSubdomain()] = segProduct(values[values.localSubdomain()], segments[D.localSubdomain()]);
+	  var (myCounts, myVals) = segProduct(values[values.localSubdomain()], segments[D.localSubdomain()]);
+	  forall (c, v, i) in zip(myCounts, myVals, 0..#numKeys) {
+	    if (c > 0) {
+	      res[i].write(res[i].read() * v);
+	    }
+	  }
 	}
       }
-      var numKeys:int = segments.size / numLocales;
-      var res = makeDistArray(numKeys, real);
-      forall i in res.domain {
-	res[i] = * reduce localProducts[i.. by numKeys];
-      }
-      return res;
+      return [v in res] v.read();
     }
-
+    
     proc segMean(values:[] ?t, segments:[?D] int): [D] real {
       var res: [D] real;
       forall (r, low, i) in zip(res, segments, D) {
@@ -625,21 +637,26 @@ module ReductionMsg
       }
       return res;
     }
-
+    
     proc perLocMin(values:[] ?t, segments:[?D] int): [] t {
-      var localMinima: [D] t;
+      var numKeys:int = segments.size / numLocales;
+      var keyDom = makeDistDom(numKeys);
+      var res: [keyDom] atomic t;
       coforall loc in Locales {
 	on loc {
-	  localMinima[D.localSubdomain()] = segMin(values[values.localSubdomain()], segments[D.localSubdomain()]);
+	  var (myCounts, myVals) = segMin(values[values.localSubdomain()], segments[D.localSubdomain()]);
+	  forall (c, v, i) in zip(myCounts, myVals, 0..#numKeys) {
+	    if (c > 0) {
+	      var cur = res[i].read();
+	      if (v < cur) {
+		res[i].write(v);
+	      }
+	    }
+	  }
 	}
       }
-      var numKeys:int = segments.size / numLocales;
-      var res = makeDistArray(numKeys, t);
-      forall i in res.domain {
-	res[i] = min reduce localMinima[i.. by numKeys];
-      }
-      return res;
-    }
+      return [v in res] v.read();
+    }    
 
     proc segMax(values:[] ?t, segments:[?D] int): [D] t {
       var res: [D] t;
