@@ -3,8 +3,8 @@
 import arkouda as ak
 import numpy as np
 import pandas as pd
-SIZE = 1000
-GROUPS = 11
+SIZE = 100
+GROUPS = 65
 
 # ## Need this monkey-patch until Mike implements find_segments in chapel
 # old_find_segments = ak.GroupBy.find_segments
@@ -124,9 +124,6 @@ def run_test(num_locales):
                     print(f"Different argmin/argmax: Arkouda failed to find an extremum")
                     print("pd: ", pdextrema)
                     print("ak: ", akextrema)
-                    failures += 1
-                elif (akvals > pdvals).any():
-                    print(f"Different argmin/argmax: Arkouda did not find the first extremum")
                     failures += 1
             else:
                 if not np.allclose(pdkeys, akkeys):

@@ -178,7 +178,7 @@ module FindSegmentsMsg
 	    var segInd = globalSegments.localSubdomain().low + relKey2ind[key - minKey];
 	    globalSegments[segInd] = offset;
 	  }
-	  var last = globalSegments.localSubdomain().high + 1;
+	  var last = D.localSubdomain().high + 1;
 	  for i in globalSegments.localSubdomain() by -1 {
 	    if globalSegments[i] == -1 {
 	      globalSegments[i] = last;

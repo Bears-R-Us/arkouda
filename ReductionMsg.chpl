@@ -300,7 +300,7 @@ module ReductionMsg
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "mean" {
-	    var (count, res) = segMean(values.a, segments.a);
+	    var res = segMean(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "min" {
@@ -312,12 +312,12 @@ module ReductionMsg
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "argmin" {
-	    var (count, res) = segArgmin(values.a, segments.a);
-	    st.addEntry(rname, new shared SymEntry(res));
+	    var (count, locs, vals) = segArgmin(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(locs));
 	  }
 	  when "argmax" {
-	    var (count, res) = segArgmax(values.a, segments.a);
-	    st.addEntry(rname, new shared SymEntry(res));
+	    var (count, locs, vals) = segArgmax(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(locs));
 	  }
 	  when "nunique" {
 	    var res = segNumUnique(values.a, segments.a);
@@ -338,7 +338,7 @@ module ReductionMsg
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "mean" {
-	    var (count, res) = segMean(values.a, segments.a);
+	    var res = segMean(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "min" {
@@ -350,12 +350,12 @@ module ReductionMsg
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "argmin" {
-	    var (count, res) = segArgmin(values.a, segments.a);
-	    st.addEntry(rname, new shared SymEntry(res));
+	    var (count, locs, vals) = segArgmin(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(locs));
 	  }
 	  when "argmax" {
-	    var (count, res) = segArgmax(values.a, segments.a);
-	    st.addEntry(rname, new shared SymEntry(res));
+	    var (count, locs, vals) = segArgmax(values.a, segments.a);
+	    st.addEntry(rname, new shared SymEntry(locs));
 	  }
 	  otherwise {return notImplementedError("segmentedReduction",operator,gVal.dtype);}
 	  }
@@ -376,7 +376,7 @@ module ReductionMsg
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "mean" {
-	    var (count, res) = segMean(values.a, segments.a);
+	    var res = segMean(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  otherwise {return notImplementedError("segmentedReduction",operator,gVal.dtype);}
@@ -398,9 +398,9 @@ module ReductionMsg
       if v {try! writeln("%s %s %s %s".format(cmd,values_name,segments_name,operator));try! stdout.flush();}
 
       var gVal: borrowed GenSymEntry = st.lookup(values_name);
-      if (gVal == nil) {return unknownSymbolError("segmentedReduction",values_name);}
+      if (gVal == nil) {return unknownSymbolError("segmentedLocalRdx",values_name);}
       var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
-      if (gSeg == nil) {return unknownSymbolError("segmentedReduction",segments_name);}
+      if (gSeg == nil) {return unknownSymbolError("segmentedLocalRdx",segments_name);}
       var segments = toSymEntry(gSeg, int);
       if (segments == nil) {return "Error: array of segment offsets must be int dtype";}
       select (gVal.dtype) {
@@ -439,7 +439,7 @@ module ReductionMsg
 	    var res = perLocNumUnique(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
-	  otherwise {return notImplementedError("segmentedReduction",operator,gVal.dtype);}
+	  otherwise {return notImplementedError("segmentedLocalRdx",operator,gVal.dtype);}
 	  }
       }
       when (DType.Float64) {
@@ -473,7 +473,7 @@ module ReductionMsg
 	    var res = perLocArgmax(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
-	  otherwise {return notImplementedError("segmentedReduction",operator,gVal.dtype);}
+	  otherwise {return notImplementedError("segmentedLocalRdx",operator,gVal.dtype);}
 	  }
       }
       when (DType.Bool) {
@@ -495,10 +495,10 @@ module ReductionMsg
 	    var res = perLocMean(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
-	  otherwise {return notImplementedError("segmentedReduction",operator,gVal.dtype);}
+	  otherwise {return notImplementedError("segmentedLocalRdx",operator,gVal.dtype);}
 	  }
       }
-      otherwise {return unrecognizedTypeError("segmentedReduction", dtype2str(gVal.dtype));}
+      otherwise {return unrecognizedTypeError("segmentedLocalRdx", dtype2str(gVal.dtype));}
       }
       return try! "created " + st.attrib(rname);
     }
@@ -526,7 +526,11 @@ module ReductionMsg
       var res: [keyDom] atomic t;
       coforall loc in Locales {
 	on loc {
-	  var (myCounts, myVals) = segSum(values[values.localSubdomain()], segments[D.localSubdomain()]);
+	  var myCounts: [D.localSubdomain()] int;
+	  var myVals:[D.localSubdomain()] t;
+	  local {
+	    (myCounts, myVals) = segSum(values[values.localSubdomain()], segments[D.localSubdomain()]);
+	  }
 	  forall (c, v, i) in zip(myCounts, myVals, 0..#numKeys) {
 	    if (c > 0) {
 	      res[i].add(v);
@@ -534,7 +538,8 @@ module ReductionMsg
 	  }
 	}
       }
-      return [v in res] v.read();
+      var ret:[keyDom] t = [v in res] v.read();
+      return ret;
     }
 
     proc segSum(values:[] bool, segments:[?D] int): ([D] int, [D] int) {
@@ -559,7 +564,11 @@ module ReductionMsg
       var res: [keyDom] atomic int;
       coforall loc in Locales {
 	on loc {
-	  var (myCounts, myVals) = segSum(values[values.localSubdomain()], segments[D.localSubdomain()]);
+	  var myCounts:[D.localSubdomain()] int;
+	  var myVals:[D.localSubdomain()] int;
+	  local {
+	    (myCounts, myVals) = segSum(values[values.localSubdomain()], segments[D.localSubdomain()]);
+	  }
 	  forall (c, v, i) in zip(myCounts, myVals, 0..#numKeys) {
 	    if (c > 0) {
 	      res[i].add(v);
@@ -567,7 +576,8 @@ module ReductionMsg
 	  }
 	}
       }
-      return [v in res] v.read();
+      var ret:[keyDom] int = [v in res] v.read();
+      return ret;
     }
     
     proc segProduct(values:[], segments:[?D] int): ([D] int, [D] real) {
@@ -706,7 +716,7 @@ module ReductionMsg
     proc segArgmin(values:[] ?t, segments:[?D] int): ([D] int, [D] int, [D] t) {
       var count: [D] int;
       var locs: [D] int;
-      var vals: [D] int;
+      var vals: [D] t;
       forall (l, v, c, low, i) in zip(locs, vals, count, segments, D) {
 	var high: int;
 	if (i < D.high) {
@@ -757,7 +767,7 @@ module ReductionMsg
     proc segArgmax(values:[] ?t, segments:[?D] int): ([D] int, [D] int, [D] t) {
       var count: [D] int;
       var locs: [D] int;
-      var vals: [D] int;
+      var vals: [D] t;
       forall (l, v, c, low, i) in zip(locs, vals, count, segments, D) {
 	var high: int;
 	if (i < D.high) {
@@ -839,7 +849,7 @@ module ReductionMsg
       return res;
     }
     
-    proc segAll(values:[] bool, segments:[?D] int): [D] bool {
+    proc segAll(values:[] bool, segments:[?D] int): ([D] int, [D] bool) {
       var count: [D] int;
       var res: [D] bool;
       forall (r, c, low, i) in zip(res, count, segments, D) {
