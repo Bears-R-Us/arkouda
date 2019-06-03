@@ -87,7 +87,7 @@ proc main() {
   	    when "countReduction"    {repMsg = countReductionMsg(reqMsg, st);}
    	    when "countLocalRdx"     {repMsg = countLocalRdxMsg(reqMsg, st);}
 	    when "findSegments"      {repMsg = findSegmentsMsg(reqMsg, st);}
-	    //when "findLocalSegments" {repMsg = findLocalSegmentsMsg(reqMsg, st);}
+	    when "findLocalSegments" {repMsg = findLocalSegmentsMsg(reqMsg, st);}
 	    when "segmentedReduction"{repMsg = segmentedReductionMsg(reqMsg, st);}
 	    when "segmentedLocalRdx" {repMsg = segmentedLocalRdxMsg(reqMsg, st);}
             when "arange"            {repMsg = arangeMsg(reqMsg, st);}

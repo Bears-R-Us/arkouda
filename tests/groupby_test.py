@@ -6,38 +6,38 @@ import pandas as pd
 SIZE = 1000
 GROUPS = 11
 
-## Need this monkey-patch until Mike implements find_segments in chapel
-old_find_segments = ak.GroupBy.find_segments
-def find_segments(self):
-    if self.per_locale:
-        global numLocales
-        perm_keys = self.keys[self.permutation].to_ndarray()
-        unique_keys = np.unique(perm_keys)
-        unique_keys.sort()
-        perm_keys = perm_keys.reshape((numLocales, -1))
-        k2i = {k:i for i, k in enumerate(unique_keys)}
-        segments = -np.ones(len(unique_keys)*numLocales, dtype='int64').reshape((numLocales, -1))
-        for loc in range(numLocales):
-            steps = np.hstack((np.array([True]), perm_keys[loc, :-1]!=perm_keys[loc, 1:]))
-            # steps[0::len(perm_keys)//numLocales] = True
-            start = loc * perm_keys.shape[1]
-            offsets = np.arange(start, start + perm_keys.shape[1])[steps]
-            keyvals = perm_keys[loc, :][steps]
-            for o, k in zip(offsets, keyvals):
-                segments[loc, k2i[k]] = o
-        segments = segments.flatten()
-        last = self.keys.size
-        for i in range(len(segments)-1, -1, -1):
-            if segments[i] == -1:
-                segments[i] = last
-            else:
-                last = segments[i]
-        return ak.array(segments), ak.array(unique_keys)
-    else:
-        return old_find_segments(self)
+# ## Need this monkey-patch until Mike implements find_segments in chapel
+# old_find_segments = ak.GroupBy.find_segments
+# def find_segments(self):
+#     if self.per_locale:
+#         global numLocales
+#         perm_keys = self.keys[self.permutation].to_ndarray()
+#         unique_keys = np.unique(perm_keys)
+#         unique_keys.sort()
+#         perm_keys = perm_keys.reshape((numLocales, -1))
+#         k2i = {k:i for i, k in enumerate(unique_keys)}
+#         segments = -np.ones(len(unique_keys)*numLocales, dtype='int64').reshape((numLocales, -1))
+#         for loc in range(numLocales):
+#             steps = np.hstack((np.array([True]), perm_keys[loc, :-1]!=perm_keys[loc, 1:]))
+#             # steps[0::len(perm_keys)//numLocales] = True
+#             start = loc * perm_keys.shape[1]
+#             offsets = np.arange(start, start + perm_keys.shape[1])[steps]
+#             keyvals = perm_keys[loc, :][steps]
+#             for o, k in zip(offsets, keyvals):
+#                 segments[loc, k2i[k]] = o
+#         segments = segments.flatten()
+#         last = self.keys.size
+#         for i in range(len(segments)-1, -1, -1):
+#             if segments[i] == -1:
+#                 segments[i] = last
+#             else:
+#                 last = segments[i]
+#         return ak.array(segments), ak.array(unique_keys)
+#     else:
+#         return old_find_segments(self)
 
-ak.GroupBy.find_segments = find_segments
-## End monkey patch
+# ak.GroupBy.find_segments = find_segments
+# ## End monkey patch
 
 def groupby_to_arrays(df, kname, vname, op):
     # if op == 'argmin':
