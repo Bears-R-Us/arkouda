@@ -117,13 +117,24 @@ def run_test(num_locales):
                 continue
             if not do_check:
                 continue
-            if not np.allclose(pdkeys, akkeys):
-                print(f"Different keys")
-                failures += 1
-                continue
-            if not np.allclose(pdvals, akvals):
-                print(f"Different values")
-                failures += 1
+            if op.startswith('arg'):
+                pdextrema = df[vname][pdvals]
+                akextrema = akdf[vname][ak.array(akvals)].to_ndarray()
+                if not np.allclose(pdextrema, akextrema):
+                    print(f"Different argmin/argmax: Arkouda failed to find an extremum")
+                    print("pd: ", pdextrema)
+                    print("ak: ", akextrema)
+                    failures += 1
+                elif (akvals > pdvals).any():
+                    print(f"Different argmin/argmax: Arkouda did not find the first extremum")
+                    failures += 1
+            else:
+                if not np.allclose(pdkeys, akkeys):
+                    print(f"Different keys")
+                    failures += 1
+                elif not np.allclose(pdvals, akvals):
+                    print(f"Different values")
+                    failures += 1
     print(f"\n{failures} failures in {tests} tests ({not_impl} not implemented)")
 
 if __name__ == '__main__':
