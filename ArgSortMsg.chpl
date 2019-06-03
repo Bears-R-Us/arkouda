@@ -20,7 +20,8 @@ module ArgSortMsg
 
     // experimental
     use UnorderedCopy;
-
+    use UnorderedAtomics;
+    
     // thresholds for different sized sorts
     var lgSmall = 10;
     var small = 2**lgSmall;
@@ -34,10 +35,12 @@ module ArgSortMsg
     var mBins = 2**25;
     var lBins = 2**25 * numLocales;
 
+    // defined for reduction and scan on atomics
     proc +(x: atomic int, y: atomic int) {
         return x.read() + y.read();
     }
     
+    // defined for reduction and scan on atomics
     proc +=(X: [?D] int, Y: [D] atomic int) {
         [i in D] {X[i] += Y[i].read();}
     }
@@ -52,24 +55,19 @@ module ArgSortMsg
         var bins = aMax-aMin+1;
         if v {try! writeln("bins = %t".format(bins));}
 
-        // perf improvement: what is a better strategy
-        //     below a threshold on buckets
-        //     use second dim on locales??? then + reduce across locales
-        //     can we keep all atomics local??? I think so...
-        //     var hD = {a_min..a_max} dmapped Replicated();// look at primer
-        //     add up values from other locales into this locale's hist
-        //     coforall loc in Locales { on loc {...;} }
-        //     calc ends and starts per locale
-        //     etc...
         // histogram domain size should be equal to a_nvals
         var hD = makeDistDom(bins);
+
         // atomic histogram
         var atomic_hist: [hD] atomic int;
+
         // normal histogram for + scan
         var hist: [hD] int;
 
         // count number of each value into atomic histogram
-        [e in a] atomic_hist[e-aMin].add(1);
+        //[e in a] atomic_hist[e-aMin].add(1);
+        [e in a] atomic_hist[e-aMin].unorderedAdd(1);
+        
         // copy from atomic histogram to normal histogram
         [(e,ae) in zip(hist, atomic_hist)] e = ae.read();
         if v {printAry("hist =",hist);}
@@ -82,13 +80,16 @@ module ArgSortMsg
 
         // atomic position in output array for buckets
         var atomic_pos: [hD] atomic int;
+        
         // copy in start positions
         [(ae,e) in zip(atomic_pos, starts)] ae.write(e);
 
         // permute index vector
         forall (e,i) in zip(a,aD) {
             var pos = atomic_pos[e-aMin].fetchAdd(1);// get position to deposit element
-            iv[pos] = i;
+            //iv[pos] = i;
+            var idx = i;
+            unorderedCopy(iv[pos], idx);
         }
         
         // return the index vector
@@ -261,7 +262,7 @@ module ArgSortMsg
                         try! stdout.flush();
                         exit(1);
                     }
-                    iv[gLow..gHigh] = localBuffer[lLow..lHigh];
+                    if localCounts[here.id][i] > 0 {iv[gLow..gHigh] = localBuffer[lLow..lHigh];}
                 }
             }
         }
@@ -340,10 +341,10 @@ module ArgSortMsg
             on loc {
                 // fetch-and-inc to get per-locale-subbin-position
                 // and directly write index to output array
-                forall idx in a.localSubdomain() {
-                    var idxCopy = idx;
+                forall i in a.localSubdomain() {
+                    var idx = i;
                     var pos = atomicHist[here.id][a[idx]-aMin].fetchAdd(1); // local pos in localBuffer
-                    unorderedCopy(iv[pos],idxCopy); // iv[pos] = idx; // should be global pos and global idx
+                    unorderedCopy(iv[pos],idx); // iv[pos] = idx; // should be global pos and global idx
                 }
             }
         }
