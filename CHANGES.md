@@ -6,8 +6,8 @@
  * optimized argsort
  * added ak.where
  * opt some a[pdarray] gather-indexing
- * added initial ak.GroupBy functionality
- *
+ * added initial ak.GroupBy and ak.aggregate functionality
+
 
 ### Changes in arkouda-0.0.7
 ------------------------
