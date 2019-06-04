@@ -85,8 +85,11 @@ proc main() {
 	    when "efunc3ss"          {repMsg = efunc3ssMsg(reqMsg, st);}
             when "reduction"         {repMsg = reductionMsg(reqMsg, st);}
   	    when "countReduction"    {repMsg = countReductionMsg(reqMsg, st);}
+   	    when "countLocalRdx"     {repMsg = countLocalRdxMsg(reqMsg, st);}
 	    when "findSegments"      {repMsg = findSegmentsMsg(reqMsg, st);}
+	    when "findLocalSegments" {repMsg = findLocalSegmentsMsg(reqMsg, st);}
 	    when "segmentedReduction"{repMsg = segmentedReductionMsg(reqMsg, st);}
+	    when "segmentedLocalRdx" {repMsg = segmentedLocalRdxMsg(reqMsg, st);}
             when "arange"            {repMsg = arangeMsg(reqMsg, st);}
             when "linspace"          {repMsg = linspaceMsg(reqMsg, st);}
             when "randint"           {repMsg = randintMsg(reqMsg, st);}
@@ -109,6 +112,7 @@ proc main() {
             when "[slice]=val"       {repMsg = setSliceIndexToValueMsg(reqMsg, st);}            
             when "[slice]=pdarray"   {repMsg = setSliceIndexToPdarrayMsg(reqMsg, st);}
             when "argsort"           {repMsg = argsortMsg(reqMsg, st);}
+	    when "localArgsort"      {repMsg = localArgsortMsg(reqMsg, st);}
             when "connect" {
                 repMsg = "connected to arkouda server tcp://*:%t".format(ServerPort);
             }

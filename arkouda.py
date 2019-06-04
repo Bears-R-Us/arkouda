@@ -874,8 +874,8 @@ def where(condition, A, B):
 class GroupBy:
     Reductions = frozenset(['sum', 'prod', 'mean',
                             'min', 'max', 'argmin', 'argmax',
-                            'num_unique', 'any', 'all'])
-    def __init__(self, keys, per_locale=False):
+                            'nunique', 'any', 'all'])
+    def __init__(self, keys, per_locale=True):
         '''Group <keys> by value, usually in preparation for grouping and aggregating the values of another array via the .aggregate() method. Return a GroupBy object that stores the information for how to group values.
         '''
         if not isinstance(keys, pdarray):
@@ -931,7 +931,10 @@ class GroupBy:
                                       operator)
         repMsg = generic_msg(reqMsg)
         if v: print(repMsg)
-        return self.unique_keys, create_pdarray(repMsg)
+        if operator.startswith('arg'):
+            return self.unique_keys, self.permutation[create_pdarray(repMsg)]
+        else:
+            return self.unique_keys, create_pdarray(repMsg)
 
     def sum(self, values):
         return self.aggregate(values, "sum")
@@ -947,8 +950,8 @@ class GroupBy:
         return self.aggregate(values, "argmin")
     def argmax(self, values):
         return self.aggregate(values, "argmax")
-    def num_unique(self, values):
-        return self.aggregate(values, "num_unique")
+    def nunique(self, values):
+        return self.aggregate(values, "nunique")
     def any(self, values):
         return self.aggregate(values, "any")
     def all(self, values):
