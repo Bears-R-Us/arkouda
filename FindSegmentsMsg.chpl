@@ -141,7 +141,7 @@ module FindSegmentsMsg
       var localSegments: [PrivateSpace] Segments;
       coforall loc in Locales {
 	on loc {
-	  var (locSegs, locUkeys) = segsAndUkeysFromSortedArray(perLocSorted[perLocSorted.localSubdomain()]);
+	  var (locSegs, locUkeys) = segsAndUkeysFromSortedArray(perLocSorted.localSlice[perLocSorted.localSubdomain()]);
 	  localSegments[here.id] = new Segments(locUkeys, locSegs);
 	  forall k in locUkeys with (ref globalRelKeys) {
 	    // This does not need to be atomic, because race conditions will result in the correct answer

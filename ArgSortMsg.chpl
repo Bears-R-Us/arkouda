@@ -427,7 +427,7 @@ module ArgSortMsg
 	on loc {
 	  //ref myIV = iv[iv.localSubdomain()];
 	  var myIV: [0..#iv.localSubdomain().size] int;
-	  ref myA = a[a.localSubdomain()];
+	  ref myA = a.localSlice[a.localSubdomain()];
 	  // Calculate number of histogram bins
 	  var locMin = min reduce myA;
 	  var locMax = max reduce myA;
@@ -439,7 +439,7 @@ module ArgSortMsg
 	    if (v && here.id==0) {try! writeln("bins %i > %i; using localAssocArgSort".format(bins, mBins));}
 	    localAssocArgSort(myIV, myA);
 	  }
-	  iv[iv.localSubdomain()] = myIV;
+	  iv.localSlice[iv.localSubdomain()] = myIV;
 	}
       }
       return iv;
