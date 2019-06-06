@@ -8,6 +8,8 @@ module ReductionMsg
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
+    use ArgSortMsg;
+    use FindSegmentsMsg;
 
     use AryUtil;
     use PrivateDist;
@@ -857,40 +859,128 @@ module ReductionMsg
     }
 
     proc perLocNumUnique(values:[] int, segments:[?D] int): [] int {
+      var minVal = min reduce values;
+      var valRange = (max reduce values) - minVal + 1;
       var numKeys:int = segments.size / numLocales;
-      var keyDom = makeDistDom(numKeys);
-      // First get all per-locale sets of unique values
-      var localUnique: [PrivateSpace] [0..#numKeys] domain(int);
+      if (numKeys*valRange <= lBins) {
+	if v {try! writeln("bins %i <= %i; using perLocNumUniqueHist".format(numKeys*valRange, lBins));}
+	return perLocNumUniqueHist(values, segments, minVal, valRange, numKeys);
+      } else {
+	if v {try! writeln("bins %i > %i; using perLocNumUniqueAssoc".format(numKeys*valRange, lBins));}
+	return perLocNumUniqueAssoc(values, segments, numKeys);
+      }
+    }
+
+    /* proc perLocNumUnique(values:[] int, segments:[?D] int, numKeys: int): [] int { */
+    /*   // First get all per-locale sets of unique values */
+    /*   var localUnique: [PrivateSpace] [0..#numKeys] domain(int); */
+    /*   coforall loc in Locales { */
+    /* 	on loc { */
+    /* 	  var myD = D.localSubdomain(); */
+    /* 	  // Loop over keys */
+    /* 	  forall (i, low, myU) in zip(myD, segments.localSlice[myD], localUnique[here.id]) { */
+    /* 	    // Find segment boundaries */
+    /* 	    var high: int; */
+    /* 	    if (i < myD.high) { */
+    /* 	      high = segments[i+1] - 1; */
+    /* 	    } else { */
+    /* 	      high = values.localSubdomain().high; */
+    /* 	    } */
+    /* 	    // Aggregate segment's values into a set */
+    /* 	    var domLock$:sync bool = true; */
+    /* 	    forall v in values.localSlice[low..high] with (ref myU, ref domLock$) { */
+    /* 	      // This outer check is not logically necessary, but it reduces unnecesary acquisition of the lock, which saves a lot of time when keys are dense */
+    /* 	      if !myU.contains(v) { */
+    /* 		domLock$; */
+    /* 		if !myU.contains(v) { */
+    /* 		  myU += v; */
+    /* 		} */
+    /* 		domLock$ = true; */
+    /* 	      } */
+    /* 	    } */
+    /* 	  } */
+    /* 	} */
+    /*   } */
+    /*   // Union the local sets */
+    /*   var keyDom = makeDistDom(numKeys); */
+    /*   var globalUnique: [keyDom] domain(int) = + reduce [i in PrivateSpace] localUnique[i]; */
+    /*   var res = [i in keyDom] globalUnique[i].size; */
+    /*   return res; */
+    /* } */
+
+    proc perLocNumUniqueHist(values: [] int, segments: [?D] int, minVal: int, valRange: int, numKeys: int): [] int {
+      var valDom = makeDistDom(numKeys*valRange);
+      var globalValFlags: [valDom] bool;
       coforall loc in Locales {
 	on loc {
 	  var myD = D.localSubdomain();
-	  // Loop over keys
-	  forall (i, low, myU) in zip(myD, segments.localSlice[myD], localUnique[here.id]) {
-	    // Find segment boundaries
+	  forall (i, low) in zip(myD, segments.localSlice[myD]) {
 	    var high: int;
 	    if (i < myD.high) {
 	      high = segments[i+1] - 1;
 	    } else {
 	      high = values.localSubdomain().high;
 	    }
-	    // Aggregate segment's values into a set
-	    var domLock$:sync bool = true;
-	    forall v in values.localSlice[values.localSubdomain()][low..high] with (ref myU, ref domLock$) {
-	      // This outer check is not logically necessary, but it reduces unnecesary acquisition of the lock, which saves a lot of time when keys are dense
-	      if !myU.contains(v) {
-		domLock$;
-		if !myU.contains(v) {
-		  myU += v;
-		}
-		domLock$ = true;
+	    if (high >= low) {
+	      var perm: [0..#(high-low+1)] int;
+	      ref myVals = values.localSlice[low..high];
+	      var myMin = min reduce myVals;
+	      var myRange = (max reduce myVals) - myMin + 1;
+	      localHistArgSort(perm, myVals, myMin, myRange);
+	      var sorted: [low..high] int;
+	      [(s, idx) in zip(sorted, perm)] unorderedCopy(s, myVals[idx]);
+	      var (mySegs, myUvals) = segsAndUkeysFromSortedArray(sorted);
+	      var keyInd = i - myD.low;
+	      forall v in myUvals with (ref globalValFlags) {
+		// Does not need to be atomic
+		globalValFlags[keyInd*valRange + v - minVal] = true;
 	      }
-	    }
+	    }	
 	  }
 	}
       }
-      // Union the local sets
-      var globalUnique: [keyDom] domain(int) = + reduce [i in PrivateSpace] localUnique[i];
-      var res = [i in keyDom] globalUnique[i].size;
+      var keyDom = makeDistDom(numKeys);
+      var res: [keyDom] int;
+      forall (keyInd, r) in zip(keyDom, res) {
+	r = + reduce globalValFlags[keyInd*valRange..#valRange];
+      }
+      return res;
+    }
+
+    proc perLocNumUniqueAssoc(values: [] int, segments: [?D] int, numKeys: int): [] int {
+      var localUvals: [PrivateSpace] [0..#numKeys] domain(int, parSafe=false);
+      coforall loc in Locales {
+	on loc {
+	  var myD = D.localSubdomain();
+	  forall (i, low) in zip(myD, segments.localSlice[myD]) {
+	    var high: int;
+	    if (i < myD.high) {
+	      high = segments[i+1] - 1;
+	    } else {
+	      high = values.localSubdomain().high;
+	    }
+	    if (high >= low) {
+	      var perm: [0..#(high-low+1)] int;
+	      ref myVals = values.localSlice[low..high];
+	      var myMin = min reduce myVals;
+	      var myRange = (max reduce myVals) - myMin + 1;
+	      localHistArgSort(perm, myVals, myMin, myRange);
+	      var sorted: [low..high] int;
+	      [(s, idx) in zip(sorted, perm)] unorderedCopy(s, myVals[idx]);
+	      var (mySegs, myUvals) = segsAndUkeysFromSortedArray(sorted);
+	      var keyInd = i - myD.low;
+	      forall v in myUvals {
+		localUvals[here.id][keyInd] += v;
+	      }
+	    }	
+	  }
+	}
+      }
+      var keyDom = makeDistDom(numKeys);
+      var res: [keyDom] int;
+      forall (keyInd, r) in zip(keyDom, res) {
+	r = (+ reduce [i in PrivateSpace] localUvals[i][keyInd]).size;
+      }
       return res;
     }
 }
