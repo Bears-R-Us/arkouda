@@ -8,11 +8,12 @@ module ReductionMsg
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
-    use ArgSortMsg;
-    use FindSegmentsMsg;
+    use PerLocaleHelper;
 
     use AryUtil;
     use PrivateDist;
+
+    const lBins = 2**25 * numLocales;
       
     // these functions take an array and produce a scalar
     // parse and respond to reduction message
