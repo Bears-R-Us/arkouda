@@ -21,6 +21,8 @@ module ArgSortMsg
     // experimental
     use UnorderedCopy;
     use UnorderedAtomics;
+
+    use ArgsortDRS;
     
     // thresholds for different sized sorts
     var lgSmall = 10;
@@ -386,7 +388,7 @@ module ArgSortMsg
                 }
                 else {
                     if v {try! writeln("bins = %t".format(bins));try! stdout.flush();}
-                    var iv = argCountSortGlobHist(e.a, eMin, eMax);
+                    var iv = argsortDRS(e.a, eMin, eMax);
                     st.addEntry(ivname, new shared SymEntry(iv));
                 }
             }
