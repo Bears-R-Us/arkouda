@@ -15,6 +15,7 @@ module ArgSortMsg
     use ServerErrorStrings;
 
     use AryUtil;
+    use PerLocaleHelper;
     
     use PrivateDist;
 
@@ -429,7 +430,7 @@ module ArgSortMsg
 	on loc {
 	  //ref myIV = iv[iv.localSubdomain()];
 	  var myIV: [0..#iv.localSubdomain().size] int;
-	  ref myA = a[a.localSubdomain()];
+	  ref myA = a.localSlice[a.localSubdomain()];
 	  // Calculate number of histogram bins
 	  var locMin = min reduce myA;
 	  var locMax = max reduce myA;
@@ -441,27 +442,10 @@ module ArgSortMsg
 	    if (v && here.id==0) {try! writeln("bins %i > %i; using localAssocArgSort".format(bins, mBins));}
 	    localAssocArgSort(myIV, myA);
 	  }
-	  iv[iv.localSubdomain()] = myIV;
+	  iv.localSlice[iv.localSubdomain()] = myIV;
 	}
       }
       return iv;
-    }
-
-    proc localHistArgSort(iv:[] int, a:[?D] int, lmin: int, bins: int) {
-      var hist: [0..#bins] atomic int;
-      // Make counts for each value in a
-      [val in a] hist[val - lmin].add(1);
-      // Figure out segment offsets
-      var counts = [c in hist] c.read();
-      var offsets = (+ scan counts) - counts;
-      // Now insert the a_index into iv 
-      var binpos: [0..#bins] atomic int;
-      forall (aidx, val) in zip(D, a) with (ref binpos, ref iv) {
-	// Use val to determine where in iv to put a_index
-	// ividx is the offset of val's bin plus a running counter
-	var ividx = offsets[val - lmin] + binpos[val - lmin].fetchAdd(1);
-	iv[ividx] = aidx;
-      }
     }
 
     proc localAssocArgSort(iv:[] int, a:[?D] int) {

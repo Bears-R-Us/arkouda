@@ -8,8 +8,12 @@ module ReductionMsg
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
+    use PerLocaleHelper;
 
     use AryUtil;
+    use PrivateDist;
+
+    const lBins = 2**25 * numLocales;
       
     // these functions take an array and produce a scalar
     // parse and respond to reduction message
@@ -48,7 +52,7 @@ module ReductionMsg
                         return try! "int64 %i".format(val);
                     }
                     when "prod" {
-                        var prod = * reduce e.a;
+		      var prod = * reduce e.a:real;
                         var val = prod:string;
                         return try! "int64 %i".format(val);
                     }
@@ -210,14 +214,14 @@ module ReductionMsg
       return try! "created " + st.attrib(rname);
     }
 
-    proc segCount(segments:[?D] int, size: int):[D] int {
+    proc segCount(segments:[?D] int, upper: int):[D] int {
       var counts:[D] int;
       forall (c, low, i) in zip(counts, segments, D) {
 	var high: int;
 	if (i < D.high) {
 	  high = segments[i+1] - 1;
 	} else {
-	  high = size - 1;
+	  high = upper - 1;
 	}
 	c = high - low + 1;
       }
@@ -244,29 +248,17 @@ module ReductionMsg
     }
 
     proc perLocCount(segments:[?D] int, size: int): [] int {
-      var origSubdomains = makeDistDom(size);
+      var origD = makeDistDom(size);
       var numKeys:int = segments.size / numLocales;
-      var localCounts: [D] int;
+      var keyDom = makeDistDom(numKeys);
+      var localCounts: [PrivateSpace] [0..#numKeys] int;
       coforall loc in Locales {
 	on loc {
-	  var myHigh = origSubdomains.localSubdomain().high;
-	  var myDom = segments.localSubdomain();
-	  ref mySeg = segments[myDom];
-	  forall (i, low, c) in zip(myDom, mySeg, localCounts[myDom]) {
-	    var high: int;
-	    if (i < myDom.high) {
-	      high = mySeg[i+1] - 1;
-	    } else {
-	      high = myHigh;
-	    }
-	    c = high - low + 1;
-	  }
+	  localCounts[here.id] = segCount(segments.localSlice[D.localSubdomain()],
+					  origD.localSubdomain().high + 1);
 	}
       }
-      var counts = makeDistArray(numKeys, int);
-      forall i in counts.domain {
-	counts[i] = + reduce localCounts[i.. by numKeys];
-      }
+      var counts: [keyDom] int = + reduce [i in PrivateSpace] localCounts[i];
       return counts;
     }
 
@@ -292,11 +284,11 @@ module ReductionMsg
 	var values = toSymEntry(gVal, int);
 	select operator {
 	  when "sum" {
-	    var (count, res) = segSum(values.a, segments.a);
+	    var res = segSum(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "prod" {
-	    var (count, res) = segProduct(values.a, segments.a);
+	    var res = segProduct(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "mean" {
@@ -304,19 +296,19 @@ module ReductionMsg
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "min" {
-	    var (count, res) = segMin(values.a, segments.a);
+	    var res = segMin(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "max" {
-	    var (count, res) = segMax(values.a, segments.a);
+	    var res = segMax(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "argmin" {
-	    var (count, locs, vals) = segArgmin(values.a, segments.a);
+	    var (vals, locs) = segArgmin(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(locs));
 	  }
 	  when "argmax" {
-	    var (count, locs, vals) = segArgmax(values.a, segments.a);
+	    var (vals, locs) = segArgmax(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(locs));
 	  }
 	  when "nunique" {
@@ -330,11 +322,11 @@ module ReductionMsg
 	var values = toSymEntry(gVal, real);
 	select operator {
 	  when "sum" {
-	    var (count, res) = segSum(values.a, segments.a);
+	    var res = segSum(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "prod" {
-	    var (count, res) = segProduct(values.a, segments.a);
+	    var res = segProduct(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "mean" {
@@ -342,19 +334,19 @@ module ReductionMsg
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "min" {
-	    var (count, res) = segMin(values.a, segments.a);
+	    var res = segMin(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "max" {
-	    var (count, res) = segMax(values.a, segments.a);
+	    var res = segMax(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "argmin" {
-	    var (count, locs, vals) = segArgmin(values.a, segments.a);
+	    var (vals, locs) = segArgmin(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(locs));
 	  }
 	  when "argmax" {
-	    var (count, locs, vals) = segArgmax(values.a, segments.a);
+	    var (vals, locs) = segArgmax(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(locs));
 	  }
 	  otherwise {return notImplementedError("segmentedReduction",operator,gVal.dtype);}
@@ -364,15 +356,15 @@ module ReductionMsg
 	var values = toSymEntry(gVal, bool);
 	select operator {
 	  when "sum" {
-	    var (count, res) = segSum(values.a, segments.a);
+	    var res = segSum(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "any" {
-	    var (count, res) = segAny(values.a, segments.a);
+	    var res = segAny(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "all" {
-	    var (count, res) = segAll(values.a, segments.a);
+	    var res = segAll(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "mean" {
@@ -503,116 +495,111 @@ module ReductionMsg
       return try! "created " + st.attrib(rname);
     }
 	  
-
-    proc segSum(values:[] ?t, segments:[?D] int): ([D] int, [D] t) {
+    /* Segmented Reductions of the form: seg<Op>(values:[] t, segments: [] int)
+       Use <segments> as the boundary indices to divide <values> into chunks, 
+       and then reduce over each chunk uisng the operator <Op>. The return array 
+       of reduced values is the same size as <segments>.
+     */
+    proc segSum(values:[] ?t, segments:[?D] int): [D] t {
       var res: [D] t;
-      var count: [D] int;
-      forall (r, c, low, i) in zip(res, count, segments, D) {
+      // Iterate over segments
+      forall (r, low, i) in zip(res, segments, D) {
+	// Find the segment boundaries
 	var high: int;
 	if (i < D.high) {
+	  // Usually determine the upper bound from the next segment boundary
 	  high = segments[i+1] - 1;
 	} else {
+	  // If this is the last segment, then the upper bound is the end of <values>
 	  high = values.domain.high;
 	}
-	c = high - low + 1;
+	// Knowing the bounds, reduce the values of the segment
 	r = + reduce values[low..high];
       }
-      return (count, res);
+      return res;
     }
 
+
+    /* Per-Locale Segmented Reductions have the same form as segmented reductions:
+       perLoc<Op>(values:[] t, segments: [] int)
+       However, in this case <segments> has length <numSegments>*<numLocales> and
+       stores the segment boundaries for each locale's chunk of <values>. These
+       reductions perform two stages: a local reduction (implemented via a call
+       to seg<Op> on the local slice of values) and a global reduction of the 
+       local results. The return is the same as seg<Op>: one reduced value per segment.
+    */
     proc perLocSum(values:[] ?t, segments:[?D] int): [] t {
+      // Infer the number of keys from size of <segments>
       var numKeys:int = segments.size / numLocales;
+      // Make the distributed domain of the final result
       var keyDom = makeDistDom(numKeys);
-      var res: [keyDom] atomic t;
+      // Local reductions stored in a PrivateDist
+      var perLocVals: [PrivateSpace] [0..#numKeys] t;
       coforall loc in Locales {
 	on loc {
-	  var myCounts: [D.localSubdomain()] int;
-	  var myVals:[D.localSubdomain()] t;
-	  local {
-	    (myCounts, myVals) = segSum(values[values.localSubdomain()], segments[D.localSubdomain()]);
-	  }
-	  forall (c, v, i) in zip(myCounts, myVals, 0..#numKeys) {
-	    if (c > 0) {
-	      res[i].add(v);
-	    }
-	  }
+	  // Each locale reduces its local slice of <values>
+	  perLocVals[here.id] = segSum(values.localSlice[values.localSubdomain()],
+				       segments.localSlice[D.localSubdomain()]);
 	}
       }
-      var ret:[keyDom] t = [v in res] v.read();
-      return ret;
+      // The global result is a distributed array, computed as a vector reduction over local results
+      var res:[keyDom] t = + reduce [i in PrivateSpace] perLocVals[i];
+      return res;
     }
 
-    proc segSum(values:[] bool, segments:[?D] int): ([D] int, [D] int) {
-      var count: [D] int;
+    proc segSum(values:[] bool, segments:[?D] int): [D] int {
       var res: [D] int;
-      forall (r, c, low, i) in zip(res, count, segments, D) {
+      forall (r, low, i) in zip(res, segments, D) {
 	var high: int;
 	if (i < D.high) {
 	  high = segments[i+1] - 1;
 	} else {
 	  high = values.domain.high;
 	}
-	c = high - low + 1;
 	r = + reduce (values[low..high]:int);
       }
-      return (count, res);
+      return res;
     }
 
     proc perLocSum(values:[] bool, segments:[?D] int): [] int {
       var numKeys:int = segments.size / numLocales;
       var keyDom = makeDistDom(numKeys);
-      var res: [keyDom] atomic int;
+      var perLocVals: [PrivateSpace] [0..#numKeys] int;
       coforall loc in Locales {
 	on loc {
-	  var myCounts:[D.localSubdomain()] int;
-	  var myVals:[D.localSubdomain()] int;
-	  local {
-	    (myCounts, myVals) = segSum(values[values.localSubdomain()], segments[D.localSubdomain()]);
-	  }
-	  forall (c, v, i) in zip(myCounts, myVals, 0..#numKeys) {
-	    if (c > 0) {
-	      res[i].add(v);
-	    }
-	  }
+	  perLocVals[here.id] = segSum(values.localSlice[values.localSubdomain()],
+				       segments.localSlice[D.localSubdomain()]);
 	}
       }
-      var ret:[keyDom] int = [v in res] v.read();
-      return ret;
+      var res:[keyDom] int = + reduce [i in PrivateSpace] perLocVals[i];
+      return res;
     }
     
-    proc segProduct(values:[], segments:[?D] int): ([D] int, [D] real) {
-      var count: [D] int;
+    proc segProduct(values:[], segments:[?D] int): [D] real {
       var res: [D] real = 1;
-      forall (r, c, low, i) in zip(res, count, segments, D) {
+      forall (r, low, i) in zip(res, segments, D) {
 	var high: int;
 	if (i < D.high) {
 	  high = segments[i+1] - 1;
 	} else {
 	  high = values.domain.high;
 	}
-	c = high - low + 1;
 	r = * reduce values[low..high]:real;
       }
-      return (count, res);
+      return res;
     }
 
     proc perLocProduct(values:[] ?t, segments:[?D] int): [] real {
       var numKeys:int = segments.size / numLocales;
       var keyDom = makeDistDom(numKeys);
-      var res: [keyDom] real = 1;
-      var lock$: [keyDom] sync bool = [i in keyDom] true;
+      var perLocVals: [PrivateSpace] [0..#numKeys] real;
       coforall loc in Locales {
 	on loc {
-	  var (myCounts, myVals) = segProduct(values[values.localSubdomain()], segments[D.localSubdomain()]);
-	  forall (c, v, i) in zip(myCounts, myVals, 0..#numKeys) {
-	    if (c > 0) {
-	      lock$[i];
-	      res[i] *= v;
-	      lock$[i] = true;
-	    }
-	  }
+	  perLocVals[here.id] = segProduct(values.localSlice[values.localSubdomain()],
+					   segments.localSlice[D.localSubdomain()]);
 	}
       }
+      var res: [keyDom] real = * reduce [i in PrivateSpace] perLocVals[i];
       return res;
     }
     
@@ -637,94 +624,78 @@ module ReductionMsg
       return res:real / keyCounts:real;
     }
 
-    proc segMin(values:[] ?t, segments:[?D] int): ([D] int, [D] t) {
-      var count: [D] int;
+    proc segMin(values:[] ?t, segments:[?D] int): [D] t {
       var res: [D] t;
-      forall (r, c, low, i) in zip(res, count, segments, D) {
+      forall (r, low, i) in zip(res, segments, D) {
 	var high: int;
 	if (i < D.high) {
 	  high = segments[i+1] - 1;
 	} else {
 	  high = values.domain.high;
 	}
-	c = high - low + 1;
 	r = min reduce values[low..high];
       }
-      return (count, res);
+      return res;
     }
     
     proc perLocMin(values:[] ?t, segments:[?D] int): [] t {
       var numKeys:int = segments.size / numLocales;
       var keyDom = makeDistDom(numKeys);
-      var lock$: [keyDom] sync bool = [i in keyDom] true;
-      var res: [keyDom] t = max(t);
+      var perLocVals: [PrivateSpace] [0..#numKeys] t;
       coforall loc in Locales {
 	on loc {
-	  var (myCounts, myVals) = segMin(values[values.localSubdomain()], segments[D.localSubdomain()]);
-	  forall (c, v, i) in zip(myCounts, myVals, 0..#numKeys) {
-	    if (c > 0) {
-	      lock$[i];
-	      if (v < res[i]) {
-		res[i] = v;
-	      }
-	      lock$[i] = true;
-	    }
-	  }
+	  perLocVals[here.id] = segMin(values.localSlice[values.localSubdomain()],
+				       segments.localSlice[D.localSubdomain()]);
 	}
+      }
+      var res: [keyDom] t;
+      forall (r, keyInd) in zip(res, 0..#numKeys) {
+	r = min reduce [i in PrivateSpace] perLocVals[i][keyInd];
       }
       return res;
     }    
 
-    proc segMax(values:[] ?t, segments:[?D] int): ([D] int, [D] t) {
-      var count: [D] int;
+    proc segMax(values:[] ?t, segments:[?D] int): [D] t {
       var res: [D] t;
-      forall (r, c, low, i) in zip(res, count, segments, D) {
+      forall (r, low, i) in zip(res, segments, D) {
 	var high: int;
 	if (i < D.high) {
 	  high = segments[i+1] - 1;
 	} else {
 	  high = values.domain.high;
 	}
-	c = high - low + 1;
 	r = max reduce values[low..high];
       }
-      return (count, res);
+      return res;
     }
 
     proc perLocMax(values:[] ?t, segments:[?D] int): [] t {
       var numKeys:int = segments.size / numLocales;
       var keyDom = makeDistDom(numKeys);
-      var lock$: [keyDom] sync bool = [i in keyDom] true;
-      var res: [keyDom] t = min(t);
+      var perLocVals: [PrivateSpace] [0..#numKeys] t;
       coforall loc in Locales {
 	on loc {
-	  var (myCounts, myVals) = segMax(values[values.localSubdomain()], segments[D.localSubdomain()]);
-	  forall (c, v, i) in zip(myCounts, myVals, 0..#numKeys) {
-	    if (c > 0) {
-	      lock$[i];
-	      if (v > res[i]) {
-		res[i] = v;
-	      }
-	      lock$[i] = true;
-	    }
-	  }
+	  perLocVals[here.id] = segMax(values.localSlice[values.localSubdomain()],
+				       segments.localSlice[D.localSubdomain()]);
 	}
       }
+      var res: [keyDom] t;
+      forall (r, keyInd) in zip(res, 0..#numKeys) {
+	r = max reduce [i in PrivateSpace] perLocVals[i][keyInd];
+      }    
       return res;
     }
     
-    proc segArgmin(values:[] ?t, segments:[?D] int): ([D] int, [D] int, [D] t) {
-      var count: [D] int;
+    proc segArgmin(values:[] ?t, segments:[?D] int): ([D] t, [D] int) {
       var locs: [D] int;
       var vals: [D] t;
-      forall (l, v, c, low, i) in zip(locs, vals, count, segments, D) {
+      forall (l, v, low, i) in zip(locs, vals, segments, D) {
 	var high: int;
 	if (i < D.high) {
 	  high = segments[i+1] - 1;
 	} else {
 	  high = values.domain.high;
 	}
-	c = high - low + 1;
 	if (high < low) {
 	  v = max(t);
 	  l = -1; // no values in this segment, so return a sentinel index
@@ -735,47 +706,39 @@ module ReductionMsg
 	  l = minInd;
 	}
       }
-      return (count, locs, vals);
+      return (vals, locs);
     }
 
     proc perLocArgmin(values:[] ?t, segments:[?D] int): [] int {
       var numKeys:int = segments.size / numLocales;
       var keyDom = makeDistDom(numKeys);
-      var lock$: [keyDom] sync bool = [i in keyDom] true;
-      var locs: [keyDom] int;
-      var vals: [keyDom] t = max(t);
+      var perLocVals: [PrivateSpace] [0..#numKeys] t;
+      var perLocLocs: [PrivateSpace] [0..#numKeys] int;
       coforall loc in Locales {
 	on loc {
-	  var (myCounts, myLocs, myVals) = segArgmin(values[values.localSubdomain()], segments[D.localSubdomain()]);
-	  forall (c, l, v, i) in zip(myCounts, myLocs, myVals, 0..#numKeys) {
-	    if (c > 0) {
-	      lock$[i];
-	      if (v < vals[i]) {
-		vals[i] = v;
-		locs[i] = l;
-	      } else if (v == vals[i]) && (l < locs[i]) {
-		locs[i] = l;
-	      }
-	      lock$[i] = true;
-	    }
-	  }
+	  (perLocVals[here.id], perLocLocs[here.id]) = segArgmin(values.localSlice[values.localSubdomain()],
+								 segments.localSlice[D.localSubdomain()]);
 	}
       }
-      return locs;
+      var res: [keyDom] int;
+      forall (r, keyInd) in zip(res, 0..#numKeys) {
+	var val: t;
+	(val, r) = minloc reduce zip([i in PrivateSpace] perLocVals[i][keyInd],
+				     [i in PrivateSpace] perLocLocs[i][keyInd]);
+      }
+      return res;
     }
     
-    proc segArgmax(values:[] ?t, segments:[?D] int): ([D] int, [D] int, [D] t) {
-      var count: [D] int;
+    proc segArgmax(values:[] ?t, segments:[?D] int): ([D] t, [D] int) {
       var locs: [D] int;
       var vals: [D] t;
-      forall (l, v, c, low, i) in zip(locs, vals, count, segments, D) {
+      forall (l, v, low, i) in zip(locs, vals, segments, D) {
 	var high: int;
 	if (i < D.high) {
 	  high = segments[i+1] - 1;
 	} else {
 	  high = values.domain.high;
 	}
-	c = high - low + 1;
 	if (high < low) {
 	  v = min(t);
 	  l = -1; // no values in this segment, so return a sentinel index
@@ -786,100 +749,88 @@ module ReductionMsg
 	  l = maxInd;
 	}
       }
-      return (count, locs, vals);
+      return (vals, locs);
     }
 
     proc perLocArgmax(values:[] ?t, segments:[?D] int): [] int {
       var numKeys:int = segments.size / numLocales;
       var keyDom = makeDistDom(numKeys);
-      var lock$: [keyDom] sync bool = [i in keyDom] true;
-      var locs: [keyDom] int;
-      var vals: [keyDom] t = min(t);
+      var perLocVals: [PrivateSpace] [0..#numKeys] t;
+      var perLocLocs: [PrivateSpace] [0..#numKeys] int;
       coforall loc in Locales {
 	on loc {
-	  var (myCounts, myLocs, myVals) = segArgmax(values[values.localSubdomain()], segments[D.localSubdomain()]);
-	  forall (c, l, v, i) in zip(myCounts, myLocs, myVals, 0..#numKeys) {
-	    if (c > 0) {
-	      lock$[i];
-	      if (v > vals[i]) {
-		vals[i] = v;
-		locs[i] = l;
-	      } else if (v == vals[i]) && (l < locs[i]) {
-		locs[i] = l;
-	      }
-	      lock$[i] = true;
-	    }
-	  }
+	  (perLocVals[here.id], perLocLocs[here.id]) = segArgmax(values.localSlice[values.localSubdomain()],
+								 segments.localSlice[D.localSubdomain()]);
 	}
       }
-      return locs;
+      var res: [keyDom] int;
+      forall (r, keyInd) in zip(res, 0..#numKeys) {
+	var val: t;
+	(val, r) = maxloc reduce zip([i in PrivateSpace] perLocVals[i][keyInd],
+				     [i in PrivateSpace] perLocLocs[i][keyInd]);
+      }
+      return res;
     }
     
-    proc segAny(values:[] bool, segments:[?D] int): ([D] int, [D] bool) {
-      var count: [D] int;
+    proc segAny(values:[] bool, segments:[?D] int): [D] bool {
       var res: [D] bool;
-      forall (r, c, low, i) in zip(res, count, segments, D) {
+      forall (r, low, i) in zip(res, segments, D) {
 	var high: int;
 	if (i < D.high) {
 	  high = segments[i+1] - 1;
 	} else {
 	  high = values.domain.high;
 	}
-	c = high - low + 1;
 	r = || reduce values[low..high];
       }
-      return (count, res);
+      return res;
     }
 
     proc perLocAny(values:[] bool, segments:[?D] int): [] bool {
       var numKeys:int = segments.size / numLocales;
       var keyDom = makeDistDom(numKeys);
-      var res: [keyDom] bool;
+      var perLocVals: [PrivateSpace] [0..#numKeys] bool;
       coforall loc in Locales {
 	on loc {
-	  var (myCounts, myVals) = segAny(values[values.localSubdomain()], segments[D.localSubdomain()]);
-	  forall (c, v, i) in zip(myCounts, myVals, 0..#numKeys) {
-	    if (c > 0) && v {
-	      // Does not need to be atomic, because race conditions will still produce the correct answer
-	      res[i] = true;
-	    }
-	  }
+	  perLocVals[here.id] = segAny(values.localSlice[values.localSubdomain()],
+				       segments.localSlice[D.localSubdomain()]);
 	}
+      }
+      var res: [keyDom] bool;
+      for (r, keyInd) in zip(res, 0..#numKeys) {
+	r = || reduce [i in PrivateSpace] perLocVals[i][keyInd];
       }
       return res;
     }
     
-    proc segAll(values:[] bool, segments:[?D] int): ([D] int, [D] bool) {
-      var count: [D] int;
+    proc segAll(values:[] bool, segments:[?D] int): [D] bool {
       var res: [D] bool;
-      forall (r, c, low, i) in zip(res, count, segments, D) {
+      forall (r, low, i) in zip(res, segments, D) {
 	var high: int;
 	if (i < D.high) {
 	  high = segments[i+1] - 1;
 	} else {
 	  high = values.domain.high;
 	}
-	c = high - low + 1;
 	r = && reduce values[low..high];
       }
-      return (count, res);
+      return res;
     }
 
     proc perLocAll(values:[] bool, segments:[?D] int): [] bool {
       var numKeys:int = segments.size / numLocales;
       var keyDom = makeDistDom(numKeys);
-      var res: [keyDom] bool = true;
+      var perLocVals: [PrivateSpace] [0..#numKeys] bool;
       coforall loc in Locales {
 	on loc {
-	  var (myCounts, myVals) = segAll(values[values.localSubdomain()], segments[D.localSubdomain()]);
-	  forall (c, v, i) in zip(myCounts, myVals, 0..#numKeys) {
-	    if (c > 0) && !v {
-	      // Does not need to be atomic, because race conditions will still produce the correct answer
-	      res[i] = false;
-	    }
-	  }
+	  perLocVals[here.id] = segAll(values.localSlice[values.localSubdomain()],
+				       segments.localSlice[D.localSubdomain()]);
 	}
       }
+      var res: [keyDom] bool;
+      for (r, keyInd) in zip(res, 0..#numKeys) {
+	r = && reduce [i in PrivateSpace] perLocVals[i][keyInd];
+      }    
       return res;
     }
     
@@ -909,41 +860,127 @@ module ReductionMsg
     }
 
     proc perLocNumUnique(values:[] int, segments:[?D] int): [] int {
-      // First get all per-locale sets of unique values
-      var localUnique: [D] domain(int);
+      var minVal = min reduce values;
+      var valRange = (max reduce values) - minVal + 1;
+      var numKeys:int = segments.size / numLocales;
+      if (numKeys*valRange <= lBins) {
+	if v {try! writeln("bins %i <= %i; using perLocNumUniqueHist".format(numKeys*valRange, lBins));}
+	return perLocNumUniqueHist(values, segments, minVal, valRange, numKeys);
+      } else {
+	if v {try! writeln("bins %i > %i; using perLocNumUniqueAssoc".format(numKeys*valRange, lBins));}
+	return perLocNumUniqueAssoc(values, segments, numKeys);
+      }
+    }
+
+    /* proc perLocNumUnique(values:[] int, segments:[?D] int, numKeys: int): [] int { */
+    /*   // First get all per-locale sets of unique values */
+    /*   var localUnique: [PrivateSpace] [0..#numKeys] domain(int); */
+    /*   coforall loc in Locales { */
+    /* 	on loc { */
+    /* 	  var myD = D.localSubdomain(); */
+    /* 	  // Loop over keys */
+    /* 	  forall (i, low, myU) in zip(myD, segments.localSlice[myD], localUnique[here.id]) { */
+    /* 	    // Find segment boundaries */
+    /* 	    var high: int; */
+    /* 	    if (i < myD.high) { */
+    /* 	      high = segments[i+1] - 1; */
+    /* 	    } else { */
+    /* 	      high = values.localSubdomain().high; */
+    /* 	    } */
+    /* 	    // Aggregate segment's values into a set */
+    /* 	    var domLock$:sync bool = true; */
+    /* 	    forall v in values.localSlice[low..high] with (ref myU, ref domLock$) { */
+    /* 	      // This outer check is not logically necessary, but it reduces unnecesary acquisition of the lock, which saves a lot of time when keys are dense */
+    /* 	      if !myU.contains(v) { */
+    /* 		domLock$; */
+    /* 		if !myU.contains(v) { */
+    /* 		  myU += v; */
+    /* 		} */
+    /* 		domLock$ = true; */
+    /* 	      } */
+    /* 	    } */
+    /* 	  } */
+    /* 	} */
+    /*   } */
+    /*   // Union the local sets */
+    /*   var keyDom = makeDistDom(numKeys); */
+    /*   var globalUnique: [keyDom] domain(int) = + reduce [i in PrivateSpace] localUnique[i]; */
+    /*   var res = [i in keyDom] globalUnique[i].size; */
+    /*   return res; */
+    /* } */
+
+    proc perLocNumUniqueHist(values: [] int, segments: [?D] int, minVal: int, valRange: int, numKeys: int): [] int {
+      var valDom = makeDistDom(numKeys*valRange);
+      var globalValFlags: [valDom] bool;
       coforall loc in Locales {
 	on loc {
 	  var myD = D.localSubdomain();
-	  forall (i, low, myU) in zip(myD, segments[myD], localUnique[D]) {
+	  forall (i, low) in zip(myD, segments.localSlice[myD]) {
 	    var high: int;
 	    if (i < myD.high) {
 	      high = segments[i+1] - 1;
 	    } else {
 	      high = values.localSubdomain().high;
 	    }
-	    var domLock$:sync bool = true;
-	    forall v in values[values.localSubdomain()][low..high] with (ref myU, ref domLock$) {
-	      if !myU.contains(v) {
-		domLock$;
-		if !myU.contains(v) {
-		  myU += v; // will this propagate, or do we need a ref intent?
-		}
-		domLock$ = true;
+	    if (high >= low) {
+	      var perm: [0..#(high-low+1)] int;
+	      ref myVals = values.localSlice[low..high];
+	      var myMin = min reduce myVals;
+	      var myRange = (max reduce myVals) - myMin + 1;
+	      localHistArgSort(perm, myVals, myMin, myRange);
+	      var sorted: [low..high] int;
+	      [(s, idx) in zip(sorted, perm)] unorderedCopy(s, myVals[idx]);
+	      var (mySegs, myUvals) = segsAndUkeysFromSortedArray(sorted);
+	      var keyInd = i - myD.low;
+	      forall v in myUvals with (ref globalValFlags) {
+		// Does not need to be atomic
+		globalValFlags[keyInd*valRange + v - minVal] = true;
 	      }
-	    }
+	    }	
 	  }
 	}
       }
-      // For each key, union all sets of unique values across locales
-      var numKeys:int = segments.size / numLocales;
-      var res = makeDistArray(numKeys, int);
-      forall i in res.domain {
-	var globalUnique: domain(int); // set of all unique values for key i
-	// Does not make sense to do this in parallel
-	for locU in localUnique[i.. by numKeys] {
-	  globalUnique += locU;
+      var keyDom = makeDistDom(numKeys);
+      var res: [keyDom] int;
+      forall (keyInd, r) in zip(keyDom, res) {
+	r = + reduce globalValFlags[keyInd*valRange..#valRange];
+      }
+      return res;
+    }
+
+    proc perLocNumUniqueAssoc(values: [] int, segments: [?D] int, numKeys: int): [] int {
+      var localUvals: [PrivateSpace] [0..#numKeys] domain(int, parSafe=false);
+      coforall loc in Locales {
+	on loc {
+	  var myD = D.localSubdomain();
+	  forall (i, low) in zip(myD, segments.localSlice[myD]) {
+	    var high: int;
+	    if (i < myD.high) {
+	      high = segments[i+1] - 1;
+	    } else {
+	      high = values.localSubdomain().high;
+	    }
+	    if (high >= low) {
+	      var perm: [0..#(high-low+1)] int;
+	      ref myVals = values.localSlice[low..high];
+	      var myMin = min reduce myVals;
+	      var myRange = (max reduce myVals) - myMin + 1;
+	      localHistArgSort(perm, myVals, myMin, myRange);
+	      var sorted: [low..high] int;
+	      [(s, idx) in zip(sorted, perm)] unorderedCopy(s, myVals[idx]);
+	      var (mySegs, myUvals) = segsAndUkeysFromSortedArray(sorted);
+	      var keyInd = i - myD.low;
+	      forall v in myUvals {
+		localUvals[here.id][keyInd] += v;
+	      }
+	    }	
+	  }
 	}
-	res[i] = globalUnique.size;
+      }
+      var keyDom = makeDistDom(numKeys);
+      var res: [keyDom] int;
+      forall (keyInd, r) in zip(keyDom, res) {
+	r = (+ reduce [i in PrivateSpace] localUvals[i][keyInd]).size;
       }
       return res;
     }

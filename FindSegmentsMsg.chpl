@@ -8,6 +8,7 @@ module FindSegmentsMsg
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
+    use PerLocaleHelper;
 
     use PrivateDist;
     // experimental
@@ -105,28 +106,6 @@ module FindSegmentsMsg
         return try! "created " + st.attrib(sname) + " +created " + st.attrib(uname);
     }
 
-    proc segsAndUkeysFromSortedArray(sorted: [?D] int) {
-      var truth: [D] bool;
-      // truth array to hold segment break points
-      truth[D.low] = true;
-      [(t, s, i) in zip(truth, sorted, D)] if i > D.low { t = (sorted[i-1] != s); }
-
-      // +scan to compute segment position... 1-based because of inclusive-scan
-      var iv: [D] int = (+ scan truth);
-      // compute how many segments
-      var pop = iv[D.high];
-      
-      var segs: [0..#pop] int;
-      var ukeys: [0..#pop] int;
-
-      // segment position... 1-based needs to be converted to 0-based because of inclusive-scan
-      // where ever a segment break is... that index is a segment start index
-      [i in D] if (truth[i] == true) {var idx = i; unorderedCopy(segs[iv[i]-1], idx);}
-      // pull out the first key in each segment as a unique value
-      [i in segs.domain] ukeys[i] = sorted[segs[i]];
-      return (segs, ukeys);
-    }
-
     proc perLocFindSegsAndUkeys(keys:[?D] int, perm:[D] int, minKey:int, keyRange:int) {
       var timer = new Time.Timer();
       var perLocSorted: [D] int;
@@ -141,7 +120,7 @@ module FindSegmentsMsg
       var localSegments: [PrivateSpace] Segments;
       coforall loc in Locales {
 	on loc {
-	  var (locSegs, locUkeys) = segsAndUkeysFromSortedArray(perLocSorted[perLocSorted.localSubdomain()]);
+	  var (locSegs, locUkeys) = segsAndUkeysFromSortedArray(perLocSorted.localSlice[perLocSorted.localSubdomain()]);
 	  localSegments[here.id] = new Segments(locUkeys, locSegs);
 	  forall k in locUkeys with (ref globalRelKeys) {
 	    // This does not need to be atomic, because race conditions will result in the correct answer
