@@ -44,10 +44,19 @@ module In1dMsg
         
         coforall loc in Locales {
             on loc {
-                var ar2Set: domain(int);
-                ar2Set += ar2;
+
+                var t1 = Time.getCurrentTime();
+                var ar2Set: domain(int); // create a set to hold ar2
+                ar2Set.requestCapacity(100_000); // requrest a capacity for the initial set
+                if v {writeln("(",here.id,") creation time = ",Time.getCurrentTime() - t1);try! stdout.flush();}
+
+                t1 = Time.getCurrentTime();
+                ar2Set += ar2; // bulk add all the elts from ar2 to the set
+                if v {writeln("(",here.id,") fill time = ",Time.getCurrentTime() - t1);try! stdout.flush();}
                 
+                t1 = Time.getCurrentTime();
                 [i in truth.localSubdomain()] truth[i] = ar2Set.contains(ar1[i]);
+                if v {writeln("(",here.id,") compute time = ",Time.getCurrentTime() - t1);try! stdout.flush();}
             }
         }
 
