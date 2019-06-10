@@ -55,7 +55,7 @@ chpl --ccflags=-Wno-incompatible-pointer-types --cache-remote --fast -senablePar
  * startup the arkouda_server
  * defaults to port 5555
 ```bash
-./arkouda_server
+./arkouda_server -nl 1
 ```
  * config var on the commandline
   * --v=true/false to turn on/off verbose messages from server
@@ -63,7 +63,7 @@ chpl --ccflags=-Wno-incompatible-pointer-types --cache-remote --fast -senablePar
  * or you could run it this way if you don't want as many messages
 and a different port to be used
 ```bash
-./arkouda_server --ServerPort=5555 --v=false
+./arkouda_server -nl 1 --ServerPort=5555 --v=false
 ```
  * in the same directory in a different terminal window
  * run the ak_test.py python3 program
