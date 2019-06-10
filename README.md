@@ -37,6 +37,7 @@ pip3 install jupyter
 ```
  * setup your CHPL_HOME env variable and source $CHPL_HOME/util/setchplenv.bash
  * compile arkouda_server.chpl
+ * a pre-canned compile line is in `./build_arkouda_server.sh` which you may want to edit
  * don't forget the --fast flag on the compile line
  * need to use the -senableParScan config param on the compile line
  * you may also need to use -I to find zmq.h and -L to find libzmq.a
