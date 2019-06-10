@@ -1,3 +1,7 @@
+### Changes in arkouda-0.0.9
+------------------------
+ *
+
 ### Changes in arkouda-0.0.8
 ------------------------
  * added initial ak.argsort functionality
