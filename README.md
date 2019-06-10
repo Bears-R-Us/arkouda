@@ -41,6 +41,10 @@ pip3 install jupyter
  * don't forget the --fast flag on the compile line
  * need to use the -senableParScan config param on the compile line
  * you may also need to use -I to find zmq.h and -L to find libzmq.a
+here are a couple different ways to compile arkouda_server.chpl
+```bash
+./build_arkouda_server.sh
+```
 ```bash
 chpl --fast -senableParScan arkouda_server.chpl
 ```
