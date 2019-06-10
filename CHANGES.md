@@ -7,7 +7,7 @@
  * added ak.where
  * opt some a[pdarray] gather-indexing
  * added initial ak.GroupBy and ak.aggregate functionality
-
+ * added optimized per-locale version of groupby and aggregate
 
 ### Changes in arkouda-0.0.7
 ------------------------
