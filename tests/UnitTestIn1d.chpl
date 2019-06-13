@@ -6,7 +6,8 @@ module UnitTestIn1d
     use Time only;
 
     use BlockDist;
-    
+
+       
     // fill a with integers from interval aMin..(aMax-1)
     proc fillRandInt(a: [?aD] int, aMin: int, aMax: int) {
 
