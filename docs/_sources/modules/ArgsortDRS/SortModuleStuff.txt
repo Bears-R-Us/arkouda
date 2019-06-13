@@ -1,0 +1,24 @@
+.. default-domain:: chpl
+
+.. module:: SortModuleStuff
+
+SortModuleStuff
+===============
+**Usage**
+
+.. code-block:: chapel
+
+   use ArgsortDRS.SortModuleStuff;
+
+.. data:: param RADIX_BITS = 8
+
+.. function:: proc binForRecordKeyPart(a, criterion, startbit: int)
+
+.. function:: proc fixedWidth(type eltTy) param
+
+.. function:: proc msbRadixSortParamLastStartBit(Data: [], comparator) param
+
+.. function:: proc findDataStartBit(startbit: int, min_ubits, max_ubits): int
+
+.. function:: proc checkSorted(start_n: int, end_n: int, A: [], criterion, startbit = 0)
+

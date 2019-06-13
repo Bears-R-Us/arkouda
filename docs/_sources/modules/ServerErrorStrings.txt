@@ -1,0 +1,26 @@
+.. default-domain:: chpl
+
+.. module:: ServerErrorStrings
+
+ServerErrorStrings
+==================
+**Usage**
+
+.. code-block:: chapel
+
+   use ServerErrorStrings;
+
+.. function:: proc notImplementedError(pname: string, ldtype: DType, op: string, rdtype: DType): string
+
+.. function:: proc notImplementedError(pname: string, efunc: string, ldtype: DType): string
+
+.. function:: proc notImplementedError(pname: string, efunc: string, dt1: DType, dt2: DType, dt3: DType): string
+
+.. function:: proc notImplementedError(pname: string, dtype: DType): string
+
+.. function:: proc notImplementedError(pname: string, arg: string): string
+
+.. function:: proc unrecognizedTypeError(pname: string, stype: string): string
+
+.. function:: proc unknownSymbolError(pname: string, sname: string): string
+

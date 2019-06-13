@@ -1,0 +1,70 @@
+.. default-domain:: chpl
+
+.. module:: ReductionMsg
+
+ReductionMsg
+============
+**Usage**
+
+.. code-block:: chapel
+
+   use ReductionMsg;
+
+.. function:: proc reductionMsg(reqMsg: string, st: borrowed SymTab): string
+
+.. function:: proc countReductionMsg(reqMsg: string, st: borrowed SymTab): string
+
+.. function:: proc segCount(segments: [?D] int, size: int): [D] int
+
+.. function:: proc countLocalRdxMsg(reqMsg: string, st: borrowed SymTab): string
+
+.. function:: proc perLocCount(segments: [?D] int, size: int): [] int
+
+.. function:: proc segmentedReductionMsg(reqMsg: string, st: borrowed SymTab): string
+
+.. function:: proc segmentedLocalRdxMsg(reqMsg: string, st: borrowed SymTab): string
+
+.. function:: proc segSum(values: [] ?t, segments: [?D] int): (AppendExpr.01, AppendExpr.01)
+
+.. function:: proc perLocSum(values: [] ?t, segments: [?D] int): [] t
+
+.. function:: proc segSum(values: [] bool, segments: [?D] int): (AppendExpr.01, AppendExpr.01)
+
+.. function:: proc perLocSum(values: [] bool, segments: [?D] int): [] int
+
+.. function:: proc segProduct(values: [], segments: [?D] int): (AppendExpr.01, AppendExpr.01)
+
+.. function:: proc perLocProduct(values: [] ?t, segments: [?D] int): [] real
+
+.. function:: proc segMean(values: [] ?t, segments: [?D] int): [D] real
+
+.. function:: proc perLocMean(values: [] ?t, segments: [?D] int): [] real
+
+.. function:: proc segMin(values: [] ?t, segments: [?D] int): [D] t
+
+.. function:: proc perLocMin(values: [] ?t, segments: [?D] int): [] t
+
+.. function:: proc segMax(values: [] ?t, segments: [?D] int): [D] t
+
+.. function:: proc perLocMax(values: [] ?t, segments: [?D] int): [] t
+
+.. function:: proc segArgmin(values: [] ?t, segments: [?D] int): [D] int
+
+.. function:: proc perLocArgmin(values: [] ?t, segments: [?D] int): [] int
+
+.. function:: proc segArgmax(values: [] ?t, segments: [?D] int): [D] int
+
+.. function:: proc perLocArgmax(values: [] ?t, segments: [?D] int): [] int
+
+.. function:: proc segAny(values: [] bool, segments: [?D] int): [D] bool
+
+.. function:: proc perLocAny(values: [] bool, segments: [?D] int): [] bool
+
+.. function:: proc segAll(values: [] bool, segments: [?D] int): [D] bool
+
+.. function:: proc perLocAll(values: [] bool, segments: [?D] int): [] bool
+
+.. function:: proc segNumUnique(values: [] int, segments: [?D] int): [D] int
+
+.. function:: proc perLocNumUnique(values: [] int, segments: [?D] int): [] int
+

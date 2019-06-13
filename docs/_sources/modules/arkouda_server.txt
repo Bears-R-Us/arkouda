@@ -1,0 +1,16 @@
+.. default-domain:: chpl
+
+.. module:: arkouda_server
+
+arkouda_server
+==============
+**Usage**
+
+.. code-block:: chapel
+
+   use arkouda_server;
+
+.. function:: proc main()
+
+.. function:: proc get_hostname(): string
+

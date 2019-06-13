@@ -1,0 +1,14 @@
+.. default-domain:: chpl
+
+.. module:: RandMsg
+
+RandMsg
+=======
+**Usage**
+
+.. code-block:: chapel
+
+   use RandMsg;
+
+.. function:: proc randintMsg(reqMsg: string, st: borrowed SymTab): string
+

@@ -1,8 +1,7 @@
-// arg sort algorithm
-// these pass back an index vector which can be used
-// to permute the original array into sorted order
-//
-//
+/* arg sort algorithm
+these pass back an index vector which can be used
+to permute the original array into sorted order */
+
 module ArgSortMsg
 {
     use ServerConfig;
@@ -38,18 +37,18 @@ module ArgSortMsg
     var mBins = 2**25;
     var lBins = 2**25 * numLocales;
 
-    // defined for reduction and scan on atomics
+    /* defined for reduction and scan on atomics */
     proc +(x: atomic int, y: atomic int) {
         return x.read() + y.read();
     }
     
-    // defined for reduction and scan on atomics
+    /* defined for reduction and scan on atomics */
     proc +=(X: [?D] int, Y: [D] atomic int) {
         [i in D] {X[i] += Y[i].read();}
     }
 
-    // do a counting sort on a (an array of integers)
-    // returns iv an array of indices that would sort the array original array
+    /* do a counting sort on a (an array of integers)
+       returns iv an array of indices that would sort the array original array */
     proc argCountSortGlobHist(a: [?aD] int, aMin: int, aMax: int): [aD] int {
         // index vector to hold permutation
         var iv: [aD] int;
@@ -99,8 +98,8 @@ module ArgSortMsg
         return iv;
     }
 
-    // do a counting sort on a (an array of integers)
-    // returns iv an array of indices that would sort the array original array
+    /* do a counting sort on a (an array of integers)
+       returns iv an array of indices that would sort the array original array */
     proc argCountSortLocHistGlobHist(a: [?aD] int, aMin: int, aMax: int): [aD] int {
         // index vector to hold permutation
         var iv: [aD] int;
@@ -179,10 +178,10 @@ module ArgSortMsg
         return iv;
     }
     
-    // do a counting sort on a (an array of integers)
-    // returns iv an array of indices that would sort the array original array
-    // PD == PrivateDist
-    // IW == Indirect write to local array then block copy to output array
+    /* do a counting sort on a (an array of integers)
+    returns iv an array of indices that would sort the array original array
+    PD == PrivateDist
+    IW == Indirect write to local array then block copy to output array */
     proc argCountSortLocHistGlobHistPDIW(a: [?aD] int, aMin: int, aMax: int): [aD] int {
         // index vector to hold permutation
         var iv: [aD] int;
@@ -275,10 +274,10 @@ module ArgSortMsg
         return iv;
     }
     
-    // do a counting sort on a (an array of integers)
-    // returns iv an array of indices that would sort the array original array
-    // PD = PrivateDist
-    // DW = Direct Write into output array
+    /* do a counting sort on a (an array of integers)
+    returns iv an array of indices that would sort the array original array
+    PD = PrivateDist
+    DW = Direct Write into output array */
     proc argCountSortLocHistGlobHistPDDW(a: [?aD] int, aMin: int, aMax: int): [aD] int {
         // index vector to hold permutation
         var iv: [aD] int;
@@ -357,7 +356,7 @@ module ArgSortMsg
         return iv;
     }
     
-    // argsort takes pdarray and returns an index vector iv which sorts the array
+    /* argsort takes pdarray and returns an index vector iv which sorts the array */
     proc argsortMsg(reqMsg: string, st: borrowed SymTab): string {
         var pn = "argsort";
         var repMsg: string; // response message

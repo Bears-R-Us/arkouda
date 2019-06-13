@@ -1,0 +1,16 @@
+.. default-domain:: chpl
+
+.. module:: PerLocaleHelper
+
+PerLocaleHelper
+===============
+**Usage**
+
+.. code-block:: chapel
+
+   use PerLocaleHelper;
+
+.. function:: proc segsAndUkeysFromSortedArray(sorted: [?D] int)
+
+.. function:: proc localHistArgSort(iv: [] int, a: [?D] int, lmin: int, bins: int)
+

@@ -1,0 +1,44 @@
+.. default-domain:: chpl
+
+.. module:: MultiTypeSymbolTable
+
+MultiTypeSymbolTable
+====================
+**Usage**
+
+.. code-block:: chapel
+
+   use MultiTypeSymbolTable;
+
+.. class:: SymTab
+
+   .. attribute:: var tD: domain(string)
+
+   .. attribute:: var tab: [tD] shared GenSymEntry
+
+   .. attribute:: var nid = 0
+
+   .. method:: proc nextName(): string
+
+   .. method:: proc addEntry(name: string, len: int, type t)
+
+   .. method:: proc addEntry(name: string, entry: shared GenSymEntry)
+
+   .. method:: proc addEntry(name: string, len: int, dtype: DType)
+
+   .. method:: proc deleteEntry(name: string)
+
+   .. method:: proc lookup(name: string): shared GenSymEntry
+
+   .. method:: proc pretty()
+
+   .. method:: proc dump(name: string): string
+
+   .. method:: proc info(name: string): string
+
+   .. method:: proc attrib(name: string): string
+
+   .. method:: proc datastr(name: string, thresh: int): string
+
+   .. method:: proc datarepr(name: string, thresh: int): string
+

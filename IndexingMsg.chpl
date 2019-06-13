@@ -7,7 +7,7 @@ module IndexingMsg
     // experimental
     use UnorderedCopy;
 
-    // intIndex "a[int]" response to __getitem__(int)
+    /* intIndex "a[int]" response to __getitem__(int) */
     proc intIndexMsg(reqMsg: string, st: borrowed SymTab):string {
         var pn = "intIndex";
         var repMsg: string; // response message
@@ -40,7 +40,7 @@ module IndexingMsg
          }
     }
 
-    // sliceIndex "a[slice]" response to __getitem__(slice)
+    /* sliceIndex "a[slice]" response to __getitem__(slice) */
     proc sliceIndexMsg(reqMsg: string, st: borrowed SymTab): string {
         var pn = "sliceIndex";
         var repMsg: string; // response message
@@ -93,7 +93,7 @@ module IndexingMsg
         return try! "created " + st.attrib(rname);
     }
 
-    // pdarrayIndex "a[pdarray]" response to __getitem__(pdarray)
+    /* pdarrayIndex "a[pdarray]" response to __getitem__(pdarray) */
     proc pdarrayIndexMsg(reqMsg: string, st: borrowed SymTab): string {
         var pn = "pdarrayIndex";
         var repMsg: string; // response message
@@ -235,7 +235,7 @@ module IndexingMsg
         return try! "created " + st.attrib(rname);
     }
 
-    // setIntIndexToValue "a[int] = value" response to __setitem__(int, value)
+    /* setIntIndexToValue "a[int] = value" response to __setitem__(int, value) */
     proc setIntIndexToValueMsg(reqMsg: string, st: borrowed SymTab):string {
         var pn = "setIntIndexToValue";
         var repMsg: string; // response message
@@ -310,7 +310,7 @@ module IndexingMsg
          return try! "%s success".format(pn);
     }
 
-    // setPdarrayIndexToValue "a[pdarray] = value" response to __setitem__(pdarray, value)
+    /* setPdarrayIndexToValue "a[pdarray] = value" response to __setitem__(pdarray, value) */
     proc setPdarrayIndexToValueMsg(reqMsg: string, st: borrowed SymTab):string {
         var pn = "setPdarrayIndexToValue";
         var repMsg: string; // response message
@@ -361,7 +361,7 @@ module IndexingMsg
         }
     }
 
-    // setPdarrayIndexToPdarray "a[pdarray] = pdarray" response to __setitem__(pdarray, pdarray)
+    /* setPdarrayIndexToPdarray "a[pdarray] = pdarray" response to __setitem__(pdarray, pdarray) */
     proc setPdarrayIndexToPdarrayMsg(reqMsg: string, st: borrowed SymTab):string {
         var pn = "setPdarrayIndexToPdarray";
         var repMsg: string; // response message
@@ -421,7 +421,7 @@ module IndexingMsg
         return try! "%s success".format(pn);
     }
 
-    // setSliceIndexToValue "a[slice] = value" response to __setitem__(slice, value)
+    /* setSliceIndexToValue "a[slice] = value" response to __setitem__(slice, value) */
     proc setSliceIndexToValueMsg(reqMsg: string, st: borrowed SymTab):string {
         var pn = "setSliceIndexToValue";
         var repMsg: string; // response message
@@ -508,7 +508,7 @@ module IndexingMsg
         return try! "%s success".format(pn); 
     }
     
-    // setSliceIndexToPdarray "a[slice] = pdarray" response to __setitem__(slice, pdarray)
+    /* setSliceIndexToPdarray "a[slice] = pdarray" response to __setitem__(slice, pdarray) */
     proc setSliceIndexToPdarrayMsg(reqMsg: string, st: borrowed SymTab):string {
         var pn = "setSliceIndexToPdarray";
         var repMsg: string; // response message

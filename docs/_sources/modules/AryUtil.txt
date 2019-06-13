@@ -1,0 +1,20 @@
+.. default-domain:: chpl
+
+.. module:: AryUtil
+
+AryUtil
+=======
+**Usage**
+
+.. code-block:: chapel
+
+   use AryUtil;
+
+.. data:: var printThresh = 30
+
+.. function:: proc printAry(name: string, A)
+
+.. function:: proc isSorted(A: [?D] ?t): bool
+
+.. function:: proc aStats(a: [?D] int): (int, int, real, real, real)
+

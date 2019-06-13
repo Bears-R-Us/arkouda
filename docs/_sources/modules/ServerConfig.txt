@@ -1,0 +1,20 @@
+.. default-domain:: chpl
+
+.. module:: ServerConfig
+
+ServerConfig
+============
+**Usage**
+
+.. code-block:: chapel
+
+   use ServerConfig;
+
+.. data:: config const v = true
+
+.. data:: config const ServerPort = 5555
+
+.. data:: config param arkoudaVersion = "0.0.9pre"
+
+.. data:: config param MyDmap = 1
+

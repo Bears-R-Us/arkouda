@@ -80,7 +80,7 @@ module HistogramMsg
         return hist;
     }
     
-    // histogram takes a pdarray and returns a pdarray with the histogram in it
+    /* histogram takes a pdarray and returns a pdarray with the histogram in it */
     proc histogramMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields

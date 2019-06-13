@@ -1,0 +1,44 @@
+.. default-domain:: chpl
+
+.. module:: IndexingMsg
+
+IndexingMsg
+===========
+**Usage**
+
+.. code-block:: chapel
+
+   use IndexingMsg;
+
+.. function:: proc intIndexMsg(reqMsg: string, st: borrowed SymTab): string
+
+   intIndex "a[int]" response to __getitem__(int) 
+
+.. function:: proc sliceIndexMsg(reqMsg: string, st: borrowed SymTab): string
+
+   sliceIndex "a[slice]" response to __getitem__(slice) 
+
+.. function:: proc pdarrayIndexMsg(reqMsg: string, st: borrowed SymTab): string
+
+   pdarrayIndex "a[pdarray]" response to __getitem__(pdarray) 
+
+.. function:: proc setIntIndexToValueMsg(reqMsg: string, st: borrowed SymTab): string
+
+   setIntIndexToValue "a[int] = value" response to __setitem__(int, value) 
+
+.. function:: proc setPdarrayIndexToValueMsg(reqMsg: string, st: borrowed SymTab): string
+
+   setPdarrayIndexToValue "a[pdarray] = value" response to __setitem__(pdarray, value) 
+
+.. function:: proc setPdarrayIndexToPdarrayMsg(reqMsg: string, st: borrowed SymTab): string
+
+   setPdarrayIndexToPdarray "a[pdarray] = pdarray" response to __setitem__(pdarray, pdarray) 
+
+.. function:: proc setSliceIndexToValueMsg(reqMsg: string, st: borrowed SymTab): string
+
+   setSliceIndexToValue "a[slice] = value" response to __setitem__(slice, value) 
+
+.. function:: proc setSliceIndexToPdarrayMsg(reqMsg: string, st: borrowed SymTab): string
+
+   setSliceIndexToPdarray "a[slice] = pdarray" response to __setitem__(slice, pdarray) 
+

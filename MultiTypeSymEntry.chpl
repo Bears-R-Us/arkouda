@@ -6,11 +6,11 @@ module MultiTypeSymEntry
     use CyclicDist;
     use BlockDist;
     
-    // in chapel the types int and real defalut to int(64) and real(64)
-    // also need other types like float32, int32, etc
+    /* in chapel the types int and real defalut to int(64) and real(64)
+       also need other types like float32, int32, etc */
     enum DType {Int64, Float64, Bool, UNDEF}; 
 
-    // take a chapel type and returns the matching DType
+    /* take a chapel type and returns the matching DType */
     proc whichDtype(type etype) param : DType {
       if (etype == int) {return DType.Int64;}
       if (etype == real) {return DType.Float64;}
@@ -18,6 +18,7 @@ module MultiTypeSymEntry
       return DType.UNDEF; // undefined type
     }
 
+    /* return the size in bytes of a DType */
     proc dtypeSize(dt: DType): int {
       if (dt == DType.Int64) { return 8; }
       if (dt == DType.Float64) { return 8; }
@@ -25,7 +26,7 @@ module MultiTypeSymEntry
       return 0;
     }
 
-    // turns a dtype string in pythonland into a DType
+    /* turns a dtype string in pythonland into a DType */
     proc str2dtype(dstr:string): DType {
         if dstr == "int64" {return DType.Int64;}
         if dstr == "float64" {return DType.Float64;}        
@@ -33,7 +34,7 @@ module MultiTypeSymEntry
         return DType.UNDEF;
     }
     
-    // turns a DType into a dtype string in pythonland
+    /* turns a DType into a dtype string in pythonland */
     proc dtype2str(dtype:DType): string {
         if dtype == DType.Int64 {return "int64";}
         if dtype == DType.Float64 {return "float64";}        
@@ -41,9 +42,9 @@ module MultiTypeSymEntry
         return "UNDEF";
     }
 
-    // uses the MyDmap config param in ServerConfig.chpl
-    // if MyDmap = 0 {return (type CyclicDom(1,int(64),false));}
-    // if MyDmap = 1 {return (type BlockDom(1,int(64),false,unmanaged DefaultDist));}
+    /* uses the MyDmap config param in ServerConfig.chpl
+    if MyDmap = 0 {return (type CyclicDom(1,int(64),false));}
+    if MyDmap = 1 {return (type BlockDom(1,int(64),false,unmanaged DefaultDist));} */
     proc makeDistDom(size:int) {
         select MyDmap
         {
@@ -63,24 +64,24 @@ module MultiTypeSymEntry
         }
     }
     
-    // make an array of the dmapped dom and type I want
+    /* make an array of the dmapped dom and type I want */
     proc makeDistArray(size:int, type etype) {
         var a: [makeDistDom(size)] etype;
         return a;
     }
 
-    // retrun the type of the dist domain
+    /* retrun the type of the dist domain */
     proc makeDistDomType(size: int) type {
         return makeDistDom(size).type;
     }
 
-    // cast the symbol entry of the right type and return it
-    // blah too much type inference still for my taste
+    /* cast the symbol entry of the right type and return it
+       blah too much type inference still for my taste */
     inline proc toSymEntry(gse: borrowed GenSymEntry, type etype) {
         return gse: SymEntry(etype);
     }
 
-    // 1.18 version
+    /* 1.18 version print out localSubdomains */
     proc printOwnership(x) {
         for loc in Locales do
             on loc do
@@ -88,8 +89,8 @@ module MultiTypeSymEntry
         writeln();
     }
 
-    // This is a dummy class to avoid having to talk about specific
-    // instantiations of SymEntry.
+    /* This is a dummy class to avoid having to talk about specific
+       instantiations of SymEntry. */
     class GenSymEntry
     {
         var dtype: DType; // answer to numpy dtype
@@ -108,8 +109,8 @@ module MultiTypeSymEntry
         }
     }
 
-    // symbol table entry
-    // we will just do 1-d arrays for now
+    /* symbol table entry
+       we will just do 1-d arrays for now */
     class SymEntry : GenSymEntry
     {
         // generic element type array

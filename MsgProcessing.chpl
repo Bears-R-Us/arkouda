@@ -22,7 +22,7 @@ module MsgProcessing
     use ReductionMsg;
     use FindSegmentsMsg;
     
-    // parse, execute, and respond to create message
+    /* parse, execute, and respond to create message */
     proc createMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -41,7 +41,7 @@ module MsgProcessing
         return try! "created " + st.attrib(rname);
     }
 
-    // parse, execute, and respond to delete message
+    /* parse, execute, and respond to delete message */
     proc deleteMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -53,7 +53,7 @@ module MsgProcessing
         return try! "deleted %s".format(name);
     }
 
-    // info header only
+    /* info header only */
     proc infoMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -64,7 +64,7 @@ module MsgProcessing
         return st.info(name);
     }
     
-    // dump info and values
+    /* dump info and values */
     proc dumpMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -75,8 +75,8 @@ module MsgProcessing
         return st.dump(name);
     }
 
-    // response to __str__ method in python
-    // str convert array data to string
+    /* response to __str__ method in python
+       str convert array data to string */
     proc strMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -87,8 +87,8 @@ module MsgProcessing
         return st.datastr(name,printThresh);
     }
 
-    // response to __repr__ method in python
-    // repr convert array data to string
+    /* response to __repr__ method in python
+       repr convert array data to string */ 
     proc reprMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -157,7 +157,7 @@ module MsgProcessing
         return try! "created " + st.attrib(rname);
     }
 
-    // sets all elements in array to a value (broadcast)
+    /* sets all elements in array to a value (broadcast) */
     proc setMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -244,10 +244,10 @@ module MsgProcessing
         return repMsg;
     }
     
-    // these ops are functions which take an array and produce and array
-    // do scans fit here also? I think so... vector = scanop(vector)
-    // parse and respond to efunc "elemental function" message
-    // vector = efunc(vector)
+    /* these ops are functions which take an array and produce and array
+       do scans fit here also? I think so... vector = scanop(vector)
+       parse and respond to efunc "elemental function" message
+       vector = efunc(vector) */
     proc efuncMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
