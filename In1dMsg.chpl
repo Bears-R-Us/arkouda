@@ -20,7 +20,7 @@ module In1dMsg
     causes every elt in ar1 to be broadcast/communicated over ar2 */
     proc in1dGlobalAr1Bcast(ar1: [?aD1] int, ar2: [?aD2] int) {
 
-        var truth = makeDistArray(ar1.size, bool);
+        var truth: [aD1] bool;
         
         [(elt,t) in zip(ar1,truth)] t = | reduce (elt == ar2);
 
@@ -32,7 +32,7 @@ module In1dMsg
     causes every elt in ar2 to be broadcast/communicated over ar1 */
     proc in1dGlobalAr2Bcast(ar1: [?aD1] int, ar2: [?aD2] int) {
 
-        var truth = makeDistArray(ar1.size, bool);
+        var truth: [aD1] bool;
 
         for elt in ar2 {truth |= (ar1 == elt);}
         
@@ -42,7 +42,7 @@ module In1dMsg
     /* put ar2 into an assoc domain of int per locale */
     proc in1dAr2PerLocAssoc(ar1: [?aD1] int, ar2: [?aD2] int) {
 
-        var truth = makeDistArray(ar1.size, bool);
+        var truth: [aD1] bool;
         var timings: [PrivateSpace] [0..#3] real;
         
         coforall loc in Locales {
@@ -51,14 +51,21 @@ module In1dMsg
                 var t = new Time.Timer();
                 
                 if v {t.start();}
-                var ar2Set: domain(int); // create a set to hold ar2
-                ar2Set.requestCapacity(100_000); // requrest a capacity for the initial set
+
+                var ar2Set: domain(int, parSafe=false); // create a set to hold ar2, parSafe modification is OFF
+                ar2Set.requestCapacity(ar2.size); // requrest a capacity for the initial set
+
                 if v {t.stop(); timings[here.id][0] = t.elapsed(); t.clear(); t.start();}
 
-                ar2Set += ar2; // bulk add all the elts from ar2 to the set
-                if v {t.stop(); timings[here.id][1] = t.elapsed(); t.clear(); t.start();}
+                // serially add all elements of ar2 to ar2Set
+                for e in ar2 { ar2Set += e; }
+                // all elements of ar2 have been added to ar2Set so modification done.
                 
+                if v {t.stop(); timings[here.id][1] = t.elapsed(); t.clear(); t.start();}
+
+                // in parallel check all elements of ar1 to see if ar2Set contains them
                 [i in truth.localSubdomain()] truth[i] = ar2Set.contains(ar1[i]);
+
                 if v {t.stop(); timings[here.id][2] = t.elapsed();}
             }
         }

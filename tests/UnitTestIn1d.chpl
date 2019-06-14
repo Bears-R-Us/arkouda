@@ -7,7 +7,7 @@ module UnitTestIn1d
 
     use BlockDist;
 
-       
+
     // fill a with integers from interval aMin..(aMax-1)
     proc fillRandInt(a: [?aD] int, aMin: int, aMax: int) {
 
@@ -25,12 +25,14 @@ module UnitTestIn1d
 
     proc test_in1d(n: int, m: int, nVals: int) {
 
+        writeln((n, m, nVals)); try! stdout.flush();
+
         const aDom = newBlockDom({0..#n});
 
         var a: [aDom] int;
+
         var aMin = 0;
         var aMax = nVals-1;
-        writeln((n, nVals));
 
         // fill a with random ints from a range
         fillRandInt(a, aMin, aMax+1);
@@ -53,7 +55,7 @@ module UnitTestIn1d
         // returns a boolean vector
         var truth = in1dAr2PerLocAssoc(a, b);
         writeln("total time = ", Time.getCurrentTime() - t1, "sec"); try! stdout.flush();
-        writeln("<<< #a[i] in b = ", + reduce truth, " (expected ", expected, ")");
+        writeln("<<< #a[i] in b = ", + reduce truth, " (expected ", expected, ")");try! stdout.flush();
     }
 
     config const N = 1_000_000;
