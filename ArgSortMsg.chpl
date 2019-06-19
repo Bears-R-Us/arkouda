@@ -427,11 +427,11 @@ module ArgSortMsg
     proc perLocaleArgSort(a:[?aD] int):[aD] int {
       var iv: [aD] int;
       coforall loc in Locales {
-        on loc {
-	  var toSort = [(v, i) in zip(a.localSlice[a.localSubdomain()], a.localSubdomain()] (v, i);
-	  Sort.sort(toSort);
-	  iv.localSlice[iv.localSubdomain] = [(v, i) in toSort] i;
-	}
+          on loc {
+              var toSort = [(v, i) in zip(a.localSlice[a.localSubdomain()], a.localSubdomain())] (v, i);
+              Sort.sort(toSort);
+              iv.localSlice[iv.localSubdomain()] = [(v, i) in toSort] i;
+          }
       }
       return iv;
     }

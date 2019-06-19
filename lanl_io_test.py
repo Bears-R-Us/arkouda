@@ -41,19 +41,19 @@ if __name__ == '__main__':
     
     print(ak.info(ak.AllSymbols))
     
-    u,c = nfDF['srcIP'].unique(return_counts=True)
+    u,c = ak.unique(nfDF['srcIP'],return_counts=True)
     print(u.size,u)
     print(c.size,c)
     
-    u,c = nfDF['dstIP'].unique(return_counts=True)
+    u,c = ak.unique(nfDF['dstIP'],return_counts=True)
     print(u.size,u)
     print(c.size,c)
     
-    u,c = nfDF['srcPort'].unique(return_counts=True)
+    u,c = ak.unique(nfDF['srcPort'],return_counts=True)
     print(u.size,u)
     print(c.size,c)
     
-    u,c = nfDF['dstPort'].unique(return_counts=True)
+    u,c = ak.unique(nfDF['dstPort'],return_counts=True)
     print(u.size,u)
     print(c.size,c)
     

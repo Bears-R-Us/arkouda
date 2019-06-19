@@ -27,8 +27,10 @@ module UnitTestArgSort
     }
 
     proc writeIntArray(a:[?D] int, filename:string) {
-      var f = try! open(filename, iomode.cw);
-      var w = try! f.writer(kind=ionative);
+        var f: open(filename, iomode.cw).type;
+        try { f = open(filename, iomode.cw); } catch e { exit(1); }
+        var w: f.writer(kind=ionative).type ;
+        try { w = f.writer(kind=ionative); } catch e { exit(1); }
       try! w.write(D.size);
       try! w.write(a);
       try! w.close();

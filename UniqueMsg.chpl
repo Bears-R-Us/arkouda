@@ -258,6 +258,70 @@ module UniqueMsg
         return (aV, aC);
     }
     
+    // use when unique value vary over a wide range and and are sparse
+    // unique with per-locale assoc domains and arrays
+    proc uniquePerLocAssocParUnsafeGlobAssocParUnsafe(a: [?aD] int, aMin: int, aMax: int) {
+
+        // per locale assoc domain of int to hold uniq values
+        // parSafe=false means NO modifying the domain in a parallel context
+        var uniqSet: [PrivateSpace] domain(int, parSafe=false);
+        [i in PrivateSpace] uniqSet[i].requestCapacity(100_000);
+
+        // accumulate the uniq values into each locale's domain of uniq values
+        coforall loc in Locales {
+            on loc {
+                // serially add to this locale's assoc domain of int
+                for i in a.localSubdomain() { uniqSet[here.id] += a[i]; }
+            }
+        }
+        
+        // reduce counts across locales
+        var numUniq = + reduce [i in PrivateSpace]  uniqSet[i].size;
+        if v {try! writeln("num unique vals upper bound = %t".format(numUniq));try! stdout.flush();}
+
+        // global assoc domain for global unique value set
+        // parSafe=false means NO modifying the domain in a parallel context
+        var globalUniqSet: domain(int, parSafe=false);
+        globalUniqSet.requestCapacity(100_000);
+        
+        // efectively +reduce(union-reduction) private uniqSet domians to get global uniqSet
+        // serial iteration because parSafe=false
+        for loc in Locales {
+            on loc {
+                for val in uniqSet[here.id] {globalUniqSet += val;}
+            }
+        }
+        if v {try! writeln("num unique vals = %t".format(globalUniqSet.size));try! stdout.flush();}
+
+        // allocate global uniqCounts over global set of uniq values
+        var globalUniqCounts: [globalUniqSet] atomic int;
+        
+        // calc local counts and then effectively +reduce uniqCounts to get global uniqCount
+        coforall loc in Locales {
+            on loc {
+                var uniqCounts: [uniqSet[here.id]] atomic int;
+
+                // count locale part of array's values into per-locale private atomic counter set
+                [i in a.localSubdomain()] uniqCounts[a[i]].add(1);
+
+                // accumulate into global counters
+                [val in uniqSet[here.id]] globalUniqCounts[val].add(uniqCounts[val].read());
+            }
+        }
+
+        // unique array
+        var aV = makeDistArray(globalUniqSet.size, int);
+        // counts array
+        var aC = makeDistArray(globalUniqSet.size, int);
+
+        for (val,i) in zip(globalUniqSet.sorted(), 0..) {
+            aV[i] = val; // copy unique value
+            aC[i] = globalUniqCounts[val].read(); // copy count of unique value
+        }
+        
+        return (aV, aC);
+    }
+    
     // unique take a pdarray and returns a pdarray with the unique values
     proc uniqueMsg(reqMsg: string, st: borrowed SymTab): string {
         var pn = "unique";
@@ -297,15 +361,9 @@ module UniqueMsg
                     st.addEntry(vname, new shared SymEntry(aV));
                     if returnCounts {st.addEntry(cname, new shared SymEntry(aC));}
                 }
-                else if (bins <= lBins) {
-                    if v {try! writeln("bins <= %t".format(lBins));try! stdout.flush();}
-                    var (aV,aC) = uniquePerLocAssocGlobHist(e.a, eMin, eMax);
-                    st.addEntry(vname, new shared SymEntry(aV));
-                    if returnCounts {st.addEntry(cname, new shared SymEntry(aC));}
-                }
                 else {
                     if v {try! writeln("bins = %t".format(bins));try! stdout.flush();}
-                    var (aV,aC) = uniquePerLocAssocGlobAssoc(e.a, eMin, eMax);
+                    var (aV,aC) = uniquePerLocAssocParUnsafeGlobAssocParUnsafe(e.a, eMin, eMax);
                     st.addEntry(vname, new shared SymEntry(aV));
                     if returnCounts {st.addEntry(cname, new shared SymEntry(aC));}
                 }
