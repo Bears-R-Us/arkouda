@@ -23,6 +23,7 @@ module ArgSortMsg
     use UnorderedAtomics;
 
     use ArgsortDRS;
+    use Sort only;
     
     // thresholds for different sized sorts
     var lgSmall = 10;
@@ -415,12 +416,24 @@ module ArgSortMsg
         select (gEnt.dtype) {
             when (DType.Int64) {
                 var e = toSymEntry(gEnt,int);
-		var iv = perLocaleArgCountSort(e.a);
+		var iv = perLocaleArgSort(e.a);
 		st.addEntry(ivname, new shared SymEntry(iv));
 	    }
 	    otherwise {return notImplementedError(pn,gEnt.dtype);}
 	}
 	return try! "created " + st.attrib(ivname);
+    }
+    
+    proc perLocaleArgSort(a:[?aD] int):[aD] int {
+      var iv: [aD] int;
+      coforall loc in Locales {
+        on loc {
+	  var toSort = [(v, i) in zip(a.localSlice[a.localSubdomain()], a.localSubdomain()] (v, i);
+	  Sort.sort(toSort);
+	  iv.localSlice[iv.localSubdomain] = [(v, i) in toSort] i;
+	}
+      }
+      return iv;
     }
 
     proc perLocaleArgCountSort(a:[?aD] int):[aD] int {
