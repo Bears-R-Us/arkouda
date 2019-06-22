@@ -886,6 +886,7 @@ class GroupBy:
             self.permutation = local_argsort(keys)
         else:
             self.permutation = argsort(keys)
+        self.permuted_keys = self.keys[self.permutation]
         self.segments, self.unique_keys = self.find_segments()
             
     def find_segments(self):
@@ -893,7 +894,7 @@ class GroupBy:
             cmd = "findLocalSegments"
         else:
             cmd = "findSegments"
-        reqMsg = "{} {} {}".format(cmd, self.keys.name, self.permutation.name)
+        reqMsg = "{} {} {}".format(cmd, self.permuted_keys.name)
         repMsg = generic_msg(reqMsg)
         segAttr, uniqAttr = repMsg.split("+")
         if v: print(segAttr, uniqAttr)
@@ -925,10 +926,11 @@ class GroupBy:
             cmd = "segmentedLocalRdx"
         else:
             cmd = "segmentedReduction"
-        reqMsg = "{} {} {} {}".format(cmd,
-                                      permuted_values.name,
-                                      self.segments.name,
-                                      operator)
+        reqMsg = "{} {} {} {} {}".format(cmd,
+                                         self.permuted_keys.name,
+                                         permuted_values.name,
+                                         self.segments.name,
+                                         operator)
         repMsg = generic_msg(reqMsg)
         if v: print(repMsg)
         if operator.startswith('arg'):

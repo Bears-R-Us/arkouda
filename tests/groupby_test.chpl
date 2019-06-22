@@ -30,8 +30,8 @@ proc main() {
   write_result("mean", unique_keys, perLocMean(valD, segD));
   write_result("min", unique_keys, perLocMin(keyD, valD, segD));
   write_result("max", unique_keys, perLocMax(keyD, valD, segD));
-  write_result("argmin", unique_keys, perLocArgmin(valD, segD));
-  write_result("argmax", unique_keys, perLocArgmax(valD, segD));
+  write_result("argmin", unique_keys, perLocArgmin(keyD, valD, segD));
+  write_result("argmax", unique_keys, perLocArgmax(keyD, valD, segD));
   write_result("nunique", unique_keys, perLocNumUnique(valD, segD));
 }
 

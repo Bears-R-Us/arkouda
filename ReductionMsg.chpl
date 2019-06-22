@@ -267,12 +267,16 @@ module ReductionMsg
       // reqMsg: segmentedReduction values segments operator
       var fields = reqMsg.split();
       var cmd = fields[1];
-      var values_name = fields[2];   // segmented array of values to be reduced
-      var segments_name = fields[3]; // segment offsets
-      var operator = fields[4];      // reduction operator
+      var keys_name = fields[2];
+      var values_name = fields[3];   // segmented array of values to be reduced
+      var segments_name = fields[4]; // segment offsets
+      var operator = fields[5];      // reduction operator
       var rname = st.nextName();
-      if v {try! writeln("%s %s %s %s".format(cmd,values_name,segments_name,operator));try! stdout.flush();}
-
+      if v {try! writeln("%s %s %s %s %s".format(cmd,keys_name,values_name,segments_name,operator));try! stdout.flush();}
+      var gKey: borrowed GenSymEntry = st.lookup(keys_name);
+      if (gKey == nil) {return unknownSymbolError("segmentedReduction", keys_name);}
+      if (gKey.dtype != DType.Int64) {return unrecognizedTypeError("segmentedLocalRdx", dtype2str(gKey.dtype));}
+      var keys = toSymEntry(gKey, int);
       var gVal: borrowed GenSymEntry = st.lookup(values_name);
       if (gVal == nil) {return unknownSymbolError("segmentedReduction",values_name);}
       var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
@@ -296,19 +300,19 @@ module ReductionMsg
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "min" {
-	    var res = segMin(values.a, segments.a);
+	    var res = segMin(keys.a, values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "max" {
-	    var res = segMax(values.a, segments.a);
+	    var res = segMax(keys.a, values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "argmin" {
-	    var (vals, locs) = segArgmin(values.a, segments.a);
+	    var (vals, locs) = segArgmin(keys.a, values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(locs));
 	  }
 	  when "argmax" {
-	    var (vals, locs) = segArgmax(values.a, segments.a);
+	    var (vals, locs) = segArgmax(keys.a, values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(locs));
 	  }
 	  when "nunique" {
@@ -334,19 +338,19 @@ module ReductionMsg
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "min" {
-	    var res = segMin(values.a, segments.a);
+	    var res = segMin(keys.a, values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "max" {
-	    var res = segMax(values.a, segments.a);
+	    var res = segMax(keys.a, values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "argmin" {
-	    var (vals, locs) = segArgmin(values.a, segments.a);
+	    var (vals, locs) = segArgmin(keys.a, values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(locs));
 	  }
 	  when "argmax" {
-	    var (vals, locs) = segArgmax(values.a, segments.a);
+	    var (vals, locs) = segArgmax(keys.a, values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(locs));
 	  }
 	  otherwise {return notImplementedError("segmentedReduction",operator,gVal.dtype);}
@@ -425,11 +429,11 @@ module ReductionMsg
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "argmin" {
-	    var res = perLocArgmin(values.a, segments.a);
+	    var res = perLocArgmin(keys.a, values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "argmax" {
-	    var res = perLocArgmax(values.a, segments.a);
+	    var res = perLocArgmax(keys.a, values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "nunique" {
@@ -463,11 +467,11 @@ module ReductionMsg
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "argmin" {
-	    var res = perLocArgmin(values.a, segments.a);
+	    var res = perLocArgmin(keys.a, values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "argmax" {
-	    var res = perLocArgmax(values.a, segments.a);
+	    var res = perLocArgmax(keys.a, values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  otherwise {return notImplementedError("segmentedLocalRdx",operator,gVal.dtype);}
@@ -511,16 +515,18 @@ module ReductionMsg
       // Iterate over segments
       forall (i, r) in zip(D, res) {
 	// Find the segment boundaries
-	var vi: int;
-	if (i < D.high) {
-	  // Usually determine the upper bound from the next segment boundary
-	  vi = segments[i+1] - 1;
+	var vl: t, vr: t;
+	if (i == D.low) {
+	  vl = 0;
 	} else {
-	  // If this is the last segment, then the upper bound is the end of <values>
-	  vi = values.domain.high;
+	  vl = cumsum[segments[i] - 1];
 	}
-	// Knowing the bounds, reduce the values of the segment
-	r = cumsum[vi];
+	if (i == D.high) {
+	  vr = cumsum[values.domain.high];
+	} else {
+	  vr = cumsum[segments[i+1] -1];
+	}
+	r = vr - vl;
       }
       return res;
     }
@@ -556,14 +562,21 @@ module ReductionMsg
     proc segSum(values:[] bool, segments:[?D] int): [D] int {
       var res: [D] int;
       var cumsum = + scan values;
+      // Iterate over segments
       forall (i, r) in zip(D, res) {
-	var vi: int;
-	if (i < D.high) {
-	  vi = segments[i+1] - 1;
+	// Find the values to the left of the segment boundaries
+	var vl: int, vr: int;
+	if (i == D.low) {
+	  vl = 0;
 	} else {
-	  vi = values.domain.high;
+	  vl = cumsum[segments[i] - 1];
 	}
-	r = cumsum[vi];
+	if (i == D.high) {
+	  vr = cumsum[values.domain.high];
+	} else {
+	  vr = cumsum[segments[i+1] -1];
+	}
+	r = vr - vl;
       }
       return res;
     }
@@ -583,18 +596,27 @@ module ReductionMsg
     }
     
     proc segProduct(values:[], segments:[?D] int): [D] real {
-      var res: [D] real = 1;
-      var cumprod = * scan values:real;
-      forall (i, r) in zip(D, res) {
-	var vi: int;
-	if (i < D.high) {
-	  vi = segments[i+1] - 1;
-	} else {
-	  vi = values.domain.high;
-	}
-	r = cumprod[vi];
-      }
-      return res;
+      var logs = Math.log(values:real);
+      return Math.exp(segSum(logs, segments));
+      /* var res: [D] real = 1; */
+      /* var cumprod = * scan values; */
+      /* // Iterate over segments */
+      /* forall (i, r) in zip(D, res) { */
+      /* 	// Find the segment boundaries */
+      /* 	var vl: real, vr: real; */
+      /* 	if (i == D.low) { */
+      /* 	  vl = 1.0; */
+      /* 	} else { */
+      /* 	  vl = cumprod[segments[i] - 1]; */
+      /* 	} */
+      /* 	if (i == D.high) { */
+      /* 	  vr = cumprod[values.domain.high]; */
+      /* 	} else { */
+      /* 	  vr = cumprod[segments[i+1] -1]; */
+      /* 	} */
+      /* 	r = vr / vl; */
+      /* } */
+      /* return res; */
     }
 
     proc perLocProduct(values:[] ?t, segments:[?D] int): [] real {
@@ -614,16 +636,22 @@ module ReductionMsg
     proc segMean(values:[] ?t, segments:[?D] int): [D] real {
       var res: [D] real;
       var cumsum = + scan values;
-      forall (i, r, low) in zip(D, res, segments) {
-	var vi: int;
-	if (i < D.high) {
-	  vi = segments[i+1] - 1;
+      forall (i, r) in zip(D, res) {
+	// Find the values to the left of the segment boundaries
+	var vl: t, vr: t;
+	var j: int;
+	if (i == D.low) {
+	  vl = 0;
 	} else {
-	  vi = values.domain.high;
+	  vl = cumsum[segments[i] - 1];
 	}
-	if (vi >= low) {
-	  r = cumsum[vi]:real / (vi - low + 1):real;
+	if (i == D.high) {
+	  j = values.domain.high;
+	} else {
+	  j = segments[i+1] - 1;
 	}
+	vr = cumsum[j];
+	r = (vr - vl):real / (j - i + 1):real;
       }
       return res;
     }
@@ -637,7 +665,8 @@ module ReductionMsg
 
     proc segMin(keys:[] int, values:[] ?t, segments:[?D] int): [D] t {
       var res: [D] t = max(t);
-      var cummin = min reduce zip(-keys, values);
+      var kv = [(k, v) in zip(keys, values)] (-k, v);
+      var cummin = min scan kv;
       forall (i, r, low) in zip(D, res, segments) {
 	var vi: int;
 	if (i < D.high) {
@@ -646,7 +675,7 @@ module ReductionMsg
 	  vi = values.domain.high;
 	}
 	if (vi >= low) {
-	  r = cummin[vi];
+	  r = cummin[vi][2];
 	}
       }
       return res;
@@ -672,7 +701,8 @@ module ReductionMsg
 
     proc segMax(keys:[] int, values:[] ?t, segments:[?D] int): [D] t {
       var res: [D] t = min(t);
-      var cummax = max reduce zip(keys, values);
+      var kv = [(k, v) in zip(keys, values)] (k, v);
+      var cummax = max scan kv;
       forall (i, r, low) in zip(D, res, segments) {
 	var vi: int;
 	if (i < D.high) {
@@ -681,7 +711,7 @@ module ReductionMsg
 	  vi = values.domain.high;
 	}
 	if (vi >= low) {
-	  r = cummax[vi];
+	  r = cummax[vi][2];
 	}
       }
       return res;
@@ -705,37 +735,35 @@ module ReductionMsg
       return res;
     }
     
-    proc segArgmin(values:[] ?t, segments:[?D] int): ([D] t, [D] int) {
+    proc segArgmin(keys:[] int, values:[] ?t, segments:[?D] int): ([D] t, [D] int) {
+      var kvi = [(k, v, i) in zip(keys, values, keys.domain)] ((k, v), i);
+      var cummin = minloc scan kvi;
       var locs: [D] int;
-      var vals: [D] t;
+      var vals: [D] t = max(t);
       forall (l, v, low, i) in zip(locs, vals, segments, D) {
-	var high: int;
+	var vi: int;
 	if (i < D.high) {
-	  high = segments[i+1] - 1;
+	  vi = segments[i+1] - 1;
 	} else {
-	  high = values.domain.high;
+	  vi = values.domain.high;
 	}
-	if (high < low) {
-	  v = max(t);
-	  l = -1; // no values in this segment, so return a sentinel index
-	} else {
-	  var segment: subdomain(values.domain) = values.domain[low..high];
-	  var (minVal, minInd) = minloc reduce zip(values[segment],segment);
-	  v = minVal;
-	  l = minInd;
+	if (vi >= low) {
+	  v = cummin[vi][1][2];
+	  l = cummin[vi][2];
 	}
       }
       return (vals, locs);
     }
 
-    proc perLocArgmin(values:[] ?t, segments:[?D] int): [] int {
+    proc perLocArgmin(keys:[] int, values:[] ?t, segments:[?D] int): [] int {
       var numKeys:int = segments.size / numLocales;
       var keyDom = makeDistDom(numKeys);
       var perLocVals: [PrivateSpace] [0..#numKeys] t;
       var perLocLocs: [PrivateSpace] [0..#numKeys] int;
       coforall loc in Locales {
 	on loc {
-	  (perLocVals[here.id], perLocLocs[here.id]) = segArgmin(values.localSlice[values.localSubdomain()],
+	  (perLocVals[here.id], perLocLocs[here.id]) = segArgmin(keys.localSlice[keys.localSubdomain()],
+								 values.localSlice[values.localSubdomain()],
 								 segments.localSlice[D.localSubdomain()]);
 	}
       }
@@ -748,37 +776,35 @@ module ReductionMsg
       return res;
     }
     
-    proc segArgmax(values:[] ?t, segments:[?D] int): ([D] t, [D] int) {
+    proc segArgmax(keys:[] int, values:[] ?t, segments:[?D] int): ([D] t, [D] int) {
+      var kvi = [(k, v, i) in zip(keys, values, keys.domain)] ((k, v), i);
+      var cummax = maxloc scan kvi;
       var locs: [D] int;
-      var vals: [D] t;
+      var vals: [D] t = min(t);
       forall (l, v, low, i) in zip(locs, vals, segments, D) {
-	var high: int;
+	var vi: int;
 	if (i < D.high) {
-	  high = segments[i+1] - 1;
+	  vi = segments[i+1] - 1;
 	} else {
-	  high = values.domain.high;
+	  vi = values.domain.high;
 	}
-	if (high < low) {
-	  v = min(t);
-	  l = -1; // no values in this segment, so return a sentinel index
-	} else {
-	  var segment: subdomain(values.domain) = values.domain[low..high];
-	  var (maxVal, maxInd) = maxloc reduce zip(values[segment],segment);
-	  v = maxVal;
-	  l = maxInd;
+	if (vi >= low) {
+	  v = cummax[vi][1][2];
+	  l = cummax[vi][2];
 	}
       }
       return (vals, locs);
     }
 
-    proc perLocArgmax(values:[] ?t, segments:[?D] int): [] int {
+    proc perLocArgmax(keys:[] int, values:[] ?t, segments:[?D] int): [] int {
       var numKeys:int = segments.size / numLocales;
       var keyDom = makeDistDom(numKeys);
       var perLocVals: [PrivateSpace] [0..#numKeys] t;
       var perLocLocs: [PrivateSpace] [0..#numKeys] int;
       coforall loc in Locales {
 	on loc {
-	  (perLocVals[here.id], perLocLocs[here.id]) = segArgmax(values.localSlice[values.localSubdomain()],
+	  (perLocVals[here.id], perLocLocs[here.id]) = segArgmax(keys.localSlice[keys.localSubdomain()],
+								 values.localSlice[values.localSubdomain()],
 								 segments.localSlice[D.localSubdomain()]);
 	}
       }
