@@ -516,15 +516,13 @@ module ReductionMsg
       forall (i, r) in zip(D, res) {
 	// Find the segment boundaries
 	var vl: t, vr: t;
-	if (i == D.low) {
-	  vl = 0;
-	} else {
-	  vl = cumsum[segments[i] - 1];
+	if (i > D.low) {
+	  vl = cumsum[segments[i] - 1]:t;
 	}
 	if (i == D.high) {
-	  vr = cumsum[values.domain.high];
+	  vr = cumsum[values.domain.high]:t;
 	} else {
-	  vr = cumsum[segments[i+1] -1];
+	  vr = cumsum[segments[i+1] -1]:t;
 	}
 	r = vr - vl;
       }
@@ -566,9 +564,7 @@ module ReductionMsg
       forall (i, r) in zip(D, res) {
 	// Find the values to the left of the segment boundaries
 	var vl: int, vr: int;
-	if (i == D.low) {
-	  vl = 0;
-	} else {
+	if (i > D.low) {
 	  vl = cumsum[segments[i] - 1];
 	}
 	if (i == D.high) {
@@ -596,27 +592,8 @@ module ReductionMsg
     }
     
     proc segProduct(values:[], segments:[?D] int): [D] real {
-      var logs = Math.log(values:real);
+      var logs = Math.log(values:real + 1/max(real));
       return Math.exp(segSum(logs, segments));
-      /* var res: [D] real = 1; */
-      /* var cumprod = * scan values; */
-      /* // Iterate over segments */
-      /* forall (i, r) in zip(D, res) { */
-      /* 	// Find the segment boundaries */
-      /* 	var vl: real, vr: real; */
-      /* 	if (i == D.low) { */
-      /* 	  vl = 1.0; */
-      /* 	} else { */
-      /* 	  vl = cumprod[segments[i] - 1]; */
-      /* 	} */
-      /* 	if (i == D.high) { */
-      /* 	  vr = cumprod[values.domain.high]; */
-      /* 	} else { */
-      /* 	  vr = cumprod[segments[i+1] -1]; */
-      /* 	} */
-      /* 	r = vr / vl; */
-      /* } */
-      /* return res; */
     }
 
     proc perLocProduct(values:[] ?t, segments:[?D] int): [] real {
@@ -640,17 +617,15 @@ module ReductionMsg
 	// Find the values to the left of the segment boundaries
 	var vl: t, vr: t;
 	var j: int;
-	if (i == D.low) {
-	  vl = 0;
-	} else {
-	  vl = cumsum[segments[i] - 1];
+	if (i > D.low) {
+	  vl = cumsum[segments[i] - 1]:t;
 	}
 	if (i == D.high) {
 	  j = values.domain.high;
 	} else {
 	  j = segments[i+1] - 1;
 	}
-	vr = cumsum[j];
+	vr = cumsum[j]:t;
 	r = (vr - vl):real / (j - i + 1):real;
       }
       return res;
