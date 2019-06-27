@@ -19,7 +19,7 @@ module FindSegmentsMsg
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
-        var kname = fields[2]; // key array
+        var kname = fields[2]; // sorted key array
         
         // get next symbol name
         var sname = st.nextName(); // segments
@@ -28,8 +28,8 @@ module FindSegmentsMsg
         var kEnt: borrowed GenSymEntry = st.lookup(kname);
         if (kEnt == nil) {return unknownSymbolError(pn,kname);}
 
-        select (kEnt.dtype, pEnt.dtype) {
-            when (DType.Int64, DType.Int64) {
+        select (kEnt.dtype) {
+            when (DType.Int64) {
                 var k = toSymEntry(kEnt,int); // key array
                 
                 ref ka = k.a; // ref to key array
@@ -53,12 +53,13 @@ module FindSegmentsMsg
                 // where ever a segment break (true value) is... that index is a segment start index
                 [i in truth.domain] if (truth[i] == true) {var idx = i; unorderedCopy(segs[iv[i]-1], idx);}
                 // pull out the first key in each segment as a unique key
+		// unique keys guaranteed to be sorted because keys are sorted
                 [i in segs.domain] ukeys[i] = ka[segs[i]];
                 
                 st.addEntry(sname, new shared SymEntry(segs));
                 st.addEntry(uname, new shared SymEntry(ukeys));
             }
-            otherwise {return notImplementedError(pn,"("+dtype2str(kEnt.dtype)+","+dtype2str(pEnt.dtype)+")");}
+            otherwise {return notImplementedError(pn,"("+dtype2str(kEnt.dtype)+")");}
         }
         
         return try! "created " + st.attrib(sname) + " +created " + st.attrib(uname);
@@ -78,8 +79,8 @@ module FindSegmentsMsg
         var kEnt: borrowed GenSymEntry = st.lookup(kname);
         if (kEnt == nil) {return unknownSymbolError(pn,kname);}
 
-        select (kEnt.dtype, pEnt.dtype) {
-            when (DType.Int64, DType.Int64) {
+        select (kEnt.dtype) {
+            when (DType.Int64) {
                 var k = toSymEntry(kEnt,int); // key array
 		var minKey = min reduce k.a;
 		var keyRange = (max reduce k.a) - minKey + 1;
@@ -87,7 +88,7 @@ module FindSegmentsMsg
                 st.addEntry(sname, new shared SymEntry(segs));
                 st.addEntry(uname, new shared SymEntry(ukeys));
             }
-            otherwise {return notImplementedError(pn,"("+dtype2str(kEnt.dtype)+","+dtype2str(pEnt.dtype)+")");}
+            otherwise {return notImplementedError(pn,"("+dtype2str(kEnt.dtype)+")");}
         }
         
         return try! "created " + st.attrib(sname) + " +created " + st.attrib(uname);
@@ -120,6 +121,7 @@ module FindSegmentsMsg
       var globalUkeys = makeDistArray(numKeys, int);
       forall (relKey, present, ind) in zip(keyDom, globalRelKeys, relKey2ind) {
       	if present {
+	  // globalUkeys guaranteed to be sorted because ind and relKey monotonically increasing
       	  globalUkeys[ind] = relKey + minKey;
 	  // would like to use unorderedCopy here but get non-lvalue error
 	  // unorderedCopy(globalUkeys[ind], relKey + minKey);
