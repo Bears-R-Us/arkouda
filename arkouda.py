@@ -894,7 +894,7 @@ class GroupBy:
             cmd = "findLocalSegments"
         else:
             cmd = "findSegments"
-        reqMsg = "{} {} {}".format(cmd, self.permuted_keys.name)
+        reqMsg = "{} {}".format(cmd, self.permuted_keys.name)
         repMsg = generic_msg(reqMsg)
         segAttr, uniqAttr = repMsg.split("+")
         if v: print(segAttr, uniqAttr)
