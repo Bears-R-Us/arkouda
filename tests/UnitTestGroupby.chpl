@@ -16,18 +16,17 @@ module UnitTestGroupby
   config const OPERATOR:string;
   config const STRATEGY:string;
 
-  proc lookupInt(s: string, st: borrowed SymTab) {
+  proc parseName(s: string, st: borrowed SymTab): string {
     var fields = s.split();
     var name = fields[2];
-    var gse = st.lookup(fields[2]);
-    return (name, toSymEntry(gse, int));
+    return name;
   }
 
-  proc lookupTwoInts(s: string, st: borrowedSymTab) {
+  proc parseTwoNames(s: string, st: borrowed SymTab) {
     var entries = s.split("+");
-    var (n1, e1) = lookupInt(entries[1], st);
-    var (n2, e2) = lookupInt(entries[2], st);
-    return (n1, e1, n2, e2);
+    var n1 = parseName(entries[1], st);
+    var n2 = parseName(entries[2], st);
+    return (n1, n2);
   }
 
   proc main() {
@@ -48,7 +47,9 @@ module UnitTestGroupby
     repMsg = randintMsg(reqMsg, st);
     writeln(cmd, " time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
     writeln(repMsg);
-    var (kname, keys) = lookupInt(repMsg, st);
+    var kname = parseName(repMsg, st);
+    var kg = st.lookup(kname);
+    var keys = toSymEntry(kg, int);
 
     // create random vals array
     aMax = NVALS;
@@ -57,11 +58,13 @@ module UnitTestGroupby
     repMsg = randintMsg(reqMsg, st);
     writeln(cmd, " time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
     writeln(repMsg);
-    var (vname, vals) = lookupInt(repMsg, st);
+    var vname = parseName(repMsg, st);
+    var vg = st.lookup(vname);
+    var vals = toSymEntry(vg, int);
     
     // sort keys and return iv
     var ivname = st.nextName();
-    var iv: SymEntry(int);
+    var iv: [keys.aD] int;
     var eMin = min reduce keys.a;
     var eMax = max reduce keys.a;
     t1 = Time.getCurrentTime();
@@ -87,7 +90,9 @@ module UnitTestGroupby
     repMsg = pdarrayIndexMsg(reqMsg, st);
     writeln(cmd, " time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
     writeln(repMsg);
-    var (skname, skeys) = lookupInt(repMsg, st);
+    var skname = parseName(repMsg, st);
+    var skg = st.lookup(skname);
+    var skeys = toSymEntry(skg, int);
 
     // find segment boundaries and unique keys
     t1 = Time.getCurrentTime();
@@ -101,7 +106,11 @@ module UnitTestGroupby
       repMsg = findLocalSegmentsMsg(reqMsg, st);
     } 
     writeln(cmd, " time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
-    var (segname, segs, ukname, ukeys) = parseTwoInts(repMsg);
+    var (segname, ukname) = parseTwoNames(repMsg, st);
+    var segg = st.lookup(segname);
+    var segs = toSymEntry(segg, int);
+    var ukg = st.lookup(ukname);
+    var ukeys = toSymEntry(ukg, int);
 
     // permute the values array
     cmd = "[pdarray]";
@@ -110,14 +119,16 @@ module UnitTestGroupby
     repMsg = pdarrayIndexMsg(reqMsg, st);
     writeln(cmd, " time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
     writeln(repMsg);
-    var (svname, svals) = lookupInt(repMsg, st);
+    var svname = parseName(repMsg, st);
+    var svg = st.lookup(svname);
+    var svals = toSymEntry(svg, int);
 
     // do segmented reduction
     t1 = Time.getCurrentTime();
     if (STRATEGY == "global-count") || (STRATEGY == "global-DRS") {
       cmd = "segmentedReduction";
       reqMsg = try! "%s %s %s %s".format(skname, svname, segname, OPERATOR);
-      repMsg = segmentedReduction(reqMsg, st);
+      repMsg = segmentedReductionMsg(reqMsg, st);
     } else {
       cmd = "segmentedLocalRdx";
       reqMsg = try! "%s %s %s %s".format(skname, svname, segname, OPERATOR);
@@ -125,10 +136,13 @@ module UnitTestGroupby
     }
     writeln(cmd, " time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
     writeln(repMsg);
-    var (redname, red) = lookupInt(repMsg, st);
+    var redname = parseName(repMsg, st);
+    var redg = st.lookup(redname);
+    var red = toSymEntry(redg, int);
 
     var show = min(ukeys.size, 5);
-    for (k, r) in zip(ukeys[..#show], red[..#show]) {
+    for (k, r) in zip(ukeys.a[0..#show], red.a[0..#show]) {
       writeln(k, ": ", r);
     }
+  }
 }
