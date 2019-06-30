@@ -875,6 +875,49 @@ module ReductionMsg
       }    
       return res;
     }
+
+    proc segNumUnique(keys:[?kD] int, values:[kD] int, segments:[?sD] int): [sD] int {
+      var res: [sD] int;
+      var toSort = [(k, v) in zip(keys, values)] (k, v);
+      if (keys.targetLocales().size == 1) {
+	sort(toSort);
+      } else {
+	argsortDRS(toSort);
+      }
+      var truth: [kD] bool;
+      truth[kD.low] = true;
+      [(t, s, i) in zip(truth, toSort, kD)] if i > D.low { t = (toSort[i-1] != s); }
+      var iv: [kD] int = (+ scan truth);
+      var pop = iv[kD.high];
+      var hD = domain(1) dmapped Block(locales=kD.targetLocales(), boundingBox={0..#pop}) = {0..#pop};
+      var keyhits: [hD] int;
+      [i in truth.domain] if (truth[i] == true) {var key = toSort[i][1]; unorderedCopy(keyhits[iv[i]-1], key);}
+      var truth2: [hD] bool;
+      truth2[hD.low] = true;
+      [(t, k, i) in zip(truth2, keyhits, hD)] if i > D.low { t = (keyhits[i-1] != k); }
+      var kiv: [hD] int = (+ scan truth2);
+      var nKeysPresent = kiv[hD.high];
+      var nD = domain(1) dmapped Block(locales=kD.targetLocales(), boundingBox={0..#(nKeysPresent+1)}) = {0..#(nKeysPresent+1)};
+      var stepInds: [nD] int;
+      stepInds[nKeysPresent] = keyhits.size;
+      [i in hD] if (truth2[i] == true) {var idx = i; unorderedCopy(stepInds[kiv[i]-1], idx); }
+      var nunique = stepInds[1..#nKeysPresent] - stepInds[0..#nKeysPresent];
+      if (nKeysPresent == sD.size) {
+	res = nunique;
+      } else {
+	var segSizes:[sD] int;
+	segSizes[sD.low..sD.high-1] = segments[sD.low+1..sD.high] - segments[sD.low..sD.high-1];
+	segSizes[sD.high] = kD.high - segments[sD.high] + 1;
+	var idx = 0;
+	for (r, s) in zip(res, segSizes) {
+	  if (s > 0) {
+	    r = nunique[idx];
+	    idx += 1;
+	  }
+	}
+      }
+      return res;
+    }
     
     proc segNumUnique(values:[] int, segments:[?D] int): [D] int {
       var res: [D] int;
@@ -906,10 +949,10 @@ module ReductionMsg
       var valRange = (max reduce values) - minVal + 1;
       var numKeys:int = segments.size / numLocales;
       if (numKeys*valRange <= lBins) {
-	if v {try! writeln("bins %i <= %i; using perLocNumUniqueHist".format(numKeys*valRange, lBins));}
+	if v {try! writeln("bins %i <= %i; using perLocNumUniqueHist".format(numKeys*valRange, lBins)); try! stdout.flush();}
 	return perLocNumUniqueHist(values, segments, minVal, valRange, numKeys);
       } else {
-	if v {try! writeln("bins %i > %i; using perLocNumUniqueAssoc".format(numKeys*valRange, lBins));}
+	if v {try! writeln("bins %i > %i; using perLocNumUniqueAssoc".format(numKeys*valRange, lBins)); try! stdout.flush();}
 	return perLocNumUniqueAssoc(values, segments, numKeys);
       }
     }
