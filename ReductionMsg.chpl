@@ -878,33 +878,39 @@ module ReductionMsg
 
     proc segNumUnique(keys:[?kD] int, values:[kD] int, segments:[?sD] int): [sD] int {
       var res: [sD] int;
+      // sort keys and vals together
       var toSort = [(k, v) in zip(keys, values)] (k, v);
       if (keys.targetLocales().size == 1) {
 	sort(toSort);
       } else {
 	argsortDRS(toSort);
       }
+      // find steps to get unique (key, val) pairs
       var truth: [kD] bool;
       truth[kD.low] = true;
       [(t, s, i) in zip(truth, toSort, kD)] if i > D.low { t = (toSort[i-1] != s); }
       var iv: [kD] int = (+ scan truth);
       var pop = iv[kD.high];
       var hD = domain(1) dmapped Block(locales=kD.targetLocales(), boundingBox={0..#pop}) = {0..#pop};
+      // save off only the key from each pair (now there will be nunique of each key)
       var keyhits: [hD] int;
       [i in truth.domain] if (truth[i] == true) {var key = toSort[i][1]; unorderedCopy(keyhits[iv[i]-1], key);}
+      // find steps in keys
       var truth2: [hD] bool;
       truth2[hD.low] = true;
       [(t, k, i) in zip(truth2, keyhits, hD)] if i > D.low { t = (keyhits[i-1] != k); }
       var kiv: [hD] int = (+ scan truth2);
       var nKeysPresent = kiv[hD.high];
       var nD = domain(1) dmapped Block(locales=kD.targetLocales(), boundingBox={0..#(nKeysPresent+1)}) = {0..#(nKeysPresent+1)};
+      // get step indices and take diff to get number of times each key appears
       var stepInds: [nD] int;
       stepInds[nKeysPresent] = keyhits.size;
       [i in hD] if (truth2[i] == true) {var idx = i; unorderedCopy(stepInds[kiv[i]-1], idx); }
       var nunique = stepInds[1..#nKeysPresent] - stepInds[0..#nKeysPresent];
+      // if every key is present, we're done
       if (nKeysPresent == sD.size) {
 	res = nunique;
-      } else {
+      } else { // we need to skip over non-present keys
 	var segSizes:[sD] int;
 	segSizes[sD.low..sD.high-1] = segments[sD.low+1..sD.high] - segments[sD.low..sD.high-1];
 	segSizes[sD.high] = kD.high - segments[sD.high] + 1;
