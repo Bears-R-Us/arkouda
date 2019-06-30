@@ -292,7 +292,7 @@ module ReductionMsg
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "prod" {
-	    var res = segProduct(values.a, segments.a);
+	    var res = segProduct(keys.a, values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "mean" {
@@ -330,7 +330,7 @@ module ReductionMsg
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "prod" {
-	    var res = segProduct(values.a, segments.a);
+	    var res = segProduct(keys.a, values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "mean" {
@@ -392,7 +392,7 @@ module ReductionMsg
       var segments_name = fields[4]; // segment offsets
       var operator = fields[5];      // reduction operator
       var rname = st.nextName();
-      if v {try! writeln("%s %s %s %s".format(cmd,keys_name,values_name,segments_name,operator));try! stdout.flush();}
+      if v {try! writeln("%s %s %s %s %s".format(cmd,keys_name,values_name,segments_name,operator));try! stdout.flush();}
 
       var gKey: borrowed GenSymEntry = st.lookup(keys_name);
       if (gKey == nil) {return unknownSymbolError("segmentedLocalRdx",keys_name);}
@@ -413,7 +413,7 @@ module ReductionMsg
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "prod" {
-	    var res = perLocProduct(values.a, segments.a);
+	    var res = perLocProduct(keys.a, values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "mean" {
@@ -451,7 +451,7 @@ module ReductionMsg
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "prod" {
-	    var res = perLocProduct(values.a, segments.a);
+	    var res = perLocProduct(keys.a, values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "mean" {
@@ -591,18 +591,33 @@ module ReductionMsg
       return res;
     }
     
-    proc segProduct(values:[], segments:[?D] int): [D] real {
-      var logs = Math.log(values:real + 1/max(real));
-      return Math.exp(segSum(logs, segments));
+    proc segProduct(keys:[] int, values:[], segments:[?D] int): [D] real {
+      // Segmented sum of log-magnitudes
+      var res: [D] real = 0.0;
+      const epsilon:real = 1 / max(real);
+      var magnitudes = Math.abs(values);
+      var logs = Math.log(magnitudes:real + epsilon);
+      var negatives = (Math.sgn(values) == -1);
+      forall (r, m, v, n) in zip(res,
+				 segMin(keys, magnitudes, segments),
+				 segSum(logs, segments),
+				 segSum(negatives, segments)) {
+	if m > epsilon {
+	  var sign = -2*(n%2) + 1;
+	  r = sign * Math.exp(v);
+	}
+      }
+      return res;
     }
 
-    proc perLocProduct(values:[] ?t, segments:[?D] int): [] real {
+    proc perLocProduct(keys:[] int, values:[] ?t, segments:[?D] int): [] real {
       var numKeys:int = segments.size / numLocales;
       var keyDom = makeDistDom(numKeys);
       var perLocVals: [PrivateSpace] [0..#numKeys] real;
       coforall loc in Locales {
 	on loc {
-	  perLocVals[here.id] = segProduct(values.localSlice[values.localSubdomain()],
+	  perLocVals[here.id] = segProduct(keys.localSlice[keys.localSubdomain()],
+					   values.localSlice[values.localSubdomain()],
 					   segments.localSlice[D.localSubdomain()]);
 	}
       }
@@ -612,22 +627,29 @@ module ReductionMsg
     
     proc segMean(values:[] ?t, segments:[?D] int): [D] real {
       var res: [D] real;
-      var cumsum = + scan values;
-      forall (i, r) in zip(D, res) {
-	// Find the values to the left of the segment boundaries
-	var vl: t, vr: t;
-	var j: int;
-	if (i > D.low) {
-	  vl = cumsum[segments[i] - 1]:t;
+      var sums = segSum(values, segments);
+      var counts = segCount(segments, values.size);
+      forall (r, s, c) in zip(res, sums, counts) {
+	if (c > 0) {
+	  r = s:real / c:real;
 	}
-	if (i == D.high) {
-	  j = values.domain.high;
-	} else {
-	  j = segments[i+1] - 1;
-	}
-	vr = cumsum[j]:t;
-	r = (vr - vl):real / (j - i + 1):real;
       }
+      /* var cumsum = + scan values; */
+      /* forall (i, r) in zip(D, res) { */
+      /* 	// Find the values to the left of the segment boundaries */
+      /* 	var vl: t, vr: t; */
+      /* 	var j: int; */
+      /* 	if (i > D.low) { */
+      /* 	  vl = cumsum[segments[i] - 1]:t; */
+      /* 	} */
+      /* 	if (i == D.high) { */
+      /* 	  j = values.domain.high; */
+      /* 	} else { */
+      /* 	  j = segments[i+1] - 1; */
+      /* 	} */
+      /* 	vr = cumsum[j]:t; */
+      /* 	r = (vr - vl):real / (j - i + 1):real; */
+      /* } */
       return res;
     }
 
@@ -711,7 +733,7 @@ module ReductionMsg
     }
     
     proc segArgmin(keys:[] int, values:[] ?t, segments:[?D] int): ([D] t, [D] int) {
-      var kvi = [(k, v, i) in zip(keys, values, keys.domain)] ((k, v), i);
+      var kvi = [(k, v, i) in zip(keys, values, keys.domain)] ((-k, v), i);
       var cummin = minloc scan kvi;
       var locs: [D] int;
       var vals: [D] t = max(t);

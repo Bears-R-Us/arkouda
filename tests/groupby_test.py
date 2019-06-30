@@ -43,7 +43,7 @@ def run_test(num_locales):
         print(f"Different keys")
         failures += 1
     elif not np.allclose(pdvals, akvals):
-        print(f"Different values")
+        print(f"Different values (abs diff = {np.abs(pdvals - akvals).sum()})")
         failures += 1
     for vname in ('int64', 'float64', 'bool'):
         for op in ak.GroupBy.Reductions:
@@ -85,7 +85,7 @@ def run_test(num_locales):
                     print(f"Different keys")
                     failures += 1
                 elif not np.allclose(pdvals, akvals):
-                    print(f"Different values")
+                    print(f"Different values (abs diff = {np.where(np.isfinite(pdvals) & np.isfinite(akvals), np.abs(pdvals - akvals), 0).sum()})")
                     failures += 1
     print(f"\n{failures} failures in {tests} tests ({not_impl} not implemented)")
 

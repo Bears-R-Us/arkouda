@@ -26,7 +26,7 @@ proc main() {
 
   write_result("count", unique_keys, perLocCount(segD, valD.size));
   write_result("sum", unique_keys, perLocSum(valD, segD));
-  write_result("prod", unique_keys, perLocProduct(valD, segD));
+  write_result("prod", unique_keys, perLocProduct(keyD, valD, segD));
   write_result("mean", unique_keys, perLocMean(valD, segD));
   write_result("min", unique_keys, perLocMin(keyD, valD, segD));
   write_result("max", unique_keys, perLocMax(keyD, valD, segD));
