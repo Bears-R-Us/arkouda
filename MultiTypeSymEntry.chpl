@@ -78,7 +78,7 @@ module MultiTypeSymEntry
     /* cast the symbol entry of the right type and return it
        blah too much type inference still for my taste */
     inline proc toSymEntry(gse: borrowed GenSymEntry, type etype) {
-        return gse: SymEntry(etype);
+        return try! gse: borrowed SymEntry(etype);
     }
 
     /* 1.18 version print out localSubdomains */
