@@ -12,6 +12,8 @@ module ReductionMsg
 
     use AryUtil;
     use PrivateDist;
+    use ArgsortDRS only msbRadixSortWithScratchSpace;
+    use Sort only defaultComparator;
 
     const lBins = 2**25 * numLocales;
       
@@ -876,79 +878,111 @@ module ReductionMsg
       return res;
     }
 
-    proc segNumUnique(keys:[?kD] int, values:[kD] int, segments:[?sD] int): [sD] int {
-      var res: [sD] int;
-      // sort keys and vals together
-      var toSort = [(k, v) in zip(keys, values)] (k, v);
-      if (keys.targetLocales().size == 1) {
-	sort(toSort);
-      } else {
-	argsortDRS(toSort);
-      }
-      // find steps to get unique (key, val) pairs
-      var truth: [kD] bool;
-      truth[kD.low] = true;
-      [(t, s, i) in zip(truth, toSort, kD)] if i > D.low { t = (toSort[i-1] != s); }
-      var iv: [kD] int = (+ scan truth);
-      var pop = iv[kD.high];
-      var hD = domain(1) dmapped Block(locales=kD.targetLocales(), boundingBox={0..#pop}) = {0..#pop};
-      // save off only the key from each pair (now there will be nunique of each key)
-      var keyhits: [hD] int;
-      [i in truth.domain] if (truth[i] == true) {var key = toSort[i][1]; unorderedCopy(keyhits[iv[i]-1], key);}
-      // find steps in keys
-      var truth2: [hD] bool;
-      truth2[hD.low] = true;
-      [(t, k, i) in zip(truth2, keyhits, hD)] if i > D.low { t = (keyhits[i-1] != k); }
-      var kiv: [hD] int = (+ scan truth2);
-      var nKeysPresent = kiv[hD.high];
-      var nD = domain(1) dmapped Block(locales=kD.targetLocales(), boundingBox={0..#(nKeysPresent+1)}) = {0..#(nKeysPresent+1)};
-      // get step indices and take diff to get number of times each key appears
-      var stepInds: [nD] int;
-      stepInds[nKeysPresent] = keyhits.size;
-      [i in hD] if (truth2[i] == true) {var idx = i; unorderedCopy(stepInds[kiv[i]-1], idx); }
-      var nunique = stepInds[1..#nKeysPresent] - stepInds[0..#nKeysPresent];
-      // if every key is present, we're done
-      if (nKeysPresent == sD.size) {
-	res = nunique;
-      } else { // we need to skip over non-present keys
-	var segSizes:[sD] int;
-	segSizes[sD.low..sD.high-1] = segments[sD.low+1..sD.high] - segments[sD.low..sD.high-1];
-	segSizes[sD.high] = kD.high - segments[sD.high] + 1;
-	var idx = 0;
-	for (r, s) in zip(res, segSizes) {
-	  if (s > 0) {
-	    r = nunique[idx];
-	    idx += 1;
-	  }
-	}
-      }
-      return res;
-    }
-    
-    proc segNumUnique(values:[] int, segments:[?D] int): [D] int {
-      var res: [D] int;
-      forall (r, low, i) in zip(res, segments, D) {
-	var high: int;
-	if (i < D.high) {
-	  high = segments[i+1] - 1;
+    proc segNumUnique(values:[?vD] int, segments:[?sD] int): [sD] int {
+      // TO DO: this is not correct. Sometimes gives values that are too large.
+      // var res: [sD] int;
+      var sorted: [vD] int;
+      var aMin = min reduce values;
+      var aMax = max reduce values;
+      forall (i, left) in zip(sD, segments) {
+	var right: int;
+	if (i == sD.high) {
+	  right = vD.high;
 	} else {
-	  high = values.domain.high;
+	  right = segments[i+1] - 1;
 	}
-	var unique: domain(int);
-	var domLock$:sync bool = true;
-	forall v in values[low..high] with (ref unique, ref domLock$) {
-	  if !unique.contains(v) {
-	    domLock$;
-	    if !unique.contains(v) {
-	      unique += v;
-	    }
-	    domLock$ = true;
-	  }
+	if (right > left) {
+	  msbRadixSortWithScratchSpace(left, right, sorted, values, defaultComparator, aMin, aMax);
 	}
-	r = unique.size;
       }
-      return res;
+      // TO DO: make sure within-key sort worked properly
+      
+      var truth: [vD] bool;
+      // true where new value appears
+      [(t, s, i) in zip(truth, sorted, vD)] if i > vD.low { t = (sorted[i-1] != s); }
+      // first value of every segment is automatically new
+      [s in segments] truth[s] = true;
+      // count cumulative new values and take diffs at segment boundaries
+      var count: [vD] int = (+ scan truth);
+      var pop = count[vD.high];
+      var nunique: [sD] int;
+      forall (i, s, n) in zip(sD, segments, nunique) {
+	var high: int;
+	if (i == sD.high) {
+	  n = pop + 1 - count[s];
+	} else {
+	  n = count[segments[i+1]] - count[s];
+	}
+      }
+      return nunique;
     }
+
+    /* // sort keys and vals together */
+    /* var toSort = [(k, v) in zip(keys, values)] (k, v); */
+    /* if (keys.targetLocales().size == 1) { */
+    /* 	sort(toSort); */
+    /* } else { */
+    /* 	argsortDRS(toSort); */
+    /* } */
+    // find steps to get unique (key, val) pairs
+    /*   var hD = domain(1) dmapped Block(locales=kD.targetLocales(), boundingBox={0..#pop}) = {0..#pop}; */
+    /*   // save off only the key from each pair (now there will be nunique of each key) */
+    /*   var keyhits: [hD] int; */
+    /*   [i in truth.domain] if (truth[i] == true) {var key = toSort[i][1]; unorderedCopy(keyhits[iv[i]-1], key);} */
+    /*   // find steps in keys */
+    /*   var truth2: [hD] bool; */
+    /*   truth2[hD.low] = true; */
+    /*   [(t, k, i) in zip(truth2, keyhits, hD)] if i > D.low { t = (keyhits[i-1] != k); } */
+    /*   var kiv: [hD] int = (+ scan truth2); */
+    /*   var nKeysPresent = kiv[hD.high]; */
+    /*   var nD = domain(1) dmapped Block(locales=kD.targetLocales(), boundingBox={0..#(nKeysPresent+1)}) = {0..#(nKeysPresent+1)}; */
+    /*   // get step indices and take diff to get number of times each key appears */
+    /*   var stepInds: [nD] int; */
+    /*   stepInds[nKeysPresent] = keyhits.size; */
+    /*   [i in hD] if (truth2[i] == true) {var idx = i; unorderedCopy(stepInds[kiv[i]-1], idx); } */
+    /*   var nunique = stepInds[1..#nKeysPresent] - stepInds[0..#nKeysPresent]; */
+    /*   // if every key is present, we're done */
+    /*   if (nKeysPresent == sD.size) { */
+    /* 	res = nunique; */
+    /*   } else { // we need to skip over non-present keys */
+    /* 	var segSizes:[sD] int; */
+    /* 	segSizes[sD.low..sD.high-1] = segments[sD.low+1..sD.high] - segments[sD.low..sD.high-1]; */
+    /* 	segSizes[sD.high] = kD.high - segments[sD.high] + 1; */
+    /* 	var idx = 0; */
+    /* 	for (r, s) in zip(res, segSizes) { */
+    /* 	  if (s > 0) { */
+    /* 	    r = nunique[idx]; */
+    /* 	    idx += 1; */
+    /* 	  } */
+    /* 	} */
+    /*   } */
+    /*   return res; */
+    /* } */
+    
+    /* proc segNumUnique(values:[] int, segments:[?D] int): [D] int { */
+    /*   var res: [D] int; */
+    /*   forall (r, low, i) in zip(res, segments, D) { */
+    /* 	var high: int; */
+    /* 	if (i < D.high) { */
+    /* 	  high = segments[i+1] - 1; */
+    /* 	} else { */
+    /* 	  high = values.domain.high; */
+    /* 	} */
+    /* 	var unique: domain(int); */
+    /* 	var domLock$:sync bool = true; */
+    /* 	forall v in values[low..high] with (ref unique, ref domLock$) { */
+    /* 	  if !unique.contains(v) { */
+    /* 	    domLock$; */
+    /* 	    if !unique.contains(v) { */
+    /* 	      unique += v; */
+    /* 	    } */
+    /* 	    domLock$ = true; */
+    /* 	  } */
+    /* 	} */
+    /* 	r = unique.size; */
+    /*   } */
+    /*   return res; */
+    /* } */
 
     proc perLocNumUnique(values:[] int, segments:[?D] int): [] int {
       var minVal = min reduce values;
