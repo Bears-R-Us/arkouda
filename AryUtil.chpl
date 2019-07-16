@@ -1,13 +1,28 @@
 module AryUtil
 {
+    /*
+    Threshold for the amount of data that will be printed. 
+    Arrays larger than 30 will print less data.
+    */
     var printThresh = 30;
     
+    /*
+    Prints the passed array.
+
+    :arg name: name of the array
+    :arg A: array to be printed
+    */
     proc printAry(name:string, A) {
         if A.size <= printThresh {writeln(name,A);}
         else {writeln(name,[i in A.domain.low..A.domain.low+2] A[i],
                       " ... ", [i in A.domain.high-2..A.domain.high] A[i]);}
     }
 
+    /*
+    Determines if the passed array is sorted.
+
+    :arg A: array to check
+    */
     proc isSorted(A:[?D] ?t): bool {
         var sorted: bool;
         sorted = true;
@@ -19,6 +34,13 @@ module AryUtil
         return sorted;
     }
 
+    /*
+    Returns stats on a given array in form (int,int,real,real,real).
+
+    :arg a: array to produce statistics on
+    :type a: [] int
+    :returns: a_min, a_max, a_mean, a_variation, a_stdDeviation
+    */
     proc aStats(a: [?D] int): (int,int,real,real,real) {
         var a_min:int = min reduce a;
         var a_max:int = max reduce a;

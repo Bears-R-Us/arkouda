@@ -112,7 +112,11 @@ module OperatorMsg
                     when "^" {
                         var a = l.a ^ r.a;
                         st.addEntry(rname, new shared SymEntry(a));
-                    }                    
+                    }    
+                    when "**" { //POTENTIALL BROKE 
+                        var a = l.a**r.a;
+                        st.addEntry(rname, new shared SymEntry(a));
+                    } //end rsdange experiment     
                     otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
                 }
             }
@@ -165,6 +169,10 @@ module OperatorMsg
                         var a = l.a != r.a;
                         st.addEntry(rname, new shared SymEntry(a));                        
                     }
+                    when "**" { //POTENTIALL BROKE 
+                        var a = l.a**r.a;
+                        st.addEntry(rname, new shared SymEntry(a));
+                    } //end rsdange experiment     
                     otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
                 }
             }
@@ -217,6 +225,10 @@ module OperatorMsg
                         var a = l.a != r.a;
                         st.addEntry(rname, new shared SymEntry(a));                        
                     }
+                    when "**" { //POTENTIALL BROKE 
+                       var a = l.a**r.a;
+                        st.addEntry(rname, new shared SymEntry(a));
+                    } //end rsdange experiment     
                     otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
                 }
             }
@@ -269,6 +281,10 @@ module OperatorMsg
                         var a = l.a != r.a;
                         st.addEntry(rname, new shared SymEntry(a));                        
                     }
+                    when "**" { //POTENTIALL BROKE 
+                        var a = l.a**r.a;
+                        st.addEntry(rname, new shared SymEntry(a));
+                    } //end rsdange experiment     
                     otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
                 }
             }
@@ -474,6 +490,10 @@ module OperatorMsg
                         var a = l.a ^ val;
                         st.addEntry(rname, new shared SymEntry(a));
                     }
+                    when "**" { //this doesnt seem elegant...?
+                        var a =l.a**val;
+                        st.addEntry(rname, new shared SymEntry(a));
+                    }//end rsdange experiment
                     otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
                 }
             }
@@ -526,6 +546,10 @@ module OperatorMsg
                         var a = l.a != val;
                         st.addEntry(rname, new shared SymEntry(a));
                     }
+                    when "**" { //this doesnt seem elegant...?
+                        var a =l.a**val;
+                        st.addEntry(rname, new shared SymEntry(a));
+                    }//end rsdange experiment
                     otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
                 }
             }
@@ -578,6 +602,10 @@ module OperatorMsg
                         var a = l.a != val;
                         st.addEntry(rname, new shared SymEntry(a));
                     }
+                    when "**" { //this doesnt seem elegant...?
+                        var a =l.a**val;
+                        st.addEntry(rname, new shared SymEntry(a));
+                    }//end rsdange experiment
                     otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
                 }
             }
@@ -630,6 +658,10 @@ module OperatorMsg
                         var a = l.a != val;
                         st.addEntry(rname, new shared SymEntry(a));
                     }
+                    when "**" { //this doesnt seem elegant...?
+                        var a =l.a**val;
+                        st.addEntry(rname, new shared SymEntry(a));
+                    }//end rsdange experiment
                     otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
                 }
             }
@@ -835,6 +867,10 @@ module OperatorMsg
                         var a = val ^ r.a;
                         st.addEntry(rname, new shared SymEntry(a));
                     }
+                    when "**" { //this doesnt seem elegant...?
+                        var a =val**r.a;
+                        st.addEntry(rname, new shared SymEntry(a));
+                    }//end rsdange experiment
                     otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
                 }
             }
@@ -887,6 +923,10 @@ module OperatorMsg
                         var a = val != r.a;
                         st.addEntry(rname, new shared SymEntry(a));
                     }
+                    when "**" { //this doesnt seem elegant...?
+                        var a =val**r.a;
+                        st.addEntry(rname, new shared SymEntry(a));
+                    }//end rsdange experiment
                     otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
                 }
             }
@@ -939,6 +979,10 @@ module OperatorMsg
                         var a = val != r.a;
                         st.addEntry(rname, new shared SymEntry(a));
                     }
+                    when "**" { //this doesnt seem elegant...?
+                        var a =val**r.a;
+                        st.addEntry(rname, new shared SymEntry(a));
+                    }//end rsdange experiment
                     otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
                 }
             }
@@ -991,6 +1035,10 @@ module OperatorMsg
                         var a = val != r.a;
                         st.addEntry(rname, new shared SymEntry(a));
                     }
+                    when "**" { //this doesnt seem elegant...?
+                        var a =val**r.a;
+                        st.addEntry(rname, new shared SymEntry(a));
+                    }//end rsdange experiment
                     otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
                 }
             }
@@ -1120,6 +1168,7 @@ module OperatorMsg
                     when "-=" { l.a -= r.a; }
                     when "*=" { l.a *= r.a; }
                     when "//=" { l.a /= r.a; }//floordiv
+                    when "**=" { l.a **= r.a; }
                     otherwise {return notImplementedError("opeqvv",left.dtype,op,right.dtype);}
                 }
             }
@@ -1138,6 +1187,7 @@ module OperatorMsg
                     when "*=" {l.a *= r.a;}
                     when "/=" {l.a /= r.a:real;} //truediv
                     when "//=" {l.a = floor(l.a / r.a);} //floordiv
+                    when "**=" { l.a **= r.a; }
                     otherwise {return notImplementedError("opeqvv",left.dtype,op,right.dtype);}
                 }
             }
@@ -1151,6 +1201,7 @@ module OperatorMsg
                     when "*=" {l.a *= r.a;}
                     when "/=" {l.a /= r.a;}//truediv
                     when "//=" {l.a = floor(l.a / r.a);}//floordiv
+                    when "**=" { l.a **= r.a; }
                     otherwise {return notImplementedError("opeqvv",left.dtype,op,right.dtype);}
                 }
             }
@@ -1218,6 +1269,7 @@ module OperatorMsg
                     when "-=" { l.a -= val; }
                     when "*=" { l.a *= val; }
                     when "//=" { l.a /= val; }//floordiv
+                    when "**=" { l.a **= val; }
                     otherwise {return notImplementedError("opeqvs",left.dtype,op,dtype);}
                 }
             }
@@ -1236,6 +1288,7 @@ module OperatorMsg
                     when "*=" {l.a *= val;}
                     when "/=" {l.a /= val:real;} //truediv
                     when "//=" {l.a = floor(l.a / val);} //floordiv
+                    when "**=" { l.a **= r.a; }
                     otherwise {return notImplementedError("opeqvs",left.dtype,op,dtype);}
                 }
             }
@@ -1249,6 +1302,7 @@ module OperatorMsg
                     when "*=" {l.a *= val;}
                     when "/=" {l.a /= val;}//truediv
                     when "//=" {l.a = floor(l.a / val);}//floordiv
+                    when "**=" { l.a **= r.a; }
                     otherwise {return notImplementedError("opeqvs",left.dtype,op,dtype);}
                 }
             }

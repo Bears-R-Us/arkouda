@@ -14,6 +14,12 @@ module ArgsortDRS
 /* BEGIN STUFF THAT SHOULD BE IN SORT MODULE */
 
         pragma "no doc"
+            /*
+            Based on Sedgewick's Shell Sort -- see
+            analysis of Shellsort and Related Algorithms 1996.
+            Also see Marcin Ciura - Best Increments for the Average Case of Shellsort
+            for the choice of these increments.
+            */
             proc shellSort(Data: [?Dom] ?eltType, comparator:?rec=defaultComparator,
                            start=Dom.low, end=Dom.high)
         {
@@ -24,10 +30,6 @@ module ArgsortDRS
             if Dom.stridable then
                 compilerError("shellSort() requires an array over a non-stridable domain");
 
-            // Based on Sedgewick's Shell Sort -- see
-            // Analysis of Shellsort and Related Algorithms 1996
-            // and see Marcin Ciura - Best Increments for the Average Case of Shellsort
-            // for the choice of these increments.
             var n = 1 + end - start;
             var js,hs:int;
             var v,tmp:Data.eltType;
@@ -46,11 +48,13 @@ module ArgsortDRS
             }
         }
 
-// This is the number of bits to sort at a time in the radix sorter.
-// The code assumes that all integer types are a multiple of it.
-// That would need to change if it were to increase.
-//
-// At the same time, using a value less than 8 will probably perform poorly.
+        /*
+        This is the number of bits to sort at a time in the radix sorter.
+        The code assumes that all integer types are a multiple of it.
+        That would need to change if it were to increase.
+
+        At the same time, using a value less than 8 will probably perform poorly.
+        */
         param RADIX_BITS = 8;
 
 // This structure tracks configuration for the radix sorter.
@@ -66,16 +70,20 @@ module ArgsortDRS
                 param returnCounts = false;
             }
 
-// Get the bin for a record by calling criterion.keyPart
-//
-// startbit is starting from 0
-// bin 0 is for the end was reached (sort before)
-// bins 1..256 are for data with next part 0..255.
-// bin 256 is for the end was reached (sort after)
-//
-// ubits are the result of keyPart normalized to a uint.
-//
-// returns (bin, ubits)
+        /*Get the bin for a record by calling criterion.keyPart
+        :arg a:
+        :arg criterion:
+        :arg startbit: starting from 0.
+
+
+        bin 0 is for the end was reached (sort before).
+        bins 1..256 are for data with next part 0..255.
+        bin 256 is for the end was reached (sort after).
+
+        ubits are the result of keyPart normalized to a uint.
+
+        :returns: (bin, ubits)
+        */
         inline
             proc binForRecordKeyPart(a, criterion, startbit:int)
         {
@@ -136,8 +144,10 @@ module ArgsortDRS
             }
         }
 
-// Returns the fixed number of bits in a value, if known.
-// Returns -1 otherwise.
+        /*
+        Returns the fixed number of bits in a value, if known.
+        Returns -1 otherwise.
+        */
         proc fixedWidth(type eltTy) param {
             if (isUintType(eltTy) || isIntType(eltTy) ||
                 isRealType(eltTy) || isImagType(eltTy)) then
@@ -151,11 +161,16 @@ module ArgsortDRS
             return -1;
         }
 
-// Returns a compile-time known final startbit
-// e.g. for uint(64), returns 56 (since that's 64-8 and the
-// last sort pass will sort on the last 8 bits).
-//
-// Returns -1 if no such ending is known at compile-time.
+        /*
+        Returns a compile-time known final startbit.
+        e.g. for uint(64), returns 56 (since that's 64-8 and the
+        last sort pass will sort on the last 8 bits).
+        
+        Returns -1 if no such ending is known at compile-time.
+
+        :arg Data: 
+        :arg comparator:
+        */
         proc msbRadixSortParamLastStartBit(Data:[], comparator) param {
             use Reflection;
 
@@ -195,8 +210,16 @@ module ArgsortDRS
             return n;
         }
 
-// Compute the startbit location that could be used based on the
-// min/max of values returned by keyPart.
+        /*
+        Compute the startbit location that could be used based on the
+        min/max of values returned by keyPart.
+
+        :arg startbit:
+        :arg min_ubits:
+        :arg max_ubits:
+
+        :returns new_start_bit_rounded: (int)
+        */
         proc findDataStartBit(startbit:int, min_ubits, max_ubits):int {
             var xor = min_ubits ^ max_ubits;
 
@@ -451,7 +474,18 @@ module ArgsortDRS
             return counts;
         }
 
-// Check that the elements from start_n..end_n in A are sorted by criterion
+        /*
+        Check that the elements from start_n..end_n in A are sorted by criterion
+
+        :arg start_n:
+        :type start_n: int
+        :arg end_n:
+        :type end_n: int
+        :arg A: array
+        :type A: []
+        :arg criterion:
+        :arg startbit: defaults to 0
+        */
         proc checkSorted(start_n:int, end_n:int, A:[], criterion, startbit = 0)
         {
             for i in start_n+1..end_n {

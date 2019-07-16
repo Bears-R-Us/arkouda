@@ -285,6 +285,14 @@ module MsgProcessing
                         var a: [e.aD] int = * scan e.a; //try! writeln((a.type):string,(a.domain.type):string); try! stdout.flush();
                         st.addEntry(rname, new shared SymEntry(a));
                     }
+                    when "sin" {
+                        var a = Math.sin(e.a);
+                        st.addEntry(rname,new shared SymEntry(a));
+                    }
+                    when "cos" {
+                        var a = Math.cos(e.a);
+                        st.addEntry(rname,new shared SymEntry(a));
+                    }
                     otherwise {return notImplementedError("efunc",efunc,gEnt.dtype);}
                 }
             }
@@ -311,6 +319,14 @@ module MsgProcessing
                     when "cumprod" {
                         var a: [e.aD] real = * scan e.a;
                         st.addEntry(rname, new shared SymEntry(a));
+                    }
+                    when "sin" {
+                        var a = Math.sin(e.a);
+                        st.addEntry(rname,new shared SymEntry(a));
+                    }
+                    when "cos" {
+                        var a = Math.cos(e.a);
+                        st.addEntry(rname,new shared SymEntry(a));
                     }
                     otherwise {return notImplementedError("efunc",efunc,gEnt.dtype);}
                 }

@@ -147,8 +147,8 @@ def resolve_scalar_dtype(val):
     else:
         return str(type(val))
 
-BinOps = frozenset(["+", "-", "*", "/", "//", "%", "<", ">", "<=", ">=", "!=", "==", "&", "|", "^", "<<", ">>"])
-OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", "<<=", ">>="])
+BinOps = frozenset(["+", "-", "*", "/", "//", "%", "<", ">", "<=", ">=", "!=", "==", "&", "|", "^", "<<", ">>","**"])
+OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", "<<=", ">>=","**="])
 
 # class for the pdarray
 class pdarray:
@@ -305,6 +305,12 @@ class pdarray:
     def __rxor__(self, other):
         return self.r_binop(other, "^")
 
+    def __pow__(self,other): 
+        return self.binop(other,"**")
+    
+    def __rpow__(self,other): 
+        return self.r_binop(other,"**")
+
     # overloaded comparison operators
     def __lt__(self, other):
         return self.binop(other, "<")
@@ -394,6 +400,8 @@ class pdarray:
     # overload ^= pdarray, other can be {pdarray, int, float}
     def __ixor__(self, other):
         return self.opeq(other, "^=")
+    def __ipow__(self, other):
+        return self.opeq(other,"**=")
 
     # overload a[] to treat like list
     def __getitem__(self, key):
@@ -754,6 +762,20 @@ def cumsum(pda):
 def cumprod(pda):
     if isinstance(pda, pdarray):
         repMsg = generic_msg("efunc {} {}".format("cumprod", pda.name))
+        return create_pdarray(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+
+def sin(pda):
+    if isinstance(pda,pdarray):
+        repMsg = generic_msg("efunc {} {}".format("sin",pda.name))
+        return create_pdarray(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+
+def cos(pda):
+    if isinstance(pda,pdarray):
+        repMsg = generic_msg("efunc {} {}".format("cos",pda.name))
         return create_pdarray(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
