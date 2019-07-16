@@ -71,6 +71,10 @@ to permute the original array into sorted order
 
 .. function:: proc localArgsortMsg(reqMsg: string, st: borrowed SymTab): string
 
+   localArgsort takes a pdarray and returns an index vector which sorts the array on a per-locale basis 
+
+.. function:: proc perLocaleArgSort(a: [?aD] int): [aD] int
+
 .. function:: proc perLocaleArgCountSort(a: [?aD] int): [aD] int
 
 .. function:: proc localAssocArgSort(iv: [] int, a: [?D] int)

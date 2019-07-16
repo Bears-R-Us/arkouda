@@ -876,7 +876,10 @@ class GroupBy:
                             'min', 'max', 'argmin', 'argmax',
                             'nunique', 'any', 'all'])
     def __init__(self, keys, per_locale=True):
-        '''Group <keys> by value, usually in preparation for grouping and aggregating the values of another array via the .aggregate() method. Return a GroupBy object that stores the information for how to group values.
+        '''Group <keys> by value, usually in preparation for grouping
+        and aggregating the values of another array via the
+        .aggregate() method. Return a GroupBy object that stores the
+        information for how to group values.
         '''
         if not isinstance(keys, pdarray):
             raise TypeError("Argument must be a pdarray")

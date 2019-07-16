@@ -1,17 +1,18 @@
+/* arkouda server config param and config const */
 module ServerConfig
 {
-    // verbose flag
+    /* verbose flag */
     config const v = true;
 
-    // port for zeromq
+    /* port for zeromq */
     config const ServerPort = 5555;
 
-    // arkouda version
+    /* arkouda version */
     config param arkoudaVersion = "0.0.9pre";
 
-    // configure MyDmap on compile line by "-s MyDmap=0" or "-s MyDmap=1"
-    // 0 = Cyclic, 1 = Block, Cyclic may not work now haven't tested it in a while
-    // BlockDist is the default now
+    /* configure MyDmap on compile line by "-s MyDmap=0" or "-s MyDmap=1"
+    0 = Cyclic, 1 = Block, Cyclic may not work now haven't tested it in a while
+    BlockDist is the default now */
     config param MyDmap = 1;
 
 }

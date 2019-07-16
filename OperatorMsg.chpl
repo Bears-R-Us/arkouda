@@ -10,8 +10,8 @@ module OperatorMsg
     use MultiTypeSymEntry;
     use ServerErrorStrings;
 
-    // parse and respond to binopvv message
-    // vv == vector op vector
+    /* parse and respond to binopvv message
+       vv == vector op vector */
     proc binopvvMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -34,8 +34,11 @@ module OperatorMsg
                 select op
                 {
                     when "+" {
-                        var a = l.a + r.a;
-                        st.addEntry(rname, new shared SymEntry(a));
+                        st.addEntry(rname, l.size, int);
+                        var e = toSymEntry(st.lookup(rname), int);
+                        e.a = l.a + r.a;
+                        /* var a = l.a + r.a; */
+                        /* st.addEntry(rname, new shared SymEntry(a)); */
                     }
                     when "-" {
                         var a = l.a - r.a;
@@ -373,8 +376,8 @@ module OperatorMsg
         return try! "created " + st.attrib(rname);
     }
 
-    // parse and respond to binopvs message
-    // vs == vector op scalar
+    /* parse and respond to binopvs message
+       vs == vector op scalar */
     proc binopvsMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string = ""; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -734,8 +737,8 @@ module OperatorMsg
         return try! "created " + st.attrib(rname);
     }
 
-    // parse and respond to binopsv message
-    // sv == scalar op vector
+    /* parse and respond to binopsv message
+       sv == scalar op vector */
     proc binopsvMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string = ""; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -1095,8 +1098,8 @@ module OperatorMsg
         return try! "created " + st.attrib(rname);
     }
 
-    // parse and respond to opeqvv message
-    // vector op= vector
+    /* parse and respond to opeqvv message
+       vector op= vector */
     proc opeqvvMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -1193,8 +1196,8 @@ module OperatorMsg
         return "opeqvv success";
     }
 
-    // parse and respond to opeqvs message
-    // vector op= scalar
+    /* parse and respond to opeqvs message
+       vector op= scalar */
     proc opeqvsMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields

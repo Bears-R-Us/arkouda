@@ -44,32 +44,3 @@ MsgProcessing
 
    sets all elements in array to a value (broadcast) 
 
-.. function:: proc efuncMsg(reqMsg: string, st: borrowed SymTab): string
-
-   these ops are functions which take an array and produce and array
-   do scans fit here also? I think so... vector = scanop(vector)
-   parse and respond to efunc "elemental function" message
-   vector = efunc(vector) 
-
-.. function:: proc efunc3vvMsg(reqMsg: string, st: borrowed SymTab): string
-
-.. function:: proc efunc3vsMsg(reqMsg: string, st: borrowed SymTab): string
-
-.. function:: proc efunc3svMsg(reqMsg: string, st: borrowed SymTab): string
-
-.. function:: proc efunc3ssMsg(reqMsg: string, st: borrowed SymTab): string
-
-.. function:: proc where_helper(cond: [?D] bool, A: [D] ?t, B: [D] t, param kind): [D] t
-
-   The 'where' function takes a boolean array and two other arguments A and B, and 
-   returns an array with A where the boolean is true and B where it is false. A and B
-   can be vectors or scalars. I would like to be able to write these functions without
-   the param kind and just let the compiler choose, but it complains about an
-   ambiguous call. 
-
-.. function:: proc where_helper(cond: [?D] bool, A: [D] ?t, b: t, param kind): [D] t
-
-.. function:: proc where_helper(cond: [?D] bool, a: ?t, B: [D] t, param kind): [D] t
-
-.. function:: proc where_helper(cond: [?D] bool, a: ?t, b: t, param kind): [D] t
-

@@ -1,13 +1,13 @@
-// unique finding and counting algorithms
-// these are all based on dense histograms and sparse histograms(assoc domains/arrays)
-//
-// you could also use a sort if you got into a real bind with really
-// large dense ranges of values and large arrays...
-//
-// *** need to factor in sparsity estimation somehow ***
-// for example if (a.max-a.min > a.size) means that a's are sparse
-//
-//
+/* unique finding and counting algorithms
+ these are all based on dense histograms and sparse histograms(assoc domains/arrays)
+
+ you could also use a sort if you got into a real bind with really
+ large dense ranges of values and large arrays...
+
+ *** need to factor in sparsity estimation somehow ***
+ for example if (a.max-a.min > a.size) means that a's are sparse
+
+ */
 module UniqueMsg
 {
     use ServerConfig;
@@ -35,7 +35,7 @@ module UniqueMsg
         [i in D] {X[i] += Y[i].read();}
     }
 
-    // unique with global histogram
+    /* unique with global histogram */
     proc uniqueGlobHist(a: [?aD] int, aMin: int, aMax: int) {
         // how many bins in histogram
         var bins = aMax-aMin+1;
@@ -81,7 +81,7 @@ module UniqueMsg
         return (aV, aC);
     }
 
-    // unique with per-locale histograms
+    /* unique with per-locale histograms */
     proc uniquePerLocHistGlobHist(a: [?aD] int, aMin: int, aMax: int) {
 
         // how many bin in histogram
@@ -131,9 +131,9 @@ module UniqueMsg
         return (aV, aC);
     }
 
-    // use when unique values vary over a wide range and and are sparse
-    // unique with per-locale assoc domains and arrays
-    // global unique value histogram
+    /* use when unique values vary over a wide range and and are sparse
+    unique with per-locale assoc domains and arrays
+    global unique value histogram */
     proc uniquePerLocAssocGlobHist(a: [?aD] int, aMin: int, aMax: int) {
 
         // per locale assoc domain of int to hold uniq values
@@ -194,8 +194,8 @@ module UniqueMsg
         return (aV, aC);
     }
 
-    // use when unique value vary over a wide range and and are sparse
-    // unique with per-locale assoc domains and arrays
+    /* use when unique value vary over a wide range and and are sparse
+       unique with per-locale assoc domains and arrays */
     proc uniquePerLocAssocGlobAssoc(a: [?aD] int, aMin: int, aMax: int) {
 
         // per locale assoc domain of int to hold uniq values
@@ -258,8 +258,8 @@ module UniqueMsg
         return (aV, aC);
     }
     
-    // use when unique value vary over a wide range and and are sparse
-    // unique with per-locale assoc domains and arrays
+    /* use when unique value vary over a wide range and and are sparse
+       unique with per-locale assoc domains and arrays */
     proc uniquePerLocAssocParUnsafeGlobAssocParUnsafe(a: [?aD] int, aMin: int, aMax: int) {
 
         // per locale assoc domain of int to hold uniq values
@@ -322,7 +322,7 @@ module UniqueMsg
         return (aV, aC);
     }
     
-    // unique take a pdarray and returns a pdarray with the unique values
+    /* unique take a pdarray and returns a pdarray with the unique values */
     proc uniqueMsg(reqMsg: string, st: borrowed SymTab): string {
         var pn = "unique";
         var repMsg: string; // response message
@@ -378,7 +378,7 @@ module UniqueMsg
         return s;
     }
     
-    // value_counts takes a pdarray and returns two pdarrays unique values and counts for each value
+    /* value_counts takes a pdarray and returns two pdarrays unique values and counts for each value */
     proc value_countsMsg(reqMsg: string, st: borrowed SymTab): string {
         var pn = "value_counts";
         var repMsg: string; // response message

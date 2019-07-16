@@ -14,6 +14,8 @@ module FindSegmentsMsg
     // experimental
     use UnorderedCopy;
 
+    /* findSegemnt takes a key-pdarray and a perm-pdarray and
+       returns a segemnt-pdarray where the values change in the key[perm] */
     proc findSegmentsMsg(reqMsg: string, st: borrowed SymTab): string {
         var pn = "findSegments";
         var repMsg: string; // response message

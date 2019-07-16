@@ -90,6 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ArgsortDRS/SortModuleStuff.html">SortModuleStuff</a></li>
 <li class="toctree-l1"><a class="reference internal" href="AryUtil.html">AryUtil</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Chapel118.html">Chapel118</a></li>
+<li class="toctree-l1"><a class="reference internal" href="EfuncMsg.html">EfuncMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FindSegmentsMsg.html">FindSegmentsMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="GenSymIO.html">GenSymIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="HistogramMsg.html">HistogramMsg</a></li>
@@ -156,25 +157,32 @@
 <div class="highlight-chapel"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">ServerConfig</span><span class="p">;</span>
 </pre></div>
 </div>
+<p>arkouda server config param and config const</p>
 <dl class="data">
 <dt id="ServerConfig.v">
 <em class="property">config const </em><code class="descname">v</code> = true<a class="headerlink" href="#ServerConfig.v" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>verbose flag</p>
+</dd></dl>
 
 <dl class="data">
 <dt id="ServerConfig.ServerPort">
 <em class="property">config const </em><code class="descname">ServerPort</code> = 5555<a class="headerlink" href="#ServerConfig.ServerPort" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>port for zeromq</p>
+</dd></dl>
 
 <dl class="data">
 <dt id="ServerConfig.arkoudaVersion">
 <em class="property">config param </em><code class="descname">arkoudaVersion</code> = &quot;0.0.9pre&quot;<a class="headerlink" href="#ServerConfig.arkoudaVersion" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>arkouda version</p>
+</dd></dl>
 
 <dl class="data">
 <dt id="ServerConfig.MyDmap">
 <em class="property">config param </em><code class="descname">MyDmap</code> = 1<a class="headerlink" href="#ServerConfig.MyDmap" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>configure MyDmap on compile line by &#8220;-s MyDmap=0&#8221; or &#8220;-s MyDmap=1&#8221;
+0 = Cyclic, 1 = Block, Cyclic may not work now haven&#8217;t tested it in a while
+BlockDist is the default now</p>
+</dd></dl>
 
 </div>
 

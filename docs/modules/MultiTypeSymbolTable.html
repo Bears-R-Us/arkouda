@@ -90,6 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ArgsortDRS/SortModuleStuff.html">SortModuleStuff</a></li>
 <li class="toctree-l1"><a class="reference internal" href="AryUtil.html">AryUtil</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Chapel118.html">Chapel118</a></li>
+<li class="toctree-l1"><a class="reference internal" href="EfuncMsg.html">EfuncMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FindSegmentsMsg.html">FindSegmentsMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="GenSymIO.html">GenSymIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="HistogramMsg.html">HistogramMsg</a></li>
@@ -159,7 +160,8 @@
 <dl class="class">
 <dt id="MultiTypeSymbolTable.SymTab">
 <em class="property">class </em><code class="descname">SymTab</code><a class="headerlink" href="#MultiTypeSymbolTable.SymTab" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="attribute">
+<dd><p>symbol table</p>
+<dl class="attribute">
 <dt id="MultiTypeSymbolTable.SymTab.tD">
 <em class="property">var </em><code class="descname">tD</code>: domain(string)<a class="headerlink" href="#MultiTypeSymbolTable.SymTab.tD" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -177,62 +179,76 @@
 <dl class="method">
 <dt id="MultiTypeSymbolTable.SymTab.nextName">
 <em class="property">proc </em><code class="descname">nextName</code><span class="sig-paren">(</span><span class="sig-paren">)</span>: string<a class="headerlink" href="#MultiTypeSymbolTable.SymTab.nextName" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>generate a new name</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="MultiTypeSymbolTable.SymTab.addEntry">
 <em class="property">proc </em><code class="descname">addEntry</code><span class="sig-paren">(</span><em>name: string</em>, <em>len: int</em>, <em>type t</em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.addEntry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>add an entry to the symbol table using a name a length and a Chapel type
+is it an error to redefine an entry? ... probably not
+this addEntry takes stuff to create a new SymEntry</p>
+</dd></dl>
 
 <dl class="method">
 <dt>
 <em class="property">proc </em><code class="descname">addEntry</code><span class="sig-paren">(</span><em>name: string</em>, <em>entry: shared GenSymEntry</em><span class="sig-paren">)</span></dt>
-<dd></dd></dl>
+<dd><p>add an entry to the symbol table using an already created GenSymEntry</p>
+</dd></dl>
 
 <dl class="method">
 <dt>
 <em class="property">proc </em><code class="descname">addEntry</code><span class="sig-paren">(</span><em>name: string</em>, <em>len: int</em>, <em>dtype: DType</em><span class="sig-paren">)</span></dt>
-<dd></dd></dl>
+<dd><p>add an entry to the symbol table using a name a length and a DType</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="MultiTypeSymbolTable.SymTab.deleteEntry">
 <em class="property">proc </em><code class="descname">deleteEntry</code><span class="sig-paren">(</span><em>name: string</em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.deleteEntry" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>detete an entry from the symboltable</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="MultiTypeSymbolTable.SymTab.lookup">
 <em class="property">proc </em><code class="descname">lookup</code><span class="sig-paren">(</span><em>name: string</em><span class="sig-paren">)</span>: shared GenSymEntry<a class="headerlink" href="#MultiTypeSymbolTable.SymTab.lookup" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>lookup a name in the symbol table</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="MultiTypeSymbolTable.SymTab.pretty">
 <em class="property">proc </em><code class="descname">pretty</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.pretty" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>pretty print the symbol table</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="MultiTypeSymbolTable.SymTab.dump">
 <em class="property">proc </em><code class="descname">dump</code><span class="sig-paren">(</span><em>name: string</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MultiTypeSymbolTable.SymTab.dump" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>dump the symbol table to a string</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="MultiTypeSymbolTable.SymTab.info">
 <em class="property">proc </em><code class="descname">info</code><span class="sig-paren">(</span><em>name: string</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MultiTypeSymbolTable.SymTab.info" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>get info on a name/symbol but NOT the data</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="MultiTypeSymbolTable.SymTab.attrib">
 <em class="property">proc </em><code class="descname">attrib</code><span class="sig-paren">(</span><em>name: string</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MultiTypeSymbolTable.SymTab.attrib" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>put the symbol&#8217;s attributes into a string</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="MultiTypeSymbolTable.SymTab.datastr">
 <em class="property">proc </em><code class="descname">datastr</code><span class="sig-paren">(</span><em>name: string</em>, <em>thresh: int</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MultiTypeSymbolTable.SymTab.datastr" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>put the data into a string abreviate if over the threshold</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="MultiTypeSymbolTable.SymTab.datarepr">
 <em class="property">proc </em><code class="descname">datarepr</code><span class="sig-paren">(</span><em>name: string</em>, <em>thresh: int</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MultiTypeSymbolTable.SymTab.datarepr" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>put the data into a string abreviate if over the threshold</p>
+</dd></dl>
 
 </dd></dl>
 

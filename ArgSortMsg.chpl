@@ -399,6 +399,7 @@ module ArgSortMsg
         return try! "created " + st.attrib(ivname);
     }
 
+    /* localArgsort takes a pdarray and returns an index vector which sorts the array on a per-locale basis */
     proc localArgsortMsg(reqMsg: string, st: borrowed SymTab): string {
       var pn = "localArgsort";
         var repMsg: string; // response message

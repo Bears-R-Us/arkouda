@@ -1,6 +1,7 @@
 .. default-domain:: chpl
 
 .. module:: UniqueMsg
+   :synopsis: unique finding and counting algorithms
 
 UniqueMsg
 =========
@@ -9,6 +10,17 @@ UniqueMsg
 .. code-block:: chapel
 
    use UniqueMsg;
+
+unique finding and counting algorithms
+these are all based on dense histograms and sparse histograms(assoc domains/arrays)
+
+you could also use a sort if you got into a real bind with really
+large dense ranges of values and large arrays...
+
+*** need to factor in sparsity estimation somehow ***
+for example if (a.max-a.min > a.size) means that a's are sparse
+
+
 
 .. data:: var sBins = 2**10
 
@@ -22,13 +34,33 @@ UniqueMsg
 
 .. function:: proc uniqueGlobHist(a: [?aD] int, aMin: int, aMax: int)
 
+   unique with global histogram 
+
 .. function:: proc uniquePerLocHistGlobHist(a: [?aD] int, aMin: int, aMax: int)
+
+   unique with per-locale histograms 
 
 .. function:: proc uniquePerLocAssocGlobHist(a: [?aD] int, aMin: int, aMax: int)
 
+   use when unique values vary over a wide range and and are sparse
+   unique with per-locale assoc domains and arrays
+   global unique value histogram 
+
 .. function:: proc uniquePerLocAssocGlobAssoc(a: [?aD] int, aMin: int, aMax: int)
+
+   use when unique value vary over a wide range and and are sparse
+   unique with per-locale assoc domains and arrays 
+
+.. function:: proc uniquePerLocAssocParUnsafeGlobAssocParUnsafe(a: [?aD] int, aMin: int, aMax: int)
+
+   use when unique value vary over a wide range and and are sparse
+   unique with per-locale assoc domains and arrays 
 
 .. function:: proc uniqueMsg(reqMsg: string, st: borrowed SymTab): string
 
+   unique take a pdarray and returns a pdarray with the unique values 
+
 .. function:: proc value_countsMsg(reqMsg: string, st: borrowed SymTab): string
+
+   value_counts takes a pdarray and returns two pdarrays unique values and counts for each value 
 

@@ -90,6 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ArgsortDRS/SortModuleStuff.html">SortModuleStuff</a></li>
 <li class="toctree-l1"><a class="reference internal" href="AryUtil.html">AryUtil</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Chapel118.html">Chapel118</a></li>
+<li class="toctree-l1"><a class="reference internal" href="EfuncMsg.html">EfuncMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FindSegmentsMsg.html">FindSegmentsMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="GenSymIO.html">GenSymIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="HistogramMsg.html">HistogramMsg</a></li>
@@ -257,6 +258,12 @@ DW = Direct Write into output array</p>
 <dl class="function">
 <dt id="ArgSortMsg.localArgsortMsg">
 <em class="property">proc </em><code class="descname">localArgsortMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#ArgSortMsg.localArgsortMsg" title="Permalink to this definition">¶</a></dt>
+<dd><p>localArgsort takes a pdarray and returns an index vector which sorts the array on a per-locale basis</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ArgSortMsg.perLocaleArgSort">
+<em class="property">proc </em><code class="descname">perLocaleArgSort</code><span class="sig-paren">(</span><em>a: [?aD] int</em><span class="sig-paren">)</span>: [aD] int<a class="headerlink" href="#ArgSortMsg.perLocaleArgSort" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">

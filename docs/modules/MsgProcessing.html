@@ -90,6 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ArgsortDRS/SortModuleStuff.html">SortModuleStuff</a></li>
 <li class="toctree-l1"><a class="reference internal" href="AryUtil.html">AryUtil</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Chapel118.html">Chapel118</a></li>
+<li class="toctree-l1"><a class="reference internal" href="EfuncMsg.html">EfuncMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FindSegmentsMsg.html">FindSegmentsMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="GenSymIO.html">GenSymIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="HistogramMsg.html">HistogramMsg</a></li>
@@ -209,60 +210,6 @@ repr convert array data to string</p>
 <em class="property">proc </em><code class="descname">setMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MsgProcessing.setMsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>sets all elements in array to a value (broadcast)</p>
 </dd></dl>
-
-<dl class="function">
-<dt id="MsgProcessing.efuncMsg">
-<em class="property">proc </em><code class="descname">efuncMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MsgProcessing.efuncMsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>these ops are functions which take an array and produce and array
-do scans fit here also? I think so... vector = scanop(vector)
-parse and respond to efunc &#8220;elemental function&#8221; message
-vector = efunc(vector)</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="MsgProcessing.efunc3vvMsg">
-<em class="property">proc </em><code class="descname">efunc3vvMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MsgProcessing.efunc3vvMsg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="MsgProcessing.efunc3vsMsg">
-<em class="property">proc </em><code class="descname">efunc3vsMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MsgProcessing.efunc3vsMsg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="MsgProcessing.efunc3svMsg">
-<em class="property">proc </em><code class="descname">efunc3svMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MsgProcessing.efunc3svMsg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="MsgProcessing.efunc3ssMsg">
-<em class="property">proc </em><code class="descname">efunc3ssMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MsgProcessing.efunc3ssMsg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="MsgProcessing.where_helper">
-<em class="property">proc </em><code class="descname">where_helper</code><span class="sig-paren">(</span><em>cond: [?D] bool</em>, <em>A: [D] ?t</em>, <em>B: [D] t</em>, <em>param kind</em><span class="sig-paren">)</span>: [D] t<a class="headerlink" href="#MsgProcessing.where_helper" title="Permalink to this definition">¶</a></dt>
-<dd><p>The &#8216;where&#8217; function takes a boolean array and two other arguments A and B, and
-returns an array with A where the boolean is true and B where it is false. A and B
-can be vectors or scalars. I would like to be able to write these functions without
-the param kind and just let the compiler choose, but it complains about an
-ambiguous call.</p>
-</dd></dl>
-
-<dl class="function">
-<dt>
-<em class="property">proc </em><code class="descname">where_helper</code><span class="sig-paren">(</span><em>cond: [?D] bool</em>, <em>A: [D] ?t</em>, <em>b: t</em>, <em>param kind</em><span class="sig-paren">)</span>: [D] t</dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt>
-<em class="property">proc </em><code class="descname">where_helper</code><span class="sig-paren">(</span><em>cond: [?D] bool</em>, <em>a: ?t</em>, <em>B: [D] t</em>, <em>param kind</em><span class="sig-paren">)</span>: [D] t</dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt>
-<em class="property">proc </em><code class="descname">where_helper</code><span class="sig-paren">(</span><em>cond: [?D] bool</em>, <em>a: ?t</em>, <em>b: t</em>, <em>param kind</em><span class="sig-paren">)</span>: [D] t</dt>
-<dd></dd></dl>
 
 </div>
 

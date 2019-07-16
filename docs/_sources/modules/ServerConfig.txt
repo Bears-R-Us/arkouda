@@ -1,6 +1,7 @@
 .. default-domain:: chpl
 
 .. module:: ServerConfig
+   :synopsis: arkouda server config param and config const 
 
 ServerConfig
 ============
@@ -10,11 +11,23 @@ ServerConfig
 
    use ServerConfig;
 
+arkouda server config param and config const 
+
 .. data:: config const v = true
+
+   verbose flag 
 
 .. data:: config const ServerPort = 5555
 
+   port for zeromq 
+
 .. data:: config param arkoudaVersion = "0.0.9pre"
 
+   arkouda version 
+
 .. data:: config param MyDmap = 1
+
+   configure MyDmap on compile line by "-s MyDmap=0" or "-s MyDmap=1"
+   0 = Cyclic, 1 = Block, Cyclic may not work now haven't tested it in a while
+   BlockDist is the default now 
 
