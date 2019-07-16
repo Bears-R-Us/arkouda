@@ -7,7 +7,7 @@ module MultiTypeSymbolTable
     use MultiTypeSymEntry;
     use Chapel118;
 
-    // symbol table
+    /* symbol table */
     class SymTab
     {
         var tD: domain(string); // assoc domain of string
@@ -15,13 +15,16 @@ module MultiTypeSymbolTable
 
         // give out symbol names
         var nid = 0;
+        
+        /* generate a new name */
         proc nextName():string {
             nid += 1;
             return "id_"+ nid:string;
         }
 
-        // is it an error to redefine an entry? ... probably not
-        // this addEntry takes stuff to create a new SymEntry
+        /* add an entry to the symbol table using a name a length and a Chapel type
+           is it an error to redefine an entry? ... probably not
+           this addEntry takes stuff to create a new SymEntry */
         proc addEntry(name: string, len: int, type t) {
             var entry = new shared SymEntry(len, t);
             if (tD.contains(name))
@@ -34,7 +37,7 @@ module MultiTypeSymbolTable
             tab[name] = entry;
         }
 
-        // this addEntry takes an already created GenSymEntry
+        /* add an entry to the symbol table using an already created GenSymEntry */
         proc addEntry(name: string, entry: shared GenSymEntry) {
             if (tD.contains(name))
             {
@@ -46,6 +49,7 @@ module MultiTypeSymbolTable
             tab[name] = entry;
         }
 
+        /* add an entry to the symbol table using a name a length and a DType */
         proc addEntry(name: string, len: int, dtype: DType) {
             if dtype == DType.Int64 {addEntry(name,len,int);}
             else if dtype == DType.Float64 {addEntry(name,len,real);}
@@ -53,6 +57,7 @@ module MultiTypeSymbolTable
             else {writeln("should not get here!");try! stdout.flush();}
         }
 
+        /* detete an entry from the symboltable */
         proc deleteEntry(name: string) {
             if (tD.contains(name))
             {
@@ -62,7 +67,7 @@ module MultiTypeSymbolTable
             else
                 if (v) {writeln("unkown symbol ",name);try! stdout.flush();}
         }
-        
+        /* lookup a name in the symbol table */
         proc lookup(name: string): shared GenSymEntry {
             if (!tD.contains(name))
             {
@@ -76,19 +81,22 @@ module MultiTypeSymbolTable
             }
         }
 
+        /* pretty print the symbol table */
         proc pretty(){
             for n in tD
             {
                 try! writeln("%10s = ".format(n), tab[n]);try! stdout.flush();
             }
         }
-        
+
+        /* dump the symbol table to a string */
         proc dump(name:string): string {
             if name == "__AllSymbols__" {return try! "%jt".format(this);}
             else if (tD.contains(name)) {return try! "%jt %jt".format(name, tab[name]);}
             else {return try! "Error: dump: undefined name: %s".format(name);}
         }
-        
+
+        /* get info on a name/symbol but NOT the data */
         proc info(name:string): string {
             var s: string;
             if name == "__AllSymbols__" {
@@ -108,6 +116,7 @@ module MultiTypeSymbolTable
             return s;
         }
 
+        /* put the symbol's attributes into a string */
         proc attrib(name:string):string {
             var s:string;
             if (tD.contains(name)) {
@@ -117,6 +126,7 @@ module MultiTypeSymbolTable
             return s;
         }
 
+        /* put the data into a string abreviate if over the threshold */
         proc datastr(name: string, thresh:int): string {
             var s:string;
             if (tD.contains(name)) {
@@ -180,6 +190,7 @@ module MultiTypeSymbolTable
             return s;
         }
         
+        /* put the data into a string abreviate if over the threshold */
         proc datarepr(name: string, thresh:int): string {
             var s:string;
             if (tD.contains(name)) {

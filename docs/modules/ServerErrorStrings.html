@@ -90,6 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ArgsortDRS/SortModuleStuff.html">SortModuleStuff</a></li>
 <li class="toctree-l1"><a class="reference internal" href="AryUtil.html">AryUtil</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Chapel118.html">Chapel118</a></li>
+<li class="toctree-l1"><a class="reference internal" href="EfuncMsg.html">EfuncMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FindSegmentsMsg.html">FindSegmentsMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="GenSymIO.html">GenSymIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="HistogramMsg.html">HistogramMsg</a></li>
@@ -156,40 +157,48 @@
 <div class="highlight-chapel"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">ServerErrorStrings</span><span class="p">;</span>
 </pre></div>
 </div>
+<p>error string to return to client... generate consistent error strings for notImplementedError</p>
 <dl class="function">
 <dt id="ServerErrorStrings.notImplementedError">
 <em class="property">proc </em><code class="descname">notImplementedError</code><span class="sig-paren">(</span><em>pname: string</em>, <em>ldtype: DType</em>, <em>op: string</em>, <em>rdtype: DType</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#ServerErrorStrings.notImplementedError" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>binary operator is not implemented for DTypes</p>
+</dd></dl>
 
 <dl class="function">
 <dt>
 <em class="property">proc </em><code class="descname">notImplementedError</code><span class="sig-paren">(</span><em>pname: string</em>, <em>efunc: string</em>, <em>ldtype: DType</em><span class="sig-paren">)</span>: string</dt>
-<dd></dd></dl>
+<dd><p>efunc is not implemented for DType</p>
+</dd></dl>
 
 <dl class="function">
 <dt>
 <em class="property">proc </em><code class="descname">notImplementedError</code><span class="sig-paren">(</span><em>pname: string</em>, <em>efunc: string</em>, <em>dt1: DType</em>, <em>dt2: DType</em>, <em>dt3: DType</em><span class="sig-paren">)</span>: string</dt>
-<dd></dd></dl>
+<dd><p>efunc is not implemented for DTypes</p>
+</dd></dl>
 
 <dl class="function">
 <dt>
 <em class="property">proc </em><code class="descname">notImplementedError</code><span class="sig-paren">(</span><em>pname: string</em>, <em>dtype: DType</em><span class="sig-paren">)</span>: string</dt>
-<dd></dd></dl>
+<dd><p>algorthm is not implemented for DType</p>
+</dd></dl>
 
 <dl class="function">
 <dt>
 <em class="property">proc </em><code class="descname">notImplementedError</code><span class="sig-paren">(</span><em>pname: string</em>, <em>arg: string</em><span class="sig-paren">)</span>: string</dt>
-<dd></dd></dl>
+<dd><p>proc is not implemented for this kind of argument</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="ServerErrorStrings.unrecognizedTypeError">
 <em class="property">proc </em><code class="descname">unrecognizedTypeError</code><span class="sig-paren">(</span><em>pname: string</em>, <em>stype: string</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#ServerErrorStrings.unrecognizedTypeError" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>unrecognized DType</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="ServerErrorStrings.unknownSymbolError">
 <em class="property">proc </em><code class="descname">unknownSymbolError</code><span class="sig-paren">(</span><em>pname: string</em>, <em>sname: string</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#ServerErrorStrings.unknownSymbolError" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>name not found in the symbol table</p>
+</dd></dl>
 
 </div>
 

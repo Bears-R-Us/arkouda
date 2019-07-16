@@ -90,6 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ArgsortDRS/SortModuleStuff.html">SortModuleStuff</a></li>
 <li class="toctree-l1"><a class="reference internal" href="AryUtil.html">AryUtil</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Chapel118.html">Chapel118</a></li>
+<li class="toctree-l1"><a class="reference internal" href="EfuncMsg.html">EfuncMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FindSegmentsMsg.html">FindSegmentsMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="GenSymIO.html">GenSymIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="HistogramMsg.html">HistogramMsg</a></li>
@@ -156,6 +157,12 @@
 <div class="highlight-chapel"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">UniqueMsg</span><span class="p">;</span>
 </pre></div>
 </div>
+<p>unique finding and counting algorithms
+these are all based on dense histograms and sparse histograms(assoc domains/arrays)</p>
+<p>you could also use a sort if you got into a real bind with really
+large dense ranges of values and large arrays...</p>
+<p><strong>* need to factor in sparsity estimation somehow *</strong>
+for example if (a.max-a.min &gt; a.size) means that a&#8217;s are sparse</p>
 <dl class="data">
 <dt id="UniqueMsg.sBins">
 <em class="property">var </em><code class="descname">sBins</code> = 2**10<a class="headerlink" href="#UniqueMsg.sBins" title="Permalink to this definition">¶</a></dt>
@@ -184,32 +191,48 @@
 <dl class="function">
 <dt id="UniqueMsg.uniqueGlobHist">
 <em class="property">proc </em><code class="descname">uniqueGlobHist</code><span class="sig-paren">(</span><em>a: [?aD] int</em>, <em>aMin: int</em>, <em>aMax: int</em><span class="sig-paren">)</span><a class="headerlink" href="#UniqueMsg.uniqueGlobHist" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>unique with global histogram</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="UniqueMsg.uniquePerLocHistGlobHist">
 <em class="property">proc </em><code class="descname">uniquePerLocHistGlobHist</code><span class="sig-paren">(</span><em>a: [?aD] int</em>, <em>aMin: int</em>, <em>aMax: int</em><span class="sig-paren">)</span><a class="headerlink" href="#UniqueMsg.uniquePerLocHistGlobHist" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>unique with per-locale histograms</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="UniqueMsg.uniquePerLocAssocGlobHist">
 <em class="property">proc </em><code class="descname">uniquePerLocAssocGlobHist</code><span class="sig-paren">(</span><em>a: [?aD] int</em>, <em>aMin: int</em>, <em>aMax: int</em><span class="sig-paren">)</span><a class="headerlink" href="#UniqueMsg.uniquePerLocAssocGlobHist" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>use when unique values vary over a wide range and and are sparse
+unique with per-locale assoc domains and arrays
+global unique value histogram</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="UniqueMsg.uniquePerLocAssocGlobAssoc">
 <em class="property">proc </em><code class="descname">uniquePerLocAssocGlobAssoc</code><span class="sig-paren">(</span><em>a: [?aD] int</em>, <em>aMin: int</em>, <em>aMax: int</em><span class="sig-paren">)</span><a class="headerlink" href="#UniqueMsg.uniquePerLocAssocGlobAssoc" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>use when unique value vary over a wide range and and are sparse
+unique with per-locale assoc domains and arrays</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="UniqueMsg.uniquePerLocAssocParUnsafeGlobAssocParUnsafe">
+<em class="property">proc </em><code class="descname">uniquePerLocAssocParUnsafeGlobAssocParUnsafe</code><span class="sig-paren">(</span><em>a: [?aD] int</em>, <em>aMin: int</em>, <em>aMax: int</em><span class="sig-paren">)</span><a class="headerlink" href="#UniqueMsg.uniquePerLocAssocParUnsafeGlobAssocParUnsafe" title="Permalink to this definition">¶</a></dt>
+<dd><p>use when unique value vary over a wide range and and are sparse
+unique with per-locale assoc domains and arrays</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="UniqueMsg.uniqueMsg">
 <em class="property">proc </em><code class="descname">uniqueMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#UniqueMsg.uniqueMsg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>unique take a pdarray and returns a pdarray with the unique values</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="UniqueMsg.value_countsMsg">
 <em class="property">proc </em><code class="descname">value_countsMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#UniqueMsg.value_countsMsg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>value_counts takes a pdarray and returns two pdarrays unique values and counts for each value</p>
+</dd></dl>
 
 </div>
 

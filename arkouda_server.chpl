@@ -1,7 +1,7 @@
-// arkouda server
-// backend chapel program to mimic ndarray from numpy
-// This is the main driver for the arkouda server
-//
+/* arkouda server
+backend chapel program to mimic ndarray from numpy
+This is the main driver for the arkouda server */
+
 use ServerConfig;
 
 use Time only;

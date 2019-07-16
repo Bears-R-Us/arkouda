@@ -90,6 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ArgsortDRS/SortModuleStuff.html">SortModuleStuff</a></li>
 <li class="toctree-l1"><a class="reference internal" href="AryUtil.html">AryUtil</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Chapel118.html">Chapel118</a></li>
+<li class="toctree-l1"><a class="reference internal" href="EfuncMsg.html">EfuncMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FindSegmentsMsg.html">FindSegmentsMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="GenSymIO.html">GenSymIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="HistogramMsg.html">HistogramMsg</a></li>
@@ -159,27 +160,37 @@
 <dl class="function">
 <dt id="OperatorMsg.binopvvMsg">
 <em class="property">proc </em><code class="descname">binopvvMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#OperatorMsg.binopvvMsg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>parse and respond to binopvv message
+vv == vector op vector</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="OperatorMsg.binopvsMsg">
 <em class="property">proc </em><code class="descname">binopvsMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#OperatorMsg.binopvsMsg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>parse and respond to binopvs message
+vs == vector op scalar</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="OperatorMsg.binopsvMsg">
 <em class="property">proc </em><code class="descname">binopsvMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#OperatorMsg.binopsvMsg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>parse and respond to binopsv message
+sv == scalar op vector</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="OperatorMsg.opeqvvMsg">
 <em class="property">proc </em><code class="descname">opeqvvMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#OperatorMsg.opeqvvMsg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>parse and respond to opeqvv message
+vector op= vector</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="OperatorMsg.opeqvsMsg">
 <em class="property">proc </em><code class="descname">opeqvsMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#OperatorMsg.opeqvsMsg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>parse and respond to opeqvs message
+vector op= scalar</p>
+</dd></dl>
 
 </div>
 

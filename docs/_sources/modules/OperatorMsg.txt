@@ -12,11 +12,26 @@ OperatorMsg
 
 .. function:: proc binopvvMsg(reqMsg: string, st: borrowed SymTab): string
 
+   parse and respond to binopvv message
+   vv == vector op vector 
+
 .. function:: proc binopvsMsg(reqMsg: string, st: borrowed SymTab): string
+
+   parse and respond to binopvs message
+   vs == vector op scalar 
 
 .. function:: proc binopsvMsg(reqMsg: string, st: borrowed SymTab): string
 
+   parse and respond to binopsv message
+   sv == scalar op vector 
+
 .. function:: proc opeqvvMsg(reqMsg: string, st: borrowed SymTab): string
 
+   parse and respond to opeqvv message
+   vector op= vector 
+
 .. function:: proc opeqvsMsg(reqMsg: string, st: borrowed SymTab): string
+
+   parse and respond to opeqvs message
+   vector op= scalar 
 

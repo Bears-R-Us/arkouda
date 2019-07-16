@@ -22,7 +22,8 @@ module HistogramMsg
     proc +=(X: [?D] int, Y: [D] atomic int) {
         [i in D] {X[i] += Y[i].read();}
     }
-    
+
+    /* build histogram using global atomic histogram */
     proc histogramGlobalAtomic(a: [?aD] ?etype, aMin: etype, aMax: etype, bins: int, binWidth: real) {
 
         var hD = makeDistDom(bins);
@@ -44,6 +45,7 @@ module HistogramMsg
         return hist;
     }
 
+    /* build histogram using local atomic histogram and global atomic histogram */
     proc histogramLocalAtomic(a: [?aD] ?etype, aMin: etype, aMax: etype, bins: int, binWidth: real) {
 
         // allocate per-locale atomic histogram
@@ -63,7 +65,7 @@ module HistogramMsg
 
         return hist;
     }
-    
+    /* build histogram using reduce intents */
     proc histogramReduceIntent(a: [?aD] ?etype, aMin: etype, aMax: etype, bins: int, binWidth: real) {
 
         var gHist: [0..#bins] int;

@@ -20,9 +20,15 @@ HistogramMsg
 
 .. function:: proc histogramGlobalAtomic(a: [?aD] ?etype, aMin: etype, aMax: etype, bins: int, binWidth: real)
 
+   build histogram using global atomic histogram 
+
 .. function:: proc histogramLocalAtomic(a: [?aD] ?etype, aMin: etype, aMax: etype, bins: int, binWidth: real)
 
+   build histogram using local atomic histogram and global atomic histogram 
+
 .. function:: proc histogramReduceIntent(a: [?aD] ?etype, aMin: etype, aMax: etype, bins: int, binWidth: real)
+
+   build histogram using reduce intents 
 
 .. function:: proc histogramMsg(reqMsg: string, st: borrowed SymTab): string
 

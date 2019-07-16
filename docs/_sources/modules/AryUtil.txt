@@ -14,7 +14,13 @@ AryUtil
 
 .. function:: proc printAry(name: string, A)
 
+   print out and array with a name and threshold how many elements are printed 
+
 .. function:: proc isSorted(A: [?D] ?t): bool
 
+   test to see if an array is sorted 
+
 .. function:: proc aStats(a: [?D] int): (int, int, real, real, real)
+
+   calculates the (min, max, mean, variance, standard deviation) of an array 
 

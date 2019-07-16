@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>HistogramMsg &mdash; chpldoc 0.0.1 documentation</title>
+  <title>EfuncMsg &mdash; chpldoc 0.0.1 documentation</title>
   
 
   
@@ -31,8 +31,8 @@
 
   
     <link rel="top" title="chpldoc 0.0.1 documentation" href="../index.html"/>
-        <link rel="next" title="In1dMsg" href="In1dMsg.html"/>
-        <link rel="prev" title="GenSymIO" href="GenSymIO.html"/> 
+        <link rel="next" title="FindSegmentsMsg" href="FindSegmentsMsg.html"/>
+        <link rel="prev" title="Chapel118" href="Chapel118.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -90,10 +90,10 @@
 <li class="toctree-l1"><a class="reference internal" href="ArgsortDRS/SortModuleStuff.html">SortModuleStuff</a></li>
 <li class="toctree-l1"><a class="reference internal" href="AryUtil.html">AryUtil</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Chapel118.html">Chapel118</a></li>
-<li class="toctree-l1"><a class="reference internal" href="EfuncMsg.html">EfuncMsg</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">EfuncMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FindSegmentsMsg.html">FindSegmentsMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="GenSymIO.html">GenSymIO</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">HistogramMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HistogramMsg.html">HistogramMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="In1dMsg.html">In1dMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="IndexingMsg.html">IndexingMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="MsgProcessing.html">MsgProcessing</a></li>
@@ -137,11 +137,11 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html">Docs</a> &raquo;</li>
       
-    <li>HistogramMsg</li>
+    <li>EfuncMsg</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/modules/HistogramMsg.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/modules/EfuncMsg.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -151,55 +151,65 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <span class="target" id="module-HistogramMsg"></span><div class="section" id="histogrammsg">
-<h1>HistogramMsg<a class="headerlink" href="#histogrammsg" title="Permalink to this headline">¶</a></h1>
+  <span class="target" id="module-EfuncMsg"></span><div class="section" id="efuncmsg">
+<h1>EfuncMsg<a class="headerlink" href="#efuncmsg" title="Permalink to this headline">¶</a></h1>
 <p><strong>Usage</strong></p>
-<div class="highlight-chapel"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">HistogramMsg</span><span class="p">;</span>
+<div class="highlight-chapel"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">EfuncMsg</span><span class="p">;</span>
 </pre></div>
 </div>
-<dl class="data">
-<dt id="HistogramMsg.sBound">
-<em class="property">var </em><code class="descname">sBound</code> = 2**12<a class="headerlink" href="#HistogramMsg.sBound" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="data">
-<dt id="HistogramMsg.mBound">
-<em class="property">var </em><code class="descname">mBound</code> = 2**25<a class="headerlink" href="#HistogramMsg.mBound" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="function">
-<dt id="HistogramMsg.+">
-<em class="property">proc </em><code class="descname">+</code><span class="sig-paren">(</span><em>x: atomicint</em>, <em>y: atomicint</em><span class="sig-paren">)</span><a class="headerlink" href="#HistogramMsg.+" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="HistogramMsg.+=">
-<em class="property">proc </em><code class="descname">+=</code><span class="sig-paren">(</span><em>X: [?D] int</em>, <em>Y: [D] atomicint</em><span class="sig-paren">)</span><a class="headerlink" href="#HistogramMsg.+=" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="HistogramMsg.histogramGlobalAtomic">
-<em class="property">proc </em><code class="descname">histogramGlobalAtomic</code><span class="sig-paren">(</span><em>a: [?aD] ?etype</em>, <em>aMin: etype</em>, <em>aMax: etype</em>, <em>bins: int</em>, <em>binWidth: real</em><span class="sig-paren">)</span><a class="headerlink" href="#HistogramMsg.histogramGlobalAtomic" title="Permalink to this definition">¶</a></dt>
-<dd><p>build histogram using global atomic histogram</p>
+<dt id="EfuncMsg.efuncMsg">
+<em class="property">proc </em><code class="descname">efuncMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#EfuncMsg.efuncMsg" title="Permalink to this definition">¶</a></dt>
+<dd><p>these ops are functions which take an array and produce and array
+do scans fit here also? I think so... vector = scanop(vector)
+parse and respond to efunc &#8220;elemental function&#8221; message
+vector = efunc(vector)</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="HistogramMsg.histogramLocalAtomic">
-<em class="property">proc </em><code class="descname">histogramLocalAtomic</code><span class="sig-paren">(</span><em>a: [?aD] ?etype</em>, <em>aMin: etype</em>, <em>aMax: etype</em>, <em>bins: int</em>, <em>binWidth: real</em><span class="sig-paren">)</span><a class="headerlink" href="#HistogramMsg.histogramLocalAtomic" title="Permalink to this definition">¶</a></dt>
-<dd><p>build histogram using local atomic histogram and global atomic histogram</p>
+<dt id="EfuncMsg.efunc3vvMsg">
+<em class="property">proc </em><code class="descname">efunc3vvMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#EfuncMsg.efunc3vvMsg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="EfuncMsg.efunc3vsMsg">
+<em class="property">proc </em><code class="descname">efunc3vsMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#EfuncMsg.efunc3vsMsg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="EfuncMsg.efunc3svMsg">
+<em class="property">proc </em><code class="descname">efunc3svMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#EfuncMsg.efunc3svMsg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="EfuncMsg.efunc3ssMsg">
+<em class="property">proc </em><code class="descname">efunc3ssMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#EfuncMsg.efunc3ssMsg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="EfuncMsg.where_helper">
+<em class="property">proc </em><code class="descname">where_helper</code><span class="sig-paren">(</span><em>cond: [?D] bool</em>, <em>A: [D] ?t</em>, <em>B: [D] t</em>, <em>param kind</em><span class="sig-paren">)</span>: [D] t<a class="headerlink" href="#EfuncMsg.where_helper" title="Permalink to this definition">¶</a></dt>
+<dd><p>The &#8216;where&#8217; function takes a boolean array and two other arguments A and B, and
+returns an array with A where the boolean is true and B where it is false. A and B
+can be vectors or scalars. I would like to be able to write these functions without
+the param kind and just let the compiler choose, but it complains about an
+ambiguous call.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="HistogramMsg.histogramReduceIntent">
-<em class="property">proc </em><code class="descname">histogramReduceIntent</code><span class="sig-paren">(</span><em>a: [?aD] ?etype</em>, <em>aMin: etype</em>, <em>aMax: etype</em>, <em>bins: int</em>, <em>binWidth: real</em><span class="sig-paren">)</span><a class="headerlink" href="#HistogramMsg.histogramReduceIntent" title="Permalink to this definition">¶</a></dt>
-<dd><p>build histogram using reduce intents</p>
-</dd></dl>
+<dt>
+<em class="property">proc </em><code class="descname">where_helper</code><span class="sig-paren">(</span><em>cond: [?D] bool</em>, <em>A: [D] ?t</em>, <em>b: t</em>, <em>param kind</em><span class="sig-paren">)</span>: [D] t</dt>
+<dd></dd></dl>
 
 <dl class="function">
-<dt id="HistogramMsg.histogramMsg">
-<em class="property">proc </em><code class="descname">histogramMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#HistogramMsg.histogramMsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>histogram takes a pdarray and returns a pdarray with the histogram in it</p>
-</dd></dl>
+<dt>
+<em class="property">proc </em><code class="descname">where_helper</code><span class="sig-paren">(</span><em>cond: [?D] bool</em>, <em>a: ?t</em>, <em>B: [D] t</em>, <em>param kind</em><span class="sig-paren">)</span>: [D] t</dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt>
+<em class="property">proc </em><code class="descname">where_helper</code><span class="sig-paren">(</span><em>cond: [?D] bool</em>, <em>a: ?t</em>, <em>b: t</em>, <em>param kind</em><span class="sig-paren">)</span>: [D] t</dt>
+<dd></dd></dl>
 
 </div>
 
@@ -210,10 +220,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="In1dMsg.html" class="btn btn-neutral float-right" title="In1dMsg" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="FindSegmentsMsg.html" class="btn btn-neutral float-right" title="FindSegmentsMsg" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="GenSymIO.html" class="btn btn-neutral" title="GenSymIO" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="Chapel118.html" class="btn btn-neutral" title="Chapel118" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

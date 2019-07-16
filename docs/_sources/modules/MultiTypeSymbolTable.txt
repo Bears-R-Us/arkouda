@@ -12,6 +12,9 @@ MultiTypeSymbolTable
 
 .. class:: SymTab
 
+   symbol table 
+
+
    .. attribute:: var tD: domain(string)
 
    .. attribute:: var tab: [tD] shared GenSymEntry
@@ -20,25 +23,51 @@ MultiTypeSymbolTable
 
    .. method:: proc nextName(): string
 
+      generate a new name 
+
    .. method:: proc addEntry(name: string, len: int, type t)
+
+      add an entry to the symbol table using a name a length and a Chapel type
+      is it an error to redefine an entry? ... probably not
+      this addEntry takes stuff to create a new SymEntry 
 
    .. method:: proc addEntry(name: string, entry: shared GenSymEntry)
 
+      add an entry to the symbol table using an already created GenSymEntry 
+
    .. method:: proc addEntry(name: string, len: int, dtype: DType)
+
+      add an entry to the symbol table using a name a length and a DType 
 
    .. method:: proc deleteEntry(name: string)
 
+      detete an entry from the symboltable 
+
    .. method:: proc lookup(name: string): shared GenSymEntry
+
+      lookup a name in the symbol table 
 
    .. method:: proc pretty()
 
+      pretty print the symbol table 
+
    .. method:: proc dump(name: string): string
+
+      dump the symbol table to a string 
 
    .. method:: proc info(name: string): string
 
+      get info on a name/symbol but NOT the data 
+
    .. method:: proc attrib(name: string): string
+
+      put the symbol's attributes into a string 
 
    .. method:: proc datastr(name: string, thresh: int): string
 
+      put the data into a string abreviate if over the threshold 
+
    .. method:: proc datarepr(name: string, thresh: int): string
+
+      put the data into a string abreviate if over the threshold 
 
