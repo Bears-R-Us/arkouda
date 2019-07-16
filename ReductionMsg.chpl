@@ -13,8 +13,9 @@ module ReductionMsg
     use AryUtil;
     use PrivateDist;
     use ArgsortDRS only msbRadixSortWithScratchSpace;
-    use Sort only defaultComparator;
+    use Sort only defaultComparator, sort;
 
+    config const reductionDEBUG = false;
     const lBins = 2**25 * numLocales;
       
     // these functions take an array and produce a scalar
@@ -892,10 +893,36 @@ module ReductionMsg
 	  right = segments[i+1] - 1;
 	}
 	if (right > left) {
-	  msbRadixSortWithScratchSpace(left, right, sorted, values, defaultComparator, aMin, aMax);
+	  //msbRadixSortWithScratchSpace(left, right, sorted, values, defaultComparator, aMin, aMax);
+	  sorted[left..right] = values[left..right];
+	  ref seg = sorted[left..right];
+	  sort(seg);
 	}
       }
       // TO DO: make sure within-key sort worked properly
+      if reductionDEBUG {
+	var sortCheck = true;
+	forall (i, left) in zip(sD, segments) with (&& reduce sortCheck) {
+	  var right: int;
+	  if (i == sD.high) {
+	    right = sorted.domain.high;
+	  } else {
+	    right = segments[i+1] - 1;
+	  }
+	  if (right > left) {
+	    if (i < 3) || (i > sD.high - 3) {
+	      if ((right - left) > 5) {
+		writeln(i, ": ", sorted[left..left+3], " ... ", sorted[right-3..right]);
+	      } else {
+		writeln(i, ": ", sorted[left..right]);
+	      }
+	    }
+	    var ascending = [j in left..right-1] (sorted[j] <= sorted[j+1]);
+	    sortCheck reduce= (&& reduce ascending);
+	  }
+	}
+	writeln("All segments of values are internally sorted? ", sortCheck);
+      }
       
       var truth: [vD] bool;
       // true where new value appears
@@ -905,6 +932,7 @@ module ReductionMsg
       // count cumulative new values and take diffs at segment boundaries
       var count: [vD] int = (+ scan truth);
       var pop = count[vD.high];
+      if reductionDEBUG { writeln("Total unique vals across all keys: ", pop); }
       var nunique: [sD] int;
       forall (i, s, n) in zip(sD, segments, nunique) {
 	var high: int;
