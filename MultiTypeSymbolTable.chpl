@@ -111,6 +111,7 @@ module MultiTypeSymbolTable
         
         /*
         Returns the sym entry associated with the provided name, if the sym entry exists
+
         :arg name: string to index/query in the sym table
         :type name: string
 
@@ -129,6 +130,9 @@ module MultiTypeSymbolTable
             }
         }
 
+        /*
+        Prints the SymTable in a pretty format (name,SymTable[name])
+        */
         proc pretty(){
             for n in tD
             {

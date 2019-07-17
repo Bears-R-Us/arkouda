@@ -22,6 +22,7 @@ module AryUtil
     Determines if the passed array is sorted.
 
     :arg A: array to check
+    
     */
     proc isSorted(A:[?D] ?t): bool {
         var sorted: bool;
@@ -39,6 +40,7 @@ module AryUtil
 
     :arg a: array to produce statistics on
     :type a: [] int
+
     :returns: a_min, a_max, a_mean, a_variation, a_stdDeviation
     */
     proc aStats(a: [?D] int): (int,int,real,real,real) {

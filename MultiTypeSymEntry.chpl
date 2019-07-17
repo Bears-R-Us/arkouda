@@ -10,8 +10,11 @@ module MultiTypeSymEntry
        We also need other types like float32, int32, etc */
     enum DType {Int64, Float64, Bool, UNDEF}; 
 
-    /* Take a chapel type and returns the matching DType 
+    /* 
+    Take a chapel type and returns the matching DType 
+
     :arg etype: chapel type
+
     :returns: DType
     */
     proc whichDtype(type etype) param : DType {
@@ -22,8 +25,10 @@ module MultiTypeSymEntry
     }
 
     /* Returns the size in bytes of a DType 
+
     :arg dt: (pythonic) DType
     :type dt: DType
+
     :returns: (int)
     */
     proc dtypeSize(dt: DType): int {
@@ -34,8 +39,10 @@ module MultiTypeSymEntry
     }
 
     /* Turns a dtype string in pythonland into a DType 
+
     :arg dstr: pythonic dtype to be converted
     :type dstr: string
+
     :returns: DType
     */
     proc str2dtype(dstr:string): DType {
@@ -46,8 +53,10 @@ module MultiTypeSymEntry
     }
     
     /* Turns a DType into a dtype string in pythonland 
+
     :arg dtype: DType to convert to string
     :type dtype: DType
+
     :returns: (string)
     */
     proc dtype2str(dtype:DType): string {
@@ -59,14 +68,16 @@ module MultiTypeSymEntry
 
     /* 
     Uses the MyDmap config param in ServerConfig.chpl::
-        if MyDmap == 0 {return (type CyclicDom(1,int(64),false));}
-        if MyDmap == 1 {return (type BlockDom(1,int(64),false,unmanaged DefaultDist));} 
+        *if MyDmap == 0 {return (type CyclicDom(1,int(64),false));}* 
+
+        *if MyDmap == 1 {return (type BlockDom(1,int(64),false,unmanaged DefaultDist));}*
 
     :arg size: size of domain
     :type size: int
 
-    Note, if MyDmap is not set, Cyclic Distribution will be selected by default. 
+    **Note**: if MyDmap does not evaluate to 0 or 1, Cyclic Distribution will be selected. 
     Cyclic Distribution is currently not fully supported.
+    **Note 2**: MyDmap is by default set to 1 in ServerConfig.chpl
     */
     proc makeDistDom(size:int) {
         select MyDmap
@@ -89,6 +100,7 @@ module MultiTypeSymEntry
     
     /* 
     Makes an array of specified type over a distributed domain
+
     :arg size: size of the domain
     :type size: int 
 
@@ -103,7 +115,8 @@ module MultiTypeSymEntry
     }
 
     /* 
-    Returns the type of the distributed domain 
+    Returns the type of the distributed domain
+
     :arg size: size of domain
     :type size: int
 
@@ -115,7 +128,7 @@ module MultiTypeSymEntry
 
     /* Casts a GenSymEntry to the specified type and returns it.
        
-       Dev Note: too much type inference still for my taste! Takes a generic sym entry and 
+       **Dev Note**: too much type inference still for my taste! Takes a generic sym entry and 
        instantiates a SymEntry with the specified type.
 
        :arg gse: general sym entry
@@ -129,6 +142,7 @@ module MultiTypeSymEntry
     }
 
     /* 1.18 version print out localSubdomains 
+
     :arg x: array
     :type x: [] 
     */
@@ -178,6 +192,7 @@ module MultiTypeSymEntry
         
         /*
         This init takes length and element type
+
         :arg len: length of array to be allocated
         :type len: int
 
@@ -192,6 +207,7 @@ module MultiTypeSymEntry
         }
 
         /*This init takes an array of a type
+
         :arg a: array
         :type a: [] ?etype
         */

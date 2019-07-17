@@ -218,7 +218,7 @@ module ArgsortDRS
         :arg min_ubits:
         :arg max_ubits:
 
-        :returns new_start_bit_rounded: (int)
+        :returns: new_start_bit_rounded (int)
         */
         proc findDataStartBit(startbit:int, min_ubits, max_ubits):int {
             var xor = min_ubits ^ max_ubits;
@@ -479,10 +479,13 @@ module ArgsortDRS
 
         :arg start_n:
         :type start_n: int
+
         :arg end_n:
         :type end_n: int
+
         :arg A: array
         :type A: []
+        
         :arg criterion:
         :arg startbit: defaults to 0
         */
