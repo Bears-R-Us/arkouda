@@ -10,8 +10,12 @@ module RandMsg
     use MultiTypeSymEntry;
     use ServerErrorStrings;
 
-    // parse, execute, and respond to randint message
-    // uniform int in half-open interval [min,max)
+    /*
+    parse, execute, and respond to randint message
+    uniform int in half-open interval [min,max)
+
+    :arg reqMsg: message to process (contains cmd,aMin,aMax,len,dtype)
+    */
     proc randintMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields

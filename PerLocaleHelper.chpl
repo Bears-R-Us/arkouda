@@ -1,6 +1,12 @@
 module PerLocaleHelper {
   use UnorderedCopy;
   
+  /*
+  Takes a sorted array, computes the segments and unique keys.
+
+  :arg sorted: sorted array
+  :type sorted: [?D] int
+  */
   proc segsAndUkeysFromSortedArray(sorted: [?D] int) {
     var truth: [D] bool;
     // truth array to hold segment break points
