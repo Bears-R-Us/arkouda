@@ -359,7 +359,7 @@ module ArgSortMsg
     proc argsortDefault(A:[?D] ?t):[D] int {
       var t1 = Time.getCurrentTime();
       var AI = [(a, i) in zip(A, D)] (a, i);
-      Sort.sort(AI);
+      Sort.TwoArrayRadixSort.twoArrayRadixSort(AI);
       var iv = [(a, i) in AI] i;
       if v {writeln("argsort time = ", Time.getCurrentTime() - t1); try! stdout.flush();}
       return iv;
@@ -383,23 +383,8 @@ module ArgSortMsg
         select (gEnt.dtype) {
             when (DType.Int64) {
                 var e = toSymEntry(gEnt,int);
-                var eMin:int = min reduce e.a;
-                var eMax:int = max reduce e.a;
-
-                // how many bins/values possible in sort
-                var bins = eMax-eMin+1;
-                if v {try! writeln("bins = %t".format(bins));try! stdout.flush();}
-
-                if (bins <= mBins) {
-                    if v {try! writeln("%t <= %t".format(bins, mBins));try! stdout.flush();}
-                    var iv = argCountSortLocHistGlobHistPDDW(e.a, eMin, eMax);
-                    st.addEntry(ivname, new shared SymEntry(iv));
-                }
-                else {
-                    if v {try! writeln("bins = %t".format(bins));try! stdout.flush();}
-                    var iv = argsortDefault(e.a);
-                    st.addEntry(ivname, new shared SymEntry(iv));
-                }
+		var iv = argsortDefault(e.a);
+		st.addEntry(ivname, new shared SymEntry(iv));
             }
             otherwise {return notImplementedError(pn,gEnt.dtype);}
         }
