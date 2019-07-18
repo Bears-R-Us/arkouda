@@ -10,6 +10,7 @@ module OperatorMsg
     use MultiTypeSymEntry;
     use ServerErrorStrings;
 
+    use MsgProcessing;
     /*
     Parse and respond to binopvv message.
     vv == vector op vector
@@ -509,10 +510,10 @@ module OperatorMsg
                         var a = l.a ^ val;
                         st.addEntry(rname, new shared SymEntry(a));
                     }
-                    when "**" { //this doesnt seem elegant...?
+                    when "**" { 
                         var a =l.a**val;
                         st.addEntry(rname, new shared SymEntry(a));
-                    }//end rsdange experiment
+                    }
                     otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
                 }
             }
@@ -1207,7 +1208,12 @@ module OperatorMsg
                     when "-=" { l.a -= r.a; }
                     when "*=" { l.a *= r.a; }
                     when "//=" { l.a /= r.a; }//floordiv
-                    when "**=" { l.a **= r.a; }
+                    when "**=" { 
+                        if(r.a<0){
+                            l=toSymEntry(left,real);
+                        }
+                        l.a **= r.a; 
+                    }
                     otherwise {return notImplementedError("opeqvv",left.dtype,op,right.dtype);}
                 }
             }
@@ -1308,7 +1314,7 @@ module OperatorMsg
 
         var left: borrowed GenSymEntry = st.lookup(aname);
         if (left == nil) {return unknownSymbolError("opeqvs",aname);}
-       
+
         select (left.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
                 var l = toSymEntry(left,int);
@@ -1319,7 +1325,28 @@ module OperatorMsg
                     when "-=" { l.a -= val; }
                     when "*=" { l.a *= val; }
                     when "//=" { l.a /= val; }//floordiv
-                    when "**=" { l.a **= val; }
+                    when "**=" { 
+                        if(val<0){
+                            
+                            cmd = "create"; //create an array of reals.
+                            var len = l.a.size;
+                            dtype = DType.Float64;
+                            var reqMsg = try! "%s %s %i".format(cmd, dtype2str(dtype), len);
+                            repMsg = createMsg(reqMsg, st);
+                            if v { writeln(repMsg); }
+                            var fields = repMsg.split(); 
+                            aname= fields[2];
+                        
+                            var left2: borrowed GenSymEntry = st.lookup(aname);
+                            var l2=toSymEntry(left2,real);
+
+                            l2.a=[i in l.a] i:real; //transfer and cast vals
+                            l2.a **= val; //perform the desired operation
+
+                        }//negative exponent
+                        else{ l.a **= val; }
+                        
+                    }
                     otherwise {return notImplementedError("opeqvs",left.dtype,op,dtype);}
                 }
             }
@@ -1338,7 +1365,7 @@ module OperatorMsg
                     when "*=" {l.a *= val;}
                     when "/=" {l.a /= val:real;} //truediv
                     when "//=" {l.a = floor(l.a / val);} //floordiv
-                    when "**=" { l.a **= r.a; }
+                    when "**=" { l.a **= val; }
                     otherwise {return notImplementedError("opeqvs",left.dtype,op,dtype);}
                 }
             }
@@ -1352,7 +1379,7 @@ module OperatorMsg
                     when "*=" {l.a *= val;}
                     when "/=" {l.a /= val;}//truediv
                     when "//=" {l.a = floor(l.a / val);}//floordiv
-                    when "**=" { l.a **= r.a; }
+                    when "**=" { l.a **= val; }
                     otherwise {return notImplementedError("opeqvs",left.dtype,op,dtype);}
                 }
             }

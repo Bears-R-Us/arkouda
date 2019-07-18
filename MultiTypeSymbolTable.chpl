@@ -11,7 +11,7 @@ module MultiTypeSymbolTable
     class SymTab
     {
         /*
-        Assocaitive domain of strings
+        Associative domain of strings
         */
         var tD: domain(string);
 
