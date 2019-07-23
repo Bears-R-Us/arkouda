@@ -14,11 +14,15 @@ if len(sys.argv) > 1:
 else:
     ak.connect()
 
-a = ak.array(np.arange(0,10,1))
-b = ak.arange(0,10,1)
+N = 10**9
+a = ak.ones(N,dtype='int64')
+b = ak.ones(N,dtype='int64')
 print(a,b)
-c = a == b
-print(type(c),c)
-print(c.all())
+
+c = a+b
+d = a-b
+print(c)
+print(d)
 
 ak.shutdown()
+
