@@ -2,47 +2,47 @@
 
 import arkouda as ak
 import numpy as np
-import pandas as pd
 from time import time
 
-def measure_runtime(length, ncat, op, dtype, per_locale=True):
-    keys = ak.randint(0, ncat, length)
+OPERATORS = ['sum', 'min', 'nunique']
+
+def generate_arrays(length, nkeys, nvals, dtype='int64'):
+    keys = ak.randint(0, nkeys, length)
     if dtype == 'int64':
-        vals = ak.randint(0, length//ncat, length)
+        vals = ak.randint(0, nvals, length)
     elif dtype == 'bool':
         vals = ak.zeros(length, dtype='bool')
-        for i in np.random.randint(0, length, ncat//2):
+        for i in np.random.randint(0, length, nkeys//2):
             vals[i] = True
     else:
-        vals = ak.linspace(-1, 1, length)        
-    print("Local groupby", end=' ')
-    start = time()
-    lg = ak.GroupBy(keys, per_locale)
-    lgtime = time() - start
-    print(lgtime)
-    print("Local reduce", end=' ')
-    start = time()
-    lk, lv = lg.aggregate(vals, op)
-    lrtime = time() - start
-    print(lrtime)
-    return lgtime, lrtime
+        vals = ak.linspace(-1, 1, length)
+    return keys, vals
 
 if __name__ == '__main__':
     import sys
-    if len(sys.argv) < 5:
-        print(f"Usage: {sys.argv[0]} <server> <port> <length> <num_categories> [op [dtype [global]]]")
-    if len(sys.argv) < 6:
-        op = 'sum'
-    else:
-        op = sys.argv[5]
-    if len(sys.argv) < 7:
-        dtype = 'float64'
-    else:
-        dtype = sys.argv[6]
-    if len(sys.argv) < 8:
-        per_locale = True
-    else:
-        per_locale = (sys.argv[7].lower() in ('0', 'False'))
+    if len(sys.argv) != 7:
+        print(f"Usage: {sys.argv[0]} <server> <port> <strategy (0=global, 1=perLocale)> <length> <num_keys> <num_vals>")
+        sys.exit()
+    per_locale = (sys.argv[3] == '1')
+    print("per_locale = ", per_locale)
+    length = int(sys.argv[4])
+    print("length     = ", length)
+    nkeys = int(sys.argv[5])
+    print("nkeys      = ", nkeys)
+    nvals = int(sys.argv[6])
+    print("nvals      = ", nvals)
     ak.connect(sys.argv[1], int(sys.argv[2]))
-    measure_runtime(int(sys.argv[3]), int(sys.argv[4]), op, dtype, per_locale)
+    print("Generating keys and vals...")
+    start = time()
+    keys, vals = generate_arrays(length, nkeys, nvals)
+    print(f"{time() - start:.2f} seconds", end="\n\n")
+    print("GroupBy...")
+    start = time()
+    g = ak.GroupBy(keys, per_locale)
+    print(f"{time() - start:.2f} seconds", end="\n\n")
+    for op in OPERATORS:
+        print(f"Aggregate('{op}') ...")
+        start = time()
+        uk, rv = g.aggregate(vals, op)
+        print(f"{time() - start:.2f} seconds", end="\n\n")
     sys.exit()

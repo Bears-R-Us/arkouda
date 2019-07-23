@@ -7,6 +7,8 @@ proc main() {
 		    0,  4,  5,
 		    1,  2,  7,
 		    2,  5, 11];
+  var keyD = makeDistArray(perm_keys.size, int);
+  keyD = perm_keys;
   var segments = [ 0,  1,  1,  1,  1,  1,  1,  2,  3,
 		   3,  4,  4,  4,  5,  6,  6,  6,  6,
 		   6,  6,  7,  8,  8,  8,  9,  9,  9,
@@ -24,12 +26,12 @@ proc main() {
 
   write_result("count", unique_keys, perLocCount(segD, valD.size));
   write_result("sum", unique_keys, perLocSum(valD, segD));
-  write_result("prod", unique_keys, perLocProduct(valD, segD));
+  write_result("prod", unique_keys, perLocProduct(keyD, valD, segD));
   write_result("mean", unique_keys, perLocMean(valD, segD));
-  write_result("min", unique_keys, perLocMin(valD, segD));
-  write_result("max", unique_keys, perLocMax(valD, segD));
-  write_result("argmin", unique_keys, perLocArgmin(valD, segD));
-  write_result("argmax", unique_keys, perLocArgmax(valD, segD));
+  write_result("min", unique_keys, perLocMin(keyD, valD, segD));
+  write_result("max", unique_keys, perLocMax(keyD, valD, segD));
+  write_result("argmin", unique_keys, perLocArgmin(keyD, valD, segD));
+  write_result("argmax", unique_keys, perLocArgmax(keyD, valD, segD));
   write_result("nunique", unique_keys, perLocNumUnique(valD, segD));
 }
 
