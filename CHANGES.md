@@ -1,5 +1,9 @@
 ### Changes in arkouda-0.0.9
 ------------------------
+ * more optimized groupby/aggregate using segmented scans
+ * fixed in1d bug
+ * added in1d unit test
+ * added groupby unit test
  *
 
 ### Changes in arkouda-0.0.8
