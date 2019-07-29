@@ -22,7 +22,6 @@ module ArgSortMsg
     use UnorderedCopy;
     use UnorderedAtomics;
 
-    use ArgsortDRS;
     use Sort only;
     
     // thresholds for different sized sorts
@@ -356,6 +355,15 @@ module ArgSortMsg
         // return the index vector
         return iv;
     }
+
+    proc argsortDefault(A:[?D] ?t):[D] int {
+      var t1 = Time.getCurrentTime();
+      var AI = [(a, i) in zip(A, D)] (a, i);
+      Sort.sort(AI);
+      var iv = [(a, i) in AI] i;
+      if v {writeln("argsort time = ", Time.getCurrentTime() - t1); try! stdout.flush();}
+      return iv;
+    }
     
     /* argsort takes pdarray and returns an index vector iv which sorts the array */
     proc argsortMsg(reqMsg: string, st: borrowed SymTab): string {
@@ -389,7 +397,7 @@ module ArgSortMsg
                 }
                 else {
                     if v {try! writeln("bins = %t".format(bins));try! stdout.flush();}
-                    var iv = argsortDRS(e.a, eMin, eMax);
+                    var iv = argsortDefault(e.a);
                     st.addEntry(ivname, new shared SymEntry(iv));
                 }
             }
@@ -399,6 +407,7 @@ module ArgSortMsg
         return try! "created " + st.attrib(ivname);
     }
 
+    /* localArgsort takes a pdarray and returns an index vector which sorts the array on a per-locale basis */
     proc localArgsortMsg(reqMsg: string, st: borrowed SymTab): string {
       var pn = "localArgsort";
         var repMsg: string; // response message

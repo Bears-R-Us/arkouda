@@ -45,8 +45,11 @@ module OperatorMsg
                 select op
                 {
                     when "+" {
-                        var a = l.a + r.a;
-                        st.addEntry(rname, new shared SymEntry(a));
+                        st.addEntry(rname, l.size, int);
+                        var e = toSymEntry(st.lookup(rname), int);
+                        e.a = l.a + r.a;
+                        /* var a = l.a + r.a; */
+                        /* st.addEntry(rname, new shared SymEntry(a)); */
                     }
                     when "-" {
                         var a = l.a - r.a;

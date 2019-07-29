@@ -1,0 +1,23 @@
+.. default-domain:: chpl
+
+.. module:: PerLocaleHelper
+
+PerLocaleHelper
+===============
+**Usage**
+
+.. code-block:: chapel
+
+   use PerLocaleHelper;
+
+.. function:: proc segsAndUkeysFromSortedArray(sorted: [?D] int)
+
+   
+   Takes a sorted array, computes the segments and unique keys.
+   
+   :arg sorted: sorted array
+   :type sorted: [?D] int
+   
+
+.. function:: proc localHistArgSort(iv: [] int, a: [?D] int, lmin: int, bins: int)
+

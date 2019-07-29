@@ -898,7 +898,10 @@ class GroupBy:
                             'min', 'max', 'argmin', 'argmax',
                             'nunique', 'any', 'all'])
     def __init__(self, keys, per_locale=True):
-        '''Group <keys> by value, usually in preparation for grouping and aggregating the values of another array via the .aggregate() method. Return a GroupBy object that stores the information for how to group values.
+        '''Group <keys> by value, usually in preparation for grouping
+        and aggregating the values of another array via the
+        .aggregate() method. Return a GroupBy object that stores the
+        information for how to group values.
         '''
         if not isinstance(keys, pdarray):
             raise TypeError("Argument must be a pdarray")
@@ -908,6 +911,7 @@ class GroupBy:
             self.permutation = local_argsort(keys)
         else:
             self.permutation = argsort(keys)
+        self.permuted_keys = self.keys[self.permutation]
         self.segments, self.unique_keys = self.find_segments()
             
     def find_segments(self):
@@ -915,7 +919,7 @@ class GroupBy:
             cmd = "findLocalSegments"
         else:
             cmd = "findSegments"
-        reqMsg = "{} {} {}".format(cmd, self.keys.name, self.permutation.name)
+        reqMsg = "{} {}".format(cmd, self.permuted_keys.name)
         repMsg = generic_msg(reqMsg)
         segAttr, uniqAttr = repMsg.split("+")
         if v: print(segAttr, uniqAttr)
@@ -947,10 +951,11 @@ class GroupBy:
             cmd = "segmentedLocalRdx"
         else:
             cmd = "segmentedReduction"
-        reqMsg = "{} {} {} {}".format(cmd,
-                                      permuted_values.name,
-                                      self.segments.name,
-                                      operator)
+        reqMsg = "{} {} {} {} {}".format(cmd,
+                                         self.permuted_keys.name,
+                                         permuted_values.name,
+                                         self.segments.name,
+                                         operator)
         repMsg = generic_msg(reqMsg)
         if v: print(repMsg)
         if operator.startswith('arg'):

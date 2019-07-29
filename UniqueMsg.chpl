@@ -1,13 +1,13 @@
-// unique finding and counting algorithms
-// these are all based on dense histograms and sparse histograms(assoc domains/arrays)
-//
-// you could also use a sort if you got into a real bind with really
-// large dense ranges of values and large arrays...
-//
-// *** need to factor in sparsity estimation somehow ***
-// for example if (a.max-a.min > a.size) means that a's are sparse
-//
-//
+/* unique finding and counting algorithms
+ these are all based on dense histograms and sparse histograms(assoc domains/arrays)
+
+ you could also use a sort if you got into a real bind with really
+ large dense ranges of values and large arrays...
+
+ *** need to factor in sparsity estimation somehow ***
+ for example if (a.max-a.min > a.size) means that a's are sparse
+
+ */
 module UniqueMsg
 {
     use ServerConfig;
@@ -402,7 +402,7 @@ module UniqueMsg
         return (aV, aC);
     }
     
-    // unique take a pdarray and returns a pdarray with the unique values
+    /* unique take a pdarray and returns a pdarray with the unique values */
     proc uniqueMsg(reqMsg: string, st: borrowed SymTab): string {
         var pn = "unique";
         var repMsg: string; // response message
@@ -458,7 +458,7 @@ module UniqueMsg
         return s;
     }
     
-    // value_counts takes a pdarray and returns two pdarrays unique values and counts for each value
+    /* value_counts takes a pdarray and returns two pdarrays unique values and counts for each value */
     proc value_countsMsg(reqMsg: string, st: borrowed SymTab): string {
         var pn = "value_counts";
         var repMsg: string; // response message

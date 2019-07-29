@@ -1,3 +1,4 @@
+/* arkouda server config param and config const */
 module ServerConfig
 {
     /*

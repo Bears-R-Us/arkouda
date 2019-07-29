@@ -1,0 +1,83 @@
+.. default-domain:: chpl
+
+.. module:: ArgSortMsg
+   :synopsis: arg sort algorithm
+
+ArgSortMsg
+==========
+**Usage**
+
+.. code-block:: chapel
+
+   use ArgSortMsg;
+
+arg sort algorithm
+these pass back an index vector which can be used
+to permute the original array into sorted order 
+
+.. data:: var lgSmall = 10
+
+.. data:: var small = 2**lgSmall
+
+.. data:: var lgMedium = 20
+
+.. data:: var medium = 2**lgMedium
+
+.. data:: var lgLarge = 30
+
+.. data:: var large = 2**lgLarge
+
+.. data:: var sBins = 2**10
+
+.. data:: var mBins = 2**25
+
+.. data:: var lBins = 2**25*numLocales
+
+.. function:: proc +(x: atomicint, y: atomicint)
+
+   defined for reduction and scan on atomics 
+
+.. function:: proc +=(X: [?D] int, Y: [D] atomicint)
+
+   defined for reduction and scan on atomics 
+
+.. function:: proc argCountSortGlobHist(a: [?aD] int, aMin: int, aMax: int): [aD] int
+
+   do a counting sort on a (an array of integers)
+   returns iv an array of indices that would sort the array original array 
+
+.. function:: proc argCountSortLocHistGlobHist(a: [?aD] int, aMin: int, aMax: int): [aD] int
+
+   do a counting sort on a (an array of integers)
+   returns iv an array of indices that would sort the array original array 
+
+.. function:: proc argCountSortLocHistGlobHistPDIW(a: [?aD] int, aMin: int, aMax: int): [aD] int
+
+   do a counting sort on a (an array of integers)
+   returns iv an array of indices that would sort the array original array
+   PD == PrivateDist
+   IW == Indirect write to local array then block copy to output array 
+
+.. function:: proc argCountSortLocHistGlobHistPDDW(a: [?aD] int, aMin: int, aMax: int): [aD] int
+
+   do a counting sort on a (an array of integers)
+   returns iv an array of indices that would sort the array original array
+   PD = PrivateDist
+   DW = Direct Write into output array 
+
+.. function:: proc argsortDefault(A: [?D] ?t): [D] int
+
+.. function:: proc argsortMsg(reqMsg: string, st: borrowed SymTab): string
+
+   argsort takes pdarray and returns an index vector iv which sorts the array 
+
+.. function:: proc localArgsortMsg(reqMsg: string, st: borrowed SymTab): string
+
+   localArgsort takes a pdarray and returns an index vector which sorts the array on a per-locale basis 
+
+.. function:: proc perLocaleArgSort(a: [?aD] int): [aD] int
+
+.. function:: proc perLocaleArgCountSort(a: [?aD] int): [aD] int
+
+.. function:: proc localAssocArgSort(iv: [] int, a: [?D] int)
+

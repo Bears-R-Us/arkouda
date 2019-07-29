@@ -1,0 +1,66 @@
+.. default-domain:: chpl
+
+.. module:: GenSymIO
+
+GenSymIO
+========
+**Usage**
+
+.. code-block:: chapel
+
+   use GenSymIO;
+
+.. data:: config const GenSymIO_DEBUG = false
+
+.. function:: proc arrayMsg(reqMsg: string, st: borrowed SymTab): string
+
+.. function:: proc tondarrayMsg(reqMsg: string, st: borrowed SymTab): string
+
+.. class:: DatasetNotFoundError : Error
+
+   .. method:: proc init()
+
+.. class:: NotHDF5FileError : Error
+
+   .. method:: proc init()
+
+.. class:: MismatchedAppendError : Error
+
+   .. method:: proc init()
+
+.. function:: proc decode_json(json: string, size: int) throws
+
+.. function:: proc lshdfMsg(reqMsg: string, st: borrowed SymTab): string
+
+.. function:: proc readhdfMsg(reqMsg: string, st: borrowed SymTab): string
+
+.. function:: proc get_dtype(filename: string, dsetName: string) throws
+
+   Get the class of the HDF5 datatype for the dataset. 
+
+.. class:: HDF5RankError : Error
+
+   .. attribute:: var rank: int
+
+   .. attribute:: var filename: string
+
+   .. attribute:: var dsetName: string
+
+.. function:: proc get_subdoms(filenames: [?FD] string, dsetName: string) throws
+
+   Get the subdomains of the distributed array represented by each file, as well as the total length of the array. 
+
+.. function:: proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), filenames: [FD] string, dsetName: string)
+
+   This function gets called when A is a BlockDist array. 
+
+.. function:: proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), filenames: [FD] string, dsetName: string)
+
+   This function is called when A is a CyclicDist array. 
+
+.. function:: proc domain_intersection(d1: domain(1), d2: domain(1))
+
+.. function:: proc tohdfMsg(reqMsg, st: borrowed SymTab): string
+
+.. function:: proc write1DDistArray(filename, mode, dsetName, A) throws
+

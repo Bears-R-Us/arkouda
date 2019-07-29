@@ -21,6 +21,7 @@ module MsgProcessing
     use ArgSortMsg;
     use ReductionMsg;
     use FindSegmentsMsg;
+    use EfuncMsg;
     
     /* 
     Parse, execute, and respond to a create message 

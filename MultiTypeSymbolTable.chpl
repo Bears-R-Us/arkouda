@@ -7,7 +7,7 @@ module MultiTypeSymbolTable
     use MultiTypeSymEntry;
     use Chapel118;
 
-    // symbol table
+    /* symbol table */
     class SymTab
     {
         /*

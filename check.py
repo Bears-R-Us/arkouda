@@ -1,16 +1,24 @@
+#!/usr/bin/env python3                                                         
+
+import importlib
 import numpy as np
+import math
+import gc
+import sys
 
 import arkouda as ak
 
 ak.v = False
-ak.connect(server="localhost", port=5555)
+if len(sys.argv) > 1:
+    ak.connect(server=sys.argv[1], port=sys.argv[2])
+else:
+    ak.connect()
 
-a = np.arange(0,10,1)
-b = list(ak.arange(0,10,1))
+a = ak.array(np.arange(0,10,1))
+b = ak.arange(0,10,1)
 print(a,b)
 c = a == b
 print(type(c),c)
-print(c.any())
+print(c.all())
 
-ak.disconnect()
-
+ak.shutdown()
