@@ -52,18 +52,40 @@ module efuncTest
         repMsg = setMsg(reqMsg, st);
         writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
         writeln(repMsg);
+
+        var aname = parseName(repMsg);
+
+        cmd = "create";
+        len = 5;
+        dtype = DType.Int64;
+        reqMsg = try! "%s %s %i".format(cmd, dtype2str(dtype), len);
+        t1 = Time.getCurrentTime();
+        repMsg = createMsg(reqMsg, st);
+        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+        writeln(repMsg);
+
+        cmd = "set";
+        name = parseName(repMsg);
+        dtype = DType.Int64;
+        v2= -2;
+        reqMsg = try! "%s %s %s %i".format(cmd, name, dtype2str(dtype), v2);
+        t1 = Time.getCurrentTime();
+        repMsg = setMsg(reqMsg, st);
+        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+        writeln(repMsg);
         
+        var bname = parseName(repMsg);
 
         //sort it and return iv in symbol table
-        cmd = "opeqvs";
+        cmd = "opeqvv";
         var op = "**=";
-        var aname = parseName(repMsg); // get name from randint reply msg
+         // get name from randint reply msg
         
         dtype = DType.Int64;
         var value=-1;
-        reqMsg = try! "%s %s %s %s %s".format(cmd, op, aname,dtype2str(dtype),value);
+        reqMsg = try! "%s %s %s %s".format(cmd, op, aname,bname);
         t1 = Time.getCurrentTime();
-        repMsg = opeqvsMsg(reqMsg, st);
+        repMsg = opeqvvMsg(reqMsg, st);
         writeln(repMsg);
         writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
 

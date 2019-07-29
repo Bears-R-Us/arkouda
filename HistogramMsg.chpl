@@ -23,6 +23,30 @@ module HistogramMsg
         [i in D] {X[i] += Y[i].read();}
     }
     
+    /*
+    Takes the data in array a, creates an atomic histogram in parallel, 
+    and copies the result of the histogram operation into a distributed int array
+
+    Returns the histogram (distributed int array).
+
+    :arg a: array of data to be histogrammed
+    :type a: [] ?etype
+
+    :arg aMin: Min value in array a
+    :type aMin: etype
+
+    :arg aMax: Max value in array a
+    :type aMax: etype
+
+    :arg bins: allocate size of the histogram's distributed domain
+    :type bins: int
+
+    :arg binWidth: set value for either 1:1 unique value counts, or multiple unique values per bin.
+    :type binWidth: real
+
+    :returns: [] int
+
+    */
     proc histogramGlobalAtomic(a: [?aD] ?etype, aMin: etype, aMax: etype, bins: int, binWidth: real) {
 
         var hD = makeDistDom(bins);
@@ -44,6 +68,30 @@ module HistogramMsg
         return hist;
     }
 
+    /*
+    Takes the data in array a, creates an atomic histogram in each locale,
+    + reduces each locale's histogram computations into a distributed int array
+
+    Returns the histogram (distributed int array).
+
+    :arg a: array of data to be histogrammed
+    :type a: [] ?etype
+
+    :arg aMin: Min value in array a
+    :type aMin: etype
+
+    :arg aMax: Max value in array a
+    :type aMax: etype
+
+    :arg bins: allocate size of the histogram's distributed domain
+    :type bins: int
+
+    :arg binWidth: set value for either 1:1 unique value counts, or multiple unique values per bin.
+    :type binWidth: real
+
+    :returns: [] int
+
+    */
     proc histogramLocalAtomic(a: [?aD] ?etype, aMin: etype, aMax: etype, bins: int, binWidth: real) {
 
         // allocate per-locale atomic histogram
@@ -64,6 +112,31 @@ module HistogramMsg
         return hist;
     }
     
+
+    /*
+    Iterates in parallel over all values of a, histogramming into a new array as each value is processed. 
+    This new array is returned as the histogram.
+    
+    Returns the histogram (distributed int array).
+
+    :arg a: array of data to be histogrammed
+    :type a: [] ?etype
+
+    :arg aMin: Min value in array a
+    :type aMin: etype
+
+    :arg aMax: Max value in array a
+    :type aMax: etype
+
+    :arg bins: allocate size of the histogram's distributed domain
+    :type bins: int
+
+    :arg binWidth: set value for either 1:1 unique value counts, or multiple unique values per bin.
+    :type binWidth: real
+
+    :returns: [] int
+
+    */
     proc histogramReduceIntent(a: [?aD] ?etype, aMin: etype, aMax: etype, bins: int, binWidth: real) {
 
         var gHist: [0..#bins] int;

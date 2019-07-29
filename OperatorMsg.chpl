@@ -1209,10 +1209,36 @@ module OperatorMsg
                     when "*=" { l.a *= r.a; }
                     when "//=" { l.a /= r.a; }//floordiv
                     when "**=" { 
-                        if(r.a<0){
-                            l=toSymEntry(left,real);
+                        //do a +scan and iter thru res
+                        //if any i+1 val is < i val, then set neg flag to true.
+                        var neg: atomic bool;
+                        neg.write(false);
+                        //(there exists an el in r.a thats<0)
+                        forall i in r.a{
+                            if(i<0){
+                                neg.write(true);
+                            }
                         }
-                        l.a **= r.a; 
+                        if(neg.read()){
+                            
+                            // cmd = "create"; //create an array of reals.
+                            // var len = l.a.size;
+                            // var dtype = DType.Float64;
+                            // var reqMsg = try! "%s %s %i".format(cmd, dtype2str(dtype), len);
+                            // repMsg = createMsg(reqMsg, st);
+                            // if v { writeln(repMsg); }
+                            // fields = repMsg.split(); 
+                            // aname= fields[2];
+                        
+                            // var left2: borrowed GenSymEntry = st.lookup(aname);
+                            // var l2=toSymEntry(left2,real);
+
+                            // l2.a=[i in l.a] i:real; //transfer and cast vals
+                            // l2.a **= r.a; //perform the desired operation
+                            writeln("Negative exponent not supported in vv int64 int64");
+                            return notImplementedError("opeqvv",left.dtype,op,right.dtype);
+                        }//negative exponent
+                        else{ l.a **= r.a; }
                     }
                     otherwise {return notImplementedError("opeqvv",left.dtype,op,right.dtype);}
                 }
@@ -1328,24 +1354,25 @@ module OperatorMsg
                     when "**=" { 
                         if(val<0){
                             
-                            cmd = "create"; //create an array of reals.
-                            var len = l.a.size;
-                            dtype = DType.Float64;
-                            var reqMsg = try! "%s %s %i".format(cmd, dtype2str(dtype), len);
-                            repMsg = createMsg(reqMsg, st);
-                            if v { writeln(repMsg); }
-                            var fields = repMsg.split(); 
-                            aname= fields[2];
+                            // cmd = "create"; //create an array of reals.
+                            // var len = l.a.size;
+                            // dtype = DType.Float64;
+                            // var reqMsg = try! "%s %s %i".format(cmd, dtype2str(dtype), len);
+                            // repMsg = createMsg(reqMsg, st);
+                            // if v { writeln(repMsg); }
+                            // var fields = repMsg.split(); 
+                            // aname= fields[2];
                         
-                            var left2: borrowed GenSymEntry = st.lookup(aname);
-                            var l2=toSymEntry(left2,real);
+                            // var left2: borrowed GenSymEntry = st.lookup(aname);
+                            // var l2=toSymEntry(left2,real);
 
-                            l2.a=[i in l.a] i:real; //transfer and cast vals
-                            l2.a **= val; //perform the desired operation
-
+                            // l2.a=[i in l.a] i:real; //transfer and cast vals
+                            // l2.a **= val; //perform the desired operation
+                            writeln("Negative exponent not supported in vs int64 int64");
+                            return notImplementedError("opeqvs",left.dtype,op,dtype);
                         }//negative exponent
                         else{ l.a **= val; }
-                        
+
                     }
                     otherwise {return notImplementedError("opeqvs",left.dtype,op,dtype);}
                 }
