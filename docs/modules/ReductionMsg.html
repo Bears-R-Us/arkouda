@@ -157,10 +157,23 @@
 <div class="highlight-chapel"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">ReductionMsg</span><span class="p">;</span>
 </pre></div>
 </div>
+<dl class="data">
+<dt id="ReductionMsg.reductionDEBUG">
+<em class="property">config const </em><code class="descname">reductionDEBUG</code> = false<a class="headerlink" href="#ReductionMsg.reductionDEBUG" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="ReductionMsg.lBins">
+<em class="property">const </em><code class="descname">lBins</code> = 2**25*numLocales<a class="headerlink" href="#ReductionMsg.lBins" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="function">
 <dt id="ReductionMsg.reductionMsg">
 <em class="property">proc </em><code class="descname">reductionMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#ReductionMsg.reductionMsg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>these functions take an array and produce a scalar
+parse and respond to reduction message
+scalar = reductionop(vector)</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="ReductionMsg.countReductionMsg">
@@ -169,7 +182,7 @@
 
 <dl class="function">
 <dt id="ReductionMsg.segCount">
-<em class="property">proc </em><code class="descname">segCount</code><span class="sig-paren">(</span><em>segments: [?D] int</em>, <em>size: int</em><span class="sig-paren">)</span>: [D] int<a class="headerlink" href="#ReductionMsg.segCount" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="descname">segCount</code><span class="sig-paren">(</span><em>segments: [?D] int</em>, <em>upper: int</em><span class="sig-paren">)</span>: [D] int<a class="headerlink" href="#ReductionMsg.segCount" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -194,17 +207,28 @@
 
 <dl class="function">
 <dt id="ReductionMsg.segSum">
-<em class="property">proc </em><code class="descname">segSum</code><span class="sig-paren">(</span><em>values: [] ?t</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: (AppendExpr.01, AppendExpr.01)<a class="headerlink" href="#ReductionMsg.segSum" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property">proc </em><code class="descname">segSum</code><span class="sig-paren">(</span><em>values: [] ?t</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [D] t<a class="headerlink" href="#ReductionMsg.segSum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Segmented Reductions of the form: seg&lt;Op&gt;(values:[] t, segments: [] int)
+Use &lt;segments&gt; as the boundary indices to divide &lt;values&gt; into chunks,
+and then reduce over each chunk uisng the operator &lt;Op&gt;. The return array
+of reduced values is the same size as &lt;segments&gt;.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="ReductionMsg.perLocSum">
 <em class="property">proc </em><code class="descname">perLocSum</code><span class="sig-paren">(</span><em>values: [] ?t</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [] t<a class="headerlink" href="#ReductionMsg.perLocSum" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Per-Locale Segmented Reductions have the same form as segmented reductions:
+perLoc&lt;Op&gt;(values:[] t, segments: [] int)
+However, in this case &lt;segments&gt; has length &lt;numSegments&gt;*&lt;numLocales&gt; and
+stores the segment boundaries for each locale&#8217;s chunk of &lt;values&gt;. These
+reductions perform two stages: a local reduction (implemented via a call
+to seg&lt;Op&gt; on the local slice of values) and a global reduction of the
+local results. The return is the same as seg&lt;Op&gt;: one reduced value per segment.</p>
+</dd></dl>
 
 <dl class="function">
 <dt>
-<em class="property">proc </em><code class="descname">segSum</code><span class="sig-paren">(</span><em>values: [] bool</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: (AppendExpr.01, AppendExpr.01)</dt>
+<em class="property">proc </em><code class="descname">segSum</code><span class="sig-paren">(</span><em>values: [] bool</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [D] int</dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -214,12 +238,12 @@
 
 <dl class="function">
 <dt id="ReductionMsg.segProduct">
-<em class="property">proc </em><code class="descname">segProduct</code><span class="sig-paren">(</span><em>values: []</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: (AppendExpr.01, AppendExpr.01)<a class="headerlink" href="#ReductionMsg.segProduct" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="descname">segProduct</code><span class="sig-paren">(</span><em>keys: [] int</em>, <em>values: []</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [D] real<a class="headerlink" href="#ReductionMsg.segProduct" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="ReductionMsg.perLocProduct">
-<em class="property">proc </em><code class="descname">perLocProduct</code><span class="sig-paren">(</span><em>values: [] ?t</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [] real<a class="headerlink" href="#ReductionMsg.perLocProduct" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="descname">perLocProduct</code><span class="sig-paren">(</span><em>keys: [] int</em>, <em>values: [] ?t</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [] real<a class="headerlink" href="#ReductionMsg.perLocProduct" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -234,42 +258,42 @@
 
 <dl class="function">
 <dt id="ReductionMsg.segMin">
-<em class="property">proc </em><code class="descname">segMin</code><span class="sig-paren">(</span><em>values: [] ?t</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [D] t<a class="headerlink" href="#ReductionMsg.segMin" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="descname">segMin</code><span class="sig-paren">(</span><em>keys: [] int</em>, <em>values: [] ?t</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [D] t<a class="headerlink" href="#ReductionMsg.segMin" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="ReductionMsg.perLocMin">
-<em class="property">proc </em><code class="descname">perLocMin</code><span class="sig-paren">(</span><em>values: [] ?t</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [] t<a class="headerlink" href="#ReductionMsg.perLocMin" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="descname">perLocMin</code><span class="sig-paren">(</span><em>keys: [] int</em>, <em>values: [] ?t</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [] t<a class="headerlink" href="#ReductionMsg.perLocMin" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="ReductionMsg.segMax">
-<em class="property">proc </em><code class="descname">segMax</code><span class="sig-paren">(</span><em>values: [] ?t</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [D] t<a class="headerlink" href="#ReductionMsg.segMax" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="descname">segMax</code><span class="sig-paren">(</span><em>keys: [] int</em>, <em>values: [] ?t</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [D] t<a class="headerlink" href="#ReductionMsg.segMax" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="ReductionMsg.perLocMax">
-<em class="property">proc </em><code class="descname">perLocMax</code><span class="sig-paren">(</span><em>values: [] ?t</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [] t<a class="headerlink" href="#ReductionMsg.perLocMax" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="descname">perLocMax</code><span class="sig-paren">(</span><em>keys: [] int</em>, <em>values: [] ?t</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [] t<a class="headerlink" href="#ReductionMsg.perLocMax" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="ReductionMsg.segArgmin">
-<em class="property">proc </em><code class="descname">segArgmin</code><span class="sig-paren">(</span><em>values: [] ?t</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [D] int<a class="headerlink" href="#ReductionMsg.segArgmin" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="descname">segArgmin</code><span class="sig-paren">(</span><em>keys: [] int</em>, <em>values: [] ?t</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: (AppendExpr.01, AppendExpr.01)<a class="headerlink" href="#ReductionMsg.segArgmin" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="ReductionMsg.perLocArgmin">
-<em class="property">proc </em><code class="descname">perLocArgmin</code><span class="sig-paren">(</span><em>values: [] ?t</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [] int<a class="headerlink" href="#ReductionMsg.perLocArgmin" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="descname">perLocArgmin</code><span class="sig-paren">(</span><em>keys: [] int</em>, <em>values: [] ?t</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [] int<a class="headerlink" href="#ReductionMsg.perLocArgmin" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="ReductionMsg.segArgmax">
-<em class="property">proc </em><code class="descname">segArgmax</code><span class="sig-paren">(</span><em>values: [] ?t</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [D] int<a class="headerlink" href="#ReductionMsg.segArgmax" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="descname">segArgmax</code><span class="sig-paren">(</span><em>keys: [] int</em>, <em>values: [] ?t</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: (AppendExpr.01, AppendExpr.01)<a class="headerlink" href="#ReductionMsg.segArgmax" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="ReductionMsg.perLocArgmax">
-<em class="property">proc </em><code class="descname">perLocArgmax</code><span class="sig-paren">(</span><em>values: [] ?t</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [] int<a class="headerlink" href="#ReductionMsg.perLocArgmax" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="descname">perLocArgmax</code><span class="sig-paren">(</span><em>keys: [] int</em>, <em>values: [] ?t</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [] int<a class="headerlink" href="#ReductionMsg.perLocArgmax" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -294,12 +318,24 @@
 
 <dl class="function">
 <dt id="ReductionMsg.segNumUnique">
-<em class="property">proc </em><code class="descname">segNumUnique</code><span class="sig-paren">(</span><em>values: [] int</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [D] int<a class="headerlink" href="#ReductionMsg.segNumUnique" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="descname">segNumUnique</code><span class="sig-paren">(</span><em>values: [?vD] int</em>, <em>segments: [?sD] int</em><span class="sig-paren">)</span>: [sD] int<a class="headerlink" href="#ReductionMsg.segNumUnique" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="ReductionMsg.perLocNumUnique">
 <em class="property">proc </em><code class="descname">perLocNumUnique</code><span class="sig-paren">(</span><em>values: [] int</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [] int<a class="headerlink" href="#ReductionMsg.perLocNumUnique" title="Permalink to this definition">¶</a></dt>
+<dd><p>}</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ReductionMsg.perLocNumUniqueHist">
+<em class="property">proc </em><code class="descname">perLocNumUniqueHist</code><span class="sig-paren">(</span><em>values: [] int</em>, <em>segments: [?D] int</em>, <em>minVal: int</em>, <em>valRange: int</em>, <em>numKeys: int</em><span class="sig-paren">)</span>: [] int<a class="headerlink" href="#ReductionMsg.perLocNumUniqueHist" title="Permalink to this definition">¶</a></dt>
+<dd><p>}</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ReductionMsg.perLocNumUniqueAssoc">
+<em class="property">proc </em><code class="descname">perLocNumUniqueAssoc</code><span class="sig-paren">(</span><em>values: [] int</em>, <em>segments: [?D] int</em>, <em>numKeys: int</em><span class="sig-paren">)</span>: [] int<a class="headerlink" href="#ReductionMsg.perLocNumUniqueAssoc" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>

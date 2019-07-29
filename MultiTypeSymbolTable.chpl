@@ -10,21 +10,39 @@ module MultiTypeSymbolTable
     /* symbol table */
     class SymTab
     {
-        var tD: domain(string); // assoc domain of string
-        var tab: [tD] shared GenSymEntry; // assoc array indexed by string
+        /*
+        Associative domain of strings
+        */
+        var tD: domain(string);
 
-        // give out symbol names
+        /*
+        Associative array indexed by strings
+        */
+        var tab: [tD] shared GenSymEntry; 
+
         var nid = 0;
-        
-        /* generate a new name */
+        /*
+        Gives out symbol names.
+        */
         proc nextName():string {
             nid += 1;
             return "id_"+ nid:string;
         }
 
-        /* add an entry to the symbol table using a name a length and a Chapel type
-           is it an error to redefine an entry? ... probably not
-           this addEntry takes stuff to create a new SymEntry */
+        // is it an error to redefine an entry? ... probably not
+        // this addEntry takes stuff to create a new SymEntry
+
+        /*
+        Takes args and creates a new SymEntry.
+
+        :arg name: name of the array
+        :type name: string
+
+        :arg len: length of array
+        :type len: int
+
+        :arg t: type of array
+        */
         proc addEntry(name: string, len: int, type t) {
             var entry = new shared SymEntry(len, t);
             if (tD.contains(name))
@@ -37,7 +55,15 @@ module MultiTypeSymbolTable
             tab[name] = entry;
         }
 
-        /* add an entry to the symbol table using an already created GenSymEntry */
+        /*
+        Takes an already created GenSymEntry and creates a new SymEntry.
+
+        :arg name: name of the array
+        :type name: string
+
+        :arg entry: Generic Sym Entry to convert
+        :type entry: GenSymEntry
+        */
         proc addEntry(name: string, entry: shared GenSymEntry) {
             if (tD.contains(name))
             {
@@ -49,7 +75,17 @@ module MultiTypeSymbolTable
             tab[name] = entry;
         }
 
-        /* add an entry to the symbol table using a name a length and a DType */
+        /*
+        Creates a symEntry from array name, length, and DType
+
+        :arg name: name of the array
+        :type name: string
+
+        :arg len: length of array
+        :type len: int
+
+        :arg dtype: type of array
+        */
         proc addEntry(name: string, len: int, dtype: DType) {
             if dtype == DType.Int64 {addEntry(name,len,int);}
             else if dtype == DType.Float64 {addEntry(name,len,real);}
@@ -57,7 +93,12 @@ module MultiTypeSymbolTable
             else {writeln("should not get here!");try! stdout.flush();}
         }
 
-        /* detete an entry from the symboltable */
+        /*
+        Removes an entry from the symTable
+
+        :arg name: name of the array
+        :type name: string
+        */
         proc deleteEntry(name: string) {
             if (tD.contains(name))
             {
@@ -67,7 +108,15 @@ module MultiTypeSymbolTable
             else
                 if (v) {writeln("unkown symbol ",name);try! stdout.flush();}
         }
-        /* lookup a name in the symbol table */
+        
+        /*
+        Returns the sym entry associated with the provided name, if the sym entry exists
+
+        :arg name: string to index/query in the sym table
+        :type name: string
+
+        :returns: sym entry or nil
+        */
         proc lookup(name: string): shared GenSymEntry {
             if (!tD.contains(name))
             {
@@ -81,22 +130,40 @@ module MultiTypeSymbolTable
             }
         }
 
-        /* pretty print the symbol table */
+        /*
+        Prints the SymTable in a pretty format (name,SymTable[name])
+        */
         proc pretty(){
             for n in tD
             {
                 try! writeln("%10s = ".format(n), tab[n]);try! stdout.flush();
             }
         }
+        
+        /*
+        Attempts to format and return sym entries mapped to the provided string into JSON format.
+        Pass __AllSymbols__ to process the entire sym table.
 
-        /* dump the symbol table to a string */
+        :arg name: name of entry to be processed
+        :type name: string
+        */
         proc dump(name:string): string {
             if name == "__AllSymbols__" {return try! "%jt".format(this);}
             else if (tD.contains(name)) {return try! "%jt %jt".format(name, tab[name]);}
             else {return try! "Error: dump: undefined name: %s".format(name);}
         }
+        
+        /*
+        Returns verbose attributes of the sym entry at the given string, if the string maps to an entry.
+        Pass __AllSymbols__ to process all sym entries in the sym table.
 
-        /* get info on a name/symbol but NOT the data */
+        Returns: name, dtype, size, ndim, shape, and item size
+
+        :arg name: name of entry to be processed
+        :type name: string
+
+        :returns: s (string) containing info
+        */
         proc info(name:string): string {
             var s: string;
             if name == "__AllSymbols__" {
@@ -116,7 +183,15 @@ module MultiTypeSymbolTable
             return s;
         }
 
-        /* put the symbol's attributes into a string */
+        /*
+        Returns raw attributes of the sym entry at the given string, if the string maps to an entry.
+        Returns: name, dtype, size, ndim, shape, and item size
+
+        :arg name: name of entry to be processed
+        :type name: string
+
+        :returns: s (string) containing info
+        */
         proc attrib(name:string):string {
             var s:string;
             if (tD.contains(name)) {
@@ -126,7 +201,20 @@ module MultiTypeSymbolTable
             return s;
         }
 
-        /* put the data into a string abreviate if over the threshold */
+        /*
+        Attempts to find a sym entry mapped to the provided string, then 
+        returns the data in the entry up to the specified threshold.
+        Arrays of size less than threshold will be printed in their entirety. 
+        Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
+
+        :arg name: name of entry to be processed
+        :type name: string
+
+        :arg thresh: threshold for data to return
+        :type thresh: int
+
+        :returns: s (string) containing the array data
+        */
         proc datastr(name: string, thresh:int): string {
             var s:string;
             if (tD.contains(name)) {
@@ -189,8 +277,21 @@ module MultiTypeSymbolTable
             else {s = unknownSymbolError("datastr",name);}
             return s;
         }
-        
-        /* put the data into a string abreviate if over the threshold */
+        /*
+        Attempts to find a sym entry mapped to the provided string, then 
+        returns the data in the entry up to the specified threshold. 
+        This method returns the data in form "array([<DATA>])".
+        Arrays of size less than threshold will be printed in their entirety. 
+        Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
+
+        :arg name: name of entry to be processed
+        :type name: string
+
+        :arg thresh: threshold for data to return
+        :type thresh: int
+
+        :returns: s (string) containing the array data
+        */
         proc datarepr(name: string, thresh:int): string {
             var s:string;
             if (tD.contains(name)) {

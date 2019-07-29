@@ -160,65 +160,161 @@
 <dl class="enum">
 <dt id="MultiTypeSymEntry.DType">
 <em class="property">enum </em><code class="descname">DType</code> { Int64, Float64, Bool, UNDEF }<a class="headerlink" href="#MultiTypeSymEntry.DType" title="Permalink to this definition">¶</a></dt>
-<dd><p>in chapel the types int and real defalut to int(64) and real(64)
-also need other types like float32, int32, etc</p>
+<dd><p>In chapel the types int and real defalut to int(64) and real(64).
+We also need other types like float32, int32, etc</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="MultiTypeSymEntry.whichDtype">
 <em class="property">proc </em><code class="descname">whichDtype</code><span class="sig-paren">(</span><em>type etype</em><span class="sig-paren">)</span> param: DType<a class="headerlink" href="#MultiTypeSymEntry.whichDtype" title="Permalink to this definition">¶</a></dt>
-<dd><p>take a chapel type and returns the matching DType</p>
+<dd><p>Take a chapel type and returns the matching DType</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>etype</strong> &#8211; chapel type</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">DType</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="MultiTypeSymEntry.dtypeSize">
 <em class="property">proc </em><code class="descname">dtypeSize</code><span class="sig-paren">(</span><em>dt: DType</em><span class="sig-paren">)</span>: int<a class="headerlink" href="#MultiTypeSymEntry.dtypeSize" title="Permalink to this definition">¶</a></dt>
-<dd><p>return the size in bytes of a DType</p>
+<dd><p>Returns the size in bytes of a DType</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>dt</strong> : <em>DType</em> &#8211; (pythonic) DType</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(int)</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="MultiTypeSymEntry.str2dtype">
 <em class="property">proc </em><code class="descname">str2dtype</code><span class="sig-paren">(</span><em>dstr: string</em><span class="sig-paren">)</span>: DType<a class="headerlink" href="#MultiTypeSymEntry.str2dtype" title="Permalink to this definition">¶</a></dt>
-<dd><p>turns a dtype string in pythonland into a DType</p>
+<dd><p>Turns a dtype string in pythonland into a DType</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>dstr</strong> : <em>string</em> &#8211; pythonic dtype to be converted</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">DType</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="MultiTypeSymEntry.dtype2str">
 <em class="property">proc </em><code class="descname">dtype2str</code><span class="sig-paren">(</span><em>dtype: DType</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MultiTypeSymEntry.dtype2str" title="Permalink to this definition">¶</a></dt>
-<dd><p>turns a DType into a dtype string in pythonland</p>
+<dd><p>Turns a DType into a dtype string in pythonland</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>dtype</strong> : <em>DType</em> &#8211; DType to convert to string</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">(string)</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="MultiTypeSymEntry.makeDistDom">
 <em class="property">proc </em><code class="descname">makeDistDom</code><span class="sig-paren">(</span><em>size: int</em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.makeDistDom" title="Permalink to this definition">¶</a></dt>
-<dd><p>uses the MyDmap config param in ServerConfig.chpl
-if MyDmap = 0 {return (type CyclicDom(1,int(64),false));}
-if MyDmap = 1 {return (type BlockDom(1,int(64),false,unmanaged DefaultDist));}</p>
+<dd><dl class="docutils">
+<dt>Uses the MyDmap config param in ServerConfig.chpl::</dt>
+<dd><p class="first"><em>if MyDmap == 0 {return (type CyclicDom(1,int(64),false));}</em></p>
+<p class="last"><em>if MyDmap == 1 {return (type BlockDom(1,int(64),false,unmanaged DefaultDist));}</em></p>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>size</strong> : <em>int</em> &#8211; size of domain</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note</strong>: if MyDmap does not evaluate to 0 or 1, Cyclic Distribution will be selected.
+Cyclic Distribution is currently not fully supported.
+<strong>Note 2</strong>: MyDmap is by default set to 1 in ServerConfig.chpl</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="MultiTypeSymEntry.makeDistArray">
 <em class="property">proc </em><code class="descname">makeDistArray</code><span class="sig-paren">(</span><em>size: int</em>, <em>type etype</em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.makeDistArray" title="Permalink to this definition">¶</a></dt>
-<dd><p>make an array of the dmapped dom and type I want</p>
+<dd><p>Makes an array of specified type over a distributed domain</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>size</strong> : <em>int</em> &#8211; size of the domain</li>
+<li><strong>etype</strong> : <em>type</em> &#8211; desired type of array</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">[] ?etype</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="MultiTypeSymEntry.makeDistDomType">
 <em class="property">proc </em><code class="descname">makeDistDomType</code><span class="sig-paren">(</span><em>size: int</em><span class="sig-paren">)</span> type<a class="headerlink" href="#MultiTypeSymEntry.makeDistDomType" title="Permalink to this definition">¶</a></dt>
-<dd><p>retrun the type of the dist domain</p>
+<dd><p>Returns the type of the distributed domain</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>size</strong> : <em>int</em> &#8211; size of domain</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">type</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="MultiTypeSymEntry.toSymEntry">
 <em class="property">proc </em><code class="descname">toSymEntry</code><span class="sig-paren">(</span><em>gse: borrowed GenSymEntry</em>, <em>type etype</em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.toSymEntry" title="Permalink to this definition">¶</a></dt>
-<dd><p>cast the symbol entry of the right type and return it
-blah too much type inference still for my taste</p>
+<dd><p>Casts a GenSymEntry to the specified type and returns it.</p>
+<p><strong>Dev Note</strong>: too much type inference still for my taste! Takes a generic sym entry and
+instantiates a SymEntry with the specified type.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>gse</strong> &#8211; general sym entry</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="MultiTypeSymEntry.printOwnership">
 <em class="property">proc </em><code class="descname">printOwnership</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.printOwnership" title="Permalink to this definition">¶</a></dt>
 <dd><p>1.18 version print out localSubdomains</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>x</strong> : <em>[]</em> &#8211; array</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="class">
@@ -261,17 +357,21 @@ instantiations of SymEntry.</p>
 <dl class="class">
 <dt id="MultiTypeSymEntry.SymEntry">
 <em class="property">class </em><code class="descname">SymEntry</code>: GenSymEntry<a class="headerlink" href="#MultiTypeSymEntry.SymEntry" title="Permalink to this definition">¶</a></dt>
-<dd><p>symbol table entry
-we will just do 1-d arrays for now</p>
+<dd><p>Symbol table entry
+Only supports 1-d arrays for now</p>
 <dl class="attribute">
 <dt id="MultiTypeSymEntry.SymEntry.etype">
 <em class="property">type </em><code class="descname">etype</code><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.etype" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>generic element type array
+etype is different from dtype (chapel vs numpy)</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="MultiTypeSymEntry.SymEntry.aD">
 <em class="property">var </em><code class="descname">aD</code>: makeDistDom(size).type<a class="headerlink" href="#MultiTypeSymEntry.SymEntry.aD" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>&#8216;aD&#8217; is the distributed domain for &#8216;a&#8217; whose value and type
+are defined by makeDistDom() to support varying distributions</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="MultiTypeSymEntry.SymEntry.a">
@@ -281,22 +381,46 @@ we will just do 1-d arrays for now</p>
 <dl class="method">
 <dt id="MultiTypeSymEntry.SymEntry.init">
 <em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><em>len: int</em>, <em>type etype</em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.init" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This init takes length and element type</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>len</strong> : <em>int</em> &#8211; length of array to be allocated</li>
+<li><strong>etype</strong> : <em>type</em> &#8211; type to be instantiated</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt>
 <em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><em>a: [?D] ?etype</em><span class="sig-paren">)</span></dt>
-<dd></dd></dl>
+<dd><p>This init takes an array of a type</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>a</strong> : <em>[] ?etype</em> &#8211; array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="MultiTypeSymEntry.SymEntry.postinit">
 <em class="property">proc </em><code class="descname">postinit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.postinit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Verbose flag utility method</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="MultiTypeSymEntry.SymEntry.deinit">
 <em class="property">proc </em><code class="descname">deinit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.deinit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Verbose flag utility method</p>
+</dd></dl>
 
 </dd></dl>
 

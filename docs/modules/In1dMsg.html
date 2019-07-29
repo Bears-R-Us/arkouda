@@ -160,40 +160,96 @@
 <dl class="data">
 <dt id="In1dMsg.sBound">
 <em class="property">var </em><code class="descname">sBound</code> = 2**6<a class="headerlink" href="#In1dMsg.sBound" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Small bound const. Brute force in1d implementation recommended.</p>
+</dd></dl>
 
 <dl class="data">
 <dt id="In1dMsg.mBound">
 <em class="property">var </em><code class="descname">mBound</code> = 2**25<a class="headerlink" href="#In1dMsg.mBound" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Medium bound const. Per locale associative domain in1d implementation recommended.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="In1dMsg.in1dGlobalAr1Bcast">
 <em class="property">proc </em><code class="descname">in1dGlobalAr1Bcast</code><span class="sig-paren">(</span><em>ar1: [?aD1] int</em>, <em>ar2: [?aD2] int</em><span class="sig-paren">)</span><a class="headerlink" href="#In1dMsg.in1dGlobalAr1Bcast" title="Permalink to this definition">¶</a></dt>
-<dd><p>brute force
-forward-way reduction per element of ar1 over ar2
-causes every elt in ar1 to be broadcast/communicated over ar2</p>
+<dd><p>Brute force:
+forward-way reduction per element of ar1 over ar2.
+Causes every element in ar1 to be broadcast/communicated over ar2.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>ar1</strong> : <em>[] int</em> &#8211; array to broadcast over ar2</li>
+<li><strong>ar2</strong> : <em>[] int</em> &#8211; array to be broadcast over</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns truth:</th><td class="field-body"><p class="first last">a boolean array containing the result of ar1 being broadcast over ar2</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="In1dMsg.in1dGlobalAr2Bcast">
 <em class="property">proc </em><code class="descname">in1dGlobalAr2Bcast</code><span class="sig-paren">(</span><em>ar1: [?aD1] int</em>, <em>ar2: [?aD2] int</em><span class="sig-paren">)</span><a class="headerlink" href="#In1dMsg.in1dGlobalAr2Bcast" title="Permalink to this definition">¶</a></dt>
-<dd><p>brute force
-reverse-way serial-or-reduce for each elt in ar2 over ar1
-causes every elt in ar2 to be broadcast/communicated over ar1</p>
+<dd><p>Brute force:
+reverse-way serial-or-reduce for each element in ar2 over ar1.
+Causes every element in ar2 to be broadcast/communicated over ar1.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>ar1</strong> : <em>[] int</em> &#8211; array to be broadcast over</li>
+<li><strong>ar2</strong> : <em>[] int</em> &#8211; array to broadcast over ar1</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns truth:</th><td class="field-body"><p class="first last">a boolean array containing the result of ar2 being broadcast over ar1</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="In1dMsg.in1dAr2PerLocAssoc">
 <em class="property">proc </em><code class="descname">in1dAr2PerLocAssoc</code><span class="sig-paren">(</span><em>ar1: [?aD1] int</em>, <em>ar2: [?aD2] int</em><span class="sig-paren">)</span><a class="headerlink" href="#In1dMsg.in1dAr2PerLocAssoc" title="Permalink to this definition">¶</a></dt>
-<dd><p>put ar2 into an assoc domain of int per locale</p>
+<dd><p>Put ar2 into an associative domain of int, per locale.
+Creates truth (boolean array) from the domain of ar1.
+ar1 and truth are distributed on the same locales.
+ar2 is copied to a set (associative domain) in each locale.
+set membership of ar1 to ar2 is checked on each locale by iterating over
+the local subdomains of ar1, and populating the local subdomains of truth
+with the result of the membership test.</p>
+<p>Apply v flag for timing information.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>ar1</strong> : <em>[] int</em> &#8211; array to broadcast in parallel over ar2</li>
+<li><strong>ar2</strong> : <em>[] int</em> &#8211; array to be broadcast over in parallel</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns truth:</th><td class="field-body"><p class="first last">the distributed boolean array containing the result of ar1 being broadcast over ar2</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="In1dMsg.in1dMsg">
 <em class="property">proc </em><code class="descname">in1dMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#In1dMsg.in1dMsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>in1d takes two pdarray and returns a bool pdarray
-with the &#8220;in&#8221;/contains for each element tested against the second pdarray</p>
+with the &#8220;in&#8221;/contains for each element tested against the second pdarray.</p>
+<p>in1dMsg processes the request, considers the size of the arguements, and decides which implementation
+of in1d to utilize.</p>
 </dd></dl>
 
 </div>

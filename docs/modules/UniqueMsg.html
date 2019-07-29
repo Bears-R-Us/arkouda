@@ -191,13 +191,49 @@ for example if (a.max-a.min &gt; a.size) means that a&#8217;s are sparse</p>
 <dl class="function">
 <dt id="UniqueMsg.uniqueGlobHist">
 <em class="property">proc </em><code class="descname">uniqueGlobHist</code><span class="sig-paren">(</span><em>a: [?aD] int</em>, <em>aMin: int</em>, <em>aMax: int</em><span class="sig-paren">)</span><a class="headerlink" href="#UniqueMsg.uniqueGlobHist" title="Permalink to this definition">¶</a></dt>
-<dd><p>unique with global histogram</p>
+<dd><p>unique with global histogram
+Returns a tuple: (UniqueValArray,UniqueValCountsArray)
+which contains the unique values of a, along with the number of times each unique value appears in a</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>a</strong> : <em>[] int</em> &#8211; Array of data to be processed</li>
+<li><strong>aMin</strong> : <em>int</em> &#8211; Min value in array a</li>
+<li><strong>aMax</strong> : <em>int</em> &#8211; Max value in array a</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">([] int, [] int)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="UniqueMsg.uniquePerLocHistGlobHist">
 <em class="property">proc </em><code class="descname">uniquePerLocHistGlobHist</code><span class="sig-paren">(</span><em>a: [?aD] int</em>, <em>aMin: int</em>, <em>aMax: int</em><span class="sig-paren">)</span><a class="headerlink" href="#UniqueMsg.uniquePerLocHistGlobHist" title="Permalink to this definition">¶</a></dt>
-<dd><p>unique with per-locale histograms</p>
+<dd><p>unique with per-locale histograms
+Returns a tuple: (UniqueValArray,UniqueValCountsArray)
+which contains the unique values of a, along with the number of times each unique value appears in a</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>a</strong> : <em>[] int</em> &#8211; Array of data to be processed</li>
+<li><strong>aMin</strong> : <em>int</em> &#8211; Min value in array a</li>
+<li><strong>aMax</strong> : <em>int</em> &#8211; Max value in array a</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">([] int, [] int)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -206,6 +242,24 @@ for example if (a.max-a.min &gt; a.size) means that a&#8217;s are sparse</p>
 <dd><p>use when unique values vary over a wide range and and are sparse
 unique with per-locale assoc domains and arrays
 global unique value histogram</p>
+<p>Returns a tuple: (UniqueValArray,UniqueValCountsArray)
+which contains the unique values of a, along with the number of times each unique value appears in a</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>a</strong> : <em>[] int</em> &#8211; Array of data to be processed</li>
+<li><strong>aMin</strong> : <em>int</em> &#8211; Min value in array a</li>
+<li><strong>aMax</strong> : <em>int</em> &#8211; Max value in array a</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">([] int, [] int)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -213,6 +267,24 @@ global unique value histogram</p>
 <em class="property">proc </em><code class="descname">uniquePerLocAssocGlobAssoc</code><span class="sig-paren">(</span><em>a: [?aD] int</em>, <em>aMin: int</em>, <em>aMax: int</em><span class="sig-paren">)</span><a class="headerlink" href="#UniqueMsg.uniquePerLocAssocGlobAssoc" title="Permalink to this definition">¶</a></dt>
 <dd><p>use when unique value vary over a wide range and and are sparse
 unique with per-locale assoc domains and arrays</p>
+<p>Returns a tuple: (UniqueValArray,UniqueValCountsArray)
+which contains the unique values of a, along with the number of times each unique value appears in a</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>a</strong> : <em>[] int</em> &#8211; Array of data to be processed</li>
+<li><strong>aMin</strong> : <em>int</em> &#8211; Min value in array a</li>
+<li><strong>aMax</strong> : <em>int</em> &#8211; Max value in array a</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">([] int, [] int)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -220,6 +292,24 @@ unique with per-locale assoc domains and arrays</p>
 <em class="property">proc </em><code class="descname">uniquePerLocAssocParUnsafeGlobAssocParUnsafe</code><span class="sig-paren">(</span><em>a: [?aD] int</em>, <em>aMin: int</em>, <em>aMax: int</em><span class="sig-paren">)</span><a class="headerlink" href="#UniqueMsg.uniquePerLocAssocParUnsafeGlobAssocParUnsafe" title="Permalink to this definition">¶</a></dt>
 <dd><p>use when unique value vary over a wide range and and are sparse
 unique with per-locale assoc domains and arrays</p>
+<p>Returns a tuple: (UniqueValArray,UniqueValCountsArray)
+which contains the unique values of a, along with the number of times each unique value appears in a</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>a</strong> : <em>[] int</em> &#8211; Array of data to be processed</li>
+<li><strong>aMin</strong> : <em>int</em> &#8211; Min value in array a</li>
+<li><strong>aMax</strong> : <em>int</em> &#8211; Max value in array a</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">([] int, [] int)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">

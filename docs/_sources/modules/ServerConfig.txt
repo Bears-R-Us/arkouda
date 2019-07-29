@@ -15,19 +15,27 @@ arkouda server config param and config const
 
 .. data:: config const v = true
 
-   verbose flag 
+   
+   Verbose flag
+   
 
 .. data:: config const ServerPort = 5555
 
-   port for zeromq 
+   
+   Port for zeromq
+   
 
 .. data:: config param arkoudaVersion = "0.0.9pre"
 
-   arkouda version 
+   
+   Arkouda version
+   
 
 .. data:: config param MyDmap = 1
 
-   configure MyDmap on compile line by "-s MyDmap=0" or "-s MyDmap=1"
-   0 = Cyclic, 1 = Block, Cyclic may not work now haven't tested it in a while
-   BlockDist is the default now 
+   
+   Configure MyDmap on compile line by "-s MyDmap=0" or "-s MyDmap=1"
+   0 = Cyclic, 1 = Block. Cyclic may not work; we haven't tested it in a while.
+   BlockDist is the default.
+   
 

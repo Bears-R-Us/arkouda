@@ -12,6 +12,10 @@ RandMsg
 
 .. function:: proc randintMsg(reqMsg: string, st: borrowed SymTab): string
 
+   
    parse, execute, and respond to randint message
-   uniform int in half-open interval [min,max) 
+   uniform int in half-open interval [min,max)
+   
+   :arg reqMsg: message to process (contains cmd,aMin,aMax,len,dtype)
+   
 

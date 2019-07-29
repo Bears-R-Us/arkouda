@@ -34,27 +34,107 @@ for example if (a.max-a.min > a.size) means that a's are sparse
 
 .. function:: proc uniqueGlobHist(a: [?aD] int, aMin: int, aMax: int)
 
-   unique with global histogram 
+   
+   unique with global histogram
+   Returns a tuple: (UniqueValArray,UniqueValCountsArray)
+   which contains the unique values of a, along with the number of times each unique value appears in a
+   
+   :arg a: Array of data to be processed
+   :type a: [] int
+   
+   :arg aMin: Min value in array a
+   :type aMin: int
+   
+   :arg aMax: Max value in array a
+   :type aMax: int
+   
+   :returns: ([] int, [] int)
+   
+   
 
 .. function:: proc uniquePerLocHistGlobHist(a: [?aD] int, aMin: int, aMax: int)
 
-   unique with per-locale histograms 
+   
+   unique with per-locale histograms
+   Returns a tuple: (UniqueValArray,UniqueValCountsArray)
+   which contains the unique values of a, along with the number of times each unique value appears in a
+   
+   :arg a: Array of data to be processed
+   :type a: [] int
+   
+   :arg aMin: Min value in array a
+   :type aMin: int
+   
+   :arg aMax: Max value in array a
+   :type aMax: int
+   
+   :returns: ([] int, [] int)
+   
+   
 
 .. function:: proc uniquePerLocAssocGlobHist(a: [?aD] int, aMin: int, aMax: int)
 
+   
    use when unique values vary over a wide range and and are sparse
    unique with per-locale assoc domains and arrays
-   global unique value histogram 
+   global unique value histogram
+   
+   Returns a tuple: (UniqueValArray,UniqueValCountsArray)
+   which contains the unique values of a, along with the number of times each unique value appears in a
+   
+   :arg a: Array of data to be processed
+   :type a: [] int
+   
+   :arg aMin: Min value in array a
+   :type aMin: int
+   
+   :arg aMax: Max value in array a
+   :type aMax: int
+   
+   :returns: ([] int, [] int)
+   
 
 .. function:: proc uniquePerLocAssocGlobAssoc(a: [?aD] int, aMin: int, aMax: int)
 
+   
    use when unique value vary over a wide range and and are sparse
-   unique with per-locale assoc domains and arrays 
+   unique with per-locale assoc domains and arrays
+   
+   Returns a tuple: (UniqueValArray,UniqueValCountsArray)
+   which contains the unique values of a, along with the number of times each unique value appears in a
+   
+   :arg a: Array of data to be processed
+   :type a: [] int
+   
+   :arg aMin: Min value in array a
+   :type aMin: int
+   
+   :arg aMax: Max value in array a
+   :type aMax: int
+   
+   :returns: ([] int, [] int)
+   
 
 .. function:: proc uniquePerLocAssocParUnsafeGlobAssocParUnsafe(a: [?aD] int, aMin: int, aMax: int)
 
+   
    use when unique value vary over a wide range and and are sparse
-   unique with per-locale assoc domains and arrays 
+   unique with per-locale assoc domains and arrays
+   
+   Returns a tuple: (UniqueValArray,UniqueValCountsArray)
+   which contains the unique values of a, along with the number of times each unique value appears in a
+   
+   :arg a: Array of data to be processed
+   :type a: [] int
+   
+   :arg aMin: Min value in array a
+   :type aMin: int
+   
+   :arg aMax: Max value in array a
+   :type aMax: int
+   
+   :returns: ([] int, [] int)
+   
 
 .. function:: proc uniqueMsg(reqMsg: string, st: borrowed SymTab): string
 

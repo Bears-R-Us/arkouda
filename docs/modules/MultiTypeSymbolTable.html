@@ -164,12 +164,14 @@
 <dl class="attribute">
 <dt id="MultiTypeSymbolTable.SymTab.tD">
 <em class="property">var </em><code class="descname">tD</code>: domain(string)<a class="headerlink" href="#MultiTypeSymbolTable.SymTab.tD" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Associative domain of strings</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="MultiTypeSymbolTable.SymTab.tab">
 <em class="property">var </em><code class="descname">tab</code>: [tD] shared GenSymEntry<a class="headerlink" href="#MultiTypeSymbolTable.SymTab.tab" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Associative array indexed by strings</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="MultiTypeSymbolTable.SymTab.nid">
@@ -179,75 +181,198 @@
 <dl class="method">
 <dt id="MultiTypeSymbolTable.SymTab.nextName">
 <em class="property">proc </em><code class="descname">nextName</code><span class="sig-paren">(</span><span class="sig-paren">)</span>: string<a class="headerlink" href="#MultiTypeSymbolTable.SymTab.nextName" title="Permalink to this definition">¶</a></dt>
-<dd><p>generate a new name</p>
+<dd><p>Gives out symbol names.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="MultiTypeSymbolTable.SymTab.addEntry">
 <em class="property">proc </em><code class="descname">addEntry</code><span class="sig-paren">(</span><em>name: string</em>, <em>len: int</em>, <em>type t</em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.addEntry" title="Permalink to this definition">¶</a></dt>
-<dd><p>add an entry to the symbol table using a name a length and a Chapel type
-is it an error to redefine an entry? ... probably not
-this addEntry takes stuff to create a new SymEntry</p>
+<dd><p>Takes args and creates a new SymEntry.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> : <em>string</em> &#8211; name of the array</li>
+<li><strong>len</strong> : <em>int</em> &#8211; length of array</li>
+<li><strong>t</strong> &#8211; type of array</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt>
 <em class="property">proc </em><code class="descname">addEntry</code><span class="sig-paren">(</span><em>name: string</em>, <em>entry: shared GenSymEntry</em><span class="sig-paren">)</span></dt>
-<dd><p>add an entry to the symbol table using an already created GenSymEntry</p>
+<dd><p>Takes an already created GenSymEntry and creates a new SymEntry.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> : <em>string</em> &#8211; name of the array</li>
+<li><strong>entry</strong> : <em>GenSymEntry</em> &#8211; Generic Sym Entry to convert</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt>
 <em class="property">proc </em><code class="descname">addEntry</code><span class="sig-paren">(</span><em>name: string</em>, <em>len: int</em>, <em>dtype: DType</em><span class="sig-paren">)</span></dt>
-<dd><p>add an entry to the symbol table using a name a length and a DType</p>
+<dd><p>Creates a symEntry from array name, length, and DType</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> : <em>string</em> &#8211; name of the array</li>
+<li><strong>len</strong> : <em>int</em> &#8211; length of array</li>
+<li><strong>dtype</strong> &#8211; type of array</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="MultiTypeSymbolTable.SymTab.deleteEntry">
 <em class="property">proc </em><code class="descname">deleteEntry</code><span class="sig-paren">(</span><em>name: string</em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.deleteEntry" title="Permalink to this definition">¶</a></dt>
-<dd><p>detete an entry from the symboltable</p>
+<dd><p>Removes an entry from the symTable</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>name</strong> : <em>string</em> &#8211; name of the array</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="MultiTypeSymbolTable.SymTab.lookup">
 <em class="property">proc </em><code class="descname">lookup</code><span class="sig-paren">(</span><em>name: string</em><span class="sig-paren">)</span>: shared GenSymEntry<a class="headerlink" href="#MultiTypeSymbolTable.SymTab.lookup" title="Permalink to this definition">¶</a></dt>
-<dd><p>lookup a name in the symbol table</p>
+<dd><p>Returns the sym entry associated with the provided name, if the sym entry exists</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>name</strong> : <em>string</em> &#8211; string to index/query in the sym table</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">sym entry or nil</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="MultiTypeSymbolTable.SymTab.pretty">
 <em class="property">proc </em><code class="descname">pretty</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymbolTable.SymTab.pretty" title="Permalink to this definition">¶</a></dt>
-<dd><p>pretty print the symbol table</p>
+<dd><p>Prints the SymTable in a pretty format (name,SymTable[name])</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="MultiTypeSymbolTable.SymTab.dump">
 <em class="property">proc </em><code class="descname">dump</code><span class="sig-paren">(</span><em>name: string</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MultiTypeSymbolTable.SymTab.dump" title="Permalink to this definition">¶</a></dt>
-<dd><p>dump the symbol table to a string</p>
+<dd><p>Attempts to format and return sym entries mapped to the provided string into JSON format.
+Pass __AllSymbols__ to process the entire sym table.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>name</strong> : <em>string</em> &#8211; name of entry to be processed</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="MultiTypeSymbolTable.SymTab.info">
 <em class="property">proc </em><code class="descname">info</code><span class="sig-paren">(</span><em>name: string</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MultiTypeSymbolTable.SymTab.info" title="Permalink to this definition">¶</a></dt>
-<dd><p>get info on a name/symbol but NOT the data</p>
+<dd><p>Returns verbose attributes of the sym entry at the given string, if the string maps to an entry.
+Pass __AllSymbols__ to process all sym entries in the sym table.</p>
+<p>Returns: name, dtype, size, ndim, shape, and item size</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>name</strong> : <em>string</em> &#8211; name of entry to be processed</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">s (string) containing info</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="MultiTypeSymbolTable.SymTab.attrib">
 <em class="property">proc </em><code class="descname">attrib</code><span class="sig-paren">(</span><em>name: string</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MultiTypeSymbolTable.SymTab.attrib" title="Permalink to this definition">¶</a></dt>
-<dd><p>put the symbol&#8217;s attributes into a string</p>
+<dd><p>Returns raw attributes of the sym entry at the given string, if the string maps to an entry.
+Returns: name, dtype, size, ndim, shape, and item size</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>name</strong> : <em>string</em> &#8211; name of entry to be processed</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">s (string) containing info</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="MultiTypeSymbolTable.SymTab.datastr">
 <em class="property">proc </em><code class="descname">datastr</code><span class="sig-paren">(</span><em>name: string</em>, <em>thresh: int</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MultiTypeSymbolTable.SymTab.datastr" title="Permalink to this definition">¶</a></dt>
-<dd><p>put the data into a string abreviate if over the threshold</p>
+<dd><p>Attempts to find a sym entry mapped to the provided string, then
+returns the data in the entry up to the specified threshold.
+Arrays of size less than threshold will be printed in their entirety.
+Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> : <em>string</em> &#8211; name of entry to be processed</li>
+<li><strong>thresh</strong> : <em>int</em> &#8211; threshold for data to return</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">s (string) containing the array data</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="MultiTypeSymbolTable.SymTab.datarepr">
 <em class="property">proc </em><code class="descname">datarepr</code><span class="sig-paren">(</span><em>name: string</em>, <em>thresh: int</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MultiTypeSymbolTable.SymTab.datarepr" title="Permalink to this definition">¶</a></dt>
-<dd><p>put the data into a string abreviate if over the threshold</p>
+<dd><p>Attempts to find a sym entry mapped to the provided string, then
+returns the data in the entry up to the specified threshold.
+This method returns the data in form &#8220;array([&lt;DATA&gt;])&#8221;.
+Arrays of size less than threshold will be printed in their entirety.
+Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> : <em>string</em> &#8211; name of entry to be processed</li>
+<li><strong>thresh</strong> : <em>int</em> &#8211; threshold for data to return</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">s (string) containing the array data</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
