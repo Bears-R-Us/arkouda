@@ -12,15 +12,37 @@ AryUtil
 
 .. data:: var printThresh = 30
 
+   
+   Threshold for the amount of data that will be printed. 
+   Arrays larger than 30 will print less data.
+   
+
 .. function:: proc printAry(name: string, A)
 
-   print out and array with a name and threshold how many elements are printed 
+   
+   Prints the passed array.
+   
+   :arg name: name of the array
+   :arg A: array to be printed
+   
 
 .. function:: proc isSorted(A: [?D] ?t): bool
 
-   test to see if an array is sorted 
+   
+   Determines if the passed array is sorted.
+   
+   :arg A: array to check
+   
+   
 
 .. function:: proc aStats(a: [?D] int): (int, int, real, real, real)
 
-   calculates the (min, max, mean, variance, standard deviation) of an array 
+   
+   Returns stats on a given array in form (int,int,real,real,real).
+   
+   :arg a: array to produce statistics on
+   :type a: [] int
+   
+   :returns: a_min, a_max, a_mean, a_variation, a_stdDeviation
+   
 

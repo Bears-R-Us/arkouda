@@ -163,32 +163,104 @@
 <dl class="data">
 <dt id="SortModuleStuff.RADIX_BITS">
 <em class="property">param </em><code class="descname">RADIX_BITS</code> = 8<a class="headerlink" href="#SortModuleStuff.RADIX_BITS" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This is the number of bits to sort at a time in the radix sorter.
+The code assumes that all integer types are a multiple of it.
+That would need to change if it were to increase.</p>
+<p>At the same time, using a value less than 8 will probably perform poorly.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="SortModuleStuff.binForRecordKeyPart">
 <em class="property">proc </em><code class="descname">binForRecordKeyPart</code><span class="sig-paren">(</span><em>a</em>, <em>criterion</em>, <em>startbit: int</em><span class="sig-paren">)</span><a class="headerlink" href="#SortModuleStuff.binForRecordKeyPart" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the bin for a record by calling criterion.keyPart
+:arg a:
+:arg criterion:
+:arg startbit: starting from 0.</p>
+<p>bin 0 is for the end was reached (sort before).
+bins 1..256 are for data with next part 0..255.
+bin 256 is for the end was reached (sort after).</p>
+<p>ubits are the result of keyPart normalized to a uint.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(bin, ubits)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="SortModuleStuff.fixedWidth">
 <em class="property">proc </em><code class="descname">fixedWidth</code><span class="sig-paren">(</span><em>type eltTy</em><span class="sig-paren">)</span> param<a class="headerlink" href="#SortModuleStuff.fixedWidth" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns the fixed number of bits in a value, if known.
+Returns -1 otherwise.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="SortModuleStuff.msbRadixSortParamLastStartBit">
 <em class="property">proc </em><code class="descname">msbRadixSortParamLastStartBit</code><span class="sig-paren">(</span><em>Data: []</em>, <em>comparator</em><span class="sig-paren">)</span> param<a class="headerlink" href="#SortModuleStuff.msbRadixSortParamLastStartBit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns a compile-time known final startbit.
+e.g. for uint(64), returns 56 (since that&#8217;s 64-8 and the
+last sort pass will sort on the last 8 bits).</p>
+<p>Returns -1 if no such ending is known at compile-time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Data</strong> &#8211; </li>
+<li><strong>comparator</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="SortModuleStuff.findDataStartBit">
 <em class="property">proc </em><code class="descname">findDataStartBit</code><span class="sig-paren">(</span><em>startbit: int</em>, <em>min_ubits</em>, <em>max_ubits</em><span class="sig-paren">)</span>: int<a class="headerlink" href="#SortModuleStuff.findDataStartBit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Compute the startbit location that could be used based on the
+min/max of values returned by keyPart.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>startbit</strong> &#8211; </li>
+<li><strong>min_ubits</strong> &#8211; </li>
+<li><strong>max_ubits</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">new_start_bit_rounded (int)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="SortModuleStuff.checkSorted">
 <em class="property">proc </em><code class="descname">checkSorted</code><span class="sig-paren">(</span><em>start_n: int</em>, <em>end_n: int</em>, <em>A: []</em>, <em>criterion</em>, <em>startbit = 0</em><span class="sig-paren">)</span><a class="headerlink" href="#SortModuleStuff.checkSorted" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Check that the elements from start_n..end_n in A are sorted by criterion</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>start_n</strong> : <em>int</em> &#8211; </li>
+<li><strong>end_n</strong> : <em>int</em> &#8211; </li>
+<li><strong>A</strong> : <em>[]</em> &#8211; array</li>
+<li><strong>criterion</strong> &#8211; </li>
+<li><strong>startbit</strong> &#8211; defaults to 0</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </div>
 

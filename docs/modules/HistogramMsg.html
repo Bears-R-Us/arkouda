@@ -180,19 +180,79 @@
 <dl class="function">
 <dt id="HistogramMsg.histogramGlobalAtomic">
 <em class="property">proc </em><code class="descname">histogramGlobalAtomic</code><span class="sig-paren">(</span><em>a: [?aD] ?etype</em>, <em>aMin: etype</em>, <em>aMax: etype</em>, <em>bins: int</em>, <em>binWidth: real</em><span class="sig-paren">)</span><a class="headerlink" href="#HistogramMsg.histogramGlobalAtomic" title="Permalink to this definition">¶</a></dt>
-<dd><p>build histogram using global atomic histogram</p>
+<dd><p>Takes the data in array a, creates an atomic histogram in parallel,
+and copies the result of the histogram operation into a distributed int array</p>
+<p>Returns the histogram (distributed int array).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>a</strong> : <em>[] ?etype</em> &#8211; array of data to be histogrammed</li>
+<li><strong>aMin</strong> : <em>etype</em> &#8211; Min value in array a</li>
+<li><strong>aMax</strong> : <em>etype</em> &#8211; Max value in array a</li>
+<li><strong>bins</strong> : <em>int</em> &#8211; allocate size of the histogram&#8217;s distributed domain</li>
+<li><strong>binWidth</strong> : <em>real</em> &#8211; set value for either 1:1 unique value counts, or multiple unique values per bin.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">[] int</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="HistogramMsg.histogramLocalAtomic">
 <em class="property">proc </em><code class="descname">histogramLocalAtomic</code><span class="sig-paren">(</span><em>a: [?aD] ?etype</em>, <em>aMin: etype</em>, <em>aMax: etype</em>, <em>bins: int</em>, <em>binWidth: real</em><span class="sig-paren">)</span><a class="headerlink" href="#HistogramMsg.histogramLocalAtomic" title="Permalink to this definition">¶</a></dt>
-<dd><p>build histogram using local atomic histogram and global atomic histogram</p>
+<dd><p>Takes the data in array a, creates an atomic histogram in each locale,
++ reduces each locale&#8217;s histogram computations into a distributed int array</p>
+<p>Returns the histogram (distributed int array).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>a</strong> : <em>[] ?etype</em> &#8211; array of data to be histogrammed</li>
+<li><strong>aMin</strong> : <em>etype</em> &#8211; Min value in array a</li>
+<li><strong>aMax</strong> : <em>etype</em> &#8211; Max value in array a</li>
+<li><strong>bins</strong> : <em>int</em> &#8211; allocate size of the histogram&#8217;s distributed domain</li>
+<li><strong>binWidth</strong> : <em>real</em> &#8211; set value for either 1:1 unique value counts, or multiple unique values per bin.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">[] int</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="HistogramMsg.histogramReduceIntent">
 <em class="property">proc </em><code class="descname">histogramReduceIntent</code><span class="sig-paren">(</span><em>a: [?aD] ?etype</em>, <em>aMin: etype</em>, <em>aMax: etype</em>, <em>bins: int</em>, <em>binWidth: real</em><span class="sig-paren">)</span><a class="headerlink" href="#HistogramMsg.histogramReduceIntent" title="Permalink to this definition">¶</a></dt>
-<dd><p>build histogram using reduce intents</p>
+<dd><p>Iterates in parallel over all values of a, histogramming into a new array as each value is processed.
+This new array is returned as the histogram.</p>
+<p>Returns the histogram (distributed int array).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>a</strong> : <em>[] ?etype</em> &#8211; array of data to be histogrammed</li>
+<li><strong>aMin</strong> : <em>etype</em> &#8211; Min value in array a</li>
+<li><strong>aMax</strong> : <em>etype</em> &#8211; Max value in array a</li>
+<li><strong>bins</strong> : <em>int</em> &#8211; allocate size of the histogram&#8217;s distributed domain</li>
+<li><strong>binWidth</strong> : <em>real</em> &#8211; set value for either 1:1 unique value counts, or multiple unique values per bin.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">[] int</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">

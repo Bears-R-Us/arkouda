@@ -160,24 +160,56 @@
 <dl class="data">
 <dt id="AryUtil.printThresh">
 <em class="property">var </em><code class="descname">printThresh</code> = 30<a class="headerlink" href="#AryUtil.printThresh" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Threshold for the amount of data that will be printed.
+Arrays larger than 30 will print less data.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="AryUtil.printAry">
 <em class="property">proc </em><code class="descname">printAry</code><span class="sig-paren">(</span><em>name: string</em>, <em>A</em><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.printAry" title="Permalink to this definition">¶</a></dt>
-<dd><p>print out and array with a name and threshold how many elements are printed</p>
+<dd><p>Prints the passed array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> &#8211; name of the array</li>
+<li><strong>A</strong> &#8211; array to be printed</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="AryUtil.isSorted">
 <em class="property">proc </em><code class="descname">isSorted</code><span class="sig-paren">(</span><em>A: [?D] ?t</em><span class="sig-paren">)</span>: bool<a class="headerlink" href="#AryUtil.isSorted" title="Permalink to this definition">¶</a></dt>
-<dd><p>test to see if an array is sorted</p>
+<dd><p>Determines if the passed array is sorted.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>A</strong> &#8211; array to check</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="AryUtil.aStats">
 <em class="property">proc </em><code class="descname">aStats</code><span class="sig-paren">(</span><em>a: [?D] int</em><span class="sig-paren">)</span>: (int, int, real, real, real)<a class="headerlink" href="#AryUtil.aStats" title="Permalink to this definition">¶</a></dt>
-<dd><p>calculates the (min, max, mean, variance, standard deviation) of an array</p>
+<dd><p>Returns stats on a given array in form (int,int,real,real,real).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>a</strong> : <em>[] int</em> &#8211; array to produce statistics on</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a_min, a_max, a_mean, a_variation, a_stdDeviation</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>

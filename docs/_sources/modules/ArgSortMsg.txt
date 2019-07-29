@@ -65,6 +65,8 @@ to permute the original array into sorted order
    PD = PrivateDist
    DW = Direct Write into output array 
 
+.. function:: proc argsortDefault(A: [?D] ?t): [D] int
+
 .. function:: proc argsortMsg(reqMsg: string, st: borrowed SymTab): string
 
    argsort takes pdarray and returns an index vector iv which sorts the array 

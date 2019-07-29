@@ -18,9 +18,12 @@ module ReductionMsg
     config const reductionDEBUG = false;
     const lBins = 2**25 * numLocales;
       
-    // these functions take an array and produce a scalar
-    // parse and respond to reduction message
-    // scalar = reductionop(vector)
+    /*
+    these functions take an array and produce a scalar
+    parse and respond to reduction message
+    scalar = reductionop(vector)
+    
+    */
     proc reductionMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields

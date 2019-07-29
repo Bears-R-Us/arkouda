@@ -12,12 +12,29 @@ module In1dMsg
 
     use PrivateDist;
 
-    var sBound = 2**6; // small bound do brute force
-    var mBound = 2**25; // medium bound do per locale assoc domain
+    /*
+    Small bound const. Brute force in1d implementation recommended.
+    */
+    var sBound = 2**6; 
 
-    /* brute force
-    forward-way reduction per element of ar1 over ar2
-    causes every elt in ar1 to be broadcast/communicated over ar2 */
+    /*
+    Medium bound const. Per locale associative domain in1d implementation recommended.
+    */
+    var mBound = 2**25; 
+
+    /* Brute force:
+    forward-way reduction per element of ar1 over ar2.
+    Causes every element in ar1 to be broadcast/communicated over ar2.
+    
+    :arg ar1: array to broadcast over ar2
+    :type ar1: [] int
+
+    :arg ar2: array to be broadcast over
+    :type ar2: [] int
+
+    :returns truth: a boolean array containing the result of ar1 being broadcast over ar2
+    :type truth: [] bool
+    */
     proc in1dGlobalAr1Bcast(ar1: [?aD1] int, ar2: [?aD2] int) {
 
         var truth: [aD1] bool;
@@ -27,9 +44,19 @@ module In1dMsg
         return truth;
     }
 
-    /* brute force
-    reverse-way serial-or-reduce for each elt in ar2 over ar1
-    causes every elt in ar2 to be broadcast/communicated over ar1 */
+    /* Brute force:
+    reverse-way serial-or-reduce for each element in ar2 over ar1.
+    Causes every element in ar2 to be broadcast/communicated over ar1.
+    
+    :arg ar1: array to be broadcast over
+    :type ar1: [] int
+
+    :arg ar2: array to broadcast over ar1
+    :type ar2: [] int
+
+    :returns truth: a boolean array containing the result of ar2 being broadcast over ar1
+    :type truth: [] bool
+    */
     proc in1dGlobalAr2Bcast(ar1: [?aD1] int, ar2: [?aD2] int) {
 
         var truth: [aD1] bool;
@@ -39,7 +66,25 @@ module In1dMsg
         return truth;
     }
 
-    /* put ar2 into an assoc domain of int per locale */
+    /* Put ar2 into an associative domain of int, per locale. 
+    Creates truth (boolean array) from the domain of ar1.
+    ar1 and truth are distributed on the same locales.
+    ar2 is copied to a set (associative domain) in each locale.
+    set membership of ar1 to ar2 is checked on each locale by iterating over 
+    the local subdomains of ar1, and populating the local subdomains of truth 
+    with the result of the membership test.
+
+    Apply v flag for timing information.
+
+    :arg ar1: array to broadcast in parallel over ar2
+    :type ar1: [] int
+    
+    :arg ar2: array to be broadcast over in parallel
+    :type ar2: [] int
+    
+    :returns truth: the distributed boolean array containing the result of ar1 being broadcast over ar2
+    :type truth: [] bool
+    */
     proc in1dAr2PerLocAssoc(ar1: [?aD1] int, ar2: [?aD2] int) {
 
         var truth: [aD1] bool;
@@ -53,7 +98,7 @@ module In1dMsg
                 if v {t.start();}
 
                 var ar2Set: domain(int, parSafe=false); // create a set to hold ar2, parSafe modification is OFF
-                ar2Set.requestCapacity(ar2.size); // requrest a capacity for the initial set
+                ar2Set.requestCapacity(ar2.size); // request a capacity for the initial set
 
                 if v {t.stop(); timings[here.id][0] = t.elapsed(); t.clear(); t.start();}
 
@@ -81,7 +126,11 @@ module In1dMsg
     }
     
     /* in1d takes two pdarray and returns a bool pdarray
-       with the "in"/contains for each element tested against the second pdarray */
+       with the "in"/contains for each element tested against the second pdarray.
+       
+       in1dMsg processes the request, considers the size of the arguements, and decides which implementation
+       of in1d to utilize.
+    */
     proc in1dMsg(reqMsg: string, st: borrowed SymTab): string {
         var pn = "in1d";
         var repMsg: string; // response message

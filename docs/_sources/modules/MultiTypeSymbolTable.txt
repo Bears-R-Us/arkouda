@@ -17,57 +17,158 @@ MultiTypeSymbolTable
 
    .. attribute:: var tD: domain(string)
 
+      
+      Associative domain of strings
+      
+
    .. attribute:: var tab: [tD] shared GenSymEntry
+
+      
+      Associative array indexed by strings
+      
 
    .. attribute:: var nid = 0
 
    .. method:: proc nextName(): string
 
-      generate a new name 
+      
+      Gives out symbol names.
+      
 
    .. method:: proc addEntry(name: string, len: int, type t)
 
-      add an entry to the symbol table using a name a length and a Chapel type
-      is it an error to redefine an entry? ... probably not
-      this addEntry takes stuff to create a new SymEntry 
+      
+      Takes args and creates a new SymEntry.
+      
+      :arg name: name of the array
+      :type name: string
+      
+      :arg len: length of array
+      :type len: int
+      
+      :arg t: type of array
+      
 
    .. method:: proc addEntry(name: string, entry: shared GenSymEntry)
 
-      add an entry to the symbol table using an already created GenSymEntry 
+      
+      Takes an already created GenSymEntry and creates a new SymEntry.
+      
+      :arg name: name of the array
+      :type name: string
+      
+      :arg entry: Generic Sym Entry to convert
+      :type entry: GenSymEntry
+      
 
    .. method:: proc addEntry(name: string, len: int, dtype: DType)
 
-      add an entry to the symbol table using a name a length and a DType 
+      
+      Creates a symEntry from array name, length, and DType
+      
+      :arg name: name of the array
+      :type name: string
+      
+      :arg len: length of array
+      :type len: int
+      
+      :arg dtype: type of array
+      
 
    .. method:: proc deleteEntry(name: string)
 
-      detete an entry from the symboltable 
+      
+      Removes an entry from the symTable
+      
+      :arg name: name of the array
+      :type name: string
+      
 
    .. method:: proc lookup(name: string): shared GenSymEntry
 
-      lookup a name in the symbol table 
+      
+      Returns the sym entry associated with the provided name, if the sym entry exists
+      
+      :arg name: string to index/query in the sym table
+      :type name: string
+      
+      :returns: sym entry or nil
+      
 
    .. method:: proc pretty()
 
-      pretty print the symbol table 
+      
+      Prints the SymTable in a pretty format (name,SymTable[name])
+      
 
    .. method:: proc dump(name: string): string
 
-      dump the symbol table to a string 
+      
+      Attempts to format and return sym entries mapped to the provided string into JSON format.
+      Pass __AllSymbols__ to process the entire sym table.
+      
+      :arg name: name of entry to be processed
+      :type name: string
+      
 
    .. method:: proc info(name: string): string
 
-      get info on a name/symbol but NOT the data 
+      
+      Returns verbose attributes of the sym entry at the given string, if the string maps to an entry.
+      Pass __AllSymbols__ to process all sym entries in the sym table.
+      
+      Returns: name, dtype, size, ndim, shape, and item size
+      
+      :arg name: name of entry to be processed
+      :type name: string
+      
+      :returns: s (string) containing info
+      
 
    .. method:: proc attrib(name: string): string
 
-      put the symbol's attributes into a string 
+      
+      Returns raw attributes of the sym entry at the given string, if the string maps to an entry.
+      Returns: name, dtype, size, ndim, shape, and item size
+      
+      :arg name: name of entry to be processed
+      :type name: string
+      
+      :returns: s (string) containing info
+      
 
    .. method:: proc datastr(name: string, thresh: int): string
 
-      put the data into a string abreviate if over the threshold 
+      
+      Attempts to find a sym entry mapped to the provided string, then 
+      returns the data in the entry up to the specified threshold.
+      Arrays of size less than threshold will be printed in their entirety. 
+      Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
+      
+      :arg name: name of entry to be processed
+      :type name: string
+      
+      :arg thresh: threshold for data to return
+      :type thresh: int
+      
+      :returns: s (string) containing the array data
+      
 
    .. method:: proc datarepr(name: string, thresh: int): string
 
-      put the data into a string abreviate if over the threshold 
+      
+      Attempts to find a sym entry mapped to the provided string, then 
+      returns the data in the entry up to the specified threshold. 
+      This method returns the data in form "array([<DATA>])".
+      Arrays of size less than threshold will be printed in their entirety. 
+      Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
+      
+      :arg name: name of entry to be processed
+      :type name: string
+      
+      :arg thresh: threshold for data to return
+      :type thresh: int
+      
+      :returns: s (string) containing the array data
+      
 

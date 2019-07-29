@@ -160,55 +160,384 @@
 <dl class="function">
 <dt id="MsgProcessing.createMsg">
 <em class="property">proc </em><code class="descname">createMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MsgProcessing.createMsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>parse, execute, and respond to create message</p>
+<dd><p>Parse, execute, and respond to a create message</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>reqMsg</strong> : <em>string</em> &#8211; request containing (cmd,dtype,size)</li>
+<li><strong>st</strong> : <em>borrowed SymTab</em> &#8211; SymTab to act on</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(string) response message</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="MsgProcessing.deleteMsg">
 <em class="property">proc </em><code class="descname">deleteMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MsgProcessing.deleteMsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>parse, execute, and respond to delete message</p>
+<dd><p>Parse, execute, and respond to a delete message</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>reqMsg</strong> : <em>string</em> &#8211; request containing (cmd,name)</li>
+<li><strong>st</strong> : <em>borrowed SymTab</em> &#8211; SymTab to act on</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(string) response message</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="MsgProcessing.infoMsg">
 <em class="property">proc </em><code class="descname">infoMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MsgProcessing.infoMsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>info header only</p>
+<dd><p>Takes the name of data referenced in a msg and searches for the name in the provided sym table.
+Returns a string of info for the sym entry that is mapped to the provided name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>reqMsg</strong> : <em>string</em> &#8211; request containing (cmd,name)</li>
+<li><strong>st</strong> : <em>borrowed SymTab</em> &#8211; SymTab to act on</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(string)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="MsgProcessing.dumpMsg">
 <em class="property">proc </em><code class="descname">dumpMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MsgProcessing.dumpMsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>dump info and values</p>
+<dd><p>Performs an info and value dump on the message-specified sym entry within the provided sym table.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>reqMsg</strong> : <em>string</em> &#8211; request containing (cmd,name)</li>
+<li><strong>st</strong> : <em>borrowed SymTab</em> &#8211; SymTab to act on</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(string)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="MsgProcessing.strMsg">
 <em class="property">proc </em><code class="descname">strMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MsgProcessing.strMsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>response to __str__ method in python
-str convert array data to string</p>
+<dd><p>Response to __str__ method in python str convert array data to string</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>reqMsg</strong> : <em>string</em> &#8211; request containing (cmd,name)</li>
+<li><strong>st</strong> : <em>borrowed SymTab</em> &#8211; SymTab to act on</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(string)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="MsgProcessing.reprMsg">
 <em class="property">proc </em><code class="descname">reprMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MsgProcessing.reprMsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>response to __repr__ method in python
-repr convert array data to string</p>
+<dd><p>Response to __repr__ method in python.
+Repr convert array data to string</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>reqMsg</strong> : <em>string</em> &#8211; request containing (cmd,name)</li>
+<li><strong>st</strong> : <em>borrowed SymTab</em> &#8211; SymTab to act on</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(string)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="MsgProcessing.arangeMsg">
 <em class="property">proc </em><code class="descname">arangeMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MsgProcessing.arangeMsg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Creates a sym entry with distributed array adhering to the Msg parameters (start, stop, stride)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>reqMsg</strong> : <em>string</em> &#8211; request containing (cmd,start,stop,stride)</li>
+<li><strong>st</strong> : <em>borrowed SymTab</em> &#8211; SymTab to act on</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(string)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="MsgProcessing.linspaceMsg">
 <em class="property">proc </em><code class="descname">linspaceMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MsgProcessing.linspaceMsg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Creates a sym entry with distributed array adhering to the Msg parameters (start, stop, len)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>reqMsg</strong> : <em>string</em> &#8211; request containing (cmd,start,stop,len)</li>
+<li><strong>st</strong> : <em>borrowed SymTab</em> &#8211; SymTab to act on</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(string)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="MsgProcessing.setMsg">
 <em class="property">proc </em><code class="descname">setMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MsgProcessing.setMsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>sets all elements in array to a value (broadcast)</p>
+<dd><p>Sets all elements in array to a value (broadcast)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>reqMsg</strong> : <em>string</em> &#8211; request containing (cmd,name,dtype,value)</li>
+<li><strong>st</strong> : <em>borrowed SymTab</em> &#8211; SymTab to act on</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(string)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="MsgProcessing.efuncMsg">
+<em class="property">proc </em><code class="descname">efuncMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MsgProcessing.efuncMsg" title="Permalink to this definition">¶</a></dt>
+<dd><p>These ops are functions which take an array and produce an array.</p>
+<blockquote>
+<div><strong>Dev Note:</strong> Do scans fit here also? I think so... vector = scanop(vector)
+parse and respond to efunc &#8220;elemental function&#8221; message
+vector = efunc(vector)</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>reqMsg</strong> : <em>string</em> &#8211; request containing (cmd,efunc,name)</li>
+<li><strong>st</strong> : <em>borrowed SymTab</em> &#8211; SymTab to act on</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(string)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="MsgProcessing.efunc3vvMsg">
+<em class="property">proc </em><code class="descname">efunc3vvMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MsgProcessing.efunc3vvMsg" title="Permalink to this definition">¶</a></dt>
+<dd><p>These are ternary functions which take three arrays and produce an array.
+vector = efunc(vector, vector, vector)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>reqMsg</strong> : <em>string</em> &#8211; request containing (cmd,efunc,name1,name2,name3)</li>
+<li><strong>st</strong> : <em>borrowed SymTab</em> &#8211; SymTab to act on</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(string)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="MsgProcessing.efunc3vsMsg">
+<em class="property">proc </em><code class="descname">efunc3vsMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MsgProcessing.efunc3vsMsg" title="Permalink to this definition">¶</a></dt>
+<dd><p>vector = efunc(vector, vector, scalar)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>reqMsg</strong> : <em>string</em> &#8211; request containing (cmd,efunc,name1,name2,dtype,value)</li>
+<li><strong>st</strong> : <em>borrowed SymTab</em> &#8211; SymTab to act on</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(string)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="MsgProcessing.efunc3svMsg">
+<em class="property">proc </em><code class="descname">efunc3svMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MsgProcessing.efunc3svMsg" title="Permalink to this definition">¶</a></dt>
+<dd><p>vector = efunc(vector, scalar, vector)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>reqMsg</strong> : <em>string</em> &#8211; request containing (cmd,efunc,name1,dtype,value,name2)</li>
+<li><strong>st</strong> : <em>borrowed SymTab</em> &#8211; SymTab to act on</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(string)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="MsgProcessing.efunc3ssMsg">
+<em class="property">proc </em><code class="descname">efunc3ssMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#MsgProcessing.efunc3ssMsg" title="Permalink to this definition">¶</a></dt>
+<dd><p>vector = efunc(vector, scalar, scalar)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>reqMsg</strong> : <em>string</em> &#8211; request containing (cmd,efunc,name1,dtype1,value1,dtype2,value2)</li>
+<li><strong>st</strong> : <em>borrowed SymTab</em> &#8211; SymTab to act on</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(string)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="MsgProcessing.where_helper">
+<em class="property">proc </em><code class="descname">where_helper</code><span class="sig-paren">(</span><em>cond: [?D] bool</em>, <em>A: [D] ?t</em>, <em>B: [D] t</em>, <em>param kind</em><span class="sig-paren">)</span>: [D] t<a class="headerlink" href="#MsgProcessing.where_helper" title="Permalink to this definition">¶</a></dt>
+<dd><p>The &#8216;where&#8217; function takes a boolean array and two other arguments A and B, and
+returns an array with A where the boolean is true and B where it is false. A and B
+can be vectors or scalars.
+Dev Note: I would like to be able to write these functions without
+the param kind and just let the compiler choose, but it complains about an
+ambiguous call.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cond</strong> : <em>[?D] bool</em> &#8211; </li>
+<li><strong>A</strong> : <em>[D] ?t</em> &#8211; </li>
+<li><strong>B</strong> : <em>[D] t</em> &#8211; </li>
+<li><strong>kind</strong> : <em>param</em> &#8211; </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<em class="property">proc </em><code class="descname">where_helper</code><span class="sig-paren">(</span><em>cond: [?D] bool</em>, <em>A: [D] ?t</em>, <em>b: t</em>, <em>param kind</em><span class="sig-paren">)</span>: [D] t</dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cond</strong> : <em>[?D] bool</em> &#8211; </li>
+<li><strong>A</strong> : <em>[D] ?t</em> &#8211; </li>
+<li><strong>B</strong> : <em>t</em> &#8211; </li>
+<li><strong>kind</strong> : <em>param</em> &#8211; </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<em class="property">proc </em><code class="descname">where_helper</code><span class="sig-paren">(</span><em>cond: [?D] bool</em>, <em>a: ?t</em>, <em>B: [D] t</em>, <em>param kind</em><span class="sig-paren">)</span>: [D] t</dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cond</strong> : <em>[?D] bool</em> &#8211; </li>
+<li><strong>a</strong> : <em>?t</em> &#8211; </li>
+<li><strong>B</strong> : <em>[D] t</em> &#8211; </li>
+<li><strong>kind</strong> : <em>param</em> &#8211; </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<em class="property">proc </em><code class="descname">where_helper</code><span class="sig-paren">(</span><em>cond: [?D] bool</em>, <em>a: ?t</em>, <em>b: t</em>, <em>param kind</em><span class="sig-paren">)</span>: [D] t</dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cond</strong> : <em>[?D] bool</em> &#8211; </li>
+<li><strong>a</strong> : <em>?t</em> &#8211; </li>
+<li><strong>b</strong> : <em>t</em> &#8211; </li>
+<li><strong>kind</strong> : <em>param</em> &#8211; </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>

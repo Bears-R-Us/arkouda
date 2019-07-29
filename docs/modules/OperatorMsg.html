@@ -160,36 +160,111 @@
 <dl class="function">
 <dt id="OperatorMsg.binopvvMsg">
 <em class="property">proc </em><code class="descname">binopvvMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#OperatorMsg.binopvvMsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>parse and respond to binopvv message
+<dd><p>Parse and respond to binopvv message.
 vv == vector op vector</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>reqMsg</strong> : <em>string</em> &#8211; request containing (cmd,op,aname,bname,rname)</li>
+<li><strong>st</strong> : <em>borrowed SymTab</em> &#8211; SymTab to act on</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(string)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="OperatorMsg.binopvsMsg">
 <em class="property">proc </em><code class="descname">binopvsMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#OperatorMsg.binopvsMsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>parse and respond to binopvs message
+<dd><p>Parse and respond to binopvs message.
 vs == vector op scalar</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>reqMsg</strong> : <em>string</em> &#8211; request containing (cmd,op,aname,dtype,value)</li>
+<li><strong>st</strong> : <em>borrowed SymTab</em> &#8211; SymTab to act on</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(string)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="OperatorMsg.binopsvMsg">
 <em class="property">proc </em><code class="descname">binopsvMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#OperatorMsg.binopsvMsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>parse and respond to binopsv message
+<dd><p>Parse and respond to binopsv message.
 sv == scalar op vector</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>reqMsg</strong> : <em>string</em> &#8211; request containing (cmd,op,dtype,value,aname)</li>
+<li><strong>st</strong> : <em>borrowed SymTab</em> &#8211; SymTab to act on</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(string)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="OperatorMsg.opeqvvMsg">
 <em class="property">proc </em><code class="descname">opeqvvMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#OperatorMsg.opeqvvMsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>parse and respond to opeqvv message
+<dd><p>Parse and respond to opeqvv message.
 vector op= vector</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>reqMsg</strong> : <em>string</em> &#8211; request containing (cmd,op,aname,bname)</li>
+<li><strong>st</strong> : <em>borrowed SymTab</em> &#8211; SymTab to act on</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(string)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="OperatorMsg.opeqvsMsg">
 <em class="property">proc </em><code class="descname">opeqvsMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#OperatorMsg.opeqvsMsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>parse and respond to opeqvs message
+<dd><p>Parse and respond to opeqvs message.
 vector op= scalar</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>reqMsg</strong> : <em>string</em> &#8211; request containing (cmd,op,aname,bname,rname)</li>
+<li><strong>st</strong> : <em>borrowed SymTab</em> &#8211; SymTab to act on</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(string)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>

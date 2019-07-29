@@ -160,8 +160,21 @@
 <dl class="function">
 <dt id="FindSegmentsMsg.findSegmentsMsg">
 <em class="property">proc </em><code class="descname">findSegmentsMsg</code><span class="sig-paren">(</span><em>reqMsg: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#FindSegmentsMsg.findSegmentsMsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>findSegemnt takes a key-pdarray and a perm-pdarray and
-returns a segemnt-pdarray where the values change in the key[perm]</p>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>reqMsg</strong> : <em>string</em> &#8211; request containing (cmd,kname,pname)</li>
+<li><strong>st</strong> : <em>borrowed SymTab</em> &#8211; SymTab to act on</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(string)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -171,7 +184,7 @@ returns a segemnt-pdarray where the values change in the key[perm]</p>
 
 <dl class="function">
 <dt id="FindSegmentsMsg.perLocFindSegsAndUkeys">
-<em class="property">proc </em><code class="descname">perLocFindSegsAndUkeys</code><span class="sig-paren">(</span><em>keys: [?D] int</em>, <em>perm: [D] int</em>, <em>minKey: int</em>, <em>keyRange: int</em><span class="sig-paren">)</span><a class="headerlink" href="#FindSegmentsMsg.perLocFindSegsAndUkeys" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="descname">perLocFindSegsAndUkeys</code><span class="sig-paren">(</span><em>perLocSorted: [?D] int</em>, <em>minKey: int</em>, <em>keyRange: int</em><span class="sig-paren">)</span><a class="headerlink" href="#FindSegmentsMsg.perLocFindSegsAndUkeys" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="record">
