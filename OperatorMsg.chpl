@@ -10,7 +10,6 @@ module OperatorMsg
     use MultiTypeSymEntry;
     use ServerErrorStrings;
 
-    use MsgProcessing;
     /*
     Parse and respond to binopvv message.
     vv == vector op vector
