@@ -1,6 +1,7 @@
 # Arkouda: NumPy-like arrays at massive scale backed by Chapel.
 ## _REMEMBER_: this is not yet open source software... we are currently seeking approval to open source Arkouda
 
+## Abstract:
 Exploratory data analysis (EDA) is a prerequisite for all data 
 science, as illustrated by the ubiquity of Jupyter notebooks, the 
 preferred interface for EDA among data scientists. The operations 
@@ -41,18 +42,19 @@ the role of a shell, a data scientist could explore, prepare, and call
 optimized HPC libraries on massive datasets, all within the same 
 interactive session.
 
-
+## Requirements:
  * requires chapel 1.19.0
  * requires llvm version of Chapel parser to support HDF5 I/O
  * requires zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * requires python 3.6 or greater
-```bash
 
-# it should be simple to get things going on a mac
-# can't use brew install chapel anymore
-# need to build with export CHPL_LLVM=llvm
-# on my mac build chapel in my home directory with these settings...
-# I don't understand them all but they seem to work
+## Build and install:
+```bash
+#it should be simple to get things going on a mac
+#can't use brew install chapel anymore
+#need to build with export CHPL_LLVM=llvm
+#on my mac build chapel in my home directory with these settings...
+#I don't understand them all but they seem to work
 export CHPL_HOME=~/chapel/chapel-1.19.0
 source $CHPL_HOME/util/setchplenv.bash
 export CHPL_COMM=gasnet
@@ -92,6 +94,7 @@ chpl --fast -senableParScan arkouda_server.chpl
 ```bash
 chpl --ccflags=-Wno-incompatible-pointer-types --cache-remote --fast -senableParScan arkouda_server.chpl
 ```
+## Running arkouda_srever:
  * startup the arkouda_server
  * defaults to port 5555
 ```bash
@@ -120,9 +123,9 @@ python3 ak_test.py
  * This also works fine from a jupyter notebook
  * there is an included Jupyter notebook called test_arkouda.ipynb
 
-### Naming conventions for code
+## Naming conventions for code
 
-#### Python3
+### Python3
  * camelCase for variable names
 ```python
 printThreshold = 100
@@ -132,7 +135,7 @@ printThreshold = 100
 def print_it(x):
     print(x)
 ```
-#### Chapel
+### Chapel
  * camelCase for variable names and procedures
 ```chapel
 var aX: [{0..#s}] real;
