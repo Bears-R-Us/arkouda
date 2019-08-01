@@ -101,8 +101,8 @@ chpl --ccflags=-Wno-incompatible-pointer-types --cache-remote --fast -senablePar
 ./arkouda_server -nl 1
 ```
  * config var on the commandline
-  * --v=true/false to turn on/off verbose messages from server
-  * --ServerPort=5555
+ * --v=true/false to turn on/off verbose messages from server
+ * --ServerPort=5555
  * or you could run it this way if you don't want as many messages
 and a different port to be used
 ```bash
@@ -119,6 +119,10 @@ default if you ran the server on a different server or port
 or
 ```bash
 python3 ak_test.py
+```
+or
+```bash
+./ak_test.py localhost 5555
 ```
  * This also works fine from a jupyter notebook
  * there is an included Jupyter notebook called test_arkouda.ipynb
