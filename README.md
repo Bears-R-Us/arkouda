@@ -17,7 +17,7 @@ cloud computing, but none of these projects have come close to meeting
 our needs for high-performance EDA.
 
 To fill this gap, we have
-developed a prototype, called Arkouda, which allows a user to 
+developed a software package, called Arkouda, which allows a user to 
 interactively issue massively parallel computations on distributed 
 data using functions and syntax that mimic NumPy, the underlying 
 computational library used in the vast majority of Python data science 
