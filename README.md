@@ -1,18 +1,60 @@
-# Arkouda
-# _REMEMBER_: this is not yet open source software... we are currently seeking approval to open source Arkouda
+# Arkouda: NumPy-like arrays at massive scale backed by Chapel.
+## _REMEMBER_: this is not yet open source software... we are currently seeking approval to open source Arkouda
 
-arkouda python/chapel package
+## Abstract:
+Exploratory data analysis (EDA) is a prerequisite for all data
+science, as illustrated by the ubiquity of Jupyter notebooks, the
+preferred interface for EDA among data scientists. The operations
+involved in exploring and transforming the data are often at least as
+computationally intensive as downstream applications (e.g. machine
+learning algorithms), and as datasets grow, so does the need for HPC-enabled
+EDA. However, the inherently interactive and open-ended nature of
+EDA does not mesh well with current HPC usage models. Meanwhile, several
+existing projects from outside the traditional HPC space attempt to
+combine interactivity and
+distributed computation using programming paradigms and tools from
+cloud computing, but none of these projects have come close to meeting
+our needs for high-performance EDA.
 
+To fill this gap, we have
+developed a software package, called Arkouda, which allows a user to
+interactively issue massively parallel computations on distributed
+data using functions and syntax that mimic NumPy, the underlying
+computational library used in the vast majority of Python data science
+workflows. The computational heart of Arkouda is a Chapel interpreter
+that
+accepts a pre-defined set of commands from a client (currently
+implemented in Python) and
+uses Chapel's built-in machinery for multi-locale and multithreaded
+execution. Arkouda has benefited greatly from Chapel's distinctive
+features and has also helped guide the development of the language.
+
+In early applications, users of Arkouda have tended to iterate rapidly
+between multi-node execution with Arkouda and single-node analysis in
+Python, relying on Arkouda to filter a large dataset down to a smaller
+collection suitable for analysis in Python, and then feeding the results
+back into Arkouda computations on the full dataset. This paradigm has
+already proved very fruitful for EDA. Our goal is to enable users to
+progress seamlessly from EDA to specialized algorithms by making Arkouda
+an integration point for HPC implementations of expensive kernels like
+FFTs, sparse linear algebra, and graph traversal. With Arkouda serving
+the role of a shell, a data scientist could explore, prepare, and call
+optimized HPC libraries on massive datasets, all within the same
+interactive session.
+
+## Requirements:
  * requires chapel 1.19.0
  * requires llvm version of Chapel parser to support HDF5 I/O
  * requires zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * requires python 3.6 or greater
+
+## Build and install:
 ```bash
-# it should be simple to get things going on a mac…
-# can't use brew install chapel anymore
-# need to build with export CHPL_LLVM=llvm
-# on my mac build chapel in my home directory with these settings...
-# I don't understand them all but they seem to work
+#it should be simple to get things going on a mac
+#can't use brew install chapel anymore
+#need to build with export CHPL_LLVM=llvm
+#on my mac build chapel in my home directory with these settings...
+#I don't understand them all but they seem to work
 export CHPL_HOME=~/chapel/chapel-1.19.0
 source $CHPL_HOME/util/setchplenv.bash
 export CHPL_COMM=gasnet
@@ -52,6 +94,7 @@ chpl --fast -senableParScan arkouda_server.chpl
 ```bash
 chpl --ccflags=-Wno-incompatible-pointer-types --cache-remote --fast -senableParScan arkouda_server.chpl
 ```
+## Running arkouda_srever:
  * startup the arkouda_server
  * defaults to port 5555
 ```bash
@@ -80,10 +123,9 @@ python3 ak_test.py
  * This also works fine from a jupyter notebook
  * there is an included Jupyter notebook called test_arkouda.ipynb
 
-### Naming conventions for code
-
-#### Python3
- * camelCase for variable names
+## (loose) Conventions for code:
+### Python3
+ * lower-case camelCase for variable names
 ```python
 printThreshold = 100
 ```
@@ -92,15 +134,15 @@ printThreshold = 100
 def print_it(x):
     print(x)
 ```
-#### Chapel
- * camelCase for variable names and procedures
+### Chapel
+ * lower-case camelCase for variable names and procedures
 ```chapel
 var aX: [{0..#s}] real;
 proc printIt(x) {
      writeln(x);
 }
 ````
- * CamelCase for Class names
+ * upper-case CamelCase for Class names
  ```chapel
  class Foo: FooParent
  {}
