@@ -152,10 +152,11 @@ module OperatorMsg
                     }    
                     when "**" { 
                         if || reduce (r.a<0){
-                            return "Error: Attempt to exponentiate base of type Int64 to negative exponent"
+                            return "Error: Attempt to exponentiate base of type Int64 to negative exponent";
                         }
-                        var a = l.a**r.a;
-                        st.addEntry(rname, new shared SymEntry(a));
+                        st.addEntry(rname, l.size, int);
+                        var e = toSymEntry(st.lookup(rname), int);
+                        e.a= l.a**r.a;
                     }     
                     otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
                 }
@@ -227,8 +228,9 @@ module OperatorMsg
                         e.a = l.a != r.a;
                     }
                     when "**" { 
-                        var a = l.a**r.a;
-                        st.addEntry(rname, new shared SymEntry(a));
+                        st.addEntry(rname, l.size, real);
+                        var e = toSymEntry(st.lookup(rname), real);
+                        e.a= l.a**r.a;
                     }    
                     otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
                 }
@@ -300,8 +302,9 @@ module OperatorMsg
                         e.a = l.a != r.a;
                     }
                     when "**" { 
-                        var a = l.a**r.a;
-                        st.addEntry(rname, new shared SymEntry(a));
+                        st.addEntry(rname, l.size, real);
+                        var e = toSymEntry(st.lookup(rname), real);
+                        e.a= l.a**r.a;
                     }      
                     otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
                 }
@@ -373,8 +376,9 @@ module OperatorMsg
                         e.a = l.a != r.a;
                     }
                     when "**" { 
-                        var a = l.a**r.a;
-                        st.addEntry(rname, new shared SymEntry(a));
+                        st.addEntry(rname, l.size, real);
+                        var e = toSymEntry(st.lookup(rname), real);
+                        e.a= l.a**r.a;
                     }     
                     otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
                 }
@@ -624,10 +628,11 @@ module OperatorMsg
                     }
                     when "**" { 
                         if (val<0){
-                            return "Error: Attempt to exponentiate base of type Int64 to negative exponent"
+                            return "Error: Attempt to exponentiate base of type Int64 to negative exponent";
                         }
-                        var a =l.a**val;
-                        st.addEntry(rname, new shared SymEntry(a));
+                        st.addEntry(rname, l.size, int);
+                        var e = toSymEntry(st.lookup(rname), int);
+                        e.a= l.a**val;
                     }
                     otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
                 }
@@ -701,8 +706,9 @@ module OperatorMsg
                         e.a = l.a != val;
                     }
                     when "**" { 
-                        var a =l.a**val;
-                        st.addEntry(rname, new shared SymEntry(a));
+                        st.addEntry(rname, l.size, real);
+                        var e = toSymEntry(st.lookup(rname), real);
+                        e.a= l.a**val;
                     }
                     otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
                 }
@@ -776,8 +782,9 @@ module OperatorMsg
                         e.a = l.a != val;
                     }
                     when "**" { 
-                        var a =l.a**val;
-                        st.addEntry(rname, new shared SymEntry(a));
+                        st.addEntry(rname, l.size, real);
+                        var e = toSymEntry(st.lookup(rname), real);
+                        e.a= l.a**val;
                     }
                     otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
                 }
@@ -851,8 +858,9 @@ module OperatorMsg
                         e.a = l.a != val;
                     }
                     when "**" { 
-                        var a =l.a**val;
-                        st.addEntry(rname, new shared SymEntry(a));
+                        st.addEntry(rname, l.size, real);
+                        var e = toSymEntry(st.lookup(rname), real);
+                        e.a= l.a**val;
                     }
                     otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
                 }
@@ -1103,10 +1111,11 @@ module OperatorMsg
                     }
                     when "**" { 
                         if || reduce (r.a<0){
-                            return "Error: Attempt to exponentiate base of type Int64 to negative exponent"
+                            return "Error: Attempt to exponentiate base of type Int64 to negative exponent";
                         }
-                        var a =val**r.a;
-                        st.addEntry(rname, new shared SymEntry(a));
+                        st.addEntry(rname, r.size, int);
+                        var e = toSymEntry(st.lookup(rname), int);
+                        e.a= val**r.a;
                     }
                     otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
                 }
@@ -1132,7 +1141,6 @@ module OperatorMsg
                         e.a = val * r.a;
                     }
                     when "/" { // truediv
-                        // add check for division by zero!
                         if || reduce (r.a == 0) {
 			                 return "Error: Attempt to divide by zero";
 			            }
@@ -1141,7 +1149,6 @@ module OperatorMsg
                         e.a = val:real / r.a;
                     }
                     when "//" { // floordiv
-                        // add check for division by zero!
                         if || reduce (r.a == 0) {
 			                 return "Error: Attempt to divide by zero";
 			            }
@@ -1180,8 +1187,9 @@ module OperatorMsg
                         e.a = val != r.a;
                     }
                     when "**" { 
-                        var a =val**r.a;
-                        st.addEntry(rname, new shared SymEntry(a));
+                        st.addEntry(rname, r.size, real);
+                        var e = toSymEntry(st.lookup(rname), real);
+                        e.a= val**r.a;
                     }
                     otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
                 }
@@ -1255,8 +1263,9 @@ module OperatorMsg
                         e.a = val != r.a;
                     }
                     when "**" { 
-                        var a =val**r.a;
-                        st.addEntry(rname, new shared SymEntry(a));
+                        st.addEntry(rname, r.size, real);
+                        var e = toSymEntry(st.lookup(rname), real);
+                        e.a= val**r.a;
                     }
                     otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
                 }
@@ -1328,8 +1337,9 @@ module OperatorMsg
                         e.a = val != r.a;
                     }
                     when "**" { 
-                        var a =val**r.a;
-                        st.addEntry(rname, new shared SymEntry(a));
+                        st.addEntry(rname, r.size, real);
+                        var e = toSymEntry(st.lookup(rname), real);
+                        e.a= val**r.a;
                     }
                     otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
                 }
@@ -1492,7 +1502,7 @@ module OperatorMsg
                     }//floordiv
                     when "**=" { 
                         if || reduce (r.a<0){
-                            return "Error: Attempt to exponentiate base of type Int64 to negative exponent"
+                            return "Error: Attempt to exponentiate base of type Int64 to negative exponent";
                         }
                         else{ l.a **= r.a; }
                     }
@@ -1629,7 +1639,7 @@ module OperatorMsg
                     }//floordiv
                     when "**=" { 
                         if (val<0){
-                            return "Error: Attempt to exponentiate base of type Int64 to negative exponent"
+                            return "Error: Attempt to exponentiate base of type Int64 to negative exponent";
                         }
                         else{ l.a **= val; }
 
