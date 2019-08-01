@@ -7,8 +7,8 @@ science, as illustrated by the ubiquity of Jupyter notebooks, the
 preferred interface for EDA among data scientists. The operations
 involved in exploring and transforming the data are often at least as
 computationally intensive as downstream applications (e.g. machine
-learning algorithms), and as datasets grow, so does the need for HPC-
-enabled EDA. However, the inherently interactive and open-ended nature of
+learning algorithms), and as datasets grow, so does the need for HPC-enabled
+EDA. However, the inherently interactive and open-ended nature of
 EDA does not mesh well with current HPC usage models. Meanwhile, several
 existing projects from outside the traditional HPC space attempt to
 combine interactivity and
