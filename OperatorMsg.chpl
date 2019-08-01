@@ -70,9 +70,9 @@ module OperatorMsg
                     }
                     when "/" { // truediv
 		        // Chapel will halt if any element of r.a is zero
-		        if || reduce (r.a == 0) {
-			  return "Error: Attempt to divide by zero";
-			}
+		                if || reduce (r.a == 0) {
+			                return "Error: Attempt to divide by zero";
+			            }
                         st.addEntry(rname, l.size, real);
                         var e = toSymEntry(st.lookup(rname), real);                        
                         e.a = l.a:real / r.a:real;
@@ -150,10 +150,15 @@ module OperatorMsg
                         var e = toSymEntry(st.lookup(rname), int);
                         e.a = l.a ^ r.a;
                     }    
-                    when "**" { //POTENTIALL BROKE 
-                        var a = l.a**r.a;
-                        st.addEntry(rname, new shared SymEntry(a));
-                    } //end rsdange experiment     
+                    when "**" { 
+                        if || reduce (r.a<0){
+                            //instead of error, could we paste the below code but of type float?
+                            return "Error: Attempt to exponentiate base of type Int64 to negative exponent";
+                        }
+                        st.addEntry(rname, l.size, int);
+                        var e = toSymEntry(st.lookup(rname), int);
+                        e.a= l.a**r.a;
+                    }     
                     otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
                 }
             }
@@ -178,13 +183,17 @@ module OperatorMsg
                         e.a = l.a * r.a;
                     }
                     when "/" { // truediv
-                        // add check for division by zero!
+                        if || reduce (r.a == 0) {
+			                return "Error: Attempt to divide by zero";
+			            }
                         st.addEntry(rname, l.size, real);
                         var e = toSymEntry(st.lookup(rname), real);
                         e.a = l.a:real / r.a;
                     } 
                     when "//" { // floordiv
-                        // add check for division by zero!
+                        if || reduce (r.a == 0) {
+			                return "Error: Attempt to divide by zero";
+			            }
                         st.addEntry(rname, l.size, real);
                         var e = toSymEntry(st.lookup(rname), real);
                         e.a = floor((l.a / r.a));
@@ -219,10 +228,11 @@ module OperatorMsg
                         var e = toSymEntry(st.lookup(rname), bool);
                         e.a = l.a != r.a;
                     }
-                    when "**" { //POTENTIALL BROKE 
-                        var a = l.a**r.a;
-                        st.addEntry(rname, new shared SymEntry(a));
-                    } //end rsdange experiment     
+                    when "**" { 
+                        st.addEntry(rname, l.size, real);
+                        var e = toSymEntry(st.lookup(rname), real);
+                        e.a= l.a**r.a;
+                    }    
                     otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
                 }
             }
@@ -247,13 +257,17 @@ module OperatorMsg
                         e.a = l.a * r.a;
                     }
                     when "/" { // truediv
-                        // add check for division by zero!
+                        if || reduce (r.a == 0) {
+			                return "Error: Attempt to divide by zero";
+			            }
                         st.addEntry(rname, l.size, real);
                         var e = toSymEntry(st.lookup(rname), real);
                         e.a = l.a / r.a:real;
                     } 
                     when "//" { // floordiv
-                        // add check for division by zero!
+                        if || reduce (r.a == 0) {
+			                return "Error: Attempt to divide by zero";
+			            }
                         st.addEntry(rname, l.size, real);
                         var e = toSymEntry(st.lookup(rname), real);
                         e.a = floor(l.a / r.a);
@@ -288,10 +302,11 @@ module OperatorMsg
                         var e = toSymEntry(st.lookup(rname), bool);
                         e.a = l.a != r.a;
                     }
-                    when "**" { //POTENTIALL BROKE 
-                       var a = l.a**r.a;
-                        st.addEntry(rname, new shared SymEntry(a));
-                    } //end rsdange experiment     
+                    when "**" { 
+                        st.addEntry(rname, l.size, real);
+                        var e = toSymEntry(st.lookup(rname), real);
+                        e.a= l.a**r.a;
+                    }      
                     otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
                 }
             }
@@ -316,13 +331,17 @@ module OperatorMsg
                         e.a = l.a * r.a;
                     }
                     when "/" { // truediv
-                        // add check for division by zero!
+                        if || reduce (r.a == 0) {
+			                return "Error: Attempt to divide by zero";
+			            }
                         st.addEntry(rname, l.size, real);
                         var e = toSymEntry(st.lookup(rname), real);
                         e.a = l.a / r.a;
                     } 
                     when "//" { // floordiv
-                        // add check for division by zero!
+                        if || reduce (r.a == 0) {
+			                return "Error: Attempt to divide by zero";
+			            }
                         st.addEntry(rname, l.size, real);
                         var e = toSymEntry(st.lookup(rname), real);
                         e.a = floor(l.a / r.a);
@@ -357,10 +376,11 @@ module OperatorMsg
                         var e = toSymEntry(st.lookup(rname), bool);
                         e.a = l.a != r.a;
                     }
-                    when "**" { //POTENTIALL BROKE 
-                        var a = l.a**r.a;
-                        st.addEntry(rname, new shared SymEntry(a));
-                    } //end rsdange experiment     
+                    when "**" { 
+                        st.addEntry(rname, l.size, real);
+                        var e = toSymEntry(st.lookup(rname), real);
+                        e.a= l.a**r.a;
+                    }     
                     otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
                 }
             }
@@ -608,8 +628,12 @@ module OperatorMsg
                         e.a = l.a ^ val;
                     }
                     when "**" { 
-                        var a =l.a**val;
-                        st.addEntry(rname, new shared SymEntry(a));
+                        if (val<0){
+                            return "Error: Attempt to exponentiate base of type Int64 to negative exponent";
+                        }
+                        st.addEntry(rname, l.size, int);
+                        var e = toSymEntry(st.lookup(rname), int);
+                        e.a= l.a**val;
                     }
                     otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
                 }
@@ -636,12 +660,18 @@ module OperatorMsg
                     }
                     when "/" { // truediv
                         // add check for division by zero!
+                        if (val == 0) {
+			              return "Error: Attempt to divide by zero";
+			            }
                         st.addEntry(rname, l.size, real);
                         var e = toSymEntry(st.lookup(rname), real);
                         e.a = l.a:real / val;
                     } 
                     when "//" { // floordiv
                         // add check for division by zero!
+                        if (val == 0) {
+			              return "Error: Attempt to divide by zero";
+			            }
                         st.addEntry(rname, l.size, real);
                         var e = toSymEntry(st.lookup(rname), real);
                         e.a = floor(l.a:real / val);
@@ -676,10 +706,11 @@ module OperatorMsg
                         var e = toSymEntry(st.lookup(rname), bool);
                         e.a = l.a != val;
                     }
-                    when "**" { //this doesnt seem elegant...?
-                        var a =l.a**val;
-                        st.addEntry(rname, new shared SymEntry(a));
-                    }//end rsdange experiment
+                    when "**" { 
+                        st.addEntry(rname, l.size, real);
+                        var e = toSymEntry(st.lookup(rname), real);
+                        e.a= l.a**val;
+                    }
                     otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
                 }
             }
@@ -705,12 +736,18 @@ module OperatorMsg
                     }
                     when "/" { // truediv
                         // add check for division by zero!
+                        if (val == 0) {
+			              return "Error: Attempt to divide by zero";
+			            }
                         st.addEntry(rname, l.size, real);
                         var e = toSymEntry(st.lookup(rname), real);
                         e.a = l.a / val:real;
                     } 
                     when "//" { // floordiv
                         // add check for division by zero!
+                        if (val == 0) {
+			              return "Error: Attempt to divide by zero";
+			            }
                         st.addEntry(rname, l.size, real);
                         var e = toSymEntry(st.lookup(rname), real);
                         e.a = floor(l.a / val:real);
@@ -745,10 +782,11 @@ module OperatorMsg
                         var e = toSymEntry(st.lookup(rname), bool);
                         e.a = l.a != val;
                     }
-                    when "**" { //this doesnt seem elegant...?
-                        var a =l.a**val;
-                        st.addEntry(rname, new shared SymEntry(a));
-                    }//end rsdange experiment
+                    when "**" { 
+                        st.addEntry(rname, l.size, real);
+                        var e = toSymEntry(st.lookup(rname), real);
+                        e.a= l.a**val;
+                    }
                     otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
                 }
             }
@@ -774,12 +812,18 @@ module OperatorMsg
                     }
                     when "/" { // truediv
                         // add check for division by zero!
+                        if (val == 0) {
+			              return "Error: Attempt to divide by zero";
+			            }
                         st.addEntry(rname, l.size, real);
                         var e = toSymEntry(st.lookup(rname), real);
                         e.a = l.a / val;
                     } 
                     when "//" { // floordiv
                         // add check for division by zero!
+                        if (val == 0) {
+			              return "Error: Attempt to divide by zero";
+			            }
                         st.addEntry(rname, l.size, real);
                         var e = toSymEntry(st.lookup(rname), real);
                         e.a = floor(l.a / val);
@@ -814,10 +858,11 @@ module OperatorMsg
                         var e = toSymEntry(st.lookup(rname), bool);
                         e.a = l.a != val;
                     }
-                    when "**" { //this doesnt seem elegant...?
-                        var a =l.a**val;
-                        st.addEntry(rname, new shared SymEntry(a));
-                    }//end rsdange experiment
+                    when "**" { 
+                        st.addEntry(rname, l.size, real);
+                        var e = toSymEntry(st.lookup(rname), real);
+                        e.a= l.a**val;
+                    }
                     otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
                 }
             }
@@ -1065,10 +1110,14 @@ module OperatorMsg
                         var e = toSymEntry(st.lookup(rname), int);
                         e.a = val ^ r.a;
                     }
-                    when "**" { //this doesnt seem elegant...?
-                        var a =val**r.a;
-                        st.addEntry(rname, new shared SymEntry(a));
-                    }//end rsdange experiment
+                    when "**" { 
+                        if || reduce (r.a<0){
+                            return "Error: Attempt to exponentiate base of type Int64 to negative exponent";
+                        }
+                        st.addEntry(rname, r.size, int);
+                        var e = toSymEntry(st.lookup(rname), int);
+                        e.a= val**r.a;
+                    }
                     otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
                 }
             }
@@ -1093,13 +1142,17 @@ module OperatorMsg
                         e.a = val * r.a;
                     }
                     when "/" { // truediv
-                        // add check for division by zero!
+                        if || reduce (r.a == 0) {
+			                 return "Error: Attempt to divide by zero";
+			            }
                         st.addEntry(rname, r.size, real);
                         var e = toSymEntry(st.lookup(rname), real);
                         e.a = val:real / r.a;
                     }
                     when "//" { // floordiv
-                        // add check for division by zero!
+                        if || reduce (r.a == 0) {
+			                 return "Error: Attempt to divide by zero";
+			            }
                         st.addEntry(rname, r.size, real);
                         var e = toSymEntry(st.lookup(rname), real);
                         e.a = floor(val:real / r.a);
@@ -1134,10 +1187,11 @@ module OperatorMsg
                         var e = toSymEntry(st.lookup(rname), bool);
                         e.a = val != r.a;
                     }
-                    when "**" { //this doesnt seem elegant...?
-                        var a =val**r.a;
-                        st.addEntry(rname, new shared SymEntry(a));
-                    }//end rsdange experiment
+                    when "**" { 
+                        st.addEntry(rname, r.size, real);
+                        var e = toSymEntry(st.lookup(rname), real);
+                        e.a= val**r.a;
+                    }
                     otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
                 }
             }
@@ -1163,12 +1217,18 @@ module OperatorMsg
                     }
                     when "/" { // truediv
                         // add check for division by zero!
+                        if || reduce (r.a == 0) {
+			                 return "Error: Attempt to divide by zero";
+			            }
                         st.addEntry(rname, r.size, real);
                         var e = toSymEntry(st.lookup(rname), real);
                         e.a = val / r.a:real;
                     } 
                     when "//" { // floordiv
                         // add check for division by zero!
+                        if || reduce (r.a == 0) {
+			                 return "Error: Attempt to divide by zero";
+			            }
                         st.addEntry(rname, r.size, real);
                         var e = toSymEntry(st.lookup(rname), real);
                         e.a = floor(val / r.a:real);
@@ -1203,10 +1263,11 @@ module OperatorMsg
                         var e = toSymEntry(st.lookup(rname), bool);
                         e.a = val != r.a;
                     }
-                    when "**" { //this doesnt seem elegant...?
-                        var a =val**r.a;
-                        st.addEntry(rname, new shared SymEntry(a));
-                    }//end rsdange experiment
+                    when "**" { 
+                        st.addEntry(rname, r.size, real);
+                        var e = toSymEntry(st.lookup(rname), real);
+                        e.a= val**r.a;
+                    }
                     otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
                 }
             }
@@ -1231,13 +1292,17 @@ module OperatorMsg
                         e.a = val * r.a;
                     }
                     when "/" { // truediv
-                        // add check for division by zero!
+                        if || reduce (r.a == 0) {
+			                 return "Error: Attempt to divide by zero";
+			            }
                         st.addEntry(rname, r.size, real);
                         var e = toSymEntry(st.lookup(rname), real);
                         e.a = val / r.a;
                     } 
                     when "//" { // floordiv
-                        // add check for division by zero!
+                        if || reduce (r.a == 0) {
+			                 return "Error: Attempt to divide by zero";
+			            }
                         st.addEntry(rname, r.size, real);
                         var e = toSymEntry(st.lookup(rname), real);
                         e.a = floor(val / r.a);
@@ -1272,10 +1337,11 @@ module OperatorMsg
                         var e = toSymEntry(st.lookup(rname), bool);
                         e.a = val != r.a;
                     }
-                    when "**" { //this doesnt seem elegant...?
-                        var a =val**r.a;
-                        st.addEntry(rname, new shared SymEntry(a));
-                    }//end rsdange experiment
+                    when "**" { 
+                        st.addEntry(rname, r.size, real);
+                        var e = toSymEntry(st.lookup(rname), real);
+                        e.a= val**r.a;
+                    }
                     otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
                 }
             }
@@ -1429,37 +1495,16 @@ module OperatorMsg
                     when "+=" { l.a += r.a; }
                     when "-=" { l.a -= r.a; }
                     when "*=" { l.a *= r.a; }
-                    when "//=" { l.a /= r.a; }//floordiv
-                    when "**=" { 
-                        //do a +scan and iter thru res
-                        //if any i+1 val is < i val, then set neg flag to true.
-                        var neg: atomic bool;
-                        neg.write(false);
-                        //(there exists an el in r.a thats<0)
-                        forall i in r.a{
-                            if(i<0){
-                                neg.write(true);
-                            }
+                    when "//=" { 
+                        if || reduce(r.a==0){
+                            return "Error: Attempt to divide by zero";
                         }
-                        if(neg.read()){
-                            
-                            // cmd = "create"; //create an array of reals.
-                            // var len = l.a.size;
-                            // var dtype = DType.Float64;
-                            // var reqMsg = try! "%s %s %i".format(cmd, dtype2str(dtype), len);
-                            // repMsg = createMsg(reqMsg, st);
-                            // if v { writeln(repMsg); }
-                            // fields = repMsg.split(); 
-                            // aname= fields[2];
-                        
-                            // var left2: borrowed GenSymEntry = st.lookup(aname);
-                            // var l2=toSymEntry(left2,real);
-
-                            // l2.a=[i in l.a] i:real; //transfer and cast vals
-                            // l2.a **= r.a; //perform the desired operation
-                            writeln("Negative exponent not supported in vv int64 int64");
-                            return notImplementedError("opeqvv",left.dtype,op,right.dtype);
-                        }//negative exponent
+                        l.a /= r.a; 
+                    }//floordiv
+                    when "**=" { 
+                        if || reduce (r.a<0){
+                            return "Error: Attempt to exponentiate base of type Int64 to negative exponent";
+                        }
                         else{ l.a **= r.a; }
                     }
                     otherwise {return notImplementedError("opeqvv",left.dtype,op,right.dtype);}
@@ -1478,8 +1523,18 @@ module OperatorMsg
                     when "+=" {l.a += r.a;}
                     when "-=" {l.a -= r.a;}
                     when "*=" {l.a *= r.a;}
-                    when "/=" {l.a /= r.a:real;} //truediv
-                    when "//=" {l.a = floor(l.a / r.a);} //floordiv
+                    when "/=" {
+                        if || reduce(r.a==0){
+                            return "Error: Attempt to divide by zero";
+                        }
+                        l.a /= r.a:real;
+                    } //truediv
+                    when "//=" {
+                        if || reduce(r.a==0){
+                            return "Error: Attempt to divide by zero";
+                        }
+                        l.a = floor(l.a / r.a);
+                    } //floordiv
                     when "**=" { l.a **= r.a; }
                     otherwise {return notImplementedError("opeqvv",left.dtype,op,right.dtype);}
                 }
@@ -1493,7 +1548,12 @@ module OperatorMsg
                     when "-=" {l.a -= r.a;}
                     when "*=" {l.a *= r.a;}
                     when "/=" {l.a /= r.a;}//truediv
-                    when "//=" {l.a = floor(l.a / r.a);}//floordiv
+                    when "//=" {
+                        if || reduce(r.a==0){
+                            return "Error: Attempt to divide by zero";
+                        }
+                        l.a = floor(l.a / r.a);
+                    }//floordiv
                     when "**=" { l.a **= r.a; }
                     otherwise {return notImplementedError("opeqvv",left.dtype,op,right.dtype);}
                 }
@@ -1572,27 +1632,16 @@ module OperatorMsg
                     when "+=" { l.a += val; }
                     when "-=" { l.a -= val; }
                     when "*=" { l.a *= val; }
-                    when "//=" { l.a /= val; }//floordiv
+                    when "//=" { 
+                        if (val==0){
+                            return "Error: Attempt to divide by zero";
+                        }
+                        l.a /= val; 
+                    }//floordiv
                     when "**=" { 
-                        if(val<0){
-                            
-                            // cmd = "create"; //create an array of reals.
-                            // var len = l.a.size;
-                            // dtype = DType.Float64;
-                            // var reqMsg = try! "%s %s %i".format(cmd, dtype2str(dtype), len);
-                            // repMsg = createMsg(reqMsg, st);
-                            // if v { writeln(repMsg); }
-                            // var fields = repMsg.split(); 
-                            // aname= fields[2];
-                        
-                            // var left2: borrowed GenSymEntry = st.lookup(aname);
-                            // var l2=toSymEntry(left2,real);
-
-                            // l2.a=[i in l.a] i:real; //transfer and cast vals
-                            // l2.a **= val; //perform the desired operation
-                            writeln("Negative exponent not supported in vs int64 int64");
-                            return notImplementedError("opeqvs",left.dtype,op,dtype);
-                        }//negative exponent
+                        if (val<0){
+                            return "Error: Attempt to exponentiate base of type Int64 to negative exponent";
+                        }
                         else{ l.a **= val; }
 
                     }
@@ -1612,8 +1661,18 @@ module OperatorMsg
                     when "+=" {l.a += val;}
                     when "-=" {l.a -= val;}
                     when "*=" {l.a *= val;}
-                    when "/=" {l.a /= val:real;} //truediv
-                    when "//=" {l.a = floor(l.a / val);} //floordiv
+                    when "/=" {
+                        if (val==0){
+                            return "Error: Attempt to divide by zero";
+                        }
+                        l.a /= val:real;
+                    } //truediv
+                    when "//=" {
+                        if (val==0){
+                            return "Error: Attempt to divide by zero";
+                        }
+                        l.a = floor(l.a / val);
+                    } //floordiv
                     when "**=" { l.a **= val; }
                     otherwise {return notImplementedError("opeqvs",left.dtype,op,dtype);}
                 }
@@ -1626,8 +1685,18 @@ module OperatorMsg
                     when "+=" {l.a += val;}
                     when "-=" {l.a -= val;}
                     when "*=" {l.a *= val;}
-                    when "/=" {l.a /= val;}//truediv
-                    when "//=" {l.a = floor(l.a / val);}//floordiv
+                    when "/=" {
+                        if (val==0){
+                            return "Error: Attempt to divide by zero";
+                        }
+                        l.a /= val;
+                    }//truediv
+                    when "//=" {
+                        if (val==0){
+                            return "Error: Attempt to divide by zero";
+                        }
+                        l.a = floor(l.a / val);
+                    }//floordiv
                     when "**=" { l.a **= val; }
                     otherwise {return notImplementedError("opeqvs",left.dtype,op,dtype);}
                 }
