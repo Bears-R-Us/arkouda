@@ -152,6 +152,7 @@ module OperatorMsg
                     }    
                     when "**" { 
                         if || reduce (r.a<0){
+                            //instead of error, could we paste the below code but of type float?
                             return "Error: Attempt to exponentiate base of type Int64 to negative exponent";
                         }
                         st.addEntry(rname, l.size, int);

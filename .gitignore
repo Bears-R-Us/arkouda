@@ -7,3 +7,5 @@ arkouda_server_real
 __pycache__/
 .ipynb_checkpoints/
 .vscode/
+SysInfo.chpl
+Untitled.ipynb
