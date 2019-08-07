@@ -1,5 +1,5 @@
 
-module DType
+module NumPyDType
 {
     use ServerConfig;
 

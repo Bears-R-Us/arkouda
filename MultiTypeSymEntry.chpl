@@ -3,9 +3,36 @@ module MultiTypeSymEntry
 {
     use ServerConfig;
 
-    use Dtype;
+    use NumPyDType;
 
-    use MyDmap;
+    use SymArrayDmap;
+
+    /* Casts a GenSymEntry to the specified type and returns it.
+       
+       **Dev Note**: too much type inference still for my taste! Takes a generic sym entry and 
+       instantiates a SymEntry with the specified type.
+
+       :arg gse: general sym entry
+       :type gse: borrowed GenSymEntry
+
+        :arg etype: type for gse to be cast to
+        :type etype: type
+       */
+    inline proc toSymEntry(gse: borrowed GenSymEntry, type etype) {
+        return try! gse: borrowed SymEntry(etype);
+    }
+
+    /* 1.18 version print out localSubdomains 
+
+    :arg x: array
+    :type x: [] 
+    */
+    proc printOwnership(x) {
+        for loc in Locales do
+            on loc do
+                write(x.localSubdomain(), " ");
+        writeln();
+    }
 
     /* This is a dummy class to avoid having to talk about specific
        instantiations of SymEntry. */
