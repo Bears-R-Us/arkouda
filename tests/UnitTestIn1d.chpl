@@ -1,6 +1,6 @@
 module UnitTestIn1d
 {
-    use In1dMsg;
+    use In1d;
     
     use Random;
     use Time only;
