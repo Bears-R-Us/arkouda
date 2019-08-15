@@ -2,7 +2,7 @@ module AryUtil
 {
     /*
     Threshold for the amount of data that will be printed. 
-    Arrays larger than 30 will print less data.
+    Arrays larger than printThresh will print less data.
     */
     var printThresh = 30;
     
@@ -17,6 +17,19 @@ module AryUtil
         else {writeln(name,[i in A.domain.low..A.domain.low+2] A[i],
                       " ... ", [i in A.domain.high-2..A.domain.high] A[i]);}
     }
+
+    /* 1.18 version print out localSubdomains 
+
+    :arg x: array
+    :type x: [] 
+    */
+    proc printOwnership(x) {
+        for loc in Locales do
+            on loc do
+                write(x.localSubdomain(), " ");
+        writeln();
+    }
+
 
     /*
     Determines if the passed array is sorted.
