@@ -22,7 +22,7 @@ endif
 .PHONY: all clean
 all: $(ARKOUDA_MAIN_MODULE)
 
-$(ARKOUDA_MAIN_MODULE): $(shell find src/ -type f -name '*.chpl') Makefile Makefile.*
+$(ARKOUDA_MAIN_MODULE): $(shell find src/ -type f -name '*.chpl') Makefile #Makefile.*
 	$(CHPL) $(CHPL_FLAGS) src/$(ARKOUDA_MAIN_MODULE).chpl
 
 clean:
