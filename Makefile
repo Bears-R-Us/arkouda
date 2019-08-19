@@ -13,7 +13,6 @@ endef
 # Usage: $(eval $(call add-path,/home/user/anaconda3/envs/arkouda))
 #                               ^ no space after comma
 #-include Makefile.paths # Add entries here.
-#-include Makefile.paths # Add entries here.
 
 # System Environment
 ifdef LD_RUN_PATH
@@ -23,7 +22,7 @@ endif
 .PHONY: all clean
 all: $(ARKOUDA_MAIN_MODULE)
 
-$(ARKOUDA_MAIN_MODULE): $(shell find src/ -type f -name '*.chpl') Makefile # Makefile.*
+$(ARKOUDA_MAIN_MODULE): $(shell find src/ -type f -name '*.chpl') Makefile #Makefile.*
 	$(CHPL) $(CHPL_FLAGS) src/$(ARKOUDA_MAIN_MODULE).chpl
 
 clean:
