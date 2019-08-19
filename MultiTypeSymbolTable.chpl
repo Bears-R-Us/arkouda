@@ -64,7 +64,7 @@ module MultiTypeSymbolTable
         :arg entry: Generic Sym Entry to convert
         :type entry: GenSymEntry
         */
-        proc addEntry(name: string, entry: shared GenSymEntry) {
+        proc addEntry(name: string, in entry: shared GenSymEntry) {
             if (tD.contains(name))
             {
                 if (v) {writeln("redefined symbol ",name);try! stdout.flush();}
