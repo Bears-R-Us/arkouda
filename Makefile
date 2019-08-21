@@ -77,7 +77,7 @@ define TEST_HELP_TEXT
 # test			Build all tests ($(TEST_BINARY_SIGIL)*). Can override TEST_CHPL_FLAGS.
   test-help
   test-clean
- $(foreach t,$(TEST_TARGETS), $(t)\n)
+ $(foreach t,$(sort $(TEST_TARGETS)), $(t)\n)
 endef
 export TEST_HELP_TEXT
 HELP_TARGETS += test-help
