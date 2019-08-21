@@ -1,0 +1,1 @@
+git show --no-patch --no-notes --pretty='%cI' $@
