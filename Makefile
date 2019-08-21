@@ -74,7 +74,7 @@ TEST_TARGETS := $(addprefix $(TEST_BINARY_DIR)/$(TEST_BINARY_SIGIL),$(TEST_MODUL
 TEST_CHPL_FLAGS ?= $(CHPL_FLAGS)
 
 define TEST_HELP_TEXT
-# test			Build all tests ($(TEST_BINARY_SIGIL)*). Can override TEST_CHPL_FLAGS.
+# test			Build all tests ($(TEST_BINARY_DIR)/$(TEST_BINARY_SIGIL)*). Can override TEST_CHPL_FLAGS.
   test-help
   test-clean
  $(foreach t,$(sort $(TEST_TARGETS)), $(t)\n)
