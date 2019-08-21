@@ -1,0 +1,23 @@
+#!/bin/bash
+set -o errexit -o pipefail -o noclobber -o nounset
+
+Branch="origin/master"
+
+min_args=1
+if (( $# < min_args )); then
+    >&2 echo "Usage: git hash-from-date Date [Branch] [Options]"
+    >&2 echo "  Date can be any format"
+    >&2 echo "  Branch can be any commit reference (default: $Branch)"
+    >&2 echo "  Options that are accepted by 'git rev-list'"
+    >&2 echo
+    exit 1
+fi
+Date="$1"
+ObservedRequiredArgs=$min_args
+if (( $# >= 2 )) && ! [[ "$2" =~ '--' ]]; then
+    ((ObservedRequiredArgs++))
+    Branch="$2"
+fi
+shift $ObservedRequiredArgs
+
+git rev-list -1 --before="Date" "$Branch" $@
