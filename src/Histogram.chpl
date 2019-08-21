@@ -1,0 +1,151 @@
+module Histogram
+{
+    use ServerConfig;
+    
+    use Time only;
+    use Math only;
+
+    use PrivateDist;
+    use SymArrayDmap;
+
+    // need + and += defined to support reduction on atomic int 
+    proc +(x: atomic int, y: atomic int) {
+        return x.read() + y.read();
+    }
+    // need + and += defined to support reduction on atomic int     
+    proc +=(X: [?D] int, Y: [D] atomic int) {
+        [i in D] {X[i] += Y[i].read();}
+    }
+    
+    /*
+    Takes the data in array a, creates an atomic histogram in parallel, 
+    and copies the result of the histogram operation into a distributed int array
+
+    Returns the histogram (distributed int array).
+
+    :arg a: array of data to be histogrammed
+    :type a: [] ?etype
+
+    :arg aMin: Min value in array a
+    :type aMin: etype
+
+    :arg aMax: Max value in array a
+    :type aMax: etype
+
+    :arg bins: allocate size of the histogram's distributed domain
+    :type bins: int
+
+    :arg binWidth: set value for either 1:1 unique value counts, or multiple unique values per bin.
+    :type binWidth: real
+
+    :returns: [] int
+
+    */
+    proc histogramGlobalAtomic(a: [?aD] ?etype, aMin: etype, aMax: etype, bins: int, binWidth: real) {
+
+        var hD = makeDistDom(bins);
+        var atomicHist: [hD] atomic int;
+        
+        // count into atomic histogram
+        forall v in a {
+            var vBin = ((v - aMin) / binWidth):int;
+            if v == aMax {vBin = bins-1;}
+            //if (v_bin < 0) | (v_bin > (bins-1)) {try! writeln("OOB");try! stdout.flush();}
+            atomicHist[vBin].add(1);
+        }
+        
+        var hist = makeDistArray(bins,int);
+        // copy from atomic histogram to normal histogram
+        [(e,ae) in zip(hist, atomicHist)] e = ae.read();
+        //if v {try! writeln("hist =",hist); try! stdout.flush();}
+
+        return hist;
+    }
+
+    /*
+    Takes the data in array a, creates an atomic histogram in each locale,
+    + reduces each locale's histogram computations into a distributed int array
+
+    Returns the histogram (distributed int array).
+
+    :arg a: array of data to be histogrammed
+    :type a: [] ?etype
+
+    :arg aMin: Min value in array a
+    :type aMin: etype
+
+    :arg aMax: Max value in array a
+    :type aMax: etype
+
+    :arg bins: allocate size of the histogram's distributed domain
+    :type bins: int
+
+    :arg binWidth: set value for either 1:1 unique value counts, or multiple unique values per bin.
+    :type binWidth: real
+
+    :returns: [] int
+
+    */
+    proc histogramLocalAtomic(a: [?aD] ?etype, aMin: etype, aMax: etype, bins: int, binWidth: real) {
+
+        // allocate per-locale atomic histogram
+        var atomicHist: [PrivateSpace] [0..#bins] atomic int;
+
+        // count into per-locale private atomic histogram
+        forall v in a {
+            var vBin = ((v - aMin) / binWidth):int;
+            if v == aMax {vBin = bins-1;}
+            atomicHist[here.id][vBin].add(1);
+        }
+        
+        var hist = makeDistArray(bins,int);
+
+        // +reduce across per-locale histograms to get counts
+        hist = + reduce [i in PrivateSpace] atomicHist[i];
+
+        return hist;
+    }
+    
+
+    /*
+    Iterates in parallel over all values of a, histogramming into a new array as each value is processed. 
+    This new array is returned as the histogram.
+    
+    Returns the histogram (distributed int array).
+
+    :arg a: array of data to be histogrammed
+    :type a: [] ?etype
+
+    :arg aMin: Min value in array a
+    :type aMin: etype
+
+    :arg aMax: Max value in array a
+    :type aMax: etype
+
+    :arg bins: allocate size of the histogram's distributed domain
+    :type bins: int
+
+    :arg binWidth: set value for either 1:1 unique value counts, or multiple unique values per bin.
+    :type binWidth: real
+
+    :returns: [] int
+
+    */
+    proc histogramReduceIntent(a: [?aD] ?etype, aMin: etype, aMax: etype, bins: int, binWidth: real) {
+
+        var gHist: [0..#bins] int;
+        
+        // count into per-task/per-locale histogram and then reduce as tasks complete
+        forall v in a with (+ reduce gHist) {
+            var vBin = ((v - aMin) / binWidth):int;
+            if v == aMax {vBin = bins-1;}
+            gHist[vBin] += 1;
+        }
+
+        var hist = makeDistArray(bins,int);        
+        hist = gHist;
+        return hist;
+    }
+
+
+}
