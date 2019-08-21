@@ -53,8 +53,11 @@ HELP_TARGETS += arkouda-help
 arkouda-help:
 	@echo "$$ARKOUDA_HELP_TEXT"
 
-$(ARKOUDA_MAIN_MODULE): $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl') $(ARKOUDA_MAKEFILES)
-	$(CHPL) $(CHPL_FLAGS) $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl -o $@
+ARKOUDA_SOURCES := $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
+ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
+
+$(ARKOUDA_MAIN_MODULE): $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
+	$(CHPL) $(CHPL_FLAGS) $(ARKOUDA_MAIN_SOURCE) -o $@
 
 CLEAN_TARGETS += arkouda-clean
 .PHONY: arkouda-clean
@@ -92,6 +95,37 @@ CLEAN_TARGETS += archive-clean
 .PHONY: archive-clean
 archive-clean:
 	$(RM) $(PROJECT_NAME)-*.$(ARCHIVE_EXTENSION)
+
+################
+#### Doc.mk ####
+################
+
+define DOC_HELP_TEXT
+# doc			Generate $(DOC_DIR)/ with chpldoc
+  doc-help
+  doc-clean
+
+endef
+export DOC_HELP_TEXT
+HELP_TARGETS += doc-help
+.PHONY: doc-help
+doc-help:
+	@echo "$$DOC_HELP_TEXT"
+
+DOC_DIR := doc
+CHPLDOC := chpldoc
+CHPLDOC_FLAGS := --process-used-modules
+
+.PHONY: doc
+doc: $(DOC_DIR)/index.html
+
+$(DOC_DIR)/index.html: $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
+	$(CHPLDOC) $(CHPLDOC_FLAGS) $(ARKOUDA_MAIN_SOURCE) -o $(DOC_DIR)
+
+CLEAN_TARGETS += doc-clean
+.PHONY: doc-clean
+doc-clean:
+	$(RM) -r $(DOC_DIR)
 
 #################
 #### Test.mk ####
