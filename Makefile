@@ -42,7 +42,7 @@ define ARKOUDA_HELP_TEXT
   help
   all			$(ALL_TARGETS)
 
-# $(ARKOUDA_MAIN_MODULE)	Can override CHPL_FLAGS.
+# $(ARKOUDA_MAIN_MODULE)	Can override CHPL_FLAGS
   arkouda-help
   arkouda-clean
 
@@ -87,7 +87,7 @@ ARCHIVE_FILENAME := $(PROJECT_NAME)-$(subst /,_,$(COMMIT)).$(ARCHIVE_EXTENSION)
 .PHONY: archive
 archive: $(ARCHIVE_FILENAME)
 
-.PHONY: $(ARCHIVE_FILENAME) # FORCE
+.PHONY: $(ARCHIVE_FILENAME)
 $(ARCHIVE_FILENAME):
 	git archive --format=$(ARCHIVE_EXTENSION) --prefix=$(subst .$(ARCHIVE_EXTENSION),,$(ARCHIVE_FILENAME))/ $(COMMIT) > $@
 
@@ -132,8 +132,8 @@ doc-clean:
 #################
 
 TEST_SOURCE_DIR := test
-TEST_SOURCE_FILES := $(wildcard $(TEST_SOURCE_DIR)/*.chpl)
-TEST_MODULES := $(basename $(notdir $(TEST_SOURCE_FILES)))
+TEST_SOURCES := $(wildcard $(TEST_SOURCE_DIR)/*.chpl)
+TEST_MODULES := $(basename $(notdir $(TEST_SOURCES)))
 
 TEST_BINARY_DIR := test-bin
 TEST_BINARY_SIGIL := #t-
@@ -141,7 +141,7 @@ TEST_TARGETS := $(addprefix $(TEST_BINARY_DIR)/$(TEST_BINARY_SIGIL),$(TEST_MODUL
 TEST_CHPL_FLAGS ?= $(CHPL_FLAGS)
 
 define TEST_HELP_TEXT
-# test			Build all tests ($(TEST_BINARY_DIR)/$(TEST_BINARY_SIGIL)*). Can override TEST_CHPL_FLAGS.
+# test			Build all tests ($(TEST_BINARY_DIR)/$(TEST_BINARY_SIGIL)*); Can override TEST_CHPL_FLAGS
   test-help
   test-clean
  $(foreach t,$(sort $(TEST_TARGETS)), $(t)\n)
