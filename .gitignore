@@ -7,6 +7,8 @@ arkouda_server_real
 __pycache__/
 .ipynb_checkpoints/
 .vscode/
+doc/
+docs/
 test-bin/
 Makefile.paths
 SysInfo.chpl
