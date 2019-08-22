@@ -4,7 +4,9 @@
  * fixed in1d bug
  * added in1d unit test
  * added groupby unit test
- *
+ * refactored a bunch of code
+ * doubled speed of binary operators
+ * many other changes lost track of them all
 
 ### Changes in arkouda-0.0.8
 ------------------------
