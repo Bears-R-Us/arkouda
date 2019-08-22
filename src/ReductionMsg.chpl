@@ -12,7 +12,6 @@ module ReductionMsg
 
     use AryUtil;
     use PrivateDist;
-    use ArgsortDRS only msbRadixSortWithScratchSpace;
     use Sort only defaultComparator, sort;
 
     config const reductionDEBUG = false;
@@ -896,7 +895,6 @@ module ReductionMsg
 	  right = segments[i+1] - 1;
 	}
 	if (right > left) {
-	  //msbRadixSortWithScratchSpace(left, right, sorted, values, defaultComparator, aMin, aMax);
 	  sorted[left..right] = values[left..right];
 	  ref seg = sorted[left..right];
 	  sort(seg);
