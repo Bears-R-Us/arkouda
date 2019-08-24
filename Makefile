@@ -92,7 +92,7 @@ archive: $(ARCHIVE_FILENAME)
 $(ARCHIVE_FILENAME):
 	git archive --format=$(ARCHIVE_EXTENSION) --prefix=$(subst .$(ARCHIVE_EXTENSION),,$(ARCHIVE_FILENAME))/ $(COMMIT) > $@
 
-CLEAN_TARGETS += archive-clean
+CLEANALL_TARGETS += archive-clean
 .PHONY: archive-clean
 archive-clean:
 	$(RM) $(PROJECT_NAME)-*.$(ARCHIVE_EXTENSION)
@@ -171,8 +171,9 @@ define CLEAN_HELP_TEXT
 endef
 $(eval $(call create_help_target,clean-help,CLEAN_HELP_TEXT))
 
-.PHONY: clean
+.PHONY: clean cleanall
 clean: $(CLEAN_TARGETS)
+cleanall: clean $(CLEANALL_TARGETS)
 
 .PHONY: help
 help: $(HELP_TARGETS)
