@@ -33,6 +33,15 @@ all: $(ALL_TARGETS)
 Makefile.paths:
 	touch $@
 
+# args: RuleTarget DefinedHelpText
+define create_help_target
+export $(2)
+HELP_TARGETS += $(1)
+.PHONY: $(1)
+$(1):
+	@echo "$$$$$(2)"
+endef
+
 ####################
 #### Arkouda.mk ####
 ####################
@@ -47,11 +56,7 @@ define ARKOUDA_HELP_TEXT
   arkouda-clean
 
 endef
-export ARKOUDA_HELP_TEXT
-HELP_TARGETS += arkouda-help
-.PHONY: arkouda-help
-arkouda-help:
-	@echo "$$ARKOUDA_HELP_TEXT"
+$(eval $(call create_help_target,arkouda-help,ARKOUDA_HELP_TEXT))
 
 ARKOUDA_SOURCES := $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
@@ -74,11 +79,7 @@ define ARCHIVE_HELP_TEXT
   archive-clean
 
 endef
-export ARCHIVE_HELP_TEXT
-HELP_TARGETS += archive-help
-.PHONY: archive-help
-archive-help:
-	@echo "$$ARCHIVE_HELP_TEXT"
+$(eval $(call create_help_target,archive-help,ARCHIVE_HELP_TEXT))
 
 COMMIT ?= master
 ARCHIVE_EXTENSION := tar.gz
@@ -106,11 +107,7 @@ define DOC_HELP_TEXT
   doc-clean
 
 endef
-export DOC_HELP_TEXT
-HELP_TARGETS += doc-help
-.PHONY: doc-help
-doc-help:
-	@echo "$$DOC_HELP_TEXT"
+$(eval $(call create_help_target,doc-help,DOC_HELP_TEXT))
 
 DOC_DIR := doc
 CHPLDOC := chpldoc
@@ -146,11 +143,7 @@ define TEST_HELP_TEXT
   test-clean
  $(foreach t,$(sort $(TEST_TARGETS)), $(t)\n)
 endef
-export TEST_HELP_TEXT
-HELP_TARGETS += test-help
-.PHONY: test-help
-test-help:
-	@echo "$$TEST_HELP_TEXT"
+$(eval $(call create_help_target,test-help,TEST_HELP_TEXT))
 
 .PHONY: test
 test: $(TEST_TARGETS)
@@ -176,11 +169,7 @@ define CLEAN_HELP_TEXT
   clean-help
  $(foreach t,$(CLEAN_TARGETS), $(t)\n)
 endef
-export CLEAN_HELP_TEXT
-HELP_TARGETS += clean-help
-.PHONY: clean-help
-clean-help:
-	@echo "$$CLEAN_HELP_TEXT"
+$(eval $(call create_help_target,clean-help,CLEAN_HELP_TEXT))
 
 .PHONY: clean
 clean: $(CLEAN_TARGETS)
