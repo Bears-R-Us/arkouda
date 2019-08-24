@@ -41,24 +41,24 @@ module GenSymIO {
     proc readEntry(): shared GenSymEntry throws {
       var tmpr = tmpf.reader(kind=iobig, start=0);
       if dtype == DType.Int64 {
-       var entryInt = new shared SymEntry(size, int);
-       tmpr.read(entryInt.a);
-       tmpr.close(); tmpf.close();
-       return entryInt;
+        var entryInt = new shared SymEntry(size, int);
+        tmpr.read(entryInt.a);
+        tmpr.close(); tmpf.close();
+        return entryInt;
       } else if dtype == DType.Float64 {
-       var entryReal = new shared SymEntry(size, real);
-       tmpr.read(entryReal.a);
-       tmpr.close(); tmpf.close();
-       return entryReal;
+        var entryReal = new shared SymEntry(size, real);
+        tmpr.read(entryReal.a);
+        tmpr.close(); tmpf.close();
+        return entryReal;
       } else if dtype == DType.Bool {
-       var entryBool = new shared SymEntry(size, bool);
-       tmpr.read(entryBool.a);
-       tmpr.close(); tmpf.close();
-       return entryBool;
+        var entryBool = new shared SymEntry(size, bool);
+        tmpr.read(entryBool.a);
+        tmpr.close(); tmpf.close();
+        return entryBool;
       } else {
-       tmpr.close();
-       tmpf.close();
-       throw new owned UnhandledDataTypeError(dtype);
+        tmpr.close();
+        tmpf.close();
+        throw new owned UnhandledDataTypeError(dtype);
       }
       tmpr.close();
       tmpf.close();
@@ -259,14 +259,14 @@ module GenSymIO {
     if dataclass == C_HDF5.H5T_INTEGER {
       var entryInt = new shared SymEntry(len, int);
       if GenSymIO_DEBUG {
-       writeln("Initialized int entry"); try! stdout.flush();
+        writeln("Initialized int entry"); try! stdout.flush();
       }
       read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
       return entryInt;
     } else if dataclass == C_HDF5.H5T_FLOAT {
       var entryReal = new shared SymEntry(len, real);
       if GenSymIO_DEBUG {
-       writeln("Initialized float entry"); try! stdout.flush();
+        writeln("Initialized float entry"); try! stdout.flush();
       }
       read_files_into_distributed_array(entryReal.a, subdoms, filenames, dsetName);
       return entryReal;
