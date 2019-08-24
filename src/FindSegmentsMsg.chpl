@@ -36,8 +36,8 @@ module FindSegmentsMsg
         var sname = st.nextName(); // segments
         var uname = st.nextName(); // unique keys
 
-        var kEnt: borrowed GenSymEntry = st.lookup(kname);
-        if (kEnt == nil) {return unknownSymbolError(pn,kname);}
+        try {
+        var kEnt: borrowed GenSymEntry = st.throwup(kname);
 
         select (kEnt.dtype) {
             when (DType.Int64) {
@@ -74,6 +74,10 @@ module FindSegmentsMsg
         }
         
         return try! "created " + st.attrib(sname) + " +created " + st.attrib(uname);
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,e.name);
+        }
+
     }
 
     proc findLocalSegmentsMsg(reqMsg: string, st: borrowed SymTab): string {
@@ -87,8 +91,8 @@ module FindSegmentsMsg
         var sname = st.nextName(); // segments
         var uname = st.nextName(); // unique keys
 
-        var kEnt: borrowed GenSymEntry = st.lookup(kname);
-        if (kEnt == nil) {return unknownSymbolError(pn,kname);}
+        try {
+        var kEnt: borrowed GenSymEntry = st.throwup(kname);
 
         select (kEnt.dtype) {
             when (DType.Int64) {
@@ -103,6 +107,9 @@ module FindSegmentsMsg
         }
         
         return try! "created " + st.attrib(sname) + " +created " + st.attrib(uname);
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,e.name);
+        }
     }
 
     proc perLocFindSegsAndUkeys(perLocSorted:[?D] int, minKey:int, keyRange:int) {

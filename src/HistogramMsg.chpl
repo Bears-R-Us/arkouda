@@ -23,8 +23,8 @@ module HistogramMsg
         var rname = st.nextName();
         if v {try! writeln("%s %s %i : %s".format(cmd, name, bins, rname));try! stdout.flush();}
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError("histogram",name);}
+        try {
+        var gEnt: borrowed GenSymEntry = st.throwup(name);
 
         // helper nested procedure
         proc histogramHelper(type t) {
@@ -58,6 +58,9 @@ module HistogramMsg
         }
         
         return try! "created " + st.attrib(rname);
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError("histogram",e.name);
+        }
     }
 
 

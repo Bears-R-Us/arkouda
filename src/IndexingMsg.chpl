@@ -17,8 +17,8 @@ module IndexingMsg
         var idx = try! fields[3]:int;
         if v {try! writeln("%s %s %i".format(cmd, name, idx));try! stdout.flush();}
 
-         var gEnt: borrowed GenSymEntry = st.lookup(name);
-         if (gEnt == nil) {return unknownSymbolError(pn,name);}
+        try {
+         var gEnt: borrowed GenSymEntry = st.throwup(name);
          
          select (gEnt.dtype) {
              when (DType.Int64) {
@@ -38,6 +38,9 @@ module IndexingMsg
              }
              otherwise {return notImplementedError(pn,dtype2str(gEnt.dtype));}
          }
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,e.name);
+        }
     }
 
     /* sliceIndex "a[slice]" response to __getitem__(slice) */
@@ -65,8 +68,8 @@ module IndexingMsg
 
         if v {try! writeln("%s %s %i %i %i : %t , %s".format(cmd, name, start, stop, stride, slice, rname));try! stdout.flush();}
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError(pn,name);}
+        try {
+        var gEnt: borrowed GenSymEntry = st.throwup(name);
 
         proc sliceHelper(type t) {
           var e = toSymEntry(gEnt,t);
@@ -91,6 +94,10 @@ module IndexingMsg
             otherwise {return notImplementedError(pn,dtype2str(gEnt.dtype));}
         }
         return try! "created " + st.attrib(rname);
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,e.name);
+        }
+
     }
 
     /* pdarrayIndex "a[pdarray]" response to __getitem__(pdarray) */
@@ -107,10 +114,9 @@ module IndexingMsg
 
         if v {try! writeln("%s %s %s : %s".format(cmd, name, iname, rname));try! stdout.flush();}
 
-        var gX: borrowed GenSymEntry = st.lookup(name);
-        if (gX == nil) {return unknownSymbolError(pn,name);}
-        var gIV: borrowed GenSymEntry = st.lookup(iname);
-        if (gIV == nil) {return unknownSymbolError(pn,iname);}
+        try {
+        var gX: borrowed GenSymEntry = st.throwup(name);
+        var gIV: borrowed GenSymEntry = st.throwup(iname);
 
         /* proc ivInt64Helper(type XType) { */
         /*     var e = toSymEntry(gX,XType); */
@@ -233,6 +239,9 @@ module IndexingMsg
                                                   "("+dtype2str(gX.dtype)+","+dtype2str(gIV.dtype)+")");}
         }
         return try! "created " + st.attrib(rname);
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,e.name);
+        }
     }
 
     /* setIntIndexToValue "a[int] = value" response to __setitem__(int, value) */
@@ -247,8 +256,8 @@ module IndexingMsg
         var value = fields[5];
         if v {try! writeln("%s %s %i %s %s".format(cmd, name, idx, dtype2str(dtype), value));try! stdout.flush();}
 
-         var gEnt: borrowed GenSymEntry = st.lookup(name);
-         if (gEnt == nil) {return unknownSymbolError(pn,name);}
+        try {
+         var gEnt: borrowed GenSymEntry = st.throwup(name);
 
          select (gEnt.dtype, dtype) {
              when (DType.Int64, DType.Int64) {
@@ -308,6 +317,10 @@ module IndexingMsg
                                                    "("+dtype2str(gEnt.dtype)+","+dtype2str(dtype)+")");}
          }
          return try! "%s success".format(pn);
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,e.name);
+        }
+
     }
 
     /* setPdarrayIndexToValue "a[pdarray] = value" response to __setitem__(pdarray, value) */
@@ -323,10 +336,9 @@ module IndexingMsg
 
         if v {try! writeln("%s %s %s %s %s".format(cmd, name, iname, dtype2str(dtype), value));try! stdout.flush();}
 
-        var gX: borrowed GenSymEntry = st.lookup(name);
-        if (gX == nil) {return unknownSymbolError(pn,name);}
-        var gIV: borrowed GenSymEntry = st.lookup(iname);
-        if (gIV == nil) {return unknownSymbolError(pn,iname);}
+        try {
+        var gX: borrowed GenSymEntry = st.throwup(name);
+        var gIV: borrowed GenSymEntry = st.throwup(iname);
 
         proc idxToValHelper(type Xtype, type IVtype, type dtype): string {
             var e = toSymEntry(gX,Xtype);
@@ -359,6 +371,9 @@ module IndexingMsg
             otherwise {return notImplementedError(pn,
                                                   "("+dtype2str(gX.dtype)+","+dtype2str(gIV.dtype)+","+dtype2str(dtype)+")");}
         }
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,e.name);
+        }
     }
 
     /* setPdarrayIndexToPdarray "a[pdarray] = pdarray" response to __setitem__(pdarray, pdarray) */
@@ -373,12 +388,10 @@ module IndexingMsg
 
         if v {try! writeln("%s %s %s %s".format(cmd, name, iname, yname));try! stdout.flush();}
 
-        var gX: borrowed GenSymEntry = st.lookup(name);
-        if (gX == nil) {return unknownSymbolError(pn,name);}
-        var gIV: borrowed GenSymEntry = st.lookup(iname);
-        if (gIV == nil) {return unknownSymbolError(pn,iname);}
-        var gY: borrowed GenSymEntry = st.lookup(yname);
-        if (gY == nil) {return unknownSymbolError(pn,yname);}
+        try {
+        var gX: borrowed GenSymEntry = st.throwup(name);
+        var gIV: borrowed GenSymEntry = st.throwup(iname);
+        var gY: borrowed GenSymEntry = st.throwup(yname);
 
         // add check to make syre IV and Y are same size
         if (gIV.size != gY.size) {return try! "Error: %s: size mismatch %i %i".format(pn,gIV.size, gY.size);}
@@ -419,6 +432,9 @@ module IndexingMsg
                                                   "("+dtype2str(gX.dtype)+","+dtype2str(gIV.dtype)+","+dtype2str(gY.dtype)+")");}
         }
         return try! "%s success".format(pn);
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,e.name);
+        }
     }
 
     /* setSliceIndexToValue "a[slice] = value" response to __setitem__(slice, value) */
@@ -444,9 +460,9 @@ module IndexingMsg
         else {slice = 1..0;}
 
         if v {try! writeln("%s %s %i %i %i %s %s".format(cmd, name, start, stop, stride, dtype2str(dtype), value));try! stdout.flush();}
-        
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError(pn,name);}
+
+        try {
+        var gEnt: borrowed GenSymEntry = st.throwup(name);
 
         select (gEnt.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
@@ -505,7 +521,10 @@ module IndexingMsg
             otherwise {return notImplementedError(pn,
                                                   "("+dtype2str(gEnt.dtype)+","+dtype2str(dtype)+")");}
         }
-        return try! "%s success".format(pn); 
+        return try! "%s success".format(pn);
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,e.name);
+        }
     }
     
     /* setSliceIndexToPdarray "a[slice] = pdarray" response to __setitem__(slice, pdarray) */
@@ -531,10 +550,9 @@ module IndexingMsg
 
         if v {try! writeln("%s %s %i %i %i %s".format(cmd, name, start, stop, stride, yname));try! stdout.flush();}
 
-        var gX: borrowed GenSymEntry = st.lookup(name);
-        if (gX == nil) {return unknownSymbolError(pn,name);}
-        var gY: borrowed GenSymEntry = st.lookup(yname);
-        if (gY == nil) {return unknownSymbolError(pn,yname);}
+        try {
+        var gX: borrowed GenSymEntry = st.throwup(name);
+        var gY: borrowed GenSymEntry = st.throwup(yname);
 
         // add check to make syre IV and Y are same size
         if (slice.size != gY.size) {return try! "Error: %s: size mismatch %i %i".format(pn,slice.size, gY.size);}
@@ -589,6 +607,9 @@ module IndexingMsg
                                                   "("+dtype2str(gX.dtype)+","+dtype2str(gY.dtype)+")");}
         }
         return try! "%s success".format(pn);
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,e.name);
+        }
     }
     
 }

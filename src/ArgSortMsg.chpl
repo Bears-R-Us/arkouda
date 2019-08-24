@@ -377,8 +377,8 @@ module ArgSortMsg
         var ivname = st.nextName();
         if v {try! writeln("%s %s : %s %s".format(cmd, name, ivname));try! stdout.flush();}
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError(pn,name);}
+        try {
+        var gEnt: borrowed GenSymEntry = st.throwup(name);
 
         select (gEnt.dtype) {
             when (DType.Int64) {
@@ -405,6 +405,10 @@ module ArgSortMsg
         }
         
         return try! "created " + st.attrib(ivname);
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,e.name);
+        }
+
     }
 
     /* localArgsort takes a pdarray and returns an index vector which sorts the array on a per-locale basis */
@@ -419,8 +423,8 @@ module ArgSortMsg
         var ivname = st.nextName();
         if v {try! writeln("%s %s : %s %s".format(cmd, name, ivname));try! stdout.flush();}
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError(pn,name);}
+        try {
+        var gEnt: borrowed GenSymEntry = st.throwup(name);
 
         select (gEnt.dtype) {
             when (DType.Int64) {
@@ -431,6 +435,10 @@ module ArgSortMsg
 	    otherwise {return notImplementedError(pn,gEnt.dtype);}
 	}
 	return try! "created " + st.attrib(ivname);
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,name);
+        }
+
     }
     
     proc perLocaleArgSort(a:[?aD] int):[aD] int {

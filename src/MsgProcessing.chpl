@@ -259,8 +259,8 @@ module MsgProcessing
         var dtype = str2dtype(fields[3]);
         var value = fields[4];
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError("set",name);}
+        try {
+        var gEnt: borrowed GenSymEntry = st.throwup(name);
 
         select (gEnt.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
@@ -335,6 +335,13 @@ module MsgProcessing
             otherwise {return unrecognizedTypeError("set",fields[3]);}
         }
         return repMsg;
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError("set",name);
+        } catch e {
+          throw e;
+          return "TODO: This shouldn't be necessary";
+        }
+
     }
     
     /* These ops are functions which take an array and produce an array.
@@ -361,8 +368,8 @@ module MsgProcessing
         var rname = st.nextName();
         if v {try! writeln("%s %s %s : %s".format(cmd,efunc,name,rname));try! stdout.flush();}
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError("efunc",name);}
+        try {
+        var gEnt: borrowed GenSymEntry = st.throwup(name);
        
         select (gEnt.dtype) {
             when (DType.Int64) {
@@ -454,6 +461,9 @@ module MsgProcessing
             }
             otherwise {return unrecognizedTypeError("efunc", dtype2str(gEnt.dtype));}
         }
+        } catch e: UndefinedSymbolError {
+          return try! "Error: binopvs: unkown symbol %s".format(e.name);
+        }
         return try! "created " + st.attrib(rname);
     }
 
@@ -480,12 +490,10 @@ module MsgProcessing
         var rname = st.nextName();
 	if v {try! writeln("%s %s %s %s %s %s : %s".format(cmd,efunc,name1,name2,name3,rname));try! stdout.flush();}
 
-        var g1: borrowed GenSymEntry = st.lookup(name1);
-        if (g1 == nil) {return unknownSymbolError("efunc",name1);}
-	var g2: borrowed GenSymEntry = st.lookup(name2);
-	if (g2 == nil) {return unknownSymbolError("efunc",name2);}
-	var g3: borrowed GenSymEntry = st.lookup(name3);
-	if (g3 == nil) {return unknownSymbolError("efunc",name3);}
+        try {
+        var g1: borrowed GenSymEntry = st.throwup(name1);
+	var g2: borrowed GenSymEntry = st.throwup(name2);
+	var g3: borrowed GenSymEntry = st.throwup(name3);
 	if !((g1.size == g2.size) && (g2.size == g3.size)) {
 	  return "Error: size mismatch in arguments to efunc3vv";
 	}
@@ -529,6 +537,9 @@ module MsgProcessing
 	otherwise {return notImplementedError("efunc3vv",efunc,g1.dtype,g2.dtype,g3.dtype);}
 	}
 	return try! "created " + st.attrib(rname);
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError("efunc",e.name);
+        }
     }
 
     /*
@@ -554,10 +565,9 @@ module MsgProcessing
         var rname = st.nextName();
 	if v {try! writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,name2,dtype,value,rname));try! stdout.flush();}
 
-        var g1: borrowed GenSymEntry = st.lookup(name1);
-        if (g1 == nil) {return unknownSymbolError("efunc",name1);}
-	var g2: borrowed GenSymEntry = st.lookup(name2);
-	if (g2 == nil) {return unknownSymbolError("efunc",name2);}
+        try {
+        var g1: borrowed GenSymEntry = st.throwup(name1);
+	var g2: borrowed GenSymEntry = st.throwup(name2);
 	if !(g1.size == g2.size) {
 	  return "Error: size mismatch in arguments to efunc3vs";
 	}
@@ -601,6 +611,9 @@ module MsgProcessing
 	otherwise {return notImplementedError("efunc3vs",efunc,g1.dtype,g2.dtype,dtype);}
 	}
 	return try! "created " + st.attrib(rname);
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError("efunc",e.name);
+        }
     }
 
     /*
@@ -626,10 +639,9 @@ module MsgProcessing
         var rname = st.nextName();
 	if v {try! writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,dtype,value,name2,rname));try! stdout.flush();}
 
-        var g1: borrowed GenSymEntry = st.lookup(name1);
-        if (g1 == nil) {return unknownSymbolError("efunc",name1);}
-	var g2: borrowed GenSymEntry = st.lookup(name2);
-	if (g2 == nil) {return unknownSymbolError("efunc",name2);}
+        try {
+        var g1: borrowed GenSymEntry = st.throwup(name1);
+	var g2: borrowed GenSymEntry = st.throwup(name2);
 	if !(g1.size == g2.size) {
 	  return "Error: size mismatch in arguments to efunc3sv";
 	}
@@ -673,6 +685,9 @@ module MsgProcessing
 	otherwise {return notImplementedError("efunc3sv",efunc,g1.dtype,dtype,g2.dtype);}
 	}
 	return try! "created " + st.attrib(rname);
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError("efunc",e.name);
+        }
     }
 
     /*
@@ -699,8 +714,8 @@ module MsgProcessing
         var rname = st.nextName();
 	if v {try! writeln("%s %s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,dtype1,value1,dtype2,value2,rname));try! stdout.flush();}
 
-        var g1: borrowed GenSymEntry = st.lookup(name1);
-        if (g1 == nil) {return unknownSymbolError("efunc",name1);}
+        try {
+        var g1: borrowed GenSymEntry = st.throwup(name1);
         select (g1.dtype, dtype1, dtype1) {
 	when (DType.Bool, DType.Int64, DType.Int64) {
 	  var e1 = toSymEntry(g1, bool);
@@ -741,6 +756,10 @@ module MsgProcessing
 	otherwise {return notImplementedError("efunc3sv",efunc,g1.dtype,dtype1,dtype2);}
 	}
 	return try! "created " + st.attrib(rname);
+        } catch e: UndefinedSymbolError {
+            return unknownSymbolError("efunc",e.name);
+        }
+
     }
 
     /* The 'where' function takes a boolean array and two other arguments A and B, and 

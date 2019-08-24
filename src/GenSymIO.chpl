@@ -23,45 +23,57 @@ module GenSymIO {
     } catch {
       return "Error: Could not write to memory buffer";
     }
-    var entry: shared GenSymEntry;
     try {
-      var tmpr = tmpf.reader(kind=iobig, start=0);
-      if dtype == DType.Int64 {
-	var entryInt = new shared SymEntry(size, int);
-	tmpr.read(entryInt.a);
-	tmpr.close(); tmpf.close();
-	entry = entryInt;
-      } else if dtype == DType.Float64 {
-	var entryReal = new shared SymEntry(size, real);
-	tmpr.read(entryReal.a);
-	tmpr.close(); tmpf.close();
-	entry = entryReal;
-      } else if dtype == DType.Bool {
-	var entryBool = new shared SymEntry(size, bool);
-	tmpr.read(entryBool.a);
-	tmpr.close(); tmpf.close();
-	entry = entryBool;
-      } else {
-	tmpr.close();
-	tmpf.close();
-	return try! "Error: Unhandled data type %s".format(fields[2]);
-      }
-      tmpr.close();
-      tmpf.close();
+      const entry: shared GenSymEntry = readEntry();
+      const rname = st.nextName();
+      st.addEntry(rname, entry);
+      return try! "created " + st.attrib(rname);
+    } catch err: UnhandledDataTypeError {
+      return try! "Error: Unhandled data type %s".format(err.dtype);
     } catch {
       return "Error: Could not read from memory buffer into SymEntry";
     }
-    var rname = st.nextName();
-    st.addEntry(rname, entry);
-    return try! "created " + st.attrib(rname);
+
+    class UnhandledDataTypeError: Error {
+      var dtype: DType;
+    }
+    
+    proc readEntry(): shared GenSymEntry throws {
+        var tmpr = tmpf.reader(kind=iobig, start=0);
+        if dtype == DType.Int64 {
+          var entryInt = new shared SymEntry(size, int);
+          tmpr.read(entryInt.a);
+          tmpr.close(); tmpf.close();
+          return entryInt;
+        } else if dtype == DType.Float64 {
+          var entryReal = new shared SymEntry(size, real);
+          tmpr.read(entryReal.a);
+          tmpr.close(); tmpf.close();
+          return entryReal;
+        } else if dtype == DType.Bool {
+          var entryBool = new shared SymEntry(size, bool);
+          tmpr.read(entryBool.a);
+          tmpr.close(); tmpf.close();
+          return entryBool;
+        } else {
+          tmpr.close();
+          tmpf.close();
+          throw new owned UnhandledDataTypeError(dtype);
+        }
+        tmpr.close();
+        tmpf.close();
+        //    } catch e {
+        //        throw e;
+        //      }
+    }
   }
 
   proc tondarrayMsg(reqMsg: string, st: borrowed SymTab): string {
     var arraystr: string;
     var fields = reqMsg.split();
-    var entry = st.lookup(fields[2]);
     var tmpf: file;
     try {
+      var entry = st.throwup(fields[2]);
       tmpf = openmem();
       var tmpw = tmpf.writer(kind=iobig);
       if entry.dtype == DType.Int64 {
@@ -74,6 +86,8 @@ module GenSymIO {
 	return try! "Error: Unhandled dtype %s".format(entry.dtype);
       }
       tmpw.close();
+    } catch e: UndefinedSymbolError {
+      return unknownSymbolError("tondarrayMsg",e.name);
     } catch {
       try! tmpf.close();
       return "Error: Unable to write SymEntry to memory buffer";
@@ -206,6 +220,15 @@ module GenSymIO {
       }
     }
     const dataclass = dclasses[dclasses.domain.first];
+    if !validateDataClass(dataclass) {
+      return try! "Error: detected unhandled datatype code %i".format(dataclass);
+    }
+
+    proc validateDataClass(dataclass: C_HDF5.hid_t) {
+      return (dataclass == C_HDF5.H5T_INTEGER ||
+              dataclass == C_HDF5.H5T_FLOAT);
+    }
+    
     for (i, dc) in zip(dclasses.domain, dclasses) {
       if dc != dataclass {
 	return try! "Error: inconsistent dtype in dataset %s of file %s".format(dsetName, filenames[i]);
@@ -226,23 +249,29 @@ module GenSymIO {
     if GenSymIO_DEBUG {
       writeln("Got subdomains and total length");
     }
-    var entry: shared GenSymEntry;
-    if dataclass == C_HDF5.H5T_INTEGER {
-      var entryInt = new shared SymEntry(len, int);
-      if GenSymIO_DEBUG {
-	writeln("Initialized int entry"); try! stdout.flush();
+    var entry: shared GenSymEntry = computeEntry(dataclass);
+
+    // This assumes that dataclass has already been validated above in
+    // validateDataClass() and that only expected dataclass values
+    // will be sent in.  If this is not the case, a halt occurs.
+    proc computeEntry(dataclass: C_HDF5.hid_t): shared GenSymEntry {
+      if dataclass == C_HDF5.H5T_INTEGER {
+        var entryInt = new shared SymEntry(len, int);
+        if GenSymIO_DEBUG {
+          writeln("Initialized int entry"); try! stdout.flush();
+        }
+        read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
+        return entryInt;
+      } else if dataclass == C_HDF5.H5T_FLOAT {
+        var entryReal = new shared SymEntry(len, real);
+        if GenSymIO_DEBUG {
+          writeln("Initialized float entry"); try! stdout.flush();
+        }
+        read_files_into_distributed_array(entryReal.a, subdoms, filenames, dsetName);
+        return entryReal;
+      } else {
+        halt("Unhandled case in validateDataClass: ", dataclass);
       }
-      read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
-      entry = entryInt;
-    } else if dataclass == C_HDF5.H5T_FLOAT {
-      var entryReal = new shared SymEntry(len, real);
-      if GenSymIO_DEBUG {
-	writeln("Initialized float entry"); try! stdout.flush();
-      }
-      read_files_into_distributed_array(entryReal.a, subdoms, filenames, dsetName);
-      entry = entryReal;
-    } else {
-      return try! "Error: detected unhandled datatype code %i".format(dataclass);
     }
     var rname = st.nextName();
     st.addEntry(rname, entry);
@@ -412,7 +441,7 @@ module GenSymIO {
     var entry = st.lookup(arrayName);
     var warnFlag: bool;
     try {
-    select entry.dtype {
+    select entry!.dtype {
       when DType.Int64 {
 	var e = toSymEntry(entry, int);
 	//C_HDF5.HDF5_WAR.H5LTmake_dataset_WAR(file_id, dsetName.c_str(), 1, c_ptrTo(dims), getHDF5Type(e.a.eltType), c_ptrTo(e.a));
@@ -427,7 +456,7 @@ module GenSymIO {
 	warnFlag = write1DDistArray(filename, mode, dsetName, e.a);
       }
       otherwise {
-	return unrecognizedTypeError("tohdf", dtype2str(entry.dtype));
+	return unrecognizedTypeError("tohdf", dtype2str(entry!.dtype));
       }
     }
     } catch e: FileNotFoundError {
