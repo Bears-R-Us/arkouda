@@ -75,6 +75,8 @@ module In1dMsg
         return try! "created " + st.attrib(rname);
         } catch e: UndefinedSymbolError {
           return unknownSymbolError("in1d",e.name);
+        } catch {
+          return unknownError("in1d");
         }
     }
 

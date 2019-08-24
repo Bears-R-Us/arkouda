@@ -407,6 +407,8 @@ module ArgSortMsg
         return try! "created " + st.attrib(ivname);
         } catch e: UndefinedSymbolError {
           return unknownSymbolError(pn,e.name);
+        } catch {
+          return unknownError(pn);
         }
 
     }
@@ -437,6 +439,8 @@ module ArgSortMsg
 	return try! "created " + st.attrib(ivname);
         } catch e: UndefinedSymbolError {
           return unknownSymbolError(pn,name);
+        } catch {
+          return unknownError(pn);
         }
 
     }

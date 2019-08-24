@@ -498,6 +498,8 @@ module OperatorMsg
         }
         } catch e: UndefinedSymbolError {
           return try! "Error: binopvv: unknown symbol %s".format(e.name);
+        } catch {
+          return unknownError("binopvv");
         }
 
         return try! "created " + st.attrib(rname);
@@ -985,6 +987,8 @@ module OperatorMsg
         return try! "created " + st.attrib(rname);
         } catch e: UndefinedSymbolError {
           return try! "Error: binopvs: unkown symbol %s".format(aname);
+        } catch {
+          return unknownError("binopvs");
         }
     }
        
@@ -1469,6 +1473,8 @@ module OperatorMsg
         return try! "created " + st.attrib(rname);
         } catch e: UndefinedSymbolError {
           return try! "Error: binopvs: unkown symbol %s".format(aname);
+        } catch {
+          return unknownError("binopvs");
         }
 
     }
@@ -1607,6 +1613,8 @@ module OperatorMsg
         }
         } catch e: UndefinedSymbolError {
           return try! "Error: binopvs: unkown symbol %s".format(aname);
+        } catch {
+          return unknownError("binopvs");
         }
         return "opeqvv success";
     }
@@ -1740,6 +1748,8 @@ module OperatorMsg
         }
         } catch e: UndefinedSymbolError {
           return try! "Error: binopvs: unkown symbol %s".format(aname);
+        } catch {
+          return unknownError("binopvs");
         }
         return "opeqvs success";
     }

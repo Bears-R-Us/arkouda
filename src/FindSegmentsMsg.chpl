@@ -76,6 +76,8 @@ module FindSegmentsMsg
         return try! "created " + st.attrib(sname) + " +created " + st.attrib(uname);
         } catch e: UndefinedSymbolError {
           return unknownSymbolError(pn,e.name);
+        } catch {
+          return unknownError(pn);
         }
 
     }
@@ -109,6 +111,8 @@ module FindSegmentsMsg
         return try! "created " + st.attrib(sname) + " +created " + st.attrib(uname);
         } catch e: UndefinedSymbolError {
           return unknownSymbolError(pn,e.name);
+        } catch {
+          return unknownError(pn);
         }
     }
 

@@ -337,9 +337,8 @@ module MsgProcessing
         return repMsg;
         } catch e: UndefinedSymbolError {
           return unknownSymbolError("set",name);
-        } catch e {
-          throw e;
-          return "TODO: This shouldn't be necessary";
+        } catch {
+          return unknownError("set");
         }
 
     }
@@ -463,6 +462,8 @@ module MsgProcessing
         }
         } catch e: UndefinedSymbolError {
           return try! "Error: binopvs: unkown symbol %s".format(e.name);
+        } catch {
+          return unknownError("binopvs");
         }
         return try! "created " + st.attrib(rname);
     }
@@ -539,6 +540,8 @@ module MsgProcessing
 	return try! "created " + st.attrib(rname);
         } catch e: UndefinedSymbolError {
           return unknownSymbolError("efunc",e.name);
+        } catch {
+          return unknownError("efunc");
         }
     }
 
@@ -613,6 +616,8 @@ module MsgProcessing
 	return try! "created " + st.attrib(rname);
         } catch e: UndefinedSymbolError {
           return unknownSymbolError("efunc",e.name);
+        } catch {
+          return unknownError("efunc");
         }
     }
 
@@ -687,6 +692,8 @@ module MsgProcessing
 	return try! "created " + st.attrib(rname);
         } catch e: UndefinedSymbolError {
           return unknownSymbolError("efunc",e.name);
+        } catch {
+          return unknownError("efunc");
         }
     }
 
@@ -758,6 +765,8 @@ module MsgProcessing
 	return try! "created " + st.attrib(rname);
         } catch e: UndefinedSymbolError {
             return unknownSymbolError("efunc",e.name);
+        } catch {
+          return unknownError("efunc");
         }
 
     }

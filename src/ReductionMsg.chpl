@@ -202,6 +202,8 @@ module ReductionMsg
         }
         } catch e: UndefinedSymbolError {
           return unknownSymbolError("reduction",e.name);
+        } catch {
+          return unknownError("reduction");
         }
 
     }
@@ -225,6 +227,8 @@ module ReductionMsg
       return try! "created " + st.attrib(rname);
       } catch e: UndefinedSymbolError {
         return unknownSymbolError("segmentedReduction",e.name);
+      } catch {
+        return unknownError("segmentedReduction");
       }
     }
 
@@ -261,6 +265,8 @@ module ReductionMsg
       return try! "created " + st.attrib(rname);
       } catch e: UndefinedSymbolError {
         return unknownSymbolError("segmentedReduction",e.name);
+      } catch {
+        return unknownError("segmentedReduction");
       }
     }
 
@@ -398,6 +404,8 @@ module ReductionMsg
       return try! "created " + st.attrib(rname);
       } catch e: UndefinedSymbolError {
         return unknownSymbolError("segmentedReduction",e.name);
+      } catch {
+        return unknownError("segmentedReduction");
       }
     }
 
@@ -520,6 +528,8 @@ module ReductionMsg
       return try! "created " + st.attrib(rname);
       } catch e: UndefinedSymbolError {
         return unknownSymbolError("segmentedLocalRdx",e.name);
+      } catch {
+        return unknownError("segmentedLocalRdx");
       }
     }
 	  

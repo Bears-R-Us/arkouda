@@ -60,6 +60,8 @@ module HistogramMsg
         return try! "created " + st.attrib(rname);
         } catch e: UndefinedSymbolError {
           return unknownSymbolError("histogram",e.name);
+        } catch {
+          return unknownError("histogram");
         }
     }
 

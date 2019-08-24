@@ -147,7 +147,6 @@ module MultiTypeSymbolTable
             {
                 if (v) {writeln("undefined symbol ",name);try! stdout.flush();}
                 throw new owned UndefinedSymbolError(name);
-                return new owned GenSymEntry(int);
             }
             else
             {

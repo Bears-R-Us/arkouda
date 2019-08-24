@@ -458,6 +458,8 @@ module UniqueMsg
         return s;
         } catch e: UndefinedSymbolError {
           return unknownSymbolError(pn,e.name);
+        } catch {
+          return unknownError(pn);
         }
 
     }
@@ -513,6 +515,8 @@ module UniqueMsg
         return try! "created " + st.attrib(vname) + " +created " + st.attrib(cname);
         } catch e: UndefinedSymbolError {
           return unknownSymbolError(pn,e.name);
+        } catch {
+          return unknownError(pn);
         }
 
     }

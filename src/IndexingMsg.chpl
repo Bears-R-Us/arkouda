@@ -40,6 +40,8 @@ module IndexingMsg
          }
         } catch e: UndefinedSymbolError {
           return unknownSymbolError(pn,e.name);
+        } catch {
+          return unknownError(pn);
         }
     }
 
@@ -96,6 +98,8 @@ module IndexingMsg
         return try! "created " + st.attrib(rname);
         } catch e: UndefinedSymbolError {
           return unknownSymbolError(pn,e.name);
+        } catch {
+          return unknownError(pn);
         }
 
     }
@@ -241,6 +245,8 @@ module IndexingMsg
         return try! "created " + st.attrib(rname);
         } catch e: UndefinedSymbolError {
           return unknownSymbolError(pn,e.name);
+        } catch {
+          return unknownError(pn);
         }
     }
 
@@ -319,6 +325,8 @@ module IndexingMsg
          return try! "%s success".format(pn);
         } catch e: UndefinedSymbolError {
           return unknownSymbolError(pn,e.name);
+        } catch {
+          return unknownError(pn);
         }
 
     }
@@ -373,6 +381,8 @@ module IndexingMsg
         }
         } catch e: UndefinedSymbolError {
           return unknownSymbolError(pn,e.name);
+        } catch {
+          return unknownError(pn);
         }
     }
 
@@ -434,6 +444,8 @@ module IndexingMsg
         return try! "%s success".format(pn);
         } catch e: UndefinedSymbolError {
           return unknownSymbolError(pn,e.name);
+        } catch {
+          return unknownError(pn);
         }
     }
 
@@ -524,6 +536,8 @@ module IndexingMsg
         return try! "%s success".format(pn);
         } catch e: UndefinedSymbolError {
           return unknownSymbolError(pn,e.name);
+        } catch {
+          return unknownError(pn);
         }
     }
     
@@ -609,6 +623,8 @@ module IndexingMsg
         return try! "%s success".format(pn);
         } catch e: UndefinedSymbolError {
           return unknownSymbolError(pn,e.name);
+        } catch {
+          return unknownError(pn);
         }
     }
     
