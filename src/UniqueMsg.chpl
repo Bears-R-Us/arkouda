@@ -423,7 +423,7 @@ module UniqueMsg
         if v {try! writeln("%s %s %t: %s %s".format(cmd, name, returnCounts, vname, cname));try! stdout.flush();}
 
         try {
-        var gEnt: borrowed GenSymEntry = st.throwup(name);
+        var gEnt: borrowed GenSymEntry = st.lookup(name);
         
         select (gEnt.dtype) {
             when (DType.Int64) {
@@ -478,7 +478,7 @@ module UniqueMsg
         if v {try! writeln("%s %s : %s %s".format(cmd, name, vname, cname));try! stdout.flush();}
 
         try {
-        var gEnt: borrowed GenSymEntry = st.throwup(name);
+        var gEnt: borrowed GenSymEntry = st.lookup(name);
 
         select (gEnt.dtype) {
             when (DType.Int64) {

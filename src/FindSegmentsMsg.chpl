@@ -37,7 +37,7 @@ module FindSegmentsMsg
         var uname = st.nextName(); // unique keys
 
         try {
-        var kEnt: borrowed GenSymEntry = st.throwup(kname);
+        var kEnt: borrowed GenSymEntry = st.lookup(kname);
 
         select (kEnt.dtype) {
             when (DType.Int64) {
@@ -94,7 +94,7 @@ module FindSegmentsMsg
         var uname = st.nextName(); // unique keys
 
         try {
-        var kEnt: borrowed GenSymEntry = st.throwup(kname);
+        var kEnt: borrowed GenSymEntry = st.lookup(kname);
 
         select (kEnt.dtype) {
             when (DType.Int64) {

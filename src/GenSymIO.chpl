@@ -73,7 +73,7 @@ module GenSymIO {
     var fields = reqMsg.split();
     var tmpf: file;
     try {
-      var entry = st.throwup(fields[2]);
+      var entry = st.lookup(fields[2]);
       tmpf = openmem();
       var tmpw = tmpf.writer(kind=iobig);
       if entry.dtype == DType.Int64 {
@@ -440,7 +440,7 @@ module GenSymIO {
     }
     var warnFlag: bool;
     try {
-      var entry = st.throwup(arrayName);
+      var entry = st.lookup(arrayName);
     select entry.dtype {
       when DType.Int64 {
 	var e = toSymEntry(entry, int);

@@ -113,36 +113,16 @@ module MultiTypeSymbolTable
                 if (v) {writeln("unkown symbol ",name);try! stdout.flush();}
         }
         
-        /*
-        Returns the sym entry associated with the provided name, if the sym entry exists
-
-        :arg name: string to index/query in the sym table
-        :type name: string
-
-        :returns: sym entry or nil
-        */
-        proc lookup(name: string): shared GenSymEntry? {
-            if (!tD.contains(name))
-            {
-                if (v) {writeln("undefined symbol ",name);try! stdout.flush();}
-                // what does the def init return ??? nil?
-                return nil; // undefined!
-            }
-            else
-            {
-                return tab[name];
-            }
-        }
-
       /*
         Returns the sym entry associated with the provided name, if the sym entry exists
 
         :arg name: string to index/query in the sym table
         :type name: string
 
-        :returns: sym entry or throws
+        :returns: sym entry or throws on error
+        :throws: `UndefinedSymbolError(name)`
         */
-        proc throwup(name: string): borrowed GenSymEntry throws {
+        proc lookup(name: string): borrowed GenSymEntry throws {
             if (!tD.contains(name) || tab[name] == nil)
             {
                 if (v) {writeln("undefined symbol ",name);try! stdout.flush();}

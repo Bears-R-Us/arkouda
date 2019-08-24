@@ -18,7 +18,7 @@ module IndexingMsg
         if v {try! writeln("%s %s %i".format(cmd, name, idx));try! stdout.flush();}
 
         try {
-         var gEnt: borrowed GenSymEntry = st.throwup(name);
+         var gEnt: borrowed GenSymEntry = st.lookup(name);
          
          select (gEnt.dtype) {
              when (DType.Int64) {
@@ -71,7 +71,7 @@ module IndexingMsg
         if v {try! writeln("%s %s %i %i %i : %t , %s".format(cmd, name, start, stop, stride, slice, rname));try! stdout.flush();}
 
         try {
-        var gEnt: borrowed GenSymEntry = st.throwup(name);
+        var gEnt: borrowed GenSymEntry = st.lookup(name);
 
         proc sliceHelper(type t) {
           var e = toSymEntry(gEnt,t);
@@ -119,8 +119,8 @@ module IndexingMsg
         if v {try! writeln("%s %s %s : %s".format(cmd, name, iname, rname));try! stdout.flush();}
 
         try {
-        var gX: borrowed GenSymEntry = st.throwup(name);
-        var gIV: borrowed GenSymEntry = st.throwup(iname);
+        var gX: borrowed GenSymEntry = st.lookup(name);
+        var gIV: borrowed GenSymEntry = st.lookup(iname);
 
         /* proc ivInt64Helper(type XType) { */
         /*     var e = toSymEntry(gX,XType); */
@@ -263,7 +263,7 @@ module IndexingMsg
         if v {try! writeln("%s %s %i %s %s".format(cmd, name, idx, dtype2str(dtype), value));try! stdout.flush();}
 
         try {
-         var gEnt: borrowed GenSymEntry = st.throwup(name);
+         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
          select (gEnt.dtype, dtype) {
              when (DType.Int64, DType.Int64) {
@@ -345,8 +345,8 @@ module IndexingMsg
         if v {try! writeln("%s %s %s %s %s".format(cmd, name, iname, dtype2str(dtype), value));try! stdout.flush();}
 
         try {
-        var gX: borrowed GenSymEntry = st.throwup(name);
-        var gIV: borrowed GenSymEntry = st.throwup(iname);
+        var gX: borrowed GenSymEntry = st.lookup(name);
+        var gIV: borrowed GenSymEntry = st.lookup(iname);
 
         proc idxToValHelper(type Xtype, type IVtype, type dtype): string {
             var e = toSymEntry(gX,Xtype);
@@ -399,9 +399,9 @@ module IndexingMsg
         if v {try! writeln("%s %s %s %s".format(cmd, name, iname, yname));try! stdout.flush();}
 
         try {
-        var gX: borrowed GenSymEntry = st.throwup(name);
-        var gIV: borrowed GenSymEntry = st.throwup(iname);
-        var gY: borrowed GenSymEntry = st.throwup(yname);
+        var gX: borrowed GenSymEntry = st.lookup(name);
+        var gIV: borrowed GenSymEntry = st.lookup(iname);
+        var gY: borrowed GenSymEntry = st.lookup(yname);
 
         // add check to make syre IV and Y are same size
         if (gIV.size != gY.size) {return try! "Error: %s: size mismatch %i %i".format(pn,gIV.size, gY.size);}
@@ -474,7 +474,7 @@ module IndexingMsg
         if v {try! writeln("%s %s %i %i %i %s %s".format(cmd, name, start, stop, stride, dtype2str(dtype), value));try! stdout.flush();}
 
         try {
-        var gEnt: borrowed GenSymEntry = st.throwup(name);
+        var gEnt: borrowed GenSymEntry = st.lookup(name);
 
         select (gEnt.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
@@ -565,8 +565,8 @@ module IndexingMsg
         if v {try! writeln("%s %s %i %i %i %s".format(cmd, name, start, stop, stride, yname));try! stdout.flush();}
 
         try {
-        var gX: borrowed GenSymEntry = st.throwup(name);
-        var gY: borrowed GenSymEntry = st.throwup(yname);
+        var gX: borrowed GenSymEntry = st.lookup(name);
+        var gY: borrowed GenSymEntry = st.lookup(yname);
 
         // add check to make syre IV and Y are same size
         if (slice.size != gY.size) {return try! "Error: %s: size mismatch %i %i".format(pn,slice.size, gY.size);}

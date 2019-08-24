@@ -38,8 +38,8 @@ module In1dMsg
         if v {try! writeln("%s %s %s : %s".format(cmd, name, sname, rname));try! stdout.flush();}
 
         try {
-        var gAr1: borrowed GenSymEntry = st.throwup(name);
-        var gAr2: borrowed GenSymEntry = st.throwup(sname);
+        var gAr1: borrowed GenSymEntry = st.lookup(name);
+        var gAr2: borrowed GenSymEntry = st.lookup(sname);
 
         select (gAr1.dtype, gAr2.dtype) {
             when (DType.Int64, DType.Int64) {

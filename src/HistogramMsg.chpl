@@ -24,7 +24,7 @@ module HistogramMsg
         if v {try! writeln("%s %s %i : %s".format(cmd, name, bins, rname));try! stdout.flush();}
 
         try {
-        var gEnt: borrowed GenSymEntry = st.throwup(name);
+        var gEnt: borrowed GenSymEntry = st.lookup(name);
 
         // helper nested procedure
         proc histogramHelper(type t) {

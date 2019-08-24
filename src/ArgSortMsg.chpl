@@ -378,7 +378,7 @@ module ArgSortMsg
         if v {try! writeln("%s %s : %s %s".format(cmd, name, ivname));try! stdout.flush();}
 
         try {
-        var gEnt: borrowed GenSymEntry = st.throwup(name);
+        var gEnt: borrowed GenSymEntry = st.lookup(name);
 
         select (gEnt.dtype) {
             when (DType.Int64) {
@@ -426,7 +426,7 @@ module ArgSortMsg
         if v {try! writeln("%s %s : %s %s".format(cmd, name, ivname));try! stdout.flush();}
 
         try {
-        var gEnt: borrowed GenSymEntry = st.throwup(name);
+        var gEnt: borrowed GenSymEntry = st.lookup(name);
 
         select (gEnt.dtype) {
             when (DType.Int64) {
