@@ -33,8 +33,8 @@ module OperatorMsg
         if v {try! writeln("%s %s %s %s : %s".format(cmd,op,aname,bname,rname));try! stdout.flush();}
 
         try {
-          var left: borrowed GenSymEntry = st.lookup(aname);
-          var right: borrowed GenSymEntry = st.lookup(bname);
+        var left: borrowed GenSymEntry = st.lookup(aname);
+        var right: borrowed GenSymEntry = st.lookup(bname);
 
         select (left.dtype, right.dtype) {
             when (DType.Int64, DType.Int64) {
@@ -991,7 +991,6 @@ module OperatorMsg
           return unknownError("binopvs");
         }
     }
-       
 
     /*
     Parse and respond to binopsv message.
@@ -1472,9 +1471,9 @@ module OperatorMsg
         }
         return try! "created " + st.attrib(rname);
         } catch e: UndefinedSymbolError {
-          return try! "Error: binopvs: unkown symbol %s".format(aname);
+          return try! "Error: binopsv: unkown symbol %s".format(aname);
         } catch {
-          return unknownError("binopvs");
+          return unknownError("binopsv");
         }
 
     }
@@ -1612,9 +1611,9 @@ module OperatorMsg
                                                     "("+dtype2str(left.dtype)+","+dtype2str(right.dtype)+")");}
         }
         } catch e: UndefinedSymbolError {
-          return try! "Error: binopvs: unkown symbol %s".format(aname);
+          return try! "Error: opeqvv: unkown symbol %s".format(aname);
         } catch {
-          return unknownError("binopvs");
+          return unknownError("opeqvv");
         }
         return "opeqvv success";
     }
@@ -1747,9 +1746,9 @@ module OperatorMsg
                                                     "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");}
         }
         } catch e: UndefinedSymbolError {
-          return try! "Error: binopvs: unkown symbol %s".format(aname);
+          return try! "Error: opeqvs: unkown symbol %s".format(aname);
         } catch {
-          return unknownError("binopvs");
+          return unknownError("opeqvs");
         }
         return "opeqvs success";
     }

@@ -463,7 +463,7 @@ module MsgProcessing
         } catch e: UndefinedSymbolError {
           return try! "Error: binopvs: unkown symbol %s".format(e.name);
         } catch {
-          return unknownError("binopvs");
+          return unknownError("efunc");
         }
         return try! "created " + st.attrib(rname);
     }
@@ -539,9 +539,9 @@ module MsgProcessing
 	}
 	return try! "created " + st.attrib(rname);
         } catch e: UndefinedSymbolError {
-          return unknownSymbolError("efunc",e.name);
+          return unknownSymbolError("efunc3vv",e.name);
         } catch {
-          return unknownError("efunc");
+          return unknownError("efunc3vv");
         }
     }
 
@@ -691,9 +691,9 @@ module MsgProcessing
 	}
 	return try! "created " + st.attrib(rname);
         } catch e: UndefinedSymbolError {
-          return unknownSymbolError("efunc",e.name);
+          return unknownSymbolError("efunc3sv",e.name);
         } catch {
-          return unknownError("efunc");
+          return unknownError("efunc3sv");
         }
     }
 
@@ -764,9 +764,9 @@ module MsgProcessing
 	}
 	return try! "created " + st.attrib(rname);
         } catch e: UndefinedSymbolError {
-            return unknownSymbolError("efunc",e.name);
+            return unknownSymbolError("efunc3ss",e.name);
         } catch {
-          return unknownError("efunc");
+          return unknownError("efunc3ss");
         }
 
     }

@@ -110,7 +110,6 @@ module EfuncMsg
           return unknownError("efunc");
         }
 
-        
     }
 
     // these ternary functions which take three arrays and produce and array

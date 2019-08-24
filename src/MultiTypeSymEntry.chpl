@@ -17,7 +17,7 @@ module MultiTypeSymEntry
         :arg etype: type for gse to be cast to
         :type etype: type
        */
-    inline proc toSymEntry(gse: borrowed GenSymEntry?, type etype) {
+    inline proc toSymEntry(gse: borrowed GenSymEntry, type etype) {
         return try! gse: borrowed SymEntry(etype);
     }
 
