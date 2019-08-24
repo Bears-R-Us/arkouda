@@ -8,8 +8,10 @@ DEFAULT_TARGET := $(ARKOUDA_MAIN_MODULE)
 .PHONY: default
 default: $(DEFAULT_TARGET)
 
+VERBOSE ?= 0
+
 CHPL := chpl
-CHPL_FLAGS += --print-passes
+CHPL_DEBUG_FLAGS += --print-passes
 CHPL_FLAGS += --ccflags="-Wno-incompatible-pointer-types" --cache-remote --instantiate-max 1024 --fast
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
 
@@ -62,7 +64,7 @@ ARKOUDA_SOURCES := $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
 $(ARKOUDA_MAIN_MODULE): $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
-	$(CHPL) $(CHPL_FLAGS) $(ARKOUDA_MAIN_SOURCE) -o $@
+	$(CHPL) $(CHPL_DEBUG_FLAGS) $(CHPL_FLAGS) $(ARKOUDA_MAIN_SOURCE) -o $@
 
 CLEAN_TARGETS += arkouda-clean
 .PHONY: arkouda-clean
@@ -135,7 +137,12 @@ TEST_MODULES := $(basename $(notdir $(TEST_SOURCES)))
 TEST_BINARY_DIR := test-bin
 TEST_BINARY_SIGIL := #t-
 TEST_TARGETS := $(addprefix $(TEST_BINARY_DIR)/$(TEST_BINARY_SIGIL),$(TEST_MODULES))
+
+ifeq ($(VERBOSE),1)
+TEST_CHPL_FLAGS ?= $(CHPL_DEBUG_FLAGS) $(CHPL_FLAGS)
+else
 TEST_CHPL_FLAGS ?= $(CHPL_FLAGS)
+endif
 
 define TEST_HELP_TEXT
 # test			Build all tests ($(TEST_BINARY_DIR)/$(TEST_BINARY_SIGIL)*); Can override TEST_CHPL_FLAGS
