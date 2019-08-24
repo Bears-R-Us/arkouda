@@ -10,7 +10,7 @@ module MultiTypeSymbolTable
     class UndefinedSymbolError: Error {
       var name: string;
     }
-    
+
     /* symbol table */
     class SymTab
     {
@@ -113,7 +113,7 @@ module MultiTypeSymbolTable
                 if (v) {writeln("unkown symbol ",name);try! stdout.flush();}
         }
         
-      /*
+        /*
         Returns the sym entry associated with the provided name, if the sym entry exists
 
         :arg name: string to index/query in the sym table

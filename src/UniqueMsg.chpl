@@ -394,7 +394,8 @@ module UniqueMsg
         // counts array
         var aC = makeDistArray(globalUniqSet.size, int);
 
-        for (val,i) in zip(globalUniqSet.sorted(), 0..) {
+        //for (val,i) in zip(globalUniqSet.sorted(), 0..) {
+        for (val,i) in zip(globalUniqSet, 0..) {
             aV[i] = val; // copy unique value
             aC[i] = globalUniqCounts[val].read(); // copy count of unique value
         }
