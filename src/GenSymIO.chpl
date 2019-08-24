@@ -438,10 +438,10 @@ module GenSymIO {
     } catch {
       return try! "Error: could not decode json filenames via tempfile (%i files: %s)".format(1, jsonfile);
     }
-    var entry = st.lookup(arrayName);
     var warnFlag: bool;
     try {
-    select entry!.dtype {
+      var entry = st.throwup(arrayName);
+    select entry.dtype {
       when DType.Int64 {
 	var e = toSymEntry(entry, int);
 	//C_HDF5.HDF5_WAR.H5LTmake_dataset_WAR(file_id, dsetName.c_str(), 1, c_ptrTo(dims), getHDF5Type(e.a.eltType), c_ptrTo(e.a));
@@ -456,13 +456,15 @@ module GenSymIO {
 	warnFlag = write1DDistArray(filename, mode, dsetName, e.a);
       }
       otherwise {
-	return unrecognizedTypeError("tohdf", dtype2str(entry!.dtype));
+	return unrecognizedTypeError("tohdf", dtype2str(entry.dtype));
       }
     }
     } catch e: FileNotFoundError {
       return try! "Error: unable to open file for writing: %s".format(filename);
     } catch e: MismatchedAppendError {
       return "Error: appending to existing files must be done with the same number of locales. Try saving with a different directory or filename prefix?";
+    } catch e: UndefinedSymbolError {
+      return try! "Error: lookup failed for %s".format(arrayName);
     } catch {
       return "Error: problem writing to file";
     }

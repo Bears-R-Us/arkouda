@@ -47,7 +47,7 @@ module OperatorMsg
                         // 1) create a new symbol table entry
                         st.addEntry(rname, l.size, int);
                         // 2) lookup and cast to the correct result type
-                        var e = toSymEntry(st.lookup(rname), int);
+                        var e = toSymEntry(st.throwup(rname), int);
                         // 3) do operation writing the result inplace into the symbol table entry's array
                         e.a = l.a + r.a;
                         
@@ -59,12 +59,12 @@ module OperatorMsg
                     }
                     when "-" {
                         st.addEntry(rname, l.size, int);
-                        var e = toSymEntry(st.lookup(rname), int);
+                        var e = toSymEntry(st.throwup(rname), int);
                         e.a = l.a - r.a;
                     }
                     when "*" {
                         st.addEntry(rname, l.size, int);
-                        var e = toSymEntry(st.lookup(rname), int);
+                        var e = toSymEntry(st.throwup(rname), int);
                         e.a = l.a * r.a;
                     }
                     when "/" { // truediv
@@ -73,7 +73,7 @@ module OperatorMsg
 			                return "Error: Attempt to divide by zero";
 			            }
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);                        
+                        var e = toSymEntry(st.throwup(rname), real);                        
                         e.a = l.a:real / r.a:real;
                     } 
                     when "//" { // floordiv
@@ -82,7 +82,7 @@ module OperatorMsg
 			  return "Error: Attempt to divide by zero";
 			}
                         st.addEntry(rname, l.size, int);
-                        var e = toSymEntry(st.lookup(rname), int);
+                        var e = toSymEntry(st.throwup(rname), int);
                         e.a = l.a / r.a;
                     }
 		    when "%" { // modulo
@@ -91,62 +91,62 @@ module OperatorMsg
 			  return "Error: Attempt to compute a modulus by zero";
 			}
                         st.addEntry(rname, l.size, int);
-                        var e = toSymEntry(st.lookup(rname), int);
+                        var e = toSymEntry(st.throwup(rname), int);
 		        e.a = l.a % r.a;
 		    }
                     when "<" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a < r.a;
                     }
                     when ">" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a > r.a;
                     }
                     when "<=" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a <= r.a;
                     }
                     when ">=" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a >= r.a;
                     }
                     when "==" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a == r.a;
                     }
                     when "!=" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a != r.a;
                     }
                     when "<<" {
                         st.addEntry(rname, l.size, int);
-                        var e = toSymEntry(st.lookup(rname), int);
+                        var e = toSymEntry(st.throwup(rname), int);
                         e.a = l.a << r.a;
                     }                    
                     when ">>" {
                         st.addEntry(rname, l.size, int);
-                        var e = toSymEntry(st.lookup(rname), int);
+                        var e = toSymEntry(st.throwup(rname), int);
                         e.a = l.a >> r.a;
                     }                    
                     when "&" {
                         st.addEntry(rname, l.size, int);
-                        var e = toSymEntry(st.lookup(rname), int);
+                        var e = toSymEntry(st.throwup(rname), int);
                         e.a = l.a & r.a;
                     }                    
                     when "|" {
                         st.addEntry(rname, l.size, int);
-                        var e = toSymEntry(st.lookup(rname), int);
+                        var e = toSymEntry(st.throwup(rname), int);
                         e.a = l.a | r.a;
                     }                    
                     when "^" {
                         st.addEntry(rname, l.size, int);
-                        var e = toSymEntry(st.lookup(rname), int);
+                        var e = toSymEntry(st.throwup(rname), int);
                         e.a = l.a ^ r.a;
                     }    
                     when "**" { 
@@ -155,7 +155,7 @@ module OperatorMsg
                             return "Error: Attempt to exponentiate base of type Int64 to negative exponent";
                         }
                         st.addEntry(rname, l.size, int);
-                        var e = toSymEntry(st.lookup(rname), int);
+                        var e = toSymEntry(st.throwup(rname), int);
                         e.a= l.a**r.a;
                     }     
                     otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
@@ -168,17 +168,17 @@ module OperatorMsg
                 {
                     when "+" {
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);
+                        var e = toSymEntry(st.throwup(rname), real);
                         e.a = l.a + r.a;
                     }
                     when "-" {
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);
+                        var e = toSymEntry(st.throwup(rname), real);
                         e.a = l.a - r.a;
                     }
                     when "*" {
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);
+                        var e = toSymEntry(st.throwup(rname), real);
                         e.a = l.a * r.a;
                     }
                     when "/" { // truediv
@@ -186,7 +186,7 @@ module OperatorMsg
 			                return "Error: Attempt to divide by zero";
 			            }
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);
+                        var e = toSymEntry(st.throwup(rname), real);
                         e.a = l.a:real / r.a;
                     } 
                     when "//" { // floordiv
@@ -194,42 +194,42 @@ module OperatorMsg
 			                return "Error: Attempt to divide by zero";
 			            }
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);
+                        var e = toSymEntry(st.throwup(rname), real);
                         e.a = floor((l.a / r.a));
                     }
                     when "<" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a < r.a;
                     }
                     when ">" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a > r.a;
                     }
                     when "<=" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a <= r.a;
                     }
                     when ">=" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a >= r.a;
                     }
                     when "==" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a == r.a;
                     }
                     when "!=" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a != r.a;
                     }
                     when "**" { 
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);
+                        var e = toSymEntry(st.throwup(rname), real);
                         e.a= l.a**r.a;
                     }    
                     otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
@@ -242,17 +242,17 @@ module OperatorMsg
                 {
                     when "+" {
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);
+                        var e = toSymEntry(st.throwup(rname), real);
                         e.a = l.a + r.a;
                     }
                     when "-" {
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);
+                        var e = toSymEntry(st.throwup(rname), real);
                         e.a = l.a - r.a;
                     }
                     when "*" {
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);
+                        var e = toSymEntry(st.throwup(rname), real);
                         e.a = l.a * r.a;
                     }
                     when "/" { // truediv
@@ -260,7 +260,7 @@ module OperatorMsg
 			                return "Error: Attempt to divide by zero";
 			            }
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);
+                        var e = toSymEntry(st.throwup(rname), real);
                         e.a = l.a / r.a:real;
                     } 
                     when "//" { // floordiv
@@ -268,42 +268,42 @@ module OperatorMsg
 			                return "Error: Attempt to divide by zero";
 			            }
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);
+                        var e = toSymEntry(st.throwup(rname), real);
                         e.a = floor(l.a / r.a);
                     }
                     when "<" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a < r.a;
                     }
                     when ">" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a > r.a;
                     }
                     when "<=" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a <= r.a;
                     }
                     when ">=" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a >= r.a;
                     }
                     when "==" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a == r.a;
                     }
                     when "!=" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a != r.a;
                     }
                     when "**" { 
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);
+                        var e = toSymEntry(st.throwup(rname), real);
                         e.a= l.a**r.a;
                     }      
                     otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
@@ -316,17 +316,17 @@ module OperatorMsg
                 {
                     when "+" {
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);
+                        var e = toSymEntry(st.throwup(rname), real);
                         e.a = l.a + r.a;
                     }
                     when "-" {
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);
+                        var e = toSymEntry(st.throwup(rname), real);
                         e.a = l.a - r.a;
                     }
                     when "*" {
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);
+                        var e = toSymEntry(st.throwup(rname), real);
                         e.a = l.a * r.a;
                     }
                     when "/" { // truediv
@@ -334,7 +334,7 @@ module OperatorMsg
 			                return "Error: Attempt to divide by zero";
 			            }
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);
+                        var e = toSymEntry(st.throwup(rname), real);
                         e.a = l.a / r.a;
                     } 
                     when "//" { // floordiv
@@ -342,42 +342,42 @@ module OperatorMsg
 			                return "Error: Attempt to divide by zero";
 			            }
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);
+                        var e = toSymEntry(st.throwup(rname), real);
                         e.a = floor(l.a / r.a);
                     }
                     when "<" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a < r.a;
                     }
                     when ">" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a > r.a;
                     }
                     when "<=" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a <= r.a;
                     }
                     when ">=" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a >= r.a;
                     }
                     when "==" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a == r.a;
                     }
                     when "!=" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
                         e.a = l.a != r.a;
                     }
                     when "**" { 
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);
+                        var e = toSymEntry(st.throwup(rname), real);
                         e.a= l.a**r.a;
                     }     
                     otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
@@ -389,17 +389,17 @@ module OperatorMsg
 		select op {
 		    when "|" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
 		        e.a = l.a | r.a;
 		    }
 		    when "&" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
 		        e.a = l.a & r.a;
 		    }
 		    when "^" {
                         st.addEntry(rname, l.size, bool);
-                        var e = toSymEntry(st.lookup(rname), bool);
+                        var e = toSymEntry(st.throwup(rname), bool);
 		        e.a = l.a ^ r.a;
 		    }
 		    otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
@@ -411,17 +411,17 @@ module OperatorMsg
 		select op {
 		    when "+" {
                         st.addEntry(rname, l.size, int);
-                        var e = toSymEntry(st.lookup(rname), int);
+                        var e = toSymEntry(st.throwup(rname), int);
 		        e.a = l.a:int + r.a;
 		    }
 		    when "-" {
                         st.addEntry(rname, l.size, int);
-                        var e = toSymEntry(st.lookup(rname), int);
+                        var e = toSymEntry(st.throwup(rname), int);
 		        e.a = l.a:int - r.a;
 		    }
 		    when "*" {
                         st.addEntry(rname, l.size, int);
-                        var e = toSymEntry(st.lookup(rname), int);
+                        var e = toSymEntry(st.throwup(rname), int);
 		        e.a = l.a:int * r.a;
 		    }
 		    otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
@@ -433,17 +433,17 @@ module OperatorMsg
 		select op {
 		    when "+" {
                         st.addEntry(rname, l.size, int);
-                        var e = toSymEntry(st.lookup(rname), int);
+                        var e = toSymEntry(st.throwup(rname), int);
 		        e.a = l.a + r.a:int;
 		    }
 		    when "-" {
                         st.addEntry(rname, l.size, int);
-                        var e = toSymEntry(st.lookup(rname), int);
+                        var e = toSymEntry(st.throwup(rname), int);
 		        e.a = l.a - r.a:int;
 		    }
 		    when "*" {
                         st.addEntry(rname, l.size, int);
-                        var e = toSymEntry(st.lookup(rname), int);
+                        var e = toSymEntry(st.throwup(rname), int);
 		        e.a = l.a * r.a:int;
 		    }
 		    otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
@@ -455,17 +455,17 @@ module OperatorMsg
 		select op {
 		    when "+" {
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);                        
+                        var e = toSymEntry(st.throwup(rname), real);                        
 		        e.a = l.a:real + r.a;
 		    }
 		    when "-" {
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);                        
+                        var e = toSymEntry(st.throwup(rname), real);                        
 		        e.a = l.a:real - r.a;
 		    }
 		    when "*" {
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);                        
+                        var e = toSymEntry(st.throwup(rname), real);                        
 		        e.a = l.a:real * r.a;
 		    }
 		    otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
@@ -477,17 +477,17 @@ module OperatorMsg
 		select op {
 		    when "+" {
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);                        
+                        var e = toSymEntry(st.throwup(rname), real);                        
 		        e.a = l.a + r.a:real;
 		    }
 		    when "-" {
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);                        
+                        var e = toSymEntry(st.throwup(rname), real);                        
 		        e.a = l.a - r.a:real;
 		    }
 		    when "*" {
                         st.addEntry(rname, l.size, real);
-                        var e = toSymEntry(st.lookup(rname), real);                        
+                        var e = toSymEntry(st.throwup(rname), real);                        
 		        e.a = l.a * r.a:real;
 		    }
 		    otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
