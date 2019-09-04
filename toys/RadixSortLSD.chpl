@@ -17,6 +17,8 @@ module RadixSortLSD
     use BitOps;
     use Time;
     use AryUtil;
+    use Random;
+    use UnorderedCopy;
 
 
     inline proc getDigit(v: int, rshift: int): int {
@@ -130,7 +132,11 @@ module RadixSortLSD
             }//coforall loc
 
             // copy back to kr0 for next iteration
-            kr0 = kr1;
+            // kr0 = kr1;
+            forall (e0, e1) in zip(kr0, kr1) {
+                unorderedCopy(e0[KEY], e1[KEY]);
+                unorderedCopy(e0[RANK], e1[RANK]);
+            }
             
         }//for digit
 
@@ -149,9 +155,10 @@ module RadixSortLSD
         var D = newBlockDom({0..#nVals});
         var A: [D] int;
 
-        var R = new owned RandomStream(real, 241); R.getNext();
-        for a in A { a = (R.getNext() * nRange):int; }
-
+        fillRandom(A, 241);
+        [a in A] a = if a<0 then -a else a;
+        A %= nRange;
+        
         printAry("A = ",A);
         
         var nBits = 64 - clz(max reduce A);
