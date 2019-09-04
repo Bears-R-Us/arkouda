@@ -19,11 +19,11 @@ module RadixSortLSD
     use AryUtil;
 
 
-    inline proc getDigit(v: int, digit: int): int {
-        return ((v >> digit) & maskDigit);
+    inline proc getDigit(v: int, rshift: int): int {
+        return ((v >> rshift) & maskDigit);
     }
 
-    // FIX this it does not give the correct range sometimes!!!!!
+    // very close but still not quite right when high is less than low
     inline proc calcBlock(task: int, low: int, high: int) {
         var totalsize = high - low + 1;
         var div = totalsize / numTasks;
@@ -32,7 +32,7 @@ module RadixSortLSD
         var rhigh: int;
         if (task < rem) {
             rlow = task * (div+1) + low;
-            rhigh = rlow + (div+1);
+            rhigh = rlow + div;
         }
         else {
             rlow = task * div + rem + low;
@@ -54,8 +54,8 @@ module RadixSortLSD
         var nBits = 64 - clz(max reduce a);
         
         // form (key,rank) vector
-        const KEY = 1;
-        const RANK = 2;
+        param KEY = 1;
+        param RANK = 2;
         var kr0: [aD] (int,int) = [(key,rank) in zip(a,aD)] (key,rank);
         var kr1: [aD] (int,int);
 
@@ -66,8 +66,8 @@ module RadixSortLSD
         var globalStarts: [gD] int;
         
         // loop over digits
-        for digit in {0..#nBits by bitsPerDigit} {
-            if v {writeln("digit = ",digit);}
+        for rshift in {0..#nBits by bitsPerDigit} {
+            if v {writeln("rshift = ",rshift);}
             // count digits
             coforall loc in Locales {
                 on loc {
@@ -83,7 +83,7 @@ module RadixSortLSD
                         if v {writeln((loc.id,task,tD));}
                         // count digits in this task's part of the array
                         for i in tD {
-                            var bucket = getDigit(kr0[i][KEY], digit); // calc bucket from key
+                            var bucket = getDigit(kr0[i][KEY], rshift); // calc bucket from key
                             taskBucketCounts[bucket] += 1;
                         }
                         // write counts in to global counts in transposed order
@@ -120,7 +120,7 @@ module RadixSortLSD
                         }
                         // calc new position and put (key,rank) pair there in kr1
                         for i in tD {
-                            var bucket = getDigit(kr0[i][KEY], digit); // calc bucket from key
+                            var bucket = getDigit(kr0[i][KEY], rshift); // calc bucket from key
                             var pos = taskBucketPos[bucket];
                             taskBucketPos[bucket] += 1;
                             kr1[pos] = kr0[i];
