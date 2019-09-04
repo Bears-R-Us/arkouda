@@ -4,7 +4,7 @@ module SplitRadixSort
     proc reverseOrder (a: [?aD] ?etype): [aD] etype {
         var result: [aD] etype;
         forall i in aD {
-            result[aD.high - i] = a[i];
+            result[aD.high - i] = a[i]; // this could give wrong result unless range is 0..high
         }
         return result;
     }
