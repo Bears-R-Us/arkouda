@@ -25,13 +25,20 @@ module RadixSortLSD
 
     // FIX this it does not give the correct range sometimes!!!!!
     inline proc calcBlock(task: int, low: int, high: int) {
-        var len = high - low + 1;
-        var size = (len + (numTasks-1)) / numTasks;
-        var rlow = (task*size)+low;
-        var rhigh = ((task+1)*size)+low - 1;
-        if (task == (numTasks-1)) then rhigh = high;
-        var ret = {rlow .. rhigh};
-        return ret;
+        var totalsize = high - low + 1;
+        var div = totalsize / numTasks;
+        var rem = totalsize % numTasks;
+        var rlow: int;
+        var rhigh: int;
+        if (task < rem) {
+            rlow = task * (div+1) + low;
+            rhigh = rlow + (div+1);
+        }
+        else {
+            rlow = task * div + rem + low;
+            rhigh = rlow + div - 1;
+        }
+        return {rlow .. rhigh};
     }
 
     // calc global transposed index
