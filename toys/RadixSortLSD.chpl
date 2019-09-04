@@ -140,7 +140,14 @@ module RadixSortLSD
             
         }//for digit
 
-        var ranks: [aD] int = [(key,rank) in kr0] rank;
+        var ranks: [aD] int;
+        var (negVal, firstNegative) = maxloc reduce ([(key, rank) in kr0] ((key < 0), rank));
+        if (negVal < 0) {
+            [((key, rank), i) in zip(kr0[firstNegative..], aD.low..)] unorderedCopy(ranks[i], rank);
+            [((key, rank), i) in zip(kr0[..firstNegative], aD.high-firstNegative+1..)] unorderedCopy(ranks[i], rank);
+        } else {
+            [((key, rank), i) in zip(kr0, aD)] unorderedCopy(ranks[i], rank);
+        }
 
         return ranks;
         
