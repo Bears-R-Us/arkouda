@@ -5,27 +5,25 @@ module RadixSortLSD
     var v = RSLSD_v;
     
     config const RSLSD_numTasks = 4; // tasks per locale
-    const numTasks = RSLSD_numTasks; // tasks per locale
-    const Tasks = {0..#numTasks};
+    var numTasks = RSLSD_numTasks; // tasks per locale
+    var Tasks = {0..#numTasks};
     
-    config const RSLSD_bitsPerDigit = 1;
-    const bitsPerDigit = RSLSD_bitsPerDigit;
-    const numBuckets = 1 << bitsPerDigit;
-    const maskDigit = numBuckets-1;
+    config const RSLSD_bitsPerDigit = 16;
+    var bitsPerDigit = RSLSD_bitsPerDigit;
+    var numBuckets = 1 << bitsPerDigit;
+    var maskDigit = numBuckets-1;
 
     use BlockDist;
     use BitOps;
-    use Time;
     use AryUtil;
-    use Random;
     use UnorderedCopy;
 
-
+    
     inline proc getDigit(v: int, rshift: int): int {
         return ((v >> rshift) & maskDigit);
     }
 
-    // very close but still not quite right when high is less than low
+    // calculate sub-domain for task
     inline proc calcBlock(task: int, low: int, high: int) {
         var totalsize = high - low + 1;
         var div = totalsize / numTasks;
@@ -49,10 +47,13 @@ module RadixSortLSD
         return ((bucket * numLocales * numTasks) + (loc * numTasks) + task);
     }
     
-    /* radix sort a block distributed array returning a permutation vector */
+    /* Radix Sort Least Significant Digit
+       radix sort a block distributed array
+       returning a permutation vector also as a block distributed array */
     proc radixSortLSD(a: [?aD] int): [aD] int {
 
         // calc max value in bit position
+        // *** need to fix this to take into account negative integers
         var nBits = 64 - clz(max reduce a);
         
         // form (key,rank) vector
@@ -150,70 +151,6 @@ module RadixSortLSD
         return ranks;
         
     }//proc radixSortLSD
-
-
-    config const NVALS = 10;
-    config const NRANGE = 10;
-    
-    proc testIt(nVals: int, nRange:int) {
-
-        var D = newBlockDom({0..#nVals});
-        var A: [D] int;
-
-        fillRandom(A, 241);
-        [a in A] a = if a<0 then -a else a;
-        A %= nRange;
-        
-        printAry("A = ",A);
-        
-        var nBits = 64 - clz(max reduce A);
-        writeln("nBits = ",nBits);
-        var timer:Timer;
-        timer.start();
-        // sort data
-        var iv = radixSortLSD(A);
-        timer.stop();
-        writeln(">>>Sorted ", nVals, " elements in ", timer.elapsed(), " seconds",
-                " (", 8.0*nVals/timer.elapsed()/1024.0/1024.0, " MiB/s)");
-
-        printAry("iv = ", iv);
-        var aiv = A[iv];
-        printAry("A[iv] = ", aiv);
-        writeln(isSorted(aiv));
-    }
-
-    proc testSimple() {
-        v = true;
-        
-        // test a simple case
-        var D = newBlockDom({0..#8});
-        var A: [D] int = [5,7,3,1,4,2,7,2];
-        
-        printAry("A = ",A);
-        
-        var nBits = 64 - clz(max reduce A);
-        
-        var iv = radixSortLSD(A);
-        printAry("iv = ", iv);
-        var aiv = A[iv];
-        printAry("A[iv] = ", aiv);
-        writeln(isSorted(aiv));
-
-        v = RSLSD_v;
-    }
-    
-    proc main() {
-        writeln("RSLSD_numTasks = ",RSLSD_numTasks);
-        writeln("numTasks = ",numTasks);
-        writeln("Tasks = ",Tasks);
-        writeln("RSLSD_bitsPerDigit = ",RSLSD_bitsPerDigit);
-        writeln("bitsPerDigit = ",bitsPerDigit);
-        writeln("numBuckets = ",numBuckets);
-        writeln("maskDigit = ",maskDigit);
-
-        testSimple();
-        testIt(NVALS, NRANGE);
-    }
     
 }
 
