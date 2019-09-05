@@ -125,20 +125,18 @@ module RadixSortLSD
                             var bucket = getDigit(kr0[i][KEY], rshift); // calc bucket from key
                             var pos = taskBucketPos[bucket];
                             taskBucketPos[bucket] += 1;
-                            kr1[pos] = kr0[i];
+                            // kr1[pos] = kr0[i];
+                            unorderedCopy(kr1[pos][KEY], kr0[i][KEY]);
+                            unorderedCopy(kr1[pos][RANK], kr0[i][RANK]);
                         }
                     }//coforall task 
                 }//on loc
             }//coforall loc
 
             // copy back to kr0 for next iteration
-            // kr0 = kr1;
-            forall (e0, e1) in zip(kr0, kr1) {
-                unorderedCopy(e0[KEY], e1[KEY]);
-                unorderedCopy(e0[RANK], e1[RANK]);
-            }
+            kr0 = kr1;
             
-        }//for digit
+        }//for rshift
 
         var ranks: [aD] int;
         var (negVal, firstNegative) = maxloc reduce ([(key, rank) in kr0] ((key < 0), rank));
@@ -146,7 +144,7 @@ module RadixSortLSD
             [((key, rank), i) in zip(kr0[firstNegative..], aD.low..)] unorderedCopy(ranks[i], rank);
             [((key, rank), i) in zip(kr0[..firstNegative], aD.high-firstNegative+1..)] unorderedCopy(ranks[i], rank);
         } else {
-            [((key, rank), i) in zip(kr0, aD)] unorderedCopy(ranks[i], rank);
+            [((key, rank), i) in zip(kr0, aD)] ranks[i] = rank;
         }
 
         return ranks;
