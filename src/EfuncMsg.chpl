@@ -12,11 +12,21 @@ module EfuncMsg
     
     use AryUtil;
     
-    
-    /* these ops are functions which take an array and produce and array
-       do scans fit here also? I think so... vector = scanop(vector)
+    /* These ops are functions which take an array and produce an array.
+       
+       **Dev Note:** Do scans fit here also? I think so... vector = scanop(vector)
        parse and respond to efunc "elemental function" message
-       vector = efunc(vector) */
+       vector = efunc(vector) 
+       
+      :arg reqMsg: request containing (cmd,efunc,name)
+      :type reqMsg: string 
+
+      :arg st: SymTab to act on
+      :type st: borrowed SymTab 
+
+      :returns: (string)
+      */
+
     proc efuncMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -54,6 +64,14 @@ module EfuncMsg
                         var a: [e.aD] int = * scan e.a; //try! writeln((a.type):string,(a.domain.type):string); try! stdout.flush();
                         st.addEntry(rname, new shared SymEntry(a));
                     }
+                    when "sin" {
+                        var a = Math.sin(e.a);
+                        st.addEntry(rname,new shared SymEntry(a));
+                    }
+                    when "cos" {
+                        var a = Math.cos(e.a);
+                        st.addEntry(rname,new shared SymEntry(a));
+                    }
                     otherwise {return notImplementedError("efunc",efunc,gEnt.dtype);}
                 }
             }
@@ -80,6 +98,14 @@ module EfuncMsg
                     when "cumprod" {
                         var a: [e.aD] real = * scan e.a;
                         st.addEntry(rname, new shared SymEntry(a));
+                    }
+                    when "sin" {
+                        var a = Math.sin(e.a);
+                        st.addEntry(rname,new shared SymEntry(a));
+                    }
+                    when "cos" {
+                        var a = Math.cos(e.a);
+                        st.addEntry(rname,new shared SymEntry(a));
                     }
                     otherwise {return notImplementedError("efunc",efunc,gEnt.dtype);}
                 }
@@ -112,8 +138,18 @@ module EfuncMsg
 
     }
 
-    // these ternary functions which take three arrays and produce and array
-    // vector = efunc(vector, vector, vector)
+    /*
+    These are ternary functions which take three arrays and produce an array.
+    vector = efunc(vector, vector, vector)
+
+    :arg reqMsg: request containing (cmd,efunc,name1,name2,name3)
+    :type reqMsg: string 
+
+    :arg st: SymTab to act on
+    :type st: borrowed SymTab 
+
+    :returns: (string)
+    */
     proc efunc3vvMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -179,7 +215,17 @@ module EfuncMsg
         }
     }
 
-    // vector = efunc(vector, vector, scalar)
+    /*
+    vector = efunc(vector, vector, scalar)
+
+    :arg reqMsg: request containing (cmd,efunc,name1,name2,dtype,value)
+    :type reqMsg: string 
+
+    :arg st: SymTab to act on
+    :type st: borrowed SymTab 
+
+    :returns: (string)
+    */
     proc efunc3vsMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -245,7 +291,17 @@ module EfuncMsg
         }
     }
 
-    // vector = efunc(vector, scalar, vector)
+    /*
+    vector = efunc(vector, scalar, vector)
+
+    :arg reqMsg: request containing (cmd,efunc,name1,dtype,value,name2)
+    :type reqMsg: string 
+
+    :arg st: SymTab to act on
+    :type st: borrowed SymTab 
+
+    :returns: (string)
+    */
     proc efunc3svMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -311,7 +367,17 @@ module EfuncMsg
         }
     }
 
-    // vector = efunc(vector, scalar, scalar)
+    /*
+    vector = efunc(vector, scalar, scalar)
+    
+    :arg reqMsg: request containing (cmd,efunc,name1,dtype1,value1,dtype2,value2)
+    :type reqMsg: string 
+
+    :arg st: SymTab to act on
+    :type st: borrowed SymTab 
+
+    :returns: (string)
+    */
     proc efunc3ssMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -376,9 +442,23 @@ module EfuncMsg
 
     /* The 'where' function takes a boolean array and two other arguments A and B, and 
        returns an array with A where the boolean is true and B where it is false. A and B
-       can be vectors or scalars. I would like to be able to write these functions without
+       can be vectors or scalars. 
+       Dev Note: I would like to be able to write these functions without
        the param kind and just let the compiler choose, but it complains about an
-       ambiguous call. */
+       ambiguous call. 
+       
+       :arg cond:
+       :type cond: [?D] bool
+
+       :arg A:
+       :type A: [D] ?t
+
+       :arg B: 
+       :type B: [D] t
+
+       :arg kind:
+       :type kind: param
+       */
     proc where_helper(cond:[?D] bool, A:[D] ?t, B:[D] t, param kind):[D] t where (kind == 0) {
       var C:[D] t;
       forall (ch, a, b, c) in zip(cond, A, B, C) {
@@ -387,6 +467,20 @@ module EfuncMsg
       return C;
     }
 
+    /*
+
+    :arg cond:
+    :type cond: [?D] bool
+
+    :arg A:
+    :type A: [D] ?t
+
+    :arg B: 
+    :type B: t
+
+    :arg kind:
+    :type kind: param
+    */
     proc where_helper(cond:[?D] bool, A:[D] ?t, b:t, param kind):[D] t where (kind == 1) {
       var C:[D] t;
       forall (ch, a, c) in zip(cond, A, C) {
@@ -395,6 +489,20 @@ module EfuncMsg
       return C;
     }
 
+    /*
+
+    :arg cond:
+    :type cond: [?D] bool
+
+    :arg a:
+    :type a: ?t
+
+    :arg B: 
+    :type B: [D] t
+
+    :arg kind:
+    :type kind: param
+    */
     proc where_helper(cond:[?D] bool, a:?t, B:[D] t, param kind):[D] t where (kind == 2) {
       var C:[D] t;
       forall (ch, b, c) in zip(cond, B, C) {
@@ -403,11 +511,26 @@ module EfuncMsg
       return C;
     }
 
+    /*
+    
+    :arg cond:
+    :type cond: [?D] bool
+
+    :arg a:
+    :type a: ?t
+
+    :arg b: 
+    :type b: t
+
+    :arg kind:
+    :type kind: param
+    */
     proc where_helper(cond:[?D] bool, a:?t, b:t, param kind):[D] t where (kind == 3) {
       var C:[D] t;
       forall (ch, c) in zip(cond, C) {
 	c = if ch then a else b;
       }
       return C;
-    }
+    }    
+
 }

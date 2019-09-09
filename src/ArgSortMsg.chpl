@@ -22,7 +22,8 @@ module ArgSortMsg
     use UnorderedCopy;
     use UnorderedAtomics;
 
-    use Sort only;
+    //use Sort only;
+    use RadixSortLSD;
     
     // thresholds for different sized sorts
     var lgSmall = 10;
@@ -358,9 +359,10 @@ module ArgSortMsg
 
     proc argsortDefault(A:[?D] ?t):[D] int {
       var t1 = Time.getCurrentTime();
-      var AI = [(a, i) in zip(A, D)] (a, i);
-      Sort.TwoArrayRadixSort.twoArrayRadixSort(AI);
-      var iv = [(a, i) in AI] i;
+      //var AI = [(a, i) in zip(A, D)] (a, i);
+      //Sort.TwoArrayRadixSort.twoArrayRadixSort(AI);
+      //var iv = [(a, i) in AI] i;
+      var iv = radixSortLSD(A);
       if v {writeln("argsort time = ", Time.getCurrentTime() - t1); try! stdout.flush();}
       return iv;
     }
