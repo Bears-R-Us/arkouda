@@ -22,7 +22,7 @@ module ArgSortMsg
     use UnorderedCopy;
     use UnorderedAtomics;
 
-    //use Sort only;
+    use Sort only;
     use RadixSortLSD;
     
     // thresholds for different sized sorts
