@@ -22,7 +22,7 @@ var A: [D] real;
 for a in A { a = R.getNext(); }
 print_ary("A = ",A);
 
-var EI: [D] (real, int) = [(e,i) in zip(A, A.domain)] (e,i);   
+var EI: [D] (real, int) = [(e,i) in zip(A, A.domain)] (e,i);
 print_ary("EI = ",EI);
 
 mergeSort(EI, comparator=comp);
