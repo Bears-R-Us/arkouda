@@ -12,19 +12,17 @@ module testRadixSortLSD
     config const NVALS = 10;
     config const NRANGE = 10;
     
-    proc testIt(nVals: int, nRange:int) {
+    proc testIt(nVals: int, nRange: int, posOnly: bool) {
 
         var D = newBlockDom({0..#nVals});
         var A: [D] int;
 
         fillRandom(A, 241);
-        [a in A] a = if a<0 then -a else a;
+        if posOnly {[a in A] a = if a<0 then -a else a;}
         A %= nRange;
         
         printAry("A = ",A);
         
-        var nBits = 64 - clz(max reduce A);
-        writeln("nBits = ",nBits);
         var timer:Timer;
         timer.start();
         // sort data
@@ -40,7 +38,7 @@ module testRadixSortLSD
     }
 
     proc testSimple() {
-        v = true;
+        vv = true;
         
         // test a simple case
         var D = newBlockDom({0..#8});
@@ -56,7 +54,7 @@ module testRadixSortLSD
         printAry("A[iv] = ", aiv);
         writeln(isSorted(aiv));
 
-        v = RSLSD_v;
+        vv = RSLSD_vv;
     }
     
     proc main() {
@@ -69,7 +67,8 @@ module testRadixSortLSD
         writeln("maskDigit = ",maskDigit);
 
         testSimple();
-        testIt(NVALS, NRANGE);
+        testIt(NVALS, NRANGE,true);
+        testIt(NVALS, NRANGE,false);
     }
 
 

@@ -1,10 +1,10 @@
 /* Radix Sort Least Significant Digit */
 module RadixSortLSD
 {
-    config const RSLSD_v = true;
-    var v = RSLSD_v;
+    config const RSLSD_vv = true;
+    var vv = RSLSD_vv;
     
-    config const RSLSD_numTasks = 4; // tasks per locale
+    config const RSLSD_numTasks = here.maxTaskPar; // tasks per locale based on locale0
     var numTasks = RSLSD_numTasks; // tasks per locale
     var Tasks = {0..#numTasks};
     
@@ -19,8 +19,8 @@ module RadixSortLSD
     use UnorderedCopy;
 
     
-    inline proc getDigit(v: int, rshift: int): int {
-        return ((v >> rshift) & maskDigit);
+    inline proc getDigit(key: int, rshift: int): int {
+        return ((key >> rshift) & maskDigit);
     }
 
     // calculate sub-domain for task
@@ -54,23 +54,25 @@ module RadixSortLSD
 
         // calc max value in bit position
         // *** need to fix this to take into account negative integers
-        var nBits = 64 - clz(max reduce a);
+        var aMin = min reduce a;
+        var aMax = max reduce a;
+        var nBits = if aMin<0 then 64 else 64 - clz(aMax);
+        writeln("(aMin,aMax,nBits)",(aMin,aMax,nBits));
         
         // form (key,rank) vector
-        param KEY = 1;
-        param RANK = 2;
+        param KEY = 1; // index of key in pair
+        param RANK = 2; // index of rank in pair
         var kr0: [aD] (int,int) = [(key,rank) in zip(a,aD)] (key,rank);
         var kr1: [aD] (int,int);
 
         // create a global count array to scan
         var gD = newBlockDom({0..#(numLocales * numTasks * numBuckets)});
         var globalCounts: [gD] int;
-        var globalEnds: [gD] int;
         var globalStarts: [gD] int;
         
         // loop over digits
         for rshift in {0..#nBits by bitsPerDigit} {
-            if v {writeln("rshift = ",rshift);}
+            if vv {writeln("rshift = ",rshift);}
             // count digits
             coforall loc in Locales {
                 on loc {
@@ -83,7 +85,7 @@ module RadixSortLSD
                         var lD = kr0.localSubdomain();
                         // calc task's indices from local domain's indices
                         var tD = calcBlock(task, lD.low, lD.high);
-                        if v {writeln((loc.id,task,tD));}
+                        if vv {writeln((loc.id,task,tD));}
                         // count digits in this task's part of the array
                         for i in tD {
                             var bucket = getDigit(kr0[i][KEY], rshift); // calc bucket from key
@@ -98,12 +100,11 @@ module RadixSortLSD
             }//coforall loc
             
             // scan globalCounts to get bucket ends on each locale/task
-            globalEnds = + scan globalCounts;
-            globalStarts = globalEnds - globalCounts;
+            globalStarts = + scan globalCounts;
+            globalStarts = globalStarts - globalCounts;
             
-            if v {printAry("globalCounts =",globalCounts);try! stdout.flush();}
-            if v {printAry("globalEnds =",globalEnds);try! stdout.flush();}
-            if v {printAry("globalStarts =",globalStarts);try! stdout.flush();}
+            if vv {printAry("globalCounts =",globalCounts);try! stdout.flush();}
+            if vv {printAry("globalStarts =",globalStarts);try! stdout.flush();}
             
             // calc new positions and permute
             coforall loc in Locales {
@@ -139,14 +140,16 @@ module RadixSortLSD
             
         }//for rshift
 
+        // find negative keys, they will appear in order at the high end of the array
+        // if there are no negative keys then firstNegative will correspond to the lowest positive key in location 0
+        var (negVal, firstNegative) = minloc reduce zip([(key,rank) in kr0] key, aD);
+        if vv then writeln((negVal,firstNegative));
+        
         var ranks: [aD] int;
-        var (negVal, firstNegative) = maxloc reduce ([(key, rank) in kr0] ((key < 0), rank));
-        if (negVal < 0) {
-            [((key, rank), i) in zip(kr0[firstNegative..], aD.low..)] unorderedCopy(ranks[i], rank);
-            [((key, rank), i) in zip(kr0[..firstNegative], aD.high-firstNegative+1..)] unorderedCopy(ranks[i], rank);
-        } else {
-            [((key, rank), i) in zip(kr0, aD)] ranks[i] = rank;
-        }
+        // copy the ranks corresponding to the negative keys to the beginning of the output array
+        [((key, rank), i) in zip(kr0[firstNegative..], aD.low..)] unorderedCopy(ranks[i], rank);
+        // copy the ranks corresponding to the positive keys to the end of the output array
+        [((key, rank), i) in zip(kr0[..firstNegative-1], aD.high-firstNegative+1..)] unorderedCopy(ranks[i], rank);
 
         return ranks;
         
