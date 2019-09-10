@@ -22,11 +22,12 @@ module testRadixSortLSD
         A %= nRange;
         
         printAry("A = ",A);
-        
+        writeln(">> radixSortLSD_ranks");
         var timer:Timer;
+        timer.clear();
         timer.start();
         // sort data
-        var iv = radixSortLSD(A);
+        var iv = radixSortLSD_ranks(A);
         timer.stop();
         writeln(">>>Sorted ", nVals, " elements in ", timer.elapsed(), " seconds",
                 " (", 8.0*nVals/timer.elapsed()/1024.0/1024.0, " MiB/s)");
@@ -35,6 +36,20 @@ module testRadixSortLSD
         var aiv = A[iv];
         printAry("A[iv] = ", aiv);
         writeln(isSorted(aiv));
+
+        writeln(">> radixSortLSD_keys");
+        timer.clear();
+        timer.start();
+        // sort data
+        var sorted = radixSortLSD_keys(A);
+        timer.stop();
+        writeln(">>>Sorted ", nVals, " elements in ", timer.elapsed(), " seconds",
+                " (", 8.0*nVals/timer.elapsed()/1024.0/1024.0, " MiB/s)");
+
+        printAry("sorted = ", sorted);
+        writeln(isSorted(sorted));
+
+        
     }
 
     proc testSimple() {
@@ -48,11 +63,15 @@ module testRadixSortLSD
         
         var nBits = 64 - clz(max reduce A);
         
-        var iv = radixSortLSD(A);
+        var iv = radixSortLSD_ranks(A);
         printAry("iv = ", iv);
         var aiv = A[iv];
         printAry("A[iv] = ", aiv);
         writeln(isSorted(aiv));
+
+        var sorted = radixSortLSD_keys(A);
+        printAry("sorted = ", sorted);
+        writeln(isSorted(sorted));
 
         vv = RSLSD_vv;
     }

@@ -1,11 +1,12 @@
 module UnitTestUnique
 {
-    use UniqueMsg;
+    use Unique;
     
     use Random;
     use Time only;
 
     use BlockDist;
+    use AryUtil;
 
 
     // fill a with integers from interval aMin..(aMax-1)
@@ -48,7 +49,11 @@ module UnitTestUnique
     
     proc test_unique(n: int, aMin: int, aMax: int, nVals: int) {
 
-        writeln((n, aMin, aMax, nVals)); try! stdout.flush();
+        writeln("n = ",n);
+        writeln("aMin = ", aMin);
+        writeln("aMax = ", aMax);
+        writeln("nVals = ",nVals);
+        try! stdout.flush();
 
         const aDom = newBlockDom({0..#n});
 
@@ -61,23 +66,18 @@ module UnitTestUnique
         fillRandInt(vals, aMin, aMax+1);
         fillRandFromArray(a,vals);
         
-        writeln(">>> uniquePerLocAssocParUnsafeGlobAssocParUnsafe");
+        writeln(">>> uniqueSort");
         var t1 = Time.getCurrentTime();
 
-        var (aV1,aC1) = uniquePerLocAssocParUnsafeGlobAssocParUnsafe(a, aMin, aMax);
+        var (aV1,aC1) = uniqueSort(a);
 
         writeln("total time = ", Time.getCurrentTime() - t1, "sec"); try! stdout.flush();
 
-        writeln((aV1.size, + reduce aC1)); try! stdout.flush();
+        printAry("aV1 = ",aV1);
+        printAry("aC1 = ",aC1);
 
-        writeln(">>> uniquePerLocAssocGlobAssoc");
-        t1 = Time.getCurrentTime();
-
-        var (aV2,aC2) = uniquePerLocAssocGlobAssoc(a, aMin, aMax);
-
-        writeln("total time = ", Time.getCurrentTime() - t1, "sec"); try! stdout.flush();
-
-        writeln((aV2.size, + reduce aC2)); try! stdout.flush();
+        writeln("aV1.size = ",aV1.size);
+        writeln("totalCounts = ",+ reduce aC1); try! stdout.flush();
 
     }
 
