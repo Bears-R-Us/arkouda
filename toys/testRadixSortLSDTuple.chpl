@@ -1,4 +1,4 @@
-module testRadixSortLSD
+module testRadixSortLSDTuple
 {
     use BlockDist;
     use BitOps;
@@ -35,7 +35,7 @@ module testRadixSortLSD
         var timer:Timer;
         timer.start();
         // sort data
-        var iv = radixSortLSD(A);
+        var iv = radixSortLSD_ranks(A);
         timer.stop();
         writeln(">>>Sorted ", nVals, " elements in ", timer.elapsed(), " seconds",
                 " (", 8.0*nVals/timer.elapsed()/1024.0/1024.0, " MiB/s)");
@@ -46,81 +46,81 @@ module testRadixSortLSD
         writeln(isSorted(aiv));
     }
 
-    proc testTuple(nVals: int, nRange: (int, int, int), posOnly: (bool, bool, bool),
-		   type t) {
+    proc makeArray(example, D) {
+      var arr: [D] example.type;
+      return arr;
+    }
+    
+    proc testTuple(nVals: int, type args...?nt) {
       var D = newBlockDom({0..#nVals});
-      var v: t;
-      var x: [D] v[1].type;
-      var y: [D] v[2].type;
-      var z: [D] v[3].type;
-      fillRandom(x, 241);
-      fillRandom(y, 242);
-      fillRandom(z, 243);
-      var A: [D] t = [(a, b, c) in zip(x, y, z)] (a, b, c);
-      forall a in A {
-	for param i in 1..3 {
-	  if isIntegral(a[i].type) {
-	    if (posOnly[i]) {
-	      a[i] = if a[i] < 0 then -a[i] else a[i];
-	    }
-	    a[i] %= nRange[i];
-	  } else if isRealType(a[i].type) {
-	    if !posOnly[i] {
-	      a[i] = 2*a[i] - 1;
-	    }
-	    a[i] *= nRange[i];
-	  }
-	}
+      var dummy: args;
+      var arrays = for i in 0..#nt do makeArray(dummy[i], D);
+      for (a, i) in zip(arrays, 1..) {
+	fillRandom(a, i);
+	printAry("arrays[", i, "] = ", a);
       }
-      printAry("A = ",A);
         
         var timer:Timer;
         timer.start();
         // sort data
-        var iv = radixSortLSD(A);
+        var iv = radixSortLSDMulti_ranks(arrays);
         timer.stop();
         writeln(">>>Sorted ", nVals, " elements in ", timer.elapsed(), " seconds",
                 " (", 8.0*nVals/timer.elapsed()/1024.0/1024.0, " MiB/s)");
 
         printAry("iv = ", iv);
-        var aiv = A[iv];
-        printAry("A[iv] = ", aiv);
-        writeln(isSorted(aiv));
+	var sorted = for a in arrays do a[iv];
+	for (s, i) in zip(sorted, 1..) {
+	  printAry("arrays[", i, "][iv] = ", s);
+	}
+	var allSorted = true;
+	forall i in D with (&& reduce allSorted) {
+	  if i < D.high {
+	    for j in 1..nt {
+	      if (sorted[j][i] < sorted[j][i+1]) {
+		break;
+	      } else if sorted[j][i] > sorted[j][i+1] {
+		allSorted reduce= false;
+	      }
+	    }
+	  }
+	}
+        writeln("allSorted? ", allSorted);
     }
 
-    proc testSimple() {
-        vv = true;
+    /* proc testSimple() { */
+    /*     vv = true; */
         
-        // test a simple case
-        var D = newBlockDom({0..#8});
-        var A: [D] int = [5,7,3,1,4,2,7,2];
+    /*     // test a simple case */
+    /*     var D = newBlockDom({0..#8}); */
+    /*     var A: [D] int = [5,7,3,1,4,2,7,2]; */
         
-        printAry("A = ",A);
+    /*     printAry("A = ",A); */
         
-        var nBits = 64 - clz(max reduce A);
+    /*     var nBits = 64 - clz(max reduce A); */
         
-        var iv = radixSortLSD(A);
-        printAry("iv = ", iv);
-        var aiv = A[iv];
-        printAry("A[iv] = ", aiv);
-        writeln(isSorted(aiv));
+    /*     var iv = radixSortLSD(A); */
+    /*     printAry("iv = ", iv); */
+    /*     var aiv = A[iv]; */
+    /*     printAry("A[iv] = ", aiv); */
+    /*     writeln(isSorted(aiv)); */
 
-        vv = RSLSD_vv;
-    }
+    /*     vv = RSLSD_vv; */
+    /* } */
 
-    proc testDigit() {
-      var e = -0.138365;
-      writeln("e = ", e);
-      try! writeln("shiftDoublt(e, 0) = %xu".format(shiftDouble(e, 0):uint));
-      var a = getDigit(e, 0);
-      var b = getDigit(e, 16);
-      var c = getDigit(e, 32);
-      var d = getDigit(e, 48);
-      try! writeln("getDigit(e,  0) = %xu".format(a:uint));
-      try! writeln("getDigit(e, 16) = %xu".format(b:uint));
-      try! writeln("getDigit(e, 32) = %xu".format(c:uint));
-      try! writeln("getDigit(e, 48) = %xu".format(d:uint));
-    }
+    /* proc testDigit() { */
+    /*   var e = -0.138365; */
+    /*   writeln("e = ", e); */
+    /*   try! writeln("shiftDoublt(e, 0) = %xu".format(shiftDouble(e, 0):uint)); */
+    /*   var a = getDigit(e, 0); */
+    /*   var b = getDigit(e, 16); */
+    /*   var c = getDigit(e, 32); */
+    /*   var d = getDigit(e, 48); */
+    /*   try! writeln("getDigit(e,  0) = %xu".format(a:uint)); */
+    /*   try! writeln("getDigit(e, 16) = %xu".format(b:uint)); */
+    /*   try! writeln("getDigit(e, 32) = %xu".format(c:uint)); */
+    /*   try! writeln("getDigit(e, 48) = %xu".format(d:uint)); */
+    /* } */
       
     proc main() {
         writeln("RSLSD_numTasks = ",RSLSD_numTasks);
@@ -131,14 +131,16 @@ module testRadixSortLSD
         writeln("numBuckets = ",numBuckets);
         writeln("maskDigit = ",maskDigit);
 
-	testDigit();
-        testSimple();
+	// testDigit();
+        // testSimple();
         testIt(NVALS, NRANGE,true, int);
         testIt(NVALS, NRANGE,false, int);
 	testIt(NVALS, NRANGE, true, real);
 	testIt(NVALS, NRANGE, false, real);
-	testTuple(NVALS, (NRANGE, NRANGE*NRANGE, (NRANGE**0.5):int), (false, true, false), (int, int, int));
-	testTuple(NVALS, (NRANGE, NRANGE*NRANGE, 1), (false, false, true), (real, int, real));
+	// testTuple(NVALS, (NRANGE, NRANGE*NRANGE, (NRANGE**0.5):int), (false, true, false), (int, int, int));
+	// testTuple(NVALS, (NRANGE, NRANGE*NRANGE, 1), (false, false, true), (real, int, real));
+	testTuple(NVALS, (int, int, int));
+	testTuple(NVALS, (real, int, real));
     }
 
 

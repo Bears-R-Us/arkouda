@@ -1,5 +1,5 @@
 /* Radix Sort Least Significant Digit */
-module RadixSortLSD
+module RadixSortLSDTuple
 {
     config const RSLSD_vv = true;
     var vv = RSLSD_vv;
