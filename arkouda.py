@@ -724,6 +724,18 @@ def argsort(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
+def coargsort(arrays):
+    size = -1
+    for a in arrays:
+        if not isinstance(a, pdarray):
+            raise ValueError("Argument must be an iterable of pdarrays")
+        if size == -1:
+            size = a.size
+        elif size != a.size:
+            raise ValueError("All pdarrays must have same size")
+    repMsg = generic_msg("coargsort {} {}".format(len(arrays), ' '.join([a.name for a in arrays])))
+    return create_pdarray(repMsg)
+
 def local_argsort(pda):
     if isinstance(pda, pdarray):
         repMsg = generic_msg("localArgsort {}".format(pda.name))
