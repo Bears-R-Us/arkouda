@@ -127,7 +127,7 @@ module UniqueMsg
                 /*     st.addEntry(cname, new shared SymEntry(aC)); */
                 /* } */
 
-                var (aV,aC) = uniquePerLocAssocGlobAssoc(e.a);
+                var (aV,aC) = uniqueSort(e.a);
                 st.addEntry(vname, new shared SymEntry(aV));
                 st.addEntry(cname, new shared SymEntry(aC));
             }
