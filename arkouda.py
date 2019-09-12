@@ -500,7 +500,7 @@ class pdarray:
             m = 0
         rep_msg = generic_msg("tohdf {} {} {} {}".format(self.name, dataset, m, json.dumps([prefix_path])))
         
-# flag to info and dump all arrays from arkouda server
+# flag to info all arrays from arkouda server
 AllSymbols = "__AllSymbols__"
 
 #################################
@@ -995,13 +995,13 @@ def info(pda):
     else:
         raise TypeError("info: must be pdarray or string {}".format(pda))
 
-def dump(pda):
-    if isinstance(pda, pdarray):
-        return generic_msg("dump {}".format(pda.name))
-    elif isinstance(pda, str):
-        return generic_msg("dump {}".format(pda))
-    else:
-        raise TypeError("dump: must be pdarray or string {}".format(pda))
+# query the server to get configuration 
+def get_config():
+    return generic_msg("getconfig")
+
+# query the server to get pda memory used 
+def get_mem_used():
+    return int(generic_msg("getmemused"))
 
 
 ################################################
@@ -1014,7 +1014,6 @@ if __name__ == "__main__":
     v = True
     connect()
 
-    dump(AllSymbols)
 
     # create some arrays and other things
     # and see the effect of the python __del__ method
@@ -1045,12 +1044,8 @@ if __name__ == "__main__":
     a.fill(247)
     # get info of specific array
     info(a)
-    # dump a specific array
-    dump(a)
     
     info(AllSymbols)
-    
-    dump(AllSymbols)
     
     # shutdown arkouda server
     shutdown()

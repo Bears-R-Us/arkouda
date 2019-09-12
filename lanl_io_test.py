@@ -25,6 +25,8 @@ if __name__ == '__main__':
         else:
             ak.connect()
 
+    print(ak.get_config())
+            
     if len(args.hdffiles) == 0:
         print("usage: {} [--server server] [--port port] hdffiles ".format(sys.argv[0]))
 
@@ -40,6 +42,8 @@ if __name__ == '__main__':
     print(nfDF)
     
     print(ak.info(ak.AllSymbols))
+
+    print("mem used: ", ak.get_mem_used())
     
     u,c = ak.unique(nfDF['srcIP'],return_counts=True)
     print(u.size,u)
@@ -57,6 +61,6 @@ if __name__ == '__main__':
     print(u.size,u)
     print(c.size,c)
     
-    #ak.shutdown()
+    ak.shutdown()
     #ak.disconnect()
     
