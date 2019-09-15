@@ -23,24 +23,24 @@ module GenSymIO {
     } catch {
       return "Error: Could not write to memory buffer";
     }
-    var entry: shared GenSymEntry;
+    var rname = st.nextName();
     try {
       var tmpr = tmpf.reader(kind=iobig, start=0);
       if dtype == DType.Int64 {
 	var entryInt = new shared SymEntry(size, int);
 	tmpr.read(entryInt.a);
 	tmpr.close(); tmpf.close();
-	entry = entryInt;
+        st.addEntry(rname, entryInt);
       } else if dtype == DType.Float64 {
 	var entryReal = new shared SymEntry(size, real);
 	tmpr.read(entryReal.a);
 	tmpr.close(); tmpf.close();
-	entry = entryReal;
+        st.addEntry(rname, entryReal);
       } else if dtype == DType.Bool {
 	var entryBool = new shared SymEntry(size, bool);
 	tmpr.read(entryBool.a);
 	tmpr.close(); tmpf.close();
-	entry = entryBool;
+        st.addEntry(rname, entryBool);
       } else {
 	tmpr.close();
 	tmpf.close();
@@ -51,15 +51,13 @@ module GenSymIO {
     } catch {
       return "Error: Could not read from memory buffer into SymEntry";
     }
-    var rname = st.nextName();
-    st.addEntry(rname, entry);
     return try! "created " + st.attrib(rname);
   }
 
   proc tondarrayMsg(reqMsg: string, st: borrowed SymTab): string {
     var arraystr: string;
     var fields = reqMsg.split();
-    var entry = st.lookup(fields[2]);
+    var entry = st.lookup(fields[2])!;
     var tmpf: file;
     try {
       tmpf = openmem();
@@ -226,26 +224,24 @@ module GenSymIO {
     if GenSymIO_DEBUG {
       writeln("Got subdomains and total length");
     }
-    var entry: shared GenSymEntry;
+    var rname = st.nextName();
     if dataclass == C_HDF5.H5T_INTEGER {
       var entryInt = new shared SymEntry(len, int);
       if GenSymIO_DEBUG {
 	writeln("Initialized int entry"); try! stdout.flush();
       }
       read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
-      entry = entryInt;
+      st.addEntry(rname, entryInt);
     } else if dataclass == C_HDF5.H5T_FLOAT {
       var entryReal = new shared SymEntry(len, real);
       if GenSymIO_DEBUG {
 	writeln("Initialized float entry"); try! stdout.flush();
       }
       read_files_into_distributed_array(entryReal.a, subdoms, filenames, dsetName);
-      entry = entryReal;
+      st.addEntry(rname, entryReal);
     } else {
       return try! "Error: detected unhandled datatype code %i".format(dataclass);
     }
-    var rname = st.nextName();
-    st.addEntry(rname, entry);
     return try! "created " + st.attrib(rname);
   }
   
@@ -409,7 +405,7 @@ module GenSymIO {
     } catch {
       return try! "Error: could not decode json filenames via tempfile (%i files: %s)".format(1, jsonfile);
     }
-    var entry = st.lookup(arrayName);
+    var entry = st.lookup(arrayName)!;
     var warnFlag: bool;
     try {
     select entry.dtype {

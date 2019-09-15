@@ -41,8 +41,9 @@ module UniqueMsg
         var cname = st.nextName();
         if v {try! writeln("%s %s %t: %s %s".format(cmd, name, returnCounts, vname, cname));try! stdout.flush();}
         
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError(pn,name);}
+        var gEnt_: borrowed GenSymEntry? = st.lookup(name);
+        if (gEnt_ == nil) {return unknownSymbolError(pn,name);}
+        var gEnt = gEnt_!;
         
         select (gEnt.dtype) {
             when (DType.Int64) {
@@ -95,8 +96,9 @@ module UniqueMsg
         var cname = st.nextName();
         if v {try! writeln("%s %s : %s %s".format(cmd, name, vname, cname));try! stdout.flush();}
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError(pn,name);}
+        var gEnt_: borrowed GenSymEntry? = st.lookup(name);
+        if (gEnt_ == nil) {return unknownSymbolError(pn,name);}
+        var gEnt = gEnt_!;
 
         select (gEnt.dtype) {
             when (DType.Int64) {

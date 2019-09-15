@@ -17,8 +17,9 @@ module IndexingMsg
         var idx = try! fields[3]:int;
         if v {try! writeln("%s %s %i".format(cmd, name, idx));try! stdout.flush();}
 
-         var gEnt: borrowed GenSymEntry = st.lookup(name);
-         if (gEnt == nil) {return unknownSymbolError(pn,name);}
+         var gEnt_: borrowed GenSymEntry? = st.lookup(name);
+         if (gEnt_ == nil) {return unknownSymbolError(pn,name);}
+         var gEnt = gEnt_!;
          
          select (gEnt.dtype) {
              when (DType.Int64) {
@@ -65,8 +66,9 @@ module IndexingMsg
 
         if v {try! writeln("%s %s %i %i %i : %t , %s".format(cmd, name, start, stop, stride, slice, rname));try! stdout.flush();}
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError(pn,name);}
+        var gEnt_: borrowed GenSymEntry? = st.lookup(name);
+        if (gEnt_ == nil) {return unknownSymbolError(pn,name);}
+        var gEnt = gEnt_!;
 
         proc sliceHelper(type t) {
           var e = toSymEntry(gEnt,t);
@@ -107,10 +109,13 @@ module IndexingMsg
 
         if v {try! writeln("%s %s %s : %s".format(cmd, name, iname, rname));try! stdout.flush();}
 
-        var gX: borrowed GenSymEntry = st.lookup(name);
-        if (gX == nil) {return unknownSymbolError(pn,name);}
-        var gIV: borrowed GenSymEntry = st.lookup(iname);
-        if (gIV == nil) {return unknownSymbolError(pn,iname);}
+        var gX_: borrowed GenSymEntry? = st.lookup(name);
+        if (gX_ == nil) {return unknownSymbolError(pn,name);}
+        var gX = gX_!;
+
+        var gIV_: borrowed GenSymEntry? = st.lookup(iname);
+        if (gIV_ == nil) {return unknownSymbolError(pn,iname);}
+        var gIV = gIV_!;
 
         /* proc ivInt64Helper(type XType) { */
         /*     var e = toSymEntry(gX,XType); */
@@ -247,8 +252,9 @@ module IndexingMsg
         var value = fields[5];
         if v {try! writeln("%s %s %i %s %s".format(cmd, name, idx, dtype2str(dtype), value));try! stdout.flush();}
 
-         var gEnt: borrowed GenSymEntry = st.lookup(name);
-         if (gEnt == nil) {return unknownSymbolError(pn,name);}
+         var gEnt_: borrowed GenSymEntry? = st.lookup(name);
+         if (gEnt_ == nil) {return unknownSymbolError(pn,name);}
+         var gEnt = gEnt_!;
 
          select (gEnt.dtype, dtype) {
              when (DType.Int64, DType.Int64) {
@@ -323,10 +329,13 @@ module IndexingMsg
 
         if v {try! writeln("%s %s %s %s %s".format(cmd, name, iname, dtype2str(dtype), value));try! stdout.flush();}
 
-        var gX: borrowed GenSymEntry = st.lookup(name);
-        if (gX == nil) {return unknownSymbolError(pn,name);}
-        var gIV: borrowed GenSymEntry = st.lookup(iname);
-        if (gIV == nil) {return unknownSymbolError(pn,iname);}
+        var gX_: borrowed GenSymEntry? = st.lookup(name);
+        if (gX_ == nil) {return unknownSymbolError(pn,name);}
+        var gX = gX_!;
+
+        var gIV_: borrowed GenSymEntry? = st.lookup(iname);
+        if (gIV_ == nil) {return unknownSymbolError(pn,iname);}
+        var gIV = gIV_!;
 
         proc idxToValHelper(type Xtype, type IVtype, type dtype): string {
             var e = toSymEntry(gX,Xtype);
@@ -373,12 +382,17 @@ module IndexingMsg
 
         if v {try! writeln("%s %s %s %s".format(cmd, name, iname, yname));try! stdout.flush();}
 
-        var gX: borrowed GenSymEntry = st.lookup(name);
-        if (gX == nil) {return unknownSymbolError(pn,name);}
-        var gIV: borrowed GenSymEntry = st.lookup(iname);
-        if (gIV == nil) {return unknownSymbolError(pn,iname);}
-        var gY: borrowed GenSymEntry = st.lookup(yname);
-        if (gY == nil) {return unknownSymbolError(pn,yname);}
+        var gX_: borrowed GenSymEntry? = st.lookup(name);
+        if (gX_ == nil) {return unknownSymbolError(pn,name);}
+        var gX = gX_!;
+
+        var gIV_: borrowed GenSymEntry? = st.lookup(iname);
+        if (gIV_ == nil) {return unknownSymbolError(pn,iname);}
+        var gIV = gIV_!;
+
+        var gY_: borrowed GenSymEntry? = st.lookup(yname);
+        if (gY_ == nil) {return unknownSymbolError(pn,yname);}
+        var gY = gY_!;
 
         // add check to make syre IV and Y are same size
         if (gIV.size != gY.size) {return try! "Error: %s: size mismatch %i %i".format(pn,gIV.size, gY.size);}
@@ -445,8 +459,9 @@ module IndexingMsg
 
         if v {try! writeln("%s %s %i %i %i %s %s".format(cmd, name, start, stop, stride, dtype2str(dtype), value));try! stdout.flush();}
         
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError(pn,name);}
+        var gEnt_: borrowed GenSymEntry? = st.lookup(name);
+        if (gEnt_ == nil) {return unknownSymbolError(pn,name);}
+        var gEnt = gEnt_!;
 
         select (gEnt.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
@@ -531,10 +546,13 @@ module IndexingMsg
 
         if v {try! writeln("%s %s %i %i %i %s".format(cmd, name, start, stop, stride, yname));try! stdout.flush();}
 
-        var gX: borrowed GenSymEntry = st.lookup(name);
-        if (gX == nil) {return unknownSymbolError(pn,name);}
-        var gY: borrowed GenSymEntry = st.lookup(yname);
-        if (gY == nil) {return unknownSymbolError(pn,yname);}
+        var gX_: borrowed GenSymEntry? = st.lookup(name);
+        if (gX_ == nil) {return unknownSymbolError(pn,name);}
+        var gX = gX_!;
+
+        var gY_: borrowed GenSymEntry? = st.lookup(yname);
+        if (gY_ == nil) {return unknownSymbolError(pn,yname);}
+        var gY = gY_!;
 
         // add check to make syre IV and Y are same size
         if (slice.size != gY.size) {return try! "Error: %s: size mismatch %i %i".format(pn,slice.size, gY.size);}

@@ -37,10 +37,13 @@ module In1dMsg
         var rname = st.nextName();
         if v {try! writeln("%s %s %s : %s".format(cmd, name, sname, rname));try! stdout.flush();}
 
-        var gAr1: borrowed GenSymEntry = st.lookup(name);
-        if (gAr1 == nil) {return unknownSymbolError("in1d",name);}
-        var gAr2: borrowed GenSymEntry = st.lookup(sname);
-        if (gAr2 == nil) {return unknownSymbolError("in1d",sname);}
+        var gAr1_: borrowed GenSymEntry? = st.lookup(name);
+        if (gAr1_ == nil) {return unknownSymbolError("in1d",name);}
+        var gAr1 = gAr1_!;
+
+        var gAr2_: borrowed GenSymEntry? = st.lookup(sname);
+        if (gAr2_ == nil) {return unknownSymbolError("in1d",sname);}
+        var gAr2 = gAr2_!;
 
         select (gAr1.dtype, gAr2.dtype) {
             when (DType.Int64, DType.Int64) {

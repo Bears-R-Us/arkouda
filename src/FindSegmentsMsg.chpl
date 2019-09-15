@@ -36,8 +36,9 @@ module FindSegmentsMsg
         var sname = st.nextName(); // segments
         var uname = st.nextName(); // unique keys
 
-        var kEnt: borrowed GenSymEntry = st.lookup(kname);
-        if (kEnt == nil) {return unknownSymbolError(pn,kname);}
+        var kEnt_: borrowed GenSymEntry? = st.lookup(kname);
+        if (kEnt_ == nil) {return unknownSymbolError(pn,kname);}
+        var kEnt = kEnt_!;
 
         select (kEnt.dtype) {
             when (DType.Int64) {
@@ -87,8 +88,9 @@ module FindSegmentsMsg
         var sname = st.nextName(); // segments
         var uname = st.nextName(); // unique keys
 
-        var kEnt: borrowed GenSymEntry = st.lookup(kname);
-        if (kEnt == nil) {return unknownSymbolError(pn,kname);}
+        var kEnt_: borrowed GenSymEntry? = st.lookup(kname);
+        if (kEnt_ == nil) {return unknownSymbolError(pn,kname);}
+        var kEnt = kEnt_!;
 
         select (kEnt.dtype) {
             when (DType.Int64) {

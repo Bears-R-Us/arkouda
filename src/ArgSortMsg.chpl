@@ -22,7 +22,7 @@ module ArgSortMsg
     use UnorderedCopy;
     use UnorderedAtomics;
 
-    //use Sort only;
+    use Sort only;
     use RadixSortLSD;
     
     // thresholds for different sized sorts
@@ -379,8 +379,9 @@ module ArgSortMsg
         var ivname = st.nextName();
         if v {try! writeln("%s %s : %s %s".format(cmd, name, ivname));try! stdout.flush();}
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError(pn,name);}
+        var gEnt_: borrowed GenSymEntry? = st.lookup(name);
+        if (gEnt_ == nil) {return unknownSymbolError(pn,name);}
+        var gEnt = gEnt_!;
 
         select (gEnt.dtype) {
             when (DType.Int64) {
@@ -396,7 +397,7 @@ module ArgSortMsg
 
     /* localArgsort takes a pdarray and returns an index vector which sorts the array on a per-locale basis */
     proc localArgsortMsg(reqMsg: string, st: borrowed SymTab): string {
-      var pn = "localArgsort";
+        var pn = "localArgsort";
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -406,8 +407,9 @@ module ArgSortMsg
         var ivname = st.nextName();
         if v {try! writeln("%s %s : %s %s".format(cmd, name, ivname));try! stdout.flush();}
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError(pn,name);}
+        var gEnt_: borrowed GenSymEntry? = st.lookup(name);
+        if (gEnt_ == nil) {return unknownSymbolError(pn,name);}
+        var gEnt = gEnt_!;
 
         select (gEnt.dtype) {
             when (DType.Int64) {

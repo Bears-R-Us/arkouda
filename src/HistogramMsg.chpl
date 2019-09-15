@@ -23,8 +23,9 @@ module HistogramMsg
         var rname = st.nextName();
         if v {try! writeln("%s %s %i : %s".format(cmd, name, bins, rname));try! stdout.flush();}
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError("histogram",name);}
+        var gEnt_: borrowed GenSymEntry? = st.lookup(name);
+        if (gEnt_ == nil) {return unknownSymbolError("histogram",name);}
+        var gEnt = gEnt_!;
 
         // helper nested procedure
         proc histogramHelper(type t) {

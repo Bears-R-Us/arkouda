@@ -32,10 +32,13 @@ module OperatorMsg
         var rname = st.nextName();
         if v {try! writeln("%s %s %s %s : %s".format(cmd,op,aname,bname,rname));try! stdout.flush();}
 
-        var left: borrowed GenSymEntry = st.lookup(aname);
-        if (left == nil) {return try! "Error: binopvv: unkown symbol %s".format(aname);}
-        var right: borrowed GenSymEntry = st.lookup(bname);
-        if (right == nil) {return try! "Error: binopvv: unkown symbol %s".format(bname);}
+        var left_: borrowed GenSymEntry? = st.lookup(aname);
+        if (left_ == nil) {return try! "Error: binopvv: unkown symbol %s".format(aname);}
+        var left = left_!;
+
+        var right_: borrowed GenSymEntry? = st.lookup(bname);
+        if (right_ == nil) {return try! "Error: binopvv: unkown symbol %s".format(bname);}
+        var right = right_!;
 
         select (left.dtype, right.dtype) {
             when (DType.Int64, DType.Int64) {
@@ -453,8 +456,10 @@ module OperatorMsg
         var rname = st.nextName();
         if v {try! writeln("%s %s %s %s %s : %s".format(cmd,op,aname,dtype2str(dtype),value,rname));try! stdout.flush();}
 
-        var left: borrowed GenSymEntry = st.lookup(aname);
-        if (left == nil) {return try! "Error: binopvs: unkown symbol %s".format(aname);}
+        var left_: borrowed GenSymEntry? = st.lookup(aname);
+        if (left_ == nil) {return try! "Error: binopvs: unkown symbol %s".format(aname);}
+        var left = left_!;
+
         select (left.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
                 var l = toSymEntry(left,int);
@@ -867,8 +872,10 @@ module OperatorMsg
         var rname = st.nextName();
         if v {try! writeln("%s %s %s %s %s : %s".format(cmd,op,dtype2str(dtype),value,aname,rname));try! stdout.flush();}
 
-        var right: borrowed GenSymEntry = st.lookup(aname);
-        if (right == nil) {return try! "Error: binopsv: unkown symbol %s".format(aname);}
+        var right_: borrowed GenSymEntry? = st.lookup(aname);
+        if (right_ == nil) {return try! "Error: binopsv: unkown symbol %s".format(aname);}
+        var right = right_!;
+
         select (dtype, right.dtype) {
             when (DType.Int64, DType.Int64) {
                 var val = try! value:int;
@@ -1275,10 +1282,14 @@ module OperatorMsg
         var bname = fields[4];
         if v {try! writeln("%s %s %s %s".format(cmd,op,aname,bname));try! stdout.flush();}
         
-        var left: borrowed GenSymEntry = st.lookup(aname);
-        if (left == nil) {return unknownSymbolError("opeqvv",aname);}
-        var right: borrowed GenSymEntry = st.lookup(bname);
-        if (right == nil) {return unknownSymbolError("opeqvv",bname);}
+        var left_: borrowed GenSymEntry? = st.lookup(aname);
+        if (left_ == nil) {return unknownSymbolError("opeqvv",aname);}
+        var left = left_!;
+
+        var right_: borrowed GenSymEntry? = st.lookup(bname);
+        if (right_ == nil) {return unknownSymbolError("opeqvv",bname);}
+        var right = right_!;
+
         select (left.dtype, right.dtype) {
             when (DType.Int64, DType.Int64) {
                 var l = toSymEntry(left,int);
@@ -1413,8 +1424,9 @@ module OperatorMsg
         var value = fields[5];
         if v {try! writeln("%s %s %s %s %s".format(cmd,op,aname,dtype2str(dtype),value));try! stdout.flush();}
 
-        var left: borrowed GenSymEntry = st.lookup(aname);
-        if (left == nil) {return unknownSymbolError("opeqvs",aname);}
+        var left_: borrowed GenSymEntry? = st.lookup(aname);
+        if (left_ == nil) {return unknownSymbolError("opeqvs",aname);}
+        var left = left_!;
 
         select (left.dtype, dtype) {
             when (DType.Int64, DType.Int64) {

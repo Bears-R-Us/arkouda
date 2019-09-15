@@ -18,7 +18,7 @@ module MultiTypeSymbolTable
         /*
         Associative array indexed by strings
         */
-        var tab: [tD] shared GenSymEntry; 
+        var tab: [tD] shared GenSymEntry?;
 
         var nid = 0;
         /*
@@ -56,7 +56,7 @@ module MultiTypeSymbolTable
 
             ref tableEntry = tab[name];
             tableEntry = entry;
-            return tableEntry.borrow().toSymEntry(t);
+            return tableEntry!.borrow().toSymEntry(t);
         }
 
         /*
@@ -80,7 +80,7 @@ module MultiTypeSymbolTable
 
             ref tableEntry = tab[name];
             tableEntry = entry;
-            return tableEntry.borrow();
+            return tableEntry!.borrow();
         }
 
         /*
@@ -129,7 +129,7 @@ module MultiTypeSymbolTable
 
         :returns: sym entry or nil
         */
-        proc lookup(name: string): shared GenSymEntry {
+        proc lookup(name: string): borrowed GenSymEntry? {
             if (!tD.contains(name))
             {
                 if (v) {writeln("undefined symbol ",name);try! stdout.flush();}
@@ -180,15 +180,18 @@ module MultiTypeSymbolTable
             var s: string;
             if name == "__AllSymbols__" {
                 for n in tD {
-                    if (tab[n] != nil) {
-                        try! s += "name:%t dtype:%t size:%t ndim:%t shape:%t itemsize:%t\n".format(n, dtype2str(tab[n].dtype), tab[n].size, tab[n].ndim, tab[n].shape, tab[n].itemsize);
+                    var entry_ = tab[n];
+                    if (entry_ != nil) {
+                        var entry = entry_!;
+                        try! s += "name:%t dtype:%t size:%t ndim:%t shape:%t itemsize:%t\n".format(n, dtype2str(entry.dtype), entry.size, entry.ndim, entry.shape, entry.itemsize);
                     }
                 }
             }
             else
             {
                 if (tD.contains(name)) {
-                    try! s = "name:%t dtype:%t size:%t ndim:%t shape:%t itemsize:%t\n".format(name, dtype2str(tab[name].dtype), tab[name].size, tab[name].ndim, tab[name].shape, tab[name].itemsize);
+                    var entry = tab[name]!;
+                    try! s = "name:%t dtype:%t size:%t ndim:%t shape:%t itemsize:%t\n".format(name, dtype2str(entry.dtype), entry.size, entry.ndim, entry.shape, entry.itemsize);
                 }
                 else {s = unknownSymbolError("info",name);}
             }
@@ -207,7 +210,9 @@ module MultiTypeSymbolTable
         proc attrib(name:string):string {
             var s:string;
             if (tD.contains(name)) {
-                try! s = "%s %s %t %t %t %t".format(name, dtype2str(tab[name].dtype), tab[name].size, tab[name].ndim, tab[name].shape, tab[name].itemsize);
+                // TODO: Use a serializer.
+                var entry = tab[name]!;
+                try! s = "%s %s %t %t %t %t".format(name, dtype2str(entry.dtype), entry.size, entry.ndim, entry.shape, entry.itemsize);
             }
             else {s = unknownSymbolError("attrib",name);}
             return s;
@@ -230,7 +235,7 @@ module MultiTypeSymbolTable
         proc datastr(name: string, thresh:int): string {
             var s:string;
             if (tD.contains(name)) {
-                var u: borrowed GenSymEntry = tab[name];
+                var u: borrowed GenSymEntry = tab[name]!;
                 select u.dtype
                 {
                     when DType.Int64
@@ -307,7 +312,7 @@ module MultiTypeSymbolTable
         proc datarepr(name: string, thresh:int): string {
             var s:string;
             if (tD.contains(name)) {
-                var u: borrowed GenSymEntry = tab[name];
+                var u: borrowed GenSymEntry = tab[name]!;
                 select u.dtype
                 {
                     when DType.Int64

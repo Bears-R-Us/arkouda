@@ -36,8 +36,9 @@ module EfuncMsg
         var rname = st.nextName();
         if v {try! writeln("%s %s %s : %s".format(cmd,efunc,name,rname));try! stdout.flush();}
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError("efunc",name);}
+        var gEnt_: borrowed GenSymEntry? = st.lookup(name);
+        if (gEnt_ == nil) {return unknownSymbolError("efunc",name);}
+        var gEnt = gEnt_!;
        
         select (gEnt.dtype) {
             when (DType.Int64) {
@@ -155,12 +156,18 @@ module EfuncMsg
         var rname = st.nextName();
 	if v {try! writeln("%s %s %s %s %s %s : %s".format(cmd,efunc,name1,name2,name3,rname));try! stdout.flush();}
 
-        var g1: borrowed GenSymEntry = st.lookup(name1);
-        if (g1 == nil) {return unknownSymbolError("efunc",name1);}
-	var g2: borrowed GenSymEntry = st.lookup(name2);
-	if (g2 == nil) {return unknownSymbolError("efunc",name2);}
-	var g3: borrowed GenSymEntry = st.lookup(name3);
-	if (g3 == nil) {return unknownSymbolError("efunc",name3);}
+        var g1_: borrowed GenSymEntry? = st.lookup(name1);
+        if (g1_ == nil) {return unknownSymbolError("efunc",name1);}
+        var g1 = g1_!;
+
+        var g2_: borrowed GenSymEntry? = st.lookup(name2);
+        if (g2_ == nil) {return unknownSymbolError("efunc",name2);}
+        var g2 = g2_!;
+
+        var g3_: borrowed GenSymEntry? = st.lookup(name3);
+        if (g3_ == nil) {return unknownSymbolError("efunc",name3);}
+        var g3 = g3_!;
+
 	if !((g1.size == g2.size) && (g2.size == g3.size)) {
 	  return "Error: size mismatch in arguments to efunc3vv";
 	}
@@ -229,10 +236,14 @@ module EfuncMsg
         var rname = st.nextName();
 	if v {try! writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,name2,dtype,value,rname));try! stdout.flush();}
 
-        var g1: borrowed GenSymEntry = st.lookup(name1);
-        if (g1 == nil) {return unknownSymbolError("efunc",name1);}
-	var g2: borrowed GenSymEntry = st.lookup(name2);
-	if (g2 == nil) {return unknownSymbolError("efunc",name2);}
+        var g1_: borrowed GenSymEntry? = st.lookup(name1);
+        if (g1_ == nil) {return unknownSymbolError("efunc",name1);}
+        var g1 = g1_!;
+
+        var g2_: borrowed GenSymEntry? = st.lookup(name2);
+        if (g2_ == nil) {return unknownSymbolError("efunc",name2);}
+        var g2 = g2_!;
+
 	if !(g1.size == g2.size) {
 	  return "Error: size mismatch in arguments to efunc3vs";
 	}
@@ -301,10 +312,14 @@ module EfuncMsg
         var rname = st.nextName();
 	if v {try! writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,dtype,value,name2,rname));try! stdout.flush();}
 
-        var g1: borrowed GenSymEntry = st.lookup(name1);
-        if (g1 == nil) {return unknownSymbolError("efunc",name1);}
-	var g2: borrowed GenSymEntry = st.lookup(name2);
-	if (g2 == nil) {return unknownSymbolError("efunc",name2);}
+        var g1_: borrowed GenSymEntry? = st.lookup(name1);
+        if (g1_ == nil) {return unknownSymbolError("efunc",name1);}
+        var g1 = g1_!;
+
+        var g2_: borrowed GenSymEntry? = st.lookup(name2);
+        if (g2_ == nil) {return unknownSymbolError("efunc",name2);}
+        var g2 = g2_!;
+
 	if !(g1.size == g2.size) {
 	  return "Error: size mismatch in arguments to efunc3sv";
 	}
@@ -374,8 +389,10 @@ module EfuncMsg
         var rname = st.nextName();
 	if v {try! writeln("%s %s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,dtype1,value1,dtype2,value2,rname));try! stdout.flush();}
 
-        var g1: borrowed GenSymEntry = st.lookup(name1);
-        if (g1 == nil) {return unknownSymbolError("efunc",name1);}
+        var g1_: borrowed GenSymEntry? = st.lookup(name1);
+        if (g1_ == nil) {return unknownSymbolError("efunc",name1);}
+        var g1 = g1_!;
+
         select (g1.dtype, dtype1, dtype1) {
 	when (DType.Bool, DType.Int64, DType.Int64) {
 	  var e1 = toSymEntry(g1, bool);

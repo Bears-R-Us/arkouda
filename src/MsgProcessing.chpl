@@ -259,8 +259,9 @@ module MsgProcessing
         var dtype = str2dtype(fields[3]);
         var value = fields[4];
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError("set",name);}
+        var gEnt_: borrowed GenSymEntry? = st.lookup(name);
+        if (gEnt_ == nil) {return unknownSymbolError("set",name);}
+        var gEnt = gEnt_!;
 
         select (gEnt.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
