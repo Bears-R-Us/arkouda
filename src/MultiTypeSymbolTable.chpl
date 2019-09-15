@@ -43,7 +43,7 @@ module MultiTypeSymbolTable
 
         :arg t: type of array
 
-        :returns: borrow of newly created GenSymEntry
+        :returns: borrow of newly created `SymEntry(t)`
         */
         proc addEntry(name: string, len: int, type t): borrowed SymEntry(t) {
             var entry = new shared SymEntry(len, t);

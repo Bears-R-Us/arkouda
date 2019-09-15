@@ -42,6 +42,8 @@ module MultiTypeSymEntry
 
         /* Cast this `GenSymEntry` to `borrowed SymEntry(etype)`
 
+           This function will halt if the cast fails.
+
            :arg etype: `SymEntry` type parameter
            :type etype: type
          */
