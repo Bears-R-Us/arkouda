@@ -48,7 +48,6 @@ interactive session.
  * requires zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * requires python 3.6 or greater
 
-## Build and install:
 ```bash
 #it should be simple to get things going on a mac
 #can't use brew install chapel anymore
@@ -77,24 +76,29 @@ pip3 install numpy
 pip3 install pandas
 pip3 install jupyter
 ```
- * setup your CHPL_HOME env variable and source $CHPL_HOME/util/setchplenv.bash
- * compile arkouda_server.chpl
- * a pre-canned compile line is in `./build_arkouda_server.sh` which you may want to edit
- * don't forget the --fast flag on the compile line
- * need to use the -senableParScan config param on the compile line
- * you may also need to use -I to find zmq.h and -L to find libzmq.a
 
-here are a couple different ways to compile arkouda_server.chpl
-```bash
-./build_arkouda_server.sh
+## Building Arkouda
+
+Simply run `make` to build `arkouda_server.chpl`.
+
+If your environment requires non-system paths to find dependencies (e.g.,
+[Anaconda]), append each path to a new file `Makefile.paths` like so:
+
+```make
+# Makefile.paths
+
+# Custom Anaconda environment for Arkouda
+$(eval $(call add-path,/home/user/anaconda3/envs/arkouda))
+#                      ^ Note: No space after comma.
 ```
-```bash
-chpl --fast -senableParScan arkouda_server.chpl
-```
-```bash
-chpl --ccflags=-Wno-incompatible-pointer-types --cache-remote --fast -senableParScan arkouda_server.chpl
-```
-## Running arkouda_srever:
+
+The `chpl` compiler will be executed with `-I`, `-L` and an `-rpath` to each
+path.
+
+[Anaconda]: https://www.anaconda.com/distribution/
+
+## Running arkouda_server
+
  * startup the arkouda_server
  * defaults to port 5555
 ```bash
@@ -127,28 +131,6 @@ or
  * This also works fine from a jupyter notebook
  * there is an included Jupyter notebook called test_arkouda.ipynb
 
-## (loose) Conventions for code:
-### Python3
- * lower-case camelCase for variable names
-```python
-printThreshold = 100
-```
- * names with underscores for functions
-```python
-def print_it(x):
-    print(x)
-```
-### Chapel
- * lower-case camelCase for variable names and procedures
-```chapel
-var aX: [{0..#s}] real;
-proc printIt(x) {
-     writeln(x);
-}
-````
- * upper-case CamelCase for Class names
- ```chapel
- class Foo: FooParent
- {}
- ```
- 
+## Contributing to Arkouda
+
+If you'd like to contribute, please see [CONTRIBUTING.md](CONTRIBUTING.md).
