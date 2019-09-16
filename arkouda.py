@@ -724,6 +724,18 @@ def argsort(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
+def coargsort(arrays):
+    size = -1
+    for a in arrays:
+        if not isinstance(a, pdarray):
+            raise ValueError("Argument must be an iterable of pdarrays")
+        if size == -1:
+            size = a.size
+        elif size != a.size:
+            raise ValueError("All pdarrays must have same size")
+    repMsg = generic_msg("coargsort {} {}".format(len(arrays), ' '.join([a.name for a in arrays])))
+    return create_pdarray(repMsg)
+
 def local_argsort(pda):
     if isinstance(pda, pdarray):
         repMsg = generic_msg("localArgsort {}".format(pda.name))
@@ -903,27 +915,56 @@ class GroupBy:
         .aggregate() method. Return a GroupBy object that stores the
         information for how to group values.
         '''
-        if not isinstance(keys, pdarray):
-            raise TypeError("Argument must be a pdarray")
-        self.per_locale = per_locale
+            
+        self.per_locale = False
         self.keys = keys
-        if per_locale:
-            self.permutation = local_argsort(keys)
+        if isinstance(keys, pdarray):
+            self.nkeys = 1
+            self.size = keys.size
+            if per_locale:
+                self.permutation = local_argsort(keys)
+            else:
+                self.permutation = argsort(keys)
         else:
-            self.permutation = argsort(keys)
-        self.permuted_keys = self.keys[self.permutation]
-        self.segments, self.unique_keys = self.find_segments()
+            self.nkeys = len(keys)
+            self.size = keys[0].size
+            for k in keys:
+                if k.size != self.size:
+                    raise ValueError("Key arrays must all be same size")
+            self.permutation = coargsort(keys)
+            
+        # self.permuted_keys = self.keys[self.permutation]
+        self.find_segments()
             
     def find_segments(self):
-        if self.per_locale:
-            cmd = "findLocalSegments"
+        steps = zeros(self.size-1, dtype=bool)
+        if self.nkeys == 1:
+            keys = [self.keys]
         else:
-            cmd = "findSegments"
-        reqMsg = "{} {}".format(cmd, self.permuted_keys.name)
-        repMsg = generic_msg(reqMsg)
-        segAttr, uniqAttr = repMsg.split("+")
-        if v: print(segAttr, uniqAttr)
-        return create_pdarray(segAttr), create_pdarray(uniqAttr)
+            keys = self.keys
+        for k in keys:
+            kperm = k[self.permutation]
+            steps |= (kperm[:-1] != kperm[1:])
+        ukeyinds = zeros(self.size, dtype=bool)
+        ukeyinds[0] = True
+        ukeyinds[1:] = steps
+        #nsegments = ukeyinds.sum()
+        self.segments = arange(0, self.size, 1)[ukeyinds]
+        self.unique_key_indices = self.permutation[ukeyinds]
+        if self.nkeys == 1:
+            self.unique_keys = self.keys[self.unique_key_indices]
+        else:
+            self.unique_keys = [k[self.unique_key_indices] for k in self.keys]
+        
+        # if self.per_locale:
+        #     cmd = "findLocalSegments"
+        # else:
+        #     cmd = "findSegments"
+        # reqMsg = "{} {}".format(cmd, self.permuted_keys.name)
+        # repMsg = generic_msg(reqMsg)
+        # segAttr, uniqAttr = repMsg.split("+")
+        # if v: print(segAttr, uniqAttr)
+        # return create_pdarray(segAttr), create_pdarray(uniqAttr)
 
     def count(self):
         '''Return the number of elements in each group, i.e. the number of times each key occurs.
@@ -932,7 +973,7 @@ class GroupBy:
             cmd = "countLocalRdx"
         else:
             cmd = "countReduction"
-        reqMsg = "{} {} {}".format(cmd, self.segments.name, self.keys.size)
+        reqMsg = "{} {} {}".format(cmd, self.segments.name, self.size)
         repMsg = generic_msg(reqMsg)
         if v: print(repMsg)
         return self.unique_keys, create_pdarray(repMsg)
@@ -942,7 +983,7 @@ class GroupBy:
         '''
         if not isinstance(values, pdarray):
             raise TypeError("<values> must be a pdarray")
-        if values.size != self.keys.size:
+        if values.size != self.size:
             raise ValueError("Attempt to group array using key array of different length")
         if operator not in self.Reductions:
             raise ValueError("Unsupported reduction: {}\nMust be one of {}".format(operator, self.Reductions))
@@ -951,8 +992,7 @@ class GroupBy:
             cmd = "segmentedLocalRdx"
         else:
             cmd = "segmentedReduction"
-        reqMsg = "{} {} {} {} {}".format(cmd,
-                                         self.permuted_keys.name,
+        reqMsg = "{} {} {} {}".format(cmd,
                                          permuted_values.name,
                                          self.segments.name,
                                          operator)

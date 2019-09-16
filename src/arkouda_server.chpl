@@ -111,6 +111,7 @@ proc main() {
             when "[slice]=val"       {repMsg = setSliceIndexToValueMsg(reqMsg, st);}            
             when "[slice]=pdarray"   {repMsg = setSliceIndexToPdarrayMsg(reqMsg, st);}
             when "argsort"           {repMsg = argsortMsg(reqMsg, st);}
+	    when "coargsort"         {repMsg = coargsortMsg(reqMsg, st);}
 	    when "localArgsort"      {repMsg = localArgsortMsg(reqMsg, st);}
             when "getconfig"         {repMsg = getconfigMsg(reqMsg, st);}
             when "getmemused"        {repMsg = getmemusedMsg(reqMsg, st);}
