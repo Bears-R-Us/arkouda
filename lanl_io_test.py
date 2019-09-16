@@ -46,20 +46,20 @@ if __name__ == '__main__':
     print("mem used: ", ak.get_mem_used())
     
     u,c = ak.unique(nfDF['srcIP'],return_counts=True)
-    print(u.size,u)
-    print(c.size,c)
+    print("unique values = ", u.size,u)
+    print("value counts = ", c.size,c)
     
     u,c = ak.unique(nfDF['dstIP'],return_counts=True)
-    print(u.size,u)
-    print(c.size,c)
+    print("unique values = ", u.size,u)
+    print("value counts = ", c.size,c)
     
     u,c = ak.unique(nfDF['srcPort'],return_counts=True)
-    print(u.size,u)
-    print(c.size,c)
+    print("unique values = ", u.size,u)
+    print("value counts = ", c.size,c)
     
     u,c = ak.unique(nfDF['dstPort'],return_counts=True)
-    print(u.size,u)
-    print(c.size,c)
+    print("unique values = ", u.size,u)
+    print("value counts = ", c.size,c)
     
     ak.shutdown()
     #ak.disconnect()
