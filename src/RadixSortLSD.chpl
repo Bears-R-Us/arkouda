@@ -35,7 +35,7 @@ module RadixSortLSD
     }
 
     extern {
-      unsigned long long shiftDouble(double key, long long rshift) {
+      static unsigned long long shiftDouble(double key, long long rshift) {
 	// Reinterpret the bits of key as an unsigned 64-bit int (u long long)
 	// Unsigned because we want to left-extend with zeros
 	unsigned long long intkey = * (unsigned long long *) &key;
