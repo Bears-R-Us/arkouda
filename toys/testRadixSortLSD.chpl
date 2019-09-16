@@ -12,14 +12,23 @@ module testRadixSortLSD
     config const NVALS = 10;
     config const NRANGE = 10;
     
-    proc testIt(nVals: int, nRange: int, posOnly: bool) {
+    proc testIt(nVals: int, nRange: int, posOnly: bool, type t) {
 
         var D = newBlockDom({0..#nVals});
-        var A: [D] int;
+        var A: [D] t;
 
         fillRandom(A, 241);
-        if posOnly {[a in A] a = if a<0 then -a else a;}
-        A %= nRange;
+        if isIntegral(t) {
+	  if posOnly {
+	    [a in A] a = if a < 0 then -a else a;
+	  }
+	  A %= nRange;
+	} else if isRealType(t) {
+	  if !posOnly {
+	    A = 2*A - 1;
+	  }
+	  A *= nRange;
+	}
         
         printAry("A = ",A);
         writeln(">> radixSortLSD_ranks");
@@ -86,8 +95,14 @@ module testRadixSortLSD
         writeln("maskDigit = ",maskDigit);
 
         testSimple();
-        testIt(NVALS, NRANGE,true);
-        testIt(NVALS, NRANGE,false);
+	writeln("Testing positive int");
+        testIt(NVALS, NRANGE,true, int);
+	writeln("Testing negative int");
+        testIt(NVALS, NRANGE,false, int);
+	writeln("Testing positive real");
+	testIt(NVALS, NRANGE, true, real);
+	writeln("Testing negative real");
+	testIt(NVALS, NRANGE, false, real);
     }
 
 
