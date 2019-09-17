@@ -81,7 +81,14 @@ proc readStrings(filename: string, dsetName: string, size:int) {
 proc readBytearray(filename: string, group: string, size: int) {
   var offsets: [0..#size] int;
   var file_id = H5Fopen(filename.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT);
+  var dset_id = H5Dopen(file_id, group.c_str(), H5P_DEFAULT);
+  if (dset_id < 0) {
+    writeln("Verified that group is not a dataset");
+  }
   var group_id = H5Gopen2(file_id, group.c_str(), H5P_DEFAULT);
+  if (group_id < 0) {
+    halt("Not a group");
+  }
   var dtypeExists = H5Aexists(group_id, "segmented_string".c_str()): bool;
   if !dtypeExists {
     halt("Expected attr 'segmented_string'; not found");
