@@ -41,12 +41,12 @@ module FindSegmentsMsg
 	var gPerm = st.lookup(pname);
 	if (gPerm == nil) { return unknownSymbolError(pn, pname); }
 	if (gPerm.dtype != DType.Int64) { return notImplementedError(pn,"(permutation dtype "+dtype2str(gPerm.dtype)+")"); }	
-	var keyEntries: [0..#nkeys] borrowed GenSymEntry;
+	// var keyEntries: [0..#nkeys] borrowed GenSymEntry;
 	for (name, i) in zip(knames, 0..) {
-	  keyEntries[i] = st.lookup(name);
-	  if (keyEntries[i] == nil) { return unknownSymbolError(pn, name); }
-	  if (keyEntries[i].size != size) { return try! incompatibleArgumentsError(pn, "Expected array of size %i, got size %i".format(size, keyEntries[i].size)); }
-	  if (keyEntries[i].dtype != DType.Int64) { return notImplementedError(pn,"(key array dtype "+dtype2str(kEnt.dtype)+")");}
+	  var g = st.lookup(name);
+	  if (g == nil) { return unknownSymbolError(pn, name); }
+	  if (g.size != size) { return try! incompatibleArgumentsError(pn, "Expected array of size %i, got size %i".format(size, g.size)); }
+	  if (g.dtype != DType.Int64) { return notImplementedError(pn,"(key array dtype "+dtype2str(g.dtype)+")");}
 	}
 	
 	// At this point, all arg arrays exist, have the same size, and are int64 dtype
@@ -59,11 +59,12 @@ module FindSegmentsMsg
 	// First key is automatically present
 	ukeylocs[0] = true;
 	var permKey: [paD] int;
-	for g in keyEntries {
+	for name in knames {
+	  var g: borrowed GenSymEntry = st.lookup(name);
 	  var k = toSymEntry(g,int); // key array
 	  ref ka = k.a; // ref to key array
 	  // Permute the key array to grouped order
-	  [(s, p, i) in zip(permKey, pa, paD)] { unorderedCopy(s[i], ka[p]); }
+	  [(s, p) in zip(permKey, pa)] { unorderedCopy(s, ka[p]); }
 	  // Find steps and update ukeylocs
 	  [(u, s, i) in zip(ukeylocs, permKey, paD)] if ((i > paD.low) && (permKey[i-1] != s))  { u = true; }
 	}
