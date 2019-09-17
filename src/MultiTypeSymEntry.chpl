@@ -18,7 +18,7 @@ module MultiTypeSymEntry
         :type etype: type
        */
     inline proc toSymEntry(gse: borrowed GenSymEntry, type etype) {
-        return try! gse: borrowed SymEntry(etype);
+        return gse.toSymEntry(etype);
     }
 
     /* This is a dummy class to avoid having to talk about specific
@@ -38,6 +38,17 @@ module MultiTypeSymEntry
 	    this.itemsize = dtypeSize(this.dtype);
             this.size = len;
             this.shape = (len,);
+        }
+
+        /* Cast this `GenSymEntry` to `borrowed SymEntry(etype)`
+
+           This function will halt if the cast fails.
+
+           :arg etype: `SymEntry` type parameter
+           :type etype: type
+         */
+        inline proc toSymEntry(type etype) {
+            return try! this :borrowed SymEntry(etype);
         }
     }
 

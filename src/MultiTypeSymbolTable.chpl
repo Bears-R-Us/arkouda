@@ -41,8 +41,10 @@ module MultiTypeSymbolTable
         :type len: int
 
         :arg t: type of array
+
+        :returns: borrow of newly created `SymEntry(t)`
         */
-        proc addEntry(name: string, len: int, type t) {
+        proc addEntry(name: string, len: int, type t): borrowed SymEntry(t) {
             var entry = new shared SymEntry(len, t);
             if (tD.contains(name))
             {
@@ -50,8 +52,10 @@ module MultiTypeSymbolTable
             }
             else
                 tD += name;
-            
-            tab[name] = entry;
+
+            ref tableEntry = tab[name];
+            tableEntry = entry;
+            return tableEntry.borrow().toSymEntry(t);
         }
 
         /*
@@ -62,16 +66,20 @@ module MultiTypeSymbolTable
 
         :arg entry: Generic Sym Entry to convert
         :type entry: GenSymEntry
+
+        :returns: borrow of newly created GenSymEntry
         */
-        proc addEntry(name: string, in entry: shared GenSymEntry) {
+        proc addEntry(name: string, in entry: shared GenSymEntry): borrowed GenSymEntry {
             if (tD.contains(name))
             {
                 if (v) {writeln("redefined symbol ",name);try! stdout.flush();}
             }
             else
                 tD += name;
-            
-            tab[name] = entry;
+
+            ref tableEntry = tab[name];
+            tableEntry = entry;
+            return tableEntry.borrow();
         }
 
         /*
@@ -84,12 +92,16 @@ module MultiTypeSymbolTable
         :type len: int
 
         :arg dtype: type of array
+
+        :returns: borrow of newly created GenSymEntry
         */
-        proc addEntry(name: string, len: int, dtype: DType) {
-            if dtype == DType.Int64 {addEntry(name,len,int);}
-            else if dtype == DType.Float64 {addEntry(name,len,real);}
-            else if dtype == DType.Bool {addEntry(name,len,bool);}
-            else {writeln("should not get here!");try! stdout.flush();}
+        proc addEntry(name: string, len: int, dtype: DType): borrowed GenSymEntry {
+            select dtype {
+                when DType.Int64 { return addEntry(name, len, int); }
+                when DType.Float64 { return addEntry(name, len, real); }
+                when DType.Bool { return addEntry(name, len, bool); }
+                otherwise { halt("unimplemented"); }
+            }
         }
 
         /*
