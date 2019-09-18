@@ -120,7 +120,12 @@ def run_test(levels):
 if __name__ == '__main__':
     import sys
     if len(sys.argv) != 4:
-        print(f"Usage: {sys.argv[0]} <server> <port> <levels=0|1>")
+        print(f"Usage: {sys.argv[0]} <server> <port> <levels=1|2>")
+        sys.exit()
+    levels = int(sys.argv[3])
+    if levels not in (1, 2):
+        print(f"Levels must be 1 or 2")
+        sys.exit()
     ak.connect(sys.argv[1], int(sys.argv[2]))
-    run_test(int(sys.argv[3]))
+    run_test(levels)
     sys.exit()

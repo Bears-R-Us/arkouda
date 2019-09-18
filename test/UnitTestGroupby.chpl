@@ -14,7 +14,7 @@ module UnitTestGroupby
   config const NKEYS:int;
   config const NVALS:int;
   config const OPERATOR:string = "sum";
-  config const STRATEGY:string;
+  config const STRATEGY:string = "default";
   config const nShow:int = 5;
 
   proc parseName(s: string, st: borrowed SymTab): string {
@@ -40,12 +40,28 @@ module UnitTestGroupby
 	try! writeln("%5i: %5i".format(ki, vi));
       }
       writeln("...");
-      for (ki, vi) in zip(k[D.high-n..#n], v[D.high-n..#n]) {
+      for (ki, vi) in zip(k[D.high-n+1..#n], v[D.high-n+1..#n]) {
 	try! writeln("%5i: %5i".format(ki, vi));
       }
     }
   }
 
+  proc show(k:[?D] int, n=5) {
+    if (D.size <= 2*n) {
+      for ki in k {
+	try! writeln("%5i".format(ki));
+      }
+    } else {
+      for ki in k[D.low..#n] {
+	try! writeln("%5i".format(ki));
+      }
+      writeln("...");
+      for ki in k[D.high-n+1..#n] {
+	try! writeln("%5i".format(ki));
+      }
+    }
+  }
+  
   proc main() {
     writeln("Unit Test for localArgSortMsg");
     var st = new owned SymTab();
@@ -89,47 +105,37 @@ module UnitTestGroupby
     var eMin = min reduce keys.a;
     var eMax = max reduce keys.a;
     t1 = Time.getCurrentTime();
-    if (STRATEGY == "global-count") {
-      writeln("argCountSortLocHistGlobHistPDDW");
-      iv = argCountSortLocHistGlobHistPDDW(keys.a, eMin, eMax);
-    } else if (STRATEGY == "global-DRS") {
-      writeln("argsortDRS");
-      iv = argsortDRS(keys.a, eMin, eMax);
-    } else if (STRATEGY == "per-locale") {
-      writeln("perLocaleArgsort");
-      iv = perLocaleArgSort(keys.a);
+    if (STRATEGY == "default") {
+      writeln("argsortDefault");
+      iv = argsortDefault(keys.a);
     } else {
       halt("Unrecognized STRATEGY: ", STRATEGY);
     }
     st.addEntry(ivname, new shared SymEntry(iv));
     writeln("argsort time = ",Time.getCurrentTime() - t1,"sec\n"); try! stdout.flush();
 
-    // permute keys array
+    // find segment boundaries and unique keys
+    t1 = Time.getCurrentTime();
+    if (STRATEGY == "default") {
+      cmd = "findSegments";
+      reqMsg = try! "%s %s %i %i %s".format(cmd, ivname, 1, keys.size, kname);
+      repMsg = findSegmentsMsg(reqMsg, st);
+    }
+    writeln(cmd, " time = ",Time.getCurrentTime() - t1,"sec\n"); try! stdout.flush();
+    var (segname, ukiname) = parseTwoNames(repMsg, st);
+    var segg = st.lookup(segname);
+    var segs = toSymEntry(segg, int);
+    var ukig = st.lookup(ukiname);
+    var ukeyinds = toSymEntry(ukig, int);
+
+    // get unique keys
     cmd = "[pdarray]";
-    reqMsg = try! "%s %s %s".format(cmd, kname, ivname);
+    reqMsg = try! "%s %s %s".format(cmd, kname, ukiname);
     t1 = Time.getCurrentTime();
     repMsg = pdarrayIndexMsg(reqMsg, st);
     writeln(cmd, " time = ",Time.getCurrentTime() - t1,"sec\n"); try! stdout.flush();
     writeln(repMsg);
-    var skname = parseName(repMsg, st);
-    var skg = st.lookup(skname);
-    var skeys = toSymEntry(skg, int);
-
-    // find segment boundaries and unique keys
-    t1 = Time.getCurrentTime();
-    if (STRATEGY == "global-count") || (STRATEGY == "global-DRS") {
-      cmd = "findSegments";
-      reqMsg = try! "%s %s".format(cmd, skname);
-      repMsg = findSegmentsMsg(reqMsg, st);
-    } else {
-      cmd = "findLocalSegments";
-      reqMsg = try! "%s %s".format(cmd, skname);
-      repMsg = findLocalSegmentsMsg(reqMsg, st);
-    } 
-    writeln(cmd, " time = ",Time.getCurrentTime() - t1,"sec\n"); try! stdout.flush();
-    var (segname, ukname) = parseTwoNames(repMsg, st);
-    var segg = st.lookup(segname);
-    var segs = toSymEntry(segg, int);
+    var ukname = parseName(repMsg, st);
     var ukg = st.lookup(ukname);
     var ukeys = toSymEntry(ukg, int);
 
@@ -148,23 +154,18 @@ module UnitTestGroupby
     var svg = st.lookup(svname);
     var svals = toSymEntry(svg, int);
 
-    writeln("Sorted keys, vals");
-    show(skeys.a, svals.a, nShow);
+    writeln("Sorted vals");
+    show(svals.a, nShow);
     writeln();
     
     // do segmented reduction
     t1 = Time.getCurrentTime();
-    if (STRATEGY == "global-count") || (STRATEGY == "global-DRS") {
+    if (STRATEGY == "default") {
       cmd = "segmentedReduction";
-      reqMsg = try! "%s %s %s %s %s".format(cmd, skname, svname, segname, OPERATOR);
+      reqMsg = try! "%s %s %s %s".format(cmd, svname, segname, OPERATOR);
       //writeln(reqMsg);
       repMsg = segmentedReductionMsg(reqMsg, st);
-    } else {
-      cmd = "segmentedLocalRdx";
-      reqMsg = try! "%s %s %s %s %s".format(cmd, skname, svname, segname, OPERATOR);
-      //writeln(reqMsg);
-      repMsg = segmentedLocalRdxMsg(reqMsg, st);
-    }
+    } 
     writeln(cmd, " time = ",Time.getCurrentTime() - t1,"sec\n"); try! stdout.flush();
     writeln(repMsg);
     var redname = parseName(repMsg, st);

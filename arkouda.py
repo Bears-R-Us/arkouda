@@ -937,34 +937,44 @@ class GroupBy:
         self.find_segments()
             
     def find_segments(self):
-        steps = zeros(self.size-1, dtype=bool)
-        if self.nkeys == 1:
-            keys = [self.keys]
+        # steps = zeros(self.size-1, dtype=bool)
+        # if self.nkeys == 1:
+        #     keys = [self.keys]
+        # else:
+        #     keys = self.keys
+        # for k in keys:
+        #     kperm = k[self.permutation]
+        #     steps |= (kperm[:-1] != kperm[1:])
+        # ukeyinds = zeros(self.size, dtype=bool)
+        # ukeyinds[0] = True
+        # ukeyinds[1:] = steps
+        # #nsegments = ukeyinds.sum()
+        # self.segments = arange(0, self.size, 1)[ukeyinds]
+        # self.unique_key_indices = self.permutation[ukeyinds]
+
+        if self.per_locale:
+            cmd = "findLocalSegments"
         else:
-            keys = self.keys
-        for k in keys:
-            kperm = k[self.permutation]
-            steps |= (kperm[:-1] != kperm[1:])
-        ukeyinds = zeros(self.size, dtype=bool)
-        ukeyinds[0] = True
-        ukeyinds[1:] = steps
-        #nsegments = ukeyinds.sum()
-        self.segments = arange(0, self.size, 1)[ukeyinds]
-        self.unique_key_indices = self.permutation[ukeyinds]
+            cmd = "findSegments"
+        if self.nkeys == 1:
+            keynames = self.keys.name
+        else:
+            keynames = ' '.join([k.name for k in self.keys])
+        reqMsg = "{} {} {:n} {:n} {}".format(cmd,
+                                             self.permutation.name,
+                                             self.nkeys,
+                                             self.size,
+                                             keynames)
+        repMsg = generic_msg(reqMsg)
+        segAttr, uniqAttr = repMsg.split("+")
+        if v: print(segAttr, uniqAttr)
+        self.segments = create_pdarray(segAttr)
+        self.unique_key_indices = create_pdarray(uniqAttr)
         if self.nkeys == 1:
             self.unique_keys = self.keys[self.unique_key_indices]
         else:
             self.unique_keys = [k[self.unique_key_indices] for k in self.keys]
-        
-        # if self.per_locale:
-        #     cmd = "findLocalSegments"
-        # else:
-        #     cmd = "findSegments"
-        # reqMsg = "{} {}".format(cmd, self.permuted_keys.name)
-        # repMsg = generic_msg(reqMsg)
-        # segAttr, uniqAttr = repMsg.split("+")
-        # if v: print(segAttr, uniqAttr)
-        # return create_pdarray(segAttr), create_pdarray(uniqAttr)
+
 
     def count(self):
         '''Return the number of elements in each group, i.e. the number of times each key occurs.
