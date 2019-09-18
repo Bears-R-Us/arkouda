@@ -42,8 +42,9 @@ module RandMsg
                     on loc {
 		      ref myA = a.localSlice[a.localSubdomain()];
 		      fillRandom(myA);
-		      const modulus = (aMax - aMin)/2;
-		      myA = (myA % modulus) + aMin + modulus;
+		      [ai in myA] if (ai < 0) { ai = -ai; }
+		      const modulus = aMax - aMin;
+		      myA = (myA % modulus) + aMin;
                     }
                 }
                 writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
