@@ -1047,7 +1047,7 @@ def info(pda):
 
 # query the server to get configuration 
 def get_config():
-    return generic_msg("getconfig")
+    return json.loads(generic_msg("getconfig"))
 
 # query the server to get pda memory used 
 def get_mem_used():
