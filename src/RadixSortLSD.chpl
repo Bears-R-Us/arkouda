@@ -2,16 +2,16 @@
 module RadixSortLSD
 {
     config const RSLSD_vv = false;
-    const vv = RSLSD_vv;
+    const vv = RSLSD_vv; // these need to be const for comms/performance reasons
     
     config const RSLSD_numTasks = here.maxTaskPar; // tasks per locale based on locale0
     const numTasks = RSLSD_numTasks; // tasks per locale
-    const Tasks = {0..#numTasks};
+    const Tasks = {0..#numTasks}; // these need to be const for comms/performance reasons
     
     config const RSLSD_bitsPerDigit = 16;
-    const bitsPerDigit = RSLSD_bitsPerDigit;
-    const numBuckets = 1 << bitsPerDigit;
-    const maskDigit = numBuckets-1;
+    const bitsPerDigit = RSLSD_bitsPerDigit; // these need to be const for comms/performance reasons
+    const numBuckets = 1 << bitsPerDigit; // these need to be const for comms/performance reasons
+    const maskDigit = numBuckets-1; // these need to be const for comms/performance reasons
 
     use BlockDist;
     use BitOps;
