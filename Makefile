@@ -1,4 +1,5 @@
 # Makefile for Arkouda
+THISDIR := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 PROJECT_NAME := arkouda
 ARKOUDA_SOURCE_DIR := src
 ARKOUDA_MAIN_MODULE := arkouda_server
@@ -12,6 +13,9 @@ CHPL := chpl
 CHPL_FLAGS += --print-passes
 CHPL_FLAGS += --ccflags="-Wno-incompatible-pointer-types" --cache-remote --instantiate-max 1024 --fast
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
+
+# Run script to get more compiler flags for broader version compatibility.
+CHPL_FLAGS += $(shell $(THISDIR)/chpl-compat.bash)
 
 # add-path: Append custom paths for non-system software.
 define add-path
