@@ -9,6 +9,10 @@ CHPL_MAJOR_VERSION="${BASH_REMATCH[2]}"
 CHPL_MINOR_VERSION="${BASH_REMATCH[3]}"
 CHPL_PATCH_VERSION="${BASH_REMATCH[4]}"
 
-if (( CHPL_MAJOR_VERSION == 1 )) && (( CHPL_MINOR_VERSION >= 20 )); then
-    echo "--legacy-classes"
+FLAGS=
+
+if (( CHPL_MAJOR_VERSION >= 1 )) && (( CHPL_MINOR_VERSION >= 20 )); then
+    FLAGS+=" --legacy-classes "
 fi
+
+echo $FLAGS
