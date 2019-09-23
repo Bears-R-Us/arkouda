@@ -6,6 +6,8 @@
  * added groupby unit test
  * refactored a bunch of code
  * doubled speed of binary operators
+ * much faster sort added
+ * multi-level groupby added
  * many other changes lost track of them all
 
 ### Changes in arkouda-0.0.8
