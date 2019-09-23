@@ -15,7 +15,7 @@ CHPL_FLAGS += --ccflags="-Wno-incompatible-pointer-types" --cache-remote --insta
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
 
 # Run script to get more compiler flags for broader version compatibility.
-CHPL_FLAGS += $(shell $(THISDIR)/chpl-compat.bash)
+CHPL_FLAGS += $(shell $(THISDIR)/chpl-compat.bash $(CHPL))
 
 # add-path: Append custom paths for non-system software.
 define add-path
