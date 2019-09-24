@@ -3,96 +3,9 @@ module IndexingMsg
     use ServerConfig;
     use MultiTypeSymEntry;
     use MultiTypeSymbolTable;
-    use StringType;
 
     // experimental
     use UnorderedCopy;
-    proc segmentedIndexMsg(reqMsg: string, st: borrowed SymTab): string {
-      var pn = "segmentedIndexMsg";
-      var repMsg: string;
-      var fields = reqMsg.split();
-      var cmd = fields[1];
-      var subcmd = fields[2];
-      var objtype = fields[3];
-      var args: [1..#(fields.size-3)] string = fields[4..];
-      select subcmd {
-	when "intIndex" {
-	  return segIntIndex(objtype, args, st);
-	}
-	when "sliceIndex" {
-	  return segSliceIndex(objtype, args, st);
-	}
-	/* when "pdarrayIndex" { */
-	/*   return segPdarrayIndex(objtype, args, st); */
-	/* } */
-	otherwise {
-	  return try! "Error: in %s, unknown subcommand %s".format(pn, subcmd);
-	}
-	}
-    }
-
-    proc segIntIndex(objtype: string, args: [] string, st: borrowed SymTab): string {
-      var pn = "segIntIndex";
-      select objtype {
-	when "string" {
-	  var segName = args[1];
-	  var valName = args[2];
-	  var strings = new owned SegString(segName, valName, st);
-	  var idx = try! args[3]:int;
-	  idx = convertPythonIndexToChapel(idx, strings.size);
-	  var s = strings[idx];
-	  return try! "item %s %jt".format("string", s);
-	}
-	otherwise { return notImplementedError(pn, objtype); }
-	}
-    }
-
-    proc segSliceIndex(objtype: string, args: [] string, st: borrowed SymTab): string {
-      var pn = "segSliceIndex";
-      select objtype {
-	when "string" {
-	  var segName = args[1];
-	  var valName = args[2];
-	  var strings = new owned SegString(segName, valName, st);
-	  var start = try! args[3]:int;
-	  var stop = try! args[4]:int;
-	  var stride = try! args[5]:int;
-	  if (stride != 1) { return notImplementedError(pn, "stride != 1"); }
-	  var slice: range(stridable=true) = convertPythonSliceToChapel(start, stop, stride);
-	  var newSegName = st.nextName();
-	  var newValName = st.nextName();
-	  var (newSegs, newVals) = strings[slice];
-	  var newSegsEntry = new shared SymEntry(newSegs);
-	  var newValsEntry = new shared SymEntry(newVals);
-	  st.addEntry(newSegName, newSegsEntry);
-	  st.addEntry(newValName, newValsEntry);
-	  return try! "created " + st.attrib(newSegName) + " +created " + st.attrib(newValName);
-	}
-	otherwise {return notImplementedError(pn, objtype);}
-	}
-    }
-
-    proc convertPythonSliceToChapel(start:int, stop:int, stride:int=1): range(stridable=true) {
-      var slice: range(stridable=true);
-      // convert python slice to chapel slice
-      // backwards iteration with negative stride
-      if  (start > stop) & (stride < 0) {slice = (stop+1)..start by stride;}
-      // forward iteration with positive stride
-      else if (start <= stop) & (stride > 0) {slice = start..(stop-1) by stride;}
-      // BAD FORM start < stop and stride is negative
-      else {slice = 1..0;}
-      return slice;
-    }
-
-    proc convertPythonIndexToChapel(pyidx: int, high: int): int {
-      var chplIdx: int;
-      if (pyidx < 0) {
-	chplIdx = high + 1 + pyidx;
-      } else {
-	chplIdx = pyidx;
-      }
-      return chplIdx;
-    }
 
     /* intIndex "a[int]" response to __getitem__(int) */
     proc intIndexMsg(reqMsg: string, st: borrowed SymTab):string {
