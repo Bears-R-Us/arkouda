@@ -132,9 +132,10 @@ or
  * there is an included Jupyter notebook called test_arkouda.ipynb
 
 ## Data for Development and Testing
-The [Los Alamos National Lab NetFlow] dataset
+The Los Alamos National Lab [NetFlow] dataset with Network Event Data [field] types
 
-[Los Alamos National Lab NetFlow]:https://csr.lanl.gov/data/netflow.html
+[NetFlow]:https://csr.lanl.gov/data/netflow.html
+[field]:https://csr.lanl.gov/data/2017.html
 
 ## Contributing to Arkouda
 
