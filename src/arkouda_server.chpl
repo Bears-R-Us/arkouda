@@ -24,7 +24,7 @@ proc main() {
     var context: ZMQ.Context;
     var socket = context.socket(ZMQ.REP);
     socket.bind("tcp://*:%t".format(ServerPort));
-    writeln("server listening on %s:%t".format(get_hostname(), ServerPort)); try! stdout.flush();
+    writeln("server listening on %s:%t".format(serverHostname, ServerPort)); try! stdout.flush();
 
     var reqCount: int = 0;
     var repCount: int = 0;
@@ -99,7 +99,6 @@ proc main() {
             when "value_counts"      {repMsg = value_countsMsg(reqMsg, st);}
             when "set"               {repMsg = setMsg(reqMsg, st);}
             when "info"              {repMsg = infoMsg(reqMsg, st);}
-            when "dump"              {repMsg = dumpMsg(reqMsg, st);}
             when "str"               {repMsg = strMsg(reqMsg, st);}
             when "repr"              {repMsg = reprMsg(reqMsg, st);}
 	    when "tondarray"         {repMsg = tondarrayMsg(reqMsg, st);}
@@ -112,7 +111,10 @@ proc main() {
             when "[slice]=val"       {repMsg = setSliceIndexToValueMsg(reqMsg, st);}            
             when "[slice]=pdarray"   {repMsg = setSliceIndexToPdarrayMsg(reqMsg, st);}
             when "argsort"           {repMsg = argsortMsg(reqMsg, st);}
+	    when "coargsort"         {repMsg = coargsortMsg(reqMsg, st);}
 	    when "localArgsort"      {repMsg = localArgsortMsg(reqMsg, st);}
+            when "getconfig"         {repMsg = getconfigMsg(reqMsg, st);}
+            when "getmemused"        {repMsg = getmemusedMsg(reqMsg, st);}
             when "connect" {
                 repMsg = "connected to arkouda server tcp://*:%t".format(ServerPort);
             }
@@ -144,27 +146,3 @@ proc main() {
     writeln("requests = ",reqCount," responseCount = ",repCount);
 }
 
-proc get_hostname(): string {
-  /* The right way to do this is by reading the hostname from stdout, but that 
-     causes a segfault in a multilocale setting. So we have to use a temp file, 
-     but we can't use opentmp, because we need the name and the .path attribute 
-     is not the true name. */
-  use Spawn;
-  use IO;
-  use FileSystem;
-  const tmpfile = '/tmp/arkouda.hostname';
-  if exists(tmpfile) {
-    remove(tmpfile);
-  }
-  var cmd = "hostname > \"%s\"".format(tmpfile);
-  var sub = spawnshell(cmd);
-  sub.wait();
-  var hostname: string;
-  var f = open(tmpfile, iomode.r);
-  var r = f.reader();
-  r.readstring(hostname);
-  r.close();
-  f.close();
-  remove(tmpfile);
-  return hostname.strip();
-}

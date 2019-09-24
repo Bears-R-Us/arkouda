@@ -97,26 +97,43 @@ module MsgProcessing
     }
     
     /* 
-    Performs an info and value dump on the message-specified sym entry within the provided sym table.
+    query server configuration...
     
-    :arg reqMsg: request containing (cmd,name)
+    :arg reqMsg: request containing (cmd)
     :type reqMsg: string 
 
     :arg st: SymTab to act on
-    :type st: borrowed SymTab  
+    :type st: borrowed SymTab 
 
     :returns: (string)
-    */
-    proc dumpMsg(reqMsg: string, st: borrowed SymTab): string {
+     */
+    proc getconfigMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
-        var name = fields[2];
-        if v {try! writeln("%s %s".format(cmd,name));try! stdout.flush();}
-        // if name == "__AllSymbols__" passes back dump on all symbols
-        return st.dump(name);
+        if v {try! writeln("%s".format(cmd));try! stdout.flush();}
+        return getConfig();
     }
 
+    /* 
+    query server total symbol table data memory
+    
+    :arg reqMsg: request containing (cmd)
+    :type reqMsg: string 
+
+    :arg st: SymTab to act on
+    :type st: borrowed SymTab 
+
+    :returns: (string)
+     */
+    proc getmemusedMsg(reqMsg: string, st: borrowed SymTab): string {
+        var repMsg: string; // response message
+        var fields = reqMsg.split(); // split request into fields
+        var cmd = fields[1];
+        if v {try! writeln("%s".format(cmd));try! stdout.flush();}
+        return st.memUsed():string;
+    }
+    
     /* 
     Response to __str__ method in python str convert array data to string 
 

@@ -40,8 +40,11 @@ module RandMsg
                 t1 = Time.getCurrentTime();
                 coforall loc in Locales {
                     on loc {
-                        var R = new owned RandomStream(real); R.getNext();
-                        [i in a.localSubdomain()] a[i] = (R.getNext() * (aMax - aMin) + aMin):int;
+		      ref myA = a.localSlice[a.localSubdomain()];
+		      fillRandom(myA);
+		      [ai in myA] if (ai < 0) { ai = -ai; }
+		      const modulus = aMax - aMin;
+		      myA = (myA % modulus) + aMin;
                     }
                 }
                 writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
@@ -57,8 +60,10 @@ module RandMsg
                 t1 = Time.getCurrentTime();
                 coforall loc in Locales {
                     on loc {
-                        var R = new owned RandomStream(real); R.getNext();
-                        [i in a.localSubdomain()] a[i] = ((R.getNext() * (aMax - aMin) + aMin):int):real;
+		      ref myA = a.localSlice[a.localSubdomain()];
+		      fillRandom(myA);
+		      const scale = aMax - aMin;
+		      myA = scale*myA + aMin;
                     }
                 }
                 writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
@@ -74,8 +79,10 @@ module RandMsg
                 t1 = Time.getCurrentTime();
                 coforall loc in Locales {
                     on loc {
-                        var R = new owned RandomStream(real); R.getNext();
-                        [i in a.localSubdomain()] a[i] = (R.getNext() >= 0.5);
+		      ref myA = a.localSlice[a.localSubdomain()];
+		      fillRandom(myA);
+                        /* var R = new owned RandomStream(real); R.getNext(); */
+                        /* [i in a.localSubdomain()] a[i] = (R.getNext() >= 0.5); */
                     }
                 }
                         writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();

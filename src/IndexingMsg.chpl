@@ -393,7 +393,8 @@ module IndexingMsg
                 var y = toSymEntry(gY,int);
                 if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
                 if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);}
-                [(i,v) in zip(iv.a,y.a)] e.a[i] = v;
+                //[(i,v) in zip(iv.a,y.a)] e.a[i] = v;
+                [(i,v) in zip(iv.a,y.a)] unorderedCopy(e.a[i],v);
             }
             when (DType.Float64, DType.Int64, DType.Float64) {
                 var e = toSymEntry(gX,real);
@@ -403,7 +404,8 @@ module IndexingMsg
                 var y = toSymEntry(gY,real);
                 if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
                 if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);}
-                [(i,v) in zip(iv.a,y.a)] e.a[i] = v;
+                //[(i,v) in zip(iv.a,y.a)] e.a[i] = v;
+                [(i,v) in zip(iv.a,y.a)] unorderedCopy(e.a[i],v);
             }
             when (DType.Bool, DType.Int64, DType.Bool) {
                 var e = toSymEntry(gX,bool);
@@ -413,7 +415,8 @@ module IndexingMsg
                 var y = toSymEntry(gY,bool);
                 if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
                 if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);}
-                [(i,v) in zip(iv.a,y.a)] e.a[i] = v;
+                //[(i,v) in zip(iv.a,y.a)] e.a[i] = v;
+                [(i,v) in zip(iv.a,y.a)] unorderedCopy(e.a[i],v);
             }
             otherwise {return notImplementedError(pn,
                                                   "("+dtype2str(gX.dtype)+","+dtype2str(gIV.dtype)+","+dtype2str(gY.dtype)+")");}

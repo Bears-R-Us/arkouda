@@ -12,17 +12,14 @@ module ReductionMsg
 
     use AryUtil;
     use PrivateDist;
-    use Sort only defaultComparator, sort;
+    use RadixSortLSD;
 
     config const reductionDEBUG = false;
     const lBins = 2**25 * numLocales;
       
-    /*
-    these functions take an array and produce a scalar
-    parse and respond to reduction message
-    scalar = reductionop(vector)
-    
-    */
+    // these functions take an array and produce a scalar
+    // parse and respond to reduction message
+    // scalar = reductionop(vector)
     proc reductionMsg(reqMsg: string, st: borrowed SymTab): string {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -272,16 +269,11 @@ module ReductionMsg
       // reqMsg: segmentedReduction values segments operator
       var fields = reqMsg.split();
       var cmd = fields[1];
-      var keys_name = fields[2];
-      var values_name = fields[3];   // segmented array of values to be reduced
-      var segments_name = fields[4]; // segment offsets
-      var operator = fields[5];      // reduction operator
+      var values_name = fields[2];   // segmented array of values to be reduced
+      var segments_name = fields[3]; // segment offsets
+      var operator = fields[4];      // reduction operator
       var rname = st.nextName();
-      if v {try! writeln("%s %s %s %s %s".format(cmd,keys_name,values_name,segments_name,operator));try! stdout.flush();}
-      var gKey: borrowed GenSymEntry = st.lookup(keys_name);
-      if (gKey == nil) {return unknownSymbolError("segmentedReduction", keys_name);}
-      if (gKey.dtype != DType.Int64) {return unrecognizedTypeError("segmentedLocalRdx", dtype2str(gKey.dtype));}
-      var keys = toSymEntry(gKey, int);
+      if v {try! writeln("%s %s %s %s".format(cmd,values_name,segments_name,operator));try! stdout.flush();}
       var gVal: borrowed GenSymEntry = st.lookup(values_name);
       if (gVal == nil) {return unknownSymbolError("segmentedReduction",values_name);}
       var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
@@ -297,7 +289,7 @@ module ReductionMsg
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "prod" {
-	    var res = segProduct(keys.a, values.a, segments.a);
+	    var res = segProduct(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "mean" {
@@ -305,19 +297,19 @@ module ReductionMsg
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "min" {
-	    var res = segMin(keys.a, values.a, segments.a);
+	    var res = segMin(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "max" {
-	    var res = segMax(keys.a, values.a, segments.a);
+	    var res = segMax(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "argmin" {
-	    var (vals, locs) = segArgmin(keys.a, values.a, segments.a);
+	    var (vals, locs) = segArgmin(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(locs));
 	  }
 	  when "argmax" {
-	    var (vals, locs) = segArgmax(keys.a, values.a, segments.a);
+	    var (vals, locs) = segArgmax(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(locs));
 	  }
 	  when "nunique" {
@@ -335,7 +327,7 @@ module ReductionMsg
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "prod" {
-	    var res = segProduct(keys.a, values.a, segments.a);
+	    var res = segProduct(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "mean" {
@@ -343,19 +335,19 @@ module ReductionMsg
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "min" {
-	    var res = segMin(keys.a, values.a, segments.a);
+	    var res = segMin(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "max" {
-	    var res = segMax(keys.a, values.a, segments.a);
+	    var res = segMax(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "argmin" {
-	    var (vals, locs) = segArgmin(keys.a, values.a, segments.a);
+	    var (vals, locs) = segArgmin(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(locs));
 	  }
 	  when "argmax" {
-	    var (vals, locs) = segArgmax(keys.a, values.a, segments.a);
+	    var (vals, locs) = segArgmax(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(locs));
 	  }
 	  otherwise {return notImplementedError("segmentedReduction",operator,gVal.dtype);}
@@ -418,7 +410,7 @@ module ReductionMsg
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "prod" {
-	    var res = perLocProduct(keys.a, values.a, segments.a);
+	    var res = perLocProduct(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "mean" {
@@ -426,19 +418,19 @@ module ReductionMsg
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "min" {
-	    var res = perLocMin(keys.a, values.a, segments.a);
+	    var res = perLocMin(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "max" {
-	    var res = perLocMax(keys.a, values.a, segments.a);
+	    var res = perLocMax(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "argmin" {
-	    var res = perLocArgmin(keys.a, values.a, segments.a);
+	    var res = perLocArgmin(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "argmax" {
-	    var res = perLocArgmax(keys.a, values.a, segments.a);
+	    var res = perLocArgmax(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "nunique" {
@@ -456,7 +448,7 @@ module ReductionMsg
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "prod" {
-	    var res = perLocProduct(keys.a, values.a, segments.a);
+	    var res = perLocProduct(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "mean" {
@@ -464,19 +456,19 @@ module ReductionMsg
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "min" {
-	    var res = perLocMin(keys.a, values.a, segments.a);
+	    var res = perLocMin(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "max" {
-	    var res = perLocMax(keys.a, values.a, segments.a);
+	    var res = perLocMax(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "argmin" {
-	    var res = perLocArgmin(keys.a, values.a, segments.a);
+	    var res = perLocArgmin(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  when "argmax" {
-	    var res = perLocArgmax(keys.a, values.a, segments.a);
+	    var res = perLocArgmax(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
 	  otherwise {return notImplementedError("segmentedLocalRdx",operator,gVal.dtype);}
@@ -596,7 +588,7 @@ module ReductionMsg
       return res;
     }
     
-    proc segProduct(keys:[] int, values:[], segments:[?D] int): [D] real {
+    proc segProduct(values:[], segments:[?D] int): [D] real {
       // Segmented sum of log-magnitudes
       var res: [D] real = 0.0;
       const epsilon:real = 1 / max(real);
@@ -604,7 +596,7 @@ module ReductionMsg
       var logs = Math.log(magnitudes:real + epsilon);
       var negatives = (Math.sgn(values) == -1);
       forall (r, m, v, n) in zip(res,
-				 segMin(keys, magnitudes, segments),
+				 segMin(magnitudes, segments),
 				 segSum(logs, segments),
 				 segSum(negatives, segments)) {
 	if m > epsilon {
@@ -615,14 +607,13 @@ module ReductionMsg
       return res;
     }
 
-    proc perLocProduct(keys:[] int, values:[] ?t, segments:[?D] int): [] real {
+    proc perLocProduct(values:[] ?t, segments:[?D] int): [] real {
       var numKeys:int = segments.size / numLocales;
       var keyDom = makeDistDom(numKeys);
       var perLocVals: [PrivateSpace] [0..#numKeys] real;
       coforall loc in Locales {
 	on loc {
-	  perLocVals[here.id] = segProduct(keys.localSlice[keys.localSubdomain()],
-					   values.localSlice[values.localSubdomain()],
+	  perLocVals[here.id] = segProduct(values.localSlice[values.localSubdomain()],
 					   segments.localSlice[D.localSubdomain()]);
 	}
       }
@@ -665,7 +656,8 @@ module ReductionMsg
       return res:real / keyCounts:real;
     }
 
-    proc segMin(keys:[] int, values:[] ?t, segments:[?D] int): [D] t {
+    proc segMin(values:[?vD] ?t, segments:[?D] int): [D] t {
+      var keys = expandKeys(vD, segments);
       var res: [D] t = max(t);
       var kv = [(k, v) in zip(keys, values)] (-k, v);
       var cummin = min scan kv;
@@ -683,14 +675,13 @@ module ReductionMsg
       return res;
     }
     
-    proc perLocMin(keys:[] int, values:[] ?t, segments:[?D] int): [] t {
+    proc perLocMin(values:[] ?t, segments:[?D] int): [] t {
       var numKeys:int = segments.size / numLocales;
       var keyDom = makeDistDom(numKeys);
       var perLocVals: [PrivateSpace] [0..#numKeys] t;
       coforall loc in Locales {
 	on loc {
-	  perLocVals[here.id] = segMin(keys.localSlice[keys.localSubdomain()],
-				       values.localSlice[values.localSubdomain()],
+	  perLocVals[here.id] = segMin(values.localSlice[values.localSubdomain()],
 				       segments.localSlice[D.localSubdomain()]);
 	}
       }
@@ -701,7 +692,8 @@ module ReductionMsg
       return res;
     }    
 
-    proc segMax(keys:[] int, values:[] ?t, segments:[?D] int): [D] t {
+    proc segMax(values:[?vD] ?t, segments:[?D] int): [D] t {
+      var keys = expandKeys(vD, segments);
       var res: [D] t = min(t);
       var kv = [(k, v) in zip(keys, values)] (k, v);
       var cummax = max scan kv;
@@ -719,14 +711,13 @@ module ReductionMsg
       return res;
     }
 
-    proc perLocMax(keys:[] int, values:[] ?t, segments:[?D] int): [] t {
+    proc perLocMax(values:[] ?t, segments:[?D] int): [] t {
       var numKeys:int = segments.size / numLocales;
       var keyDom = makeDistDom(numKeys);
       var perLocVals: [PrivateSpace] [0..#numKeys] t;
       coforall loc in Locales {
 	on loc {
-	  perLocVals[here.id] = segMax(keys.localSlice[keys.localSubdomain()],
-				       values.localSlice[values.localSubdomain()],
+	  perLocVals[here.id] = segMax(values.localSlice[values.localSubdomain()],
 				       segments.localSlice[D.localSubdomain()]);
 	}
       }
@@ -737,8 +728,9 @@ module ReductionMsg
       return res;
     }
     
-    proc segArgmin(keys:[] int, values:[] ?t, segments:[?D] int): ([D] t, [D] int) {
-      var kvi = [(k, v, i) in zip(keys, values, keys.domain)] ((-k, v), i);
+    proc segArgmin(values:[?vD] ?t, segments:[?D] int): ([D] t, [D] int) {
+      var keys = expandKeys(vD, segments);
+      var kvi = [(k, v, i) in zip(keys, values, vD)] ((-k, v), i);
       var cummin = minloc scan kvi;
       var locs: [D] int;
       var vals: [D] t = max(t);
@@ -757,15 +749,14 @@ module ReductionMsg
       return (vals, locs);
     }
 
-    proc perLocArgmin(keys:[] int, values:[] ?t, segments:[?D] int): [] int {
+    proc perLocArgmin(values:[] ?t, segments:[?D] int): [] int {
       var numKeys:int = segments.size / numLocales;
       var keyDom = makeDistDom(numKeys);
       var perLocVals: [PrivateSpace] [0..#numKeys] t;
       var perLocLocs: [PrivateSpace] [0..#numKeys] int;
       coforall loc in Locales {
 	on loc {
-	  (perLocVals[here.id], perLocLocs[here.id]) = segArgmin(keys.localSlice[keys.localSubdomain()],
-								 values.localSlice[values.localSubdomain()],
+	  (perLocVals[here.id], perLocLocs[here.id]) = segArgmin(values.localSlice[values.localSubdomain()],
 								 segments.localSlice[D.localSubdomain()]);
 	}
       }
@@ -778,8 +769,9 @@ module ReductionMsg
       return res;
     }
     
-    proc segArgmax(keys:[] int, values:[] ?t, segments:[?D] int): ([D] t, [D] int) {
-      var kvi = [(k, v, i) in zip(keys, values, keys.domain)] ((k, v), i);
+    proc segArgmax(values:[?vD] ?t, segments:[?D] int): ([D] t, [D] int) {
+      var keys = expandKeys(vD, segments);
+      var kvi = [(k, v, i) in zip(keys, values, vD)] ((k, v), i);
       var cummax = maxloc scan kvi;
       var locs: [D] int;
       var vals: [D] t = min(t);
@@ -798,15 +790,14 @@ module ReductionMsg
       return (vals, locs);
     }
 
-    proc perLocArgmax(keys:[] int, values:[] ?t, segments:[?D] int): [] int {
+    proc perLocArgmax(values:[] ?t, segments:[?D] int): [] int {
       var numKeys:int = segments.size / numLocales;
       var keyDom = makeDistDom(numKeys);
       var perLocVals: [PrivateSpace] [0..#numKeys] t;
       var perLocLocs: [PrivateSpace] [0..#numKeys] int;
       coforall loc in Locales {
 	on loc {
-	  (perLocVals[here.id], perLocLocs[here.id]) = segArgmax(keys.localSlice[keys.localSubdomain()],
-								 values.localSlice[values.localSubdomain()],
+	  (perLocVals[here.id], perLocLocs[here.id]) = segArgmax(values.localSlice[values.localSubdomain()],
 								 segments.localSlice[D.localSubdomain()]);
 	}
       }
@@ -881,113 +872,143 @@ module ReductionMsg
       return res;
     }
 
-    proc segNumUnique(values:[?vD] int, segments:[?sD] int): [sD] int {
-      // TO DO: this is not correct. Sometimes gives values that are too large.
-      // var res: [sD] int;
-      var sorted: [vD] int;
-      var aMin = min reduce values;
-      var aMax = max reduce values;
-      forall (i, left) in zip(sD, segments) {
-	var right: int;
-	if (i == sD.high) {
-	  right = vD.high;
-	} else {
-	  right = segments[i+1] - 1;
-	}
-	if (right > left) {
-	  sorted[left..right] = values[left..right];
-	  ref seg = sorted[left..right];
-	  sort(seg);
-	}
-      }
-      // TO DO: make sure within-key sort worked properly
-      if reductionDEBUG {
-	var sortCheck = true;
-	forall (i, left) in zip(sD, segments) with (&& reduce sortCheck) {
-	  var right: int;
-	  if (i == sD.high) {
-	    right = sorted.domain.high;
-	  } else {
-	    right = segments[i+1] - 1;
-	  }
-	  if (right > left) {
-	    if (i < 3) || (i > sD.high - 3) {
-	      if ((right - left) > 5) {
-		writeln(i, ": ", sorted[left..left+3], " ... ", sorted[right-3..right]);
-	      } else {
-		writeln(i, ": ", sorted[left..right]);
-	      }
-	    }
-	    var ascending = [j in left..right-1] (sorted[j] <= sorted[j+1]);
-	    sortCheck reduce= (&& reduce ascending);
-	  }
-	}
-	writeln("All segments of values are internally sorted? ", sortCheck);
-      }
+    /* proc segNumUnique(values:[?vD] int, segments:[?sD] int): [sD] int { */
+    /*   // TO DO: this is not correct. Sometimes gives values that are too large. */
+    /*   // var res: [sD] int; */
+    /*   var sorted: [vD] int; */
+    /*   var aMin = min reduce values; */
+    /*   var aMax = max reduce values; */
+    /*   forall (i, left) in zip(sD, segments) { */
+    /* 	var right: int; */
+    /* 	if (i == sD.high) { */
+    /* 	  right = vD.high; */
+    /* 	} else { */
+    /* 	  right = segments[i+1] - 1; */
+    /* 	} */
+    /* 	if (right > left) { */
+    /* 	  //msbRadixSortWithScratchSpace(left, right, sorted, values, defaultComparator, aMin, aMax); */
+    /* 	  sorted[left..right] = values[left..right]; */
+    /* 	  ref seg = sorted[left..right]; */
+    /* 	  sort(seg); */
+    /* 	} */
+    /*   } */
+    /*   // TO DO: make sure within-key sort worked properly */
+    /*   if reductionDEBUG { */
+    /* 	var sortCheck = true; */
+    /* 	forall (i, left) in zip(sD, segments) with (&& reduce sortCheck) { */
+    /* 	  var right: int; */
+    /* 	  if (i == sD.high) { */
+    /* 	    right = sorted.domain.high; */
+    /* 	  } else { */
+    /* 	    right = segments[i+1] - 1; */
+    /* 	  } */
+    /* 	  if (right > left) { */
+    /* 	    if (i < 3) || (i > sD.high - 3) { */
+    /* 	      if ((right - left) > 5) { */
+    /* 		writeln(i, ": ", sorted[left..left+3], " ... ", sorted[right-3..right]); */
+    /* 	      } else { */
+    /* 		writeln(i, ": ", sorted[left..right]); */
+    /* 	      } */
+    /* 	    } */
+    /* 	    var ascending = [j in left..right-1] (sorted[j] <= sorted[j+1]); */
+    /* 	    sortCheck reduce= (&& reduce ascending); */
+    /* 	  } */
+    /* 	} */
+    /* 	writeln("All segments of values are internally sorted? ", sortCheck); */
+    /*   } */
       
-      var truth: [vD] bool;
-      // true where new value appears
-      [(t, s, i) in zip(truth, sorted, vD)] if i > vD.low { t = (sorted[i-1] != s); }
+    /*   var truth: [vD] bool; */
+    /*   // true where new value appears */
+    /*   [(t, s, i) in zip(truth, sorted, vD)] if i > vD.low { t = (sorted[i-1] != s); } */
+    /*   // first value of every segment is automatically new */
+    /*   [s in segments] truth[s] = true; */
+    /*   // count cumulative new values and take diffs at segment boundaries */
+    /*   var count: [vD] int = (+ scan truth); */
+    /*   var pop = count[vD.high]; */
+    /*   if reductionDEBUG { writeln("Total unique vals across all keys: ", pop); } */
+    /*   var nunique: [sD] int; */
+    /*   forall (i, s, n) in zip(sD, segments, nunique) { */
+    /* 	var high: int; */
+    /* 	if (i == sD.high) { */
+    /* 	  n = pop + 1 - count[s]; */
+    /* 	} else { */
+    /* 	  n = count[segments[i+1]] - count[s]; */
+    /* 	} */
+    /*   } */
+    /*   return nunique; */
+    /* } */
+
+    proc expandKeys(kD, segments: [?sD] int): [kD] int {
+      var truth: [kD] bool;
+      [i in segments] unorderedCopy(truth[i], true);
+      var keys = (+ scan truth) - 1;
+      return keys;
+    }
+
+    proc segNumUnique(values: [?kD] int, segments: [?sD] int) {
+      var keys = expandKeys(kD, segments);
+      var res: [sD] int;
+      // sort keys and values together
+      var t1 = Time.getCurrentTime();
+      if v {writeln("Sorting keys and values..."); try! stdout.flush();}
+      /* var toSort = [(k, v) in zip(keys, values)] (k, v); */
+      /* Sort.TwoArrayRadixSort.twoArrayRadixSort(toSort); */
+      var firstIV = radixSortLSD_ranks(values);
+      var intermediate: [kD] int;
+      [(ii, idx) in zip(intermediate, firstIV)] unorderedCopy(ii, keys[idx]);
+      var deltaIV = radixSortLSD_ranks(intermediate);
+      var IV: [kD] int;
+      [(IVi, idx) in zip(IV, deltaIV)] unorderedCopy(IVi, firstIV[idx]); // IV = firstIV[deltaIV];
+      var sortedKV: [kD] (int, int);
+      [(kvi, idx) in zip(sortedKV, IV)] {unorderedCopy(kvi[1], keys[idx]); unorderedCopy(kvi[2], values[idx]);}
+      if v {writeln("sort time = ", Time.getCurrentTime() - t1); try! stdout.flush();}
+      if v {writeln("Finding unique (key, value) pairs..."); try! stdout.flush();}
+      var truth: [kD] bool;
+      // true where new (k, v) pair appears
+      [(t, kv, i) in zip(truth, sortedKV, kD)] if i > kD.low { t = (sortedKV[i-1][2] != kv[2]); }
       // first value of every segment is automatically new
       [s in segments] truth[s] = true;
       // count cumulative new values and take diffs at segment boundaries
-      var count: [vD] int = (+ scan truth);
-      var pop = count[vD.high];
-      if reductionDEBUG { writeln("Total unique vals across all keys: ", pop); }
-      var nunique: [sD] int;
-      forall (i, s, n) in zip(sD, segments, nunique) {
-	var high: int;
-	if (i == sD.high) {
-	  n = pop + 1 - count[s];
-	} else {
-	  n = count[segments[i+1]] - count[s];
+      var count: [kD] int = (+ scan truth);
+      var pop = count[kD.high];
+      // find steps to get unique (key, val) pairs
+      var hD: domain(1) dmapped Block(boundingBox={0..#pop}) = {0..#pop};
+      // save off only the key from each pair (now there will be nunique of each key)
+      var keyhits: [hD] int;
+      [i in truth.domain] if (truth[i]) { var key = sortedKV[i][1]; unorderedCopy(keyhits[count[i]-1], key); }
+      if v {writeln("time = ", Time.getCurrentTime() - t1); try! stdout.flush();}
+      if v {writeln("Finding unique keys and num unique vals per key."); try! stdout.flush(); t1 = Time.getCurrentTime();}
+      // find steps in keys
+      var truth2: [hD] bool;
+      truth2[hD.low] = true;
+      [(t, k, i) in zip(truth2, keyhits, hD)] if (i > hD.low) { t = (keyhits[i-1] != k); }
+      var kiv: [hD] int = (+ scan truth2);
+      var nKeysPresent = kiv[hD.high];
+      var nD: domain(1) dmapped Block(boundingBox={0..#(nKeysPresent+1)}) = {0..#(nKeysPresent+1)};
+      // get step indices and take diff to get number of times each key appears
+      var stepInds: [nD] int;
+      stepInds[nKeysPresent] = keyhits.size;
+      [i in hD] if (truth2[i]) { var idx = i; unorderedCopy(stepInds[kiv[i]-1], idx); }
+      var nunique = stepInds[1..#nKeysPresent] - stepInds[0..#nKeysPresent];
+      // if every key is present, we're done
+      if (nKeysPresent == sD.size) {
+        res = nunique;
+      } else { // need to skip over non-present keys
+        var segSizes: [sD] int;
+	segSizes[sD.low..sD.high-1] = segments[sD.low+1..sD.high] - segments[sD.low..sD.high-1];
+	segSizes[sD.high] = kD.high - segments[sD.high] + 1;
+	var idx = 0;
+	for (r, s) in zip(res, segSizes) {
+	  if (s > 0) {
+	    r = nunique[idx];
+	    idx += 1;
+	  }
 	}
       }
-      return nunique;
+      if v {writeln("time = ", Time.getCurrentTime() - t1); try! stdout.flush();}
+      return res;
     }
 
-    /* // sort keys and vals together */
-    /* var toSort = [(k, v) in zip(keys, values)] (k, v); */
-    /* if (keys.targetLocales().size == 1) { */
-    /* 	sort(toSort); */
-    /* } else { */
-    /* 	argsortDRS(toSort); */
-    /* } */
-    // find steps to get unique (key, val) pairs
-    /*   var hD = domain(1) dmapped Block(locales=kD.targetLocales(), boundingBox={0..#pop}) = {0..#pop}; */
-    /*   // save off only the key from each pair (now there will be nunique of each key) */
-    /*   var keyhits: [hD] int; */
-    /*   [i in truth.domain] if (truth[i] == true) {var key = toSort[i][1]; unorderedCopy(keyhits[iv[i]-1], key);} */
-    /*   // find steps in keys */
-    /*   var truth2: [hD] bool; */
-    /*   truth2[hD.low] = true; */
-    /*   [(t, k, i) in zip(truth2, keyhits, hD)] if i > D.low { t = (keyhits[i-1] != k); } */
-    /*   var kiv: [hD] int = (+ scan truth2); */
-    /*   var nKeysPresent = kiv[hD.high]; */
-    /*   var nD = domain(1) dmapped Block(locales=kD.targetLocales(), boundingBox={0..#(nKeysPresent+1)}) = {0..#(nKeysPresent+1)}; */
-    /*   // get step indices and take diff to get number of times each key appears */
-    /*   var stepInds: [nD] int; */
-    /*   stepInds[nKeysPresent] = keyhits.size; */
-    /*   [i in hD] if (truth2[i] == true) {var idx = i; unorderedCopy(stepInds[kiv[i]-1], idx); } */
-    /*   var nunique = stepInds[1..#nKeysPresent] - stepInds[0..#nKeysPresent]; */
-    /*   // if every key is present, we're done */
-    /*   if (nKeysPresent == sD.size) { */
-    /* 	res = nunique; */
-    /*   } else { // we need to skip over non-present keys */
-    /* 	var segSizes:[sD] int; */
-    /* 	segSizes[sD.low..sD.high-1] = segments[sD.low+1..sD.high] - segments[sD.low..sD.high-1]; */
-    /* 	segSizes[sD.high] = kD.high - segments[sD.high] + 1; */
-    /* 	var idx = 0; */
-    /* 	for (r, s) in zip(res, segSizes) { */
-    /* 	  if (s > 0) { */
-    /* 	    r = nunique[idx]; */
-    /* 	    idx += 1; */
-    /* 	  } */
-    /* 	} */
-    /*   } */
-    /*   return res; */
-    /* } */
-    
     /* proc segNumUnique(values:[] int, segments:[?D] int): [D] int { */
     /*   var res: [D] int; */
     /*   forall (r, low, i) in zip(res, segments, D) { */

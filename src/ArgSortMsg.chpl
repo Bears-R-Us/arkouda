@@ -22,7 +22,7 @@ module ArgSortMsg
     use UnorderedCopy;
     use UnorderedAtomics;
 
-    //use Sort only;
+    use Sort only;
     use RadixSortLSD;
     
     // thresholds for different sized sorts
@@ -357,6 +357,101 @@ module ArgSortMsg
     /*     return iv; */
     /* } */
 
+    /* Perform one step in a multi-step argsort, starting with an initial 
+       permutation vector and further permuting it in the manner required
+       to sort an array of keys.
+     */
+    proc incrementalArgSort(g: GenSymEntry, iv: [?aD] int): [] int throws {
+      // Store the incremental permutation to be applied on top of the initial perm
+      var deltaIV: [aD] int;
+      // Discover the dtype of the entry holding the keys array
+      select g.dtype {
+	when DType.Int64 {
+	  var e = toSymEntry(g, int);
+	  // Permute the keys array with the initial iv
+	  var newa: [e.aD] int;
+	  ref olda = e.a;
+	  // Effectively: newa = olda[iv]
+	  [(newai, idx) in zip(newa, iv)] unorderedCopy(newai, olda[idx]);
+	  // Generate the next incremental permutation
+	  deltaIV = radixSortLSD_ranks(newa);
+	}
+	when DType.Float64 {
+	  var e = toSymEntry(g, real);
+	  var newa: [e.aD] real;
+	  ref olda = e.a;
+	  [(newai, idx) in zip(newa, iv)] unorderedCopy(newai, olda[idx]);
+	  deltaIV = radixSortLSD_ranks(newa);
+	}
+	otherwise { throw new owned ErrorWithMsg(dtype2str(g.dtype)); }
+      }
+      // The output permutation is the composition of the initial and incremental permutations
+      var newIV: [aD] int;
+      // Effectively: newIV = iv[deltaIV] 
+      [(newIVi, idx) in zip(newIV, deltaIV)] unorderedCopy(newIVi, iv[idx]);
+      return newIV;
+    }
+
+    /* Do a LSD radix sort across multiple arrays, where each array represents a digit.
+     */
+    /* proc coArgSort(arrays: [?D] GenSymEntry): [] int throws { */
+    /*   // Calling function already checked that all arrays have same size */
+    /*   const aD = makeDistDom(arrays[D.low].size); */
+    /*   // Initialize permutation to the identity */
+    /*   var cumulativeIV: [aD] int = aD.low..aD.high; */
+    /*   // Starting with the last array, incrementally permute the IV by sorting each array */
+    /*   for i in D.low..D.high-1 by -1 { */
+    /* 	try cumulativeIV = incrementalArgSort(arrays[i], cumulativeIV); */
+    /*   } */
+    /*   return cumulativeIV; */
+    /* } */
+
+    /* Find the permutation that sorts multiple arrays, treating each array as a
+       new level of the sorting key.
+     */
+    proc coargsortMsg(reqMsg: string, st: borrowed SymTab) {
+      var pn = "coargsort";
+      var repMsg: string;
+      var fields = reqMsg.split();
+      var cmd = fields[1];
+      var n = try! fields[2]:int; // number of arrays to sort
+      var names = fields[3..];
+      // Check that fields contains the stated number of arrays
+      if (n != names.size) { return try! incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(n, names.size)); }
+      /* var arrays: [0..#n] borrowed GenSymEntry; */
+      var size: int;
+      // Check that all arrays exist in the symbol table and have the same size
+      for (name, i) in zip(names, 1..) {
+	// arrays[i] = st.lookup(name): borrowed GenSymEntry;
+	var g: borrowed GenSymEntry = st.lookup(name);
+	if (g == nil) { return unknownSymbolError(pn, name); }
+	if (i == 1) {
+	  size = g.size;
+	} else {
+	  if (g.size != size) { return incompatibleArgumentsError(pn, "Arrays must all be same size"); }
+	}
+      }
+      // Initialize the permutation vector in the symbol table with the identity perm
+      var rname = st.nextName();
+      st.addEntry(rname, size, int);
+      var iv = toSymEntry(st.lookup(rname), int);
+      iv.a = 0..#size;
+      // Starting with the last array, incrementally permute the IV by sorting each array
+      for i in names.domain.low..names.domain.high by -1 {
+	var g: borrowed GenSymEntry = st.lookup(names[i]);
+	try {
+	  // Perform the coArgSort and store in the new SymEntry
+	  iv.a = incrementalArgSort(g, iv.a);
+	} catch e:ErrorWithMsg {
+	  // The only error thrown is for an unsupported dtype
+	  return notImplementedError(pn, e.msg);
+	} catch {
+	  return try! "Error: %s unknown cause".format(pn);
+	}
+      }
+      return try! "created " + st.attrib(rname);
+    }
+    
     proc argsortDefault(A:[?D] ?t):[D] int {
       var t1 = Time.getCurrentTime();
       //var AI = [(a, i) in zip(A, D)] (a, i);

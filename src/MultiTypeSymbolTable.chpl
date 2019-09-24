@@ -5,7 +5,6 @@ module MultiTypeSymbolTable
     use ServerErrorStrings;
     
     use MultiTypeSymEntry;
-    use Chapel118;
 
     /* symbol table */
     class SymTab
@@ -150,6 +149,14 @@ module MultiTypeSymbolTable
             {
                 try! writeln("%10s = ".format(n), tab[n]);try! stdout.flush();
             }
+        }
+
+        /*
+        returns total bytes in arrays in the symbol table
+        */
+        proc memUsed(): int {
+            var total: int = + reduce [e in tab] e.size * e.itemsize;
+            return total;
         }
         
         /*
