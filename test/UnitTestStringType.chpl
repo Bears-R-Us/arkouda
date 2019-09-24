@@ -7,6 +7,7 @@ config const dsetName = "segstring";
 config const testIndex = 0;
 config const testStart = 0;
 config const testStop = 5;
+config const testString = "Comp141988";
 
 proc parseNames(msg) {
   var halves = msg.split('+', 1);
@@ -43,11 +44,13 @@ proc main() {
     writeln("%i: %s".format(i, strings[i]));
   }
 
+  // strings[int]
   reqMsg = "%s %s %s %s %s %i".format("segmentedIndexMsg", "intIndex", "string", segName, valName, testIndex);
   writeln(">>> ", reqMsg);
   repMsg = segmentedIndexMsg(reqMsg, st);
   writeln("<<< ", repMsg);
 
+  // strings[slice]
   reqMsg = "%s %s %s %s %s %i %i %i".format("segmentedIndexMsg", "sliceIndex", "string", segName, valName, testStart, testStop, 1);
   writeln(">>> ", reqMsg);
   repMsg = segmentedIndexMsg(reqMsg, st);
@@ -60,4 +63,16 @@ proc main() {
   for i in 0..#strSlice.size {
     writeln("%i: %s".format(i, strSlice[i]));
   }
+
+  // strings == val
+  reqMsg = "%s %s %s %s %s %s %s".format("segBinopvs", "==", "string", segName, valName, "string", testString);
+  writeln(">>> ", reqMsg);
+  repMsg = segBinopvsMsg(reqMsg, st);
+  writeln("<<< ", repMsg);
+  var fields = repMsg.split();
+  var aname = fields[2];
+  var giv = st.lookup(aname);
+  var iv = toSymEntry(giv, bool);
+  printAry("strings == %s: ".format(testString), iv.a);
+  writeln("pop = ", + reduce iv.a);
 }

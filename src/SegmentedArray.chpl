@@ -1,6 +1,7 @@
 module SegmentedArray {
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
+  use UnorderedCopy;
 
   class SegString {
     var offsets: unmanaged SymEntry(int);
@@ -27,6 +28,7 @@ module SegmentedArray {
     }
 
     proc this(idx: int): string {
+      // TO DO: Error handling for out of bounds
       // Start index of the string
       var start = offsets.a[idx];
       // Index of last (null) byte in string
@@ -42,6 +44,7 @@ module SegmentedArray {
     }
 
     proc this(slice: range(stridable=true)) {
+      // TO DO: Error handling for out of bounds
       // Start of bytearray slice
       var start = offsets.a[slice.low];
       // End of bytearray slice
@@ -61,8 +64,112 @@ module SegmentedArray {
       newVals = values.a[start..end];
       return (newSegs, newVals);
     }
+
+    proc this(iv: [?D] int) {
+      /* var ivMin = min reduce iv; */
+      /* var ivMax = max reduce iv; */
+      // TO DO: Error handling for out of bounds
+      ref oa = offsets.a;
+      const low = offsets.aD.low, high = offsets.aD.high;
+      // Lengths of segments including null bytes
+      /* var lengths: [offsets.aD] int; */
+      /* lengths[low..#(size-1)] = oa[(low+1)..#(size-1)] - oa[low..#(size-1)]; */
+      /* lengths[high] = values.size - oa[high]; */
+      var gatheredLengths: [D] int;
+      [(gl, idx) in zip(gatheredLengths, iv)] {
+	var l: int;
+	if (idx == high) {
+	  l = values.size - oa[high];
+	} else {
+	  l = oa[idx+1] - oa[idx];
+	}
+	unorderedCopy(gl, l);
+      }
+      var gatheredOffsets = (+ scan gatheredLengths);
+      var retBytes = gatheredOffsets[D.high];
+      gatheredOffsets -= gatheredLengths;
+      var gatheredVals = makeDistArray(retBytes, uint(8));
+      ref va = values.a;
+      forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, iv) {
+	// gatheredVals[go..#gl] = va[oa[idx]..#lengths[idx]];
+	for pos in 0..#gl {
+	  unorderedCopy(gatheredVals[go+pos], va[oa[idx]+pos]);
+	}
+      }
+      return (gatheredOffsets, gatheredVals);
+    }
+
+    proc this(iv: [offsets.aD] bool) {
+      // TO DO: Error handling for out of bounds
+      ref oa = offsets.a;
+      const low = offsets.aD.low, high = offsets.aD.high;
+      var segInds = + scan iv;
+      var newSize = segInds[high];
+      segInds -= 1;
+      var gatheredLengths = makeDistArray(newSize, int);
+      // Lengths of segments including null bytes
+      /* var lengths: [offsets.aD] int; */
+      /* lengths[low..#(size-1)] = oa[(low+1)..#(size-1)] - oa[low..#(size-1)]; */
+      /* lengths[high] = values.size - oa[high]; */
+      [idx in offsets.aD] if (iv[idx] == true) {
+	var l: int;
+	if (idx == high) {
+	  l = values.size - oa[high];
+	} else {
+	  l = oa[idx+1] - oa[idx];
+	}
+	unorderedCopy(gatheredLengths[segInds[idx]], l);
+      }
+      var gatheredOffsets = (+ scan gatheredLengths);
+      var retBytes = gatheredOffsets[newSize-1];
+      gatheredOffsets -= gatheredLengths;
+      var gatheredVals = makeDistArray(retBytes, uint(8));
+      ref va = values.a;
+      forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, segInds) {
+	// gatheredVals[go..#gl] = va[oa[idx]..#lengths[idx]];
+	for pos in 0..#gl {
+	  unorderedCopy(gatheredVals[go+pos], va[oa[idx]+pos]);
+	}
+      }
+      return (gatheredOffsets, gatheredVals);
+    }
+
+  }
+  
+  proc ==(lss:SegString, rss:SegString) {
+    ref oD = lss.offsets.aD;
+    ref lvalues = lss.values.a;
+    ref loffsets = lss.offsets.a;
+    ref rvalues = rss.values.a;
+    ref roffsets = rss.offsets.a;
+    var truth: [oD] bool;
+    forall (t, lo, ro, idx) in zip(truth, loffsets, roffsets, oD) {
+      var llen: int;
+      var rlen: int;
+      if (idx == oD.high) {
+	llen = lvalues.size - lo - 1;
+	rlen = rvalues.size - ro - 1;
+      } else {
+	llen = loffsets[idx+1] - lo - 1;
+	rlen = roffsets[idx+1] - ro - 1;
+      }
+      if (llen == rlen) {
+	var allEqual = true;
+	for pos in 0..#llen {
+	  if (lvalues[lo+pos] != rvalues[ro+pos]) {
+	    allEqual = false;
+	    break;
+	  }
+	}
+	if allEqual {
+	  unorderedCopy(t, true);
+	}
+      }
+    }
+    return truth;
   }
 
+  
   proc ==(ss:SegString, testStr: string) {
     ref oD = ss.offsets.aD;
     var truth: [oD] bool = true;
@@ -124,6 +231,16 @@ module SegmentedArray {
       }
   }
 
+  proc convertPythonIndexToChapel(pyidx: int, high: int): int {
+    var chplIdx: int;
+    if (pyidx < 0) {
+      chplIdx = high + 1 + pyidx;
+    } else {
+      chplIdx = pyidx;
+    }
+    return chplIdx;
+  }
+
   proc segSliceIndex(objtype: string, args: [] string, st: borrowed SymTab): string {
     var pn = "segSliceIndex";
     select objtype {
@@ -161,14 +278,99 @@ module SegmentedArray {
     return slice;
   }
 
-  proc convertPythonIndexToChapel(pyidx: int, high: int): int {
-    var chplIdx: int;
-    if (pyidx < 0) {
-      chplIdx = high + 1 + pyidx;
-    } else {
-      chplIdx = pyidx;
-    }
-    return chplIdx;
+  proc segPdarrayIndex(objtype: string, args: [] string, st: borrowed SymTab): string {
+    var pn = "segPdarrayIndex";
+    var newSegName = st.nextName();
+    var newValName = st.nextName();
+    select objtype {
+      when "string" {
+	var segName = args[1];
+	var valName = args[2];
+	var strings = new owned SegString(segName, valName, st);
+	var iname = args[3];
+	var gIV: borrowed GenSymEntry = st.lookup(iname);
+	if (gIV == nil) {return unknownSymbolError(pn, iname);}
+	select gIV.dtype {
+	  when DType.Int64 {
+	    var iv = toSymEntry(gIV, int);
+	    var (newSegs, newVals) = strings[iv];
+	    var newSegsEntry = new shared SymEntry(newSegs);
+	    var newValsEntry = new shared SymEntry(newVals);
+	    st.addEntry(newSegName, newSegsEntry);
+	    st.addEntry(newValName, newValsEntry);
+	  }
+	  when DType.Bool {
+	    var iv = toSymEntry(gIV, bool);
+	    var (newSegs, newVals) = strings[iv];
+	    var newSegsEntry = new shared SymEntry(newSegs);
+	    var newValsEntry = new shared SymEntry(newVals);
+	    st.addEntry(newSegName, newSegsEntry);
+	    st.addEntry(newValName, newValsEntry);
+	  }
+	  otherwise {return notImplementedError(pn,
+						"("+objtype+","+dtype2str(gIV.dtype)+")");}
+	  }
+      }
+      otherwise {return notImplementedError(pn, objtype);}
+      }
+    return try! "created " + st.attrib(newSegName) + "+created " + st.attrib(newValName);
   }
 
+  proc segBinopvvMsg(reqMsg: string, st: borrowed SymTab): string {
+    var pn = "segBinopvs";
+    var repMsg: string;
+    var fields = reqMsg.split();
+    var cmd = fields[1];
+    var op = fields[2];
+    var ltype = fields[3];
+    var lsegName = fields[4];
+    var lvalName = fields[5];
+    var rtype = fields[6];
+    var rsegName = fields[7];
+    var rvalName = fields[8];
+    var rname = st.nextName();
+    select (ltype, rtype) {
+    when ("string", "string") {
+      var lstrings = SegString(lsegName, lvalName, st);
+      var rstrings = SegString(rsegName, rvalName, st);
+      select op {
+	when "==" {
+	  var e = st.addEntry(rname, lstrings.size, bool);
+	  e.a = (lstrings == rstrings);
+	}
+	otherwise {return notImplementedError(pn, ltype, op, rtype);}
+	}
+    }
+    otherwise {return unrecognizedTypeError(pn, "("+ltype+", "+rtype+")");} 
+    }
+    return try! "created " + st.attrib(rname);
+  }
+
+  proc segBinopvsMsg(reqMsg: string, st: borrowed SymTab): string {
+    var pn = "segBinopvs";
+    var repMsg: string;
+    var fields = reqMsg.split();
+    var cmd = fields[1];
+    var op = fields[2];
+    var objtype = fields[3];
+    var segName = fields[4];
+    var valName = fields[5];
+    var valtype = fields[6];
+    var value = fields[7];
+    var rname = st.nextName();
+    select (objtype, valtype) {
+    when ("string", "string") {
+      var strings = new owned SegString(segName, valName, st);
+      select op {
+	when "==" {
+	  var e = st.addEntry(rname, strings.size, bool);
+	  e.a = (strings == value);
+	}
+	otherwise {return notImplementedError(pn, objtype, op, valtype);}
+	}
+    }
+    otherwise {return unrecognizedTypeError(pn, "("+objtype+", "+valtype+")");} 
+    }
+    return try! "created " + st.attrib(rname);
+  }
 }
