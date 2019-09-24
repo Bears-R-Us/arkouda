@@ -43,7 +43,7 @@ optimized HPC libraries on massive datasets, all within the same
 interactive session.
 
 ## Requirements:
- * requires chapel 1.19.0
+ * requires chapel 1.20.0 with the --legacy-classes flag
  * requires llvm version of Chapel parser to support HDF5 I/O
  * requires zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * requires python 3.6 or greater

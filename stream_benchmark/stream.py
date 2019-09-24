@@ -5,6 +5,7 @@ import gc
 import sys
 import time
 
+import numpy as np
 import arkouda as ak
 
 ak.v = False
@@ -35,7 +36,24 @@ def time_ak_stream(N):
     bytes_per_sec = (c.size * c.itemsize * 3) / ttime
     print("GiB/sec = ",bytes_per_sec/2**30)
 
-time_ak_stream()
+def time_np_stream(N):
+    print("numpy stream")
+    a = np.ones(N)
+    b = np.ones(N)
+    alpha = 1.0
+    
+    start = time.time()
+    for i in range(n):
+        c = a+b*alpha
+        end = time.time()
+        ttime = (end - start) / n
+        
+    print("secs = ",ttime)
+    bytes_per_sec = (c.size * c.itemsize * 3) / ttime
+    print("GiB/sec = ",bytes_per_sec/2**30)
+
+time_ak_stream(N)
+time_np_stream(N)
 
 ak.shutdown()
 

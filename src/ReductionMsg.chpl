@@ -939,14 +939,9 @@ module ReductionMsg
     /* } */
 
     proc expandKeys(kD, segments: [?sD] int): [kD] int {
-      var keys: [kD] int;
-      forall (s, i) in zip(segments, sD) {
-	if (i < sD.high) {
-	  keys[s..segments[i+1]-1] = i;
-	} else {
-	  keys[s..kD.high] = i;
-	}
-      }
+      var truth: [kD] bool;
+      [i in segments] unorderedCopy(truth[i], true);
+      var keys = (+ scan truth) - 1;
       return keys;
     }
 
