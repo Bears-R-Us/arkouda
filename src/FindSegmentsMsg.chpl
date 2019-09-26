@@ -50,6 +50,14 @@ module FindSegmentsMsg
 	}
 	
 	// At this point, all arg arrays exist, have the same size, and are int64 dtype
+	if (size == 0) {
+	  // Return two empty integer entries
+	  var n1 = st.nextName();
+	  st.addEntry(n1, 0, int);
+	  var n2 = st.nextName();
+	  st.addEntry(n2, 0, int);
+	  return try! "created " + st.attrib(n1) + " +created " + st.attrib(n1);
+	}
 	// Permutation that groups the keys
 	var perm = toSymEntry(gPerm, int);
 	ref pa = perm.a; // ref to actual permutation array
