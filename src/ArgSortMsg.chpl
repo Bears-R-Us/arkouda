@@ -483,6 +483,11 @@ module ArgSortMsg
                 var iv = argsortDefault(e.a);
                 st.addEntry(ivname, new shared SymEntry(iv));
             }
+	    when (DType.Float64) {
+	        var e = toSymEntry(gEnt, real);
+		var iv = argsortDefault(e.a);
+		st.addEntry(ivname, new shared SymEntry(iv));
+	    }
             otherwise {return notImplementedError(pn,gEnt.dtype);}
         }
         
