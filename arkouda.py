@@ -336,7 +336,11 @@ class pdarray:
 
     # overload unary~ for pdarray implemented as pdarray^(~0)
     def __invert__(self):
-        return self.binop(~0, "^")
+        if self.dtype == np.int64:
+            return self.binop(~0, "^")
+        if self.dtype == np.bool:
+            return self.binop(True, "^")
+        return NotImplemented
 
     # op= operators
     def opeq(self, other, op):
@@ -677,9 +681,9 @@ def histogram(pda, bins=10):
     else:
         raise TypeError("must be pdarray {} and bins must be an int {}".format(pda,bins))
 
-def in1d(pda1, pda2):
+def in1d(pda1, pda2, invert=False):
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
-        repMsg = generic_msg("in1d {} {}".format(pda1.name, pda2.name))
+        repMsg = generic_msg("in1d {} {} {}".format(pda1.name, pda2.name, invert))
         return create_pdarray(repMsg)
     else:
         raise TypeError("must be pdarray {} and bins must be an int {}".format(pda,bins))

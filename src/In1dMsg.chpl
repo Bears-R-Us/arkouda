@@ -12,12 +12,12 @@ module In1dMsg
     /*
     Small bound const. Brute force in1d implementation recommended.
     */
-    var sBound = 2**6; 
+    private config const sBound = 2**4; 
 
     /*
     Medium bound const. Per locale associative domain in1d implementation recommended.
     */
-    var mBound = 2**25; 
+    private config const mBound = 2**25; 
 
     /* in1d takes two pdarray and returns a bool pdarray
        with the "in"/contains for each element tested against the second pdarray.
@@ -32,10 +32,14 @@ module In1dMsg
         var cmd = fields[1];
         var name = fields[2];
         var sname = fields[3];
+        var invert: bool;
+        if fields[4] == "True" {invert = true;}
+        else if fields[4] == "False" {invert = false;}
+        else {return try! "Error: %s: %s".format(pn,fields[4]);}
 
         // get next symbol name
         var rname = st.nextName();
-        if v {try! writeln("%s %s %s : %s".format(cmd, name, sname, rname));try! stdout.flush();}
+        if v {try! writeln("%s %s %s %s : %s".format(cmd, name, sname, invert, rname));try! stdout.flush();}
 
         var gAr1: borrowed GenSymEntry = st.lookup(name);
         if (gAr1 == nil) {return unknownSymbolError("in1d",name);}
@@ -55,6 +59,7 @@ module In1dMsg
                     if v {try! writeln("%t <= %t".format(ar2.size,sBound)); try! stdout.flush();}
 
                     var truth = in1dGlobalAr2Bcast(ar1.a, ar2.a);
+                    if (invert) {truth = !truth;}
                     
                     st.addEntry(rname, new shared SymEntry(truth));
                 }
@@ -63,6 +68,7 @@ module In1dMsg
                     if v {try! writeln("%t <= %t".format(ar2.size,mBound)); try! stdout.flush();}
                     
                     var truth = in1dAr2PerLocAssoc(ar1.a, ar2.a);
+                    if (invert) {truth = !truth;}
                     
                     st.addEntry(rname, new shared SymEntry(truth));
                 }
