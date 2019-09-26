@@ -717,7 +717,7 @@ def randint(low, high, size, dtype=np.int64):
 def argsort(pda):
     if isinstance(pda, pdarray):
         if pda.size == 0:
-            raise ValueError("Attempt to argsort empty array")
+            return zeros(0, dtype=int64)
         repMsg = generic_msg("argsort {}".format(pda.name))
         return create_pdarray(repMsg)
     else:
@@ -733,14 +733,14 @@ def coargsort(arrays):
         elif size != a.size:
             raise ValueError("All pdarrays must have same size")
     if size == 0:
-        raise ValueError("Attempt to coargsort empty arrays")
+        return zeros(0, dtype=int64)
     repMsg = generic_msg("coargsort {} {}".format(len(arrays), ' '.join([a.name for a in arrays])))
     return create_pdarray(repMsg)
 
 def local_argsort(pda):
     if isinstance(pda, pdarray):
         if pda.size == 0:
-            raise ValueError("Attempt to argsort empty array")
+            return zeros(0, dtype=int64)
         repMsg = generic_msg("localArgsort {}".format(pda.name))
         return create_pdarray(repMsg)
     else:
