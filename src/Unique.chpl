@@ -416,7 +416,11 @@ module Unique
     :returns: ([] int, [] int)
     */
     proc uniqueSort(a: [?aD] int) {
-
+      if (aD.size == 0) {
+	var u = makeDistArray(0, int);
+	var c = makeDistArray(0, int);
+	return (u, c);
+      }
         var sorted = radixSortLSD_keys(a);
         var truth: [aD] bool;
         truth[0] = true;
