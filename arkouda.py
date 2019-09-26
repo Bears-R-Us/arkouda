@@ -165,6 +165,9 @@ class pdarray:
         if connected:
             generic_msg("delete {}".format(self.name))
 
+    def __len__(self):
+        return self.shape[0]
+
     def __str__(self):
         global pdarrayIterThresh
         return generic_msg("str {} {}".format(self.name,pdarrayIterThresh) )
@@ -450,18 +453,11 @@ class pdarray:
         else:
             return NotImplemented
 
-    # needs better impl but ok for now
     def __iter__(self):
-        global pdarrayIterThresh
-        if (self.size <= pdarrayIterThresh) or (self.size <= 6):
-            for i in range(0, self.size):
-                yield self[i]
-        else:
-            for i in range(0, 3):
-                yield self[i]
-            yield ...
-            for i in range(self.size-3, self.size):
-                yield self[i]
+        # to_ndarray will error if array is too large to bring back
+        a = self.to_ndarray()
+        for x in a:
+            yield x
             
     def fill(self, value):
         generic_msg("set {} {} {}".format(self.name, self.dtype.name, self.format_other(value)))
@@ -608,16 +604,17 @@ def save_all(columns, path_prefix, names=None, mode='truncate'):
 def array(a):
     if isinstance(a, pdarray):
         return a
-    try:
-        a = np.array(a)
-    except:
-        raise TypeError("Argument must be array-like")
+    if not isinstance(a, np.ndarray):
+        try:
+            a = np.array(a)
+        except:
+            raise TypeError("Argument must be array-like")
     if a.ndim != 1:
         raise RuntimeError("Only rank-1 arrays supported")
     if a.dtype.name not in DTypes:
         raise RuntimeError("Unhandled dtype {}".format(a.dtype))
-    size = a.shape[0]
-    if size > maxTransferBytes:
+    size = a.size
+    if (size * a.itemsize) > maxTransferBytes:
         raise RuntimeError("Array exceeds allowed transfer size. Increase ak.maxTransferBytes to allow")
     fmt = ">{:n}{}".format(size, structDtypeCodes[a.dtype.name])
     req_msg = "array {} {:n} ".format(a.dtype.name, size).encode() + struct.pack(fmt, *a)
@@ -719,6 +716,8 @@ def randint(low, high, size, dtype=np.int64):
 
 def argsort(pda):
     if isinstance(pda, pdarray):
+        if pda.size == 0:
+            return zeros(0, dtype=int64)
         repMsg = generic_msg("argsort {}".format(pda.name))
         return create_pdarray(repMsg)
     else:
@@ -733,11 +732,15 @@ def coargsort(arrays):
             size = a.size
         elif size != a.size:
             raise ValueError("All pdarrays must have same size")
+    if size == 0:
+        return zeros(0, dtype=int64)
     repMsg = generic_msg("coargsort {} {}".format(len(arrays), ' '.join([a.name for a in arrays])))
     return create_pdarray(repMsg)
 
 def local_argsort(pda):
     if isinstance(pda, pdarray):
+        if pda.size == 0:
+            return zeros(0, dtype=int64)
         repMsg = generic_msg("localArgsort {}".format(pda.name))
         return create_pdarray(repMsg)
     else:
