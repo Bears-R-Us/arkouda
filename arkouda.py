@@ -165,6 +165,9 @@ class pdarray:
         if connected:
             generic_msg("delete {}".format(self.name))
 
+    def __len__(self):
+        return self.shape[0]
+
     def __str__(self):
         global pdarrayIterThresh
         return generic_msg("str {} {}".format(self.name,pdarrayIterThresh) )
