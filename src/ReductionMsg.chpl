@@ -211,6 +211,7 @@ module ReductionMsg
 
     proc segCount(segments:[?D] int, upper: int):[D] int {
       var counts:[D] int;
+      if (D.size == 0) { return counts; }
       forall (c, low, i) in zip(counts, segments, D) {
 	var high: int;
 	if (i < D.high) {
@@ -501,6 +502,7 @@ module ReductionMsg
      */
     proc segSum(values:[] ?t, segments:[?D] int): [D] t {
       var res: [D] t;
+      if (D.size == 0) { return res; }
       var cumsum = + scan values;
       // Iterate over segments
       forall (i, r) in zip(D, res) {
@@ -549,6 +551,7 @@ module ReductionMsg
 
     proc segSum(values:[] bool, segments:[?D] int): [D] int {
       var res: [D] int;
+      if (D.size == 0) { return res; }
       var cumsum = + scan values;
       // Iterate over segments
       forall (i, r) in zip(D, res) {
@@ -584,6 +587,7 @@ module ReductionMsg
     proc segProduct(values:[], segments:[?D] int): [D] real {
       // Segmented sum of log-magnitudes
       var res: [D] real = 0.0;
+      if (D.size == 0) { return res; }
       const epsilon:real = 1 / max(real);
       var magnitudes = Math.abs(values);
       var logs = Math.log(magnitudes:real + epsilon);
@@ -616,6 +620,7 @@ module ReductionMsg
     
     proc segMean(values:[] ?t, segments:[?D] int): [D] real {
       var res: [D] real;
+      if (D.size == 0) { return res; }
       var sums = segSum(values, segments);
       var counts = segCount(segments, values.size);
       forall (r, s, c) in zip(res, sums, counts) {
@@ -650,8 +655,9 @@ module ReductionMsg
     }
 
     proc segMin(values:[?vD] ?t, segments:[?D] int): [D] t {
-      var keys = expandKeys(vD, segments);
       var res: [D] t = max(t);
+      if (D.size == 0) { return res; }
+      var keys = expandKeys(vD, segments);
       var kv = [(k, v) in zip(keys, values)] (-k, v);
       var cummin = min scan kv;
       forall (i, r, low) in zip(D, res, segments) {
@@ -686,8 +692,9 @@ module ReductionMsg
     }    
 
     proc segMax(values:[?vD] ?t, segments:[?D] int): [D] t {
-      var keys = expandKeys(vD, segments);
       var res: [D] t = min(t);
+      if (D.size == 0) { return res; }
+      var keys = expandKeys(vD, segments);
       var kv = [(k, v) in zip(keys, values)] (k, v);
       var cummax = max scan kv;
       forall (i, r, low) in zip(D, res, segments) {
@@ -722,11 +729,12 @@ module ReductionMsg
     }
     
     proc segArgmin(values:[?vD] ?t, segments:[?D] int): ([D] t, [D] int) {
+      var locs: [D] int;
+      var vals: [D] t = max(t);
+      if (D.size == 0) { return (vals, locs); }
       var keys = expandKeys(vD, segments);
       var kvi = [(k, v, i) in zip(keys, values, vD)] ((-k, v), i);
       var cummin = minloc scan kvi;
-      var locs: [D] int;
-      var vals: [D] t = max(t);
       forall (l, v, low, i) in zip(locs, vals, segments, D) {
 	var vi: int;
 	if (i < D.high) {
@@ -763,11 +771,12 @@ module ReductionMsg
     }
     
     proc segArgmax(values:[?vD] ?t, segments:[?D] int): ([D] t, [D] int) {
+      var locs: [D] int;
+      var vals: [D] t = min(t);
+      if (D.size == 0) { return (vals, locs); }
       var keys = expandKeys(vD, segments);
       var kvi = [(k, v, i) in zip(keys, values, vD)] ((k, v), i);
       var cummax = maxloc scan kvi;
-      var locs: [D] int;
-      var vals: [D] t = min(t);
       forall (l, v, low, i) in zip(locs, vals, segments, D) {
 	var vi: int;
 	if (i < D.high) {
@@ -805,6 +814,7 @@ module ReductionMsg
     
     proc segAny(values:[] bool, segments:[?D] int): [D] bool {
       var res: [D] bool;
+      if (D.size == 0) { return res; }
       forall (r, low, i) in zip(res, segments, D) {
 	var high: int;
 	if (i < D.high) {
@@ -836,6 +846,7 @@ module ReductionMsg
     
     proc segAll(values:[] bool, segments:[?D] int): [D] bool {
       var res: [D] bool;
+      if (D.size == 0) { return res; }
       forall (r, low, i) in zip(res, segments, D) {
 	var high: int;
 	if (i < D.high) {
@@ -939,8 +950,11 @@ module ReductionMsg
     }
 
     proc segNumUnique(values: [?kD] int, segments: [?sD] int) {
-      var keys = expandKeys(kD, segments);
       var res: [sD] int;
+      if (sD.size == 0) {
+	return res;
+      }
+      var keys = expandKeys(kD, segments);
       // sort keys and values together
       var t1 = Time.getCurrentTime();
       if v {writeln("Sorting keys and values..."); try! stdout.flush();}
