@@ -49,39 +49,40 @@ module ReductionMsg
                         return try! "bool %s".format(val);
                     }
                     when "sum" {
-                        var sum = + reduce e.a;
-                        var val = sum:string;
+                        var val = + reduce e.a;
                         return try! "int64 %i".format(val);
                     }
                     when "prod" {
-		      var prod = * reduce e.a:real;
-                        var val = prod:string;
-                        return try! "int64 %i".format(val);
+		      ref ea = e.a;
+		      // If any element is zero, skip the computation and return 0.0
+		      var val: real = 0.0;
+		      if (&& reduce (ea != 0)) {
+			// Cast to real to avoid int64 overflow
+			val = * reduce ea:real;
+		      }
+			// Return value is always float64 for prod
+                        return try! "float64 %.17r".format(val);
                     }
 		    when "min" {
-		        var minVal = min reduce e.a;
-			var val = minVal:string;
-			return try! "int64 %i".format(val);
+		      var val = min reduce e.a;
+		      return try! "int64 %i".format(val);
 		    }
 		    when "max" {
-		        var maxVal = max reduce e.a;
-			var val = maxVal:string;
+		        var val = max reduce e.a;
 			return try! "int64 %i".format(val);
 		    }
                     when "argmin" {
                         var (minVal, minLoc) = minloc reduce zip(e.a,e.aD);
-                        var val = minLoc:string;
-                        return try! "int64 %i".format(val);
+                        return try! "int64 %i".format(minLoc);
                     }
                     when "argmax" {
                         var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.aD);
-                        var val = maxLoc:string;
-                        return try! "int64 %i".format(val);
+                        return try! "int64 %i".format(maxLoc);
                     }
                     when "is_sorted" {
                         ref ea = e.a;
                         var sorted = isSorted(ea);
-                        var val:string;
+			var val: string;
                         if sorted {val = "True";} else {val = "False";}
                         return try! "bool %s".format(val);
                     }
@@ -117,34 +118,28 @@ module ReductionMsg
                         return try! "bool %s".format(val);
                     }
                     when "sum" {
-                        var sum = + reduce e.a;
-                        var val = sum:string;
+                        var val = + reduce e.a;
                         return try! "float64 %.17r".format(val);
                     }
                     when "prod" {
-                        var prod = * reduce e.a;
-                        var val = prod:string;
+                        var val = * reduce e.a;
                         return try! "float64 %.17r".format(val);
                     }
 		    when "min" {
-                        var minVal = min reduce e.a;
-                        var val = minVal:string;
+                        var val = min reduce e.a;
                         return try! "float64 %.17r".format(val);
                     }
 		    when "max" {
-                        var maxVal = max reduce e.a;
-                        var val = maxVal:string;
+                        var val = max reduce e.a;
                         return try! "float64 %.17r".format(val);
                     }
                     when "argmin" {
                         var (minVal, minLoc) = minloc reduce zip(e.a,e.aD);
-                        var val = minLoc:string;
-                        return try! "int64 %i".format(val);
+                        return try! "int64 %i".format(minLoc);
                     }
                     when "argmax" {
                         var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.aD);
-                        var val = maxLoc:string;
-                        return try! "int64 %i".format(val);
+                        return try! "int64 %i".format(maxLoc);
                     }
                     when "is_sorted" {
                         var sorted = isSorted(e.a);
@@ -172,13 +167,11 @@ module ReductionMsg
                         return try! "bool %s".format(val);
                     }
                     when "sum" {
-                        var sum = + reduce e.a:int;
-                        var val = sum:string;
+                        var val = + reduce e.a:int;
                         return try! "int64 %i".format(val);
                     }
                     when "prod" {
-                        var prod = * reduce e.a:int;
-                        var val = prod:string;
+                        var val = * reduce e.a:int;
                         return try! "int64 %i".format(val);
                     }
 		    when "min" {
