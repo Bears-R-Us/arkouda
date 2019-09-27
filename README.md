@@ -137,6 +137,12 @@ The Los Alamos National Lab [NetFlow] dataset with Network Event Data [field] ty
 [NetFlow]:https://csr.lanl.gov/data/netflow.html
 [field]:https://csr.lanl.gov/data/2017.html
 
+## Building Arkouda on a Mac
+
+You may need to download a missing [SDK]
+
+[SDK]:https://github.com/phracker/MacOSX-SDKs
+
 ## Contributing to Arkouda
 
 If you'd like to contribute, please see [CONTRIBUTING.md](CONTRIBUTING.md).
