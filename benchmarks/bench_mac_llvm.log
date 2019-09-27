@@ -1,0 +1,108 @@
+4.3.1
+psp =  tcp://localhost:5555
+connected to tcp://localhost:5555
+array size = 1,000,000
+number of trials =  6
+>>> arkouda argsort
+numLocales = 1, N = 1,000,000
+Average time = 0.0469 sec
+Average rate = 0.1588 GiB/sec
+>>> numpy argsort
+N = 1,000,000
+Average time = 0.0978 sec
+Average rate = 0.0762 GiB/sec
+4.3.1
+psp =  tcp://localhost:5555
+connected to tcp://localhost:5555
+size of index array = 100,000,000
+size of values array = 100,000,000
+number of trials =  6
+>>> arkouda gather
+numLocales = 1, num_indices = 100,000,000 ; num_values = 100,000,000
+Average time = 1.3009 sec
+Average rate = 1.72 GiB/sec
+>>> numpy gather
+num_indices = 100,000,000 ; num_values = 100,000,000
+Average time = 2.6057 sec
+Average rate = 0.86 GiB/sec
+4.3.1
+psp =  tcp://localhost:5555
+connected to tcp://localhost:5555
+array size = 100,000,000
+number of trials =  6
+>>> arkouda reduce
+numLocales = 1, N = 100,000,000
+sum = 4999999950000000
+  Average time = 0.0391 sec
+  Average rate = 19.04 GiB/sec
+prod = 0.0
+  Average time = 0.0421 sec
+  Average rate = 17.72 GiB/sec
+min = 0
+  Average time = 0.0389 sec
+  Average rate = 19.13 GiB/sec
+max = 99999999
+  Average time = 0.0398 sec
+  Average rate = 18.73 GiB/sec
+>>> numpy reduce
+N = 100,000,000
+sum = 4999999950000000
+  Average time = 0.0557 sec
+  Average rate = 13.38 GiB/sec
+prod = 0
+  Average time = 0.0900 sec
+  Average rate = 8.28 GiB/sec
+min = 0
+  Average time = 0.0897 sec
+  Average rate = 8.31 GiB/sec
+max = 99999999
+  Average time = 0.0885 sec
+  Average rate = 8.42 GiB/sec
+4.3.1
+psp =  tcp://localhost:5555
+connected to tcp://localhost:5555
+array size = 100,000,000
+number of trials =  6
+>>> arkouda scan
+numLocales = 1, N = 100,000,000
+cumsum, final value = 4999999950000000
+  Average time = 0.7731 sec
+  Average rate = 1.93 GiB/sec
+cumprod, final value = 0
+  Average time = 0.6849 sec
+  Average rate = 2.18 GiB/sec
+>>> numpy scan
+N = 100,000,000
+cumsum, final value = 4999999950000000
+  Average time = 0.6315 sec
+  Average rate = 2.36 GiB/sec
+cumprod, final value = 0
+  Average time = 0.7011 sec
+  Average rate = 2.13 GiB/sec
+4.3.1
+psp =  tcp://localhost:5555
+connected to tcp://localhost:5555
+size of index array = 100,000,000
+size of values array = 100,000,000
+number of trials =  6
+>>> arkouda scatter
+numLocales = 1, num_indices = 100,000,000 ; num_values = 100,000,000
+Average time = 0.9536 sec
+Average rate = 2.34 GiB/sec
+>>> numpy scatter
+num_indices = 100,000,000 ; num_values = 100,000,000
+Average time = 2.0967 sec
+Average rate = 1.07 GiB/sec
+4.3.1
+psp =  tcp://localhost:5555
+connected to tcp://localhost:5555
+array size = 100,000,000
+number of trials =  6
+>>> arkouda stream
+numLocales = 1, N = 100,000,000
+Average time = 0.6236 sec
+Average rate = 3.58 GiB/sec
+>>> numpy stream
+N = 100,000,000
+Average time = 0.8965 sec
+Average rate = 2.49 GiB/sec

@@ -741,6 +741,22 @@ def coargsort(arrays):
     repMsg = generic_msg("coargsort {} {}".format(len(arrays), ' '.join([a.name for a in arrays])))
     return create_pdarray(repMsg)
 
+def concatenate(arrays):
+    size = 0
+    dtype = None
+    for a in arrays:
+        if not isinstance(a, pdarray):
+            raise ValueError("Argument must be an iterable of pdarrays")
+        if dtype == None:
+            dtype = a.dtype
+        elif dtype != a.dtype:
+            raise ValueError("All pdarrays must have same dtype")
+        size += a.size
+    if size == 0:
+        return zeros(0, dtype=int64)
+    repMsg = generic_msg("concatenate {} {}".format(len(arrays), ' '.join([a.name for a in arrays])))
+    return create_pdarray(repMsg)
+
 def local_argsort(pda):
     if isinstance(pda, pdarray):
         if pda.size == 0:
