@@ -12,7 +12,7 @@ VERBOSE ?= 0
 
 CHPL := chpl
 CHPL_DEBUG_FLAGS += --print-passes
-CHPL_FLAGS += --ccflags="-Wno-incompatible-pointer-types" --cache-remote --instantiate-max 1024 --fast
+CHPL_FLAGS += --ccflags="-Wno-incompatible-pointer-types" --cache-remote --instantiate-max 1024 --fast --legacy-classes
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
 
 # add-path: Append custom paths for non-system software.

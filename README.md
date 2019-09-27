@@ -54,7 +54,7 @@ interactive session.
 #need to build with export CHPL_LLVM=llvm
 #on my mac build chapel in my home directory with these settings...
 #I don't understand them all but they seem to work
-export CHPL_HOME=~/chapel/chapel-1.19.0
+export CHPL_HOME=~/chapel/chapel-1.20.0
 source $CHPL_HOME/util/setchplenv.bash
 export CHPL_COMM=gasnet
 export CHPL_GASNET_CFG_OPTIONS=--disable-ibv
