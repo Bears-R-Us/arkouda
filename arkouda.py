@@ -683,7 +683,7 @@ def in1d(pda1, pda2, invert=False):
         repMsg = generic_msg("in1d {} {} {}".format(pda1.name, pda2.name, invert))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be pdarray {} and bins must be an int {}".format(pda,bins))
+        raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
 
 def unique(pda, return_counts=False):
     if isinstance(pda, pdarray):
@@ -756,6 +756,53 @@ def concatenate(arrays):
         return zeros(0, dtype=int64)
     repMsg = generic_msg("concatenate {} {}".format(len(arrays), ' '.join([a.name for a in arrays])))
     return create_pdarray(repMsg)
+
+# (A1 | A2) Set Union: elements are in one or the other or both
+def union1d(pda1, pda2):
+    if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+        return unique(concatenate((pda1, pda2)))
+    else:
+        raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
+
+# (A1 & A2) Set Intersection: elements have to be in both arrays
+def intersect1d(pda1, pda2, assume_unique=False):
+    if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+        if not assume_unique:
+            pda1 = unique(pda1)
+            pda2 = unique(pda2)
+        aux = concatenate((pda1, pda2))
+        aux_sort_indices = argsort(aux)
+        aux = aux[aux_sort_indices]
+        mask = aux[1:] == aux[:-1]
+        int1d = aux[:-1][mask]
+        return int1d
+    else:
+        raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
+
+# (A1 - A2) Set Difference: elements have to be in first array but not second
+def setdiff1d(pda1, pda2, assume_unique=False):
+    if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+        if not assume_unique:
+            pda1 = unique(pda1)
+            pda2 = unique(pda2)
+        return pda1[in1d(pda1, pda2, invert=True)]
+    else:
+        raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
+
+# (A1 ^ A2) Set Symmetric Difference: elements are not in the intersection
+def setxor1d(pda1, pda2, assume_unique=False):
+    if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+        if not assume_unique:
+            pda1 = unique(pda1)
+            pda2 = unique(pda2)
+        aux = concatenate((pda1, pda2))
+        aux_sort_indices = argsort(aux)
+        aux = aux[aux_sort_indices]
+        flag = concatenate((array([True]), aux[1:] != aux[:-1], array([True])))
+        return aux[flag[1:] & flag[:-1]]
+    else:
+        raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
+
 
 def local_argsort(pda):
     if isinstance(pda, pdarray):
