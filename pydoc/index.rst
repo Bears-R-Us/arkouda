@@ -9,6 +9,24 @@ Welcome to arkouda's documentation!
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+      
+   setup/prerequisites
+   setup/installation
+   setup/testing
+   setup/quickstart
+      
+   start/server
+   start/client
+
+   usage/pdarray
+   usage/creation
+   usage/IO
+   usage/arithmetic
+   usage/indexing
+   usage/histogram
+   usage/argsort
+   usage/setops
+   usage/groupby
 
 
 
