@@ -61,7 +61,8 @@ def bfs(src,dst,seeds,printLayers=False):
     # frontiers
     F = [Z]
     while Z.size != 0:
-        print("Z.size = ",Z.size," Z = ",Z)
+        if printLayers:
+            print("Z.size = ",Z.size," Z = ",Z)
         fZv = ak.in1d(src,Z) # find src vertex edges 
         W = ak.unique(dst[fZv]) # compress out dst vertices to match and make them unique
         Z = ak.setdiff1d(W,V) # subtract out vertices already visited
