@@ -87,7 +87,7 @@ if __name__ == "__main__":
     ak.v = False
     ak.connect(args.hostname, args.port)
 
-    print((args.lgNv, args.Ne_per_v, args.prob, args.perm))
+    print((args.lgNv, args.Ne_per_v, args.prob, args.perm, args.pl))
     (ii,jj) = gen_rmat_edges(args.lgNv, args.Ne_per_v, args.prob, perm=args.perm)
     
     print("ii = ", (ii.size, ii))
@@ -108,7 +108,7 @@ if __name__ == "__main__":
         # use lowest numbered vertex as representative vertex 
         rep_vertex = unvisited[0]
         # bfs from rep_vertex
-        layers,visited = bfs(src,dst,ak.array([rep_vertex]))
+        layers,visited = bfs(src,dst,ak.array([rep_vertex]),printLayers=args.pl)
         # add verticies in component to list of components
         components.append(visited)
         # subtract out visited from unvisited vertices
