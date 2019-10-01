@@ -113,3 +113,15 @@ Sorting arrays is a ubiquitous operation, and it is often useful to use the sort
    assert (D[:-1] <= D[1:]).all()
    # Check that reordered B and C still produce D
    assert ((B * C) == D).all()
+
+******************************
+Shutdown the server (optional)
+******************************
+
+If desired, you can shutdown the arkouda server from a connected client with
+
+.. code-block:: python
+
+   ak.shutdown()
+
+This command will delete all server-side arrays and cause the ``arkouda_server`` process in the first terminal to exit.

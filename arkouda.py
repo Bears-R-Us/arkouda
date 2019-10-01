@@ -125,25 +125,39 @@ int64 = np.int64
 float64 = np.float64
 
 def check_np_dtype(dt):
+    """
+    Assert that numpy dtype dt is one of the dtypes supported by arkouda, otherwise raise TypeError.
+    """
     if dt.name not in DTypes:
         raise TypeError("Unsupported type: {}".format(dt))
 
 def translate_np_dtype(dt):
+    """
+    Split numpy dtype dt into its kind and byte size, raising TypeError for unsupported dtypes.
+    """
+    # Assert that dt is one of the arkouda supported dtypes
     check_np_dtype(dt)
     trans = {'i': 'int', 'f': 'float', 'b': 'bool'}
     kind = trans[dt.kind]
     return kind, dt.itemsize
 
 def resolve_scalar_dtype(val):
-    '''Try to infer what dtype arkouda_server should treat <val> as.'''
+    """
+    Try to infer what dtype arkouda_server should treat val as.
+    """
+    # Python bool or np.bool
     if isinstance(val, bool) or (hasattr(val, 'dtype') and val.dtype.kind == 'b'):
         return 'bool'
+    # Python int or np.int* or np.uint*
     elif isinstance(val, int) or (hasattr(val, 'dtype') and val.dtype.kind in 'ui'):
         return 'int64'
+    # Python float or np.float*
     elif isinstance(val, float) or (hasattr(val, 'dtype') and val.dtype.kind == 'f'):
         return 'float64'
+    # Other numpy dtype
     elif hasattr(val, 'dtype'):
         return dtype.name
+    # Other python type
     else:
         return str(type(val))
 
@@ -152,6 +166,30 @@ OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", "<<=", ">>
 
 # class for the pdarray
 class pdarray:
+    """
+    The basic arkouda array class. This class contains only the 
+    attributies of the array; the data resides on the arkouda 
+    server. When a server operation results in a new array, arkouda 
+    will create a pdarray instance that points to the array data on 
+    the server. As such, the user should not initialize pdarray 
+    instances directly.
+
+    Attributes
+    -----------
+    
+    name : str
+        The server-side identifier for the array
+    dtype : np.dtype
+        The element type of the array
+    size : int
+        The number of elements in the array
+    ndim : int
+        The rank of the array (currently only rank 1 arrays supported)
+    shape : tuple
+        The sizes of each dimension of the array
+    itemsize : int
+        The size in bytes of each element
+    """
     def __init__(self, name, dtype, size, ndim, shape, itemsize):
         self.name = name
         self.dtype = np.dtype(dtype)
@@ -171,20 +209,17 @@ class pdarray:
     def __str__(self):
         global pdarrayIterThresh
         return generic_msg("str {} {}".format(self.name,pdarrayIterThresh) )
-        ## s = repr([e for e in self])
-        ## s = s.replace(",","")
-        ## s = s.replace("Ellipsis","...")
-        ## return s
 
     def __repr__(self):
         global pdarrayIterTresh
         return generic_msg("repr {} {}".format(self.name,pdarrayIterThresh))
-        ## s = repr([e for e in self])
-        ## s = s.replace("Ellipsis","...")
-        ## s = "array(" + s + ")"
-        ## return s
-
+ 
     def format_other(self, other):
+        """
+        Attempt to cast scalar other to the element dtype of this pdarray, 
+        and print the resulting value to a string (e.g. for sending to a
+        server command).
+        """
         try:
             other = self.dtype.type(other)
         except:
