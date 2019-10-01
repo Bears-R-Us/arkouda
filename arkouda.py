@@ -760,7 +760,11 @@ def concatenate(arrays):
 # (A1 | A2) Set Union: elements are in one or the other or both
 def union1d(pda1, pda2):
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
-        return unique(concatenate((pda1, pda2)))
+        if pda1.size == 0:
+            return pda2 # union is pda2
+        if pda2.size == 0:
+            return pda1 # union is pda1
+        return unique(concatenate((unique(pda1), unique(pda2))))
     else:
         raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
 
