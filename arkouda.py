@@ -767,6 +767,10 @@ def union1d(pda1, pda2):
 # (A1 & A2) Set Intersection: elements have to be in both arrays
 def intersect1d(pda1, pda2, assume_unique=False):
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+        if pda1.size == 0:
+            return pda1 # nothing in the intersection
+        if pda2.size == 0:
+            return pda2 # nothing in the intersection
         if not assume_unique:
             pda1 = unique(pda1)
             pda2 = unique(pda2)
@@ -782,6 +786,10 @@ def intersect1d(pda1, pda2, assume_unique=False):
 # (A1 - A2) Set Difference: elements have to be in first array but not second
 def setdiff1d(pda1, pda2, assume_unique=False):
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+        if pda1.size == 0:
+            return pda1 # return a zero length pdarray
+        if pda2.size == 0:
+            return pda1 # subtracting nothing return orig pdarray
         if not assume_unique:
             pda1 = unique(pda1)
             pda2 = unique(pda2)
@@ -792,6 +800,10 @@ def setdiff1d(pda1, pda2, assume_unique=False):
 # (A1 ^ A2) Set Symmetric Difference: elements are not in the intersection
 def setxor1d(pda1, pda2, assume_unique=False):
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+        if pda1.size == 0:
+            return pda2 # return other pdarray if pda1 is empty
+        if pda2.size == 0:
+            return pda1 # return other pdarray if pda2 is empty
         if not assume_unique:
             pda1 = unique(pda1)
             pda2 = unique(pda2)
