@@ -126,14 +126,16 @@ float64 = np.float64
 
 def check_np_dtype(dt):
     """
-    Assert that numpy dtype dt is one of the dtypes supported by arkouda, otherwise raise TypeError.
+    Assert that numpy dtype dt is one of the dtypes supported by arkouda, 
+    otherwise raise TypeError.
     """
     if dt.name not in DTypes:
         raise TypeError("Unsupported type: {}".format(dt))
 
 def translate_np_dtype(dt):
     """
-    Split numpy dtype dt into its kind and byte size, raising TypeError for unsupported dtypes.
+    Split numpy dtype dt into its kind and byte size, raising TypeError 
+    for unsupported dtypes.
     """
     # Assert that dt is one of the arkouda supported dtypes
     check_np_dtype(dt)
@@ -499,6 +501,9 @@ class pdarray:
             yield x
             
     def fill(self, value):
+        """
+        Fill the array (in place) with a constant value.
+        """
         generic_msg("set {} {} {}".format(self.name, self.dtype.name, self.format_other(value)))
 
     def any(self):
@@ -519,20 +524,101 @@ class pdarray:
         return argmax(self)
 
     def to_ndarray(self):
+        """
+        Convert the array to a np.ndarray, transferring array data from the
+        arkouda server to Python. If the array exceeds a builtin size limit, 
+        a RuntimeError is raised.
+
+        Returns
+        -------
+        to_ndarray : np.ndarray
+            A numpy ndarray with the same attributes and data as the pdarray
+
+        Notes
+        -----
+        The number of bytes in the array cannot exceed ak.maxTransferBytes,
+        otherwise a RuntimeError will be raised. This is to protect the user
+        from overflowing the memory of the system on which the Python client
+        is running, under the assumption that the server is running on a
+        distributed system with much more memory than the client. The user
+        may override this limit by setting ak.maxTransferBytes to a larger
+        value, but proceed with caution.
+
+        Examples
+        --------
+        >>> a = ak.arange(0, 5, 1)
+        >>> a.to_ndarray()
+        array([0, 1, 2, 3, 4])
+
+        >>> type(a.to_ndarray())
+        numpy.ndarray
+        """
+        # Total number of bytes in the array data
         arraybytes = self.size * self.dtype.itemsize
+        # Guard against overflowing client memory
         if arraybytes > maxTransferBytes:
             raise RuntimeError("Array exceeds allowed size for transfer. Increase ak.maxTransferBytes to allow")
+        # The reply from the server will be a bytes object
         rep_msg = generic_msg("tondarray {}".format(self.name), recv_bytes=True)
+        # Make sure the received data has the expected length
         if len(rep_msg) != self.size*self.dtype.itemsize:
             raise RuntimeError("Expected {} bytes but received {}".format(self.size*self.dtype.itemsize, len(rep_msg)))
+        # Use struct to interpret bytes as a big-endian numeric array
         fmt = '>{:n}{}'.format(self.size, structDtypeCodes[self.dtype.name])
+        # Return a numpy ndarray
         return np.array(struct.unpack(fmt, rep_msg))
 
     def save(self, prefix_path, dataset='array', mode='truncate'):
-        if mode.lower() == 'append':
+        """
+        Save the pdarray to HDF5. The result is a collection of HDF5 files,
+        one file per locale of the arkouda server, where each filename starts
+        with prefix_path. Each locale saves its chunk of the array to its
+        corresponding file.
+
+        Parameters
+        ----------
+        prefix_path : str
+            Directory and filename prefix that all output files share
+        dataset : str
+            Name of the dataset to create in HDF5 files (must not already exist)
+        mode : str ('truncate' | 'append')
+            If 'append', attempt to create new dataset in existing files. Otherwise,
+            overwrite the output files
+
+        See Also
+        --------
+        save_all, load, read_hdf, read_all
+
+        Notes
+        -----
+        The prefix_path must be visible to the arkouda server and the user must have
+        write permission.
+
+        Output files have names of the form <prefix_path>_LOCALE<i>.hdf, where <i>
+        ranges from 0 to numLocales. If any of the output files already exist and
+        the mode is 'truncate', they will be overwritten. If the mode is 'append'
+        and the number of output files is less than the number of locales or a
+        dataset with the same name already exists, a RuntimeError will result.
+
+        Examples
+        --------
+        >>> a = ak.arange(0, 100, 1)
+        >>> a.save('arkouda_range', dataset='array')
+
+        Array is saved in numLocales files with names like tmp/arkouda_range_LOCALE0.hdf 
+
+        The array can be read back in as follows (note the trailing *)
+
+        >>> b = ak.load('arkouda_range', dataset='array')
+        >>> (a == b).all()
+        True
+        """
+        if mode.lower() in 'append':
             m = 1
-        else:
+        elif mode.lower() in 'truncate':
             m = 0
+        else:
+            raise ValueError("Allowed modes are 'truncate' and 'append'")
         rep_msg = generic_msg("tohdf {} {} {} {}".format(self.name, dataset, m, json.dumps([prefix_path])))
         
 # flag to info all arrays from arkouda server
@@ -547,6 +633,10 @@ AllSymbols = "__AllSymbols__"
 #       all values have been checked by python module and...
 #       server has created pdarray already befroe this is called
 def create_pdarray(repMsg):
+    """
+    Return a pdarray instance pointing to an array created by the arkouda server.
+    The user should not call this function directly.
+    """
     fields = repMsg.split()
     name = fields[1]
     dtype = fields[2]
@@ -558,6 +648,10 @@ def create_pdarray(repMsg):
     return pdarray(name,dtype,size,ndim,shape,itemsize)
 
 def parse_single_value(msg):
+    """
+    Attempt to convert a scalar return value from the arkouda server to a numpy
+    scalar in Python. The user should not call this function directly
+    """
     dtname, value = msg.split()
     dtype = np.dtype(dtname)
     if dtype == np.bool:
@@ -573,19 +667,91 @@ def parse_single_value(msg):
         raise ValueError("unsupported value from server {} {}".format(dtype.name, value))
 
 def ls_hdf(filename):
-    '''Return the string output of `h5ls <filename>` from the server.
-    '''
+    """
+    This function calls the h5ls utility on a filename visible to the arkouda 
+    server.
+
+    Parameters
+    ----------
+    filename : str
+        The name of the file to pass to h5ls
+
+    Returns
+    -------
+    ls_hdf  : str 
+        The string output of `h5ls <filename>` from the server
+    """
     return generic_msg("lshdf {}".format(json.dumps([filename])))
 
 def read_hdf(dsetName, filenames):
-    '''Read a single dataset named <dsetName> from all HDF5 files in <filenames>. If <filenames> is a string, it will be interpreted as a glob expression (a single filename is a valid glob expression, so it will work). Returns a pdarray.
-    '''
+    """
+    Read a single dataset from multiple HDF5 files into an arkouda pdarray. 
+
+    Parameters
+    ----------
+    dsetName : str
+        The name of the dataset (must be the same across all files)
+    filenames : list or str
+        Either a list of filenames or shell expression
+
+    Returns
+    -------
+    read_hdf : pdarray
+        A pdarray instance pointing to the server-side data read in
+
+    See Also
+    --------
+    get_datasets, ls_hdf, read_all, load, save
+
+    Notes
+    -----
+    If filenames is a string, it is interpreted as a shell expression 
+    (a single filename is a valid expression, so it will work) and is 
+    expanded with glob to read all matching files. Use ``get_datasets`` to 
+    show the names of datasets in HDF5 files.
+
+    If dsetName is not present in all files, a RuntimeError is raised.
+    """
     if isinstance(filenames, str):
         filenames = [filenames]
     rep_msg = generic_msg("readhdf {} {:n} {}".format(dsetName, len(filenames), json.dumps(filenames)))
     return create_pdarray(rep_msg)
 
 def read_all(filenames, datasets=None):
+    """
+    Read multiple datasets from multiple HDF5 files.
+    
+    Parameters
+    ----------
+    filenames : list or str
+        Either a list of filenames or shell expression
+    datasets : list or str or None
+        (List of) name(s) of dataset(s) to read (default: all available)
+
+    Returns
+    -------
+    read_all : dict of pdarrays
+        Dictionary of {datasetName: pdarray}
+
+    See Also
+    --------
+    read_hdf, get_datasets, ls_hdf
+    
+    Notes
+    -----
+    If filenames is a string, it is interpreted as a shell expression 
+    (a single filename is a valid expression, so it will work) and is 
+    expanded with glob to read all matching files. This is done separately
+    for each dataset, so if new matching files appear during ``read_all``,
+    some datasets will contain more data than others. 
+
+    If datasets is None, infer the names of datasets from the first file
+    and read all of them. Use ``get_datasets`` to show the names of datasets in 
+    HDF5 files.
+
+    If not all datasets are present in all HDF5 files, a RuntimeError
+    is raised.
+    """
     if isinstance(filenames, str):
         filenames = [filenames]
     alldatasets = get_datasets(filenames[0])
@@ -600,27 +766,103 @@ def read_all(filenames, datasets=None):
     return {dset:read_hdf(dset, filenames) for dset in datasets}
 
 def load(path_prefix, dataset='array'):
-    '''Load a pdarray previously saved with .save(<path_prefix>). If <dataset> is supplied, it must match the name used to save the pdarray.
-    '''
+    """
+    Load a pdarray previously saved with ``pdarray.save()``. 
+    
+    Parameters
+    ----------
+    path_prefix : str
+        Filename prefix used to save the original pdarray
+    dataset : str
+        Dataset name where the pdarray was saved
+
+    Returns
+    -------
+    load : pdarray
+        The pdarray that was saved
+
+    See Also
+    --------
+    save, load_all, read_hdf, read_all
+    """
     prefix, extension = os.path.splitext(path_prefix)
     globstr = "{}_LOCALE*{}".format(prefix, extension)
     return read_hdf(dataset, globstr)
 
 def get_datasets(filename):
-    '''Return the list of dataset names contained in the HDF5 file <filename>.
-    '''
+    """
+    Get the names of datasets in an HDF5 file.
+
+    Parameters
+    ----------
+    filename : str
+        Name of an HDF5 file visible to the arkouda server
+
+    Returns
+    -------
+    get_datasets : list of str
+        Names of the datasets in the file
+    
+    See Also
+    --------
+    ls_hdf
+    """
     rep_msg = ls_hdf(filename)
     datasets = [line.split()[0] for line in rep_msg.splitlines()]
     return datasets
             
 def load_all(path_prefix):
+    """
+    Load multiple pdarray previously saved with ``save_all()``. 
+    
+    Parameters
+    ----------
+    path_prefix : str
+        Filename prefix used to save the original pdarray
+
+    Returns
+    -------
+    load_all : dict of pdarrays
+        Dictionary of {datsetName: pdarray} with the previously saved pdarrays
+
+    See Also
+    --------
+    save_all, load, read_hdf, read_all
+    """
     prefix, extension = os.path.splitext(path_prefix)
     firstname = "{}_LOCALE0{}".format(prefix, extension)
     return {dataset: load(path_prefix, dataset=dataset) for dataset in get_datasets(firstname)}
 
 def save_all(columns, path_prefix, names=None, mode='truncate'):
-    '''Save all pdarrays in <columns> to files under <path_prefix>. Arkouda will create one file per locale but will keep pdarrays together in the same file as datasets called <names>. If <names> is not supplied and <columns> is a dict, arkouda will try to use the keys as dataset names; otherwise, dataset names are 0-up integers. By default, any existing files at <path_prefix> will be overwritten, unless the user supplies 'append' for the <mode>, in which case arkouda will attempt to add <columns> as new datasets to existing files.
-    '''
+    """
+    Save multiple named pdarrays to HDF5 files.
+
+    Parameters
+    ----------
+    columns : dict or list of pdarrays
+        Collection of arrays to save
+    path_prefix : str
+        Directory and filename prefix for output files
+    names : list of str
+        Dataset names for the pdarrays
+    mode : str ('truncate' | 'append')
+        If 'append', attempt to create new dataset in existing files. Otherwise,
+        overwrite the output files
+
+    See Also
+    --------
+    save, load_all
+
+    Notes
+    -----
+    Creates one file per locale containing that locale's chunk of each pdarray.
+    If columns is a dictionary, the keys are used as the HDF5 dataset names. 
+    Otherwise, if no names are supplied, 0-up integers are used. By default, 
+    any existing files at path_prefix will be overwritten, unless the user 
+    specifies the 'append' mode, in which case arkouda will attempt to add 
+    <columns> as new datasets to existing files. If the wrong number of files
+    is present or dataset names already exist, a RuntimeError is raised.
+    """
     if names is not None and len(names) != len(columns):
         raise ValueError("Number of names does not match number of columns")
     if isinstance(columns, dict):
@@ -631,36 +873,109 @@ def save_all(columns, path_prefix, names=None, mode='truncate'):
         pdarrays = columns
         if names is None:
             names = range(len(columns))
+    if (mode.lower() not in 'append') and (mode.lower() not in 'truncate'):
+        raise ValueError("Allowed modes are 'truncate' and 'append'")
     first_iter = True
     for arr, name in zip(pdarrays, names):
         # Append all pdarrays to existing files as new datasets EXCEPT the first one, and only if user requests truncation
-        if mode.lower != 'append' and first_iter:
+        if mode.lower() not in 'append' and first_iter:
             arr.save(path_prefix, dataset=name, mode='truncate')
             first_iter = False
         else:
             arr.save(path_prefix, dataset=name, mode='append')
 
 def array(a):
+    """
+    Convert an iterable to a pdarray, sending data to the arkouda server.
+
+    Parameters
+    ----------
+    a : array_like
+        Rank-1 array of a supported dtype
+
+    Returns
+    -------
+    array : pdarray
+        Instance of pdarray stored on arkouda server
+
+    See Also
+    --------
+    pdarray.to_ndarray
+
+    Notes
+    -----
+    The number of bytes in the input array cannot exceed ak.maxTransferBytes,
+    otherwise a RuntimeError will be raised. This is to protect the user
+    from overwhelming the connection between the Python client and the arkouda
+    server, under the assumption that it is a low-bandwidth connection. The user
+    may override this limit by setting ak.maxTransferBytes to a larger value, 
+    but should proceed with caution.
+
+    Examples
+    --------
+    >>> a = [3, 5, 7]
+    >>> b = ak.array(a)
+    >>> b
+    array([3, 5, 7])
+   
+    >>> type(b)
+    arkouda.pdarray    
+    """
+    # If a is already a pdarray, do nothing
     if isinstance(a, pdarray):
         return a
+    # If a is not already a numpy.ndarray, convert it
     if not isinstance(a, np.ndarray):
         try:
             a = np.array(a)
         except:
             raise TypeError("Argument must be array-like")
+    # Only rank 1 arrays currently supported
     if a.ndim != 1:
         raise RuntimeError("Only rank-1 arrays supported")
+    # Check that dtype is supported in arkouda
     if a.dtype.name not in DTypes:
         raise RuntimeError("Unhandled dtype {}".format(a.dtype))
+    # Do not allow arrays that are too large
     size = a.size
     if (size * a.itemsize) > maxTransferBytes:
         raise RuntimeError("Array exceeds allowed transfer size. Increase ak.maxTransferBytes to allow")
+    # Pack binary array data into a bytes object with a command header
+    # including the dtype and size
     fmt = ">{:n}{}".format(size, structDtypeCodes[a.dtype.name])
     req_msg = "array {} {:n} ".format(a.dtype.name, size).encode() + struct.pack(fmt, *a)
     rep_msg = generic_msg(req_msg, send_bytes=True)
     return create_pdarray(rep_msg)
 
 def zeros(size, dtype=np.float64):
+    """
+    Create a pdarray filled with zeros.
+
+    Parameters
+    ----------
+    size : int
+        size of the array (only rank-1 arrays supported)
+    dtype : (np.int64 | np.float64 | np.bool)
+        default np.float64
+
+    Returns
+    -------
+    zeros : pdarray
+        zeros of the requested size and dtype
+
+    See Also
+    --------
+    ones, zeros_like
+
+    Examples
+    --------
+    >>> ak.zeros(5, dtype=ak.int64)
+    array([0, 0, 0, 0, 0])
+    >>> ak.zeros(5, dtype=ak.float64)
+    array([0, 0, 0, 0, 0])
+    >>> ak.zeros(5, dtype=ak.bool)
+    array([False, False, False, False, False])
+    """
     dtype = np.dtype(dtype) # normalize dtype
     # check dtype for error
     if dtype.name not in DTypes:
@@ -670,6 +985,34 @@ def zeros(size, dtype=np.float64):
     return create_pdarray(repMsg)
 
 def ones(size, dtype=np.float64):
+    """
+    Create a pdarray filled with ones.
+
+    Parameters
+    ----------
+    size : int
+        size of the array (only rank-1 arrays supported)
+    dtype : (np.int64 | np.float64 | np.bool)
+        default np.float64
+
+    Returns
+    -------
+    ones : pdarray
+        ones of the requested size and dtype
+
+    See Also
+    --------
+    zeros, ones_like
+
+    Examples
+    --------
+    >>> ak.ones(5, dtype=ak.int64)
+    array([1, 1, 1, 1, 1])
+    >>> ak.ones(5, dtype=ak.float64)
+    array([1, 1, 1, 1, 1])
+    >>> ak.ones(5, dtype=ak.bool)
+    array([True, True, True, True, True])
+    """
     dtype = np.dtype(dtype) # normalize dtype
     # check dtype for error
     if dtype.name not in DTypes:
@@ -681,30 +1024,134 @@ def ones(size, dtype=np.float64):
     return a
 
 def zeros_like(pda):
+    """
+    Create a zero-filled pdarray of the same size and dtype as an existing pdarray.
+
+    Parameters
+    ----------
+    pda : pdarray
+        to use for size and dtype
+
+    Returns
+    -------
+    zeros_like : pdarray
+        ak.zeros(pda.size, pda.dtype)
+
+    See Also
+    --------
+    zeros, ones_like
+    """
     if isinstance(pda, pdarray):
         return zeros(pda.size, pda.dtype)
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
 def ones_like(pda):
+    """
+    Create a one-filled pdarray of the same size and dtype as an existing pdarray.
+
+    Parameters
+    ----------
+    pda : pdarray
+        to use for size and dtype
+
+    Returns
+    -------
+    ones_like : pdarray
+        ak.ones(pda.size, pda.dtype)
+
+    See Also
+    --------
+    ones, zeros_like
+    """
     if isinstance(pda, pdarray):
         return ones(pda.size, pda.dtype)
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
 def arange(start, stop, stride):
+    """
+    Create a pdarray of consecutive integers.
+
+    Parameters
+    ----------
+    start : int
+        starting value (inclusive)
+    stop : int
+        stopping value (exclusive)
+    stride : int
+        the difference between consecutive elements
+
+    Returns
+    -------
+    arange : pdarray
+        integers from start (inclusive) to stop (exclusive) by stride
+
+    See Also
+    --------
+    zeros, ones, randint
+    
+    Notes
+    -----
+    Negative strides result in decreasing values.
+
+    Examples
+    --------
+    >>> ak.arange(0, 5, 1)
+    array([0, 1, 2, 3, 4])
+
+    >>> ak.arange(5, 0, -1)
+    array([5, 4, 3, 2, 1])
+
+    >>> ak.arange(0, 10, 2)
+    array([0, 2, 4, 6, 8])
+    """
     if isinstance(start, int) and isinstance(stop, int) and isinstance(stride, int):
+        # TO DO: fix bug in server that goes 2 steps too far for negative strides
+        if stride < 0:
+            stop = stop + 2
         repMsg = generic_msg("arange {} {} {}".format(start, stop, stride))
         return create_pdarray(repMsg)
     else:
         raise TypeError("start,stop,stride must be type int {} {} {}".format(start,stop,stride))
 
 def linspace(start, stop, length):
-    if (isinstance(start, int) or isinstance(start, float)) and (isinstance(stop, int) or isinstance(stop, float)) and (isinstance(length, int) or isinstance(length, float)) :
-        repMsg = generic_msg("linspace {} {} {}".format(start, stop, length))
-        return create_pdarray(repMsg)
-    else:
-        raise TypeError("start,stop,length must be type int or float {} {} {}".format(start,stop,length))
+    """
+    Create a pdarray of linearly spaced points in a closed interval.
+
+    Parameters
+    ----------
+    start : scalar
+        start of interval (inclusive)
+    stop : scalar
+        end of interval (inclusive)
+    length : int
+        number of points
+
+    Returns
+    -------
+    linspace : pdarray
+        float64 array of evenly spaced points along the interval
+
+    See Also
+    --------
+    arange
+
+    Examples
+    --------
+    >>> ak.linspace(0, 1, 5)
+    array([0, 0.25, 0.5, 0.75, 1])
+    """
+    starttype = resolve_scalar_dtype(start)
+    startstr = NUMBER_FORMAT_STRINGS[starttype].format(start)
+    stoptype = resolve_scalar_dtype(stop)
+    stopstr = NUMBER_FORMAT_STRINGS[stoptype].format(stop)
+    lentype = resolve_scalar_dtype(length)
+    if lentype != 'int64':
+        raise TypeError("Length must be int64")
+    lenstr = NUMBER_FORMAT_STRINGS[lentype].format(length)
+    repMsg = generic_msg("linspace {} {} {}".format(startstr, stopstr, lenstr))
+    return create_pdarray(repMsg)
 
 def histogram(pda, bins=10):
     if isinstance(pda, pdarray) and isinstance(bins, int):
@@ -742,6 +1189,43 @@ def value_counts(pda):
         raise TypeError("must be pdarray {}".format(pda))
 
 def randint(low, high, size, dtype=np.int64):
+    """
+    Generate a pdarray with random values in a specified range.
+
+    Parameters
+    ----------
+    low : int
+        the low value (inclusive) of the range
+    high : int
+        the high value (exclusive for int, inclusive for float) of the range
+    size : int
+        the length of the returned array
+    dtype : (np.int64 | np.float64 | np.bool)
+        the dtype of the array
+
+    Returns
+    -------
+    randint : pdarray
+        values drawn uniformly from the specified range
+
+    Notes
+    -----
+    Calling randint with dtype=float64 will result in uniform non-integral
+    floating point values.
+
+    Examples
+    --------
+    >>> ak.randint(0, 10, 5)
+    array([5, 7, 4, 8, 3])
+
+    >>> ak.randint(0, 1, 3, dtype=ak.float64)
+    array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])
+
+    >>> ak.randint(0, 1, 5, dtype=ak.bool)
+    array([True, False, True, True, True])
+    """
+    # TO DO: separate out into int and float versions
+    # TO DO: float version should accept non-integer low and high
     dtype = np.dtype(dtype) # normalize dtype
     # check dtype for error
     if dtype.name not in DTypes:
