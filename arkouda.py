@@ -177,7 +177,7 @@ class pdarray:
     instances directly.
 
     Attributes
-    -----------
+    
     
     name : str
         The server-side identifier for the array
@@ -530,12 +530,12 @@ class pdarray:
         a RuntimeError is raised.
 
         Returns
-        -------
+        
         to_ndarray : np.ndarray
             A numpy ndarray with the same attributes and data as the pdarray
 
         Notes
-        -----
+        
         The number of bytes in the array cannot exceed ak.maxTransferBytes,
         otherwise a RuntimeError will be raised. This is to protect the user
         from overflowing the memory of the system on which the Python client
@@ -545,7 +545,7 @@ class pdarray:
         value, but proceed with caution.
 
         Examples
-        --------
+        
         >>> a = ak.arange(0, 5, 1)
         >>> a.to_ndarray()
         array([0, 1, 2, 3, 4])
@@ -576,7 +576,7 @@ class pdarray:
         corresponding file.
 
         Parameters
-        ----------
+        
         prefix_path : str
             Directory and filename prefix that all output files share
         dataset : str
@@ -586,11 +586,11 @@ class pdarray:
             overwrite the output files
 
         See Also
-        --------
+        
         save_all, load, read_hdf, read_all
 
         Notes
-        -----
+        
         The prefix_path must be visible to the arkouda server and the user must have
         write permission.
 
@@ -601,13 +601,13 @@ class pdarray:
         dataset with the same name already exists, a RuntimeError will result.
 
         Examples
-        --------
+        
         >>> a = ak.arange(0, 100, 1)
         >>> a.save('arkouda_range', dataset='array')
 
         Array is saved in numLocales files with names like tmp/arkouda_range_LOCALE0.hdf 
 
-        The array can be read back in as follows (note the trailing *)
+        The array can be read back in as follows
 
         >>> b = ak.load('arkouda_range', dataset='array')
         >>> (a == b).all()
@@ -672,12 +672,12 @@ def ls_hdf(filename):
     server.
 
     Parameters
-    ----------
+    
     filename : str
         The name of the file to pass to h5ls
 
     Returns
-    -------
+    
     ls_hdf  : str 
         The string output of `h5ls <filename>` from the server
     """
@@ -688,23 +688,23 @@ def read_hdf(dsetName, filenames):
     Read a single dataset from multiple HDF5 files into an arkouda pdarray. 
 
     Parameters
-    ----------
+    
     dsetName : str
         The name of the dataset (must be the same across all files)
     filenames : list or str
         Either a list of filenames or shell expression
 
     Returns
-    -------
+    
     read_hdf : pdarray
         A pdarray instance pointing to the server-side data read in
 
     See Also
-    --------
+    
     get_datasets, ls_hdf, read_all, load, save
 
     Notes
-    -----
+    
     If filenames is a string, it is interpreted as a shell expression 
     (a single filename is a valid expression, so it will work) and is 
     expanded with glob to read all matching files. Use ``get_datasets`` to 
@@ -722,23 +722,23 @@ def read_all(filenames, datasets=None):
     Read multiple datasets from multiple HDF5 files.
     
     Parameters
-    ----------
+    
     filenames : list or str
         Either a list of filenames or shell expression
     datasets : list or str or None
         (List of) name(s) of dataset(s) to read (default: all available)
 
     Returns
-    -------
+    
     read_all : dict of pdarrays
         Dictionary of {datasetName: pdarray}
 
     See Also
-    --------
+    
     read_hdf, get_datasets, ls_hdf
     
     Notes
-    -----
+    
     If filenames is a string, it is interpreted as a shell expression 
     (a single filename is a valid expression, so it will work) and is 
     expanded with glob to read all matching files. This is done separately
@@ -770,19 +770,19 @@ def load(path_prefix, dataset='array'):
     Load a pdarray previously saved with ``pdarray.save()``. 
     
     Parameters
-    ----------
+    
     path_prefix : str
         Filename prefix used to save the original pdarray
     dataset : str
         Dataset name where the pdarray was saved
 
     Returns
-    -------
+    
     load : pdarray
         The pdarray that was saved
 
     See Also
-    --------
+    
     save, load_all, read_hdf, read_all
     """
     prefix, extension = os.path.splitext(path_prefix)
@@ -794,17 +794,17 @@ def get_datasets(filename):
     Get the names of datasets in an HDF5 file.
 
     Parameters
-    ----------
+    
     filename : str
         Name of an HDF5 file visible to the arkouda server
 
     Returns
-    -------
+    
     get_datasets : list of str
         Names of the datasets in the file
     
     See Also
-    --------
+    
     ls_hdf
     """
     rep_msg = ls_hdf(filename)
@@ -816,17 +816,17 @@ def load_all(path_prefix):
     Load multiple pdarray previously saved with ``save_all()``. 
     
     Parameters
-    ----------
+    
     path_prefix : str
         Filename prefix used to save the original pdarray
 
     Returns
-    -------
+    
     load_all : dict of pdarrays
         Dictionary of {datsetName: pdarray} with the previously saved pdarrays
 
     See Also
-    --------
+    
     save_all, load, read_hdf, read_all
     """
     prefix, extension = os.path.splitext(path_prefix)
@@ -838,7 +838,7 @@ def save_all(columns, path_prefix, names=None, mode='truncate'):
     Save multiple named pdarrays to HDF5 files.
 
     Parameters
-    ----------
+    
     columns : dict or list of pdarrays
         Collection of arrays to save
     path_prefix : str
@@ -850,11 +850,11 @@ def save_all(columns, path_prefix, names=None, mode='truncate'):
         overwrite the output files
 
     See Also
-    --------
+    
     save, load_all
 
     Notes
-    -----
+    
     Creates one file per locale containing that locale's chunk of each pdarray.
     If columns is a dictionary, the keys are used as the HDF5 dataset names. 
     Otherwise, if no names are supplied, 0-up integers are used. By default, 
@@ -889,21 +889,21 @@ def array(a):
     Convert an iterable to a pdarray, sending data to the arkouda server.
 
     Parameters
-    ----------
+    
     a : array_like
         Rank-1 array of a supported dtype
 
     Returns
-    -------
+    
     array : pdarray
         Instance of pdarray stored on arkouda server
 
     See Also
-    --------
+    
     pdarray.to_ndarray
 
     Notes
-    -----
+    
     The number of bytes in the input array cannot exceed ak.maxTransferBytes,
     otherwise a RuntimeError will be raised. This is to protect the user
     from overwhelming the connection between the Python client and the arkouda
@@ -912,7 +912,7 @@ def array(a):
     but should proceed with caution.
 
     Examples
-    --------
+    
     >>> a = [3, 5, 7]
     >>> b = ak.array(a)
     >>> b
@@ -952,23 +952,23 @@ def zeros(size, dtype=np.float64):
     Create a pdarray filled with zeros.
 
     Parameters
-    ----------
+    
     size : int
         size of the array (only rank-1 arrays supported)
     dtype : (np.int64 | np.float64 | np.bool)
         default np.float64
 
     Returns
-    -------
+    
     zeros : pdarray
         zeros of the requested size and dtype
 
     See Also
-    --------
+    
     ones, zeros_like
 
     Examples
-    --------
+    
     >>> ak.zeros(5, dtype=ak.int64)
     array([0, 0, 0, 0, 0])
     >>> ak.zeros(5, dtype=ak.float64)
@@ -989,23 +989,23 @@ def ones(size, dtype=np.float64):
     Create a pdarray filled with ones.
 
     Parameters
-    ----------
+    
     size : int
         size of the array (only rank-1 arrays supported)
     dtype : (np.int64 | np.float64 | np.bool)
         default np.float64
 
     Returns
-    -------
+    
     ones : pdarray
         ones of the requested size and dtype
 
     See Also
-    --------
+    
     zeros, ones_like
 
     Examples
-    --------
+    
     >>> ak.ones(5, dtype=ak.int64)
     array([1, 1, 1, 1, 1])
     >>> ak.ones(5, dtype=ak.float64)
@@ -1028,17 +1028,17 @@ def zeros_like(pda):
     Create a zero-filled pdarray of the same size and dtype as an existing pdarray.
 
     Parameters
-    ----------
+    
     pda : pdarray
         to use for size and dtype
 
     Returns
-    -------
+    
     zeros_like : pdarray
         ak.zeros(pda.size, pda.dtype)
 
     See Also
-    --------
+    
     zeros, ones_like
     """
     if isinstance(pda, pdarray):
@@ -1051,17 +1051,17 @@ def ones_like(pda):
     Create a one-filled pdarray of the same size and dtype as an existing pdarray.
 
     Parameters
-    ----------
+    
     pda : pdarray
         to use for size and dtype
 
     Returns
-    -------
+    
     ones_like : pdarray
         ak.ones(pda.size, pda.dtype)
 
     See Also
-    --------
+    
     ones, zeros_like
     """
     if isinstance(pda, pdarray):
@@ -1074,7 +1074,7 @@ def arange(start, stop, stride):
     Create a pdarray of consecutive integers.
 
     Parameters
-    ----------
+    
     start : int
         starting value (inclusive)
     stop : int
@@ -1083,20 +1083,20 @@ def arange(start, stop, stride):
         the difference between consecutive elements
 
     Returns
-    -------
+    
     arange : pdarray
         integers from start (inclusive) to stop (exclusive) by stride
 
     See Also
-    --------
+    
     zeros, ones, randint
     
     Notes
-    -----
+    
     Negative strides result in decreasing values.
 
     Examples
-    --------
+    
     >>> ak.arange(0, 5, 1)
     array([0, 1, 2, 3, 4])
 
@@ -1120,7 +1120,7 @@ def linspace(start, stop, length):
     Create a pdarray of linearly spaced points in a closed interval.
 
     Parameters
-    ----------
+    
     start : scalar
         start of interval (inclusive)
     stop : scalar
@@ -1129,16 +1129,16 @@ def linspace(start, stop, length):
         number of points
 
     Returns
-    -------
+    
     linspace : pdarray
         float64 array of evenly spaced points along the interval
 
     See Also
-    --------
+    
     arange
 
     Examples
-    --------
+    
     >>> ak.linspace(0, 1, 5)
     array([0, 0.25, 0.5, 0.75, 1])
     """
@@ -1193,7 +1193,7 @@ def randint(low, high, size, dtype=np.int64):
     Generate a pdarray with random values in a specified range.
 
     Parameters
-    ----------
+    
     low : int
         the low value (inclusive) of the range
     high : int
@@ -1204,17 +1204,17 @@ def randint(low, high, size, dtype=np.int64):
         the dtype of the array
 
     Returns
-    -------
+    
     randint : pdarray
         values drawn uniformly from the specified range
 
     Notes
-    -----
+    
     Calling randint with dtype=float64 will result in uniform non-integral
     floating point values.
 
     Examples
-    --------
+    
     >>> ak.randint(0, 10, 5)
     array([5, 7, 4, 8, 3])
 
@@ -1238,6 +1238,35 @@ def randint(low, high, size, dtype=np.int64):
         raise TypeError("min,max,size must be int {} {} {}".format(low,high,size));
 
 def argsort(pda):
+    """
+    Return the permutation that sorts the array.
+    
+    Parameters
+        
+    pda : pdarray
+        the array to sort (int64 or float64)
+
+    Returns
+
+    argsort : pdarray
+        the int64 array of indices such that pda[indices] is sorted
+
+    See Also
+
+    coargsort
+
+    Notes
+
+    Uses a least-significant-digit radix sort, which is stable and resilient
+    to non-uniformity in data but communication intensive.
+
+    Examples
+
+    >>> a = ak.randint(0, 10, 10)
+    >>> perm = ak.argsort(a)
+    >>> a[perm]
+    array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
+    """
     if isinstance(pda, pdarray):
         if pda.size == 0:
             return zeros(0, dtype=int64)
@@ -1247,6 +1276,42 @@ def argsort(pda):
         raise TypeError("must be pdarray {}".format(pda))
 
 def coargsort(arrays):
+    """
+    Return the permutation that sorts the rows (left-to-right), if the
+    input arrays are treated as columns.
+    
+    Parameters
+        
+    arrays : list of pdarray
+        the columns (int64 or float64) to sort by row
+
+    Returns
+
+    coargsort : pdarray
+        the int64 array of indices that permutes the rows to sorted order
+
+    See Also
+
+    argsort
+
+    Notes
+
+    Uses a least-significant-digit radix sort, which is stable and resilient
+    to non-uniformity in data but communication intensive. Starts with the
+    last array and moves forward.
+
+    Examples
+
+    >>> a = ak.array([0, 1, 0, 1])
+    >>> b = ak.array([1, 1, 0, 0])
+    >>> perm = ak.coargsort([a, b])
+    >>> perm
+    array([2, 0, 3, 1])
+    >>> a[perm]
+    array([0, 0, 1, 1])
+    >>> b[perm]
+    array([0, 1, 0, 1])
+    """
     size = -1
     for a in arrays:
         if not isinstance(a, pdarray):
@@ -1349,6 +1414,9 @@ def local_argsort(pda):
         raise TypeError("must be pdarray {}".format(pda))
 
 def abs(pda):
+    """
+    Return the element-wise absolute value of the array.
+    """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("efunc {} {}".format("abs", pda.name))
         return create_pdarray(repMsg)
@@ -1356,6 +1424,9 @@ def abs(pda):
         raise TypeError("must be pdarray {}".format(pda))
 
 def log(pda):
+    """
+    Return the element-wise log of the array.
+    """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("efunc {} {}".format("log", pda.name))
         return create_pdarray(repMsg)
@@ -1363,6 +1434,9 @@ def log(pda):
         raise TypeError("must be pdarray {}".format(pda))
 
 def exp(pda):
+    """
+    Return the element-wise exponential of the array.
+    """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("efunc {} {}".format("exp", pda.name))
         return create_pdarray(repMsg)
@@ -1370,6 +1444,11 @@ def exp(pda):
         raise TypeError("must be pdarray {}".format(pda))
 
 def cumsum(pda):
+    """
+    Return the cumulative sum over the array. The sum is inclusive, such
+    that the ith element of the result is the sum of elements up to and
+    including i.
+    """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("efunc {} {}".format("cumsum", pda.name))
         return create_pdarray(repMsg)
@@ -1377,6 +1456,11 @@ def cumsum(pda):
         raise TypeError("must be pdarray {}".format(pda))
 
 def cumprod(pda):
+    """
+    Return the cumulative product over the array. The product is inclusive, such
+    that the ith element of the result is the product of elements up to and
+    including i.
+    """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("efunc {} {}".format("cumprod", pda.name))
         return create_pdarray(repMsg)
@@ -1384,6 +1468,9 @@ def cumprod(pda):
         raise TypeError("must be pdarray {}".format(pda))
 
 def sin(pda):
+    """
+    Return the element-wise sine of the array
+    """
     if isinstance(pda,pdarray):
         repMsg = generic_msg("efunc {} {}".format("sin",pda.name))
         return create_pdarray(repMsg)
@@ -1391,6 +1478,9 @@ def sin(pda):
         raise TypeError("must be pdarray {}".format(pda))
 
 def cos(pda):
+    """
+    Return the element-wise cosine of the array
+    """
     if isinstance(pda,pdarray):
         repMsg = generic_msg("efunc {} {}".format("cos",pda.name))
         return create_pdarray(repMsg)
@@ -1398,6 +1488,9 @@ def cos(pda):
         raise TypeError("must be pdarray {}".format(pda))
 
 def any(pda):
+    """
+    Return True iff any element of the array evaluates to True.
+    """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("any", pda.name))
         return parse_single_value(repMsg)
@@ -1405,6 +1498,9 @@ def any(pda):
         raise TypeError("must be pdarray {}".format(pda))
 
 def all(pda):
+    """
+    Return True iff all elements of the array evaluate to True.
+    """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("all", pda.name))
         return parse_single_value(repMsg)
@@ -1412,6 +1508,9 @@ def all(pda):
         raise TypeError("must be pdarray {}".format(pda))
     
 def is_sorted(pda):
+    """
+    Return True iff the array is monotonically non-decreasing.
+    """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("is_sorted", pda.name))
         return parse_single_value(repMsg)
@@ -1419,6 +1518,9 @@ def is_sorted(pda):
         raise TypeError("must be pdarray {}".format(pda))
 
 def sum(pda):
+    """
+    Return the sum of all elements in the array.
+    """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("sum", pda.name))
         return parse_single_value(repMsg)
@@ -1426,6 +1528,10 @@ def sum(pda):
         raise TypeError("must be pdarray {}".format(pda))
 
 def prod(pda):
+    """
+    Return the product of all elements in the array. Return value is
+    always a float.
+    """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("prod", pda.name))
         return parse_single_value(repMsg)
@@ -1433,6 +1539,9 @@ def prod(pda):
         raise TypeError("must be pdarray {}".format(pda))
 
 def min(pda):
+    """
+    Return the minimum value of the array.
+    """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("min", pda.name))
         return parse_single_value(repMsg)
@@ -1440,6 +1549,9 @@ def min(pda):
         raise TypeError("must be pdarray {}".format(pda))
 
 def max(pda):
+    """
+    Return the maximum value of the array.
+    """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("max", pda.name))
         return parse_single_value(repMsg)
@@ -1447,6 +1559,9 @@ def max(pda):
         raise TypeError("must be pdarray {}".format(pda))
     
 def argmin(pda):
+    """
+    Return the index of the first minimum value of the array.
+    """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("argmin", pda.name))
         return parse_single_value(repMsg)
@@ -1454,6 +1569,9 @@ def argmin(pda):
         raise TypeError("must be pdarray {}".format(pda))
 
 def argmax(pda):
+    """
+    Return the index of the first maximum value of the array.
+    """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("argmax", pda.name))
         return parse_single_value(repMsg)
@@ -1461,6 +1579,27 @@ def argmax(pda):
         raise TypeError("must be pdarray {}".format(pda))
 
 def where(condition, A, B):
+    """
+    Return an array with elements chosen from A and B based on a conditioning array.
+    
+    Parameters
+
+    condition : pdarray
+        used to choose values from A or B
+    A : scalar or pdarray
+        value(s) used when condition is True
+    B : scalar or pdarray
+        value(s) used when condition is False
+
+    Returns
+
+    where : pdarray
+        values chosen from A and B according to condition
+
+    Notes
+    
+    A and B must have the same dtype.
+    """
     if not isinstance(condition, pdarray):
         raise TypeError("must be pdarray {}".format(condition))
     if isinstance(A, pdarray) and isinstance(B, pdarray):
@@ -1511,16 +1650,44 @@ def where(condition, A, B):
                              
             
 class GroupBy:
+    """
+    Group an array by value, usually in preparation for aggregating the 
+    within-group values of another array.
+
+    Parameters
+    
+    keys : int64 pdarray or list of int64 pdarray
+        the array to group by value, or the column arrays to group by row
+
+    Attributes
+
+    nkeys : int
+        the number of key arrays
+
+    size : int
+        the length of the array(s)
+
+    permutation : pdarray
+        the permutation that sorts the keys array(s) by value (row)
+
+    unique_keys : pdarray
+        the unique values of the keys array(s), in cosorted order
+
+    segments : pdarray
+        the start index of each group in the sorted array(s)
+
+    unique_key_indices : pdarray
+        the first index in the unsorted keys array(s) where each unique value (row) occurs
+
+    Notes
+
+    Only accepts pdarrays of int64 dtype.
+
+    """
     Reductions = frozenset(['sum', 'prod', 'mean',
                             'min', 'max', 'argmin', 'argmax',
                             'nunique', 'any', 'all'])
-    def __init__(self, keys, per_locale=False):
-        '''Group <keys> by value, usually in preparation for grouping
-        and aggregating the values of another array via the
-        .aggregate() method. Return a GroupBy object that stores the
-        information for how to group values.
-        '''
-            
+    def __init__(self, keys):    
         self.per_locale = False
         self.keys = keys
         if isinstance(keys, pdarray):
@@ -1542,21 +1709,6 @@ class GroupBy:
         self.find_segments()
             
     def find_segments(self):
-        # steps = zeros(self.size-1, dtype=bool)
-        # if self.nkeys == 1:
-        #     keys = [self.keys]
-        # else:
-        #     keys = self.keys
-        # for k in keys:
-        #     kperm = k[self.permutation]
-        #     steps |= (kperm[:-1] != kperm[1:])
-        # ukeyinds = zeros(self.size, dtype=bool)
-        # ukeyinds[0] = True
-        # ukeyinds[1:] = steps
-        # #nsegments = ukeyinds.sum()
-        # self.segments = arange(0, self.size, 1)[ukeyinds]
-        # self.unique_key_indices = self.permutation[ukeyinds]
-
         if self.per_locale:
             cmd = "findLocalSegments"
         else:
@@ -1582,7 +1734,9 @@ class GroupBy:
 
 
     def count(self):
-        '''Return the number of elements in each group, i.e. the number of times each key occurs.
+        '''
+        Return the number of elements in each group, i.e. the number 
+        of times each key value (row) occurs.
         '''
         if self.per_locale:
             cmd = "countLocalRdx"
@@ -1594,7 +1748,35 @@ class GroupBy:
         return self.unique_keys, create_pdarray(repMsg)
         
     def aggregate(self, values, operator):
-        '''Using the grouping implied by self.keys, group <values> and reduce each group with <operator>. The result is one aggregate value per key, so the function returns the pdarray of keys and the pdarray of aggregate values.
+        '''
+        Using the grouping stored in the GroupBy instance, group another array 
+        of values and apply a reduction to each group's values. 
+
+        Parameters
+        
+        values : pdarray
+            the values to group and reduce
+        operator: str
+            the name of the reduction operator to use
+
+        Returns
+
+        aggregate : pdarray
+            one aggregate value per unique key in the GroupBy instance
+
+        Notes
+
+        The values array can have any dtype. Supported operators are
+            sum : sum of values in group
+            prod : product of values in group
+            min : mininum value in group
+            max : maximum value in group
+            argmin : index in original array of first minimum value in group
+            argmax : index in original array of first maximum value in group
+            nunique : number of unique values in group
+            any : True iff any value in group is True
+            all : True iff every value in group is True
+operator>. The result is one aggregate value per key, so the function returns the pdarray of keys and the pdarray of aggregate values.
         '''
         if not isinstance(values, pdarray):
             raise TypeError("<values> must be a pdarray")
