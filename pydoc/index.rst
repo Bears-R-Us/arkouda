@@ -14,20 +14,8 @@ Welcome to arkouda's documentation!
    setup/installation
    setup/testing
    setup/quickstart
-      
-   start/server
-   start/client
 
-   usage/pdarray
-   usage/creation
-   usage/IO
-   usage/arithmetic
-   usage/indexing
-   usage/histogram
-   usage/argsort
-   usage/setops
-   usage/groupby
-
+   usage
 
 
 Indices and tables
