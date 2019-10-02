@@ -112,6 +112,7 @@ proc main() {
             when "[slice]=pdarray"   {repMsg = setSliceIndexToPdarrayMsg(reqMsg, st);}
             when "argsort"           {repMsg = argsortMsg(reqMsg, st);}
 	    when "coargsort"         {repMsg = coargsortMsg(reqMsg, st);}
+	    when "concatenate"       {repMsg = concatenateMsg(reqMsg, st);}
 	    when "localArgsort"      {repMsg = localArgsortMsg(reqMsg, st);}
             when "getconfig"         {repMsg = getconfigMsg(reqMsg, st);}
             when "getmemused"        {repMsg = getmemusedMsg(reqMsg, st);}

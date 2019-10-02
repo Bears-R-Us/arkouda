@@ -75,7 +75,16 @@ module RadixSortLSD
     /* Radix Sort Least Significant Digit
        radix sort a block distributed array
        returning a permutation vector as a block distributed array */
-    proc radixSortLSD_ranks(a:[?aD] ?t): [aD] int {
+    proc radixSortLSD_ranks(a:[?aD] ?t, checkSorted: bool = true): [aD] int {
+
+        // check to see if array is already sorted
+        if (checkSorted) {
+            if (isSorted(a)) {
+                var ranks: [aD] int = [i in aD] i;
+                return ranks;
+            }
+        }
+        
         var nBits = getBitWidth(a);
         if vv {writeln("type = ", t:string, ", nBits = ", nBits);}
         
@@ -199,7 +208,16 @@ module RadixSortLSD
     /* Radix Sort Least Significant Digit
        radix sort a block distributed array
        returning sorted keys as a block distributed array */
-    proc radixSortLSD_keys(a: [?aD] ?t): [aD] t {
+    proc radixSortLSD_keys(a: [?aD] ?t, checkSorted: bool = true): [aD] t {
+
+        // check to see if array is already sorted
+        if (checkSorted) {
+            if (isSorted(a)) {
+                var sorted: [aD] t = a;
+                return sorted;
+            }
+        }
+        
         // calc max value in bit position
         var nBits = getBitWidth(a);
         if vv {writeln("type = ", t:string, ", nBits = ", nBits);}
