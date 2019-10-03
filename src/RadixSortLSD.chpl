@@ -34,6 +34,13 @@ module RadixSortLSD
         return ((key >> rshift) & maskDigit);
     }
 
+    proc shiftDouble(in key: real(64), rshift: int(64)) {
+      const ptrToReal = c_ptrTo(key);
+      const ptrToULL = ptrToReal: c_ptr(int(64));
+      const intkey = ptrToULL.deref();
+      return (intkey >> rshift);
+    }
+    /*
     extern {
       static inline unsigned long long shiftDouble(double key, long long rshift) {
 	// Reinterpret the bits of key as an unsigned 64-bit int (u long long)
@@ -42,6 +49,7 @@ module RadixSortLSD
 	return (intkey >> rshift);
       }
     }
+    */
     
     inline proc getDigit(key: real, rshift: int): int {
       var shiftedKey: uint = shiftDouble(key: c_double, rshift: c_longlong): uint;
