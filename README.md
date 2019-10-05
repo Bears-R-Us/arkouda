@@ -43,15 +43,18 @@ optimized HPC libraries on massive datasets, all within the same
 interactive session.
 
 ## Requirements:
+<<<<<<< HEAD
  * requires chapel 1.19.0
  * requires llvm version of Chapel parser to support HDF5 I/O
+=======
+ * requires chapel 1.20.0 with the --legacy-classes flag
+>>>>>>> c6b5d185fe22d2ab6d8767cc70ecd037898f1632
  * requires zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * requires python 3.6 or greater
 
 ```bash
 #it should be simple to get things going on a mac
 #can't use brew install chapel anymore
-#need to build with export CHPL_LLVM=llvm
 #on my mac build chapel in my home directory with these settings...
 #I don't understand them all but they seem to work
 export CHPL_HOME=~/chapel/chapel-1.20.0
@@ -66,7 +69,10 @@ export GASNET_MASTERIP=127.0.0.1
 # Set these to help with oversubscription...
 export QT_AFFINITY=no
 export CHPL_QTHREAD_ENABLE_OVERSUBSCRIPTION=1
+<<<<<<< HEAD
 export CHPL_LLVM=llvm #the letters ll, not the numbers 11
+=======
+>>>>>>> c6b5d185fe22d2ab6d8767cc70ecd037898f1632
 cd $CHPL_HOME
 make
 # you can also install these other packages with brew

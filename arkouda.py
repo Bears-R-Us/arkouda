@@ -339,7 +339,11 @@ class pdarray:
 
     # overload unary~ for pdarray implemented as pdarray^(~0)
     def __invert__(self):
-        return self.binop(~0, "^")
+        if self.dtype == np.int64:
+            return self.binop(~0, "^")
+        if self.dtype == np.bool:
+            return self.binop(True, "^")
+        return NotImplemented
 
     # op= operators
     def opeq(self, other, op):
@@ -674,12 +678,12 @@ def histogram(pda, bins=10):
     else:
         raise TypeError("must be pdarray {} and bins must be an int {}".format(pda,bins))
 
-def in1d(pda1, pda2):
+def in1d(pda1, pda2, invert=False):
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
-        repMsg = generic_msg("in1d {} {}".format(pda1.name, pda2.name))
+        repMsg = generic_msg("in1d {} {} {}".format(pda1.name, pda2.name, invert))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be pdarray {} and bins must be an int {}".format(pda,bins))
+        raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
 
 def unique(pda, return_counts=False):
     if isinstance(pda, pdarray):
@@ -736,6 +740,85 @@ def coargsort(arrays):
         return zeros(0, dtype=int64)
     repMsg = generic_msg("coargsort {} {}".format(len(arrays), ' '.join([a.name for a in arrays])))
     return create_pdarray(repMsg)
+
+def concatenate(arrays):
+    size = 0
+    dtype = None
+    for a in arrays:
+        if not isinstance(a, pdarray):
+            raise ValueError("Argument must be an iterable of pdarrays")
+        if dtype == None:
+            dtype = a.dtype
+        elif dtype != a.dtype:
+            raise ValueError("All pdarrays must have same dtype")
+        size += a.size
+    if size == 0:
+        return zeros(0, dtype=int64)
+    repMsg = generic_msg("concatenate {} {}".format(len(arrays), ' '.join([a.name for a in arrays])))
+    return create_pdarray(repMsg)
+
+# (A1 | A2) Set Union: elements are in one or the other or both
+def union1d(pda1, pda2):
+    if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+        if pda1.size == 0:
+            return pda2 # union is pda2
+        if pda2.size == 0:
+            return pda1 # union is pda1
+        return unique(concatenate((unique(pda1), unique(pda2))))
+    else:
+        raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
+
+# (A1 & A2) Set Intersection: elements have to be in both arrays
+def intersect1d(pda1, pda2, assume_unique=False):
+    if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+        if pda1.size == 0:
+            return pda1 # nothing in the intersection
+        if pda2.size == 0:
+            return pda2 # nothing in the intersection
+        if not assume_unique:
+            pda1 = unique(pda1)
+            pda2 = unique(pda2)
+        aux = concatenate((pda1, pda2))
+        aux_sort_indices = argsort(aux)
+        aux = aux[aux_sort_indices]
+        mask = aux[1:] == aux[:-1]
+        int1d = aux[:-1][mask]
+        return int1d
+    else:
+        raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
+
+# (A1 - A2) Set Difference: elements have to be in first array but not second
+def setdiff1d(pda1, pda2, assume_unique=False):
+    if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+        if pda1.size == 0:
+            return pda1 # return a zero length pdarray
+        if pda2.size == 0:
+            return pda1 # subtracting nothing return orig pdarray
+        if not assume_unique:
+            pda1 = unique(pda1)
+            pda2 = unique(pda2)
+        return pda1[in1d(pda1, pda2, invert=True)]
+    else:
+        raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
+
+# (A1 ^ A2) Set Symmetric Difference: elements are not in the intersection
+def setxor1d(pda1, pda2, assume_unique=False):
+    if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+        if pda1.size == 0:
+            return pda2 # return other pdarray if pda1 is empty
+        if pda2.size == 0:
+            return pda1 # return other pdarray if pda2 is empty
+        if not assume_unique:
+            pda1 = unique(pda1)
+            pda2 = unique(pda2)
+        aux = concatenate((pda1, pda2))
+        aux_sort_indices = argsort(aux)
+        aux = aux[aux_sort_indices]
+        flag = concatenate((array([True]), aux[1:] != aux[:-1], array([True])))
+        return aux[flag[1:] & flag[:-1]]
+    else:
+        raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
+
 
 def local_argsort(pda):
     if isinstance(pda, pdarray):

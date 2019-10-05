@@ -22,6 +22,7 @@ module MsgProcessing
     use ReductionMsg;
     use FindSegmentsMsg;
     use EfuncMsg;
+    use ConcatenateMsg;
     
     /* 
     Parse, execute, and respond to a create message 
