@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
-# this is all kinda of clunky becayse we are using an
-# edgelist/tuple formulation but you can do it...
+# this is all kinda of clunky because...
+# we are using an edgelist/tuple formulation...
+# but at least you can do it... ;-)
 #
 # generate and rmat graph
-# make it undirected/symmetric
-# find it connected components using bfs
+# make the graph undirected/symmetric
+# find the graph's connected components using bfs
 
 import arkouda as ak
 
@@ -70,6 +71,28 @@ def bfs(src,dst,seeds,printLayers=False):
         F.append(Z)
     return (F,V)
 
+# src pdarray holding source vertices
+# dst pdarray holding destination vertices
+# printCComp flag to print the connected components as they are found
+#
+# edges needs to be symmetric/undirected
+def conn_comp(src, dst, printCComp=False, printLayers=False):
+    unvisited = ak.unique(src)
+    if printCComp: print("unvisited size = ", unvisited.size, unvisited)
+    components = []
+    while unvisited.size > 0:
+        # use lowest numbered vertex as representative vertex 
+        rep_vertex = unvisited[0]
+        # bfs from rep_vertex
+        layers,visited = bfs(src,dst,ak.array([rep_vertex]),printLayers)
+        # add verticies in component to list of components
+        components.append(visited)
+        # subtract out visited from unvisited vertices
+        unvisited = ak.setdiff1d(unvisited,visited)
+        if printCComp: print("  visited size = ", visited.size, visited)
+        if printCComp: print("unvisited size = ", unvisited.size, unvisited)
+    return components
+
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     import argparse, sys, gc, math, time
@@ -82,6 +105,8 @@ if __name__ == "__main__":
     parser.add_argument('--prob', type=float, default=0.01, help='prob of quadrant-0')
     parser.add_argument('--perm', default=False, action='store_true', help='permute vertex indices/names')
     parser.add_argument('--pl', default=False, action='store_true', help='print layers in bfs')
+    parser.add_argument('--pc', default=False, action='store_true', help='print connected comp as they are found')
+    
     args = parser.parse_args()
 
     ak.v = False
@@ -100,21 +125,13 @@ if __name__ == "__main__":
     src = ak.concatenate((ii,jj))
     dst = ak.concatenate((jj,ii))
 
+    print("src = ", (src.size, src))
+    print("src(min,max) = ", (src.min(), src.max()))
+    print("dst = ", (dst.size, dst))
+    print("dst(min,max) = ", (dst.min(), dst.max()))
+
     # find components using BFS
-    unvisited = ak.unique(src)
-    print("unvisited size = ", unvisited.size, unvisited)
-    components = []
-    while unvisited.size > 0:
-        # use lowest numbered vertex as representative vertex 
-        rep_vertex = unvisited[0]
-        # bfs from rep_vertex
-        layers,visited = bfs(src,dst,ak.array([rep_vertex]),printLayers=args.pl)
-        # add verticies in component to list of components
-        components.append(visited)
-        # subtract out visited from unvisited vertices
-        unvisited = ak.setdiff1d(unvisited,visited)
-        print("  visited size = ", visited.size, visited)
-        print("unvisited size = ", unvisited.size, unvisited)
+    components = conn_comp(src, dst, printCComp=args.pc, printLayers=args.pl)
     print("number of components = ",len(components))
     print("representative vertices = ",[c[0] for c in components])
     
