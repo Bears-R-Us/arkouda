@@ -16,6 +16,7 @@ Choose a number of locales that is right for your system and data. The ``-h`` fl
 The last line of output from the ``arkouda_server`` command should look like
 
 .. code-block:: none
+		
    server listening on node01:5555
 
 Use this hostname and port in the next step to connect to the server.

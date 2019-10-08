@@ -12,15 +12,14 @@ Download
 
 The easiest way to get arkouda is to download or clone the `arkouda github repo`_.
 
-.. _arkouda github repo: TO DO ADD URL
+.. _arkouda github repo: TO DO ADD PUBLIC URL
 
 *****************
 Environment Setup
 *****************
 
 1. Ensure that ``CHPL_HOME`` is set and ``$CHPL_HOME/bin`` is in your ``PATH`` (consider adding to your .*rc file).
-2. Ensure ``CHPL_LLVM`` is set to ``llvm``
-3. Tell arkouda where to find the HDF5 and ZMQ libraries. Do this by creating or modifying the ``Makefile.paths`` file in the arkouda root directory and adding one or more lines of the form::
+2. Tell arkouda where to find the HDF5 and ZMQ libraries. Do this by creating or modifying the ``Makefile.paths`` file in the arkouda root directory and adding one or more lines of the form::
 
   $(eval $(call add-path,/path/to/HDF5/root))
   $(eval $(call add-path,/path/to/ZMQ/root))

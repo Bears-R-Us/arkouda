@@ -9,26 +9,19 @@ Chapel
 *******************
 (version 1.20.0 or greater)
 
-The arkouda server application is written in Chapel_, a productive and performant parallel programming language. In order to use arkouda, you must first `download Chapel`_ 1.20.0 or later and build it according to the instructions_ for your platform(s). Below are tips for building Chapel to support arkouda.
-
-LLVM
-===================
-
-Arkouda requires Chapel to be built with the LLVM parser enabled. This is accomplished by setting the following environment variable prior to building Chapel::
-  
-  export CHPL_LLVM=llvm
-
-LLVM comes bundled with Chapel, so it does not require a separate download.
+The arkouda server application is written in Chapel_, a productive and performant parallel programming language. In order to use arkouda, you must first `download the current version of Chapel`_ and build it according to the instructions_ for your platform(s). Below are tips for building Chapel to support arkouda.
 
 Multi-Locale
 ===================
 
-Chapel and Arkouda are both designed to be portable, running with minimal reconfiguration on a laptop and a supercomputer. In fact, the developers of arkouda typically implement new functionality on a workstation, test performance on a small cluster, and support users on a massively parallel processing architecture. If you plan to use arkouda or Chapel on a mix of single- and multi-node systems, we recommend building Chapel in multi-locale (i.e. multi-node) mode on all platforms, even single machines.
+Chapel and Arkouda are both designed to be portable, running with minimal reconfiguration on a laptop and a supercomputer. In fact, the developers of arkouda typically implement new functionality on a workstation, test performance on a small cluster, and support users on a massively parallel processing architecture. The Chapel documentation has detailed instructions for `multilocale Chapel execution`_, which are important to carefully observe on multi-node systems.
 
-The Chapel documentation has detailed instructions for `multilocale Chapel execution`_, which are important to observe carefully on multi-node systems. Enabling multilocale execution on a single machine, in our experience, simply requires setting two extra environment variables before building and using Chapel::
+For an individual machine (e.g. a laptop or a workstation), you have two options. The default is single-locale mode, which is also the easiest and most performant. You do not need any special settings to enable this mode; simply build Chapel according to the above instructions. However, if you want your single machine to emulate a multi-node system (e.g. you want to test multi-node functionality on your laptop before moving to a larger system), you can enabling multilocale execution on a single machineby simply setting these environment variables::
   
   export CHPL_COMM=gasnet
   export CHPL_LAUNCHER=smp
+
+and (re)running ``make`` within ``$CHPL_HOME``. Both single- and multi-locale Chapel builds can happily coexist side-by-side. If you have built Chapel with both configurations, you can switch between them by setting ``export CHPL_COMM=none`` or ``export CHPL_COMM=gasnet`` before compiling your Chapel program (e.g. the arkouda server).
 
 *******************************
 Python 3 (Anaconda recommended)
@@ -58,8 +51,8 @@ Pandas (recommended; included with Anaconda)
 While Pandas is not required by the arkouda client, some of the arkouda tests use Pandas as a standard to check the correctness of arkouda operations. As with NumPy, the best way to get Pandas is via the Anaconda_ distribution or a Python package manager.
 
 .. _Chapel: https://chapel-lang.org/
-.. _download Chapel: https://chapel-lang.org/download.html
-.. _instructions: https://chapel-lang.org/download.html
+.. _download the current version of Chapel: https://chapel-lang.org/download.html
+.. _instructions: https://chapel-lang.org/docs/usingchapel/index.html
 .. _multilocale Chapel execution: https://chapel-lang.org/docs/usingchapel/multilocale.html
 .. _Anaconda: https://www.anaconda.com/distribution/
 .. _HDF5: https://support.hdfgroup.org/HDF5/
