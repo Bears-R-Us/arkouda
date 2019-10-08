@@ -54,15 +54,17 @@ interactive session.
  * requires chapel 1.20.0 with the --legacy-classes flag
  * requires zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * requires python 3.6 or greater
-
+ * requires numpy
+ 
 ### It should be simple to get things going on a mac
 ```bash
 brew install chapel
 # you can also install these other packages with brew
 brew install python3
 brew install zeromq
-# and pip install these packages
+# and pip install the numpy packages
 pip3 install numpy
+# these packages are nice but not a requirement
 pip3 install pandas
 pip3 install jupyter
 ```
@@ -74,6 +76,7 @@ pip3 install jupyter
 export CHPL_HOME=~/chapel/chapel-1.20.0
 source $CHPL_HOME/util/setchplenv.bash
 export CHPL_COMM=gasnet
+export CHPL_COMM_SUBSTRATE=smp
 export CHPL_GASNET_CFG_OPTIONS=--disable-ibv
 export CHPL_TARGET_CPU=native
 export GASNET_SPAWNFN=L
