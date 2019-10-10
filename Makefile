@@ -106,11 +106,11 @@ archive-clean:
 ################
 
 define DOC_HELP_TEXT
-# doc			doc-for-*
+# doc			doc-* for server, etc.
   doc-help
   doc-clean
-  doc-for-server
-  doc-for-python
+  doc-server
+  doc-python
 
 endef
 $(eval $(call create_help_target,doc-help,DOC_HELP_TEXT))
@@ -126,20 +126,20 @@ $(DOC_COMPONENTS):
 	mkdir -p $@
 
 .PHONY: doc
-doc: doc-for-server doc-for-python
+doc: doc-server doc-python
 
 CHPLDOC := chpldoc
 CHPLDOC_FLAGS := --process-used-modules
-.PHONY: doc-for-server
-doc-for-server: $(DOC_SERVER_OUTPUT_DIR)/index.html
+.PHONY: doc-server
+doc-server: $(DOC_SERVER_OUTPUT_DIR)/index.html
 $(DOC_SERVER_OUTPUT_DIR)/index.html: $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES) | $(DOC_SERVER_OUTPUT_DIR)
 	@echo "Building documentation for: Server"
 	$(CHPLDOC) $(CHPLDOC_FLAGS) $(ARKOUDA_MAIN_SOURCE) -o $(DOC_SERVER_OUTPUT_DIR)
 
 DOC_PYTHON_SOURCE_DIR := pydoc
 DOC_PYTHON_SOURCES := $(shell find $(DOC_PYTHON_SOURCE_DIR)/ -type f)
-.PHONY: doc-for-python
-doc-for-python: $(DOC_PYTHON_OUTPUT_DIR)/index.html
+.PHONY: doc-python
+doc-python: $(DOC_PYTHON_OUTPUT_DIR)/index.html
 $(DOC_PYTHON_OUTPUT_DIR)/index.html: $(DOC_PYTHON_SOURCES) $(ARKOUDA_MAKEFILES)
 	@echo "Building documentation for: Python"
 	$(eval $@_TMP := $(shell mktemp -d))
