@@ -62,7 +62,7 @@ define ARKOUDA_HELP_TEXT
 endef
 $(eval $(call create_help_target,arkouda-help,ARKOUDA_HELP_TEXT))
 
-ARKOUDA_SOURCES := $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
+ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
 $(ARKOUDA_MAIN_MODULE): $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
@@ -137,7 +137,7 @@ $(DOC_SERVER_OUTPUT_DIR)/index.html: $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES) | $
 	$(CHPLDOC) $(CHPLDOC_FLAGS) $(ARKOUDA_MAIN_SOURCE) -o $(DOC_SERVER_OUTPUT_DIR)
 
 DOC_PYTHON_SOURCE_DIR := pydoc
-DOC_PYTHON_SOURCES := $(shell find $(DOC_PYTHON_SOURCE_DIR)/ -type f)
+DOC_PYTHON_SOURCES = $(shell find $(DOC_PYTHON_SOURCE_DIR)/ -type f)
 .PHONY: doc-python
 doc-python: $(DOC_PYTHON_OUTPUT_DIR)/index.html
 $(DOC_PYTHON_OUTPUT_DIR)/index.html: $(DOC_PYTHON_SOURCES) $(ARKOUDA_MAKEFILES)
