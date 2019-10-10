@@ -1,4 +1,6 @@
 # Makefile for Arkouda
+ARKOUDA_PROJECT_DIR := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
+
 PROJECT_NAME := arkouda
 ARKOUDA_SOURCE_DIR := src
 ARKOUDA_MAIN_MODULE := arkouda_server
@@ -104,22 +106,41 @@ archive-clean:
 ################
 
 define DOC_HELP_TEXT
-# doc			Generate $(DOC_DIR)/ with chpldoc
+# doc			doc-for-*
   doc-help
   doc-clean
+  doc-for-server
+  doc-for-python
 
 endef
 $(eval $(call create_help_target,doc-help,DOC_HELP_TEXT))
 
 DOC_DIR := doc
-CHPLDOC := chpldoc
-CHPLDOC_FLAGS := --process-used-modules
+DOC_SERVER_DIR := $(DOC_DIR)/server
+DOC_PYTHON_DIR := $(DOC_DIR)/python
+
+DOC_COMPONENTS := $(DOC_SERVER_DIR) $(DOC_PYTHON_DIR)
+$(DOC_COMPONENTS):
+	mkdir -p $@
 
 .PHONY: doc
-doc: $(DOC_DIR)/index.html
+doc: doc-for-server doc-for-python
 
-$(DOC_DIR)/index.html: $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
-	$(CHPLDOC) $(CHPLDOC_FLAGS) $(ARKOUDA_MAIN_SOURCE) -o $(DOC_DIR)
+CHPLDOC := chpldoc
+CHPLDOC_FLAGS := --process-used-modules
+.PHONY: doc-for-server
+doc-for-server: $(DOC_SERVER_DIR)/index.html
+$(DOC_SERVER_DIR)/index.html: $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES) | $(DOC_SERVER_DIR)
+	@echo "Building documentation for: Server"
+	$(CHPLDOC) $(CHPLDOC_FLAGS) $(ARKOUDA_MAIN_SOURCE) -o $(DOC_SERVER_DIR)
+
+DOC_PYTHON_SOURCE_DIR := pydoc
+DOC_PYTHON_SOURCES := $(shell find $(DOC_PYTHON_SOURCE_DIR)/ -type f) Makefile
+.PHONY: doc-for-python
+doc-for-python: $(DOC_PYTHON_DIR)/html/index.html
+$(DOC_PYTHON_DIR)/html/index.html: $(DOC_PYTHON_SOURCES)
+	@echo "Building documentation for: Python"
+	cd $(DOC_PYTHON_SOURCE_DIR) && $(MAKE) BUILDDIR=$(ARKOUDA_PROJECT_DIR)/$(DOC_PYTHON_DIR) html
 
 CLEAN_TARGETS += doc-clean
 .PHONY: doc-clean
