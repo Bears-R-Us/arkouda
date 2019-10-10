@@ -116,10 +116,12 @@ endef
 $(eval $(call create_help_target,doc-help,DOC_HELP_TEXT))
 
 DOC_DIR := doc
-DOC_SERVER_DIR := $(DOC_DIR)/server
-DOC_PYTHON_DIR := $(DOC_DIR)/python
+DOC_SERVER_OUTPUT_DIR := $(ARKOUDA_PROJECT_DIR)/$(DOC_DIR)/server
+DOC_PYTHON_OUTPUT_DIR := $(ARKOUDA_PROJECT_DIR)/$(DOC_DIR)/python
 
-DOC_COMPONENTS := $(DOC_SERVER_DIR) $(DOC_PYTHON_DIR)
+DOC_COMPONENTS := \
+	$(DOC_SERVER_OUTPUT_DIR) \
+	$(DOC_PYTHON_OUTPUT_DIR)
 $(DOC_COMPONENTS):
 	mkdir -p $@
 
@@ -129,18 +131,24 @@ doc: doc-for-server doc-for-python
 CHPLDOC := chpldoc
 CHPLDOC_FLAGS := --process-used-modules
 .PHONY: doc-for-server
-doc-for-server: $(DOC_SERVER_DIR)/index.html
-$(DOC_SERVER_DIR)/index.html: $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES) | $(DOC_SERVER_DIR)
+doc-for-server: $(DOC_SERVER_OUTPUT_DIR)/index.html
+$(DOC_SERVER_OUTPUT_DIR)/index.html: $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES) | $(DOC_SERVER_OUTPUT_DIR)
 	@echo "Building documentation for: Server"
-	$(CHPLDOC) $(CHPLDOC_FLAGS) $(ARKOUDA_MAIN_SOURCE) -o $(DOC_SERVER_DIR)
+	$(CHPLDOC) $(CHPLDOC_FLAGS) $(ARKOUDA_MAIN_SOURCE) -o $(DOC_SERVER_OUTPUT_DIR)
 
 DOC_PYTHON_SOURCE_DIR := pydoc
-DOC_PYTHON_SOURCES := $(shell find $(DOC_PYTHON_SOURCE_DIR)/ -type f) Makefile
+DOC_PYTHON_SOURCES := $(shell find $(DOC_PYTHON_SOURCE_DIR)/ -type f)
 .PHONY: doc-for-python
-doc-for-python: $(DOC_PYTHON_DIR)/html/index.html
-$(DOC_PYTHON_DIR)/html/index.html: $(DOC_PYTHON_SOURCES)
+doc-for-python: $(DOC_PYTHON_OUTPUT_DIR)/index.html
+$(DOC_PYTHON_OUTPUT_DIR)/index.html: $(DOC_PYTHON_SOURCES) $(ARKOUDA_MAKEFILES)
 	@echo "Building documentation for: Python"
-	cd $(DOC_PYTHON_SOURCE_DIR) && $(MAKE) BUILDDIR=$(ARKOUDA_PROJECT_DIR)/$(DOC_PYTHON_DIR) html
+	$(eval $@_TMP := $(shell mktemp -d))
+	@# Build the documentation to a temporary output directory.
+	cd $(DOC_PYTHON_SOURCE_DIR) && $(MAKE) BUILDDIR=$($@_TMP) html
+	@# Delete old output directory and move `html` directory to its place.
+	$(RM) -r $(DOC_PYTHON_OUTPUT_DIR)
+	mv $($@_TMP)/html $(DOC_PYTHON_OUTPUT_DIR)
+	$(RM) -r $($@_TMP)
 
 CLEAN_TARGETS += doc-clean
 .PHONY: doc-clean
