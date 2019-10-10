@@ -1,4 +1,6 @@
 # Makefile for Arkouda
+ARKOUDA_PROJECT_DIR := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
+
 PROJECT_NAME := arkouda
 ARKOUDA_SOURCE_DIR := src
 ARKOUDA_MAIN_MODULE := arkouda_server
@@ -60,7 +62,7 @@ define ARKOUDA_HELP_TEXT
 endef
 $(eval $(call create_help_target,arkouda-help,ARKOUDA_HELP_TEXT))
 
-ARKOUDA_SOURCES := $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
+ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
 $(ARKOUDA_MAIN_MODULE): $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
@@ -104,22 +106,49 @@ archive-clean:
 ################
 
 define DOC_HELP_TEXT
-# doc			Generate $(DOC_DIR)/ with chpldoc
+# doc			Generate $(DOC_DIR)/ with doc-* for server, etc.
   doc-help
   doc-clean
+  doc-server
+  doc-python
 
 endef
 $(eval $(call create_help_target,doc-help,DOC_HELP_TEXT))
 
 DOC_DIR := doc
-CHPLDOC := chpldoc
-CHPLDOC_FLAGS := --process-used-modules
+DOC_SERVER_OUTPUT_DIR := $(ARKOUDA_PROJECT_DIR)/$(DOC_DIR)/server
+DOC_PYTHON_OUTPUT_DIR := $(ARKOUDA_PROJECT_DIR)/$(DOC_DIR)/python
+
+DOC_COMPONENTS := \
+	$(DOC_SERVER_OUTPUT_DIR) \
+	$(DOC_PYTHON_OUTPUT_DIR)
+$(DOC_COMPONENTS):
+	mkdir -p $@
 
 .PHONY: doc
-doc: $(DOC_DIR)/index.html
+doc: doc-server doc-python
 
-$(DOC_DIR)/index.html: $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
-	$(CHPLDOC) $(CHPLDOC_FLAGS) $(ARKOUDA_MAIN_SOURCE) -o $(DOC_DIR)
+CHPLDOC := chpldoc
+CHPLDOC_FLAGS := --process-used-modules
+.PHONY: doc-server
+doc-server: $(DOC_SERVER_OUTPUT_DIR)/index.html
+$(DOC_SERVER_OUTPUT_DIR)/index.html: $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES) | $(DOC_SERVER_OUTPUT_DIR)
+	@echo "Building documentation for: Server"
+	$(CHPLDOC) $(CHPLDOC_FLAGS) $(ARKOUDA_MAIN_SOURCE) -o $(DOC_SERVER_OUTPUT_DIR)
+
+DOC_PYTHON_SOURCE_DIR := pydoc
+DOC_PYTHON_SOURCES = $(shell find $(DOC_PYTHON_SOURCE_DIR)/ -type f)
+.PHONY: doc-python
+doc-python: $(DOC_PYTHON_OUTPUT_DIR)/index.html
+$(DOC_PYTHON_OUTPUT_DIR)/index.html: $(DOC_PYTHON_SOURCES) $(ARKOUDA_MAKEFILES)
+	@echo "Building documentation for: Python"
+	$(eval $@_TMP := $(shell mktemp -d))
+	@# Build the documentation to a temporary output directory.
+	cd $(DOC_PYTHON_SOURCE_DIR) && $(MAKE) BUILDDIR=$($@_TMP) html
+	@# Delete old output directory and move `html` directory to its place.
+	$(RM) -r $(DOC_PYTHON_OUTPUT_DIR)
+	mv $($@_TMP)/html $(DOC_PYTHON_OUTPUT_DIR)
+	$(RM) -r $($@_TMP)
 
 CLEAN_TARGETS += doc-clean
 .PHONY: doc-clean
