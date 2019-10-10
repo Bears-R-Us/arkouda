@@ -40,6 +40,7 @@ module RadixSortLSD
       const intkey = ptrToULL.deref();
       return (intkey >> rshift);
     }
+    pragma "no doc" // Bug: chapel-lang/chapel#14250
     /*
     extern {
       static inline unsigned long long shiftDouble(double key, long long rshift) {
