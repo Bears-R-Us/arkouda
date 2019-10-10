@@ -106,7 +106,7 @@ archive-clean:
 ################
 
 define DOC_HELP_TEXT
-# doc			doc-* for server, etc.
+# doc			Generate $(DOC_DIR)/ with doc-* for server, etc.
   doc-help
   doc-clean
   doc-server
