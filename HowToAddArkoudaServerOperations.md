@@ -17,7 +17,7 @@ def foo(pda):
     Return the foo() of the array.
     """
     if isinstance(pda, pdarray):
-        repMsg = generic_msg("foo {}".format("foo", pda.name))
+        repMsg = generic_msg("foo {}".format(pda.name))
         return create_pdarray(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
