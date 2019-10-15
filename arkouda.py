@@ -1154,6 +1154,46 @@ def linspace(start, stop, length):
     return create_pdarray(repMsg)
 
 def histogram(pda, bins=10):
+    """
+    Compute a histogram of evenly spaced bins over the range of an array.
+    
+    Parameters
+
+    pda : pdarray
+        the values to histogram
+
+    bins : int
+        the number of equal-size bins to use (default: 10)
+
+    Returns
+
+    counts : pdarray
+        the number of values present in each bin
+
+    See Also
+
+    value_counts
+
+    Notes
+
+    The bins are evenly spaced in the interval [pda.min(), pda.max()]. Currently,
+    the user must re-compute the bin edges, e.g. with np.linspace (see below) 
+    in order to plot the histogram.
+
+    Examples
+
+    >>> A = ak.arange(0, 10, 1)
+    >>> nbins = 3
+    >>> h = ak.histogram(A, bins=nbins)
+    >>> h
+    array([3, 3, 4])
+    # Recreate the bin edges in NumPy
+    >>> binEdges = np.linspace(A.min(), A.max(), nbins+1)
+    >>> binEdges
+    array([0., 3., 6., 9.])
+    # To plot, use only the left edges, and export the histogram to NumPy
+    >>> plt.plot(binEdges[:-1], h.to_ndarray())
+    """
     if isinstance(pda, pdarray) and isinstance(bins, int):
         repMsg = generic_msg("histogram {} {}".format(pda.name, bins))
         return create_pdarray(repMsg)
@@ -1180,13 +1220,38 @@ def unique(pda, return_counts=False):
         raise TypeError("must be pdarray {}".format(pda))
 
 def value_counts(pda):
-    if isinstance(pda, pdarray):
-        repMsg = generic_msg("value_counts {}".format(pda.name))
-        vc = repMsg.split("+")
-        if v: print(vc)
-        return create_pdarray(vc[0]), create_pdarray(vc[1])
-    else:
-        raise TypeError("must be pdarray {}".format(pda))
+    """
+    Count the occurrences of the unique values of an array.
+
+    Parameters
+
+    pda : pdarray int64
+        the array of values to count
+
+    Returns
+
+    unique_values : pdarray int64
+        the unique values, sorted in ascending order
+
+    counts : pdarray int64
+        the number of times the corresponding unique value occurs
+
+    See Also
+
+    unique, histogram
+
+    Notes
+
+    The value_counts function differs from histogram in that it only returns counts 
+    for values that are present, leaving out empty "bins".
+
+    Examples
+
+    >>> A = ak.array([2, 0, 2, 4, 0, 0])
+    >>> ak.value_counts(A)
+    (array([0, 2, 4]), array([3, 2, 1]))
+    """
+    return unique(pda, return_counts=True)
 
 def randint(low, high, size, dtype=np.int64):
     """
@@ -1767,16 +1832,25 @@ class GroupBy:
         Notes
 
         The values array can have any dtype. Supported operators are
+
             sum : sum of values in group
+
             prod : product of values in group
+
             min : mininum value in group
+
             max : maximum value in group
+
             argmin : index in original array of first minimum value in group
+
             argmax : index in original array of first maximum value in group
+
             nunique : number of unique values in group
+
             any : True iff any value in group is True
+
             all : True iff every value in group is True
-operator>. The result is one aggregate value per key, so the function returns the pdarray of keys and the pdarray of aggregate values.
+
         '''
         if not isinstance(values, pdarray):
             raise TypeError("<values> must be a pdarray")
