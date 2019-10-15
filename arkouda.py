@@ -1071,16 +1071,20 @@ def ones_like(pda):
 
 def arange(*args):
     """
-    Create a pdarray of consecutive integers.
+    Create a pdarray of consecutive integers within the interval [start, stop).
+    If only one arg is given then arg is the stop parameter. If two args are given
+    then the first arg is start and second is stop. If three args are given
+    then the first arg is start, second is stop, third is stride.
 
     Parameters
     
-    start : int
-        starting value (inclusive)
+    start : int, optional
+        starting value (inclusive), the default starting value is 0
     stop : int
         stopping value (exclusive)
-    stride : int
-        the difference between consecutive elements
+    stride : int, optional
+        the difference between consecutive elements, the default stride is 1,
+        if stride is specified then start must also be specified
 
     Returns
     
@@ -1107,20 +1111,20 @@ def arange(*args):
     array([0, 2, 4, 6, 8])
     """
    
-    #if 1 arg is given then arg is stop 
+    #if one arg is given then arg is stop
     if len(args) == 1:
         start = 0
         stop = args[0]
         stride = 1
 
-    #if 2 args are given then first arg is start and second is stop
+    #if two args are given then first arg is start and second is stop
     if len(args) == 2:
         start = args[0]
         stop = args[1]
         stride = 1
 
-    #if 3 args are given then first arg is start,
-    #second is stop, third is step
+    #if three args are given then first arg is start,
+    #second is stop, third is stride
     if len(args) == 3:
         start = args[0]
         stop = args[1]
