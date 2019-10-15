@@ -1069,7 +1069,7 @@ def ones_like(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def arange(start, stop, stride):
+def arange(*args):
     """
     Create a pdarray of consecutive integers.
 
@@ -1106,6 +1106,29 @@ def arange(start, stop, stride):
     >>> ak.arange(0, 10, 2)
     array([0, 2, 4, 6, 8])
     """
+   
+    #if 1 arg is given then arg is stop 
+    if len(args) == 1:
+        start = 0
+        stop = args[0]
+        stride = 1
+
+    #if 2 args are given then first arg is start and second is stop
+    if len(args) == 2:
+        start = args[0]
+        stop = args[1]
+        stride = 1
+
+    #if 3 args are given then first arg is start,
+    #second is stop, third is step
+    if len(args) == 3:
+        start = args[0]
+        stop = args[1]
+        stride = args[2]
+
+    if stride == 0:
+        raise ZeroDivisionError("division by zero")
+
     if isinstance(start, int) and isinstance(stop, int) and isinstance(stride, int):
         # TO DO: fix bug in server that goes 2 steps too far for negative strides
         if stride < 0:
