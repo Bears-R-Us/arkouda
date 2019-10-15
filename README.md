@@ -55,6 +55,7 @@ interactive session.
  * requires zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * requires python 3.6 or greater
  * requires numpy
+ * requires sphinx-doc to build python documentation
  
 ### It should be simple to get things going on a mac
 ```bash
@@ -62,6 +63,7 @@ brew install chapel
 # you can also install these other packages with brew
 brew install python3
 brew install zeromq
+brew install sphinx-doc
 # and pip install the numpy packages
 pip3 install numpy
 # these packages are nice but not a requirement
@@ -109,6 +111,17 @@ The `chpl` compiler will be executed with `-I`, `-L` and an `-rpath` to each
 path.
 
 [Anaconda]: https://www.anaconda.com/distribution/
+
+## Building the Arkouda documentation
+Make sure you installed the sphinx-doc package
+
+Run `make doc`, this build both the Arkouda python documentation and the Chapel server documentation
+
+The output is currently in subdirectories of the `arkouda/doc`
+```
+arkouda/doc/python # python frontend documentation
+arkouda/doc/server # chapel backend server documentation 
+```
 
 ## Running arkouda_server
 
