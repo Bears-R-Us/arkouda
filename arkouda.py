@@ -1069,18 +1069,22 @@ def ones_like(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def arange(start, stop, stride):
+def arange(*args):
     """
-    Create a pdarray of consecutive integers.
+    Create a pdarray of consecutive integers within the interval [start, stop).
+    If only one arg is given then arg is the stop parameter. If two args are given
+    then the first arg is start and second is stop. If three args are given
+    then the first arg is start, second is stop, third is stride.
 
     Parameters
     
-    start : int
-        starting value (inclusive)
+    start : int, optional
+        starting value (inclusive), the default starting value is 0
     stop : int
         stopping value (exclusive)
-    stride : int
-        the difference between consecutive elements
+    stride : int, optional
+        the difference between consecutive elements, the default stride is 1,
+        if stride is specified then start must also be specified
 
     Returns
     
@@ -1106,6 +1110,29 @@ def arange(start, stop, stride):
     >>> ak.arange(0, 10, 2)
     array([0, 2, 4, 6, 8])
     """
+   
+    #if one arg is given then arg is stop
+    if len(args) == 1:
+        start = 0
+        stop = args[0]
+        stride = 1
+
+    #if two args are given then first arg is start and second is stop
+    if len(args) == 2:
+        start = args[0]
+        stop = args[1]
+        stride = 1
+
+    #if three args are given then first arg is start,
+    #second is stop, third is stride
+    if len(args) == 3:
+        start = args[0]
+        stop = args[1]
+        stride = args[2]
+
+    if stride == 0:
+        raise ZeroDivisionError("division by zero")
+
     if isinstance(start, int) and isinstance(stop, int) and isinstance(stride, int):
         # TO DO: fix bug in server that goes 2 steps too far for negative strides
         if stride < 0:
