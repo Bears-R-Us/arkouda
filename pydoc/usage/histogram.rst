@@ -1,7 +1,55 @@
 ***********************
-Examining Distributions
+Summarizing Data
 ***********************
 
+Descriptive Statistics
+======================
+
+Simple descriptive statistics are available as reduction methods on ``pdarray`` objects. 
+
+.. code-block:: python
+		
+   >>> A = ak.randint(-10, 11, 1000)
+   >>> A.min()
+   -10
+   >>> A.max()
+   10
+   >>> A.sum()
+   13
+   >>> A.mean()
+   0.013
+   >>> A.var() 
+   36.934176000000015
+   >>> A.std()
+   6.07734942223993
+
+The list of reductions supported on ``pdarray`` objects is:
+
+.. automethod:: arkouda.pdarray.any
+
+.. automethod:: arkouda.pdarray.all
+
+.. automethod:: arkouda.pdarray.is_sorted
+
+.. automethod:: arkouda.pdarray.sum
+
+.. automethod:: arkouda.pdarray.prod
+
+.. automethod:: arkouda.pdarray.min
+
+.. automethod:: arkouda.pdarray.max
+
+.. automethod:: arkouda.pdarray.argmin
+
+.. automethod:: arkouda.pdarray.argmax
+
+.. automethod:: arkouda.pdarray.mean
+
+.. automethod:: arkouda.pdarray.var
+
+.. automethod:: arkouda.pdarray.std
+
+   
 Histogram
 =========
 
@@ -13,7 +61,7 @@ Since the ``histogram`` function currently does not return the bin edges, only t
 
 .. code-block:: python
 
-   binEdges = np.linspace(A.min(), A.max(), nbins + 1)
+   >>> binEdges = np.linspace(myarray.min(), myarray.max(), nbins + 1)
 
 
 Value Counts

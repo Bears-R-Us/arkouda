@@ -507,21 +507,77 @@ class pdarray:
         generic_msg("set {} {} {}".format(self.name, self.dtype.name, self.format_other(value)))
 
     def any(self):
+        """
+        Return True iff any element of the array evaluates to True.
+        """
         return any(self)
+    
     def all(self):
+        """
+        Return True iff all elements of the array evaluate to True.
+        """
         return all(self)
+
+    def is_sorted(self):
+        """
+        Return True iff the array is monotonically non-decreasing.
+        """
+        return is_sorted(self)
+    
     def sum(self):
+        """
+        Return the sum of all elements in the array.
+        """
         return sum(self)
+    
     def prod(self):
+        """
+        Return the product of all elements in the array. Return value is
+        always a float.
+        """
         return prod(self)
+    
     def min(self):
+        """
+        Return the minimum value of the array.
+        """
         return min(self)
+    
     def max(self):
+        """
+        Return the maximum value of the array.
+        """
         return max(self)
+    
     def argmin(self):
+        """
+        Return the index of the first minimum value of the array.
+        """
         return argmin(self)
+    
     def argmax(self):
+        """
+        Return the index of the first maximum value of the array.
+        """
         return argmax(self)
+    
+    def mean(self):
+        """
+        Return the mean of the array.
+        """
+        return mean(self)
+    
+    def var(self, ddof=0):
+        """
+        Compute the variance. See ``arkouda.var`` for details.
+        """
+        return var(self, ddof=ddof)
+    
+    def std(self, ddof=0):
+        """
+        Compute the standard deviation. See ``arkouda.std`` for details.
+        """
+        return std(self, ddof=ddof)
 
     def to_ndarray(self):
         """
@@ -1093,11 +1149,12 @@ def arange(*args):
 
     See Also
     
-    zeros, ones, randint
+    linspace, zeros, ones, randint
     
     Notes
     
-    Negative strides result in decreasing values.
+    Negative strides result in decreasing values. Currently, only int64 pdarrays
+    can be created with this function. For float64 arrays, use linspace.
 
     Examples
     
@@ -1228,6 +1285,39 @@ def histogram(pda, bins=10):
         raise TypeError("must be pdarray {} and bins must be an int {}".format(pda,bins))
 
 def in1d(pda1, pda2, invert=False):
+    """
+    Test whether each element of a 1-D array is also present in a second array.
+
+    Returns a boolean array the same length as `pda1` that is True
+    where an element of `pda1` is in `pda2` and False otherwise.
+
+    Parameters
+
+    pda1 : pdarray
+        Input array.
+    pda2 : pdarray
+        The values against which to test each value of `pda1`.
+    invert : bool, optional
+        If True, the values in the returned array are inverted (that is,
+        False where an element of `pda1` is in `pda2` and True otherwise).
+        Default is False. ``ak.in1d(a, b, invert=True)`` is equivalent
+        to (but is faster than) ``~ak.in1d(a, b)``.
+
+    Returns
+
+    in1d : pdarray, bool
+        The values `pda1[in1d]` are in `pda2`.
+
+    See Also
+
+    unique, intersect1d, union1d
+
+    Notes
+
+    `in1d` can be considered as an element-wise function version of the
+    python keyword `in`, for 1-D sequences. ``in1d(a, b)`` is roughly
+    equivalent to ``ak.array([item in b for item in a])``.
+    """
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         repMsg = generic_msg("in1d {} {} {}".format(pda1.name, pda2.name, invert))
         return create_pdarray(repMsg)
@@ -1235,6 +1325,41 @@ def in1d(pda1, pda2, invert=False):
         raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
 
 def unique(pda, return_counts=False):
+    """
+    Find the unique elements of an array.
+
+    Returns the sorted unique elements of an array. There is an optional
+    output in addition to the unique elements: the number of times each 
+    unique value comes up in the input array.
+
+    Parameters
+
+    pda : pdarray
+        Input array.
+    return_counts : bool, optional
+        If True, also return the number of times each unique item appears
+        in `pda`.
+
+    Returns
+
+    unique : ndarray
+        The sorted unique values.
+    unique_counts : ndarray, optional
+        The number of times each of the unique values comes up in the
+        original array. Only provided if `return_counts` is True.
+
+    Notes
+
+    Internally, `unique` checks to see whether `pda` is sorted and, if so,
+    whether it is already unique. This step can save considerable computation.
+    Otherwise, `unique` will sort `pda`.
+
+    Examples
+
+    >>> A = ak.array([3, 2, 1, 1, 2, 3])
+    >>> ak.unique(A)
+    array([1, 2, 3])
+    """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("unique {} {}".format(pda.name, return_counts))
         if return_counts:
@@ -1418,6 +1543,24 @@ def coargsort(arrays):
     return create_pdarray(repMsg)
 
 def concatenate(arrays):
+    """
+    Concatenate an iterable of ``pdarray`` objects into one ``pdarray``.
+
+    Parameters
+
+    arrays : iterable of pdarrays
+        The arrays to concatenate. Must all have same dtype.
+
+    Returns
+
+    concatenate : pdarray
+        Single array containing all values, in order
+
+    Examples
+
+    >>> ak.concatenate([ak.array([1, 2, 3]), ak.array([4, 5, 6])])
+    array([1, 2, 3, 4, 5, 6])
+    """
     size = 0
     dtype = None
     for a in arrays:
@@ -1435,6 +1578,31 @@ def concatenate(arrays):
 
 # (A1 | A2) Set Union: elements are in one or the other or both
 def union1d(pda1, pda2):
+    """
+    Find the union of two arrays.
+
+    Return the unique, sorted array of values that are in either of the two
+    input arrays.
+
+    Parameters
+
+    pda1, pda2 : pdarray
+        Input arrays. They are flattened if they are not already 1D.
+
+    Returns
+    
+    union1d : pdarray
+        Unique, sorted union of the input arrays.
+
+    See Also
+
+    intersect1d, unique
+
+    Examples
+
+    >>> ak.union1d([-1, 0, 1], [-2, 0, 2])
+    array([-2, -1,  0,  1,  2])
+    """
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         if pda1.size == 0:
             return pda2 # union is pda2
@@ -1446,6 +1614,33 @@ def union1d(pda1, pda2):
 
 # (A1 & A2) Set Intersection: elements have to be in both arrays
 def intersect1d(pda1, pda2, assume_unique=False):
+    """
+    Find the intersection of two arrays.
+
+    Return the sorted, unique values that are in both of the input arrays.
+
+    Parameters
+
+    pda1, pda2 : pdarray
+        Input arrays.
+    assume_unique : bool
+        If True, the input arrays are both assumed to be unique, which
+        can speed up the calculation.  Default is False.
+
+    Returns
+
+    intersect1d : pdarray
+        Sorted 1D array of common and unique elements.
+
+    See Also
+    
+    unique, union1d
+
+    Examples
+
+    >>> ak.intersect1d([1, 3, 4, 3], [3, 1, 2, 1])
+    array([1, 3])
+    """
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         if pda1.size == 0:
             return pda1 # nothing in the intersection
@@ -1465,6 +1660,37 @@ def intersect1d(pda1, pda2, assume_unique=False):
 
 # (A1 - A2) Set Difference: elements have to be in first array but not second
 def setdiff1d(pda1, pda2, assume_unique=False):
+    """
+    Find the set difference of two arrays.
+
+    Return the sorted, unique values in `pda1` that are not in `pda2`.
+
+    Parameters
+
+    pda1 : pdarray
+        Input array.
+    pda2 : pdarray
+        Input comparison array.
+    assume_unique : bool
+        If True, the input arrays are both assumed to be unique, which
+        can speed up the calculation.  Default is False.
+
+    Returns
+
+    setdiff1d : pdarray
+        Sorted 1D array of values in `pda1` that are not in `pda2`.
+
+    See Also
+
+    unique, setxor1d
+
+    Examples
+
+    >>> a = ak.array([1, 2, 3, 2, 4, 1])
+    >>> b = ak.array([3, 4, 5, 6])
+    >>> ak.setdiff1d(a, b)
+    array([1, 2])
+    """
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         if pda1.size == 0:
             return pda1 # return a zero length pdarray
@@ -1479,6 +1705,33 @@ def setdiff1d(pda1, pda2, assume_unique=False):
 
 # (A1 ^ A2) Set Symmetric Difference: elements are not in the intersection
 def setxor1d(pda1, pda2, assume_unique=False):
+    """
+    Find the set exclusive-or of two arrays.
+
+    Return the sorted, unique values that are in only one (not both) of the
+    input arrays.
+
+    Parameters
+
+    pda1, pda2 : pdarray
+        Input arrays.
+    assume_unique : bool
+        If True, the input arrays are both assumed to be unique, which
+        can speed up the calculation.  Default is False.
+
+    Returns
+
+    setxor1d : pdarray
+        Sorted 1D array of unique values that are in only one of the input
+        arrays.
+
+    Examples
+
+    >>> a = ak.array([1, 2, 3, 2, 4])
+    >>> b = ak.array([2, 3, 5, 7, 5])
+    >>> ak.setxor1d(a,b)
+    array([1, 4, 5, 7])
+    """
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         if pda1.size == 0:
             return pda2 # return other pdarray if pda1 is empty
@@ -1517,7 +1770,19 @@ def abs(pda):
 
 def log(pda):
     """
-    Return the element-wise log of the array.
+    Return the element-wise natural log of the array. Logarithms with other
+    bases can be computed as follows:
+
+    >>> A = ak.array([1, 10, 100])
+    # Natural log
+    >>> ak.log(A)
+    array([0, 2.3025850929940459, 4.6051701859880918])
+    # Log base 10
+    >>> ak.log(A) / np.log(10)
+    array([0, 1, 2])
+    # Log base 2
+    >>> ak.log(A) / np.log(2)
+    array([0, 3.3219280948873626, 6.6438561897747253])
     """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("efunc {} {}".format("log", pda.name))
@@ -1670,6 +1935,91 @@ def argmax(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
+def mean(pda):
+    """
+    Return the mean of the array.
+    """
+    return pda.sum() / pda.size
+
+def var(pda, ddof=0):
+    """
+    Return the variance of values in the array.
+
+    Parameters
+
+    pda : pdarray
+        values for which to find the variance
+
+    ddof : int
+        "Delta Degrees of Freedom" used in calculating mean
+
+    Returns
+
+    variance : float
+        the scalar variance of the array
+
+    See Also
+
+    mean, std
+
+    Notes
+
+    The variance is the average of the squared deviations from the mean,
+    i.e.,  ``var = mean((x - x.mean())**2)``.
+
+    The mean is normally calculated as ``x.sum() / N``, where ``N = len(x)``.
+    If, however, `ddof` is specified, the divisor ``N - ddof`` is used
+    instead.  In standard statistical practice, ``ddof=1`` provides an
+    unbiased estimator of the variance of a hypothetical infinite population.
+    ``ddof=0`` provides a maximum likelihood estimate of the variance for
+    normally distributed variables.
+    """
+    if not isinstance(pda, pdarray):
+        raise TypeError("must be pdarray {}".format(pda))
+    if ddof >= pda.size:
+        raise ValueError("var: ddof must be less than number of values")
+    m = mean(pda)
+    return ((pda - m)**2).sum() / (pda.size - ddof)
+
+def std(pda, ddof=0):
+    """
+    Return the standard deviation of values in the array. The standard
+    deviation is implemented as the square root of the variance.
+
+    Parameters
+
+    pda : pdarray
+        values for which to find the variance
+
+    ddof : int
+        "Delta Degrees of Freedom" used in calculating mean
+
+    Returns
+
+    standard_deviation : float
+        the scalar standard deviation of the array
+
+    See Also
+
+    mean, var
+
+    Notes
+
+    The standard deviation is the square root of the average of the squared
+    deviations from the mean, i.e., ``std = sqrt(mean((x - x.mean())**2))``.
+
+    The average squared deviation is normally calculated as
+    ``x.sum() / N``, where ``N = len(x)``.  If, however, `ddof` is specified,
+    the divisor ``N - ddof`` is used instead. In standard statistical
+    practice, ``ddof=1`` provides an unbiased estimator of the variance
+    of the infinite population. ``ddof=0`` provides a maximum likelihood
+    estimate of the variance for normally distributed variables. The
+    standard deviation computed in this function is the square root of
+    the estimated variance, so even with ``ddof=1``, it will not be an
+    unbiased estimate of the standard deviation per se.
+    """
+    return np.sqrt(var(pda))
+    
 def where(condition, A, B):
     """
     Return an array with elements chosen from A and B based on a conditioning array.
@@ -1785,7 +2135,7 @@ class GroupBy:
         if isinstance(keys, pdarray):
             self.nkeys = 1
             self.size = keys.size
-            if per_locale:
+            if self.per_locale:
                 self.permutation = local_argsort(keys)
             else:
                 self.permutation = argsort(keys)
@@ -1827,8 +2177,20 @@ class GroupBy:
 
     def count(self):
         '''
-        Return the number of elements in each group, i.e. the number 
-        of times each key value (row) occurs.
+        Count the number of elements in each group, i.e. the number of times
+        each key appears.
+
+        Parameters
+
+        none
+
+        Returns
+
+        unique_keys : pdarray int64
+            the unique keys, in sorted order
+        counts : pdarray int64
+            the number of times each unique key appears
+        
         '''
         if self.per_locale:
             cmd = "countLocalRdx"
@@ -1841,7 +2203,7 @@ class GroupBy:
         
     def aggregate(self, values, operator):
         '''
-        Using the grouping stored in the GroupBy instance, group another array 
+        Using the permutation stored in the GroupBy instance, group another array 
         of values and apply a reduction to each group's values. 
 
         Parameters
@@ -1853,30 +2215,10 @@ class GroupBy:
 
         Returns
 
-        aggregate : pdarray
+        unique_keys : pdarray int64
+            the unique keys, in sorted order
+        aggregates : pdarray
             one aggregate value per unique key in the GroupBy instance
-
-        Notes
-
-        The values array can have any dtype. Supported operators are
-
-            sum : sum of values in group
-
-            prod : product of values in group
-
-            min : mininum value in group
-
-            max : maximum value in group
-
-            argmin : index in original array of first minimum value in group
-
-            argmax : index in original array of first maximum value in group
-
-            nunique : number of unique values in group
-
-            any : True iff any value in group is True
-
-            all : True iff every value in group is True
 
         '''
         if not isinstance(values, pdarray):
@@ -1902,24 +2244,233 @@ class GroupBy:
             return self.unique_keys, create_pdarray(repMsg)
 
     def sum(self, values):
+        """
+        Using the permutation stored in the GroupBy instance, group another array 
+        of values and sum each group's values. 
+
+        Parameters
+        
+        values : pdarray
+            the values to group and sum
+
+        Returns
+
+        unique_keys : pdarray int64
+            the unique keys, in sorted order
+        group_sums : pdarray
+            one sum per unique key in the GroupBy instance
+
+        Notes
+
+        The grouped sum of a boolean ``pdarray`` returns integers.
+        """
         return self.aggregate(values, "sum")
+    
     def prod(self, values):
+        """
+        Using the permutation stored in the GroupBy instance, group another array 
+        of values and compute the product of each group's values. 
+
+        Parameters
+        
+        values : pdarray
+            the values to group and multiply
+
+        Returns
+
+        unique_keys : pdarray int64
+            the unique keys, in sorted order
+        group_products : pdarray float64
+            one product per unique key in the GroupBy instance
+
+        Notes
+
+        The return dtype is always float64.
+        """
         return self.aggregate(values, "prod")
+    
     def mean(self, values):
+        """
+        Using the permutation stored in the GroupBy instance, group another array 
+        of values and compute the mean of each group's values. 
+
+        Parameters
+        
+        values : pdarray
+            the values to group and average
+
+        Returns
+
+        unique_keys : pdarray int64
+            the unique keys, in sorted order
+        group_means : pdarray float64
+            one mean value per unique key in the GroupBy instance
+
+        Notes
+
+        The return dtype is always float64.
+        """
         return self.aggregate(values, "mean")
+    
     def min(self, values):
+        """
+        Using the permutation stored in the GroupBy instance, group another array 
+        of values and return the minimum of each group's values. 
+
+        Parameters
+        
+        values : pdarray
+            the values to group and find minima
+
+        Returns
+
+        unique_keys : pdarray int64
+            the unique keys, in sorted order
+        group_minima : pdarray
+            one minimum per unique key in the GroupBy instance
+
+        """
         return self.aggregate(values, "min")
+    
     def max(self, values):
+        """
+        Using the permutation stored in the GroupBy instance, group another array 
+        of values and return the maximum of each group's values. 
+
+        Parameters
+        
+        values : pdarray
+            the values to group and find maxima
+
+        Returns
+
+        unique_keys : pdarray int64
+            the unique keys, in sorted order
+        group_maxima : pdarray
+            one maximum per unique key in the GroupBy instance
+
+        """
         return self.aggregate(values, "max")
+    
     def argmin(self, values):
+        """
+        Using the permutation stored in the GroupBy instance, group another array 
+        of values and return the location of the first minimum of each group's values. 
+
+        Parameters
+        
+        values : pdarray
+            the values to group and find argmin
+
+        Returns
+
+        unique_keys : pdarray int64
+            the unique keys, in sorted order
+        group_argminima : pdarray int64
+            one index per unique key in the GroupBy instance
+
+        Notes
+        
+        The returned indices refer to the original values array as passed in, not
+        the permutation applied by the GroupBy instance.
+
+        Examples
+
+        >>> A = ak.array([0, 1, 0, 1, 0, 1])
+        >>> B = ak.array([0, 1, 1, 0, 0, 1])
+        >>> byA = ak.GroupBy(A)
+        >>> byA.argmin(B)
+        (array([0, 1]), array([0, 3]))
+        """
         return self.aggregate(values, "argmin")
+    
     def argmax(self, values):
+        """
+        Using the permutation stored in the GroupBy instance, group another array 
+        of values and return the location of the first maximum of each group's values. 
+
+        Parameters
+        
+        values : pdarray
+            the values to group and find argmax
+
+        Returns
+
+        unique_keys : pdarray int64
+            the unique keys, in sorted order
+        group_argmaxima : pdarray int64
+            one index per unique key in the GroupBy instance
+
+        Notes
+        
+        The returned indices refer to the original values array as passed in, not
+        the permutation applied by the GroupBy instance.
+
+        Examples
+
+        >>> A = ak.array([0, 1, 0, 1, 0, 1])
+        >>> B = ak.array([0, 1, 1, 0, 0, 1])
+        >>> byA = ak.GroupBy(A)
+        >>> byA.argmax(B)
+        (array([0, 1]), array([2, 1]))
+        """
         return self.aggregate(values, "argmax")
+    
     def nunique(self, values):
+        """
+        Using the permutation stored in the GroupBy instance, group another array 
+        of values and return the number of unique values in each group. 
+
+        Parameters
+        
+        values : pdarray
+            the values to group and find unique values
+
+        Returns
+
+        unique_keys : pdarray int64
+            the unique keys, in sorted order
+        group_nunique : pdarray int64
+            number of unique values per unique key in the GroupBy instance
+        """
         return self.aggregate(values, "nunique")
+    
     def any(self, values):
+        """
+        Using the permutation stored in the GroupBy instance, group another array 
+        of values and perform an "or" reduction on each group. 
+
+        Parameters
+        
+        values : pdarray
+            the values to group and reduce with "or"
+
+        Returns
+
+        unique_keys : pdarray int64
+            the unique keys, in sorted order
+        group_any : pdarray bool
+            one bool per unique key in the GroupBy instance
+        """
         return self.aggregate(values, "any")
+    
     def all(self, values):
+        """
+        Using the permutation stored in the GroupBy instance, group another array 
+        of values and perform an "and" reduction on each group. 
+
+        Parameters
+        
+        values : pdarray
+            the values to group and reduce with "and"
+
+        Returns
+
+        unique_keys : pdarray int64
+            the unique keys, in sorted order
+        group_any : pdarray bool
+            one bool per unique key in the GroupBy instance
+        """
         return self.aggregate(values, "all")
 
     
@@ -1935,10 +2486,16 @@ def info(pda):
 
 # query the server to get configuration 
 def get_config():
+    """
+    Get runtime information about the server.
+    """
     return json.loads(generic_msg("getconfig"))
 
 # query the server to get pda memory used 
 def get_mem_used():
+    """
+    Compute the amount of memory used by objects in the server's symbol table.
+    """
     return int(generic_msg("getmemused"))
 
 
