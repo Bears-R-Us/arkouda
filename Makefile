@@ -16,8 +16,9 @@ CHPL_FLAGS += --ccflags="-Wno-incompatible-pointer-types" --cache-remote --insta
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
 
 # add-path: Append custom paths for non-system software.
+# Note: Darwin `ld` only supports `-rpath <path>`, not `-rpath=<paths>`.
 define add-path
-CHPL_FLAGS += -I$(1)/include -L$(1)/lib --ldflags="-Wl,-rpath=$(1)/lib"
+CHPL_FLAGS += -I$(1)/include -L$(1)/lib --ldflags="-Wl,-rpath,$(1)/lib"
 endef
 # Usage: $(eval $(call add-path,/home/user/anaconda3/envs/arkouda))
 #                               ^ no space after comma
