@@ -1,3 +1,5 @@
+.. _setops-label:
+
 ********************
 Array Set Operations
 ********************
