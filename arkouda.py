@@ -2018,7 +2018,7 @@ def std(pda, ddof=0):
     the estimated variance, so even with ``ddof=1``, it will not be an
     unbiased estimate of the standard deviation per se.
     """
-    return np.sqrt(var(pda))
+    return np.sqrt(var(pda, ddof=ddof))
     
 def where(condition, A, B):
     """
