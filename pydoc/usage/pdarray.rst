@@ -26,3 +26,13 @@ Name
 ============
 
 The ``name`` attribute of an array is a string used by the arkouda server to identify the ``pdarray`` object in its symbol table. This name is chosen by the server, and the user should not overwrite it.
+
+Operators
+=========
+
+The ``pdarray`` class supports most Python special methods, including arithmetic, bitwise, and comparison operators.
+
+Iteration
+=========
+
+While it is possible to iterate directly over a ``pdarray`` with ``for x in array``, this is not recommended because it triggers a transfer of all array data from the arkouda server to the Python client as a ``numpy.ndarray``. This transfer will raise an error if it exceeds the byte limit defined in ``arkouda.maxTransferBytes``. There is almost always a more array-oriented way to express an iterator-based computation; see the coming sections for details.
