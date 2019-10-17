@@ -1,6 +1,6 @@
 #!/usr/bin/env python3                                                         
 
-import time
+import time, argparse
 import numpy as np
 import arkouda as ak
 
@@ -74,9 +74,8 @@ def check_correctness(alpha, dtype, random):
     akc = ak.array(a)+ak.array(b)*alpha
     assert np.allclose(npc, akc.to_ndarray())
 
-if __name__ == "__main__":
-    import argparse, sys
-    parser = argparse.ArgumentParser(description="Runs and times the stream benchmark: C = A + alpha*B in both arkouda and numpy.")
+def create_parser():
+    parser = argparse.ArgumentParser(description="Run the stream benchmark: C = A + alpha*B")
     parser.add_argument('hostname', help='Hostname of arkouda server')
     parser.add_argument('port', type=int, help='Port of arkouda server')
     parser.add_argument('-n', '--size', type=int, default=10**8, help='Problem size: length of arrays A and B')
@@ -84,19 +83,25 @@ if __name__ == "__main__":
     parser.add_argument('-d', '--dtype', default='int64', help='Dtype of arrays (int64 or float64)')
     parser.add_argument('-r', '--randomize', default=False, action='store_true', help='Fill arrays with random values instead of ones')
     parser.add_argument('-a', '--alpha', default=1.0, type=float, help='Scalar multiple')
-    parser.add_argument('-c', '--check', default=False, action='store_true', help='Run on a small array first to test whether arkouda and numpy results agree')
+    parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
+    return parser
+
+if __name__ == "__main__":
+    import sys
+    parser = create_parser()
     args = parser.parse_args()
     if args.dtype not in ('int64', 'float64'):
         raise ValueError("Dtype must be either int64 or float64, not {}".format(args.dtype))
     ak.v = False
     ak.connect(args.hostname, args.port)
-    if args.check:
-        print("Verifying correctness on small problem... ", end="")
-        check_correctness(args.alpha, args.dtype, args.randomize)
-        print("CORRECT")
     
     print("array size = {:,}".format(args.size))
     print("number of trials = ", args.trials)
     time_ak_stream(args.size, args.trials, args.alpha, args.dtype, args.randomize)
-    time_np_stream(args.size, args.trials, args.alpha, args.dtype, args.randomize)
+    if args.numpy:
+        time_np_stream(args.size, args.trials, args.alpha, args.dtype, args.randomize)
+        print("Verifying agreement between arkouda and NumPy on small problem... ", end="")
+        check_correctness(args.alpha, args.dtype, args.randomize)
+        print("CORRECT")
+        
     sys.exit(0)
