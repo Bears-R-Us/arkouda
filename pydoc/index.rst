@@ -16,6 +16,7 @@ Welcome to arkouda's documentation!
    setup/quickstart
 
    usage
+   contributing
 
 
 Indices and tables
