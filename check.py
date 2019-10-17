@@ -133,6 +133,23 @@ def check_get_integer_iv(N):
 
 print("check (gather) get integer iv :", check_get_integer_iv(N))
 
+def check_set_integer_iv(N):
+    # create np version
+    a = np.arange(N)
+    iv = np.arange(N//2)
+    a[iv] = iv*10
+    a = ak.array(a)
+    # create ak version
+    b = ak.arange(N)
+    iv = ak.arange(N//2)
+    b[iv] = iv*10
+    # print(a,b)
+    c = a == b
+    # print(type(c),c)
+    return pass_fail(c.all())
+
+print("check (scatter) set integer iv :", check_set_integer_iv(N))
+
 def check_get_integer_idx(N):
     # create np version
     a = np.arange(N)
