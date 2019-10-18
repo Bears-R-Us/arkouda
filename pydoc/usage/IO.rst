@@ -16,7 +16,7 @@ Arkouda is designed to integrate with NumPy and Pandas, with arkouda handling la
 Below are the two functions that enable both sides of this transfer.
 
 .. autofunction:: arkouda.array
-
+		  
 .. autofunction:: arkouda.pdarray.to_ndarray
 
 

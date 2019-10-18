@@ -27,3 +27,8 @@ Random
 ======
 
 .. autofunction:: arkouda.randint
+
+Concatenation
+=============
+
+.. autofunction:: arkouda.concatenate

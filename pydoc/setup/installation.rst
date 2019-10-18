@@ -19,14 +19,20 @@ Environment Setup
 *****************
 
 1. Ensure that ``CHPL_HOME`` is set and ``$CHPL_HOME/bin`` is in your ``PATH`` (consider adding to your .*rc file).
-2. Tell arkouda where to find the HDF5 and ZMQ libraries. Do this by creating or modifying the ``Makefile.paths`` file in the arkouda root directory and adding one or more lines of the form::
+2. Tell arkouda where to find the HDF5 and ZMQ libraries. Do this by creating or modifying the ``Makefile.paths`` file in the arkouda root directory and adding one or more lines of the form
+
+.. code-block:: bash
 
   $(eval $(call add-path,/path/to/HDF5/root))
   $(eval $(call add-path,/path/to/ZMQ/root))
 
-However, if you have the Anaconda Python distribution, the HDF5 and ZMQ libraries will be in subdirectories of the Anaconda root directory, so your ``Makefile.paths`` need only contain one line::
+However, if you have the Anaconda Python distribution, the HDF5 and ZMQ libraries will be in subdirectories of the Anaconda root directory, so your ``Makefile.paths`` need only contain one line:
+
+.. code-block:: bash
 
   $(eval $(call add-path,/path/to/Anaconda/root))
+
+Be sure to customize these paths appropriately for your system.
 
 ****************
 Build

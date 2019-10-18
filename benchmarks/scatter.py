@@ -1,6 +1,6 @@
 #!/usr/bin/env python3                                                         
 
-import time
+import time, argparse
 import numpy as np
 import arkouda as ak
 
@@ -81,10 +81,8 @@ def check_correctness(dtype, random):
     akc[aki] = akv
     assert np.allclose(npc, akc.to_ndarray())
     
-
-if __name__ == "__main__":
-    import argparse, sys
-    parser = argparse.ArgumentParser(description="Runs and times a scatter operation: C[I] = V in both arkouda and numpy.")
+def create_parser():
+    parser = argparse.ArgumentParser(description="Measure performance of random scatter: C[I] = V")
     parser.add_argument('hostname', help='Hostname of arkouda server')
     parser.add_argument('port', type=int, help='Port of arkouda server')
     parser.add_argument('-i', '--index-size', type=int, default=10**8, help='Length of index array (number of scatters to perform)')
@@ -92,20 +90,26 @@ if __name__ == "__main__":
     parser.add_argument('-t', '--trials', type=int, default=6, help='Number of times to run the benchmark')
     parser.add_argument('-d', '--dtype', default='int64', help='Dtype of value array (int64 or float64)')
     parser.add_argument('-r', '--randomize', default=False, action='store_true', help='Use random values instead of ones')
-    parser.add_argument('-c', '--check', default=False, action='store_true', help='Run on a small array first to test whether arkouda and numpy results agree')
+    parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
+    return parser
+    
+if __name__ == "__main__":
+    import sys
+    parser = create_parser()
     args = parser.parse_args()
     if args.dtype not in ('int64', 'float64'):
         raise ValueError("Dtype must be either int64 or float64, not {}".format(args.dtype))
     ak.v = False
     ak.connect(args.hostname, args.port)
-    if args.check:
-        print("Verifying correctness on small problem... ", end="")
-        check_correctness(args.dtype, args.randomize)
-        print("CORRECT")
     
     print("size of index array = {:,}".format(args.index_size))
     print("size of values array = {:,}".format(args.value_size))
     print("number of trials = ", args.trials)
     time_ak_scatter(args.index_size, args.value_size, args.trials, args.dtype, args.randomize)
-    time_np_scatter(args.index_size, args.value_size, args.trials, args.dtype, args.randomize)
+    if args.numpy:
+        time_np_scatter(args.index_size, args.value_size, args.trials, args.dtype, args.randomize)
+        print("Verifying agreement between arkouda and NumPy on small problem... ", end="")
+        check_correctness(args.dtype, args.randomize)
+        print("CORRECT")
+    
     sys.exit(0)
