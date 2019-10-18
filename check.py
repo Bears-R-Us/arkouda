@@ -191,7 +191,7 @@ def check_argsort(N):
     # print(type(c),c)
     return pass_fail(c.all())
 
-print("check argsort:", check_argsort(N))
+print("check argsort :", check_argsort(N))
 
 #ak.disconnect()
 ak.shutdown()
