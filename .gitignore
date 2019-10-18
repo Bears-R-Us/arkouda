@@ -2,6 +2,7 @@ arkouda_server
 arkouda_server_real
 arkouda_server_llvm
 arkouda_server_llvm_real
+*.log
 *_real
 #*#
 .#*

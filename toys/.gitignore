@@ -11,5 +11,6 @@ double-dispatch
 fntable
 fft-mpi
 distributedRadixSort
+nestedProc
 *_real
 *.~*

@@ -60,7 +60,7 @@ proc main() {
             else {
                 writeln("reqMsg: ", reqMsg);
             }
-            writeln(">>> ",cmd);
+            writeln(">>> ",cmd," started at ",t1,"sec");
             try! stdout.flush();
         }
 
