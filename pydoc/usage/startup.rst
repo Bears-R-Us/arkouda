@@ -34,3 +34,5 @@ In Python 3, connect to the arkouda server using the hostname and port shown by 
    connected to node01:5555
 
 If the output does not say "connected", then something went wrong (even if the command executes). Check that the hostname and port match what the server printed, and that the hostname is reachable from the machine on which the client is running (e.g. not "localhost" for a remote server)
+
+.. autofunction:: arkouda.connect
