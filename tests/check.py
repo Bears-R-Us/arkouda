@@ -71,6 +71,25 @@ def check_zeros(N):
 
 print("check zeros :", check_zeros(N))
 
+def check_argsort(N):
+    # create np version
+    a = np.arange(N)
+    a = a[::-1]
+    iv = np.argsort(a)
+    a = a[iv]
+    a = ak.array(a)
+    # create ak version
+    b = ak.arange(N)
+    b = b[::-1]
+    iv = ak.argsort(b)
+    b = b[iv]
+    # print(a,b)
+    c = a == b
+    # print(type(c),c)
+    return pass_fail(c.all())
+
+print("check argsort :", check_argsort(N))
+
 def check_get_slice(N):
     # create np version
     a = np.ones(N)
@@ -235,25 +254,6 @@ def check_set_integer_idx(N):
     return pass_fail(v1 == v2)
 
 print("check set integer idx = value:", check_set_integer_idx(N))
-
-def check_argsort(N):
-    # create np version
-    a = np.arange(N)
-    a = a[::-1]
-    iv = np.argsort(a)
-    a = a[iv]
-    a = ak.array(a)
-    # create ak version
-    b = ak.arange(N)
-    b = b[::-1]
-    iv = ak.argsort(b)
-    b = b[iv]
-    # print(a,b)
-    c = a == b
-    # print(type(c),c)
-    return pass_fail(c.all())
-
-print("check argsort :", check_argsort(N))
 
 #ak.disconnect()
 ak.shutdown()
