@@ -49,7 +49,7 @@ def gen_rmat_edges(lgNv, Ne_per_v, p, perm=False):
     #
     # maybe: remove edges which are self-loops???
     #    
-    # return pair of ndarrays
+    # return pair of pdarrays
     return (ii,jj)
 
 # src and dst pdarrays hold the edge list
