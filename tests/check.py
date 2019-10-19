@@ -86,20 +86,35 @@ def check_get_slice(N):
 
 print("check get slice [::2] :", check_get_slice(N))
 
-def check_set_slice(N):
+def check_set_slice_value(N):
     # create np version
     a = np.ones(N)
-    a[::2] = 0
+    a[::2] = -1
     a = ak.array(a)
     # create ak version
     b = ak.ones(N)
-    b[::2] = 0
+    b[::2] = -1
     # print(a,b)
     c = a == b
     # print(type(c),c)
     return pass_fail(c.all())
 
-print("check set slice [::2] :", check_set_slice(N))
+print("check set slice [::2] = value:", check_set_slice_value(N))
+
+def check_set_slice(N):
+    # create np version
+    a = np.ones(N)
+    a[::2] = a[::2] * -1
+    a = ak.array(a)
+    # create ak version
+    b = ak.ones(N)
+    b[::2] = b[::2] * -1
+    # print(a,b)
+    c = a == b
+    # print(type(c),c)
+    return pass_fail(c.all())
+
+print("check set slice [::2] = pda:", check_set_slice(N))
 
 def check_get_bool_iv(N):
     # create np version
@@ -116,6 +131,36 @@ def check_get_bool_iv(N):
 
 print("check (compressing) get bool iv :", check_get_bool_iv(N))
 
+def check_set_bool_iv_value(N):
+    # create np version
+    a = np.arange(N)
+    a[a < N//2] = -1
+    a = ak.array(a)
+    # create ak version
+    b = ak.arange(N)
+    b[b < N//2] = -1
+    # print(a,b)
+    c = a == b
+    # print(type(c),c)
+    return pass_fail(c.all())
+
+print("check (expanding) set bool iv = value:", check_set_bool_iv_value(N))
+
+def check_set_bool_iv(N):
+    # create np version
+    a = np.arange(N)
+    a[a < N//2] = a[:N//2] * -1
+    a = ak.array(a)
+    # create ak version
+    b = ak.arange(N)
+    b[b < N//2] = b[:N//2] * -1
+    # print(a,b)
+    c = a == b
+    # print(type(c),c)
+    return pass_fail(c.all())
+
+print("check (expanding) set bool iv = pda:", check_set_bool_iv(N))
+
 def check_get_integer_iv(N):
     # create np version
     a = np.arange(N)
@@ -131,7 +176,24 @@ def check_get_integer_iv(N):
     # print(type(c),c)
     return pass_fail(c.all())
 
-print("check (gather) get integer iv :", check_get_integer_iv(N))
+print("check (gather) get integer iv:", check_get_integer_iv(N))
+
+def check_set_integer_iv_value(N):
+    # create np version
+    a = np.arange(N)
+    iv = np.arange(N//2)
+    a[iv] = -1
+    a = ak.array(a)
+    # create ak version
+    b = ak.arange(N)
+    iv = ak.arange(N//2)
+    b[iv] = -1
+    # print(a,b)
+    c = a == b
+    # print(type(c),c)
+    return pass_fail(c.all())
+
+print("check (scatter) set integer iv = value:", check_set_integer_iv_value(N))
 
 def check_set_integer_iv(N):
     # create np version
@@ -148,7 +210,7 @@ def check_set_integer_iv(N):
     # print(type(c),c)
     return pass_fail(c.all())
 
-print("check (scatter) set integer iv :", check_set_integer_iv(N))
+print("check (scatter) set integer iv = pda:", check_set_integer_iv(N))
 
 def check_get_integer_idx(N):
     # create np version
@@ -172,7 +234,7 @@ def check_set_integer_idx(N):
     v2 = b[N//2]
     return pass_fail(v1 == v2)
 
-print("check set integer idx :", check_set_integer_idx(N))
+print("check set integer idx = value:", check_set_integer_idx(N))
 
 def check_argsort(N):
     # create np version
