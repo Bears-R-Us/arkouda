@@ -60,7 +60,6 @@ brew install chapel
 # you can also install these other packages with brew
 brew install python3
 brew install zeromq
-brew install sphinx-doc
 # and pip install the numpy packages
 pip3 install numpy
 # these packages are nice but not a requirement
