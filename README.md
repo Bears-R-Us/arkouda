@@ -1,6 +1,11 @@
 # Arkouda: NumPy-like arrays at massive scale backed by Chapel.
 ## _NOTE_: Arkouda is under the MIT license.
 
+## Talks on Arkouda
+[Mike Merrill's CHIUW 2019 talk](https://chapel-lang.org/CHIUW/2019/Merrill.pdf)
+
+[Bill Reus' CLSAC 2019 talk](http://www.clsac.org/uploads/5/0/6/3/50633811/2019-reus-arkuda.pdf)
+
 ## Abstract:
 Exploratory data analysis (EDA) is a prerequisite for all data
 science, as illustrated by the ubiquity of Jupyter notebooks, the
