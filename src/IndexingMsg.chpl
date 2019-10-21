@@ -262,9 +262,10 @@ module IndexingMsg
         var gIV: borrowed GenSymEntry = st.lookup(iname);
         if (gIV == nil) {return unknownSymbolError(pn,iname);}
 
-        proc idxToValHelper(type Xtype, type IVtype, type dtype): string {
+        // scatter indexing by integer index vector
+        proc ivInt64Helper(type Xtype, type dtype): string {
             var e = toSymEntry(gX,Xtype);
-            var iv = toSymEntry(gIV,IVtype);
+            var iv = toSymEntry(gIV,int);
             var ivMin = min reduce iv.a;
             var ivMax = max reduce iv.a;
             if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
@@ -280,18 +281,42 @@ module IndexingMsg
             [i in iva] unorderedCopy(ea[i],val);
             return try! "%s success".format(pn);
         }
-        
-        // add check for IV to be dtype of int64 or bool
 
+        // expansion boolean indexing by bool index vector
+        proc ivBoolHelper(type Xtype, type dtype): string {
+            var e = toSymEntry(gX,Xtype);
+            var truth = toSymEntry(gIV,bool);
+            if (e.size != truth.size) {return try! "Error: %s: bool iv must be same size %i != %i".format(pn,e.size,truth.size);}
+            if isBool(dtype) {
+                value = value.replace("True","true"); // chapel to python bool
+                value = value.replace("False","false"); // chapel to python bool
+            }
+            var val = try! value:dtype;
+            ref ead = e.aD;
+            ref ea = e.a;
+            ref trutha = truth.a;
+            [i in ead] if (trutha[i] == true) {unorderedCopy(ea[i],val);}
+            return try! "%s success".format(pn);
+        }
+        
         select(gX.dtype, gIV.dtype, dtype) {
             when (DType.Int64, DType.Int64, DType.Int64) {
-              return idxToValHelper(int, int, int);
+              return ivInt64Helper(int, int);
+            }
+            when (DType.Int64, DType.Bool, DType.Int64) {
+              return ivBoolHelper(int, int);
             }
             when (DType.Float64, DType.Int64, DType.Float64) {
-              return idxToValHelper(real, int, real);
+              return ivInt64Helper(real, real);
+            }
+            when (DType.Float64, DType.Bool, DType.Float64) {
+              return ivBoolHelper(real, real);
             }
             when (DType.Bool, DType.Int64, DType.Bool) {
-              return idxToValHelper(bool, int, bool);
+              return ivInt64Helper(bool, bool);
+            }
+            when (DType.Bool, DType.Bool, DType.Bool) {
+              return ivBoolHelper(bool, bool);
             }
             otherwise {return notImplementedError(pn,
                                                   "("+dtype2str(gX.dtype)+","+dtype2str(gIV.dtype)+","+dtype2str(dtype)+")");}
@@ -317,11 +342,12 @@ module IndexingMsg
         var gY: borrowed GenSymEntry = st.lookup(yname);
         if (gY == nil) {return unknownSymbolError(pn,yname);}
 
-        // add check to make syre IV and Y are same size
-        if (gIV.size != gY.size) {return try! "Error: %s: size mismatch %i %i".format(pn,gIV.size, gY.size);}
         // add check for IV to be dtype of int64 or bool
 
+        // scatter indexing by an integer index vector
         proc ivInt64Helper(type t) {
+            // add check to make syre IV and Y are same size
+            if (gIV.size != gY.size) {return try! "Error: %s: size mismatch %i %i".format(pn,gIV.size,gY.size);}
             var e = toSymEntry(gX,t);
             var iv = toSymEntry(gIV,int);
             var ivMin = min reduce iv.a;
@@ -337,15 +363,43 @@ module IndexingMsg
             return try! "%s success".format(pn);
         }
 
+        // expansion indexing by a bool index vector
+        proc ivBoolHelper(type t) {
+            // add check to make syre IV and Y are same size
+            if (gIV.size != gX.size) {return try! "Error: %s: size mismatch %i %i".format(pn,gIV.size,gX.size);}
+            var e = toSymEntry(gX,t);
+            var truth = toSymEntry(gIV,bool);
+            var iv: [truth.aD] int = (+ scan truth.a);
+            var pop = iv[iv.size-1];
+            if v {writeln("pop = ",pop,"last-scan = ",iv[iv.size-1]);try! stdout.flush();}
+            var y = toSymEntry(gY,t);
+            if (y.size != pop) {return try! "Error: %s: pop size mismatch %i %i".format(pn,pop,y.size);}
+            ref ya = y.a;
+            ref ead = e.aD;
+            ref ea = e.a;
+            ref trutha = truth.a;
+            [i in ead] if (trutha[i] == true) {unorderedCopy(ea[i],ya[iv[i]-1]);}
+            return try! "%s success".format(pn);
+        }
+
         select(gX.dtype, gIV.dtype, gY.dtype) {
             when (DType.Int64, DType.Int64, DType.Int64) {
                 return ivInt64Helper(int);
             }
+            when (DType.Int64, DType.Bool, DType.Int64) {
+                return ivBoolHelper(int);
+            }
             when (DType.Float64, DType.Int64, DType.Float64) {
                 return ivInt64Helper(real);
             }
+            when (DType.Float64, DType.Bool, DType.Float64) {
+                return ivBoolHelper(real);
+            }
             when (DType.Bool, DType.Int64, DType.Bool) {
                 return ivInt64Helper(bool);
+            }
+            when (DType.Bool, DType.Bool, DType.Bool) {
+                return ivBoolHelper(bool);
             }
             otherwise {return notImplementedError(pn,
                                                   "("+dtype2str(gX.dtype)+","+dtype2str(gIV.dtype)+","+dtype2str(gY.dtype)+")");}
