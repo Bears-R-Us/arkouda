@@ -126,40 +126,31 @@ To view the documentation for the Arkouda python client, point your browser to `
 
 ## Running arkouda_server
 
- * startup the arkouda_server
- * defaults to port 5555
+The command-line invocation depends on whether you built a single-locale version (with `CHPL_COMM=none`) or multi-locale version (with `CHPL_COMM` set).
+
+Single-locale startup:
+
 ```bash
-# if you buile a single-locale version
 ./arkouda_server
-# if you built a multi-locale version
+```
+
+Multi-locale startup (user selects the number of locales):
+
+```bash
 ./arkouda_server -nl 1
 ```
- * config var on the commandline
- * ```--v=true/false``` to turn on/off verbose messages from server
- * ```--ServerPort=5555```
- * or you could run it this way if you don't want as many messages
-and a different port to be used
+
+By default, the server listens on port `5555` and prints verbose output. These options can be changed with command-line flags `--ServerPort=1234` and `--v=false`.
+
+## Testing arkouda_server
+
+There is a small test program that connects to a running arkouda_server, runs a few computations, and shuts down the server. To run it, open a new terminal window in the arkouda directory and run
+
 ```bash
-./arkouda_server -nl 1 --ServerPort=5555 --v=false
+python3 tests/check.py localhost 5555
 ```
- * in the same directory in a different terminal window
- * run the ak_test.py python3 program
- * this program just does a couple things and calls shutdown for the server
- * edit the server and port in the script to something other than the
-default if you ran the server on a different server or port
-```bash
-./ak_test.py
-```
-or
-```bash
-python3 ak_test.py
-```
-or
-```bash
-./ak_test.py localhost 5555
-```
- * This also works fine from a jupyter notebook
- * there is an included Jupyter notebook called test_arkouda.ipynb
+
+Substitute the correct hostname and port if you used a different configuration.
 
 ## Contributing to Arkouda
 
