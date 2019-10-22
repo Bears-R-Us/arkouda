@@ -1,0 +1,10 @@
+include *.md
+recursive-include src *
+recursive-include pydoc *.py *.rst Makefile make.bat
+recursive-include test *
+recursive-include tests *
+recursive-include benchmarks *
+include LICENSE
+include Makefile
+include VERSION
+include setup.py
