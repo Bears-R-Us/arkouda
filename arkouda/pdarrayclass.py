@@ -2,7 +2,6 @@ import json, struct
 import numpy as np
 
 from arkouda.client import generic_msg
-from arkouda.numeric import parse_single_value
 
 __all__ = ["pdarray", "info"]
 
@@ -57,6 +56,25 @@ def resolve_scalar_dtype(val):
     else:
         return str(type(val))
 
+def parse_single_value(msg):
+    """
+    Attempt to convert a scalar return value from the arkouda server to a numpy
+    scalar in Python. The user should not call this function directly.
+    """
+    dtname, value = msg.split()
+    dtype = np.dtype(dtname)
+    if dtype == np.bool:
+        if value == "True":
+            return np.bool(True)
+        elif value == "False":
+            return np.bool(False)
+        else:
+            raise ValueError("unsupported value from server {} {}".format(dtype.name, value))
+    try:
+        return dtype.type(value)
+    except:
+        raise ValueError("unsupported value from server {} {}".format(dtype.name, value))
+    
 BinOps = frozenset(["+", "-", "*", "/", "//", "%", "<", ">", "<=", ">=", "!=", "==", "&", "|", "^", "<<", ">>","**"])
 OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", "<<=", ">>=","**="])
 

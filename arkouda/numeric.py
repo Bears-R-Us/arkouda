@@ -1,32 +1,13 @@
 import numpy as np
 
 from arkouda.client import generic_msg
-from arkouda.pdarrayclass import pdarray, resolve_scalar_dtype, create_pdarray
+from arkouda.pdarrayclass import pdarray, resolve_scalar_dtype, parse_single_value, create_pdarray
 from arkouda.pdarraysetops import unique
 
 __all__ = ["abs", "log", "exp", "cumsum", "cumprod", "sin", "cos",
            "any", "all", "is_sorted", "sum", "prod", "min", "max",
            "argmin", "argmax", "mean", "var", "std", "where",
            "histogram", "value_counts"]
-
-def parse_single_value(msg):
-    """
-    Attempt to convert a scalar return value from the arkouda server to a numpy
-    scalar in Python. The user should not call this function directly.
-    """
-    dtname, value = msg.split()
-    dtype = np.dtype(dtname)
-    if dtype == np.bool:
-        if value == "True":
-            return np.bool(True)
-        elif value == "False":
-            return np.bool(False)
-        else:
-            raise ValueError("unsupported value from server {} {}".format(dtype.name, value))
-    try:
-        return dtype.type(value)
-    except:
-        raise ValueError("unsupported value from server {} {}".format(dtype.name, value))
 
 def abs(pda):
     """
