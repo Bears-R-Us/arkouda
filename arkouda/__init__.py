@@ -6,3 +6,4 @@ from arkouda.pdarraysetops import *
 from arkouda.pdarraycreation import *
 from arkouda.numeric import *
 from arkouda.pdarrayIO import *
+from arkouda.groupbyclass import *
