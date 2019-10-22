@@ -1,60 +1,9 @@
 import json, struct
-import numpy as np
 
 from arkouda.client import generic_msg
+from arkouda.dtypes import *
 
 __all__ = ["pdarray", "info"]
-
-# supported dtypes
-structDtypeCodes = {'int64': 'q',
-                    'float64': 'd',
-                    'bool': '?'}
-DTypes = frozenset(structDtypeCodes.keys())
-NUMBER_FORMAT_STRINGS = {'bool': '{}',
-                         'int64': '{:n}',
-                         'float64': '{:.17f}'}
-bool = np.bool
-int64 = np.int64
-float64 = np.float64
-
-def check_np_dtype(dt):
-    """
-    Assert that numpy dtype dt is one of the dtypes supported by arkouda, 
-    otherwise raise TypeError.
-    """
-    if dt.name not in DTypes:
-        raise TypeError("Unsupported type: {}".format(dt))
-
-def translate_np_dtype(dt):
-    """
-    Split numpy dtype dt into its kind and byte size, raising TypeError 
-    for unsupported dtypes.
-    """
-    # Assert that dt is one of the arkouda supported dtypes
-    check_np_dtype(dt)
-    trans = {'i': 'int', 'f': 'float', 'b': 'bool'}
-    kind = trans[dt.kind]
-    return kind, dt.itemsize
-
-def resolve_scalar_dtype(val):
-    """
-    Try to infer what dtype arkouda_server should treat val as.
-    """
-    # Python bool or np.bool
-    if isinstance(val, bool) or (hasattr(val, 'dtype') and val.dtype.kind == 'b'):
-        return 'bool'
-    # Python int or np.int* or np.uint*
-    elif isinstance(val, int) or (hasattr(val, 'dtype') and val.dtype.kind in 'ui'):
-        return 'int64'
-    # Python float or np.float*
-    elif isinstance(val, float) or (hasattr(val, 'dtype') and val.dtype.kind == 'f'):
-        return 'float64'
-    # Other numpy dtype
-    elif hasattr(val, 'dtype'):
-        return dtype.name
-    # Other python type
-    else:
-        return str(type(val))
 
 def parse_single_value(msg):
     """
@@ -62,18 +11,18 @@ def parse_single_value(msg):
     scalar in Python. The user should not call this function directly.
     """
     dtname, value = msg.split()
-    dtype = np.dtype(dtname)
-    if dtype == np.bool:
+    mydtype = dtype(dtname)
+    if mydtype == bool:
         if value == "True":
-            return np.bool(True)
+            return bool(True)
         elif value == "False":
-            return np.bool(False)
+            return bool(False)
         else:
-            raise ValueError("unsupported value from server {} {}".format(dtype.name, value))
+            raise ValueError("unsupported value from server {} {}".format(mydtype.name, value))
     try:
-        return dtype.type(value)
+        return mydtype.type(value)
     except:
-        raise ValueError("unsupported value from server {} {}".format(dtype.name, value))
+        raise ValueError("unsupported value from server {} {}".format(mydtype.name, value))
     
 BinOps = frozenset(["+", "-", "*", "/", "//", "%", "<", ">", "<=", ">=", "!=", "==", "&", "|", "^", "<<", ">>","**"])
 OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", "<<=", ">>=","**="])
@@ -92,7 +41,7 @@ class pdarray:
     ----------
     name : str
         The server-side identifier for the array
-    dtype : np.dtype
+    dtype : dtype
         The element type of the array
     size : int
         The number of elements in the array
@@ -103,9 +52,9 @@ class pdarray:
     itemsize : int
         The size in bytes of each element
     """
-    def __init__(self, name, dtype, size, ndim, shape, itemsize):
+    def __init__(self, name, mydtype, size, ndim, shape, itemsize):
         self.name = name
-        self.dtype = np.dtype(dtype)
+        self.dtype = dtype(mydtype)
         self.size = size
         self.ndim = ndim
         self.shape = shape
@@ -137,7 +86,7 @@ class pdarray:
             other = self.dtype.type(other)
         except:
             raise TypeError("Unable to convert {} to {}".format(other, self.dtype.name))
-        if self.dtype == np.bool:
+        if self.dtype == bool:
             return str(other)
         fmt = NUMBER_FORMAT_STRINGS[self.dtype.name]
         return fmt.format(other)
@@ -604,13 +553,13 @@ def create_pdarray(repMsg):
     """
     fields = repMsg.split()
     name = fields[1]
-    dtype = fields[2]
+    mydtype = fields[2]
     size = int(fields[3])
     ndim = int(fields[4])
     shape = [int(el) for el in fields[5][1:-1].split(',')]
     itemsize = int(fields[6])
-    if v: print("{} {} {} {} {} {}".format(name,dtype,size,ndim,shape,itemsize))
-    return pdarray(name,dtype,size,ndim,shape,itemsize)
+    if v: print("{} {} {} {} {} {}".format(name,mydtype,size,ndim,shape,itemsize))
+    return pdarray(name,mydtype,size,ndim,shape,itemsize)
 
 def info(pda):
     if isinstance(pda, pdarray):

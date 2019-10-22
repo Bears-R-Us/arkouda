@@ -1,7 +1,8 @@
 import numpy as np
 
 from arkouda.client import generic_msg
-from arkouda.pdarrayclass import pdarray, resolve_scalar_dtype, parse_single_value, create_pdarray
+from arkouda.dtypes import *
+from arkouda.pdarrayclass import pdarray, parse_single_value, create_pdarray
 from arkouda.pdarraysetops import unique
 
 __all__ = ["abs", "log", "exp", "cumsum", "cumprod", "sin", "cos",

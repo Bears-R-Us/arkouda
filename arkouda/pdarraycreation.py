@@ -1,7 +1,10 @@
 import numpy as np
 
 from arkouda.client import generic_msg
-from arkouda.pdarrayclass import pdarray, create_pdarray, structDtypeCodes, translate_np_dtype, resolve_scalar_dtype, NUMBER_FORMAT_STRINGS
+from arkouda.dtypes import *
+from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
+from arkouda.dtypes import dtype as akdtype
+from arkouda.pdarrayclass import pdarray, create_pdarray
 
 __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", "arange",
            "linspace", "randint"]
@@ -98,7 +101,7 @@ def zeros(size, dtype=np.float64):
     >>> ak.zeros(5, dtype=ak.bool)
     array([False, False, False, False, False])
     """
-    dtype = np.dtype(dtype) # normalize dtype
+    dtype = akdtype(dtype) # normalize dtype
     # check dtype for error
     if dtype.name not in DTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
@@ -135,7 +138,7 @@ def ones(size, dtype=float64):
     >>> ak.ones(5, dtype=ak.bool)
     array([True, True, True, True, True])
     """
-    dtype = np.dtype(dtype) # normalize dtype
+    dtype = akdtype(dtype) # normalize dtype
     # check dtype for error
     if dtype.name not in DTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
@@ -306,7 +309,7 @@ def linspace(start, stop, length):
     return create_pdarray(repMsg)
 
 
-def randint(low, high, size, dtype=np.int64):
+def randint(low, high, size, dtype=int64):
     """
     Generate a pdarray with random values in a specified range.
 
@@ -318,7 +321,7 @@ def randint(low, high, size, dtype=np.int64):
         The high value (exclusive for int, inclusive for float) of the range
     size : int
         The length of the returned array
-    dtype : (np.int64 | np.float64 | np.bool)
+    dtype : {int64, float64, bool}
         The dtype of the array
 
     Returns
@@ -344,7 +347,7 @@ def randint(low, high, size, dtype=np.int64):
     """
     # TO DO: separate out into int and float versions
     # TO DO: float version should accept non-integer low and high
-    dtype = np.dtype(dtype) # normalize dtype
+    dtype = akdtype(dtype) # normalize dtype
     # check dtype for error
     if dtype.name not in DTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
