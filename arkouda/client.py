@@ -1,8 +1,9 @@
 import zmq
 import warnings
 
-__all__ = ["v", "pdarrayIterThresh", "maxTransferBytes", "set_defaults",
-           "connect", "disconnect", "shutdown", "get_config", "get_mem_used"]
+__all__ = ["connected", "v", "pdarrayIterThresh", "maxTransferBytes",
+           "AllSymbols", "set_defaults", "connect", "disconnect",
+           "shutdown", "get_config", "get_mem_used"]
 
 # stuff for zmq connection
 pspStr = None
@@ -19,6 +20,7 @@ pdarrayIterThreshDefVal = 100
 pdarrayIterThresh  = pdarrayIterThreshDefVal
 maxTransferBytesDefVal = 2**30
 maxTransferBytes = maxTransferBytesDefVal
+AllSymbols = "__AllSymbols__"
 
 # reset settings to default values
 def set_defaults():

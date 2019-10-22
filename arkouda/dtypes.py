@@ -1,7 +1,7 @@
 import numpy as np
 import builtins
 
-__all__ = ["dtype", "bool", "int64", "float64", "check_np_dtype", "translate_np_dtype", "resolve_scalar_dtype"]
+__all__ = ["DTypes", "dtype", "bool", "int64", "float64", "check_np_dtype", "translate_np_dtype", "resolve_scalar_dtype"]
 
 # supported dtypes
 structDtypeCodes = {'int64': 'q',

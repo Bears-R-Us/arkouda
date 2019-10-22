@@ -2,6 +2,8 @@ from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.sorting import argsort, coargsort, local_argsort
 
+__all__ = ["GroupBy"]
+
 class GroupBy:
     """
     Group an array by value, usually in preparation for aggregating the 

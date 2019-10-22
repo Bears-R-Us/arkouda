@@ -1,6 +1,6 @@
 import json, struct
 
-from arkouda.client import generic_msg
+from arkouda.client import generic_msg, connected
 from arkouda.dtypes import *
 
 __all__ = ["pdarray", "info"]
