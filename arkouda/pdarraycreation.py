@@ -1,7 +1,7 @@
 import numpy as np
 
 from arkouda.client import generic_msg
-from arkouda.pdarray import pdarray, create_pdarray, structDtypeCodes, translate_np_dtype, resolve_scalar_dtype, NUMBER_FORMAT_STRINGS
+from arkouda.pdarrayclass import pdarray, create_pdarray, structDtypeCodes, translate_np_dtype, resolve_scalar_dtype, NUMBER_FORMAT_STRINGS
 
 __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", "arange",
            "linspace", "randint"]
