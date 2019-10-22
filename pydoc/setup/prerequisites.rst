@@ -36,20 +36,23 @@ HDF5 and ZMQ (included with Anaconda)
 
 Arkouda uses HDF5_ for file I/O and ZMQ_ for server-client communication. Both libraries can either be downloaded and built manually or acquired via a Python package manager. For example, both libraries come pre-installed with the Anaconda_ Python distribution and can be found in the ``include``, ``bin``, and ``lib`` subdirectories of the Anaconda root directory.
 
+Alternatively, running ``pip3 install arkouda`` will also install these dependencies from the PyPI_.
+
 *******************************
 Numpy (included with Anaconda)
 *******************************
 
 Arkouda interoperates with the numerical Python package NumPy, using NumPy data types and supporting conversion between NumPy ``ndarray`` and arkouda ``pdarray`` classes.
 
-The best way to get NumPy is via the Anaconda_ distribution or through a Python package manager like ``pip``.
+The best way to get NumPy is via the Anaconda_ distribution or from the PyPI_ via ``pip3 install arkouda``.
 
 **********************************************
 Pandas (recommended; included with Anaconda)
 **********************************************
 
-While Pandas is not required by the arkouda client, some of the arkouda tests use Pandas as a standard to check the correctness of arkouda operations. As with NumPy, the best way to get Pandas is via the Anaconda_ distribution or a Python package manager.
+While Pandas is not required by the arkouda client, some of the arkouda tests use Pandas as a standard to check the correctness of arkouda operations. As with NumPy, the best way to get Pandas is via the Anaconda_ distribution or a the PyPI_.
 
+.. _PyPI: https://pypi.org/
 .. _Chapel: https://chapel-lang.org/
 .. _download the current version of Chapel: https://chapel-lang.org/download.html
 .. _instructions: https://chapel-lang.org/docs/usingchapel/index.html

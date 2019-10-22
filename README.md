@@ -57,11 +57,12 @@ interactive session.
 ### It should be simple to get things going on a mac
 ```bash
 brew install chapel
-# you can also install these other packages with brew
+# you can also install python3 with brew
 brew install python3
-brew install zeromq
-# and pip install the numpy packages
-pip3 install numpy
+# the arkouda python client is available via pip
+# pip will automatically install python dependencies (zmq and numpy)
+# however, pip will not build the arkouda server (see below)
+pip3 install arkouda
 # these packages are nice but not a requirement
 pip3 install pandas
 pip3 install jupyter
@@ -90,10 +91,10 @@ make
 
 ## Building Arkouda
 
-Simply run `make` to build `arkouda_server.chpl`.
+Download, clone, or fork the [arkouda repo](https://github.com/mhmerrill/arkouda). Further instructions assume that the current directory is the top-level directory of the repo.
 
 If your environment requires non-system paths to find dependencies (e.g.,
-[Anaconda]), append each path to a new file `Makefile.paths` like so:
+if using the ZMQ and HDF5 bundled with [Anaconda]), append each path to a new file `Makefile.paths` like so:
 
 ```make
 # Makefile.paths
@@ -106,18 +107,22 @@ $(eval $(call add-path,/home/user/anaconda3/envs/arkouda))
 The `chpl` compiler will be executed with `-I`, `-L` and an `-rpath` to each
 path.
 
+Now, simply run `make` to build the `arkouda_server` executable.
+
 [Anaconda]: https://www.anaconda.com/distribution/
 
 ## Building the Arkouda documentation
-Make sure you installed the sphinx-doc package
+Make sure you installed the sphinx-doc package (e.g. `pip3 install -U Sphinx`)
 
-Run `make doc`, this build both the Arkouda python documentation and the Chapel server documentation
+Run `make doc` to build both the Arkouda python documentation and the Chapel server documentation
 
 The output is currently in subdirectories of the `arkouda/doc`
 ```
 arkouda/doc/python # python frontend documentation
 arkouda/doc/server # chapel backend server documentation 
 ```
+
+To view the documentation for the Arkouda python client, point your browser to `file:///path/to/arkouda/doc/python/index.html`, substituting the appropriate path for your configuration.
 
 ## Running arkouda_server
 
