@@ -54,11 +54,13 @@ There are two ways to install the python client. It is available from the Python
 
    pip3 install arkouda
 
-Or you can install it from your local copy of the github repo with:
+If you are planning to contribute to arkouda as a developer, you may wish to install an editable version linked to your local copy of the github repo:
 
 .. code-block:: bash
 
-   pip3 install path/to/arkouda/repo
+   pip3 install -e path/to/local/arkouda/repo
+
+
 
 ****************
 Troubleshooting
