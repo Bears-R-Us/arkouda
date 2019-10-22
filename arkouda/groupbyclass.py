@@ -74,7 +74,7 @@ class GroupBy:
                                              keynames)
         repMsg = generic_msg(reqMsg)
         segAttr, uniqAttr = repMsg.split("+")
-        if v: print(segAttr, uniqAttr)
+        if verbose: print(segAttr, uniqAttr)
         self.segments = create_pdarray(segAttr)
         self.unique_key_indices = create_pdarray(uniqAttr)
         if self.nkeys == 1:
@@ -106,7 +106,7 @@ class GroupBy:
             cmd = "countReduction"
         reqMsg = "{} {} {}".format(cmd, self.segments.name, self.size)
         repMsg = generic_msg(reqMsg)
-        if v: print(repMsg)
+        if verbose: print(repMsg)
         return self.unique_keys, create_pdarray(repMsg)
         
     def aggregate(self, values, operator):
@@ -145,7 +145,7 @@ class GroupBy:
                                          self.segments.name,
                                          operator)
         repMsg = generic_msg(reqMsg)
-        if v: print(repMsg)
+        if verbose: print(repMsg)
         if operator.startswith('arg'):
             return self.unique_keys, self.permutation[create_pdarray(repMsg)]
         else:

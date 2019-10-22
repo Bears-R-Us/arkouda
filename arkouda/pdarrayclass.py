@@ -319,7 +319,7 @@ class pdarray:
                 raise IndexError("[int] {} is out of bounds with size {}".format(key,self.size))
         if isinstance(key, slice):
             (start,stop,stride) = key.indices(self.size)
-            if v: print(start,stop,stride)
+            if verbose: print(start,stop,stride)
             repMsg = generic_msg("[slice] {} {} {} {}".format(self.name, start, stop, stride))
             return create_pdarray(repMsg);
         if isinstance(key, pdarray):
@@ -346,7 +346,7 @@ class pdarray:
                 generic_msg("[pdarray]=val {} {} {} {}".format(self.name, key.name, self.dtype.name, self.format_other(value)))
         elif isinstance(key, slice):
             (start,stop,stride) = key.indices(self.size)
-            if v: print(start,stop,stride)
+            if verbose: print(start,stop,stride)
             if isinstance(value, pdarray):
                 generic_msg("[slice]=pdarray {} {} {} {} {}".format(self.name,start,stop,stride,value.name))
             else:
@@ -558,7 +558,7 @@ def create_pdarray(repMsg):
     ndim = int(fields[4])
     shape = [int(el) for el in fields[5][1:-1].split(',')]
     itemsize = int(fields[6])
-    if v: print("{} {} {} {} {} {}".format(name,mydtype,size,ndim,shape,itemsize))
+    if verbose: print("{} {} {} {} {} {}".format(name,mydtype,size,ndim,shape,itemsize))
     return pdarray(name,mydtype,size,ndim,shape,itemsize)
 
 def info(pda):

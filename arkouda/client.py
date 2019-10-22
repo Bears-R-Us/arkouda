@@ -1,7 +1,7 @@
 import zmq
 import warnings
 
-__all__ = ["connected", "v", "pdarrayIterThresh", "maxTransferBytes",
+__all__ = ["connected", "verbose", "pdarrayIterThresh", "maxTransferBytes",
            "AllSymbols", "set_defaults", "connect", "disconnect",
            "shutdown", "get_config", "get_mem_used"]
 
@@ -13,8 +13,8 @@ serverPid = None
 connected = False
 
 # verbose flag for arkouda module
-vDefVal = False
-v = vDefVal
+verboseDefVal = False
+verbose = verboseDefVal
 # threshold for __iter__() to limit comms to arkouda_server
 pdarrayIterThreshDefVal = 100
 pdarrayIterThresh  = pdarrayIterThreshDefVal
@@ -24,8 +24,8 @@ AllSymbols = "__AllSymbols__"
 
 # reset settings to default values
 def set_defaults():
-    global v, vDefVal, pdarrayIterThresh, pdarrayIterThreshDefVal 
-    v = vDefVal
+    global verbose, verboseDefVal, pdarrayIterThresh, pdarrayIterThreshDefVal 
+    verbose = verboseDefVal
     pdarrayIterThresh  = pdarrayIterThreshDefVal
     maxTransferBytes = maxTransferBytesDefVal
 
@@ -48,7 +48,7 @@ def connect(server = "localhost", port = 5555):
     None
         On success, prints ``connected to tcp://<hostname>:<port>``
     """
-    global v, context, socket, pspStr, serverPid, connected
+    global verbose, context, socket, pspStr, serverPid, connected
 
     if connected == False:
         print(zmq.zmq_version())
@@ -65,26 +65,26 @@ def connect(server = "localhost", port = 5555):
         
         #send the connect message
         message = "connect"
-        if v: print("[Python] Sending request: %s" % message)
+        if verbose: print("[Python] Sending request: %s" % message)
         socket.send_string(message)
         
         # get the response that the server has started
         message = socket.recv_string()
-        if v: print("[Python] Received response: %s" % message)
+        if verbose: print("[Python] Received response: %s" % message)
 
         print("connected to {}".format(pspStr))
 
 # message arkouda server to shutdown server
 def disconnect():
-    global v, context, socket, pspStr, connected
+    global verbose, context, socket, pspStr, connected
 
     if connected == True:
         # send disconnect message to server
         message = "disconnect"
-        if v: print("[Python] Sending request: %s" % message)
+        if verbose: print("[Python] Sending request: %s" % message)
         socket.send_string(message)
         message = socket.recv_string()
-        if v: print("[Python] Received response: %s" % message)
+        if verbose: print("[Python] Received response: %s" % message)
         socket.disconnect(pspStr)
         connected = False
 
@@ -92,24 +92,24 @@ def disconnect():
     
 # message arkouda server to shutdown server
 def shutdown():
-    global v, context, socket, pspStr, connected
+    global verbose, context, socket, pspStr, connected
     
     # send shutdown message to server
     message = "shutdown"
-    if v: print("[Python] Sending request: %s" % message)
+    if verbose: print("[Python] Sending request: %s" % message)
     socket.send_string(message)
     message = socket.recv_string()
-    if v: print("[Python] Received response: %s" % message)
+    if verbose: print("[Python] Received response: %s" % message)
     connected = False
     socket.disconnect(pspStr)
 
 # send message to arkouda server and check for server side error
 def generic_msg(message, send_bytes=False, recv_bytes=False):
-    global v, context, socket
+    global verbose, context, socket
     if send_bytes:
         socket.send(message)
     else:
-        if v: print("[Python] Sending request: %s" % message)
+        if verbose: print("[Python] Sending request: %s" % message)
         socket.send_string(message)
     if recv_bytes:
         message = socket.recv()
@@ -117,7 +117,7 @@ def generic_msg(message, send_bytes=False, recv_bytes=False):
         elif message.startswith(b"Warning:"): warnings.warn(message)
     else:
         message = socket.recv_string()
-        if v: print("[Python] Received response: %s" % message)
+        if verbose: print("[Python] Received response: %s" % message)
         # raise errors sent back from the server
         if message.startswith("Error:"): raise RuntimeError(message)
         elif message.startswith("Warning:"): warnings.warn(message)
