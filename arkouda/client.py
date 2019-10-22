@@ -1,4 +1,4 @@
-import zmq
+import zmq, json
 import warnings
 
 __all__ = ["connected", "verbose", "pdarrayIterThresh", "maxTransferBytes",

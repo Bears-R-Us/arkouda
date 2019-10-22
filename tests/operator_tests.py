@@ -54,7 +54,7 @@ def run_tests():
                'wrong_value': [],
                'failure': []}
     tests = 0
-    for ltype, rtype, op in product(dtypes, dtypes, ak.BinOps):
+    for ltype, rtype, op in product(dtypes, dtypes, ak.pdarray.BinOps):
         for lscalar, rscalar in ((False, False), (False, True), (True, False)):
             tests += 1
             expression = "{}({}) {} {}({})".format(ltype, ('array', 'scalar')[lscalar], op, rtype, ('array', 'scalar')[rscalar])

@@ -1,4 +1,4 @@
-from arkouda.client import generic_msg
+from arkouda.client import generic_msg, verbose
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.sorting import argsort, coargsort, local_argsort
 

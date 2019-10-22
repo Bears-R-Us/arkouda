@@ -1,6 +1,7 @@
 import numpy as np
+import struct
 
-from arkouda.client import generic_msg
+from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
 from arkouda.dtypes import dtype as akdtype

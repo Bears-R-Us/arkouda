@@ -1,6 +1,6 @@
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
-from arkouda.pdarraycreation import zeros
+from arkouda.pdarraycreation import zeros, array
 from arkouda.sorting import argsort
 
 __all__ = ["unique", "in1d", "concatenate", "union1d", "intersect1d",

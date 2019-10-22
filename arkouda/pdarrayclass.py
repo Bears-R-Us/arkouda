@@ -1,9 +1,12 @@
 import json, struct
+import numpy as np
 
-from arkouda.client import generic_msg, connected
+from arkouda.client import generic_msg, connected, verbose, maxTransferBytes, pdarrayIterThresh
 from arkouda.dtypes import *
+from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
 
-__all__ = ["pdarray", "info"]
+__all__ = ["pdarray", "info", "any", "all", "is_sorted", "sum", "prod", "min", "max",
+           "argmin", "argmax", "mean", "var", "std"]
 
 def parse_single_value(msg):
     """
@@ -24,9 +27,6 @@ def parse_single_value(msg):
     except:
         raise ValueError("unsupported value from server {} {}".format(mydtype.name, value))
     
-BinOps = frozenset(["+", "-", "*", "/", "//", "%", "<", ">", "<=", ">=", "!=", "==", "&", "|", "^", "<<", ">>","**"])
-OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", "<<=", ">>=","**="])
-
 # class for the pdarray
 class pdarray:
     """
@@ -52,6 +52,10 @@ class pdarray:
     itemsize : int
         The size in bytes of each element
     """
+
+    BinOps = frozenset(["+", "-", "*", "/", "//", "%", "<", ">", "<=", ">=", "!=", "==", "&", "|", "^", "<<", ">>","**"])
+    OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", "<<=", ">>=","**="])
+    
     def __init__(self, name, mydtype, size, ndim, shape, itemsize):
         self.name = name
         self.dtype = dtype(mydtype)
@@ -93,7 +97,7 @@ class pdarray:
         
     # binary operators
     def binop(self, other, op):
-        if op not in BinOps:
+        if op not in self.BinOps:
             raise ValueError("bad operator {}".format(op))
         # pdarray binop pdarray
         if isinstance(other, pdarray):
@@ -116,7 +120,7 @@ class pdarray:
     # reverse binary operators
     # pdarray binop pdarray: taken care of by binop function
     def r_binop(self, other, op):
-        if op not in BinOps:
+        if op not in self.BinOps:
             raise ValueError("bad operator {}".format(op))
         # pdarray binop array-like is not implemented
         if hasattr(other, '__len__'): 
@@ -236,15 +240,15 @@ class pdarray:
 
     # overload unary~ for pdarray implemented as pdarray^(~0)
     def __invert__(self):
-        if self.dtype == np.int64:
+        if self.dtype == int64:
             return self.binop(~0, "^")
-        if self.dtype == np.bool:
+        if self.dtype == bool:
             return self.binop(True, "^")
         return NotImplemented
 
     # op= operators
     def opeq(self, other, op):
-        if op not in OpEqOps:
+        if op not in self.OpEqOps:
             raise ValueError("bad operator {}".format(op))
         # pdarray op= pdarray
         if isinstance(other, pdarray):
@@ -568,3 +572,177 @@ def info(pda):
         return generic_msg("info {}".format(pda))
     else:
         raise TypeError("info: must be pdarray or string {}".format(pda))
+
+def any(pda):
+    """
+    Return True iff any element of the array evaluates to True.
+    """
+    if isinstance(pda, pdarray):
+        repMsg = generic_msg("reduction {} {}".format("any", pda.name))
+        return parse_single_value(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+
+def all(pda):
+    """
+    Return True iff all elements of the array evaluate to True.
+    """
+    if isinstance(pda, pdarray):
+        repMsg = generic_msg("reduction {} {}".format("all", pda.name))
+        return parse_single_value(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+    
+def is_sorted(pda):
+    """
+    Return True iff the array is monotonically non-decreasing.
+    """
+    if isinstance(pda, pdarray):
+        repMsg = generic_msg("reduction {} {}".format("is_sorted", pda.name))
+        return parse_single_value(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+
+def sum(pda):
+    """
+    Return the sum of all elements in the array.
+    """
+    if isinstance(pda, pdarray):
+        repMsg = generic_msg("reduction {} {}".format("sum", pda.name))
+        return parse_single_value(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+
+def prod(pda):
+    """
+    Return the product of all elements in the array. Return value is
+    always a float.
+    """
+    if isinstance(pda, pdarray):
+        repMsg = generic_msg("reduction {} {}".format("prod", pda.name))
+        return parse_single_value(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+
+def min(pda):
+    """
+    Return the minimum value of the array.
+    """
+    if isinstance(pda, pdarray):
+        repMsg = generic_msg("reduction {} {}".format("min", pda.name))
+        return parse_single_value(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+
+def max(pda):
+    """
+    Return the maximum value of the array.
+    """
+    if isinstance(pda, pdarray):
+        repMsg = generic_msg("reduction {} {}".format("max", pda.name))
+        return parse_single_value(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+    
+def argmin(pda):
+    """
+    Return the index of the first minimum value of the array.
+    """
+    if isinstance(pda, pdarray):
+        repMsg = generic_msg("reduction {} {}".format("argmin", pda.name))
+        return parse_single_value(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+
+def argmax(pda):
+    """
+    Return the index of the first maximum value of the array.
+    """
+    if isinstance(pda, pdarray):
+        repMsg = generic_msg("reduction {} {}".format("argmax", pda.name))
+        return parse_single_value(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+
+def mean(pda):
+    """
+    Return the mean of the array.
+    """
+    return pda.sum() / pda.size
+
+def var(pda, ddof=0):
+    """
+    Return the variance of values in the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+        Values for which to find the variance
+    ddof : int
+        "Delta Degrees of Freedom" used in calculating mean
+
+    Returns
+    -------
+    float
+        The scalar variance of the array
+
+    See Also
+    --------
+    mean, std
+
+    Notes
+    -----
+    The variance is the average of the squared deviations from the mean,
+    i.e.,  ``var = mean((x - x.mean())**2)``.
+
+    The mean is normally calculated as ``x.sum() / N``, where ``N = len(x)``.
+    If, however, `ddof` is specified, the divisor ``N - ddof`` is used
+    instead.  In standard statistical practice, ``ddof=1`` provides an
+    unbiased estimator of the variance of a hypothetical infinite population.
+    ``ddof=0`` provides a maximum likelihood estimate of the variance for
+    normally distributed variables.
+    """
+    if not isinstance(pda, pdarray):
+        raise TypeError("must be pdarray {}".format(pda))
+    if ddof >= pda.size:
+        raise ValueError("var: ddof must be less than number of values")
+    m = mean(pda)
+    return ((pda - m)**2).sum() / (pda.size - ddof)
+
+def std(pda, ddof=0):
+    """
+    Return the standard deviation of values in the array. The standard
+    deviation is implemented as the square root of the variance.
+
+    Parameters
+    ----------
+    pda : pdarray
+        values for which to find the variance
+    ddof : int
+        "Delta Degrees of Freedom" used in calculating mean
+
+    Returns
+    -------
+    float
+        The scalar standard deviation of the array
+
+    See Also
+    --------
+    mean, var
+
+    Notes
+    -----
+    The standard deviation is the square root of the average of the squared
+    deviations from the mean, i.e., ``std = sqrt(mean((x - x.mean())**2))``.
+
+    The average squared deviation is normally calculated as
+    ``x.sum() / N``, where ``N = len(x)``.  If, however, `ddof` is specified,
+    the divisor ``N - ddof`` is used instead. In standard statistical
+    practice, ``ddof=1`` provides an unbiased estimator of the variance
+    of the infinite population. ``ddof=0`` provides a maximum likelihood
+    estimate of the variance for normally distributed variables. The
+    standard deviation computed in this function is the square root of
+    the estimated variance, so even with ``ddof=1``, it will not be an
+    unbiased estimate of the standard deviation per se.
+    """
+    return np.sqrt(var(pda, ddof=ddof))
