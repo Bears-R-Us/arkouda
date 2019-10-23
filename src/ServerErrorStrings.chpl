@@ -45,6 +45,10 @@ module ServerErrorStrings
         return try! "Error: %s: unkown symbol: %s".format(pname, sname);
     }
 
+    proc unknownError(pname: string): string {
+      return try! "Error: %s: unexpected error".format(pname);
+    }
+
     /* incompatible arguments */
     proc incompatibleArgumentsError(pname: string, reason: string) {
       return try! "Error: %s: Incompatible arguments: %s".format(pname, reason);

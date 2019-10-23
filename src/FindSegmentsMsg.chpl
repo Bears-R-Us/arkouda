@@ -37,16 +37,30 @@ module FindSegmentsMsg
 	if (nkeys != knames.size) {
 	  return try! incompatibleArgumentsError(pn, "Expected %i key arrays, but got %i".format(nkeys, knames.size));
 	}
+        // FUTURE: A good candidate for deferred initialization (?)
+        var gPermQ: borrowed GenSymEntry?;
+        try {
 	// Check all the argument arrays before doing anything
-	var gPerm = st.lookup(pname);
-	if (gPerm == nil) { return unknownSymbolError(pn, pname); }
+	gPermQ = st.lookup(pname);
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,pname);
+        } catch {
+          return unknownError(pn);
+        }
+        var gPerm = gPermQ!;
+
 	if (gPerm.dtype != DType.Int64) { return notImplementedError(pn,"(permutation dtype "+dtype2str(gPerm.dtype)+")"); }	
 	// var keyEntries: [0..#nkeys] borrowed GenSymEntry;
 	for (name, i) in zip(knames, 0..) {
+          try {
 	  var g = st.lookup(name);
-	  if (g == nil) { return unknownSymbolError(pn, name); }
 	  if (g.size != size) { return try! incompatibleArgumentsError(pn, "Expected array of size %i, got size %i".format(size, g.size)); }
 	  if (g.dtype != DType.Int64) { return notImplementedError(pn,"(key array dtype "+dtype2str(g.dtype)+")");}
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,name);
+        } catch {
+          return unknownError(pn);
+        }
 	}
 	
 	// At this point, all arg arrays exist, have the same size, and are int64 dtype
@@ -68,6 +82,7 @@ module FindSegmentsMsg
 	ukeylocs[0] = true;
 	var permKey: [paD] int;
 	for name in knames {
+          try {
 	  var g: borrowed GenSymEntry = st.lookup(name);
 	  var k = toSymEntry(g,int); // key array
 	  ref ka = k.a; // ref to key array
@@ -75,6 +90,11 @@ module FindSegmentsMsg
 	  [(s, p) in zip(permKey, pa)] { unorderedCopy(s, ka[p]); }
 	  // Find steps and update ukeylocs
 	  [(u, s, i) in zip(ukeylocs, permKey, paD)] if ((i > paD.low) && (permKey[i-1] != s))  { u = true; }
+          } catch e: UndefinedSymbolError {
+            return unknownSymbolError(pn,name);
+          } catch {
+            return unknownError(pn);
+          }
 	}
 	// +scan to compute segment position... 1-based because of inclusive-scan
 	var iv: [ukeylocs.domain] int = (+ scan ukeylocs);
@@ -95,6 +115,7 @@ module FindSegmentsMsg
 	ref uka = ukeyinds.a;
 	// Segment boundaries are in terms of permuted arrays, so invert the permutation to get back to original index
 	[(s, i) in zip(sa, saD)] { unorderedCopy(uka[i], pa[s]); }
+
 	// Return entry names of segments and unique key indices
 	return try! "created " + st.attrib(sname) + " +created " + st.attrib(uname);
     }
@@ -110,8 +131,8 @@ module FindSegmentsMsg
         var sname = st.nextName(); // segments
         var uname = st.nextName(); // unique keys
 
+        try {
         var kEnt: borrowed GenSymEntry = st.lookup(kname);
-        if (kEnt == nil) {return unknownSymbolError(pn,kname);}
 
         select (kEnt.dtype) {
             when (DType.Int64) {
@@ -126,6 +147,11 @@ module FindSegmentsMsg
         }
         
         return try! "created " + st.attrib(sname) + " +created " + st.attrib(uname);
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,e.name);
+        } catch {
+          return unknownError(pn);
+        }
     }
 
     proc perLocFindSegsAndUkeys(perLocSorted:[?D] int, minKey:int, keyRange:int) {

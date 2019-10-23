@@ -422,18 +422,24 @@ module ArgSortMsg
       var size: int;
       // Check that all arrays exist in the symbol table and have the same size
       for (name, i) in zip(names, 1..) {
+        try {
 	// arrays[i] = st.lookup(name): borrowed GenSymEntry;
 	var g: borrowed GenSymEntry = st.lookup(name);
-	if (g == nil) { return unknownSymbolError(pn, name); }
 	if (i == 1) {
 	  size = g.size;
 	} else {
 	  if (g.size != size) { return incompatibleArgumentsError(pn, "Arrays must all be same size"); }
 	}
+        } catch (e: UndefinedSymbolError) {
+          return unknownSymbolError(pn, name);
+        } catch {
+          return unknownError(pn);
+        }
       }
       // Initialize the permutation vector in the symbol table with the identity perm
       var rname = st.nextName();
       st.addEntry(rname, size, int);
+      try {
       var iv = toSymEntry(st.lookup(rname), int);
       iv.a = 0..#size;
       // Starting with the last array, incrementally permute the IV by sorting each array
@@ -449,6 +455,12 @@ module ArgSortMsg
 	  return try! "Error: %s unknown cause".format(pn);
 	}
       }
+      } catch e: UndefinedSymbolError {
+        return unknownSymbolError(pn, rname);
+      } catch {
+        return unknownError(pn);
+      }
+
       return try! "created " + st.attrib(rname);
     }
     
@@ -474,8 +486,8 @@ module ArgSortMsg
         var ivname = st.nextName();
         if v {try! writeln("%s %s : %s %s".format(cmd, name, ivname));try! stdout.flush();}
 
+        try {
         var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError(pn,name);}
 
         select (gEnt.dtype) {
             when (DType.Int64) {
@@ -492,6 +504,12 @@ module ArgSortMsg
         }
         
         return try! "created " + st.attrib(ivname);
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,e.name);
+        } catch {
+          return unknownError(pn);
+        }
+
     }
 
     /* localArgsort takes a pdarray and returns an index vector which sorts the array on a per-locale basis */
@@ -506,8 +524,8 @@ module ArgSortMsg
         var ivname = st.nextName();
         if v {try! writeln("%s %s : %s %s".format(cmd, name, ivname));try! stdout.flush();}
 
+        try {
         var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError(pn,name);}
 
         select (gEnt.dtype) {
             when (DType.Int64) {
@@ -518,6 +536,12 @@ module ArgSortMsg
 	    otherwise {return notImplementedError(pn,gEnt.dtype);}
 	}
 	return try! "created " + st.attrib(ivname);
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,name);
+        } catch {
+          return unknownError(pn);
+        }
+
     }
     
     proc perLocaleArgSort(a:[?aD] int):[aD] int {

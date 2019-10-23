@@ -17,8 +17,8 @@ module IndexingMsg
         var idx = try! fields[3]:int;
         if v {try! writeln("%s %s %i".format(cmd, name, idx));try! stdout.flush();}
 
+        try {
          var gEnt: borrowed GenSymEntry = st.lookup(name);
-         if (gEnt == nil) {return unknownSymbolError(pn,name);}
          
          select (gEnt.dtype) {
              when (DType.Int64) {
@@ -38,6 +38,11 @@ module IndexingMsg
              }
              otherwise {return notImplementedError(pn,dtype2str(gEnt.dtype));}
          }
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,e.name);
+        } catch {
+          return unknownError(pn);
+        }
     }
 
     /* sliceIndex "a[slice]" response to __getitem__(slice) */
@@ -65,8 +70,8 @@ module IndexingMsg
 
         if v {try! writeln("%s %s %i %i %i : %t , %s".format(cmd, name, start, stop, stride, slice, rname));try! stdout.flush();}
 
+        try {
         var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError(pn,name);}
 
         proc sliceHelper(type t) {
             var e = toSymEntry(gEnt,t);
@@ -90,6 +95,12 @@ module IndexingMsg
             }
             otherwise {return notImplementedError(pn,dtype2str(gEnt.dtype));}
         }
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,e.name);
+        } catch {
+          return unknownError(pn);
+        }
+
     }
 
     /* pdarrayIndex "a[pdarray]" response to __getitem__(pdarray) */
@@ -106,10 +117,9 @@ module IndexingMsg
 
         if v {try! writeln("%s %s %s : %s".format(cmd, name, iname, rname));try! stdout.flush();}
 
+        try {
         var gX: borrowed GenSymEntry = st.lookup(name);
-        if (gX == nil) {return unknownSymbolError(pn,name);}
         var gIV: borrowed GenSymEntry = st.lookup(iname);
-        if (gIV == nil) {return unknownSymbolError(pn,iname);}
 
         // gather indexing by integer index vector
         proc ivInt64Helper(type XType) {
@@ -167,6 +177,11 @@ module IndexingMsg
             otherwise {return notImplementedError(pn,
                                                   "("+dtype2str(gX.dtype)+","+dtype2str(gIV.dtype)+")");}
         }
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,e.name);
+        } catch {
+          return unknownError(pn);
+        }
     }
 
     /* setIntIndexToValue "a[int] = value" response to __setitem__(int, value) */
@@ -181,8 +196,8 @@ module IndexingMsg
         var value = fields[5];
         if v {try! writeln("%s %s %i %s %s".format(cmd, name, idx, dtype2str(dtype), value));try! stdout.flush();}
 
+        try {
          var gEnt: borrowed GenSymEntry = st.lookup(name);
-         if (gEnt == nil) {return unknownSymbolError(pn,name);}
 
          select (gEnt.dtype, dtype) {
              when (DType.Int64, DType.Int64) {
@@ -242,6 +257,12 @@ module IndexingMsg
                                                    "("+dtype2str(gEnt.dtype)+","+dtype2str(dtype)+")");}
          }
          return try! "%s success".format(pn);
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,e.name);
+        } catch {
+          return unknownError(pn);
+        }
+
     }
 
     /* setPdarrayIndexToValue "a[pdarray] = value" response to __setitem__(pdarray, value) */
@@ -257,10 +278,9 @@ module IndexingMsg
 
         if v {try! writeln("%s %s %s %s %s".format(cmd, name, iname, dtype2str(dtype), value));try! stdout.flush();}
 
+        try {
         var gX: borrowed GenSymEntry = st.lookup(name);
-        if (gX == nil) {return unknownSymbolError(pn,name);}
         var gIV: borrowed GenSymEntry = st.lookup(iname);
-        if (gIV == nil) {return unknownSymbolError(pn,iname);}
 
         // scatter indexing by integer index vector
         proc ivInt64Helper(type Xtype, type dtype): string {
@@ -321,6 +341,11 @@ module IndexingMsg
             otherwise {return notImplementedError(pn,
                                                   "("+dtype2str(gX.dtype)+","+dtype2str(gIV.dtype)+","+dtype2str(dtype)+")");}
         }
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,e.name);
+        } catch {
+          return unknownError(pn);
+        }
     }
 
     /* setPdarrayIndexToPdarray "a[pdarray] = pdarray" response to __setitem__(pdarray, pdarray) */
@@ -335,12 +360,10 @@ module IndexingMsg
 
         if v {try! writeln("%s %s %s %s".format(cmd, name, iname, yname));try! stdout.flush();}
 
+        try {
         var gX: borrowed GenSymEntry = st.lookup(name);
-        if (gX == nil) {return unknownSymbolError(pn,name);}
         var gIV: borrowed GenSymEntry = st.lookup(iname);
-        if (gIV == nil) {return unknownSymbolError(pn,iname);}
         var gY: borrowed GenSymEntry = st.lookup(yname);
-        if (gY == nil) {return unknownSymbolError(pn,yname);}
 
         // add check for IV to be dtype of int64 or bool
 
@@ -404,6 +427,11 @@ module IndexingMsg
             otherwise {return notImplementedError(pn,
                                                   "("+dtype2str(gX.dtype)+","+dtype2str(gIV.dtype)+","+dtype2str(gY.dtype)+")");}
         }
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,e.name);
+        } catch {
+          return unknownError(pn);
+        }
     }
 
     /* setSliceIndexToValue "a[slice] = value" response to __setitem__(slice, value) */
@@ -429,9 +457,9 @@ module IndexingMsg
         else {slice = 1..0;}
 
         if v {try! writeln("%s %s %i %i %i %s %s".format(cmd, name, start, stop, stride, dtype2str(dtype), value));try! stdout.flush();}
-        
+
+        try {
         var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError(pn,name);}
 
         select (gEnt.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
@@ -490,7 +518,12 @@ module IndexingMsg
             otherwise {return notImplementedError(pn,
                                                   "("+dtype2str(gEnt.dtype)+","+dtype2str(dtype)+")");}
         }
-        return try! "%s success".format(pn); 
+        return try! "%s success".format(pn);
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,e.name);
+        } catch {
+          return unknownError(pn);
+        }
     }
     
     /* setSliceIndexToPdarray "a[slice] = pdarray" response to __setitem__(slice, pdarray) */
@@ -516,10 +549,9 @@ module IndexingMsg
 
         if v {try! writeln("%s %s %i %i %i %s".format(cmd, name, start, stop, stride, yname));try! stdout.flush();}
 
+        try {
         var gX: borrowed GenSymEntry = st.lookup(name);
-        if (gX == nil) {return unknownSymbolError(pn,name);}
         var gY: borrowed GenSymEntry = st.lookup(yname);
-        if (gY == nil) {return unknownSymbolError(pn,yname);}
 
         // add check to make syre IV and Y are same size
         if (slice.size != gY.size) {return try! "Error: %s: size mismatch %i %i".format(pn,slice.size, gY.size);}
@@ -574,6 +606,11 @@ module IndexingMsg
                                                   "("+dtype2str(gX.dtype)+","+dtype2str(gY.dtype)+")");}
         }
         return try! "%s success".format(pn);
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError(pn,e.name);
+        } catch {
+          return unknownError(pn);
+        }
     }
     
 }

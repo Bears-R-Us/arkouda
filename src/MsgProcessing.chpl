@@ -277,8 +277,8 @@ module MsgProcessing
         var dtype = str2dtype(fields[3]);
         var value = fields[4];
 
+        try {
         var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError("set",name);}
 
         select (gEnt.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
@@ -353,7 +353,11 @@ module MsgProcessing
             otherwise {return unrecognizedTypeError("set",fields[3]);}
         }
         return repMsg;
-    }
-    
+        } catch e: UndefinedSymbolError {
+          return unknownSymbolError("set",name);
+        } catch {
+          return unknownError("set");
+        }
 
+    }
 }
