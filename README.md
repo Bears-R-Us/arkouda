@@ -57,11 +57,12 @@ interactive session.
 ### It should be simple to get things going on a mac
 ```bash
 brew install chapel
-# you can also install these other packages with brew
+# you can also install python3 with brew
 brew install python3
-brew install zeromq
-# and pip install the numpy packages
-pip3 install numpy
+# the arkouda python client is available via pip
+# pip will automatically install python dependencies (zmq and numpy)
+# however, pip will not build the arkouda server (see below)
+pip3 install arkouda
 # these packages are nice but not a requirement
 pip3 install pandas
 pip3 install jupyter
@@ -90,10 +91,10 @@ make
 
 ## Building Arkouda
 
-Simply run `make` to build `arkouda_server.chpl`.
+Download, clone, or fork the [arkouda repo](https://github.com/mhmerrill/arkouda). Further instructions assume that the current directory is the top-level directory of the repo.
 
 If your environment requires non-system paths to find dependencies (e.g.,
-[Anaconda]), append each path to a new file `Makefile.paths` like so:
+if using the ZMQ and HDF5 bundled with [Anaconda]), append each path to a new file `Makefile.paths` like so:
 
 ```make
 # Makefile.paths
@@ -106,12 +107,14 @@ $(eval $(call add-path,/home/user/anaconda3/envs/arkouda))
 The `chpl` compiler will be executed with `-I`, `-L` and an `-rpath` to each
 path.
 
+Now, simply run `make` to build the `arkouda_server` executable.
+
 [Anaconda]: https://www.anaconda.com/distribution/
 
 ## Building the Arkouda documentation
-Make sure you installed the sphinx-doc package
+Make sure you installed the sphinx-doc package (e.g. `pip3 install -U Sphinx`)
 
-Run `make doc`, this build both the Arkouda python documentation and the Chapel server documentation
+Run `make doc` to build both the Arkouda python documentation and the Chapel server documentation
 
 The output is currently in subdirectories of the `arkouda/doc`
 ```
@@ -119,42 +122,35 @@ arkouda/doc/python # python frontend documentation
 arkouda/doc/server # chapel backend server documentation 
 ```
 
+To view the documentation for the Arkouda python client, point your browser to `file:///path/to/arkouda/doc/python/index.html`, substituting the appropriate path for your configuration.
+
 ## Running arkouda_server
 
- * startup the arkouda_server
- * defaults to port 5555
+The command-line invocation depends on whether you built a single-locale version (with `CHPL_COMM=none`) or multi-locale version (with `CHPL_COMM` set).
+
+Single-locale startup:
+
 ```bash
-# if you buile a single-locale version
 ./arkouda_server
-# if you built a multi-locale version
+```
+
+Multi-locale startup (user selects the number of locales):
+
+```bash
 ./arkouda_server -nl 1
 ```
- * config var on the commandline
- * ```--v=true/false``` to turn on/off verbose messages from server
- * ```--ServerPort=5555```
- * or you could run it this way if you don't want as many messages
-and a different port to be used
+
+By default, the server listens on port `5555` and prints verbose output. These options can be changed with command-line flags `--ServerPort=1234` and `--v=false`.
+
+## Testing arkouda_server
+
+There is a small test program that connects to a running arkouda_server, runs a few computations, and shuts down the server. To run it, open a new terminal window in the arkouda directory and run
+
 ```bash
-./arkouda_server -nl 1 --ServerPort=5555 --v=false
+python3 tests/check.py localhost 5555
 ```
- * in the same directory in a different terminal window
- * run the ak_test.py python3 program
- * this program just does a couple things and calls shutdown for the server
- * edit the server and port in the script to something other than the
-default if you ran the server on a different server or port
-```bash
-./ak_test.py
-```
-or
-```bash
-python3 ak_test.py
-```
-or
-```bash
-./ak_test.py localhost 5555
-```
- * This also works fine from a jupyter notebook
- * there is an included Jupyter notebook called test_arkouda.ipynb
+
+Substitute the correct hostname and port if you used a different configuration.
 
 ## Contributing to Arkouda
 

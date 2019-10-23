@@ -10,9 +10,9 @@ Before installing arkouda, make sure to satisfy all the :ref:`prerequisites-labe
 Download
 *****************
 
-The easiest way to get arkouda is to download or clone the `arkouda github repo`_.
+The easiest way to get arkouda is to download, clone, or fork the `arkouda github repo`_.
 
-.. _arkouda github repo: TO DO ADD PUBLIC URL
+.. _arkouda github repo: https://github.com/mhmerrill/arkouda/
 
 *****************
 Environment Setup
@@ -35,18 +35,32 @@ However, if you have the Anaconda Python distribution, the HDF5 and ZMQ librarie
 Be sure to customize these paths appropriately for your system.
 
 ****************
-Build
+Build the Server
 ****************
 
 Run ``make`` in the arkouda root directory to build the arkouda server program.
 
 Note: this will take 10-20 minutes, depending on your processor.
 
-****************
-Install
-****************
+We recommend adding the arkouda root directory to your ``PATH`` environment variable.
 
-We recommend adding the arkouda root directory to your ``PATH`` and ``PYTHONPATH`` environment variables to make startup easier.
+******************
+Install the Client
+******************
+
+There are two ways to install the python client. It is available from the Python Package Index (PyPI) with:
+
+.. code-block:: bash
+
+   pip3 install arkouda
+
+If you are planning to contribute to arkouda as a developer, you may wish to install an editable version linked to your local copy of the github repo:
+
+.. code-block:: bash
+
+   pip3 install -e path/to/local/arkouda/repo
+
+
 
 ****************
 Troubleshooting

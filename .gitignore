@@ -17,3 +17,6 @@ test-bin/
 Makefile.paths
 SysInfo.chpl
 Untitled.ipynb
+dist/
+arkouda.egg-info/
+build/
