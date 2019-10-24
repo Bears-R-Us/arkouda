@@ -71,20 +71,13 @@ pip3 install jupyter
 ### If you need to build Chapel from scratch here is what I use
 ```bash
 # on my mac build chapel in my home directory with these settings...
-# I don't understand them all but they seem to work
 export CHPL_HOME=~/chapel/chapel-1.20.0
 source $CHPL_HOME/util/setchplenv.bash
 export CHPL_COMM=gasnet
 export CHPL_COMM_SUBSTRATE=smp
-export CHPL_GASNET_CFG_OPTIONS=--disable-ibv
 export CHPL_TARGET_CPU=native
-export GASNET_SPAWNFN=L
-export GASNET_ROUTE_OUTPUT=0
 export GASNET_QUIET=Y
-export GASNET_MASTERIP=127.0.0.1
-# Set these to help with oversubscription...
-export QT_AFFINITY=no
-export CHPL_QTHREAD_ENABLE_OVERSUBSCRIPTION=1
+export CHPL_RT_OVERSUBSCRIBED=yes
 cd $CHPL_HOME
 make
 ```
