@@ -1,6 +1,11 @@
 # Arkouda (αρκούδα): NumPy-like arrays at massive scale backed by Chapel.
 ## _NOTE_: Arkouda is under the MIT license.
 
+## Gitter channels
+[Arkouda Gitter channel](https://gitter.im/ArkoudaProject/community)
+
+[Chapel Gitter channel](https://gitter.im/chapel-lang/chapel)
+
 ## Talks on Arkouda
 [Mike Merrill's CHIUW 2019 talk](https://chapel-lang.org/CHIUW/2019/Merrill.pdf)
 
