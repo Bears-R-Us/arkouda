@@ -1,7 +1,8 @@
 from setuptools import setup, find_packages
 from os import path
 from subprocess import PIPE, Popen
-from setuptools.command.install import install
+import installers
+
 
 here = path.abspath(path.dirname(__file__))
 # Get the long description from the README file
@@ -11,26 +12,6 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 with open(path.join(here, 'VERSION'), 'r') as f:
     version = f.read().strip()
 
-
-def setup_chpl():
-    process = Popen(["source scripts/setup_chpl.sh"], shell=True, stdout=PIPE, stderr=PIPE)
-    out, err = process.communicate()
-    if err:
-        print(err.decode("utf-8"))
-
-def make_arkouda_server():
-    process = Popen(["make"], shell=True, stdout=PIPE, stderr=PIPE)
-    out, err = process.communicate()
-    if err:
-        print(err.decode("utf-8"))
-
-class InstallArkouda(install):
-    """Custom installation command that overrides the original
-       so that arkouda is built upon pip install"""
-    def run(self):
-        setup_chpl()
-        setup_arkouda_server()
-        install.run(self)
 
 
 
@@ -174,7 +155,8 @@ setup(
     # replace orginal install command with version that also builds
     # chapel and the arkouda server.
     cmdclass={
-        "install": InstallArkouda,
+        "install": installers.ArkoudaInstall,
+        "develop": installers.ArkoudaDevelop,
     },
 
     # If there are data files included in your packages that need to be
