@@ -12,7 +12,7 @@ if __name__ == "__main__":
     parser.add_argument('-n', '--size', type=int, default=10**6, help='Problem size: length of array to argsort')
 
     args = parser.parse_args()
-    ak.v = False
+    ak.verbose = False
     ak.connect(args.hostname, args.port)
     print("size = ",args.size)
     SIZE = args.size

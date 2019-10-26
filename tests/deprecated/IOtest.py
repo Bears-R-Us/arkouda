@@ -4,7 +4,7 @@ import sys, time, argparse
 import arkouda as ak
 
 if __name__ == '__main__':
-    ak.v = False
+    ak.verbose = False
     parser = argparse.ArgumentParser()
     parser.add_argument('--server', default=None)
     parser.add_argument('--port', default=None)
