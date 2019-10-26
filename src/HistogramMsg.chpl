@@ -1,6 +1,8 @@
 module HistogramMsg
 {
     use ServerConfig;
+
+    use Reflection only;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -8,11 +10,12 @@ module HistogramMsg
 
     use Histogram;
     
-    var sBound = 2**12;
-    var mBound = 2**25;
+    private config const sBound = 2**12;
+    private config const mBound = 2**25;
 
     /* histogram takes a pdarray and returns a pdarray with the histogram in it */
     proc histogramMsg(reqMsg: string, st: borrowed SymTab): string {
+        param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -24,7 +27,7 @@ module HistogramMsg
         if v {try! writeln("%s %s %i : %s".format(cmd, name, bins, rname));try! stdout.flush();}
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError("histogram",name);}
+        if (gEnt == nil) {return unknownSymbolError(pn,name);}
 
         // helper nested procedure
         proc histogramHelper(type t) {
@@ -54,7 +57,7 @@ module HistogramMsg
         select (gEnt.dtype) {
             when (DType.Int64)   {histogramHelper(int);}
             when (DType.Float64) {histogramHelper(real);}
-            otherwise {return notImplementedError("histogram",gEnt.dtype);}
+            otherwise {return notImplementedError(pn,gEnt.dtype);}
         }
         
         return try! "created " + st.attrib(rname);

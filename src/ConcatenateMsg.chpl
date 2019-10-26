@@ -4,6 +4,7 @@ module ConcatenateMsg
     
     use Time only;
     use Math only;
+    use Reflection only;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -15,7 +16,7 @@ module ConcatenateMsg
        to form one array
      */
     proc concatenateMsg(reqMsg: string, st: borrowed SymTab) {
-        var pn = "concatenate";
+        param pn = Reflection.getRoutineName();
         var repMsg: string;
         var fields = reqMsg.split();
         var cmd = fields[1];

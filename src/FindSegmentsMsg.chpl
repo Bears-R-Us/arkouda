@@ -4,6 +4,7 @@ module FindSegmentsMsg
     
     use Time only;
     use Math only;
+    use Reflection only;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -11,7 +12,6 @@ module FindSegmentsMsg
     use PerLocaleHelper;
 
     use PrivateDist;
-    // experimental
     use UnorderedCopy;
 
     /*
@@ -26,7 +26,7 @@ module FindSegmentsMsg
 
     */
     proc findSegmentsMsg(reqMsg: string, st: borrowed SymTab): string {
-        var pn = "findSegments";
+        param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -100,7 +100,7 @@ module FindSegmentsMsg
     }
 
     proc findLocalSegmentsMsg(reqMsg: string, st: borrowed SymTab): string {
-        var pn = "findLocalSegments";
+        param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];

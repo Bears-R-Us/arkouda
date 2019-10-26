@@ -5,6 +5,7 @@ module OperatorMsg
 
     use Time;
     use Math;
+    use Reflection only;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -23,6 +24,7 @@ module OperatorMsg
     :returns: (string) 
     */
     proc binopvvMsg(reqMsg: string, st: borrowed SymTab): string {
+        param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -33,9 +35,9 @@ module OperatorMsg
         if v {try! writeln("%s %s %s %s : %s".format(cmd,op,aname,bname,rname));try! stdout.flush();}
 
         var left: borrowed GenSymEntry = st.lookup(aname);
-        if (left == nil) {return try! "Error: binopvv: unkown symbol %s".format(aname);}
+        if (left == nil) {return unknownSymbolError(pn, aname);}
         var right: borrowed GenSymEntry = st.lookup(bname);
-        if (right == nil) {return try! "Error: binopvv: unkown symbol %s".format(bname);}
+        if (right == nil) {return unknownSymbolError(pn, bname);}
 
         select (left.dtype, right.dtype) {
             when (DType.Int64, DType.Int64) {
@@ -141,7 +143,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, int);
                         e.a= l.a**r.a;
                     }     
-                    otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
+                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
                 }
             }
             when (DType.Int64, DType.Float64) {
@@ -203,7 +205,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, real);
                         e.a= l.a**r.a;
                     }    
-                    otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
+                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
                 }
             }
             when (DType.Float64, DType.Int64) {
@@ -265,7 +267,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, real);
                         e.a= l.a**r.a;
                     }      
-                    otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
+                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
                 }
             }
             when (DType.Float64, DType.Float64) {
@@ -327,7 +329,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, real);
                         e.a= l.a**r.a;
                     }     
-                    otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
+                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
                 }
             }
 	    when (DType.Bool, DType.Bool) {
@@ -346,7 +348,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, bool);
 		        e.a = l.a ^ r.a;
 		    }
-		    otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
+		    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
 		}
 	    }
 	    when (DType.Bool, DType.Int64) {
@@ -365,7 +367,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, int);
 		        e.a = l.a:int * r.a;
 		    }
-		    otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
+		    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
 		}
 	    }
 	    when (DType.Int64, DType.Bool) {
@@ -384,7 +386,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, int);
 		        e.a = l.a * r.a:int;
 		    }
-		    otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
+		    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
 		}
 	    }
 	    when (DType.Bool, DType.Float64) {
@@ -403,7 +405,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, real);
 		        e.a = l.a:real * r.a;
 		    }
-		    otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
+		    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
 		}
 	    }
 	    when (DType.Float64, DType.Bool) {
@@ -422,10 +424,10 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, real);
 		        e.a = l.a * r.a:real;
 		    }
-		    otherwise {return notImplementedError("binopvv",left.dtype,op,right.dtype);}
+		    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
 		}
 	    }
-            otherwise {return unrecognizedTypeError("binopvv",
+            otherwise {return unrecognizedTypeError(pn,
                                                     "("+dtype2str(left.dtype)+","+dtype2str(right.dtype)+")");}
         }
         return try! "created " + st.attrib(rname);
@@ -443,6 +445,7 @@ module OperatorMsg
     :returns: (string) 
     */
     proc binopvsMsg(reqMsg: string, st: borrowed SymTab): string {
+        param pn = Reflection.getRoutineName();
         var repMsg: string = ""; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -454,7 +457,7 @@ module OperatorMsg
         if v {try! writeln("%s %s %s %s %s : %s".format(cmd,op,aname,dtype2str(dtype),value,rname));try! stdout.flush();}
 
         var left: borrowed GenSymEntry = st.lookup(aname);
-        if (left == nil) {return try! "Error: binopvs: unkown symbol %s".format(aname);}
+        if (left == nil) {return unknownSymbolError(pn, aname);}
         select (left.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
                 var l = toSymEntry(left,int);
@@ -548,7 +551,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, int);
                         e.a= l.a**val;
                     }
-                    otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
+                    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
                 }
             }
             when (DType.Int64, DType.Float64) {
@@ -612,7 +615,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, real);
                         e.a= l.a**val;
                     }
-                    otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
+                    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
                 }
             }
             when (DType.Float64, DType.Int64) {
@@ -676,7 +679,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, real);
                         e.a= l.a**val;
                     }
-                    otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
+                    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
                 }
             }
             when (DType.Float64, DType.Float64) {
@@ -740,7 +743,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, real);
                         e.a= l.a**val;
                     }
-                    otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
+                    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
                 }
             }
 	    when (DType.Bool, DType.Bool) {
@@ -759,7 +762,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, bool);
 		        e.a = l.a ^ val;
 		    }
-                    otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
+                    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
 		}
 	    }
 	    when (DType.Bool, DType.Int64) {
@@ -778,7 +781,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, int);
                         e.a = l.a:int * val;
 		    }
-                    otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
+                    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
 		}
 	    }
 	    when (DType.Int64, DType.Bool) {
@@ -797,7 +800,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, int);
                         e.a = l.a * val:int;
 		    }
-                    otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
+                    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
 		}
 	    }
 	    when (DType.Bool, DType.Float64) {
@@ -816,7 +819,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, real);
                         e.a = l.a:real * val;
 		    }
-                    otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
+                    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
 		}
 	    }
 	    when (DType.Float64, DType.Bool) {
@@ -835,10 +838,10 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, real);
                         e.a = l.a * val:real;
 		    }
-                    otherwise {return notImplementedError("binopvs",left.dtype,op,dtype);}
+                    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
 		}
 	    }
-            otherwise {return unrecognizedTypeError("binopvs",
+            otherwise {return unrecognizedTypeError(pn,
                                                     "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");}
         }
         return try! "created " + st.attrib(rname);
@@ -857,6 +860,7 @@ module OperatorMsg
     :returns: (string) 
     */
     proc binopsvMsg(reqMsg: string, st: borrowed SymTab): string {
+        param pn = Reflection.getRoutineName();
         var repMsg: string = ""; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -868,7 +872,7 @@ module OperatorMsg
         if v {try! writeln("%s %s %s %s %s : %s".format(cmd,op,dtype2str(dtype),value,aname,rname));try! stdout.flush();}
 
         var right: borrowed GenSymEntry = st.lookup(aname);
-        if (right == nil) {return try! "Error: binopsv: unkown symbol %s".format(aname);}
+        if (right == nil) {return unknownSymbolError(pn, aname);}
         select (dtype, right.dtype) {
             when (DType.Int64, DType.Int64) {
                 var val = try! value:int;
@@ -962,7 +966,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, r.size, int);
                         e.a= val**r.a;
                     }
-                    otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
+                    otherwise {return notImplementedError(pn,dtype,op,right.dtype);}
                 }
             }
             when (DType.Int64, DType.Float64) {
@@ -1024,7 +1028,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, r.size, real);
                         e.a= val**r.a;
                     }
-                    otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
+                    otherwise {return notImplementedError(pn,dtype,op,right.dtype);}
                 }
             }
             when (DType.Float64, DType.Int64) {
@@ -1088,7 +1092,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, r.size, real);
                         e.a= val**r.a;
                     }
-                    otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
+                    otherwise {return notImplementedError(pn,dtype,op,right.dtype);}
                 }
             }
             when (DType.Float64, DType.Float64) {
@@ -1150,7 +1154,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, r.size, real);
                         e.a= val**r.a;
                     }
-                    otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
+                    otherwise {return notImplementedError(pn,dtype,op,right.dtype);}
                 }
             }
 	    when (DType.Bool, DType.Bool) {
@@ -1169,7 +1173,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, r.size, bool);
  		        e.a = val ^ r.a;
 		    }
-                    otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
+                    otherwise {return notImplementedError(pn,dtype,op,right.dtype);}
 		}
 	    }
 	    when (DType.Bool, DType.Int64) {
@@ -1188,7 +1192,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, r.size, int);
                         e.a = val:int * r.a;
 		    }
-                    otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
+                    otherwise {return notImplementedError(pn,dtype,op,right.dtype);}
 		}
 	    }
 	    when (DType.Int64, DType.Bool) {
@@ -1207,7 +1211,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, r.size, int);
                         e.a = val * r.a:int;
 		    }
-                    otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
+                    otherwise {return notImplementedError(pn,dtype,op,right.dtype);}
 		}
 	    }
 	    when (DType.Bool, DType.Float64) {
@@ -1226,7 +1230,7 @@ module OperatorMsg
                         var e = st.addEntry(rname, r.size, real);
                         e.a = val:real * r.a;
 		    }
-                    otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
+                    otherwise {return notImplementedError(pn,dtype,op,right.dtype);}
 		}
 	    }
 	    when (DType.Float64, DType.Bool) {
@@ -1245,10 +1249,10 @@ module OperatorMsg
                         var e = st.addEntry(rname, r.size, real);
                         e.a = val * r.a:real;
 		    }
-                    otherwise {return notImplementedError("binopsv",dtype,op,right.dtype);}
+                    otherwise {return notImplementedError(pn,dtype,op,right.dtype);}
 		}
 	    }
-            otherwise {return unrecognizedTypeError("binopsv",
+            otherwise {return unrecognizedTypeError(pn,
                                                     "("+dtype2str(dtype)+","+dtype2str(right.dtype)+")");}
         }
         return try! "created " + st.attrib(rname);
@@ -1267,6 +1271,7 @@ module OperatorMsg
     :returns: (string) 
     */
     proc opeqvvMsg(reqMsg: string, st: borrowed SymTab): string {
+        param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -1276,9 +1281,9 @@ module OperatorMsg
         if v {try! writeln("%s %s %s %s".format(cmd,op,aname,bname));try! stdout.flush();}
         
         var left: borrowed GenSymEntry = st.lookup(aname);
-        if (left == nil) {return unknownSymbolError("opeqvv",aname);}
+        if (left == nil) {return unknownSymbolError(pn,aname);}
         var right: borrowed GenSymEntry = st.lookup(bname);
-        if (right == nil) {return unknownSymbolError("opeqvv",bname);}
+        if (right == nil) {return unknownSymbolError(pn,bname);}
         select (left.dtype, right.dtype) {
             when (DType.Int64, DType.Int64) {
                 var l = toSymEntry(left,int);
@@ -1300,13 +1305,13 @@ module OperatorMsg
                         }
                         else{ l.a **= r.a; }
                     }
-                    otherwise {return notImplementedError("opeqvv",left.dtype,op,right.dtype);}
+                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
                 }
             }
             when (DType.Int64, DType.Float64) {
                 var l = toSymEntry(left,int);
                 var r = toSymEntry(right,real);
-                return notImplementedError("opeqvv",left.dtype,op,right.dtype);
+                return notImplementedError(pn,left.dtype,op,right.dtype);
             }
             when (DType.Float64, DType.Int64) {
                 var l = toSymEntry(left,real);
@@ -1329,7 +1334,7 @@ module OperatorMsg
                         l.a = floor(l.a / r.a);
                     } //floordiv
                     when "**=" { l.a **= r.a; }
-                    otherwise {return notImplementedError("opeqvv",left.dtype,op,right.dtype);}
+                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
                 }
             }
             when (DType.Float64, DType.Float64) {
@@ -1348,7 +1353,7 @@ module OperatorMsg
                         l.a = floor(l.a / r.a);
                     }//floordiv
                     when "**=" { l.a **= r.a; }
-                    otherwise {return notImplementedError("opeqvv",left.dtype,op,right.dtype);}
+                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
                 }
             }
 	    when (DType.Bool, DType.Bool) {
@@ -1359,7 +1364,7 @@ module OperatorMsg
 		    when "|=" {l.a |= r.a;}
 		    when "&=" {l.a &= r.a;}
 		    when "^=" {l.a ^= r.a;}
-		    otherwise {return notImplementedError("opeqvv",left.dtype,op,right.dtype);}
+		    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
 		}
 	    }
 	    when (DType.Int64, DType.Bool) {
@@ -1370,7 +1375,7 @@ module OperatorMsg
 		    when "+=" {l.a += r.a:int;}
 		    when "-=" {l.a -= r.a:int;}
 		    when "*=" {l.a *= r.a:int;}
-  		    otherwise {return notImplementedError("opeqvv",left.dtype,op,right.dtype);}
+  		    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
 		}
 	    }
 	    when (DType.Float64, DType.Bool) {
@@ -1381,10 +1386,10 @@ module OperatorMsg
 		    when "+=" {l.a += r.a:real;}
 		    when "-=" {l.a -= r.a:real;}
 		    when "*=" {l.a *= r.a:real;}
-  		    otherwise {return notImplementedError("opeqvv",left.dtype,op,right.dtype);}
+  		    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
 		}
 	    }
-            otherwise {return unrecognizedTypeError("opeqvv",
+            otherwise {return unrecognizedTypeError(pn,
                                                     "("+dtype2str(left.dtype)+","+dtype2str(right.dtype)+")");}
         }
         return "opeqvv success";
@@ -1404,6 +1409,7 @@ module OperatorMsg
 
     */
     proc opeqvsMsg(reqMsg: string, st: borrowed SymTab): string {
+        param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -1414,7 +1420,7 @@ module OperatorMsg
         if v {try! writeln("%s %s %s %s %s".format(cmd,op,aname,dtype2str(dtype),value));try! stdout.flush();}
 
         var left: borrowed GenSymEntry = st.lookup(aname);
-        if (left == nil) {return unknownSymbolError("opeqvs",aname);}
+        if (left == nil) {return unknownSymbolError(pn,aname);}
 
         select (left.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
@@ -1438,13 +1444,13 @@ module OperatorMsg
                         else{ l.a **= val; }
 
                     }
-                    otherwise {return notImplementedError("opeqvs",left.dtype,op,dtype);}
+                    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
                 }
             }
             when (DType.Int64, DType.Float64) {
                 var l = toSymEntry(left,int);
                 var val = try! value:real;
-                return notImplementedError("opeqvs",left.dtype,op,dtype);
+                return notImplementedError(pn,left.dtype,op,dtype);
             }
             when (DType.Float64, DType.Int64) {
                 var l = toSymEntry(left,real);
@@ -1467,7 +1473,7 @@ module OperatorMsg
                         l.a = floor(l.a / val);
                     } //floordiv
                     when "**=" { l.a **= val; }
-                    otherwise {return notImplementedError("opeqvs",left.dtype,op,dtype);}
+                    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
                 }
             }
             when (DType.Float64, DType.Float64) {
@@ -1491,7 +1497,7 @@ module OperatorMsg
                         l.a = floor(l.a / val);
                     }//floordiv
                     when "**=" { l.a **= val; }
-                    otherwise {return notImplementedError("opeqvs",left.dtype,op,dtype);}
+                    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
                 }
             }
 	    when (DType.Int64, DType.Bool) {
@@ -1501,7 +1507,7 @@ module OperatorMsg
 		    when "+=" {l.a += val:int;}
 		    when "-=" {l.a -= val:int;}
 		    when "*=" {l.a *= val:int;}
-		    otherwise {return notImplementedError("opeqvs",left.dtype,op,dtype);}
+		    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
 		}
 	    }
 	    when (DType.Float64, DType.Bool) {
@@ -1511,10 +1517,10 @@ module OperatorMsg
 		    when "+=" {l.a += val:real;}
 		    when "-=" {l.a -= val:real;}
 		    when "*=" {l.a *= val:real;}
-		    otherwise {return notImplementedError("opeqvs",left.dtype,op,dtype);}
+		    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
 		}
 	    }
-            otherwise {return unrecognizedTypeError("opeqvs",
+            otherwise {return unrecognizedTypeError(pn,
                                                     "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");}
         }
         return "opeqvs success";

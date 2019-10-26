@@ -4,6 +4,7 @@ module RandMsg
     
     use Time only;
     use Math only;
+    use Reflection only;
     use Random; // include everything from Random
     
     use MultiTypeSymbolTable;
@@ -17,6 +18,7 @@ module RandMsg
     :arg reqMsg: message to process (contains cmd,aMin,aMax,len,dtype)
     */
     proc randintMsg(reqMsg: string, st: borrowed SymTab): string {
+        param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -89,7 +91,7 @@ module RandMsg
                 
                 st.addEntry(rname, new shared SymEntry(a));
             }            
-            otherwise {return notImplementedError("randint",dtype);}
+            otherwise {return notImplementedError(pn,dtype);}
         }
         // response message
         return try! "created " + st.attrib(rname);
