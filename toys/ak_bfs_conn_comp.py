@@ -109,7 +109,7 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
 
-    ak.v = False
+    ak.verbose = False
     ak.connect(args.hostname, args.port)
 
     print((args.lgNv, args.Ne_per_v, args.prob, args.perm, args.pl))

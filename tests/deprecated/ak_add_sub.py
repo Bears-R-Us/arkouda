@@ -8,7 +8,7 @@ import sys
 
 import arkouda as ak
 
-ak.v = False
+ak.verbose = False
 if len(sys.argv) > 1:
     ak.connect(server=sys.argv[1], port=sys.argv[2])
 else:
