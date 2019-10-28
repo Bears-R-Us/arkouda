@@ -5,6 +5,7 @@ module EfuncMsg
     
     use Time only;
     use Math only;
+    use Reflection only;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -28,6 +29,7 @@ module EfuncMsg
       */
 
     proc efuncMsg(reqMsg: string, st: borrowed SymTab): string {
+        param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -37,7 +39,7 @@ module EfuncMsg
         if v {try! writeln("%s %s %s : %s".format(cmd,efunc,name,rname));try! stdout.flush();}
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError("efunc",name);}
+        if (gEnt == nil) {return unknownSymbolError(pn,name);}
        
         select (gEnt.dtype) {
             when (DType.Int64) {
@@ -72,7 +74,7 @@ module EfuncMsg
                         var a = Math.cos(e.a);
                         st.addEntry(rname,new shared SymEntry(a));
                     }
-                    otherwise {return notImplementedError("efunc",efunc,gEnt.dtype);}
+                    otherwise {return notImplementedError(pn,efunc,gEnt.dtype);}
                 }
             }
             when (DType.Float64) {
@@ -107,7 +109,7 @@ module EfuncMsg
                         var a = Math.cos(e.a);
                         st.addEntry(rname,new shared SymEntry(a));
                     }
-                    otherwise {return notImplementedError("efunc",efunc,gEnt.dtype);}
+                    otherwise {return notImplementedError(pn,efunc,gEnt.dtype);}
                 }
             }
             when (DType.Bool) {
@@ -124,10 +126,10 @@ module EfuncMsg
                         var a: [e.aD] int = * scan ia;
                         st.addEntry(rname, new shared SymEntry(a));
                     }
-                    otherwise {return notImplementedError("efunc",efunc,gEnt.dtype);}
+                    otherwise {return notImplementedError(pn,efunc,gEnt.dtype);}
                 }
             }
-            otherwise {return unrecognizedTypeError("efunc", dtype2str(gEnt.dtype));}
+            otherwise {return unrecognizedTypeError(pn, dtype2str(gEnt.dtype));}
         }
         return try! "created " + st.attrib(rname);
     }
@@ -145,6 +147,7 @@ module EfuncMsg
     :returns: (string)
     */
     proc efunc3vvMsg(reqMsg: string, st: borrowed SymTab): string {
+        param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -156,13 +159,13 @@ module EfuncMsg
 	if v {try! writeln("%s %s %s %s %s %s : %s".format(cmd,efunc,name1,name2,name3,rname));try! stdout.flush();}
 
         var g1: borrowed GenSymEntry = st.lookup(name1);
-        if (g1 == nil) {return unknownSymbolError("efunc",name1);}
+        if (g1 == nil) {return unknownSymbolError(pn,name1);}
 	var g2: borrowed GenSymEntry = st.lookup(name2);
-	if (g2 == nil) {return unknownSymbolError("efunc",name2);}
+	if (g2 == nil) {return unknownSymbolError(pn,name2);}
 	var g3: borrowed GenSymEntry = st.lookup(name3);
-	if (g3 == nil) {return unknownSymbolError("efunc",name3);}
+	if (g3 == nil) {return unknownSymbolError(pn,name3);}
 	if !((g1.size == g2.size) && (g2.size == g3.size)) {
-	  return "Error: size mismatch in arguments to efunc3vv";
+	  return "Error: size mismatch in arguments to "+pn;
 	}
         select (g1.dtype, g2.dtype, g3.dtype) {
 	when (DType.Bool, DType.Int64, DType.Int64) {
@@ -174,7 +177,7 @@ module EfuncMsg
 	      var a = where_helper(e1.a, e2.a, e3.a, 0);
 	      st.addEntry(rname, new shared SymEntry(a));
 	    }
-	    otherwise {return notImplementedError("efunc3vv",efunc,g1.dtype,g2.dtype,g3.dtype);}
+	    otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,g3.dtype);}
 	    } 
 	}
 	when (DType.Bool, DType.Float64, DType.Float64) {
@@ -186,7 +189,7 @@ module EfuncMsg
 	      var a = where_helper(e1.a, e2.a, e3.a, 0);
 	      st.addEntry(rname, new shared SymEntry(a));
 	    }
-	    otherwise {return notImplementedError("efunc3vv",efunc,g1.dtype,g2.dtype,g3.dtype);}
+	    otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,g3.dtype);}
 	    } 
 	}
 	when (DType.Bool, DType.Bool, DType.Bool) {
@@ -198,10 +201,10 @@ module EfuncMsg
 	      var a = where_helper(e1.a, e2.a, e3.a, 0);
 	      st.addEntry(rname, new shared SymEntry(a));
 	    }
-	    otherwise {return notImplementedError("efunc3vv",efunc,g1.dtype,g2.dtype,g3.dtype);}
+	    otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,g3.dtype);}
 	    } 
 	}
-	otherwise {return notImplementedError("efunc3vv",efunc,g1.dtype,g2.dtype,g3.dtype);}
+	otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,g3.dtype);}
 	}
 	return try! "created " + st.attrib(rname);
     }
@@ -218,6 +221,7 @@ module EfuncMsg
     :returns: (string)
     */
     proc efunc3vsMsg(reqMsg: string, st: borrowed SymTab): string {
+        param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -230,11 +234,11 @@ module EfuncMsg
 	if v {try! writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,name2,dtype,value,rname));try! stdout.flush();}
 
         var g1: borrowed GenSymEntry = st.lookup(name1);
-        if (g1 == nil) {return unknownSymbolError("efunc",name1);}
+        if (g1 == nil) {return unknownSymbolError(pn,name1);}
 	var g2: borrowed GenSymEntry = st.lookup(name2);
-	if (g2 == nil) {return unknownSymbolError("efunc",name2);}
+	if (g2 == nil) {return unknownSymbolError(pn,name2);}
 	if !(g1.size == g2.size) {
-	  return "Error: size mismatch in arguments to efunc3vs";
+	  return "Error: size mismatch in arguments to "+pn;
 	}
         select (g1.dtype, g2.dtype, dtype) {
 	when (DType.Bool, DType.Int64, DType.Int64) {
@@ -246,7 +250,7 @@ module EfuncMsg
 	      var a = where_helper(e1.a, e2.a, val, 1);
 	      st.addEntry(rname, new shared SymEntry(a));
 	    }
-	    otherwise {return notImplementedError("efunc3vs",efunc,g1.dtype,g2.dtype,dtype);}
+	    otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,dtype);}
 	    } 
 	}
 	when (DType.Bool, DType.Float64, DType.Float64) {
@@ -258,7 +262,7 @@ module EfuncMsg
 	      var a = where_helper(e1.a, e2.a, val, 1);
 	      st.addEntry(rname, new shared SymEntry(a));
 	    }
-	    otherwise {return notImplementedError("efunc3vs",efunc,g1.dtype,g2.dtype,dtype);}
+	    otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,dtype);}
 	    } 
 	}
 	when (DType.Bool, DType.Bool, DType.Bool) {
@@ -270,10 +274,10 @@ module EfuncMsg
 	      var a = where_helper(e1.a, e2.a, val, 1);
 	      st.addEntry(rname, new shared SymEntry(a));
 	    }
-	    otherwise {return notImplementedError("efunc3vs",efunc,g1.dtype,g2.dtype,dtype);}
+	    otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,dtype);}
 	    } 
 	}
-	otherwise {return notImplementedError("efunc3vs",efunc,g1.dtype,g2.dtype,dtype);}
+	otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,dtype);}
 	}
 	return try! "created " + st.attrib(rname);
     }
@@ -290,6 +294,7 @@ module EfuncMsg
     :returns: (string)
     */
     proc efunc3svMsg(reqMsg: string, st: borrowed SymTab): string {
+        param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -302,11 +307,11 @@ module EfuncMsg
 	if v {try! writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,dtype,value,name2,rname));try! stdout.flush();}
 
         var g1: borrowed GenSymEntry = st.lookup(name1);
-        if (g1 == nil) {return unknownSymbolError("efunc",name1);}
+        if (g1 == nil) {return unknownSymbolError(pn,name1);}
 	var g2: borrowed GenSymEntry = st.lookup(name2);
-	if (g2 == nil) {return unknownSymbolError("efunc",name2);}
+	if (g2 == nil) {return unknownSymbolError(pn,name2);}
 	if !(g1.size == g2.size) {
-	  return "Error: size mismatch in arguments to efunc3sv";
+	  return "Error: size mismatch in arguments to "+pn;
 	}
         select (g1.dtype, dtype, g2.dtype) {
 	when (DType.Bool, DType.Int64, DType.Int64) {
@@ -318,7 +323,7 @@ module EfuncMsg
 	      var a = where_helper(e1.a, val, e2.a, 2);
 	      st.addEntry(rname, new shared SymEntry(a));
 	    }
-	    otherwise {return notImplementedError("efunc3sv",efunc,g1.dtype,dtype,g2.dtype);}
+	    otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype,g2.dtype);}
 	    } 
 	}
 	when (DType.Bool, DType.Float64, DType.Float64) {
@@ -330,7 +335,7 @@ module EfuncMsg
 	      var a = where_helper(e1.a, val, e2.a, 2);
 	      st.addEntry(rname, new shared SymEntry(a));
 	    }
-	    otherwise {return notImplementedError("efunc3sv",efunc,g1.dtype,dtype,g2.dtype);}
+	    otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype,g2.dtype);}
 	    } 
 	}
 	when (DType.Bool, DType.Bool, DType.Bool) {
@@ -342,10 +347,10 @@ module EfuncMsg
 	      var a = where_helper(e1.a, val, e2.a, 2);
 	      st.addEntry(rname, new shared SymEntry(a));
 	    }
-	    otherwise {return notImplementedError("efunc3sv",efunc,g1.dtype,dtype,g2.dtype);}
+	    otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype,g2.dtype);}
 	    } 
 	}
-	otherwise {return notImplementedError("efunc3sv",efunc,g1.dtype,dtype,g2.dtype);}
+	otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype,g2.dtype);}
 	}
 	return try! "created " + st.attrib(rname);
     }
@@ -362,6 +367,7 @@ module EfuncMsg
     :returns: (string)
     */
     proc efunc3ssMsg(reqMsg: string, st: borrowed SymTab): string {
+        param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -375,7 +381,7 @@ module EfuncMsg
 	if v {try! writeln("%s %s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,dtype1,value1,dtype2,value2,rname));try! stdout.flush();}
 
         var g1: borrowed GenSymEntry = st.lookup(name1);
-        if (g1 == nil) {return unknownSymbolError("efunc",name1);}
+        if (g1 == nil) {return unknownSymbolError(pn,name1);}
         select (g1.dtype, dtype1, dtype1) {
 	when (DType.Bool, DType.Int64, DType.Int64) {
 	  var e1 = toSymEntry(g1, bool);
@@ -386,7 +392,7 @@ module EfuncMsg
 	      var a = where_helper(e1.a, val1, val2, 3);
 	      st.addEntry(rname, new shared SymEntry(a));
 	    }
-	    otherwise {return notImplementedError("efunc3ss",efunc,g1.dtype,dtype1,dtype2);}
+	    otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype1,dtype2);}
 	    } 
 	}
 	when (DType.Bool, DType.Float64, DType.Float64) {
@@ -398,7 +404,7 @@ module EfuncMsg
 	      var a = where_helper(e1.a, val1, val2, 3);
 	      st.addEntry(rname, new shared SymEntry(a));
 	    }
-	    otherwise {return notImplementedError("efunc3ss",efunc,g1.dtype,dtype1,dtype2);}
+	    otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype1,dtype2);}
 	    } 
 	}
 	when (DType.Bool, DType.Bool, DType.Bool) {
@@ -410,10 +416,10 @@ module EfuncMsg
 	      var a = where_helper(e1.a, val1, val2, 3);
 	      st.addEntry(rname, new shared SymEntry(a));
 	    }
-	    otherwise {return notImplementedError("efunc3ss",efunc,g1.dtype,dtype1,dtype2);}
+	    otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype1,dtype2);}
 	    } 
 	}
-	otherwise {return notImplementedError("efunc3sv",efunc,g1.dtype,dtype1,dtype2);}
+	otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype1,dtype2);}
 	}
 	return try! "created " + st.attrib(rname);
     }

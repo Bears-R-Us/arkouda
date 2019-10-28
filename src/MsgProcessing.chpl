@@ -5,6 +5,7 @@ module MsgProcessing
 
     use Time only;
     use Math only;
+    use Reflection only;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -270,6 +271,7 @@ module MsgProcessing
     :returns: (string)
     */
     proc setMsg(reqMsg: string, st: borrowed SymTab): string {
+        param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -278,7 +280,7 @@ module MsgProcessing
         var value = fields[4];
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError("set",name);}
+        if (gEnt == nil) {return unknownSymbolError(pn,name);}
 
         select (gEnt.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
@@ -350,7 +352,7 @@ module MsgProcessing
                 e.a = val;
                 repMsg = try! "set %s to %t".format(name, val);
             }
-            otherwise {return unrecognizedTypeError("set",fields[3]);}
+            otherwise {return unrecognizedTypeError(pn,fields[3]);}
         }
         return repMsg;
     }
