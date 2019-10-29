@@ -1,15 +1,14 @@
 import zmq, json
 import warnings
 
-__all__ = ["connected", "verbose", "pdarrayIterThresh", "maxTransferBytes",
+__all__ = ["verbose", "pdarrayIterThresh", "maxTransferBytes",
            "AllSymbols", "set_defaults", "connect", "disconnect",
            "shutdown", "get_config", "get_mem_used"]
 
 # stuff for zmq connection
 pspStr = None
-context = None
+context = zmq.Context()
 socket = None
-serverPid = None
 connected = False
 
 # verbose flag for arkouda module
@@ -46,39 +45,46 @@ def connect(server = "localhost", port = 5555):
     Returns
     -------
     None
-        On success, prints ``connected to tcp://<hostname>:<port>``
+
+    Notes
+    -----
+    On success, prints the connected address, as seen by the server. If called
+    with an existing connection, the socket will be re-initialized.
     """
-    global verbose, context, socket, pspStr, serverPid, connected
 
-    if connected == False:
-        print(zmq.zmq_version())
-        
-        # "protocol://server:port"
-        pspStr = "tcp://{}:{}".format(server,port)
-        print("psp = ",pspStr);
-    
-        # setup connection to arkouda server
-        context = zmq.Context()
-        socket = context.socket(zmq.REQ) # request end of the zmq connection
-        socket.connect(pspStr)
-        connected = True
-        
-        #send the connect message
-        message = "connect"
-        if verbose: print("[Python] Sending request: %s" % message)
-        socket.send_string(message)
-        
-        # get the response that the server has started
-        message = socket.recv_string()
-        if verbose: print("[Python] Received response: %s" % message)
+    global context, socket, pspStr, connected, verbose
 
-        print("connected to {}".format(pspStr))
+    if verbose: print("ZMQ version: {}".format(zmq.zmq_version()))
+
+    # "protocol://server:port"
+    pspStr = "tcp://{}:{}".format(server,port)
+    if verbose: print("psp = ",pspStr);
+
+    # setup connection to arkouda server
+    socket = context.socket(zmq.REQ) # request end of the zmq connection
+    socket.connect(pspStr)
+
+    #send the connect message
+    message = "connect"
+    if verbose: print("[Python] Sending request: %s" % message)
+    socket.send_string(message)
+
+    # get the response that the server has started
+    message = socket.recv_string()
+    if verbose: print("[Python] Received response: %s" % message)
+
+    print(message)
+    connected = True
 
 # message arkouda server to shutdown server
 def disconnect():
-    global verbose, context, socket, pspStr, connected
+    """
+    Disconnect from the arkouda server.
+    """
 
-    if connected == True:
+    global socket, pspStr, connected, verbose
+    
+    if socket is not None:
         # send disconnect message to server
         message = "disconnect"
         if verbose: print("[Python] Sending request: %s" % message)
@@ -86,13 +92,18 @@ def disconnect():
         message = socket.recv_string()
         if verbose: print("[Python] Received response: %s" % message)
         socket.disconnect(pspStr)
+        print(message)
         connected = False
-
-        print("disconnected from {}".format(pspStr))
+    else:
+        print("not connected; cannot disconnect")
     
 # message arkouda server to shutdown server
 def shutdown():
-    global verbose, context, socket, pspStr, connected
+    """
+    Tell the arkouda server to delete all objects and shut itself down.
+    """
+
+    global socket, pspStr, connected, verbose
     
     # send shutdown message to server
     message = "shutdown"
@@ -100,27 +111,39 @@ def shutdown():
     socket.send_string(message)
     message = socket.recv_string()
     if verbose: print("[Python] Received response: %s" % message)
-    connected = False
     socket.disconnect(pspStr)
-
+    print(message)
+    connected = False
+    
 # send message to arkouda server and check for server side error
 def generic_msg(message, send_bytes=False, recv_bytes=False):
-    global verbose, context, socket
+    global socket, pspStr, connected, verbose
+
+    if not connected:
+        raise RuntimeError("Not connected to a server")
+    
     if send_bytes:
         socket.send(message)
     else:
         if verbose: print("[Python] Sending request: %s" % message)
         socket.send_string(message)
-    if recv_bytes:
-        message = socket.recv()
-        if message.startswith(b"Error:"): raise RuntimeError(message.decode())
-        elif message.startswith(b"Warning:"): warnings.warn(message)
-    else:
-        message = socket.recv_string()
-        if verbose: print("[Python] Received response: %s" % message)
-        # raise errors sent back from the server
-        if message.startswith("Error:"): raise RuntimeError(message)
-        elif message.startswith("Warning:"): warnings.warn(message)
+    try:
+        if recv_bytes:
+            message = socket.recv()
+            if message.startswith(b"Error:"): raise RuntimeError(message.decode())
+            elif message.startswith(b"Warning:"): warnings.warn(message)
+        else:
+            message = socket.recv_string()
+            if verbose: print("[Python] Received response: %s" % message)
+            # raise errors sent back from the server
+            if message.startswith("Error:"): raise RuntimeError(message)
+            elif message.startswith("Warning:"): warnings.warn(message)
+    except KeyboardInterrupt as e:
+        # if the user interrupts during command execution, the socket gets out of sync
+        # reset the socket before raising the interrupt exception
+        socket = context.socket(zmq.REQ)
+        socket.connect(pspStr)
+        raise e
     return message
 
 # query the server to get configuration 
