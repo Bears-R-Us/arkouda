@@ -10,7 +10,7 @@ module IndexingMsg
     use UnorderedCopy;
 
     /* intIndex "a[int]" response to __getitem__(int) */
-    proc intIndexMsg(reqMsg: string, st: borrowed SymTab):string {
+    proc intIndexMsg(reqMsg: string, st: borrowed SymTab):string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -19,7 +19,6 @@ module IndexingMsg
         var idx = try! fields[3]:int;
         if v {try! writeln("%s %s %i".format(cmd, name, idx));try! stdout.flush();}
 
-        try {
          var gEnt: borrowed GenSymEntry = st.lookup(name);
          
          select (gEnt.dtype) {
@@ -40,15 +39,10 @@ module IndexingMsg
              }
              otherwise {return notImplementedError(pn,dtype2str(gEnt.dtype));}
          }
-        } catch e: UndefinedSymbolError {
-          return unknownSymbolError(pn,e.name);
-        } catch {
-          return unknownError(pn);
-        }
     }
 
     /* sliceIndex "a[slice]" response to __getitem__(slice) */
-    proc sliceIndexMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc sliceIndexMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -72,7 +66,6 @@ module IndexingMsg
 
         if v {try! writeln("%s %s %i %i %i : %t , %s".format(cmd, name, start, stop, stride, slice, rname));try! stdout.flush();}
 
-        try {
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
         proc sliceHelper(type t) {
@@ -97,16 +90,10 @@ module IndexingMsg
             }
             otherwise {return notImplementedError(pn,dtype2str(gEnt.dtype));}
         }
-        } catch e: UndefinedSymbolError {
-          return unknownSymbolError(pn,e.name);
-        } catch {
-          return unknownError(pn);
-        }
-
     }
 
     /* pdarrayIndex "a[pdarray]" response to __getitem__(pdarray) */
-    proc pdarrayIndexMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc pdarrayIndexMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -119,7 +106,6 @@ module IndexingMsg
 
         if v {try! writeln("%s %s %s : %s".format(cmd, name, iname, rname));try! stdout.flush();}
 
-        try {
         var gX: borrowed GenSymEntry = st.lookup(name);
         var gIV: borrowed GenSymEntry = st.lookup(iname);
 
@@ -179,15 +165,10 @@ module IndexingMsg
             otherwise {return notImplementedError(pn,
                                                   "("+dtype2str(gX.dtype)+","+dtype2str(gIV.dtype)+")");}
         }
-        } catch e: UndefinedSymbolError {
-          return unknownSymbolError(pn,e.name);
-        } catch {
-          return unknownError(pn);
-        }
     }
 
     /* setIntIndexToValue "a[int] = value" response to __setitem__(int, value) */
-    proc setIntIndexToValueMsg(reqMsg: string, st: borrowed SymTab):string {
+    proc setIntIndexToValueMsg(reqMsg: string, st: borrowed SymTab):string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -198,7 +179,6 @@ module IndexingMsg
         var value = fields[5];
         if v {try! writeln("%s %s %i %s %s".format(cmd, name, idx, dtype2str(dtype), value));try! stdout.flush();}
 
-        try {
          var gEnt: borrowed GenSymEntry = st.lookup(name);
 
          select (gEnt.dtype, dtype) {
@@ -259,16 +239,10 @@ module IndexingMsg
                                                    "("+dtype2str(gEnt.dtype)+","+dtype2str(dtype)+")");}
          }
          return try! "%s success".format(pn);
-        } catch e: UndefinedSymbolError {
-          return unknownSymbolError(pn,e.name);
-        } catch {
-          return unknownError(pn);
-        }
-
     }
 
     /* setPdarrayIndexToValue "a[pdarray] = value" response to __setitem__(pdarray, value) */
-    proc setPdarrayIndexToValueMsg(reqMsg: string, st: borrowed SymTab):string {
+    proc setPdarrayIndexToValueMsg(reqMsg: string, st: borrowed SymTab):string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -280,7 +254,6 @@ module IndexingMsg
 
         if v {try! writeln("%s %s %s %s %s".format(cmd, name, iname, dtype2str(dtype), value));try! stdout.flush();}
 
-        try {
         var gX: borrowed GenSymEntry = st.lookup(name);
         var gIV: borrowed GenSymEntry = st.lookup(iname);
 
@@ -305,7 +278,7 @@ module IndexingMsg
         }
 
         // expansion boolean indexing by bool index vector
-        proc ivBoolHelper(type Xtype, type dtype): string {
+        proc ivBoolHelper(type Xtype, type dtype): string throws {
             var e = toSymEntry(gX,Xtype);
             var truth = toSymEntry(gIV,bool);
             if (e.size != truth.size) {return try! "Error: %s: bool iv must be same size %i != %i".format(pn,e.size,truth.size);}
@@ -343,15 +316,10 @@ module IndexingMsg
             otherwise {return notImplementedError(pn,
                                                   "("+dtype2str(gX.dtype)+","+dtype2str(gIV.dtype)+","+dtype2str(dtype)+")");}
         }
-        } catch e: UndefinedSymbolError {
-          return unknownSymbolError(pn,e.name);
-        } catch {
-          return unknownError(pn);
-        }
     }
 
     /* setPdarrayIndexToPdarray "a[pdarray] = pdarray" response to __setitem__(pdarray, pdarray) */
-    proc setPdarrayIndexToPdarrayMsg(reqMsg: string, st: borrowed SymTab):string {
+    proc setPdarrayIndexToPdarrayMsg(reqMsg: string, st: borrowed SymTab):string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -362,7 +330,6 @@ module IndexingMsg
 
         if v {try! writeln("%s %s %s %s".format(cmd, name, iname, yname));try! stdout.flush();}
 
-        try {
         var gX: borrowed GenSymEntry = st.lookup(name);
         var gIV: borrowed GenSymEntry = st.lookup(iname);
         var gY: borrowed GenSymEntry = st.lookup(yname);
@@ -429,15 +396,10 @@ module IndexingMsg
             otherwise {return notImplementedError(pn,
                                                   "("+dtype2str(gX.dtype)+","+dtype2str(gIV.dtype)+","+dtype2str(gY.dtype)+")");}
         }
-        } catch e: UndefinedSymbolError {
-          return unknownSymbolError(pn,e.name);
-        } catch {
-          return unknownError(pn);
-        }
     }
 
     /* setSliceIndexToValue "a[slice] = value" response to __setitem__(slice, value) */
-    proc setSliceIndexToValueMsg(reqMsg: string, st: borrowed SymTab):string {
+    proc setSliceIndexToValueMsg(reqMsg: string, st: borrowed SymTab):string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -459,8 +421,7 @@ module IndexingMsg
         else {slice = 1..0;}
 
         if v {try! writeln("%s %s %i %i %i %s %s".format(cmd, name, start, stop, stride, dtype2str(dtype), value));try! stdout.flush();}
-
-        try {
+        
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
         select (gEnt.dtype, dtype) {
@@ -520,16 +481,11 @@ module IndexingMsg
             otherwise {return notImplementedError(pn,
                                                   "("+dtype2str(gEnt.dtype)+","+dtype2str(dtype)+")");}
         }
-        return try! "%s success".format(pn);
-        } catch e: UndefinedSymbolError {
-          return unknownSymbolError(pn,e.name);
-        } catch {
-          return unknownError(pn);
-        }
+        return try! "%s success".format(pn); 
     }
     
     /* setSliceIndexToPdarray "a[slice] = pdarray" response to __setitem__(slice, pdarray) */
-    proc setSliceIndexToPdarrayMsg(reqMsg: string, st: borrowed SymTab):string {
+    proc setSliceIndexToPdarrayMsg(reqMsg: string, st: borrowed SymTab):string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -551,7 +507,6 @@ module IndexingMsg
 
         if v {try! writeln("%s %s %i %i %i %s".format(cmd, name, start, stop, stride, yname));try! stdout.flush();}
 
-        try {
         var gX: borrowed GenSymEntry = st.lookup(name);
         var gY: borrowed GenSymEntry = st.lookup(yname);
 
@@ -608,11 +563,6 @@ module IndexingMsg
                                                   "("+dtype2str(gX.dtype)+","+dtype2str(gY.dtype)+")");}
         }
         return try! "%s success".format(pn);
-        } catch e: UndefinedSymbolError {
-          return unknownSymbolError(pn,e.name);
-        } catch {
-          return unknownError(pn);
-        }
     }
     
 }

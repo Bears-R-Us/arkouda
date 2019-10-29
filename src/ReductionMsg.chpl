@@ -21,7 +21,7 @@ module ReductionMsg
     // these functions take an array and produce a scalar
     // parse and respond to reduction message
     // scalar = reductionop(vector)
-    proc reductionMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc reductionMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -30,7 +30,6 @@ module ReductionMsg
         var name = fields[3];
         if v {try! writeln("%s %s %s".format(cmd,reductionop,name));try! stdout.flush();}
 
-        try {
         var gEnt: borrowed GenSymEntry = st.lookup(name);
        
         select (gEnt.dtype) {
@@ -191,15 +190,9 @@ module ReductionMsg
             }
             otherwise {return unrecognizedTypeError(pn, dtype2str(gEnt.dtype));}
         }
-        } catch e: UndefinedSymbolError {
-          return unknownSymbolError("reduction",e.name);
-        } catch {
-          return unknownError("reduction");
-        }
-
     }
 
-    proc countReductionMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc countReductionMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
       // reqMsg: segmentedReduction values segments operator
       var fields = reqMsg.split();
@@ -209,18 +202,12 @@ module ReductionMsg
       var rname = st.nextName();
       if v {try! writeln("%s %s %s".format(cmd,segments_name, size));try! stdout.flush();}
 
-      try {
       var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
       var segments = toSymEntry(gSeg, int);
       if (segments == nil) {return "Error: array of segment offsets must be int dtype";}
       var counts = segCount(segments.a, size);
       st.addEntry(rname, new shared SymEntry(counts));
       return try! "created " + st.attrib(rname);
-      } catch e: UndefinedSymbolError {
-        return unknownSymbolError("segmentedReduction",e.name);
-      } catch {
-        return unknownError("segmentedReduction");
-      }
     }
 
     proc segCount(segments:[?D] int, upper: int):[D] int {
@@ -238,7 +225,7 @@ module ReductionMsg
       return counts;
     }
     
-    proc countLocalRdxMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc countLocalRdxMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
       // reqMsg: countLocalRdx segments
       // segments.size = numLocales * numKeys
@@ -249,18 +236,12 @@ module ReductionMsg
       var rname = st.nextName();
       if v {try! writeln("%s %s %s".format(cmd,segments_name, size));try! stdout.flush();}
 
-      try {
       var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
       var segments = toSymEntry(gSeg, int);
       if (segments == nil) {return "Error: array of segment offsets must be int dtype";}
       var counts = perLocCount(segments.a, size);
       st.addEntry(rname, new shared SymEntry(counts));
       return try! "created " + st.attrib(rname);
-      } catch e: UndefinedSymbolError {
-        return unknownSymbolError("segmentedReduction",e.name);
-      } catch {
-        return unknownError("segmentedReduction");
-      }
     }
 
     proc perLocCount(segments:[?D] int, size: int): [] int {
@@ -279,7 +260,7 @@ module ReductionMsg
     }
 
 
-    proc segmentedReductionMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc segmentedReductionMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
       // reqMsg: segmentedReduction values segments operator
       var fields = reqMsg.split();
@@ -289,7 +270,6 @@ module ReductionMsg
       var operator = fields[4];      // reduction operator
       var rname = st.nextName();
       if v {try! writeln("%s %s %s %s".format(cmd,values_name,segments_name,operator));try! stdout.flush();}
-      try {
       var gVal: borrowed GenSymEntry = st.lookup(values_name);
       var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
       var segments = toSymEntry(gSeg, int);
@@ -392,14 +372,9 @@ module ReductionMsg
       otherwise {return unrecognizedTypeError(pn, dtype2str(gVal.dtype));}
       }
       return try! "created " + st.attrib(rname);
-      } catch e: UndefinedSymbolError {
-        return unknownSymbolError("segmentedReduction",e.name);
-      } catch {
-        return unknownError("segmentedReduction");
-      }
     }
 
-    proc segmentedLocalRdxMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc segmentedLocalRdxMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
       // reqMsg: segmentedReduction keys values segments operator
       var fields = reqMsg.split();
@@ -411,7 +386,6 @@ module ReductionMsg
       var rname = st.nextName();
       if v {try! writeln("%s %s %s %s %s".format(cmd,keys_name,values_name,segments_name,operator));try! stdout.flush();}
 
-      try {
       var gKey: borrowed GenSymEntry = st.lookup(keys_name);
       if (gKey.dtype != DType.Int64) {return unrecognizedTypeError(pn, dtype2str(gKey.dtype));}
       var keys = toSymEntry(gKey, int);
@@ -517,11 +491,6 @@ module ReductionMsg
       otherwise {return unrecognizedTypeError(pn, dtype2str(gVal.dtype));}
       }
       return try! "created " + st.attrib(rname);
-      } catch e: UndefinedSymbolError {
-        return unknownSymbolError("segmentedLocalRdx",e.name);
-      } catch {
-        return unknownError("segmentedLocalRdx");
-      }
     }
 	  
     /* Segmented Reductions of the form: seg<Op>(values:[] t, segments: [] int)

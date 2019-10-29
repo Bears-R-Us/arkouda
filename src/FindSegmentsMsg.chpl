@@ -23,9 +23,10 @@ module FindSegmentsMsg
     :type st: borrowed SymTab 
 
     :returns: (string) 
+    :throws: `UndefinedSymbolError(name)`
 
     */
-    proc findSegmentsMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc findSegmentsMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -37,30 +38,15 @@ module FindSegmentsMsg
 	if (nkeys != knames.size) {
 	  return try! incompatibleArgumentsError(pn, "Expected %i key arrays, but got %i".format(nkeys, knames.size));
 	}
-        // FUTURE: A good candidate for deferred initialization (?)
-        var gPermQ: borrowed GenSymEntry?;
-        try {
 	// Check all the argument arrays before doing anything
-	gPermQ = st.lookup(pname);
-        } catch e: UndefinedSymbolError {
-          return unknownSymbolError(pn,pname);
-        } catch {
-          return unknownError(pn);
-        }
-        var gPerm = gPermQ!;
+	var gPerm = st.lookup(pname);
 
 	if (gPerm.dtype != DType.Int64) { return notImplementedError(pn,"(permutation dtype "+dtype2str(gPerm.dtype)+")"); }	
 	// var keyEntries: [0..#nkeys] borrowed GenSymEntry;
 	for (name, i) in zip(knames, 0..) {
-          try {
 	  var g = st.lookup(name);
 	  if (g.size != size) { return try! incompatibleArgumentsError(pn, "Expected array of size %i, got size %i".format(size, g.size)); }
 	  if (g.dtype != DType.Int64) { return notImplementedError(pn,"(key array dtype "+dtype2str(g.dtype)+")");}
-        } catch e: UndefinedSymbolError {
-          return unknownSymbolError(pn,name);
-        } catch {
-          return unknownError(pn);
-        }
 	}
 	
 	// At this point, all arg arrays exist, have the same size, and are int64 dtype
@@ -82,7 +68,6 @@ module FindSegmentsMsg
 	ukeylocs[0] = true;
 	var permKey: [paD] int;
 	for name in knames {
-          try {
 	  var g: borrowed GenSymEntry = st.lookup(name);
 	  var k = toSymEntry(g,int); // key array
 	  ref ka = k.a; // ref to key array
@@ -90,11 +75,6 @@ module FindSegmentsMsg
 	  [(s, p) in zip(permKey, pa)] { unorderedCopy(s, ka[p]); }
 	  // Find steps and update ukeylocs
 	  [(u, s, i) in zip(ukeylocs, permKey, paD)] if ((i > paD.low) && (permKey[i-1] != s))  { u = true; }
-          } catch e: UndefinedSymbolError {
-            return unknownSymbolError(pn,name);
-          } catch {
-            return unknownError(pn);
-          }
 	}
 	// +scan to compute segment position... 1-based because of inclusive-scan
 	var iv: [ukeylocs.domain] int = (+ scan ukeylocs);
@@ -120,7 +100,7 @@ module FindSegmentsMsg
 	return try! "created " + st.attrib(sname) + " +created " + st.attrib(uname);
     }
 
-    proc findLocalSegmentsMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc findLocalSegmentsMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -131,7 +111,6 @@ module FindSegmentsMsg
         var sname = st.nextName(); // segments
         var uname = st.nextName(); // unique keys
 
-        try {
         var kEnt: borrowed GenSymEntry = st.lookup(kname);
 
         select (kEnt.dtype) {
@@ -147,11 +126,6 @@ module FindSegmentsMsg
         }
         
         return try! "created " + st.attrib(sname) + " +created " + st.attrib(uname);
-        } catch e: UndefinedSymbolError {
-          return unknownSymbolError(pn,e.name);
-        } catch {
-          return unknownError(pn);
-        }
     }
 
     proc perLocFindSegsAndUkeys(perLocSorted:[?D] int, minKey:int, keyRange:int) {

@@ -409,7 +409,7 @@ module ArgSortMsg
     /* Find the permutation that sorts multiple arrays, treating each array as a
        new level of the sorting key.
      */
-    proc coargsortMsg(reqMsg: string, st: borrowed SymTab) {
+    proc coargsortMsg(reqMsg: string, st: borrowed SymTab) throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string;
       var fields = reqMsg.split();
@@ -422,7 +422,6 @@ module ArgSortMsg
       var size: int;
       // Check that all arrays exist in the symbol table and have the same size
       for (name, i) in zip(names, 1..) {
-        try {
 	// arrays[i] = st.lookup(name): borrowed GenSymEntry;
 	var g: borrowed GenSymEntry = st.lookup(name);
 	if (i == 1) {
@@ -430,16 +429,10 @@ module ArgSortMsg
 	} else {
 	  if (g.size != size) { return incompatibleArgumentsError(pn, "Arrays must all be same size"); }
 	}
-        } catch (e: UndefinedSymbolError) {
-          return unknownSymbolError(pn, name);
-        } catch {
-          return unknownError(pn);
-        }
       }
       // Initialize the permutation vector in the symbol table with the identity perm
       var rname = st.nextName();
       st.addEntry(rname, size, int);
-      try {
       var iv = toSymEntry(st.lookup(rname), int);
       iv.a = 0..#size;
       // Starting with the last array, incrementally permute the IV by sorting each array
@@ -454,11 +447,6 @@ module ArgSortMsg
 	} catch {
 	  return try! "Error: %s unknown cause".format(pn);
 	}
-      }
-      } catch e: UndefinedSymbolError {
-        return unknownSymbolError(pn, rname);
-      } catch {
-        return unknownError(pn);
       }
 
       return try! "created " + st.attrib(rname);
@@ -475,7 +463,7 @@ module ArgSortMsg
     }
     
     /* argsort takes pdarray and returns an index vector iv which sorts the array */
-    proc argsortMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc argsortMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -486,7 +474,6 @@ module ArgSortMsg
         var ivname = st.nextName();
         if v {try! writeln("%s %s : %s %s".format(cmd, name, ivname));try! stdout.flush();}
 
-        try {
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
         select (gEnt.dtype) {
@@ -504,16 +491,11 @@ module ArgSortMsg
         }
         
         return try! "created " + st.attrib(ivname);
-        } catch e: UndefinedSymbolError {
-          return unknownSymbolError(pn,e.name);
-        } catch {
-          return unknownError(pn);
-        }
 
     }
 
     /* localArgsort takes a pdarray and returns an index vector which sorts the array on a per-locale basis */
-    proc localArgsortMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc localArgsortMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -524,7 +506,6 @@ module ArgSortMsg
         var ivname = st.nextName();
         if v {try! writeln("%s %s : %s %s".format(cmd, name, ivname));try! stdout.flush();}
 
-        try {
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
         select (gEnt.dtype) {
@@ -536,11 +517,6 @@ module ArgSortMsg
 	    otherwise {return notImplementedError(pn,gEnt.dtype);}
 	}
 	return try! "created " + st.attrib(ivname);
-        } catch e: UndefinedSymbolError {
-          return unknownSymbolError(pn,name);
-        } catch {
-          return unknownError(pn);
-        }
 
     }
     

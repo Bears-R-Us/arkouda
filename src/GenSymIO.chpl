@@ -65,12 +65,12 @@ module GenSymIO {
     }
   }
 
-  proc tondarrayMsg(reqMsg: string, st: borrowed SymTab): string {
+  proc tondarrayMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var arraystr: string;
     var fields = reqMsg.split();
+    var entry = st.lookup(fields[2]);
     var tmpf: file;
     try {
-    var entry = st.lookup(fields[2]);
       tmpf = openmem();
       var tmpw = tmpf.writer(kind=iobig);
       if entry.dtype == DType.Int64 {
@@ -83,8 +83,6 @@ module GenSymIO {
 	return try! "Error: Unhandled dtype %s".format(entry.dtype);
       }
       tmpw.close();
-    } catch e: UndefinedSymbolError {
-      return unknownSymbolError("tondarrayMsg",e.name);
     } catch {
       try! tmpf.close();
       return "Error: Unable to write SymEntry to memory buffer";
@@ -422,7 +420,7 @@ module GenSymIO {
     return {low..high by stride};
   }
 
-  proc tohdfMsg(reqMsg, st: borrowed SymTab): string {
+  proc tohdfMsg(reqMsg, st: borrowed SymTab): string throws {
     // reqMsg = "tohdf <arrayName> <dsetName> <mode> [<json_filename>]"
     var fields = reqMsg.split(4);
     var cmd = fields[1];
@@ -436,9 +434,9 @@ module GenSymIO {
     } catch {
       return try! "Error: could not decode json filenames via tempfile (%i files: %s)".format(1, jsonfile);
     }
+    var entry = st.lookup(arrayName);
     var warnFlag: bool;
     try {
-    var entry = st.lookup(arrayName);
     select entry.dtype {
       when DType.Int64 {
 	var e = toSymEntry(entry, int);
@@ -461,8 +459,6 @@ module GenSymIO {
       return try! "Error: unable to open file for writing: %s".format(filename);
     } catch e: MismatchedAppendError {
       return "Error: appending to existing files must be done with the same number of locales. Try saving with a different directory or filename prefix?";
-    } catch e: UndefinedSymbolError {
-      return try! "Error: lookup failed for %s".format(arrayName);
     } catch {
       return "Error: problem writing to file";
     }

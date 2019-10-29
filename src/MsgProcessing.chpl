@@ -269,8 +269,9 @@ module MsgProcessing
     :type st: borrowed SymTab 
 
     :returns: (string)
+    :throws: `UndefinedSymbolError(name)`
     */
-    proc setMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc setMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -279,7 +280,6 @@ module MsgProcessing
         var dtype = str2dtype(fields[3]);
         var value = fields[4];
 
-        try {
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
         select (gEnt.dtype, dtype) {
@@ -355,11 +355,7 @@ module MsgProcessing
             otherwise {return unrecognizedTypeError(pn,fields[3]);}
         }
         return repMsg;
-        } catch e: UndefinedSymbolError {
-          return unknownSymbolError("set",name);
-        } catch {
-          return unknownError("set");
-        }
-
     }
+    
+
 }

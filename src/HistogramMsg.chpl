@@ -14,7 +14,7 @@ module HistogramMsg
     private config const mBound = 2**25;
 
     /* histogram takes a pdarray and returns a pdarray with the histogram in it */
-    proc histogramMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc histogramMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -26,7 +26,6 @@ module HistogramMsg
         var rname = st.nextName();
         if v {try! writeln("%s %s %i : %s".format(cmd, name, bins, rname));try! stdout.flush();}
 
-        try {
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
         // helper nested procedure
@@ -61,11 +60,6 @@ module HistogramMsg
         }
         
         return try! "created " + st.attrib(rname);
-        } catch e: UndefinedSymbolError {
-          return unknownSymbolError("histogram",e.name);
-        } catch {
-          return unknownError("histogram");
-        }
     }
 
 

@@ -26,9 +26,10 @@ module EfuncMsg
       :type st: borrowed SymTab 
 
       :returns: (string)
+      :throws: `UndefinedSymbolError(name)`
       */
 
-    proc efuncMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc efuncMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -38,7 +39,6 @@ module EfuncMsg
         var rname = st.nextName();
         if v {try! writeln("%s %s %s : %s".format(cmd,efunc,name,rname));try! stdout.flush();}
 
-        try {
         var gEnt: borrowed GenSymEntry = st.lookup(name);
        
         select (gEnt.dtype) {
@@ -132,12 +132,6 @@ module EfuncMsg
             otherwise {return unrecognizedTypeError(pn, dtype2str(gEnt.dtype));}
         }
         return try! "created " + st.attrib(rname);
-        } catch e: UndefinedSymbolError {
-          return unknownSymbolError("efunc",e.name);
-        } catch {
-          return unknownError("efunc");
-        }
-
     }
 
     /*
@@ -151,8 +145,9 @@ module EfuncMsg
     :type st: borrowed SymTab 
 
     :returns: (string)
+    :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3vvMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc efunc3vvMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -164,7 +159,6 @@ module EfuncMsg
         var rname = st.nextName();
 	if v {try! writeln("%s %s %s %s %s %s : %s".format(cmd,efunc,name1,name2,name3,rname));try! stdout.flush();}
 
-        try {
         var g1: borrowed GenSymEntry = st.lookup(name1);
 	var g2: borrowed GenSymEntry = st.lookup(name2);
 	var g3: borrowed GenSymEntry = st.lookup(name3);
@@ -211,11 +205,6 @@ module EfuncMsg
 	otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,g3.dtype);}
 	}
 	return try! "created " + st.attrib(rname);
-        } catch e: UndefinedSymbolError {
-          return unknownSymbolError("efunc3vv",e.name);
-        } catch {
-          return unknownError("efunc3vv");
-        }
     }
 
     /*
@@ -228,8 +217,9 @@ module EfuncMsg
     :type st: borrowed SymTab 
 
     :returns: (string)
+    :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3vsMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc efunc3vsMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -242,7 +232,6 @@ module EfuncMsg
         var rname = st.nextName();
 	if v {try! writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,name2,dtype,value,rname));try! stdout.flush();}
 
-        try {
         var g1: borrowed GenSymEntry = st.lookup(name1);
 	var g2: borrowed GenSymEntry = st.lookup(name2);
 	if !(g1.size == g2.size) {
@@ -288,11 +277,6 @@ module EfuncMsg
 	otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,dtype);}
 	}
 	return try! "created " + st.attrib(rname);
-        } catch e: UndefinedSymbolError {
-          return unknownSymbolError("efunc3vs",e.name);
-        } catch {
-          return unknownError("efunc3vs");
-        }
     }
 
     /*
@@ -305,8 +289,9 @@ module EfuncMsg
     :type st: borrowed SymTab 
 
     :returns: (string)
+    :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3svMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc efunc3svMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -319,7 +304,6 @@ module EfuncMsg
         var rname = st.nextName();
 	if v {try! writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,dtype,value,name2,rname));try! stdout.flush();}
 
-        try {
         var g1: borrowed GenSymEntry = st.lookup(name1);
 	var g2: borrowed GenSymEntry = st.lookup(name2);
 	if !(g1.size == g2.size) {
@@ -365,11 +349,6 @@ module EfuncMsg
 	otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype,g2.dtype);}
 	}
 	return try! "created " + st.attrib(rname);
-        } catch e: UndefinedSymbolError {
-          return unknownSymbolError("efunc3sv",e.name);
-        } catch {
-          return unknownError("efunc3sv");
-        }
     }
 
     /*
@@ -382,8 +361,9 @@ module EfuncMsg
     :type st: borrowed SymTab 
 
     :returns: (string)
+    :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3ssMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc efunc3ssMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -397,7 +377,6 @@ module EfuncMsg
         var rname = st.nextName();
 	if v {try! writeln("%s %s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,dtype1,value1,dtype2,value2,rname));try! stdout.flush();}
 
-        try {
         var g1: borrowed GenSymEntry = st.lookup(name1);
         select (g1.dtype, dtype1, dtype1) {
 	when (DType.Bool, DType.Int64, DType.Int64) {
@@ -439,11 +418,6 @@ module EfuncMsg
 	otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype1,dtype2);}
 	}
 	return try! "created " + st.attrib(rname);
-        } catch e: UndefinedSymbolError {
-          return unknownSymbolError("efunc3ss",e.name);
-        } catch {
-          return unknownError("efunc3ss");
-        }
     }
 
     /* The 'where' function takes a boolean array and two other arguments A and B, and 

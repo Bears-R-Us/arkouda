@@ -22,8 +22,9 @@ module OperatorMsg
     :type st: borrowed SymTab 
 
     :returns: (string) 
+    :throws: `UndefinedSymbolError(name)`
     */
-    proc binopvvMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc binopvvMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -34,7 +35,6 @@ module OperatorMsg
         var rname = st.nextName();
         if v {try! writeln("%s %s %s %s : %s".format(cmd,op,aname,bname,rname));try! stdout.flush();}
 
-        try {
         var left: borrowed GenSymEntry = st.lookup(aname);
         var right: borrowed GenSymEntry = st.lookup(bname);
 
@@ -429,12 +429,6 @@ module OperatorMsg
             otherwise {return unrecognizedTypeError(pn,
                                                     "("+dtype2str(left.dtype)+","+dtype2str(right.dtype)+")");}
         }
-        } catch e: UndefinedSymbolError {
-          return try! "Error: binopvv: unknown symbol %s".format(e.name);
-        } catch {
-          return unknownError("binopvv");
-        }
-
         return try! "created " + st.attrib(rname);
     }
     /*
@@ -448,8 +442,9 @@ module OperatorMsg
     :type st: borrowed SymTab 
 
     :returns: (string) 
+    :throws: `UndefinedSymbolError(name)`
     */
-    proc binopvsMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc binopvsMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string = ""; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -461,7 +456,6 @@ module OperatorMsg
         var rname = st.nextName();
         if v {try! writeln("%s %s %s %s %s : %s".format(cmd,op,aname,dtype2str(dtype),value,rname));try! stdout.flush();}
 
-        try {
         var left: borrowed GenSymEntry = st.lookup(aname);
         select (left.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
@@ -850,11 +844,6 @@ module OperatorMsg
                                                     "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");}
         }
         return try! "created " + st.attrib(rname);
-        } catch e: UndefinedSymbolError {
-          return try! "Error: binopvs: unkown symbol %s".format(aname);
-        } catch {
-          return unknownError("binopvs");
-        }
     }
 
     /*
@@ -868,8 +857,9 @@ module OperatorMsg
     :type st: borrowed SymTab 
 
     :returns: (string) 
+    :throws: `UndefinedSymbolError(name)`
     */
-    proc binopsvMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc binopsvMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string = ""; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -881,7 +871,6 @@ module OperatorMsg
         var rname = st.nextName();
         if v {try! writeln("%s %s %s %s %s : %s".format(cmd,op,dtype2str(dtype),value,aname,rname));try! stdout.flush();}
 
-        try {
         var right: borrowed GenSymEntry = st.lookup(aname);
         if (right == nil) {return unknownSymbolError(pn, aname);}
         select (dtype, right.dtype) {
@@ -1267,12 +1256,6 @@ module OperatorMsg
                                                     "("+dtype2str(dtype)+","+dtype2str(right.dtype)+")");}
         }
         return try! "created " + st.attrib(rname);
-        } catch e: UndefinedSymbolError {
-          return try! "Error: binopsv: unkown symbol %s".format(aname);
-        } catch {
-          return unknownError("binopsv");
-        }
-
     }
 
     /*
@@ -1286,8 +1269,9 @@ module OperatorMsg
     :type st: borrowed SymTab 
 
     :returns: (string) 
+    :throws: `UndefinedSymbolError(name)`
     */
-    proc opeqvvMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc opeqvvMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -1296,8 +1280,7 @@ module OperatorMsg
         var aname = fields[3];
         var bname = fields[4];
         if v {try! writeln("%s %s %s %s".format(cmd,op,aname,bname));try! stdout.flush();}
-
-        try {
+        
         var left: borrowed GenSymEntry = st.lookup(aname);
         var right: borrowed GenSymEntry = st.lookup(bname);
         select (left.dtype, right.dtype) {
@@ -1408,11 +1391,6 @@ module OperatorMsg
             otherwise {return unrecognizedTypeError(pn,
                                                     "("+dtype2str(left.dtype)+","+dtype2str(right.dtype)+")");}
         }
-        } catch e: UndefinedSymbolError {
-          return try! "Error: opeqvv: unkown symbol %s".format(aname);
-        } catch {
-          return unknownError("opeqvv");
-        }
         return "opeqvv success";
     }
 
@@ -1427,9 +1405,10 @@ module OperatorMsg
     :type st: borrowed SymTab 
 
     :returns: (string) 
+    :throws: `UndefinedSymbolError(name)`
 
     */
-    proc opeqvsMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc opeqvsMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -1440,7 +1419,6 @@ module OperatorMsg
         var value = fields[5];
         if v {try! writeln("%s %s %s %s %s".format(cmd,op,aname,dtype2str(dtype),value));try! stdout.flush();}
 
-        try {
         var left: borrowed GenSymEntry = st.lookup(aname);
 
         select (left.dtype, dtype) {
@@ -1543,11 +1521,6 @@ module OperatorMsg
 	    }
             otherwise {return unrecognizedTypeError(pn,
                                                     "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");}
-        }
-        } catch e: UndefinedSymbolError {
-          return try! "Error: opeqvs: unkown symbol %s".format(aname);
-        } catch {
-          return unknownError("opeqvs");
         }
         return "opeqvs success";
     }

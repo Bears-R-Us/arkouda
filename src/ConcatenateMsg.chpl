@@ -15,7 +15,7 @@ module ConcatenateMsg
     /* Concatenate a list of arrays together
        to form one array
      */
-    proc concatenateMsg(reqMsg: string, st: borrowed SymTab) {
+    proc concatenateMsg(reqMsg: string, st: borrowed SymTab) throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
         var fields = reqMsg.split();
@@ -29,7 +29,6 @@ module ConcatenateMsg
         var dtype: DType;
         // Check that all arrays exist in the symbol table and have the same size
         for (name, i) in zip(names, 1..) {
-          try {
             // arrays[i] = st.lookup(name): borrowed GenSymEntry;
             var g: borrowed GenSymEntry = st.lookup(name);
             if (i == 1) {dtype = g.dtype;}
@@ -40,11 +39,6 @@ module ConcatenateMsg
             }
             // accumulate size from each array size
             size += g.size;
-          } catch e: UndefinedSymbolError {
-            return unknownSymbolError(pn,name);
-          } catch {
-            return unknownError(pn);
-          }
         }
         // allocate a new array in the symboltable
         // and copy in arrays
@@ -57,7 +51,6 @@ module ConcatenateMsg
                 var end: int;
                 start = 0;
                 for (name, i) in zip(names, 1..) {
-                  try {
                     // lookup and cast operand to copy from
                     var o = toSymEntry(st.lookup(name), int);
                     // calculate end which is inclusive
@@ -66,11 +59,6 @@ module ConcatenateMsg
                     e.a[{start..end}] = o.a;
                     // update new start for next array copy
                     start += o.size;
-                  } catch e: UndefinedSymbolError {
-                    return unknownSymbolError(pn,name);
-                  } catch {
-                    return unknownError(pn);
-                  }
                 }
             }
             when DType.Float64 {
@@ -80,7 +68,6 @@ module ConcatenateMsg
                 var end: int;
                 start = 0;
                 for (name, i) in zip(names, 1..) {
-                  try {
                     // lookup and cast operand to copy from
                     var o = toSymEntry(st.lookup(name), real);
                     // calculate end which is inclusive
@@ -89,11 +76,6 @@ module ConcatenateMsg
                     e.a[{start..end}] = o.a;
                     // update new start for next array copy
                     start += o.size;
-                  } catch e: UndefinedSymbolError {
-                    return unknownSymbolError(pn,name);
-                  } catch {
-                    return unknownError(pn);
-                  }
                 }
             }
             when DType.Bool {
@@ -103,7 +85,6 @@ module ConcatenateMsg
                 var end: int;
                 start = 0;
                 for (name, i) in zip(names, 1..) {
-                  try {
                     // lookup and cast operand to copy from
                     var o = toSymEntry(st.lookup(name), bool);
                     // calculate end which is inclusive
@@ -112,11 +93,6 @@ module ConcatenateMsg
                     e.a[{start..end}] = o.a;
                     // update new start for next array copy
                     start += o.size;
-                  } catch e: UndefinedSymbolError {
-                    return unknownSymbolError(pn,name);
-                  } catch {
-                    return unknownError(pn);
-                  }
                 }
             }
             otherwise {return notImplementedError("concatenate",dtype);}

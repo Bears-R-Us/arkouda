@@ -23,7 +23,7 @@ module UniqueMsg
     use Unique;
     
     /* unique take a pdarray and returns a pdarray with the unique values */
-    proc uniqueMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc uniqueMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -41,8 +41,7 @@ module UniqueMsg
         // get next symbol anme for counts
         var cname = st.nextName();
         if v {try! writeln("%s %s %t: %s %s".format(cmd, name, returnCounts, vname, cname));try! stdout.flush();}
-
-        try {
+        
         var gEnt: borrowed GenSymEntry = st.lookup(name);
         
         select (gEnt.dtype) {
@@ -81,16 +80,10 @@ module UniqueMsg
         if returnCounts {s += " +created " + st.attrib(cname);}
 
         return s;
-        } catch e: UndefinedSymbolError {
-          return unknownSymbolError(pn,e.name);
-        } catch {
-          return unknownError(pn);
-        }
-
     }
     
     /* value_counts takes a pdarray and returns two pdarrays unique values and counts for each value */
-    proc value_countsMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc value_countsMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -102,7 +95,6 @@ module UniqueMsg
         var cname = st.nextName();
         if v {try! writeln("%s %s : %s %s".format(cmd, name, vname, cname));try! stdout.flush();}
 
-        try {
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
         select (gEnt.dtype) {
@@ -142,12 +134,6 @@ module UniqueMsg
         }
         
         return try! "created " + st.attrib(vname) + " +created " + st.attrib(cname);
-        } catch e: UndefinedSymbolError {
-          return unknownSymbolError(pn,e.name);
-        } catch {
-          return unknownError(pn);
-        }
-
     }
 
 }
