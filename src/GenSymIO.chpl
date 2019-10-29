@@ -215,7 +215,6 @@ module GenSymIO {
       }
     }
     const dataclass = dclasses[dclasses.domain.first];
-
     for (i, dc) in zip(dclasses.domain, dclasses) {
       if dc != dataclass {
 	return try! "Error: inconsistent dtype in dataset %s of file %s".format(dsetName, filenames[i]);

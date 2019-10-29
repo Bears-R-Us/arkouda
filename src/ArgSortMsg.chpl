@@ -448,7 +448,6 @@ module ArgSortMsg
 	  return try! "Error: %s unknown cause".format(pn);
 	}
       }
-
       return try! "created " + st.attrib(rname);
     }
     
@@ -491,7 +490,6 @@ module ArgSortMsg
         }
         
         return try! "created " + st.attrib(ivname);
-
     }
 
     /* localArgsort takes a pdarray and returns an index vector which sorts the array on a per-locale basis */
@@ -517,7 +515,6 @@ module ArgSortMsg
 	    otherwise {return notImplementedError(pn,gEnt.dtype);}
 	}
 	return try! "created " + st.attrib(ivname);
-
     }
     
     proc perLocaleArgSort(a:[?aD] int):[aD] int {

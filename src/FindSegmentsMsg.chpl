@@ -40,7 +40,6 @@ module FindSegmentsMsg
 	}
 	// Check all the argument arrays before doing anything
 	var gPerm = st.lookup(pname);
-
 	if (gPerm.dtype != DType.Int64) { return notImplementedError(pn,"(permutation dtype "+dtype2str(gPerm.dtype)+")"); }	
 	// var keyEntries: [0..#nkeys] borrowed GenSymEntry;
 	for (name, i) in zip(knames, 0..) {
@@ -95,7 +94,6 @@ module FindSegmentsMsg
 	ref uka = ukeyinds.a;
 	// Segment boundaries are in terms of permuted arrays, so invert the permutation to get back to original index
 	[(s, i) in zip(sa, saD)] { unorderedCopy(uka[i], pa[s]); }
-
 	// Return entry names of segments and unique key indices
 	return try! "created " + st.attrib(sname) + " +created " + st.attrib(uname);
     }
