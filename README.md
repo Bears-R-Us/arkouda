@@ -57,7 +57,7 @@ interactive session.
  * requires zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * requires python 3.6 or greater
  * requires numpy
- * requires sphinx-doc to build python documentation
+ * requires Sphinx and sphinx-argparse to build python documentation
  
 ### It should be simple to get things going on a mac
 ```bash
@@ -110,7 +110,7 @@ Now, simply run `make` to build the `arkouda_server` executable.
 [Anaconda]: https://www.anaconda.com/distribution/
 
 ## Building the Arkouda documentation
-Make sure you installed the sphinx-doc package (e.g. `pip3 install -U Sphinx`)
+Make sure you installed the Sphinx and sphinx-argparse packages (e.g. `pip3 install -U Sphinx sphinx-argparse`)
 
 Run `make doc` to build both the Arkouda python documentation and the Chapel server documentation
 
