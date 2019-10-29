@@ -14,7 +14,7 @@ VERBOSE ?= 0
 
 CHPL := chpl
 CHPL_DEBUG_FLAGS += --print-passes
-CHPL_FLAGS += --fast --legacy-classes
+CHPL_FLAGS += --fast
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
 
 # --cache-remote does not work with ugni in Chapel 1.20
