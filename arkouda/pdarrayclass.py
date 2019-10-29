@@ -1,7 +1,7 @@
 import json, struct
 import numpy as np
 
-from arkouda.client import generic_msg, connected, verbose, maxTransferBytes, pdarrayIterThresh
+from arkouda.client import generic_msg, verbose, maxTransferBytes, pdarrayIterThresh
 from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
 
@@ -65,9 +65,10 @@ class pdarray:
         self.itemsize = itemsize
 
     def __del__(self):
-        global connected
-        if connected:
+        try:
             generic_msg("delete {}".format(self.name))
+        except:
+            pass
 
     def __len__(self):
         return self.shape[0]
