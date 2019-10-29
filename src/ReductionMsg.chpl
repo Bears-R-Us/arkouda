@@ -4,6 +4,7 @@ module ReductionMsg
 
     use Time only;
     use Math only;
+    use Reflection only;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -14,13 +15,14 @@ module ReductionMsg
     use PrivateDist;
     use RadixSortLSD;
 
-    config const reductionDEBUG = false;
-    const lBins = 2**25 * numLocales;
+    private config const reductionDEBUG = false;
+    private config const lBins = 2**25 * numLocales;
       
     // these functions take an array and produce a scalar
     // parse and respond to reduction message
     // scalar = reductionop(vector)
     proc reductionMsg(reqMsg: string, st: borrowed SymTab): string {
+        param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -98,7 +100,7 @@ module ReductionMsg
 		      if (& reduce locSorted) {val = "True";} else {val = "False";}
 		      return try! "bool %s".format(val);
 		    }
-                    otherwise {return notImplementedError("reduction",reductionop,gEnt.dtype);}
+                    otherwise {return notImplementedError(pn,reductionop,gEnt.dtype);}
                 }
             }
             when (DType.Float64) {
@@ -147,7 +149,7 @@ module ReductionMsg
                         if sorted {val = "True";} else {val = "False";}
                         return try! "bool %s".format(val);
                     }
-                    otherwise {return notImplementedError("reduction",reductionop,gEnt.dtype);}
+                    otherwise {return notImplementedError(pn,reductionop,gEnt.dtype);}
                 }
             }
             when (DType.Bool) {
@@ -184,10 +186,10 @@ module ReductionMsg
 			if (| reduce e.a) { val = "True"; } else { val = "False"; }
 			return try! "bool %s".format(val);
 		    }
-                    otherwise {return notImplementedError("reduction",reductionop,gEnt.dtype);}
+                    otherwise {return notImplementedError(pn,reductionop,gEnt.dtype);}
                 }
             }
-            otherwise {return unrecognizedTypeError("reduction", dtype2str(gEnt.dtype));}
+            otherwise {return unrecognizedTypeError(pn, dtype2str(gEnt.dtype));}
         }
         } catch e: UndefinedSymbolError {
           return unknownSymbolError("reduction",e.name);
@@ -198,6 +200,7 @@ module ReductionMsg
     }
 
     proc countReductionMsg(reqMsg: string, st: borrowed SymTab): string {
+        param pn = Reflection.getRoutineName();
       // reqMsg: segmentedReduction values segments operator
       var fields = reqMsg.split();
       var cmd = fields[1];
@@ -208,7 +211,6 @@ module ReductionMsg
 
       try {
       var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
-
       var segments = toSymEntry(gSeg, int);
       if (segments == nil) {return "Error: array of segment offsets must be int dtype";}
       var counts = segCount(segments.a, size);
@@ -237,6 +239,7 @@ module ReductionMsg
     }
     
     proc countLocalRdxMsg(reqMsg: string, st: borrowed SymTab): string {
+        param pn = Reflection.getRoutineName();
       // reqMsg: countLocalRdx segments
       // segments.size = numLocales * numKeys
       var fields = reqMsg.split();
@@ -277,6 +280,7 @@ module ReductionMsg
 
 
     proc segmentedReductionMsg(reqMsg: string, st: borrowed SymTab): string {
+        param pn = Reflection.getRoutineName();
       // reqMsg: segmentedReduction values segments operator
       var fields = reqMsg.split();
       var cmd = fields[1];
@@ -326,7 +330,7 @@ module ReductionMsg
 	    var res = segNumUnique(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
-	  otherwise {return notImplementedError("segmentedReduction",operator,gVal.dtype);}
+	  otherwise {return notImplementedError(pn,operator,gVal.dtype);}
 	  }
       }
       when (DType.Float64) {
@@ -360,7 +364,7 @@ module ReductionMsg
 	    var (vals, locs) = segArgmax(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(locs));
 	  }
-	  otherwise {return notImplementedError("segmentedReduction",operator,gVal.dtype);}
+	  otherwise {return notImplementedError(pn,operator,gVal.dtype);}
 	  }
       }
       when (DType.Bool) {
@@ -382,10 +386,10 @@ module ReductionMsg
 	    var res = segMean(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
-	  otherwise {return notImplementedError("segmentedReduction",operator,gVal.dtype);}
+	  otherwise {return notImplementedError(pn,operator,gVal.dtype);}
 	  }
       }
-      otherwise {return unrecognizedTypeError("segmentedReduction", dtype2str(gVal.dtype));}
+      otherwise {return unrecognizedTypeError(pn, dtype2str(gVal.dtype));}
       }
       return try! "created " + st.attrib(rname);
       } catch e: UndefinedSymbolError {
@@ -396,6 +400,7 @@ module ReductionMsg
     }
 
     proc segmentedLocalRdxMsg(reqMsg: string, st: borrowed SymTab): string {
+        param pn = Reflection.getRoutineName();
       // reqMsg: segmentedReduction keys values segments operator
       var fields = reqMsg.split();
       var cmd = fields[1];
@@ -408,7 +413,7 @@ module ReductionMsg
 
       try {
       var gKey: borrowed GenSymEntry = st.lookup(keys_name);
-      if (gKey.dtype != DType.Int64) {return unrecognizedTypeError("segmentedLocalRdx", dtype2str(gKey.dtype));}
+      if (gKey.dtype != DType.Int64) {return unrecognizedTypeError(pn, dtype2str(gKey.dtype));}
       var keys = toSymEntry(gKey, int);
       var gVal: borrowed GenSymEntry = st.lookup(values_name);
       var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
@@ -450,7 +455,7 @@ module ReductionMsg
 	    var res = perLocNumUnique(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
-	  otherwise {return notImplementedError("segmentedLocalRdx",operator,gVal.dtype);}
+	  otherwise {return notImplementedError(pn,operator,gVal.dtype);}
 	  }
       }
       when (DType.Float64) {
@@ -484,7 +489,7 @@ module ReductionMsg
 	    var res = perLocArgmax(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
-	  otherwise {return notImplementedError("segmentedLocalRdx",operator,gVal.dtype);}
+	  otherwise {return notImplementedError(pn,operator,gVal.dtype);}
 	  }
       }
       when (DType.Bool) {
@@ -506,10 +511,10 @@ module ReductionMsg
 	    var res = perLocMean(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
-	  otherwise {return notImplementedError("segmentedLocalRdx",operator,gVal.dtype);}
+	  otherwise {return notImplementedError(pn,operator,gVal.dtype);}
 	  }
       }
-      otherwise {return unrecognizedTypeError("segmentedLocalRdx", dtype2str(gVal.dtype));}
+      otherwise {return unrecognizedTypeError(pn, dtype2str(gVal.dtype));}
       }
       return try! "created " + st.attrib(rname);
       } catch e: UndefinedSymbolError {

@@ -3,6 +3,8 @@ module In1dMsg
 {
     use ServerConfig;
 
+    use Reflection only;
+    
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
@@ -26,7 +28,7 @@ module In1dMsg
        of in1d to utilize.
     */
     proc in1dMsg(reqMsg: string, st: borrowed SymTab): string {
-        var pn = "in1d";
+        param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];

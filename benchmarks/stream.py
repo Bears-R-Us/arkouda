@@ -92,7 +92,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.dtype not in ('int64', 'float64'):
         raise ValueError("Dtype must be either int64 or float64, not {}".format(args.dtype))
-    ak.v = False
+    ak.verbose = False
     ak.connect(args.hostname, args.port)
     
     print("array size = {:,}".format(args.size))

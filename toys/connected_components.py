@@ -1,15 +1,7 @@
 #!/usr/bin/env python3
-
-# this is all kinda of clunky because...
-# we are using an edgelist/tuple formulation...
-# but at least you can do it... ;-)
-#
-# generate and rmat graph
-# make the graph undirected/symmetric
-# find the graph's connected components using bfs
-
 import arkouda as ak
 
+# generate rmat graph edge-list as two pdarrays
 def gen_rmat_edges(lgNv, Ne_per_v, p, perm=False):
     # number of vertices
     Nv = 2**lgNv
@@ -52,6 +44,8 @@ def gen_rmat_edges(lgNv, Ne_per_v, p, perm=False):
     # return pair of pdarrays
     return (ii,jj)
 
+
+
 # src and dst pdarrays hold the edge list
 # seeds pdarray with starting vertices/seeds
 def bfs(src,dst,seeds,printLayers=False):
@@ -74,7 +68,6 @@ def bfs(src,dst,seeds,printLayers=False):
 # src pdarray holding source vertices
 # dst pdarray holding destination vertices
 # printCComp flag to print the connected components as they are found
-#
 # edges needs to be symmetric/undirected
 def conn_comp(src, dst, printCComp=False, printLayers=False):
     unvisited = ak.unique(src)
@@ -93,46 +86,11 @@ def conn_comp(src, dst, printCComp=False, printLayers=False):
         if printCComp: print("unvisited size = ", unvisited.size, unvisited)
     return components
 
-if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-    import argparse, sys, gc, math, time
-    
-    parser = argparse.ArgumentParser(description="Generates an rmat structured spare matrix as tuples(ii,jj)")
-    parser.add_argument('hostname', help='Hostname of arkouda server')
-    parser.add_argument('port', type=int, help='Port of arkouda server')
-    parser.add_argument('--lgNv', type=int, default=20, help='problem scale: log_2(Vertices)')
-    parser.add_argument('--Ne_per_v', type=int, default=2, help='number of edges per vertex')
-    parser.add_argument('--prob', type=float, default=0.01, help='prob of quadrant-0')
-    parser.add_argument('--perm', default=False, action='store_true', help='permute vertex indices/names')
-    parser.add_argument('--pl', default=False, action='store_true', help='print layers in bfs')
-    parser.add_argument('--pc', default=False, action='store_true', help='print connected comp as they are found')
-    
-    args = parser.parse_args()
-
-    ak.verbose = False
-    ak.connect(args.hostname, args.port)
-
-    print((args.lgNv, args.Ne_per_v, args.prob, args.perm, args.pl))
-    (ii,jj) = gen_rmat_edges(args.lgNv, args.Ne_per_v, args.prob, perm=args.perm)
-    
-    print("ii = ", (ii.size, ii))
-    print("ii(min,max) = ", (ii.min(), ii.max()))
-    print("jj = ", (jj.size, jj))
-    print("jj(min,max) = ", (jj.min(), jj.max()))
-
-    # make graph undirected/symmetric
-    # graph needs to undirected for connected components to work
-    src = ak.concatenate((ii,jj))
-    dst = ak.concatenate((jj,ii))
-
-    print("src = ", (src.size, src))
-    print("src(min,max) = ", (src.min(), src.max()))
-    print("dst = ", (dst.size, dst))
-    print("dst(min,max) = ", (dst.min(), dst.max()))
-
-    # find components using BFS
-    components = conn_comp(src, dst, printCComp=args.pc, printLayers=args.pl)
-    print("number of components = ",len(components))
-    print("representative vertices = ",[c[0] for c in components])
-    
-    ak.disconnect()
+ak.connect(server="localhost", port=5555)
+(ii,jj) = gen_rmat_edges(20, 2, 0.03, perm=True)
+src = ak.concatenate((ii,jj))# make graph undirected/symmetric
+dst = ak.concatenate((jj,ii))# graph needs to undirected for connected components to work
+components = conn_comp(src, dst, printCComp=False, printLayers=False) # find components
+print("number of components = ",len(components))
+print("representative vertices = ",[c[0] for c in components])
+ak.shutdown()
