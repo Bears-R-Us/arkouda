@@ -69,6 +69,13 @@ define ARKOUDA_HELP_TEXT
 endef
 $(eval $(call create_help_target,arkouda-help,ARKOUDA_HELP_TEXT))
 
+# Set the arkouda server version from the VERSION file
+VERSIONFILE=./VERSION
+ifneq ("$(wildcard $(VERSIONFILE))","")
+    # Chapel compiler does not accept "." in config params
+    VERSION=$(subst .,-,$(shell cat ${VERSIONFILE}))
+    CHPL_FLAGS += -sarkoudaVersion=$(VERSION)
+endif
 ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
