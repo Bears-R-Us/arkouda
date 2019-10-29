@@ -17,7 +17,7 @@ module ServerConfig
     /* 
     Arkouda version
     */
-    config param arkoudaVersion = "0.0.9-2019-09-23";
+    config param arkoudaVersion:string = "0.0.9-2019-09-23";
 
     /*
     Configure MyDmap on compile line by "-s MyDmap=0" or "-s MyDmap=1"
@@ -70,7 +70,7 @@ module ServerConfig
             var physicalMemory: int;
         }
         class Config {
-            param arkoudaVersion = ServerConfig.arkoudaVersion;
+	    var arkoudaVersion: string;
 	    var ZMQVersion: string;
 	    var HDF5Version: string;
 	    var serverHostname: string;
@@ -85,6 +85,7 @@ module ServerConfig
 	var H5major: c_uint, H5minor: c_uint, H5micro: c_uint;
 	H5get_libversion(H5major, H5minor, H5micro);
 	var cfg = new owned Config();
+	cfg.arkoudaVersion = (ServerConfig.arkoudaVersion:string).replace("-", ".");
 	cfg.ZMQVersion = try! "%i.%i.%i".format(Zmajor, Zminor, Zmicro);
 	cfg.HDF5Version = try! "%i.%i.%i".format(H5major, H5minor, H5micro);
         cfg.serverHostname = serverHostname;

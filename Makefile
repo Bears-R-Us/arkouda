@@ -73,7 +73,7 @@ $(eval $(call create_help_target,arkouda-help,ARKOUDA_HELP_TEXT))
 VERSIONFILE=./VERSION
 ifneq ("$(wildcard $(VERSIONFILE))","")
     # Chapel compiler does not accept "." in config params
-    VERSION=$(subst .,-,$(shell cat ${VERSIONFILE}))
+    VERSION=$(subst .,_,$(shell cat ${VERSIONFILE}))
     CHPL_FLAGS += -sarkoudaVersion=$(VERSION)
 endif
 ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')

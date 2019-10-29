@@ -13,7 +13,7 @@ use MsgProcessing;
 use GenSymIO;
 
 proc main() {
-    writeln("arkouda server version = ",arkoudaVersion); try! stdout.flush();
+    writeln("arkouda server version = ",(arkoudaVersion:string).replace("-",".")); try! stdout.flush();
 
     var st = new owned SymTab();
     var shutdownServer = false;

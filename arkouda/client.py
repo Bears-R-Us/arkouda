@@ -1,9 +1,14 @@
 import zmq, json
-import warnings
+import warnings, pkg_resources
 
 __all__ = ["verbose", "pdarrayIterThresh", "maxTransferBytes",
            "AllSymbols", "set_defaults", "connect", "disconnect",
-           "shutdown", "get_config", "get_mem_used"]
+           "shutdown", "get_config", "get_mem_used", "__version__"]
+
+# This is a trick for getting the version defined at build time in setup.py
+# pkg_resources is a subpackage of setuptools
+# __package__ is the name of the current package, i.e. "arkouda"
+__version__ = pkg_resources.require(__package__)[0].version
 
 # stuff for zmq connection
 pspStr = None
@@ -75,6 +80,10 @@ def connect(server = "localhost", port = 5555):
 
     print(message)
     connected = True
+    conf = get_config()
+    if conf['arkoudaVersion'] != __version__.replace('.',''):
+        warnings.warn("Version mismatch between client ({}) and server ({}); this may cause some commands to fail or behave incorrectly! Updating arkouda is strongly recommended.", RuntimeWarning)
+    
 
 # message arkouda server to shutdown server
 def disconnect():
