@@ -78,6 +78,11 @@ ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 $(ARKOUDA_MAIN_MODULE): $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
 	$(CHPL) $(CHPL_DEBUG_FLAGS) $(CHPL_FLAGS) $(ARKOUDA_MAIN_SOURCE) -o $@
 
+CLEAN_TARGETS += arkouda-clean
+.PHONY: arkouda-clean
+arkouda-clean:
+	$(RM) $(ARKOUDA_MAIN_MODULE) $(ARKOUDA_MAIN_MODULE)_real
+
 .PHONY: tags
 tags:
 	-@(cd $(ARKOUDA_SOURCE_DIR) && $(CHPL_HOME)/util/chpltags -r . > /dev/null \
