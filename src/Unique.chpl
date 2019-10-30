@@ -22,6 +22,7 @@ module Unique
     use SymArrayDmap;
 
     use RadixSortLSD;
+    use AryUtil;
 
     /* // thresholds for different unique counting algorithms */
     /* var sBins = 2**10; // small-range maybe for using reduce intents on forall loops */

@@ -1,6 +1,7 @@
 module IndexingMsg
 {
     use ServerConfig;
+    use ServerErrorStrings;
 
     use Reflection only;
 

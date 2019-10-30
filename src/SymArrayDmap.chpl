@@ -3,8 +3,8 @@ module SymArrayDmap
 {
     use ServerConfig;
 
-    use CyclicDist;
-    use BlockDist;
+    public use CyclicDist;
+    public use BlockDist;
 
     /* 
     Uses the MyDmap config param in ServerConfig.chpl::

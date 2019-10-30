@@ -13,17 +13,17 @@ module MsgProcessing
 
     use AryUtil;
     
-    use OperatorMsg;
-    use RandMsg;
-    use IndexingMsg;
-    use UniqueMsg;
-    use In1dMsg;
-    use HistogramMsg;
-    use ArgSortMsg;
-    use ReductionMsg;
-    use FindSegmentsMsg;
-    use EfuncMsg;
-    use ConcatenateMsg;
+    public use OperatorMsg;
+    public use RandMsg;
+    public use IndexingMsg;
+    public use UniqueMsg;
+    public use In1dMsg;
+    public use HistogramMsg;
+    public use ArgSortMsg;
+    public use ReductionMsg;
+    public use FindSegmentsMsg;
+    public use EfuncMsg;
+    public use ConcatenateMsg;
     
     /* 
     Parse, execute, and respond to a create message 
