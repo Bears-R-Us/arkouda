@@ -66,6 +66,9 @@ define ARKOUDA_HELP_TEXT
   arkouda-help
   arkouda-clean
 
+  tags			Create developer TAGS file
+  tags-clean
+
 endef
 $(eval $(call create_help_target,arkouda-help,ARKOUDA_HELP_TEXT))
 
@@ -75,10 +78,16 @@ ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 $(ARKOUDA_MAIN_MODULE): $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
 	$(CHPL) $(CHPL_DEBUG_FLAGS) $(CHPL_FLAGS) $(ARKOUDA_MAIN_SOURCE) -o $@
 
-CLEAN_TARGETS += arkouda-clean
-.PHONY: arkouda-clean
-arkouda-clean:
-	$(RM) $(ARKOUDA_MAIN_MODULE) $(ARKOUDA_MAIN_MODULE)_real
+.PHONY: tags
+tags:
+	-@(cd $(ARKOUDA_SOURCE_DIR) && $(CHPL_HOME)/util/chpltags -r . > /dev/null \
+		&& echo "Updated $(ARKOUDA_SOURCE_DIR)/TAGS" \
+		|| echo "Tags utility not available.  Skipping tags generation.")
+
+CLEANALL_TARGETS += tags-clean
+.PHONY: tags-clean
+tags-clean:
+	$(RM) $(ARKOUDA_SOURCE_DIR)/TAGS
 
 ####################
 #### Archive.mk ####
@@ -202,10 +211,6 @@ CLEAN_TARGETS += test-clean
 .PHONY: test-clean
 test-clean:
 	$(RM) $(TEST_TARGETS) $(addsuffix _real,$(TEST_TARGETS))
-
-.PHONY: tags
-tags:
-	-@(cd src && $(CHPL_HOME)/util/chpltags -r . > /dev/null 2>&1 && echo "Updating src/TAGS..." || echo "Tags utility not available.  Skipping tags generation.")
 
 #####################
 #### Epilogue.mk ####
