@@ -203,6 +203,10 @@ CLEAN_TARGETS += test-clean
 test-clean:
 	$(RM) $(TEST_TARGETS) $(addsuffix _real,$(TEST_TARGETS))
 
+.PHONY: tags
+tags:
+	-@(cd src && $(CHPL_HOME)/util/chpltags -r . > /dev/null 2>&1 && echo "Updating src/TAGS..." || echo "Tags utility not available.  Skipping tags generation.")
+
 #####################
 #### Epilogue.mk ####
 #####################
