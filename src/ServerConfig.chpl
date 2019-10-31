@@ -37,6 +37,11 @@ module ServerConfig
     config param arkoudaVersion:string;
     
     /*
+    Write the server `hostname:port` to this file.
+    */
+    config const serverConnectionInfo: string = getEnv("ARKOUDA_SERVER_CONNECTION_INFO", "");
+
+    /*
     Hostname where I am running 
     */ 
     var serverHostname: string = try! get_hostname();
@@ -103,6 +108,13 @@ module ServerConfig
         }
         var res: string = try! "%jt".format(cfg);
         return res;
+    }
+
+    proc getEnv(name: string, default=""): string {
+        extern proc getenv(name : c_string) : c_string;
+        var val = getenv(name.localize().c_str()): string;
+        if val.isEmpty() { val = default; }
+        return val;
     }
 
     /*

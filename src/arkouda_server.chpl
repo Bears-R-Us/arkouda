@@ -32,6 +32,7 @@ proc main() {
     var socket = context.socket(ZMQ.REP);
     socket.bind("tcp://*:%t".format(ServerPort));
     writeln("server listening on %s:%t".format(serverHostname, ServerPort)); try! stdout.flush();
+    createServerConnectionInfo();
 
     var reqCount: int = 0;
     var repCount: int = 0;
@@ -167,7 +168,27 @@ proc main() {
         if (logging) {writeln("<<< %s took %.17r sec".format(cmd, t1.elapsed() - s0)); try! stdout.flush();}
     }
     t1.stop();
+    deleteServerConnectionInfo();
     
     writeln("requests = ",reqCount," responseCount = ",repCount," elapsed sec = ",t1.elapsed());
+}
+
+proc createServerConnectionInfo() {
+    use IO;
+    if !serverConnectionInfo.isEmpty() {
+        try! {
+            var w = open(serverConnectionInfo, iomode.cw).writer();
+            w.writef("%s:%t\n", serverHostname, ServerPort);
+        }
+    }
+}
+
+proc deleteServerConnectionInfo() {
+    use FileSystem;
+    if !serverConnectionInfo.isEmpty() {
+        try! {
+            remove(serverConnectionInfo);
+        }
+    }
 }
 

@@ -1,21 +1,45 @@
 #!/usr/bin/env python3                                                         
 
-import importlib
-import numpy as np
-import math
-import gc
+import argparse
+import os
 import sys
+import socket
+import time
 
+import numpy as np
 import arkouda as ak
+
+
+def create_parser():
+    parser = argparse.ArgumentParser(description="Sanity check arkouda_server")
+    parser.add_argument('--hostname', help='Hostname of arkouda server',
+                        default='localhost')
+    parser.add_argument('--port', type=int, help='Port of arkouda server',
+                        default=5555)
+    parser.add_argument('--server-connection-info',
+                        help='File containing server `hostname:port`',
+                        default=os.getenv('ARKOUDA_SERVER_CONNECTION_INFO'))
+    parser.add_argument('--shutdown-server',
+                        help='Shutdown arkouda server',
+                        default=False, action='store_true')
+    return parser
+
+parser = create_parser()
+args = parser.parse_args()
 
 print(">>> Sanity checks on the arkouda_server")
 
-ak.verbose = False
-if len(sys.argv) > 1:
-    ak.connect(server=sys.argv[1], port=sys.argv[2])
-else:
-    ak.connect()
+if args.server_connection_info:
+    while not os.path.exists(args.server_connection_info):
+        time.sleep(1)
+    with open(args.server_connection_info, 'r') as f:
+        (args.hostname, args.port) = f.readline().split(':')
+        args.port = int(args.port)
+        if args.hostname == socket.gethostname():
+            args.hostname = 'localhost'
 
+ak.verbose = False
+ak.connect(args.hostname, args.port)
 
 N = 1_000_000
 
@@ -260,5 +284,8 @@ def check_set_integer_idx(N):
 
 print("check set integer idx = value:", check_set_integer_idx(N))
 
-ak.disconnect()
+if args.shutdown_server:
+    ak.shutdown()
+else:
+    ak.disconnect()
 sys.exit(errors)
