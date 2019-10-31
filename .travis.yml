@@ -1,0 +1,14 @@
+language: minimal
+
+services:
+  - docker
+
+jobs:
+  include:
+    - script: |
+        docker run -it -v ${TRAVIS_BUILD_DIR}:/repo.git -w /repo.git chapel/chapel:1.20.0 /bin/bash -c '
+        apt-get update && apt-get install -y libhdf5-dev libzmq3-dev python3-pip &&
+        pip3 install --user pyzmq numpy &&
+        echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" > Makefile.paths &&
+        ARKOUDA_DEVELOPER=true make &&
+        { ./arkouda_server &>server.log & } && PYTHONPATH=$PWD:$PYTHONPATH ./tests/check.py'
