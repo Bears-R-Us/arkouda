@@ -75,8 +75,6 @@ module ServerConfig
         cfg.arkoudaVersion = (ServerConfig.arkoudaVersion:string).replace("-", ".");
         cfg.ZMQVersion = try! "%i.%i.%i".format(Zmajor, Zminor, Zmicro);
         cfg.HDF5Version = try! "%i.%i.%i".format(H5major, H5minor, H5micro);
-        
-        var cfg = new owned Config();
         cfg.serverHostname = serverHostname;
         cfg.ServerPort = ServerPort;
         cfg.numLocales = numLocales;

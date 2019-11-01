@@ -81,7 +81,7 @@ def connect(server = "localhost", port = 5555):
     print(message)
     connected = True
     conf = get_config()
-    if conf['arkoudaVersion'] != __version__.replace('.',''):
+    if conf['arkoudaVersion'] != __version__:
         warnings.warn("Version mismatch between client ({}) and server ({}); this may cause some commands to fail or behave incorrectly! Updating arkouda is strongly recommended.", RuntimeWarning)
     
 
