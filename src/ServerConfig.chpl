@@ -17,7 +17,7 @@ module ServerConfig
     /* 
     Arkouda version
     */
-    config param arkoudaVersion:string = "0.0.9-2019-09-23";
+    config param arkoudaVersion:string;
 
     /*
     Configure MyDmap on compile line by "-s MyDmap=0" or "-s MyDmap=1"

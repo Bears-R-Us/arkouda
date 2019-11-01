@@ -74,11 +74,14 @@ $(eval $(call create_help_target,arkouda-help,ARKOUDA_HELP_TEXT))
 
 # Set the arkouda server version from the VERSION file
 VERSIONFILE=./VERSION
+# Test for existence of VERSION file
 ifneq ("$(wildcard $(VERSIONFILE))","")
-    # Chapel compiler does not accept "." in config params
 	VERSION=$(shell cat ${VERSIONFILE})
-    CHPL_FLAGS += -sarkoudaVersion="\"$(VERSION)\""
+else
+	VERSION=$(shell date +'%Y.%m.%d')
 endif
+	# Version needs to be escape-quoted for chpl to interpret as string
+    CHPL_FLAGS += -sarkoudaVersion="\"$(VERSION)\""
 ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
