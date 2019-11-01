@@ -58,7 +58,7 @@ module ServerConfig
             var numPUs: int;
             var maxTaskPar: int;
             var physicalMemory: int;
-            var LocaleConfigs: [LocaleSpace] LocaleConfig =
+            var LocaleConfigs: [LocaleSpace] owned LocaleConfig =
                         [loc in LocaleSpace] new owned LocaleConfig();
         }
         var cfg = new owned Config();
