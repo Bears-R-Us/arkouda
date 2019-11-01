@@ -23,9 +23,10 @@ module FindSegmentsMsg
     :type st: borrowed SymTab 
 
     :returns: (string) 
+    :throws: `UndefinedSymbolError(name)`
 
     */
-    proc findSegmentsMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc findSegmentsMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -39,12 +40,10 @@ module FindSegmentsMsg
 	}
 	// Check all the argument arrays before doing anything
 	var gPerm = st.lookup(pname);
-	if (gPerm == nil) { return unknownSymbolError(pn, pname); }
 	if (gPerm.dtype != DType.Int64) { return notImplementedError(pn,"(permutation dtype "+dtype2str(gPerm.dtype)+")"); }	
 	// var keyEntries: [0..#nkeys] borrowed GenSymEntry;
 	for (name, i) in zip(knames, 0..) {
 	  var g = st.lookup(name);
-	  if (g == nil) { return unknownSymbolError(pn, name); }
 	  if (g.size != size) { return try! incompatibleArgumentsError(pn, "Expected array of size %i, got size %i".format(size, g.size)); }
 	  if (g.dtype != DType.Int64) { return notImplementedError(pn,"(key array dtype "+dtype2str(g.dtype)+")");}
 	}
@@ -99,7 +98,7 @@ module FindSegmentsMsg
 	return try! "created " + st.attrib(sname) + " +created " + st.attrib(uname);
     }
 
-    proc findLocalSegmentsMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc findLocalSegmentsMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -111,7 +110,6 @@ module FindSegmentsMsg
         var uname = st.nextName(); // unique keys
 
         var kEnt: borrowed GenSymEntry = st.lookup(kname);
-        if (kEnt == nil) {return unknownSymbolError(pn,kname);}
 
         select (kEnt.dtype) {
             when (DType.Int64) {

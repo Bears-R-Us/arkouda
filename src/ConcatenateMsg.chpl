@@ -15,7 +15,7 @@ module ConcatenateMsg
     /* Concatenate a list of arrays together
        to form one array
      */
-    proc concatenateMsg(reqMsg: string, st: borrowed SymTab) {
+    proc concatenateMsg(reqMsg: string, st: borrowed SymTab) throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
         var fields = reqMsg.split();
@@ -31,7 +31,6 @@ module ConcatenateMsg
         for (name, i) in zip(names, 1..) {
             // arrays[i] = st.lookup(name): borrowed GenSymEntry;
             var g: borrowed GenSymEntry = st.lookup(name);
-            if (g == nil) { return unknownSymbolError(pn, name); }
             if (i == 1) {dtype = g.dtype;}
             else {
                 if (dtype != g.dtype) {

@@ -1,5 +1,6 @@
 module GenSymIO {
   use HDF5;
+  use ServerConfig;
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
   use ServerErrorStrings;
@@ -23,40 +24,49 @@ module GenSymIO {
     } catch {
       return "Error: Could not write to memory buffer";
     }
-    var entry: shared GenSymEntry;
     try {
+      const entry: shared GenSymEntry = readEntry();
+      const rname = st.nextName();
+      st.addEntry(rname, entry);
+      return try! "created " + st.attrib(rname);
+    } catch err: UnhandledDataTypeError {
+      return try! "Error: Unhandled data type %s".format(err.dtype);
+    } catch {
+      return "Error: Could not read from memory buffer into SymEntry";
+    }
+
+    class UnhandledDataTypeError: Error {
+      var dtype: DType;
+    }
+
+    proc readEntry(): shared GenSymEntry throws {
       var tmpr = tmpf.reader(kind=iobig, start=0);
       if dtype == DType.Int64 {
 	var entryInt = new shared SymEntry(size, int);
 	tmpr.read(entryInt.a);
 	tmpr.close(); tmpf.close();
-	entry = entryInt;
+	return entryInt;
       } else if dtype == DType.Float64 {
 	var entryReal = new shared SymEntry(size, real);
 	tmpr.read(entryReal.a);
 	tmpr.close(); tmpf.close();
-	entry = entryReal;
+	return entryReal;
       } else if dtype == DType.Bool {
 	var entryBool = new shared SymEntry(size, bool);
 	tmpr.read(entryBool.a);
 	tmpr.close(); tmpf.close();
-	entry = entryBool;
+	return entryBool;
       } else {
 	tmpr.close();
 	tmpf.close();
-	return try! "Error: Unhandled data type %s".format(fields[2]);
+	throw new owned UnhandledDataTypeError(dtype);
       }
       tmpr.close();
       tmpf.close();
-    } catch {
-      return "Error: Could not read from memory buffer into SymEntry";
     }
-    var rname = st.nextName();
-    st.addEntry(rname, entry);
-    return try! "created " + st.attrib(rname);
   }
 
-  proc tondarrayMsg(reqMsg: string, st: borrowed SymTab): string {
+  proc tondarrayMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var arraystr: string;
     var fields = reqMsg.split();
     var entry = st.lookup(fields[2]);
@@ -226,27 +236,42 @@ module GenSymIO {
     if GenSymIO_DEBUG {
       writeln("Got subdomains and total length");
     }
-    var entry: shared GenSymEntry;
+    try {
+    var entry: shared GenSymEntry = computeEntry(dataclass);
+    var rname = st.nextName();
+    st.addEntry(rname, entry);
+    return try! "created " + st.attrib(rname);
+    } catch e: UnhandledHDFSDataTypeError {
+      return try! "Error: detected unhandled datatype code %i".format(dataclass);
+    } catch {
+      return "Unexpected error";
+    }
+
+    class UnhandledHDFSDataTypeError: Error {
+    }
+
+    // This assumes that dataclass has already been validated above in
+    // validateDataClass() and that only expected dataclass values
+    // will be sent in.  If this is not the case, a halt occurs.
+    proc computeEntry(dataclass: C_HDF5.hid_t): shared GenSymEntry throws {
     if dataclass == C_HDF5.H5T_INTEGER {
       var entryInt = new shared SymEntry(len, int);
       if GenSymIO_DEBUG {
 	writeln("Initialized int entry"); try! stdout.flush();
       }
       read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
-      entry = entryInt;
+      return entryInt;
     } else if dataclass == C_HDF5.H5T_FLOAT {
       var entryReal = new shared SymEntry(len, real);
       if GenSymIO_DEBUG {
 	writeln("Initialized float entry"); try! stdout.flush();
       }
       read_files_into_distributed_array(entryReal.a, subdoms, filenames, dsetName);
-      entry = entryReal;
+      return entryReal;
     } else {
-      return try! "Error: detected unhandled datatype code %i".format(dataclass);
+      throw new owned UnhandledHDFSDataTypeError();
     }
-    var rname = st.nextName();
-    st.addEntry(rname, entry);
-    return try! "created " + st.attrib(rname);
+  }
   }
   
   /* Get the class of the HDF5 datatype for the dataset. */
@@ -395,7 +420,7 @@ module GenSymIO {
     return {low..high by stride};
   }
 
-  proc tohdfMsg(reqMsg, st: borrowed SymTab): string {
+  proc tohdfMsg(reqMsg, st: borrowed SymTab): string throws {
     // reqMsg = "tohdf <arrayName> <dsetName> <mode> [<json_filename>]"
     var fields = reqMsg.split(4);
     var cmd = fields[1];
