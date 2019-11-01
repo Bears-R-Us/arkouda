@@ -1,5 +1,6 @@
 module GenSymIO {
   use HDF5;
+  use ServerConfig;
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
   use ServerErrorStrings;

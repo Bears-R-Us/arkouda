@@ -11,6 +11,7 @@ use MultiTypeSymbolTable;
 use MultiTypeSymEntry;
 use MsgProcessing;
 use GenSymIO;
+use SymArrayDmap;
 
 proc main() {
     writeln("arkouda server version = ",arkoudaVersion); try! stdout.flush();
