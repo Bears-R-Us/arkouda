@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import arkouda as ak
 import numpy as np
@@ -40,4 +40,5 @@ if __name__ == '__main__':
         print(f"Usage: {sys.argv[0]} <server_name> <port>")
     ak.connect(server=sys.argv[1], port=int(sys.argv[2]))
     run_tests()
+    ak.shutdown()
     sys.exit()
