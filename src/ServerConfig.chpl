@@ -73,9 +73,11 @@ module ServerConfig
             var numPUs: int;
             var maxTaskPar: int;
             var physicalMemory: int;
+            var LocaleConfigs: [LocaleSpace] LocaleConfig =
+                        [loc in LocaleSpace] new owned LocaleConfig();
         }
         var cfg = new owned Config();
-        
+
         cfg.serverHostname = serverHostname;
         cfg.ServerPort = ServerPort;
         cfg.numLocales = numLocales;
@@ -83,15 +85,15 @@ module ServerConfig
         cfg.maxTaskPar = here.maxTaskPar;
         cfg.physicalMemory = here.physicalMemory();
         
-        /* for loc in Locales { */
-        /*     on loc { */
-        /*         cfg.LocaleConfigs[here.id].id = here.id; */
-        /*         cfg.LocaleConfigs[here.id].name = here.name; */
-        /*         cfg.LocaleConfigs[here.id].numPUs = here.numPUs(); */
-        /*         cfg.LocaleConfigs[here.id].maxTaskPar = here.maxTaskPar; */
-        /*         cfg.LocaleConfigs[here.id].physicalMemory = here.physicalMemory(); */
-        /*     } */
-        /* } */
+        for loc in Locales {
+            on loc {
+                cfg.LocaleConfigs[here.id].id = here.id;
+                cfg.LocaleConfigs[here.id].name = here.name;
+                cfg.LocaleConfigs[here.id].numPUs = here.numPUs();
+                cfg.LocaleConfigs[here.id].maxTaskPar = here.maxTaskPar;
+                cfg.LocaleConfigs[here.id].physicalMemory = here.physicalMemory();
+            }
+        }
         var res: string = try! "%jt".format(cfg);
         return res;
     }
