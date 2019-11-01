@@ -269,8 +269,9 @@ module MsgProcessing
     :type st: borrowed SymTab 
 
     :returns: (string)
+    :throws: `UndefinedSymbolError(name)`
     */
-    proc setMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc setMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -280,7 +281,6 @@ module MsgProcessing
         var value = fields[4];
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError(pn,name);}
 
         select (gEnt.dtype, dtype) {
             when (DType.Int64, DType.Int64) {

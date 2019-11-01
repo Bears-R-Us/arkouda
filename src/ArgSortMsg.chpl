@@ -409,7 +409,7 @@ module ArgSortMsg
     /* Find the permutation that sorts multiple arrays, treating each array as a
        new level of the sorting key.
      */
-    proc coargsortMsg(reqMsg: string, st: borrowed SymTab) {
+    proc coargsortMsg(reqMsg: string, st: borrowed SymTab) throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string;
       var fields = reqMsg.split();
@@ -424,7 +424,6 @@ module ArgSortMsg
       for (name, i) in zip(names, 1..) {
 	// arrays[i] = st.lookup(name): borrowed GenSymEntry;
 	var g: borrowed GenSymEntry = st.lookup(name);
-	if (g == nil) { return unknownSymbolError(pn, name); }
 	if (i == 1) {
 	  size = g.size;
 	} else {
@@ -463,7 +462,7 @@ module ArgSortMsg
     }
     
     /* argsort takes pdarray and returns an index vector iv which sorts the array */
-    proc argsortMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc argsortMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -475,7 +474,6 @@ module ArgSortMsg
         if v {try! writeln("%s %s : %s %s".format(cmd, name, ivname));try! stdout.flush();}
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError(pn,name);}
 
         select (gEnt.dtype) {
             when (DType.Int64) {
@@ -495,7 +493,7 @@ module ArgSortMsg
     }
 
     /* localArgsort takes a pdarray and returns an index vector which sorts the array on a per-locale basis */
-    proc localArgsortMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc localArgsortMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -507,7 +505,6 @@ module ArgSortMsg
         if v {try! writeln("%s %s : %s %s".format(cmd, name, ivname));try! stdout.flush();}
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError(pn,name);}
 
         select (gEnt.dtype) {
             when (DType.Int64) {

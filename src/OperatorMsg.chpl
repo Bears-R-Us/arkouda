@@ -22,8 +22,9 @@ module OperatorMsg
     :type st: borrowed SymTab 
 
     :returns: (string) 
+    :throws: `UndefinedSymbolError(name)`
     */
-    proc binopvvMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc binopvvMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -35,9 +36,7 @@ module OperatorMsg
         if v {try! writeln("%s %s %s %s : %s".format(cmd,op,aname,bname,rname));try! stdout.flush();}
 
         var left: borrowed GenSymEntry = st.lookup(aname);
-        if (left == nil) {return unknownSymbolError(pn, aname);}
         var right: borrowed GenSymEntry = st.lookup(bname);
-        if (right == nil) {return unknownSymbolError(pn, bname);}
 
         select (left.dtype, right.dtype) {
             when (DType.Int64, DType.Int64) {
@@ -443,8 +442,9 @@ module OperatorMsg
     :type st: borrowed SymTab 
 
     :returns: (string) 
+    :throws: `UndefinedSymbolError(name)`
     */
-    proc binopvsMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc binopvsMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string = ""; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -457,7 +457,6 @@ module OperatorMsg
         if v {try! writeln("%s %s %s %s %s : %s".format(cmd,op,aname,dtype2str(dtype),value,rname));try! stdout.flush();}
 
         var left: borrowed GenSymEntry = st.lookup(aname);
-        if (left == nil) {return unknownSymbolError(pn, aname);}
         select (left.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
                 var l = toSymEntry(left,int);
@@ -858,8 +857,9 @@ module OperatorMsg
     :type st: borrowed SymTab 
 
     :returns: (string) 
+    :throws: `UndefinedSymbolError(name)`
     */
-    proc binopsvMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc binopsvMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string = ""; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -1269,8 +1269,9 @@ module OperatorMsg
     :type st: borrowed SymTab 
 
     :returns: (string) 
+    :throws: `UndefinedSymbolError(name)`
     */
-    proc opeqvvMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc opeqvvMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -1281,9 +1282,7 @@ module OperatorMsg
         if v {try! writeln("%s %s %s %s".format(cmd,op,aname,bname));try! stdout.flush();}
         
         var left: borrowed GenSymEntry = st.lookup(aname);
-        if (left == nil) {return unknownSymbolError(pn,aname);}
         var right: borrowed GenSymEntry = st.lookup(bname);
-        if (right == nil) {return unknownSymbolError(pn,bname);}
         select (left.dtype, right.dtype) {
             when (DType.Int64, DType.Int64) {
                 var l = toSymEntry(left,int);
@@ -1406,9 +1405,10 @@ module OperatorMsg
     :type st: borrowed SymTab 
 
     :returns: (string) 
+    :throws: `UndefinedSymbolError(name)`
 
     */
-    proc opeqvsMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc opeqvsMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -1420,7 +1420,6 @@ module OperatorMsg
         if v {try! writeln("%s %s %s %s %s".format(cmd,op,aname,dtype2str(dtype),value));try! stdout.flush();}
 
         var left: borrowed GenSymEntry = st.lookup(aname);
-        if (left == nil) {return unknownSymbolError(pn,aname);}
 
         select (left.dtype, dtype) {
             when (DType.Int64, DType.Int64) {

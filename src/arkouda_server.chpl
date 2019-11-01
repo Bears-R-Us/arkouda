@@ -64,6 +64,8 @@ proc main() {
             try! stdout.flush();
         }
 
+        try {
+        
         // parse requests, execute requests, format responses
         select cmd
         {
@@ -126,6 +128,13 @@ proc main() {
                 if v {writeln("Error: unrecognized command: %s".format(reqMsg)); try! stdout.flush();}
             }
         }
+
+        } catch (e: UndefinedSymbolError) {
+          repMsg = unknownSymbolError("", e.name);
+        } catch {
+          repMsg = unknownError("");
+        }
+        
         
         // send responses
         // send count for now

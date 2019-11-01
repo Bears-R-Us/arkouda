@@ -26,9 +26,10 @@ module EfuncMsg
       :type st: borrowed SymTab 
 
       :returns: (string)
+      :throws: `UndefinedSymbolError(name)`
       */
 
-    proc efuncMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc efuncMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -39,7 +40,6 @@ module EfuncMsg
         if v {try! writeln("%s %s %s : %s".format(cmd,efunc,name,rname));try! stdout.flush();}
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError(pn,name);}
        
         select (gEnt.dtype) {
             when (DType.Int64) {
@@ -145,8 +145,9 @@ module EfuncMsg
     :type st: borrowed SymTab 
 
     :returns: (string)
+    :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3vvMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc efunc3vvMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -159,11 +160,8 @@ module EfuncMsg
 	if v {try! writeln("%s %s %s %s %s %s : %s".format(cmd,efunc,name1,name2,name3,rname));try! stdout.flush();}
 
         var g1: borrowed GenSymEntry = st.lookup(name1);
-        if (g1 == nil) {return unknownSymbolError(pn,name1);}
 	var g2: borrowed GenSymEntry = st.lookup(name2);
-	if (g2 == nil) {return unknownSymbolError(pn,name2);}
 	var g3: borrowed GenSymEntry = st.lookup(name3);
-	if (g3 == nil) {return unknownSymbolError(pn,name3);}
 	if !((g1.size == g2.size) && (g2.size == g3.size)) {
 	  return "Error: size mismatch in arguments to "+pn;
 	}
@@ -219,8 +217,9 @@ module EfuncMsg
     :type st: borrowed SymTab 
 
     :returns: (string)
+    :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3vsMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc efunc3vsMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -234,9 +233,7 @@ module EfuncMsg
 	if v {try! writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,name2,dtype,value,rname));try! stdout.flush();}
 
         var g1: borrowed GenSymEntry = st.lookup(name1);
-        if (g1 == nil) {return unknownSymbolError(pn,name1);}
 	var g2: borrowed GenSymEntry = st.lookup(name2);
-	if (g2 == nil) {return unknownSymbolError(pn,name2);}
 	if !(g1.size == g2.size) {
 	  return "Error: size mismatch in arguments to "+pn;
 	}
@@ -292,8 +289,9 @@ module EfuncMsg
     :type st: borrowed SymTab 
 
     :returns: (string)
+    :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3svMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc efunc3svMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -307,9 +305,7 @@ module EfuncMsg
 	if v {try! writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,dtype,value,name2,rname));try! stdout.flush();}
 
         var g1: borrowed GenSymEntry = st.lookup(name1);
-        if (g1 == nil) {return unknownSymbolError(pn,name1);}
 	var g2: borrowed GenSymEntry = st.lookup(name2);
-	if (g2 == nil) {return unknownSymbolError(pn,name2);}
 	if !(g1.size == g2.size) {
 	  return "Error: size mismatch in arguments to "+pn;
 	}
@@ -365,8 +361,9 @@ module EfuncMsg
     :type st: borrowed SymTab 
 
     :returns: (string)
+    :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3ssMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc efunc3ssMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -381,7 +378,6 @@ module EfuncMsg
 	if v {try! writeln("%s %s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,dtype1,value1,dtype2,value2,rname));try! stdout.flush();}
 
         var g1: borrowed GenSymEntry = st.lookup(name1);
-        if (g1 == nil) {return unknownSymbolError(pn,name1);}
         select (g1.dtype, dtype1, dtype1) {
 	when (DType.Bool, DType.Int64, DType.Int64) {
 	  var e1 = toSymEntry(g1, bool);

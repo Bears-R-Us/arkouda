@@ -27,7 +27,7 @@ module In1dMsg
        in1dMsg processes the request, considers the size of the arguements, and decides which implementation
        of in1d to utilize.
     */
-    proc in1dMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc in1dMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -44,9 +44,7 @@ module In1dMsg
         if v {try! writeln("%s %s %s %s : %s".format(cmd, name, sname, invert, rname));try! stdout.flush();}
 
         var gAr1: borrowed GenSymEntry = st.lookup(name);
-        if (gAr1 == nil) {return unknownSymbolError("in1d",name);}
         var gAr2: borrowed GenSymEntry = st.lookup(sname);
-        if (gAr2 == nil) {return unknownSymbolError("in1d",sname);}
 
         select (gAr1.dtype, gAr2.dtype) {
             when (DType.Int64, DType.Int64) {

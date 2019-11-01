@@ -10,7 +10,7 @@ module IndexingMsg
     use UnorderedCopy;
 
     /* intIndex "a[int]" response to __getitem__(int) */
-    proc intIndexMsg(reqMsg: string, st: borrowed SymTab):string {
+    proc intIndexMsg(reqMsg: string, st: borrowed SymTab):string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -20,7 +20,6 @@ module IndexingMsg
         if v {try! writeln("%s %s %i".format(cmd, name, idx));try! stdout.flush();}
 
          var gEnt: borrowed GenSymEntry = st.lookup(name);
-         if (gEnt == nil) {return unknownSymbolError(pn,name);}
          
          select (gEnt.dtype) {
              when (DType.Int64) {
@@ -43,7 +42,7 @@ module IndexingMsg
     }
 
     /* sliceIndex "a[slice]" response to __getitem__(slice) */
-    proc sliceIndexMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc sliceIndexMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -68,7 +67,6 @@ module IndexingMsg
         if v {try! writeln("%s %s %i %i %i : %t , %s".format(cmd, name, start, stop, stride, slice, rname));try! stdout.flush();}
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError(pn,name);}
 
         proc sliceHelper(type t) {
             var e = toSymEntry(gEnt,t);
@@ -95,7 +93,7 @@ module IndexingMsg
     }
 
     /* pdarrayIndex "a[pdarray]" response to __getitem__(pdarray) */
-    proc pdarrayIndexMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc pdarrayIndexMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -109,9 +107,7 @@ module IndexingMsg
         if v {try! writeln("%s %s %s : %s".format(cmd, name, iname, rname));try! stdout.flush();}
 
         var gX: borrowed GenSymEntry = st.lookup(name);
-        if (gX == nil) {return unknownSymbolError(pn,name);}
         var gIV: borrowed GenSymEntry = st.lookup(iname);
-        if (gIV == nil) {return unknownSymbolError(pn,iname);}
 
         // gather indexing by integer index vector
         proc ivInt64Helper(type XType) {
@@ -172,7 +168,7 @@ module IndexingMsg
     }
 
     /* setIntIndexToValue "a[int] = value" response to __setitem__(int, value) */
-    proc setIntIndexToValueMsg(reqMsg: string, st: borrowed SymTab):string {
+    proc setIntIndexToValueMsg(reqMsg: string, st: borrowed SymTab):string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -184,7 +180,6 @@ module IndexingMsg
         if v {try! writeln("%s %s %i %s %s".format(cmd, name, idx, dtype2str(dtype), value));try! stdout.flush();}
 
          var gEnt: borrowed GenSymEntry = st.lookup(name);
-         if (gEnt == nil) {return unknownSymbolError(pn,name);}
 
          select (gEnt.dtype, dtype) {
              when (DType.Int64, DType.Int64) {
@@ -247,7 +242,7 @@ module IndexingMsg
     }
 
     /* setPdarrayIndexToValue "a[pdarray] = value" response to __setitem__(pdarray, value) */
-    proc setPdarrayIndexToValueMsg(reqMsg: string, st: borrowed SymTab):string {
+    proc setPdarrayIndexToValueMsg(reqMsg: string, st: borrowed SymTab):string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -260,9 +255,7 @@ module IndexingMsg
         if v {try! writeln("%s %s %s %s %s".format(cmd, name, iname, dtype2str(dtype), value));try! stdout.flush();}
 
         var gX: borrowed GenSymEntry = st.lookup(name);
-        if (gX == nil) {return unknownSymbolError(pn,name);}
         var gIV: borrowed GenSymEntry = st.lookup(iname);
-        if (gIV == nil) {return unknownSymbolError(pn,iname);}
 
         // scatter indexing by integer index vector
         proc ivInt64Helper(type Xtype, type dtype): string {
@@ -285,7 +278,7 @@ module IndexingMsg
         }
 
         // expansion boolean indexing by bool index vector
-        proc ivBoolHelper(type Xtype, type dtype): string {
+        proc ivBoolHelper(type Xtype, type dtype): string throws {
             var e = toSymEntry(gX,Xtype);
             var truth = toSymEntry(gIV,bool);
             if (e.size != truth.size) {return try! "Error: %s: bool iv must be same size %i != %i".format(pn,e.size,truth.size);}
@@ -326,7 +319,7 @@ module IndexingMsg
     }
 
     /* setPdarrayIndexToPdarray "a[pdarray] = pdarray" response to __setitem__(pdarray, pdarray) */
-    proc setPdarrayIndexToPdarrayMsg(reqMsg: string, st: borrowed SymTab):string {
+    proc setPdarrayIndexToPdarrayMsg(reqMsg: string, st: borrowed SymTab):string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -338,11 +331,8 @@ module IndexingMsg
         if v {try! writeln("%s %s %s %s".format(cmd, name, iname, yname));try! stdout.flush();}
 
         var gX: borrowed GenSymEntry = st.lookup(name);
-        if (gX == nil) {return unknownSymbolError(pn,name);}
         var gIV: borrowed GenSymEntry = st.lookup(iname);
-        if (gIV == nil) {return unknownSymbolError(pn,iname);}
         var gY: borrowed GenSymEntry = st.lookup(yname);
-        if (gY == nil) {return unknownSymbolError(pn,yname);}
 
         // add check for IV to be dtype of int64 or bool
 
@@ -409,7 +399,7 @@ module IndexingMsg
     }
 
     /* setSliceIndexToValue "a[slice] = value" response to __setitem__(slice, value) */
-    proc setSliceIndexToValueMsg(reqMsg: string, st: borrowed SymTab):string {
+    proc setSliceIndexToValueMsg(reqMsg: string, st: borrowed SymTab):string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -433,7 +423,6 @@ module IndexingMsg
         if v {try! writeln("%s %s %i %i %i %s %s".format(cmd, name, start, stop, stride, dtype2str(dtype), value));try! stdout.flush();}
         
         var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError(pn,name);}
 
         select (gEnt.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
@@ -496,7 +485,7 @@ module IndexingMsg
     }
     
     /* setSliceIndexToPdarray "a[slice] = pdarray" response to __setitem__(slice, pdarray) */
-    proc setSliceIndexToPdarrayMsg(reqMsg: string, st: borrowed SymTab):string {
+    proc setSliceIndexToPdarrayMsg(reqMsg: string, st: borrowed SymTab):string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
@@ -519,9 +508,7 @@ module IndexingMsg
         if v {try! writeln("%s %s %i %i %i %s".format(cmd, name, start, stop, stride, yname));try! stdout.flush();}
 
         var gX: borrowed GenSymEntry = st.lookup(name);
-        if (gX == nil) {return unknownSymbolError(pn,name);}
         var gY: borrowed GenSymEntry = st.lookup(yname);
-        if (gY == nil) {return unknownSymbolError(pn,yname);}
 
         // add check to make syre IV and Y are same size
         if (slice.size != gY.size) {return try! "Error: %s: size mismatch %i %i".format(pn,slice.size, gY.size);}
