@@ -66,6 +66,9 @@ define ARKOUDA_HELP_TEXT
   arkouda-help
   arkouda-clean
 
+  tags			Create developer TAGS file
+  tags-clean
+
 endef
 $(eval $(call create_help_target,arkouda-help,ARKOUDA_HELP_TEXT))
 
@@ -79,6 +82,17 @@ CLEAN_TARGETS += arkouda-clean
 .PHONY: arkouda-clean
 arkouda-clean:
 	$(RM) $(ARKOUDA_MAIN_MODULE) $(ARKOUDA_MAIN_MODULE)_real
+
+.PHONY: tags
+tags:
+	-@(cd $(ARKOUDA_SOURCE_DIR) && $(CHPL_HOME)/util/chpltags -r . > /dev/null \
+		&& echo "Updated $(ARKOUDA_SOURCE_DIR)/TAGS" \
+		|| echo "Tags utility not available.  Skipping tags generation.")
+
+CLEANALL_TARGETS += tags-clean
+.PHONY: tags-clean
+tags-clean:
+	$(RM) $(ARKOUDA_SOURCE_DIR)/TAGS
 
 ####################
 #### Archive.mk ####
