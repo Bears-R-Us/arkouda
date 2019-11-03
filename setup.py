@@ -14,7 +14,6 @@ with open(path.join(here, 'VERSION'), 'r') as f:
 
 
 
-
 # Arguments marked as "Required" below must be included for upload to PyPI.
 # Fields marked as "Optional" may be commented out.
 
@@ -155,8 +154,7 @@ setup(
     # replace orginal install command with version that also builds
     # chapel and the arkouda server.
     cmdclass={
-        "install": installers.ArkoudaInstall,
-        "develop": installers.ArkoudaDevelop,
+        "build_py": installers.ArkoudaInstall,
     },
 
     # If there are data files included in your packages that need to be
