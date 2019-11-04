@@ -347,6 +347,10 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, bool);
 		        e.a = l.a ^ r.a;
 		    }
+                    when "==" {
+                        var e = st.addEntry(rname, l.size, bool);
+                        e.a = l.a == r.a;
+                    }
 		    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
 		}
 	    }
