@@ -1,5 +1,6 @@
 module GenSymIO {
   use HDF5;
+  use ServerConfig;
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
   use ServerErrorStrings;
@@ -25,40 +26,49 @@ module GenSymIO {
     } catch {
       return "Error: Could not write to memory buffer";
     }
-    var entry: shared GenSymEntry;
     try {
+      const entry: shared GenSymEntry = readEntry();
+      const rname = st.nextName();
+      st.addEntry(rname, entry);
+      return try! "created " + st.attrib(rname);
+    } catch err: UnhandledDataTypeError {
+      return try! "Error: Unhandled data type %s".format(err.dtype);
+    } catch {
+      return "Error: Could not read from memory buffer into SymEntry";
+    }
+
+    class UnhandledDataTypeError: Error {
+      var dtype: DType;
+    }
+
+    proc readEntry(): shared GenSymEntry throws {
       var tmpr = tmpf.reader(kind=iobig, start=0);
       if dtype == DType.Int64 {
 	var entryInt = new shared SymEntry(size, int);
 	tmpr.read(entryInt.a);
 	tmpr.close(); tmpf.close();
-	entry = entryInt;
+	return entryInt;
       } else if dtype == DType.Float64 {
 	var entryReal = new shared SymEntry(size, real);
 	tmpr.read(entryReal.a);
 	tmpr.close(); tmpf.close();
-	entry = entryReal;
+	return entryReal;
       } else if dtype == DType.Bool {
 	var entryBool = new shared SymEntry(size, bool);
 	tmpr.read(entryBool.a);
 	tmpr.close(); tmpf.close();
-	entry = entryBool;
+	return entryBool;
       } else {
 	tmpr.close();
 	tmpf.close();
-	return try! "Error: Unhandled data type %s".format(fields[2]);
+	throw new owned UnhandledDataTypeError(dtype);
       }
       tmpr.close();
       tmpf.close();
-    } catch {
-      return "Error: Could not read from memory buffer into SymEntry";
     }
-    var rname = st.nextName();
-    st.addEntry(rname, entry);
-    return try! "created " + st.attrib(rname);
   }
 
-  proc tondarrayMsg(reqMsg: string, st: borrowed SymTab): string {
+  proc tondarrayMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var arraystr: string;
     var fields = reqMsg.split();
     var entry = st.lookup(fields[2]);
@@ -232,9 +242,11 @@ module GenSymIO {
     var nSeg: int;
     try {
       if isSegArray {
-	(segSubdoms, nSeg) = get_subdoms(filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);
+        (segSubdoms, nSeg) = get_subdoms(filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);
+        (subdoms, len) = get_subdoms(filenames, dsetName + "/" + SEGARRAY_VALUE_NAME);
+      } else {
+        (subdoms, len) = get_subdoms(filenames, dsetName);
       }
-      (subdoms, len) = get_subdoms(filenames, dsetName + "/" + SEGARRAY_VALUE_NAME);
     } catch e: HDF5RankError {
       return notImplementedError("readhdf", try! "Rank %i arrays".format(e.rank));
     } catch {
@@ -243,42 +255,91 @@ module GenSymIO {
     if GenSymIO_DEBUG {
       writeln("Got subdomains and total length");
     }
-    select (isSegArray, dataclass, bytesize, isSigned) {
-    when (true, C_HDF5.H5T_INTEGER, 1, false) {
-      var entrySeg = new shared SymEntry(nSeg, int);
-      read_files_into_distributed_array(entrySeg.a, segSubdoms, filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);
-      var entryVal = new shared SymEntry(len, uint(8));
-      read_files_into_distributed_array(entryVal.a, subdoms, filenames, dsetName + "/" + SEGARRAY_VALUE_NAME);
-      var segName = st.nextName();
-      st.addEntry(segName, entrySeg);
-      var valName = st.nextName();
-      st.addEntry(valName, entryVal);
-      return try! "created " + st.attrib(segName) + " +created " + st.attrib(valName);
-    } 
-    when (false, C_HDF5.H5T_INTEGER, 8, true) {
+/* <<<<<<< HEAD */
+/*     select (isSegArray, dataclass, bytesize, isSigned) { */
+/*     when (true, C_HDF5.H5T_INTEGER, 1, false) { */
+/*       var entrySeg = new shared SymEntry(nSeg, int); */
+/*       read_files_into_distributed_array(entrySeg.a, segSubdoms, filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME); */
+/*       var entryVal = new shared SymEntry(len, uint(8)); */
+/*       read_files_into_distributed_array(entryVal.a, subdoms, filenames, dsetName + "/" + SEGARRAY_VALUE_NAME); */
+/*       var segName = st.nextName(); */
+/*       st.addEntry(segName, entrySeg); */
+/*       var valName = st.nextName(); */
+/*       st.addEntry(valName, entryVal); */
+/*       return try! "created " + st.attrib(segName) + " +created " + st.attrib(valName); */
+/*     }  */
+/*     when (false, C_HDF5.H5T_INTEGER, 8, true) { */
+/* ======= */
+    if isSegArray {
+      try {
+        var entrySeg: shared GenSymEntry = computeEntry(C_HDF5.H5T_INTEGER, segSubdoms, dsetName + "/" + SEGARRAY_OFFSET_NAME);
+        var entryVal: shared GenSymEntry = computeEntry(dataclass, subdoms, dsetName + "/" + SEGARRAY_VALUE_NAME);
+        var segName = st.nextName();
+        st.addEntry(segName, entrySeg);
+        var valName = st.nextName();
+        st.addEntry(valName, entryVal);
+        return try! "created " + st.attrib(segName) + " +created " + st.attrib(valName);
+      } catch e: UnhandledHDFSDataTypeError {
+        return try! "Error: detected unhandled datatype code %i".format(dataclass);
+      } catch {
+        return "Error: Unexpected error";
+      }
+    } else {
+      try {
+        var entry: shared GenSymEntry = computeEntry(dataclass, subdoms, dsetName);
+        var rname = st.nextName();
+        st.addEntry(rname, entry);
+        return try! "created " + st.attrib(rname);
+      } catch e: UnhandledHDFSDataTypeError {
+        return try! "Error: detected unhandled datatype code %i".format(dataclass);
+      } catch {
+        return "Unexpected error";
+      }
+    }
+    class UnhandledHDFSDataTypeError: Error {
+    }
+      
+    // This assumes that dataclass has already been validated above in
+    // validateDataClass() and that only expected dataclass values
+    // will be sent in.  If this is not the case, a halt occurs.
+    proc computeEntry(dataclass: C_HDF5.hid_t, subdoms, dsetName: string): shared GenSymEntry throws {
+    if dataclass == C_HDF5.H5T_INTEGER {
       var entryInt = new shared SymEntry(len, int);
       if GenSymIO_DEBUG {
 	writeln("Initialized int entry"); try! stdout.flush();
       }
       read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
-      var rname = st.nextName();
-      st.addEntry(rname, entryInt);
-      return try! "created " + st.attrib(rname);
-    }
-    when (false, C_HDF5.H5T_FLOAT, 8, true) {
+/* <<<<<<< HEAD */
+/*       var rname = st.nextName(); */
+/*       st.addEntry(rname, entryInt); */
+/*       return try! "created " + st.attrib(rname); */
+/*     } */
+/*     when (false, C_HDF5.H5T_FLOAT, 8, true) { */
+/* ======= */
+      return entryInt;
+    } else if dataclass == C_HDF5.H5T_FLOAT {
+/* >>>>>>> ae96c375d40642d032c37301676ef3392d4ee61e */
       var entryReal = new shared SymEntry(len, real);
       if GenSymIO_DEBUG {
 	writeln("Initialized float entry"); try! stdout.flush();
       }
       read_files_into_distributed_array(entryReal.a, subdoms, filenames, dsetName);
-      var rname = st.nextName();
-      st.addEntry(rname, entryReal);
-      return try! "created " + st.attrib(rname);
+/* <<<<<<< HEAD */
+/*       var rname = st.nextName(); */
+/*       st.addEntry(rname, entryReal); */
+/*       return try! "created " + st.attrib(rname); */
+/*     } */
+/*     otherwise { */
+/*       return try! "Error: detected unhandled datatype: segmented? %t, class %i, size %i, signed? %t".format(isSegArray, dataclass, bytesize, isSigned); */
+/*     } */
+/*     } */
+/* ======= */
+      return entryReal;
+    } else {
+      throw new owned UnhandledHDFSDataTypeError();
     }
-    otherwise {
-      return try! "Error: detected unhandled datatype: segmented? %t, class %i, size %i, signed? %t".format(isSegArray, dataclass, bytesize, isSigned);
     }
-    }
+/* >>>>>>> ae96c375d40642d032c37301676ef3392d4ee61e */
   }
 
   /* Get the class of the HDF5 datatype for the dataset. */
@@ -459,7 +520,7 @@ module GenSymIO {
     return {low..high by stride};
   }
 
-  proc tohdfMsg(reqMsg, st: borrowed SymTab): string {
+  proc tohdfMsg(reqMsg, st: borrowed SymTab): string throws {
     // reqMsg = "tohdf <arrayName> <dsetName> <mode> [<json_filename>]"
     var fields = reqMsg.split(4);
     var cmd = fields[1];

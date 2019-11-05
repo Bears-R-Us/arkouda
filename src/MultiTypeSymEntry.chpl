@@ -3,9 +3,9 @@ module MultiTypeSymEntry
 {
     use ServerConfig;
 
-    use NumPyDType;
+    public use NumPyDType;
 
-    use SymArrayDmap;
+    public use SymArrayDmap;
 
     use AryUtil;
     

@@ -4,6 +4,8 @@ module ReductionMsg
 
     use Time only;
     use Math only;
+    use Reflection only;
+    use UnorderedCopy;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -14,13 +16,14 @@ module ReductionMsg
     use PrivateDist;
     use RadixSortLSD;
 
-    config const reductionDEBUG = false;
-    const lBins = 2**25 * numLocales;
+    private config const reductionDEBUG = false;
+    private config const lBins = 2**25 * numLocales;
       
     // these functions take an array and produce a scalar
     // parse and respond to reduction message
     // scalar = reductionop(vector)
-    proc reductionMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc reductionMsg(reqMsg: string, st: borrowed SymTab): string throws {
+        param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -29,7 +32,6 @@ module ReductionMsg
         if v {try! writeln("%s %s %s".format(cmd,reductionop,name));try! stdout.flush();}
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError("reduction",name);}
        
         select (gEnt.dtype) {
             when (DType.Int64) {
@@ -49,39 +51,40 @@ module ReductionMsg
                         return try! "bool %s".format(val);
                     }
                     when "sum" {
-                        var sum = + reduce e.a;
-                        var val = sum:string;
+                        var val = + reduce e.a;
                         return try! "int64 %i".format(val);
                     }
                     when "prod" {
-		      var prod = * reduce e.a:real;
-                        var val = prod:string;
-                        return try! "int64 %i".format(val);
+		      ref ea = e.a;
+		      // If any element is zero, skip the computation and return 0.0
+		      var val: real = 0.0;
+		      if (&& reduce (ea != 0)) {
+			// Cast to real to avoid int64 overflow
+			val = * reduce ea:real;
+		      }
+			// Return value is always float64 for prod
+                        return try! "float64 %.17r".format(val);
                     }
 		    when "min" {
-		        var minVal = min reduce e.a;
-			var val = minVal:string;
-			return try! "int64 %i".format(val);
+		      var val = min reduce e.a;
+		      return try! "int64 %i".format(val);
 		    }
 		    when "max" {
-		        var maxVal = max reduce e.a;
-			var val = maxVal:string;
+		        var val = max reduce e.a;
 			return try! "int64 %i".format(val);
 		    }
                     when "argmin" {
                         var (minVal, minLoc) = minloc reduce zip(e.a,e.aD);
-                        var val = minLoc:string;
-                        return try! "int64 %i".format(val);
+                        return try! "int64 %i".format(minLoc);
                     }
                     when "argmax" {
                         var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.aD);
-                        var val = maxLoc:string;
-                        return try! "int64 %i".format(val);
+                        return try! "int64 %i".format(maxLoc);
                     }
                     when "is_sorted" {
                         ref ea = e.a;
                         var sorted = isSorted(ea);
-                        var val:string;
+			var val: string;
                         if sorted {val = "True";} else {val = "False";}
                         return try! "bool %s".format(val);
                     }
@@ -97,7 +100,7 @@ module ReductionMsg
 		      if (& reduce locSorted) {val = "True";} else {val = "False";}
 		      return try! "bool %s".format(val);
 		    }
-                    otherwise {return notImplementedError("reduction",reductionop,gEnt.dtype);}
+                    otherwise {return notImplementedError(pn,reductionop,gEnt.dtype);}
                 }
             }
             when (DType.Float64) {
@@ -117,34 +120,28 @@ module ReductionMsg
                         return try! "bool %s".format(val);
                     }
                     when "sum" {
-                        var sum = + reduce e.a;
-                        var val = sum:string;
+                        var val = + reduce e.a;
                         return try! "float64 %.17r".format(val);
                     }
                     when "prod" {
-                        var prod = * reduce e.a;
-                        var val = prod:string;
+                        var val = * reduce e.a;
                         return try! "float64 %.17r".format(val);
                     }
 		    when "min" {
-                        var minVal = min reduce e.a;
-                        var val = minVal:string;
+                        var val = min reduce e.a;
                         return try! "float64 %.17r".format(val);
                     }
 		    when "max" {
-                        var maxVal = max reduce e.a;
-                        var val = maxVal:string;
+                        var val = max reduce e.a;
                         return try! "float64 %.17r".format(val);
                     }
                     when "argmin" {
                         var (minVal, minLoc) = minloc reduce zip(e.a,e.aD);
-                        var val = minLoc:string;
-                        return try! "int64 %i".format(val);
+                        return try! "int64 %i".format(minLoc);
                     }
                     when "argmax" {
                         var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.aD);
-                        var val = maxLoc:string;
-                        return try! "int64 %i".format(val);
+                        return try! "int64 %i".format(maxLoc);
                     }
                     when "is_sorted" {
                         var sorted = isSorted(e.a);
@@ -152,7 +149,7 @@ module ReductionMsg
                         if sorted {val = "True";} else {val = "False";}
                         return try! "bool %s".format(val);
                     }
-                    otherwise {return notImplementedError("reduction",reductionop,gEnt.dtype);}
+                    otherwise {return notImplementedError(pn,reductionop,gEnt.dtype);}
                 }
             }
             when (DType.Bool) {
@@ -172,13 +169,11 @@ module ReductionMsg
                         return try! "bool %s".format(val);
                     }
                     when "sum" {
-                        var sum = + reduce e.a:int;
-                        var val = sum:string;
+                        var val = + reduce e.a:int;
                         return try! "int64 %i".format(val);
                     }
                     when "prod" {
-                        var prod = * reduce e.a:int;
-                        var val = prod:string;
+                        var val = * reduce e.a:int;
                         return try! "int64 %i".format(val);
                     }
 		    when "min" {
@@ -191,14 +186,15 @@ module ReductionMsg
 			if (| reduce e.a) { val = "True"; } else { val = "False"; }
 			return try! "bool %s".format(val);
 		    }
-                    otherwise {return notImplementedError("reduction",reductionop,gEnt.dtype);}
+                    otherwise {return notImplementedError(pn,reductionop,gEnt.dtype);}
                 }
             }
-            otherwise {return unrecognizedTypeError("reduction", dtype2str(gEnt.dtype));}
+            otherwise {return unrecognizedTypeError(pn, dtype2str(gEnt.dtype));}
         }
     }
 
-    proc countReductionMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc countReductionMsg(reqMsg: string, st: borrowed SymTab): string throws {
+        param pn = Reflection.getRoutineName();
       // reqMsg: segmentedReduction values segments operator
       var fields = reqMsg.split();
       var cmd = fields[1];
@@ -208,7 +204,6 @@ module ReductionMsg
       if v {try! writeln("%s %s %s".format(cmd,segments_name, size));try! stdout.flush();}
 
       var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
-      if (gSeg == nil) {return unknownSymbolError("segmentedReduction",segments_name);}
       var segments = toSymEntry(gSeg, int);
       if (segments == nil) {return "Error: array of segment offsets must be int dtype";}
       var counts = segCount(segments.a, size);
@@ -218,6 +213,7 @@ module ReductionMsg
 
     proc segCount(segments:[?D] int, upper: int):[D] int {
       var counts:[D] int;
+      if (D.size == 0) { return counts; }
       forall (c, low, i) in zip(counts, segments, D) {
 	var high: int;
 	if (i < D.high) {
@@ -230,7 +226,8 @@ module ReductionMsg
       return counts;
     }
     
-    proc countLocalRdxMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc countLocalRdxMsg(reqMsg: string, st: borrowed SymTab): string throws {
+        param pn = Reflection.getRoutineName();
       // reqMsg: countLocalRdx segments
       // segments.size = numLocales * numKeys
       var fields = reqMsg.split();
@@ -241,7 +238,6 @@ module ReductionMsg
       if v {try! writeln("%s %s %s".format(cmd,segments_name, size));try! stdout.flush();}
 
       var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
-      if (gSeg == nil) {return unknownSymbolError("segmentedReduction",segments_name);}
       var segments = toSymEntry(gSeg, int);
       if (segments == nil) {return "Error: array of segment offsets must be int dtype";}
       var counts = perLocCount(segments.a, size);
@@ -265,7 +261,8 @@ module ReductionMsg
     }
 
 
-    proc segmentedReductionMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc segmentedReductionMsg(reqMsg: string, st: borrowed SymTab): string throws {
+        param pn = Reflection.getRoutineName();
       // reqMsg: segmentedReduction values segments operator
       var fields = reqMsg.split();
       var cmd = fields[1];
@@ -275,9 +272,7 @@ module ReductionMsg
       var rname = st.nextName();
       if v {try! writeln("%s %s %s %s".format(cmd,values_name,segments_name,operator));try! stdout.flush();}
       var gVal: borrowed GenSymEntry = st.lookup(values_name);
-      if (gVal == nil) {return unknownSymbolError("segmentedReduction",values_name);}
       var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
-      if (gSeg == nil) {return unknownSymbolError("segmentedReduction",segments_name);}
       var segments = toSymEntry(gSeg, int);
       if (segments == nil) {return "Error: array of segment offsets must be int dtype";}
       select (gVal.dtype) {
@@ -316,7 +311,7 @@ module ReductionMsg
 	    var res = segNumUnique(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
-	  otherwise {return notImplementedError("segmentedReduction",operator,gVal.dtype);}
+	  otherwise {return notImplementedError(pn,operator,gVal.dtype);}
 	  }
       }
       when (DType.Float64) {
@@ -350,7 +345,7 @@ module ReductionMsg
 	    var (vals, locs) = segArgmax(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(locs));
 	  }
-	  otherwise {return notImplementedError("segmentedReduction",operator,gVal.dtype);}
+	  otherwise {return notImplementedError(pn,operator,gVal.dtype);}
 	  }
       }
       when (DType.Bool) {
@@ -372,15 +367,16 @@ module ReductionMsg
 	    var res = segMean(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
-	  otherwise {return notImplementedError("segmentedReduction",operator,gVal.dtype);}
+	  otherwise {return notImplementedError(pn,operator,gVal.dtype);}
 	  }
       }
-      otherwise {return unrecognizedTypeError("segmentedReduction", dtype2str(gVal.dtype));}
+      otherwise {return unrecognizedTypeError(pn, dtype2str(gVal.dtype));}
       }
       return try! "created " + st.attrib(rname);
     }
 
-    proc segmentedLocalRdxMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc segmentedLocalRdxMsg(reqMsg: string, st: borrowed SymTab): string throws {
+        param pn = Reflection.getRoutineName();
       // reqMsg: segmentedReduction keys values segments operator
       var fields = reqMsg.split();
       var cmd = fields[1];
@@ -392,13 +388,10 @@ module ReductionMsg
       if v {try! writeln("%s %s %s %s %s".format(cmd,keys_name,values_name,segments_name,operator));try! stdout.flush();}
 
       var gKey: borrowed GenSymEntry = st.lookup(keys_name);
-      if (gKey == nil) {return unknownSymbolError("segmentedLocalRdx",keys_name);}
-      if (gKey.dtype != DType.Int64) {return unrecognizedTypeError("segmentedLocalRdx", dtype2str(gKey.dtype));}
+      if (gKey.dtype != DType.Int64) {return unrecognizedTypeError(pn, dtype2str(gKey.dtype));}
       var keys = toSymEntry(gKey, int);
       var gVal: borrowed GenSymEntry = st.lookup(values_name);
-      if (gVal == nil) {return unknownSymbolError("segmentedLocalRdx",values_name);}
       var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
-      if (gSeg == nil) {return unknownSymbolError("segmentedLocalRdx",segments_name);}
       var segments = toSymEntry(gSeg, int);
       if (segments == nil) {return "Error: array of segment offsets must be int dtype";}
       select (gVal.dtype) {
@@ -437,7 +430,7 @@ module ReductionMsg
 	    var res = perLocNumUnique(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
-	  otherwise {return notImplementedError("segmentedLocalRdx",operator,gVal.dtype);}
+	  otherwise {return notImplementedError(pn,operator,gVal.dtype);}
 	  }
       }
       when (DType.Float64) {
@@ -471,7 +464,7 @@ module ReductionMsg
 	    var res = perLocArgmax(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
-	  otherwise {return notImplementedError("segmentedLocalRdx",operator,gVal.dtype);}
+	  otherwise {return notImplementedError(pn,operator,gVal.dtype);}
 	  }
       }
       when (DType.Bool) {
@@ -493,10 +486,10 @@ module ReductionMsg
 	    var res = perLocMean(values.a, segments.a);
 	    st.addEntry(rname, new shared SymEntry(res));
 	  }
-	  otherwise {return notImplementedError("segmentedLocalRdx",operator,gVal.dtype);}
+	  otherwise {return notImplementedError(pn,operator,gVal.dtype);}
 	  }
       }
-      otherwise {return unrecognizedTypeError("segmentedLocalRdx", dtype2str(gVal.dtype));}
+      otherwise {return unrecognizedTypeError(pn, dtype2str(gVal.dtype));}
       }
       return try! "created " + st.attrib(rname);
     }
@@ -508,6 +501,7 @@ module ReductionMsg
      */
     proc segSum(values:[] ?t, segments:[?D] int): [D] t {
       var res: [D] t;
+      if (D.size == 0) { return res; }
       var cumsum = + scan values;
       // Iterate over segments
       forall (i, r) in zip(D, res) {
@@ -556,6 +550,7 @@ module ReductionMsg
 
     proc segSum(values:[] bool, segments:[?D] int): [D] int {
       var res: [D] int;
+      if (D.size == 0) { return res; }
       var cumsum = + scan values;
       // Iterate over segments
       forall (i, r) in zip(D, res) {
@@ -591,6 +586,7 @@ module ReductionMsg
     proc segProduct(values:[], segments:[?D] int): [D] real {
       // Segmented sum of log-magnitudes
       var res: [D] real = 0.0;
+      if (D.size == 0) { return res; }
       const epsilon:real = 1 / max(real);
       var magnitudes = Math.abs(values);
       var logs = Math.log(magnitudes:real + epsilon);
@@ -623,6 +619,7 @@ module ReductionMsg
     
     proc segMean(values:[] ?t, segments:[?D] int): [D] real {
       var res: [D] real;
+      if (D.size == 0) { return res; }
       var sums = segSum(values, segments);
       var counts = segCount(segments, values.size);
       forall (r, s, c) in zip(res, sums, counts) {
@@ -657,8 +654,9 @@ module ReductionMsg
     }
 
     proc segMin(values:[?vD] ?t, segments:[?D] int): [D] t {
-      var keys = expandKeys(vD, segments);
       var res: [D] t = max(t);
+      if (D.size == 0) { return res; }
+      var keys = expandKeys(vD, segments);
       var kv = [(k, v) in zip(keys, values)] (-k, v);
       var cummin = min scan kv;
       forall (i, r, low) in zip(D, res, segments) {
@@ -693,8 +691,9 @@ module ReductionMsg
     }    
 
     proc segMax(values:[?vD] ?t, segments:[?D] int): [D] t {
-      var keys = expandKeys(vD, segments);
       var res: [D] t = min(t);
+      if (D.size == 0) { return res; }
+      var keys = expandKeys(vD, segments);
       var kv = [(k, v) in zip(keys, values)] (k, v);
       var cummax = max scan kv;
       forall (i, r, low) in zip(D, res, segments) {
@@ -729,11 +728,12 @@ module ReductionMsg
     }
     
     proc segArgmin(values:[?vD] ?t, segments:[?D] int): ([D] t, [D] int) {
+      var locs: [D] int;
+      var vals: [D] t = max(t);
+      if (D.size == 0) { return (vals, locs); }
       var keys = expandKeys(vD, segments);
       var kvi = [(k, v, i) in zip(keys, values, vD)] ((-k, v), i);
       var cummin = minloc scan kvi;
-      var locs: [D] int;
-      var vals: [D] t = max(t);
       forall (l, v, low, i) in zip(locs, vals, segments, D) {
 	var vi: int;
 	if (i < D.high) {
@@ -770,11 +770,12 @@ module ReductionMsg
     }
     
     proc segArgmax(values:[?vD] ?t, segments:[?D] int): ([D] t, [D] int) {
+      var locs: [D] int;
+      var vals: [D] t = min(t);
+      if (D.size == 0) { return (vals, locs); }
       var keys = expandKeys(vD, segments);
       var kvi = [(k, v, i) in zip(keys, values, vD)] ((k, v), i);
       var cummax = maxloc scan kvi;
-      var locs: [D] int;
-      var vals: [D] t = min(t);
       forall (l, v, low, i) in zip(locs, vals, segments, D) {
 	var vi: int;
 	if (i < D.high) {
@@ -812,6 +813,7 @@ module ReductionMsg
     
     proc segAny(values:[] bool, segments:[?D] int): [D] bool {
       var res: [D] bool;
+      if (D.size == 0) { return res; }
       forall (r, low, i) in zip(res, segments, D) {
 	var high: int;
 	if (i < D.high) {
@@ -843,6 +845,7 @@ module ReductionMsg
     
     proc segAll(values:[] bool, segments:[?D] int): [D] bool {
       var res: [D] bool;
+      if (D.size == 0) { return res; }
       forall (r, low, i) in zip(res, segments, D) {
 	var high: int;
 	if (i < D.high) {
@@ -946,8 +949,11 @@ module ReductionMsg
     }
 
     proc segNumUnique(values: [?kD] int, segments: [?sD] int) {
-      var keys = expandKeys(kD, segments);
       var res: [sD] int;
+      if (sD.size == 0) {
+	return res;
+      }
+      var keys = expandKeys(kD, segments);
       // sort keys and values together
       var t1 = Time.getCurrentTime();
       if v {writeln("Sorting keys and values..."); try! stdout.flush();}

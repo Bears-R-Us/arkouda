@@ -11,11 +11,10 @@ use MultiTypeSymbolTable;
 use MultiTypeSymEntry;
 use MsgProcessing;
 use GenSymIO;
+use SymArrayDmap;
 
 proc main() {
     writeln("arkouda server version = ",arkoudaVersion); try! stdout.flush();
-    writeln("zeromq version = ", ZMQ.version); try! stdout.flush();
-    writeln("makeDistDom.type = ", (makeDistDom(10).type):string); try! stdout.flush();
 
     var st = new owned SymTab();
     var shutdownServer = false;
@@ -60,10 +59,12 @@ proc main() {
             else {
                 writeln("reqMsg: ", reqMsg);
             }
-            writeln(">>> ",cmd);
+            writeln(">>> ",cmd," started at ",t1,"sec");
             try! stdout.flush();
         }
 
+        try {
+        
         // parse requests, execute requests, format responses
         select cmd
         {
@@ -112,6 +113,7 @@ proc main() {
             when "[slice]=pdarray"   {repMsg = setSliceIndexToPdarrayMsg(reqMsg, st);}
             when "argsort"           {repMsg = argsortMsg(reqMsg, st);}
 	    when "coargsort"         {repMsg = coargsortMsg(reqMsg, st);}
+	    when "concatenate"       {repMsg = concatenateMsg(reqMsg, st);}
 	    when "localArgsort"      {repMsg = localArgsortMsg(reqMsg, st);}
             when "getconfig"         {repMsg = getconfigMsg(reqMsg, st);}
             when "getmemused"        {repMsg = getmemusedMsg(reqMsg, st);}
@@ -125,6 +127,13 @@ proc main() {
                 if v {writeln("Error: unrecognized command: %s".format(reqMsg)); try! stdout.flush();}
             }
         }
+
+        } catch (e: UndefinedSymbolError) {
+          repMsg = unknownSymbolError("", e.name);
+        } catch {
+          repMsg = unknownError("");
+        }
+        
         
         // send responses
         // send count for now

@@ -22,6 +22,7 @@ module Unique
     use SymArrayDmap;
 
     use RadixSortLSD;
+    use AryUtil;
 
     /* // thresholds for different unique counting algorithms */
     /* var sBins = 2**10; // small-range maybe for using reduce intents on forall loops */
@@ -416,11 +417,33 @@ module Unique
     :returns: ([] int, [] int)
     */
     proc uniqueSort(a: [?aD] int) {
+        if (aD.size == 0) {
+            if v {writeln("zero size");try! stdout.flush();}
+            var u = makeDistArray(0, int);
+            var c = makeDistArray(0, int);
+            return (u, c);
+        }
 
-        var sorted = radixSortLSD_keys(a);
+        var sorted: [aD] int;
+        if (isSorted(a)) {
+            sorted = a; 
+        }
+        else {
+            sorted = radixSortLSD_keys(a);
+        }
+
         var truth: [aD] bool;
         truth[0] = true;
         [(t, s, i) in zip(truth, sorted, aD)] if i > aD.low { t = (sorted[i-1] != s); }
+        var allUnique: int = + reduce truth;
+        if (allUnique == aD.size) {
+            if v {writeln("early out already unique");try! stdout.flush();}
+            var u = makeDistArray(aD.size, int);
+            var c = makeDistArray(aD.size, int);
+            u = a; // a is already unique
+            c = 1; // c counts are all 1
+            return (u, c);
+        }
         // +scan to compute segment position... 1-based because of inclusive-scan
         var iv: [truth.domain] int = (+ scan truth);
         // compute how many segments

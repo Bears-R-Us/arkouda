@@ -5,6 +5,7 @@ module MsgProcessing
 
     use Time only;
     use Math only;
+    use Reflection only;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -12,16 +13,17 @@ module MsgProcessing
 
     use AryUtil;
     
-    use OperatorMsg;
-    use RandMsg;
-    use IndexingMsg;
-    use UniqueMsg;
-    use In1dMsg;
-    use HistogramMsg;
-    use ArgSortMsg;
-    use ReductionMsg;
-    use FindSegmentsMsg;
-    use EfuncMsg;
+    public use OperatorMsg;
+    public use RandMsg;
+    public use IndexingMsg;
+    public use UniqueMsg;
+    public use In1dMsg;
+    public use HistogramMsg;
+    public use ArgSortMsg;
+    public use ReductionMsg;
+    public use FindSegmentsMsg;
+    public use EfuncMsg;
+    public use ConcatenateMsg;
     
     /* 
     Parse, execute, and respond to a create message 
@@ -267,8 +269,10 @@ module MsgProcessing
     :type st: borrowed SymTab 
 
     :returns: (string)
+    :throws: `UndefinedSymbolError(name)`
     */
-    proc setMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc setMsg(reqMsg: string, st: borrowed SymTab): string throws {
+        param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -277,7 +281,6 @@ module MsgProcessing
         var value = fields[4];
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError("set",name);}
 
         select (gEnt.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
@@ -349,7 +352,7 @@ module MsgProcessing
                 e.a = val;
                 repMsg = try! "set %s to %t".format(name, val);
             }
-            otherwise {return unrecognizedTypeError("set",fields[3]);}
+            otherwise {return unrecognizedTypeError(pn,fields[3]);}
         }
         return repMsg;
     }

@@ -4,6 +4,7 @@ module FindSegmentsMsg
     
     use Time only;
     use Math only;
+    use Reflection only;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -11,7 +12,6 @@ module FindSegmentsMsg
     use PerLocaleHelper;
 
     use PrivateDist;
-    // experimental
     use UnorderedCopy;
 
     /*
@@ -23,10 +23,11 @@ module FindSegmentsMsg
     :type st: borrowed SymTab 
 
     :returns: (string) 
+    :throws: `UndefinedSymbolError(name)`
 
     */
-    proc findSegmentsMsg(reqMsg: string, st: borrowed SymTab): string {
-        var pn = "findSegments";
+    proc findSegmentsMsg(reqMsg: string, st: borrowed SymTab): string throws {
+        param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -39,17 +40,23 @@ module FindSegmentsMsg
 	}
 	// Check all the argument arrays before doing anything
 	var gPerm = st.lookup(pname);
-	if (gPerm == nil) { return unknownSymbolError(pn, pname); }
 	if (gPerm.dtype != DType.Int64) { return notImplementedError(pn,"(permutation dtype "+dtype2str(gPerm.dtype)+")"); }	
 	// var keyEntries: [0..#nkeys] borrowed GenSymEntry;
 	for (name, i) in zip(knames, 0..) {
 	  var g = st.lookup(name);
-	  if (g == nil) { return unknownSymbolError(pn, name); }
 	  if (g.size != size) { return try! incompatibleArgumentsError(pn, "Expected array of size %i, got size %i".format(size, g.size)); }
 	  if (g.dtype != DType.Int64) { return notImplementedError(pn,"(key array dtype "+dtype2str(g.dtype)+")");}
 	}
 	
 	// At this point, all arg arrays exist, have the same size, and are int64 dtype
+	if (size == 0) {
+	  // Return two empty integer entries
+	  var n1 = st.nextName();
+	  st.addEntry(n1, 0, int);
+	  var n2 = st.nextName();
+	  st.addEntry(n2, 0, int);
+	  return try! "created " + st.attrib(n1) + " +created " + st.attrib(n1);
+	}
 	// Permutation that groups the keys
 	var perm = toSymEntry(gPerm, int);
 	ref pa = perm.a; // ref to actual permutation array
@@ -91,8 +98,8 @@ module FindSegmentsMsg
 	return try! "created " + st.attrib(sname) + " +created " + st.attrib(uname);
     }
 
-    proc findLocalSegmentsMsg(reqMsg: string, st: borrowed SymTab): string {
-        var pn = "findLocalSegments";
+    proc findLocalSegmentsMsg(reqMsg: string, st: borrowed SymTab): string throws {
+        param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -103,7 +110,6 @@ module FindSegmentsMsg
         var uname = st.nextName(); // unique keys
 
         var kEnt: borrowed GenSymEntry = st.lookup(kname);
-        if (kEnt == nil) {return unknownSymbolError(pn,kname);}
 
         select (kEnt.dtype) {
             when (DType.Int64) {

@@ -9,12 +9,12 @@ warnings.simplefilter("always", UserWarning)
 
 def run_tests(verbose):
     global pdarrays
-    pdarrays = {'int64': ak.arange(1, SIZE+1, 1),
-                'float64': ak.linspace(0.1, 2, SIZE),
+    pdarrays = {'int64': ak.arange(0, SIZE, 1),
+                'float64': ak.linspace(0, 2, SIZE),
                 'bool': (ak.arange(0, SIZE, 1) % 2) == 0}
     global ndarrays
-    ndarrays = {'int64': np.arange(1, SIZE+1, 1),
-                'float64': np.linspace(0.1, 2, SIZE),
+    ndarrays = {'int64': np.arange(0, SIZE, 1),
+                'float64': np.linspace(0, 2, SIZE),
                 'bool': (np.arange(0, SIZE, 1) % 2) == 0}
     global scalars
     #scalars = {k: v[SIZE//2] for k, v in ndarrays.items()}
@@ -23,7 +23,7 @@ def run_tests(verbose):
                'bool': True}
     dtypes = pdarrays.keys()
     if verbose:
-        print("Operators: ", ak.BinOps)
+        print("Operators: ", ak.pdarray.BinOps)
         print("Dtypes: ", dtypes)
         print("pdarrays: ")
         for k, v in pdarrays.items():
@@ -55,7 +55,7 @@ def run_tests(verbose):
                'numpy_minus_arkouda': [], # (expression, ak_result, error_on_exec?)
                'both_implement': []}      # (expression, ak_result, error_on_exec?, dtype_mismatch?, value_mismatch?)
     tests = 0
-    for ltype, rtype, op in product(dtypes, dtypes, ak.BinOps):
+    for ltype, rtype, op in product(dtypes, dtypes, ak.pdarray.BinOps):
         for lscalar, rscalar in ((False, False), (False, True), (True, False)):
             tests += 1
             expression = "{}({}) {} {}({})".format(ltype, ('array', 'scalar')[lscalar], op, rtype, ('array', 'scalar')[rscalar])

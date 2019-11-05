@@ -8,21 +8,21 @@ module ArgSortMsg
     
     use Time only;
     use Math only;
+    use Sort only;
+    use Reflection only;
+    
+    use PrivateDist;
+
+    use UnorderedCopy;
+    use UnorderedAtomics;
+
+    use AryUtil;
+    use PerLocaleHelper;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
 
-    use AryUtil;
-    use PerLocaleHelper;
-    
-    use PrivateDist;
-
-    // experimental
-    use UnorderedCopy;
-    use UnorderedAtomics;
-
-    use Sort only;
     use RadixSortLSD;
     
     // thresholds for different sized sorts
@@ -409,8 +409,8 @@ module ArgSortMsg
     /* Find the permutation that sorts multiple arrays, treating each array as a
        new level of the sorting key.
      */
-    proc coargsortMsg(reqMsg: string, st: borrowed SymTab) {
-      var pn = "coargsort";
+    proc coargsortMsg(reqMsg: string, st: borrowed SymTab) throws {
+      param pn = Reflection.getRoutineName();
       var repMsg: string;
       var fields = reqMsg.split();
       var cmd = fields[1];
@@ -424,7 +424,6 @@ module ArgSortMsg
       for (name, i) in zip(names, 1..) {
 	// arrays[i] = st.lookup(name): borrowed GenSymEntry;
 	var g: borrowed GenSymEntry = st.lookup(name);
-	if (g == nil) { return unknownSymbolError(pn, name); }
 	if (i == 1) {
 	  size = g.size;
 	} else {
@@ -463,8 +462,8 @@ module ArgSortMsg
     }
     
     /* argsort takes pdarray and returns an index vector iv which sorts the array */
-    proc argsortMsg(reqMsg: string, st: borrowed SymTab): string {
-        var pn = "argsort";
+    proc argsortMsg(reqMsg: string, st: borrowed SymTab): string throws {
+        param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -475,7 +474,6 @@ module ArgSortMsg
         if v {try! writeln("%s %s : %s %s".format(cmd, name, ivname));try! stdout.flush();}
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError(pn,name);}
 
         select (gEnt.dtype) {
             when (DType.Int64) {
@@ -483,6 +481,11 @@ module ArgSortMsg
                 var iv = argsortDefault(e.a);
                 st.addEntry(ivname, new shared SymEntry(iv));
             }
+	    when (DType.Float64) {
+	        var e = toSymEntry(gEnt, real);
+		var iv = argsortDefault(e.a);
+		st.addEntry(ivname, new shared SymEntry(iv));
+	    }
             otherwise {return notImplementedError(pn,gEnt.dtype);}
         }
         
@@ -490,8 +493,8 @@ module ArgSortMsg
     }
 
     /* localArgsort takes a pdarray and returns an index vector which sorts the array on a per-locale basis */
-    proc localArgsortMsg(reqMsg: string, st: borrowed SymTab): string {
-      var pn = "localArgsort";
+    proc localArgsortMsg(reqMsg: string, st: borrowed SymTab): string throws {
+        param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -502,7 +505,6 @@ module ArgSortMsg
         if v {try! writeln("%s %s : %s %s".format(cmd, name, ivname));try! stdout.flush();}
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
-        if (gEnt == nil) {return unknownSymbolError(pn,name);}
 
         select (gEnt.dtype) {
             when (DType.Int64) {
