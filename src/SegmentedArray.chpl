@@ -77,13 +77,13 @@ module SegmentedArray {
       /* lengths[high] = values.size - oa[high]; */
       var gatheredLengths: [D] int;
       [(gl, idx) in zip(gatheredLengths, iv)] {
-	var l: int;
-	if (idx == high) {
-	  l = values.size - oa[high];
-	} else {
-	  l = oa[idx+1] - oa[idx];
-	}
-	unorderedCopy(gl, l);
+        var l: int;
+        if (idx == high) {
+          l = values.size - oa[high];
+        } else {
+          l = oa[idx+1] - oa[idx];
+        }
+        unorderedCopy(gl, l);
       }
       var gatheredOffsets = (+ scan gatheredLengths);
       var retBytes = gatheredOffsets[D.high];
@@ -91,10 +91,10 @@ module SegmentedArray {
       var gatheredVals = makeDistArray(retBytes, uint(8));
       ref va = values.a;
       forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, iv) {
-	// gatheredVals[go..#gl] = va[oa[idx]..#lengths[idx]];
-	for pos in 0..#gl {
-	  unorderedCopy(gatheredVals[go+pos], va[oa[idx]+pos]);
-	}
+        // gatheredVals[go..#gl] = va[oa[idx]..#lengths[idx]];
+        for pos in 0..#gl {
+          unorderedCopy(gatheredVals[go+pos], va[oa[idx]+pos]);
+        }
       }
       return (gatheredOffsets, gatheredVals);
     }
@@ -112,13 +112,13 @@ module SegmentedArray {
       /* lengths[low..#(size-1)] = oa[(low+1)..#(size-1)] - oa[low..#(size-1)]; */
       /* lengths[high] = values.size - oa[high]; */
       [idx in offsets.aD] if (iv[idx] == true) {
-	var l: int;
-	if (idx == high) {
-	  l = values.size - oa[high];
-	} else {
-	  l = oa[idx+1] - oa[idx];
-	}
-	unorderedCopy(gatheredLengths[segInds[idx]], l);
+        var l: int;
+        if (idx == high) {
+          l = values.size - oa[high];
+        } else {
+          l = oa[idx+1] - oa[idx];
+        }
+        unorderedCopy(gatheredLengths[segInds[idx]], l);
       }
       var gatheredOffsets = (+ scan gatheredLengths);
       var retBytes = gatheredOffsets[newSize-1];
@@ -126,14 +126,13 @@ module SegmentedArray {
       var gatheredVals = makeDistArray(retBytes, uint(8));
       ref va = values.a;
       forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, segInds) {
-	// gatheredVals[go..#gl] = va[oa[idx]..#lengths[idx]];
-	for pos in 0..#gl {
-	  unorderedCopy(gatheredVals[go+pos], va[oa[idx]+pos]);
-	}
+        // gatheredVals[go..#gl] = va[oa[idx]..#lengths[idx]];
+        for pos in 0..#gl {
+          unorderedCopy(gatheredVals[go+pos], va[oa[idx]+pos]);
+        }
       }
       return (gatheredOffsets, gatheredVals);
-    }
-
+    } 
   }
   
   proc ==(lss:SegString, rss:SegString) {
@@ -154,16 +153,16 @@ module SegmentedArray {
 	rlen = roffsets[idx+1] - ro - 1;
       }
       if (llen == rlen) {
-	var allEqual = true;
-	for pos in 0..#llen {
-	  if (lvalues[lo+pos] != rvalues[ro+pos]) {
-	    allEqual = false;
-	    break;
-	  }
-	}
-	if allEqual {
-	  unorderedCopy(t, true);
-	}
+        var allEqual = true;
+        for pos in 0..#llen {
+          if (lvalues[lo+pos] != rvalues[ro+pos]) {
+            allEqual = false;
+            break;
+          }
+        }
+        if allEqual {
+          unorderedCopy(t, true);
+        }
       }
     }
     return truth;
@@ -201,31 +200,31 @@ module SegmentedArray {
     var args: [1..#(fields.size-3)] string = fields[4..];
     select subcmd {
       when "intIndex" {
-	return segIntIndex(objtype, args, st);
+        return segIntIndex(objtype, args, st);
       }
       when "sliceIndex" {
-	return segSliceIndex(objtype, args, st);
+        return segSliceIndex(objtype, args, st);
       }
       /* when "pdarrayIndex" { */
       /*   return segPdarrayIndex(objtype, args, st); */
       /* } */
       otherwise {
-	return try! "Error: in %s, unknown subcommand %s".format(pn, subcmd);
+        return try! "Error: in %s, unknown subcommand %s".format(pn, subcmd);
       }
       }
   }
-
+  
   proc segIntIndex(objtype: string, args: [] string, st: borrowed SymTab): string {
     var pn = "segIntIndex";
     select objtype {
       when "string" {
-	var segName = args[1];
-	var valName = args[2];
-	var strings = new owned SegString(segName, valName, st);
-	var idx = try! args[3]:int;
-	idx = convertPythonIndexToChapel(idx, strings.size);
-	var s = strings[idx];
-	return try! "item %s %jt".format("string", s);
+        var segName = args[1];
+        var valName = args[2];
+        var strings = new owned SegString(segName, valName, st);
+        var idx = try! args[3]:int;
+        idx = convertPythonIndexToChapel(idx, strings.size);
+        var s = strings[idx];
+        return try! "item %s %jt".format("string", s);
       }
       otherwise { return notImplementedError(pn, objtype); }
       }
@@ -245,22 +244,22 @@ module SegmentedArray {
     var pn = "segSliceIndex";
     select objtype {
       when "string" {
-	var segName = args[1];
-	var valName = args[2];
-	var strings = new owned SegString(segName, valName, st);
-	var start = try! args[3]:int;
-	var stop = try! args[4]:int;
-	var stride = try! args[5]:int;
-	if (stride != 1) { return notImplementedError(pn, "stride != 1"); }
-	var slice: range(stridable=true) = convertPythonSliceToChapel(start, stop, stride);
-	var newSegName = st.nextName();
-	var newValName = st.nextName();
-	var (newSegs, newVals) = strings[slice];
-	var newSegsEntry = new shared SymEntry(newSegs);
-	var newValsEntry = new shared SymEntry(newVals);
-	st.addEntry(newSegName, newSegsEntry);
-	st.addEntry(newValName, newValsEntry);
-	return try! "created " + st.attrib(newSegName) + " +created " + st.attrib(newValName);
+        var segName = args[1];
+        var valName = args[2];
+        var strings = new owned SegString(segName, valName, st);
+        var start = try! args[3]:int;
+        var stop = try! args[4]:int;
+        var stride = try! args[5]:int;
+        if (stride != 1) { return notImplementedError(pn, "stride != 1"); }
+        var slice: range(stridable=true) = convertPythonSliceToChapel(start, stop, stride);
+        var newSegName = st.nextName();
+        var newValName = st.nextName();
+        var (newSegs, newVals) = strings[slice];
+        var newSegsEntry = new shared SymEntry(newSegs);
+        var newValsEntry = new shared SymEntry(newVals);
+        st.addEntry(newSegName, newSegsEntry);
+        st.addEntry(newValName, newValsEntry);
+        return try! "created " + st.attrib(newSegName) + " +created " + st.attrib(newValName);
       }
       otherwise {return notImplementedError(pn, objtype);}
       }
@@ -284,32 +283,32 @@ module SegmentedArray {
     var newValName = st.nextName();
     select objtype {
       when "string" {
-	var segName = args[1];
-	var valName = args[2];
-	var strings = new owned SegString(segName, valName, st);
-	var iname = args[3];
-	var gIV: borrowed GenSymEntry = st.lookup(iname);
-	if (gIV == nil) {return unknownSymbolError(pn, iname);}
-	select gIV.dtype {
-	  when DType.Int64 {
-	    var iv = toSymEntry(gIV, int);
-	    var (newSegs, newVals) = strings[iv];
-	    var newSegsEntry = new shared SymEntry(newSegs);
-	    var newValsEntry = new shared SymEntry(newVals);
-	    st.addEntry(newSegName, newSegsEntry);
-	    st.addEntry(newValName, newValsEntry);
-	  }
-	  when DType.Bool {
-	    var iv = toSymEntry(gIV, bool);
-	    var (newSegs, newVals) = strings[iv];
-	    var newSegsEntry = new shared SymEntry(newSegs);
-	    var newValsEntry = new shared SymEntry(newVals);
-	    st.addEntry(newSegName, newSegsEntry);
-	    st.addEntry(newValName, newValsEntry);
-	  }
-	  otherwise {return notImplementedError(pn,
-						"("+objtype+","+dtype2str(gIV.dtype)+")");}
-	  }
+        var segName = args[1];
+        var valName = args[2];
+        var strings = new owned SegString(segName, valName, st);
+        var iname = args[3];
+        var gIV: borrowed GenSymEntry = st.lookup(iname);
+        if (gIV == nil) {return unknownSymbolError(pn, iname);}
+        select gIV.dtype {
+          when DType.Int64 {
+            var iv = toSymEntry(gIV, int);
+            var (newSegs, newVals) = strings[iv];
+            var newSegsEntry = new shared SymEntry(newSegs);
+            var newValsEntry = new shared SymEntry(newVals);
+            st.addEntry(newSegName, newSegsEntry);
+            st.addEntry(newValName, newValsEntry);
+          }
+          when DType.Bool {
+            var iv = toSymEntry(gIV, bool);
+            var (newSegs, newVals) = strings[iv];
+            var newSegsEntry = new shared SymEntry(newSegs);
+            var newValsEntry = new shared SymEntry(newVals);
+            st.addEntry(newSegName, newSegsEntry);
+            st.addEntry(newValName, newValsEntry);
+          }
+          otherwise {return notImplementedError(pn,
+                                                "("+objtype+","+dtype2str(gIV.dtype)+")");}
+          }
       }
       otherwise {return notImplementedError(pn, objtype);}
       }
@@ -334,12 +333,12 @@ module SegmentedArray {
       var lstrings = SegString(lsegName, lvalName, st);
       var rstrings = SegString(rsegName, rvalName, st);
       select op {
-	when "==" {
-	  var e = st.addEntry(rname, lstrings.size, bool);
-	  e.a = (lstrings == rstrings);
-	}
-	otherwise {return notImplementedError(pn, ltype, op, rtype);}
-	}
+        when "==" {
+          var e = st.addEntry(rname, lstrings.size, bool);
+          e.a = (lstrings == rstrings);
+        }
+        otherwise {return notImplementedError(pn, ltype, op, rtype);}
+        }
     }
     otherwise {return unrecognizedTypeError(pn, "("+ltype+", "+rtype+")");} 
     }
@@ -362,12 +361,12 @@ module SegmentedArray {
     when ("string", "string") {
       var strings = new owned SegString(segName, valName, st);
       select op {
-	when "==" {
-	  var e = st.addEntry(rname, strings.size, bool);
-	  e.a = (strings == value);
-	}
-	otherwise {return notImplementedError(pn, objtype, op, valtype);}
-	}
+        when "==" {
+          var e = st.addEntry(rname, strings.size, bool);
+          e.a = (strings == value);
+        }
+        otherwise {return notImplementedError(pn, objtype, op, valtype);}
+        }
     }
     otherwise {return unrecognizedTypeError(pn, "("+objtype+", "+valtype+")");} 
     }
