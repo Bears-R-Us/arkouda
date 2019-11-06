@@ -44,6 +44,6 @@ if __name__ == "__main__":
     passes = ak.all(ak.in1d(set_xor, set_intersection, invert=True))
     print("setxor1d passed test: ",passed)
 
-    ak.shutdown()
+    ak.disconnect()
     
     
