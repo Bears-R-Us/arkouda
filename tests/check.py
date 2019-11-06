@@ -258,6 +258,5 @@ def check_set_integer_idx(N):
 
 print("check set integer idx = value:", check_set_integer_idx(N))
 
-#ak.disconnect()
-ak.shutdown()
+ak.disconnect()
 sys.exit(errors)
