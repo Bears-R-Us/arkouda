@@ -272,8 +272,8 @@ module GenSymIO {
 /* ======= */
     if isSegArray {
       try {
-        var entrySeg: shared GenSymEntry = computeEntry(C_HDF5.H5T_INTEGER, segSubdoms, dsetName + "/" + SEGARRAY_OFFSET_NAME);
-        var entryVal: shared GenSymEntry = computeEntry(dataclass, subdoms, dsetName + "/" + SEGARRAY_VALUE_NAME);
+        var entrySeg: shared GenSymEntry = computeEntry(C_HDF5.H5T_INTEGER, segSubdoms, dsetName + "/" + SEGARRAY_OFFSET_NAME, nSeg);
+        var entryVal: shared GenSymEntry = computeEntry(dataclass, subdoms, dsetName + "/" + SEGARRAY_VALUE_NAME, len);
         var segName = st.nextName();
         st.addEntry(segName, entrySeg);
         var valName = st.nextName();
@@ -286,7 +286,7 @@ module GenSymIO {
       }
     } else {
       try {
-        var entry: shared GenSymEntry = computeEntry(dataclass, subdoms, dsetName);
+        var entry: shared GenSymEntry = computeEntry(dataclass, subdoms, dsetName, len);
         var rname = st.nextName();
         st.addEntry(rname, entry);
         return try! "created " + st.attrib(rname);
@@ -302,7 +302,7 @@ module GenSymIO {
     // This assumes that dataclass has already been validated above in
     // validateDataClass() and that only expected dataclass values
     // will be sent in.  If this is not the case, a halt occurs.
-    proc computeEntry(dataclass: C_HDF5.hid_t, subdoms, dsetName: string): shared GenSymEntry throws {
+    proc computeEntry(dataclass: C_HDF5.hid_t, subdoms, dsetName: string, len: int): shared GenSymEntry throws {
     if dataclass == C_HDF5.H5T_INTEGER {
       var entryInt = new shared SymEntry(len, int);
       if GenSymIO_DEBUG {

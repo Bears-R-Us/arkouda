@@ -68,6 +68,9 @@ proc main() {
         // parse requests, execute requests, format responses
         select cmd
         {
+        when "segmentedIndex"    {repMsg = segmentedIndexMsg(reqMsg, st);}
+        when "segmentedBinopvv"  {repMsg = segBinopvvMsg(reqMsg, st);}
+        when "segmentedBinopvs"  {repMsg = segBinopvsMsg(reqMsg, st);}
 	    when "lshdf"             {repMsg = lshdfMsg(reqMsg, st);}
 	    when "readhdf"           {repMsg = readhdfMsg(reqMsg, st);}
 	    when "tohdf"             {repMsg = tohdfMsg(reqMsg, st);}

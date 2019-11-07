@@ -3,9 +3,11 @@ module SegmentedArray {
   use MultiTypeSymEntry;
   use UnorderedCopy;
 
+  class OutOfBoundsError: Error {}
+
   class SegString {
-    var offsets: unmanaged SymEntry(int);
-    var values: unmanaged SymEntry(uint(8));
+    var offsets: borrowed SymEntry(int);
+    var values: borrowed SymEntry(uint(8));
     var size: int;
     var nBytes: int;
 
@@ -17,18 +19,20 @@ module SegmentedArray {
     }
 
     proc init(segName: string, valName: string, st: borrowed SymTab) {
-      var gs = st.lookup(segName);
+      var gs = try! st.lookup(segName);
       var segs = toSymEntry(gs, int): unmanaged SymEntry(int);
       offsets = segs;
-      var vs = st.lookup(valName);
+      var vs = try! st.lookup(valName);
       var vals = toSymEntry(vs, uint(8)): unmanaged SymEntry(uint(8));
       values = vals;
       size = segs.size;
       nBytes = vals.size;
     }
 
-    proc this(idx: int): string {
-      // TO DO: Error handling for out of bounds
+    proc this(idx: int): string throws {
+      if (idx < 0) || (idx >= offsets.size) {
+        throw new owned OutOfBoundsError();
+      }
       // Start index of the string
       var start = offsets.a[idx];
       // Index of last (null) byte in string
@@ -43,17 +47,19 @@ module SegmentedArray {
       return s;
     }
 
-    proc this(slice: range(stridable=true)) {
-      // TO DO: Error handling for out of bounds
+    proc this(slice: range(stridable=true)) throws {
+      if (slice.low < 0) || (slice.high >= offsets.size) {
+        throw new owned OutOfBoundsError();
+      }
       // Start of bytearray slice
       var start = offsets.a[slice.low];
       // End of bytearray slice
       var end: int;
       if (slice.high == offsets.aD.high) {
-	// if slice includes the last string, go to the end of values
-	end = values.aD.high;
+        // if slice includes the last string, go to the end of values
+        end = values.aD.high;
       } else {
-	end = offsets.a[slice.high+1] - 1;
+        end = offsets.a[slice.high+1] - 1;
       }
       // Segment offsets of the new slice
       var newSegs = makeDistArray(slice.size, int);
@@ -65,10 +71,12 @@ module SegmentedArray {
       return (newSegs, newVals);
     }
 
-    proc this(iv: [?D] int) {
-      /* var ivMin = min reduce iv; */
-      /* var ivMax = max reduce iv; */
-      // TO DO: Error handling for out of bounds
+    proc this(iv: [?D] int) throws {
+      var ivMin = min reduce iv;
+      var ivMax = max reduce iv;
+      if (ivMin < 0) || (ivMax >= offsets.size) {
+        throw new owned OutOfBoundsError();
+      }
       ref oa = offsets.a;
       const low = offsets.aD.low, high = offsets.aD.high;
       // Lengths of segments including null bytes
@@ -99,8 +107,10 @@ module SegmentedArray {
       return (gatheredOffsets, gatheredVals);
     }
 
-    proc this(iv: [offsets.aD] bool) {
-      // TO DO: Error handling for out of bounds
+    proc this(iv: [?D] bool) throws {
+      if (D != offsets.aD) {
+        throw new owned OutOfBoundsError();
+      }
       ref oa = offsets.a;
       const low = offsets.aD.low, high = offsets.aD.high;
       var segInds = + scan iv;
@@ -126,10 +136,7 @@ module SegmentedArray {
       var gatheredVals = makeDistArray(retBytes, uint(8));
       ref va = values.a;
       forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, segInds) {
-        // gatheredVals[go..#gl] = va[oa[idx]..#lengths[idx]];
-        for pos in 0..#gl {
-          unorderedCopy(gatheredVals[go+pos], va[oa[idx]+pos]);
-        }
+        gatheredVals[{go..#gl}] = va[{oa[idx]..#gl}];
       }
       return (gatheredOffsets, gatheredVals);
     } 
@@ -186,7 +193,8 @@ module SegmentedArray {
     var cBytes = c_ptrTo(localBytes);
     // Byte buffer is null-terminated, so length is buffer.size - 1
     // The contents of the buffer should be copied out because cBytes will go out of scope
-    var s = new string(cBytes, D.size-1, D.size, isowned=false, needToCopy=true);
+    // var s = new string(cBytes, D.size-1, D.size, isowned=false, needToCopy=true);
+    var s = createStringWithNewBuffer(cBytes, D.size-1, D.size);
     return s;
   }
 
@@ -198,29 +206,38 @@ module SegmentedArray {
     var subcmd = fields[2];
     var objtype = fields[3];
     var args: [1..#(fields.size-3)] string = fields[4..];
-    select subcmd {
-      when "intIndex" {
-        return segIntIndex(objtype, args, st);
-      }
-      when "sliceIndex" {
-        return segSliceIndex(objtype, args, st);
-      }
-      /* when "pdarrayIndex" { */
-      /*   return segPdarrayIndex(objtype, args, st); */
-      /* } */
-      otherwise {
-        return try! "Error: in %s, unknown subcommand %s".format(pn, subcmd);
-      }
-      }
+    try {
+      select subcmd {
+        when "intIndex" {
+          return segIntIndex(objtype, args, st);
+        }
+        when "sliceIndex" {
+          return segSliceIndex(objtype, args, st);
+        }
+        when "pdarrayIndex" {
+          return segPdarrayIndex(objtype, args, st);
+        }
+        otherwise {
+          return try! "Error: in %s, unknown subcommand %s".format(pn, subcmd);
+        }
+        }
+    } catch e: OutOfBoundsError {
+      return "Error: index out of bounds";
+    } catch {
+      return "Error: unknown cause";
+    }
   }
   
-  proc segIntIndex(objtype: string, args: [] string, st: borrowed SymTab): string {
+  proc segIntIndex(objtype: string, args: [] string, st: borrowed SymTab): string throws {
     var pn = "segIntIndex";
     select objtype {
       when "string" {
-        var segName = args[1];
-        var valName = args[2];
-        var strings = new owned SegString(segName, valName, st);
+        /* var gsegs = st.lookup(args[1]); */
+        /* var segs = toSymEntry(gsegs, int); */
+        /* var gvals = st.lookup(args[2]); */
+        /* var vals = toSymEntry(gvals, uint(8)); */
+        /* var strings = new owned SegString(segs, vals); */
+        var strings = new owned SegString(args[1], args[2], st);
         var idx = try! args[3]:int;
         idx = convertPythonIndexToChapel(idx, strings.size);
         var s = strings[idx];
@@ -240,13 +257,16 @@ module SegmentedArray {
     return chplIdx;
   }
 
-  proc segSliceIndex(objtype: string, args: [] string, st: borrowed SymTab): string {
+  proc segSliceIndex(objtype: string, args: [] string, st: borrowed SymTab): string throws {
     var pn = "segSliceIndex";
     select objtype {
       when "string" {
-        var segName = args[1];
-        var valName = args[2];
-        var strings = new owned SegString(segName, valName, st);
+        /* var gsegs = st.lookup(args[1]); */
+        /* var segs = toSymEntry(gsegs, int); */
+        /* var gvals = st.lookup(args[2]); */
+        /* var vals = toSymEntry(gvals, uint(8)); */
+        /* var strings = new owned SegString(segs, vals); */
+        var strings = new owned SegString(args[1], args[2], st);
         var start = try! args[3]:int;
         var stop = try! args[4]:int;
         var stride = try! args[5]:int;
@@ -277,22 +297,24 @@ module SegmentedArray {
     return slice;
   }
 
-  proc segPdarrayIndex(objtype: string, args: [] string, st: borrowed SymTab): string {
+  proc segPdarrayIndex(objtype: string, args: [] string, st: borrowed SymTab): string throws {
     var pn = "segPdarrayIndex";
     var newSegName = st.nextName();
     var newValName = st.nextName();
     select objtype {
       when "string" {
-        var segName = args[1];
-        var valName = args[2];
-        var strings = new owned SegString(segName, valName, st);
+        /* var gsegs = st.lookup(args[1]); */
+        /* var segs = toSymEntry(gsegs, int); */
+        /* var gvals = st.lookup(args[2]); */
+        /* var vals = toSymEntry(gvals, uint(8)); */
+        /* var strings = new owned SegString(segs, vals); */
+        var strings = new owned SegString(args[1], args[2], st);
         var iname = args[3];
         var gIV: borrowed GenSymEntry = st.lookup(iname);
-        if (gIV == nil) {return unknownSymbolError(pn, iname);}
         select gIV.dtype {
           when DType.Int64 {
             var iv = toSymEntry(gIV, int);
-            var (newSegs, newVals) = strings[iv];
+            var (newSegs, newVals) = strings[iv.a];
             var newSegsEntry = new shared SymEntry(newSegs);
             var newValsEntry = new shared SymEntry(newVals);
             st.addEntry(newSegName, newSegsEntry);
@@ -300,7 +322,7 @@ module SegmentedArray {
           }
           when DType.Bool {
             var iv = toSymEntry(gIV, bool);
-            var (newSegs, newVals) = strings[iv];
+            var (newSegs, newVals) = strings[iv.a];
             var newSegsEntry = new shared SymEntry(newSegs);
             var newValsEntry = new shared SymEntry(newVals);
             st.addEntry(newSegName, newSegsEntry);
@@ -315,7 +337,7 @@ module SegmentedArray {
     return try! "created " + st.attrib(newSegName) + "+created " + st.attrib(newValName);
   }
 
-  proc segBinopvvMsg(reqMsg: string, st: borrowed SymTab): string {
+  proc segBinopvvMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var pn = "segBinopvs";
     var repMsg: string;
     var fields = reqMsg.split();
@@ -323,13 +345,23 @@ module SegmentedArray {
     var op = fields[2];
     var ltype = fields[3];
     var lsegName = fields[4];
+    /* var glsegs = st.lookup(lsegName); */
+    /* var lsegs = toSymEntry(glsegs, int); */
     var lvalName = fields[5];
+    /* var glvals = st.lookup(lvalName); */
     var rtype = fields[6];
     var rsegName = fields[7];
+    /* var grsegs = st.lookup(rsegName); */
+    /* var rsegs = toSymEntry(grsegs, int); */
     var rvalName = fields[8];
+    /* var grvals = st.lookup(rvalName); */
     var rname = st.nextName();
     select (ltype, rtype) {
     when ("string", "string") {
+      /* var lvals = toSymEntry(glvals, uint(8)); */
+      /* var rvals = toSymEntry(grvals, uint(8)); */
+      /* var lstrings = SegString(lsegs, lvals); */
+      /* var rstrings = SegString(rsegs, rvals); */
       var lstrings = SegString(lsegName, lvalName, st);
       var rstrings = SegString(rsegName, rvalName, st);
       select op {
@@ -345,7 +377,7 @@ module SegmentedArray {
     return try! "created " + st.attrib(rname);
   }
 
-  proc segBinopvsMsg(reqMsg: string, st: borrowed SymTab): string {
+  proc segBinopvsMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var pn = "segBinopvs";
     var repMsg: string;
     var fields = reqMsg.split();
@@ -353,12 +385,17 @@ module SegmentedArray {
     var op = fields[2];
     var objtype = fields[3];
     var segName = fields[4];
+    /* var gsegs = st.lookup(segName); */
+    /* var segs = toSymEntry(gsegs, int); */
     var valName = fields[5];
+    /* var gvals = st.lookup(valName); */
     var valtype = fields[6];
     var value = fields[7];
     var rname = st.nextName();
     select (objtype, valtype) {
     when ("string", "string") {
+      /* var vals = toSymEntry(gvals, uint(8)); */
+      /* var strings = new owned SegString(segs, vals); */
       var strings = new owned SegString(segName, valName, st);
       select op {
         when "==" {
