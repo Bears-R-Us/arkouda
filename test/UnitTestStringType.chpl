@@ -64,6 +64,23 @@ proc main() {
     writeln("%i: %s".format(i, strSlice[i]));
   }
 
+  // strings[pdarray]
+  var cname = st.nextName();
+  var gcountdown = st.addEntry(cname, new shared SymEntry(5, int));
+  var countdown = toSymEntry(gcountdown, int);
+  countdown.a = [4, 3, 2, 1, 0];
+  reqMsg = "%s %s %s %s %s %s".format("segmentedIndexMsg", "pdarrayIndex", "string", segName, valName, cname);
+  writeln(">>> ", reqMsg);
+  repMsg = segmentedIndexMsg(reqMsg, st);
+  writeln("<<< ", repMsg);
+  (a, b) = parseNames(repMsg);
+  var strCountdown = new owned SegString(a, b, st);
+  printAry("strCountdown offsets: ", strCountdown.offsets.a);
+  printAry("strCountdown raw bytes: ", strCountdown.values.a);
+  for i in 0..#strCountdown.size {
+    writeln("%i: %s".format(i, strCountdown[i]));
+  }
+
   // strings == val
   reqMsg = "%s %s %s %s %s %s %s".format("segBinopvs", "==", "string", segName, valName, "string", testString);
   writeln(">>> ", reqMsg);
@@ -73,8 +90,16 @@ proc main() {
   var aname = fields[2];
   var giv = st.lookup(aname);
   var iv = toSymEntry(giv, bool);
+  var steps = + scan iv.a;
+  var pop = steps[iv.aD.high];
   printAry("strings == %s: ".format(testString), iv.a);
-  writeln("pop = ", + reduce iv.a);
+  writeln("pop = ", pop);
+  var inds: [0..#pop] int;
+  [(idx, present, i) in zip(iv.aD, iv.a, steps)] if present {inds[i-1] = idx;}
+  printAry("inds: ", inds);
+  var diff = inds[1..#(pop-1)] - inds[0..#(pop-1)];
+  var consecutive = && reduce (diff == 1);
+  writeln("consecutive? ", consecutive);
 
   // group strings
   reqMsg = "%s %s %s %s".format("segGroup", "string", segName, valName);
@@ -100,5 +125,41 @@ proc main() {
   writeln("...");
   for i in strings.size-6..#5 {
     writeln("%i: %s".format(i, permStrings[i]));
+  }
+
+  // check that permuted strings grouped 
+  // strings == val
+  reqMsg = "%s %s %s %s %s %s %s".format("segBinopvs", "==", "string", permSegName, permValName, "string", testString);
+  writeln(">>> ", reqMsg);
+  repMsg = segBinopvsMsg(reqMsg, st);
+  writeln("<<< ", repMsg);
+  fields = repMsg.split();
+  aname = fields[2];
+  giv = st.lookup(aname);
+  iv = toSymEntry(giv, bool);
+  steps = + scan iv.a;
+  pop = steps[iv.aD.high];
+  printAry("strings == %s: ".format(testString), iv.a);
+  writeln("pop = ", pop);
+  var permInds: [0..#pop] int;
+  [(idx, present, i) in zip(iv.aD, iv.a, steps)] if present {permInds[i-1] = idx;}
+  //printAry("permInds: ", permInds);
+  writeln("permInds: ", permInds);
+  var permDiff = permInds[1..#(pop-1)] - permInds[0..#(pop-1)];
+  consecutive = && reduce (permDiff == 1);
+  writeln("consecutive? ", consecutive);
+
+  // compress out the matches
+  // strings[pdarray(bool)]
+  reqMsg = "%s %s %s %s %s %s".format("segmentedIndexMsg", "pdarrayIndex", "string", permSegName, permValName, aname);
+  writeln(">>> ", reqMsg);
+  repMsg = segmentedIndexMsg(reqMsg, st);
+  writeln("<<< ", repMsg);
+  (a, b) = parseNames(repMsg);
+  var strMatches = new owned SegString(a, b, st);
+  printAry("strMatches offsets: ", strMatches.offsets.a);
+  printAry("strMatches raw bytes: ", strMatches.values.a);
+  for i in 0..#strMatches.size {
+    writeln("%i: %s".format(i, strMatches[i]));
   }
 }

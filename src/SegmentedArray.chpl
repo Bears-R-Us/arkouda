@@ -4,6 +4,8 @@ module SegmentedArray {
   use UnorderedCopy;
   use Crypto;
   use RadixSortLSD;
+
+  private config const DEBUG = false;
   
   class OutOfBoundsError: Error {}
 
@@ -115,6 +117,7 @@ module SegmentedArray {
       }
       ref oa = offsets.a;
       const low = offsets.aD.low, high = offsets.aD.high;
+      // BUG: this is not segInds, this is steps. Need to compress and translate the index.
       var segInds = + scan iv;
       var newSize = segInds[high];
       segInds -= 1;
@@ -137,6 +140,9 @@ module SegmentedArray {
       gatheredOffsets -= gatheredLengths;
       var gatheredVals = makeDistArray(retBytes, uint(8));
       ref va = values.a;
+      if DEBUG {
+        writeln("gatheredOffsets: ", gatheredOffsets);
+      }
       forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, segInds) {
         gatheredVals[{go..#gl}] = va[{oa[idx]..#gl}];
       }
@@ -149,6 +155,20 @@ module SegmentedArray {
       for param i in 0..7 {
         res[1] |= d[i] << (7-i)*8;
         res[2] |= d[i+8] << (7-i)*8;
+      }
+      return res;
+    }
+
+    inline proc internalHash(buf: [?D] uint(8)): 2*uint {
+      var res: 2*uint;
+      for chunk in D by 16 {
+        var word: 2*uint;
+        for i in chunk..min(chunk+16, D.high) {
+          var shift = 7 - ((i - chunk) / 2);
+          word[((i - chunk) % 2) + 1] |= buf[i] << shift;
+        }
+        res[1] ^= _gen_key(word[1]);
+        res[2] ^= _gen_key(word[2]);
       }
       return res;
     }
@@ -167,14 +187,21 @@ module SegmentedArray {
       var hashes: [offsets.aD] (uint, uint);
       var hasher = new owned Hash(Digest.MD5);
       forall (o, l, h) in zip(oa, lengths, hashes) {
-        var buf = new owned CryptoBuffer(va[{o..#l}]);
+        // var buf = new owned CryptoBuffer(va[{o..#l}]);
         // var hasher = new owned Hash(Digest.MD5);
-        var hashbuf = hasher.getDigest(buf);
+        // var hashbuf = hasher.getDigest(buf);
         // h = new bigint(hashbuf.toHexString(), base=16);
         //var hashbytes = hashbuf.getBuffData();
-        h = hash2tuple(hashbuf);
+        // h = hash2tuple(hashbuf);
+        h = internalHash(va[{o..#l}]);
       }
       var iv = radixSortLSD_ranks(hashes);
+      if DEBUG {
+        var sortedHashes = [i in iv] hashes[i];
+        var diffs = sortedHashes[(iv.domain.low+1)..#(iv.size-1)] - sortedHashes[(iv.domain.low)..#(iv.size-1)];
+        var nonDecreasing = [d in diffs] ((d[1] > 0) || ((d[1] == 0) && (d[2] >= 0)));
+        writeln("Are hashes sorted? ", && reduce nonDecreasing);
+      }
       return iv;
     }
   }

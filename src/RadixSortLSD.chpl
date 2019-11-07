@@ -42,13 +42,14 @@ module RadixSortLSD
 
     inline proc getBitWidth(a: [?aD] (uint, uint)): int {
       var highMax = max reduce [ai in a] ai[1];
-      var w = numBits(uint) - clz(highMax);
-      if (w == 0) {
+      var whigh = numBits(uint) - clz(highMax);
+      if (whigh == 0) {
         var lowMax = max reduce [ai in a] ai[2];
         var wlow = numBits(uint) - clz(lowMax);
-        w = wlow;
+        return wlow: int;
+      } else {
+        return (whigh + numBits(uint)): int;
       }
-      return w: int;
     }
     
     inline proc getDigit(key: int, rshift: int): int {
