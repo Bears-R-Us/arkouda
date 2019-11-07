@@ -11,4 +11,4 @@ jobs:
         pip3 install --user pyzmq numpy &&
         echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" > Makefile.paths &&
         ARKOUDA_DEVELOPER=true make &&
-        { ./arkouda_server &>server.log & } && PYTHONPATH=$PWD:$PYTHONPATH ./tests/check.py'
+        { ./arkouda_server &>server.log & } && export PYTHONPATH=$(pwd):$PYTHONPATH && ./tests/check.py'
