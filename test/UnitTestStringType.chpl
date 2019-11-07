@@ -75,4 +75,30 @@ proc main() {
   var iv = toSymEntry(giv, bool);
   printAry("strings == %s: ".format(testString), iv.a);
   writeln("pop = ", + reduce iv.a);
+
+  // group strings
+  reqMsg = "%s %s %s %s".format("segGroup", "string", segName, valName);
+  writeln(">>> ", reqMsg);
+  repMsg = segGroupMsg(reqMsg, st);
+  writeln("<<< ", repMsg);
+  fields = repMsg.split();
+  var permname = fields[2];
+  var gperm = st.lookup(permname);
+  var perm = toSymEntry(gperm, int);
+
+  // permute strings
+  reqMsg = "%s %s %s %s %s %s".format("segmentedIndex", "pdarrayIndex", "string", segName, valName, permname);
+  writeln(">>> ", reqMsg);
+  repMsg = segmentedIndexMsg(reqMsg, st);
+  writeln("<<< ", repMsg);
+  var (permSegName, permValName) = parseNames(repMsg);
+  var permStrings = new owned SegString(permSegName, permValName, st);
+  writeln("grouped strings:");
+  for i in 0..#5 {
+    writeln("%i: %s".format(i, permStrings[i]));
+  }
+  writeln("...");
+  for i in strings.size-6..#5 {
+    writeln("%i: %s".format(i, permStrings[i]));
+  }
 }

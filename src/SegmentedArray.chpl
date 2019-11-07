@@ -2,7 +2,9 @@ module SegmentedArray {
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
   use UnorderedCopy;
-
+  use Crypto;
+  use RadixSortLSD;
+  
   class OutOfBoundsError: Error {}
 
   class SegString {
@@ -139,7 +141,42 @@ module SegmentedArray {
         gatheredVals[{go..#gl}] = va[{oa[idx]..#gl}];
       }
       return (gatheredOffsets, gatheredVals);
-    } 
+    }
+
+    inline proc hash2tuple(h): (uint, uint) {
+      var d = h.getBuffData();
+      var res: (uint, uint);
+      for param i in 0..7 {
+        res[1] |= d[i] << (7-i)*8;
+        res[2] |= d[i+8] << (7-i)*8;
+      }
+      return res;
+    }
+
+    proc argGroup() {
+      ref oa = offsets.a;
+      ref va = values.a;
+      var lengths: [offsets.aD] int;
+      forall (idx, l) in zip(offsets.aD, lengths) {
+        if (idx == offsets.aD.high) {
+          l = values.size - oa[idx];
+        } else {
+          l = oa[idx+1] - oa[idx];
+        }
+      }
+      var hashes: [offsets.aD] (uint, uint);
+      var hasher = new owned Hash(Digest.MD5);
+      forall (o, l, h) in zip(oa, lengths, hashes) {
+        var buf = new owned CryptoBuffer(va[{o..#l}]);
+        // var hasher = new owned Hash(Digest.MD5);
+        var hashbuf = hasher.getDigest(buf);
+        // h = new bigint(hashbuf.toHexString(), base=16);
+        //var hashbytes = hashbuf.getBuffData();
+        h = hash2tuple(hashbuf);
+      }
+      var iv = radixSortLSD_ranks(hashes);
+      return iv;
+    }
   }
   
   proc ==(lss:SegString, rss:SegString) {
@@ -406,6 +443,25 @@ module SegmentedArray {
         }
     }
     otherwise {return unrecognizedTypeError(pn, "("+objtype+", "+valtype+")");} 
+    }
+    return try! "created " + st.attrib(rname);
+  }
+
+  proc segGroupMsg(reqMsg: string, st: borrowed SymTab): string {
+    var pn = "segGroupMsg";
+    var fields = reqMsg.split();
+    var cmd = fields[1];
+    var objtype = fields[2];
+    var segName = fields[3];
+    var valName = fields[4];
+    var rname = st.nextName();
+    select (objtype) {
+    when "string" {
+      var strings = new owned SegString(segName, valName, st);
+      var iv = st.addEntry(rname, strings.size, int);
+      iv.a = strings.argGroup();
+    }
+    otherwise {return notImplementedError(pn, "("+objtype+")");}
     }
     return try! "created " + st.attrib(rname);
   }

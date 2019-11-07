@@ -17,6 +17,8 @@ module RadixSortLSD
     use BitOps;
     use AryUtil;
     use UnorderedCopy;
+    use BigInteger;
+    use Math only ceil;
 
     inline proc getBitWidth(a: [?aD] int): int {
       var aMin = min reduce a;
@@ -28,6 +30,25 @@ module RadixSortLSD
 
     inline proc getBitWidth(a: [?aD] real): int{
       return numBits(real);
+    }
+
+    /* inline proc getBitWidth(a: [?aD] bigint): int { */
+    /*   var width: int; */
+    /*   forall ai in a with (max reduce width) { */
+    /*     width reduce= ceil(ai.sizeinbase(2)): int; */
+    /*   } */
+    /*   return width; */
+    /* } */
+
+    inline proc getBitWidth(a: [?aD] (uint, uint)): int {
+      var highMax = max reduce [ai in a] ai[1];
+      var w = numBits(uint) - clz(highMax);
+      if (w == 0) {
+        var lowMax = max reduce [ai in a] ai[2];
+        var wlow = numBits(uint) - clz(lowMax);
+        w = wlow;
+      }
+      return w: int;
     }
     
     inline proc getDigit(key: int, rshift: int): int {
@@ -55,6 +76,18 @@ module RadixSortLSD
     inline proc getDigit(key: real, rshift: int): int {
       var shiftedKey: uint = shiftDouble(key: c_double, rshift: c_longlong): uint;
       return (shiftedKey & maskDigit):int;
+    }
+
+    /* inline proc getDigit(key: bigint, rshift: int): int { */
+    /*   return ((key >> rshift) % (2**bitsPerDigit)): int; */
+    /* } */
+
+    inline proc getDigit(key: 2*uint, rshift: int): int {
+      if (rshift >= numBits(uint)) {
+        return getDigit(key[1], rshift - numBits(uint));
+      } else {
+        return getDigit(key[2], rshift);
+      }
     }
 
     // calculate sub-domain for task
@@ -172,7 +205,13 @@ module RadixSortLSD
                             var pos = taskBucketPos[bucket];
                             taskBucketPos[bucket] += 1;
                             // kr1[pos] = kr0[i];
-                            unorderedCopy(kr1[pos][KEY],  kr0[i][KEY]);
+                            if isTuple(t) {
+                              for param elem in 1..t.size {
+                                unorderedCopy(kr1[pos][KEY][elem], kr0[i][KEY][elem]);
+                              }
+                            } else {
+                              unorderedCopy(kr1[pos][KEY],  kr0[i][KEY]);
+                            }
                             unorderedCopy(kr1[pos][RANK], kr0[i][RANK]);
                         }
                         unorderedCopyTaskFence();
@@ -192,7 +231,9 @@ module RadixSortLSD
 	// if there are no negative keys then firstNegative will be aD.low
         var hasNegatives: bool , firstNegative: int;
         // maxloc on bools returns the first index where condition is true
-        (hasNegatives, firstNegative) = maxloc reduce zip([(key,rank) in kr1] (key < 0), aD);
+        if !isTuple(t) {
+          (hasNegatives, firstNegative) = maxloc reduce zip([(key,rank) in kr1] (key < 0), aD);
+        }
         // Swap the ranks of the positive and negative keys, so that negatives come first
         // If real type, then negative keys will appear in descending order and
         // must be reversed
