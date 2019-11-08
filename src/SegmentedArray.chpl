@@ -3,6 +3,7 @@ module SegmentedArray {
   use MultiTypeSymEntry;
   use UnorderedCopy;
   use Crypto;
+  use MurmurHash;
   use RadixSortLSD;
 
   private config const DEBUG = false;
@@ -118,30 +119,42 @@ module SegmentedArray {
       ref oa = offsets.a;
       const low = offsets.aD.low, high = offsets.aD.high;
       // BUG: this is not segInds, this is steps. Need to compress and translate the index.
-      var segInds = + scan iv;
-      var newSize = segInds[high];
-      segInds -= 1;
+      var steps = + scan iv;
+      var newSize = steps[high];
+      var segInds = makeDistArray(newSize, int);
       var gatheredLengths = makeDistArray(newSize, int);
+      forall (idx, present, i) in zip(D, iv, steps) {
+        if present {
+          segInds[i-1] = idx;
+          if (idx == high) {
+            gatheredLengths[i-1] = values.size - oa[high];
+          } else {
+            gatheredLengths[i-1] = oa[idx+1] - oa[idx];
+          }
+        }
+      }
       // Lengths of segments including null bytes
       /* var lengths: [offsets.aD] int; */
       /* lengths[low..#(size-1)] = oa[(low+1)..#(size-1)] - oa[low..#(size-1)]; */
       /* lengths[high] = values.size - oa[high]; */
-      [idx in offsets.aD] if (iv[idx] == true) {
-        var l: int;
-        if (idx == high) {
-          l = values.size - oa[high];
-        } else {
-          l = oa[idx+1] - oa[idx];
-        }
-        unorderedCopy(gatheredLengths[segInds[idx]], l);
-      }
+      /* [idx in offsets.aD] if (iv[idx] == true) { */
+      /*   var l: int; */
+      /*   if (idx == high) { */
+      /*     l = values.size - oa[high]; */
+      /*   } else { */
+      /*     l = oa[idx+1] - oa[idx]; */
+      /*   } */
+      /*   unorderedCopy(gatheredLengths[segInds[idx]], l); */
+      /* } */
       var gatheredOffsets = (+ scan gatheredLengths);
       var retBytes = gatheredOffsets[newSize-1];
       gatheredOffsets -= gatheredLengths;
       var gatheredVals = makeDistArray(retBytes, uint(8));
       ref va = values.a;
       if DEBUG {
-        writeln("gatheredOffsets: ", gatheredOffsets);
+        printAry("gatheredOffsets: ", gatheredOffsets);
+        printAry("gatheredLengths: ", gatheredLengths);
+        printAry("segInds: ", segInds);
       }
       forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, segInds) {
         gatheredVals[{go..#gl}] = va[{oa[idx]..#gl}];
@@ -149,12 +162,12 @@ module SegmentedArray {
       return (gatheredOffsets, gatheredVals);
     }
 
-    inline proc hash2tuple(h): (uint, uint) {
+    inline proc hash2tuple(h: CryptoBuffer): (uint, uint) {
       var d = h.getBuffData();
       var res: (uint, uint);
       for param i in 0..7 {
-        res[1] |= d[i] << (7-i)*8;
-        res[2] |= d[i+8] << (7-i)*8;
+        res[1] |= (d[i]: uint) << (7-i)*8;
+        res[2] |= (d[i+8]: uint) << (7-i)*8;
       }
       return res;
     }
@@ -173,6 +186,13 @@ module SegmentedArray {
       return res;
     }
 
+    proc hashBytes(b: [] uint(8)): 2*uint {
+      var hasher = new owned Hash(Digest.MD5);
+      var buf = new owned CryptoBuffer(b);
+      const hashed = hasher.getDigest(buf);
+      return hash2tuple(hashed);
+    }
+
     proc argGroup() {
       ref oa = offsets.a;
       ref va = values.a;
@@ -184,17 +204,35 @@ module SegmentedArray {
           l = oa[idx+1] - oa[idx];
         }
       }
+      const maxLen = max reduce lengths;
+      const empty: [0..#maxLen] uint(8);
       var hashes: [offsets.aD] (uint, uint);
-      var hasher = new owned Hash(Digest.MD5);
-      forall (o, l, h) in zip(oa, lengths, hashes) {
-        // var buf = new owned CryptoBuffer(va[{o..#l}]);
-        // var hasher = new owned Hash(Digest.MD5);
-        // var hashbuf = hasher.getDigest(buf);
-        // h = new bigint(hashbuf.toHexString(), base=16);
-        //var hashbytes = hashbuf.getBuffData();
-        // h = hash2tuple(hashbuf);
-        h = internalHash(va[{o..#l}]);
-      }
+      if DEBUG {writeln("before hashing");}
+      [(o, l, h) in zip(oa, lengths, hashes)] h = MurmurHash3_128(va[{o..#l}]);
+      if DEBUG {writeln("after hashing");}
+      // var hasher = new owned Hash(Digest.MD5);
+      /* forall (o, l, h) in zip(oa, lengths, hashes) */
+      /*   with (var hasher = new owned Hash(Digest.MD5), */
+      /*         var buf = new owned CryptoBuffer(empty)) { */
+      /*   // var buf = new owned CryptoBuffer(va[{o..#l}]); */
+      /*   // var hasher = new owned Hash(Digest.MD5); */
+      /*   // Load the buffer */
+      /*   var bufPtr = buf.getBuffPtr(); */
+      /*   for i in 0..#l { */
+      /*     bufPtr[i] = va[o+i]: c_uchar; */
+      /*   } */
+      /*   // Zero the rest of the buffer */
+      /*   for i in l..(maxLen-1) { */
+      /*     bufPtr[i] = 0: c_uchar; */
+      /*   } */
+      /*   // Hash the buffer */
+      /*   var hashbuf = hasher.getDigest(buf); */
+      /*   // h = new bigint(hashbuf.toHexString(), base=16); */
+      /*   // var hashbytes = hashbuf.getBuffData(); */
+      /*   // Convert to a tuple */
+      /*   h = hash2tuple(hashbuf); */
+      /*   // h = internalHash(va[{o..#l}]); */
+      /* } */
       var iv = radixSortLSD_ranks(hashes);
       if DEBUG {
         var sortedHashes = [i in iv] hashes[i];

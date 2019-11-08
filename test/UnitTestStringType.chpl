@@ -162,4 +162,9 @@ proc main() {
   for i in 0..#strMatches.size {
     writeln("%i: %s".format(i, strMatches[i]));
   }
+
+  for i in 5177..5183 {
+    var hashval = permStrings.internalHash(permStrings.values.a[permStrings.offsets.a[i]..(permStrings.offsets.a[i+1]-1)]);
+    writeln("%i: %s, (%i, %i)".format(i, permStrings[i], hashval[1], hashval[2]));
+  }
 }
