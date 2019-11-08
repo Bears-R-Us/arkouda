@@ -2,7 +2,7 @@ from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros
 
-__all__ = ["argsort", "coargsort", "local_argsort"]
+__all__ = ["argsort", "coargsort", "local_argsort", "sort"]
 
 def argsort(pda):
     """
@@ -97,6 +97,40 @@ def local_argsort(pda):
         if pda.size == 0:
             return zeros(0, dtype=int64)
         repMsg = generic_msg("localArgsort {}".format(pda.name))
+        return create_pdarray(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+
+def sort(pda):
+    """
+    Return a sorted copy of the array.
+    
+    Parameters
+    ----------
+    pda : pdarray
+        The array to sort (int64 or float64)
+
+    Returns
+    -------
+    pdarray, int64 or float64
+        The sorted copy of pda
+
+    Notes
+    -----
+    Uses a least-significant-digit radix sort, which is stable and resilient
+    to non-uniformity in data but communication intensive.
+
+    Examples
+    --------
+    >>> a = ak.randint(0, 10, 10)
+    >>> sorted = ak.sort(a)
+    >>> a
+    array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
+    """
+    if isinstance(pda, pdarray):
+        if pda.size == 0:
+            return zeros(0, dtype=int64)
+        repMsg = generic_msg("sort {}".format(pda.name))
         return create_pdarray(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))

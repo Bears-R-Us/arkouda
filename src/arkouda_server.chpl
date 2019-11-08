@@ -117,6 +117,7 @@ proc main() {
 	    when "coargsort"         {repMsg = coargsortMsg(reqMsg, st);}
 	    when "concatenate"       {repMsg = concatenateMsg(reqMsg, st);}
 	    when "localArgsort"      {repMsg = localArgsortMsg(reqMsg, st);}
+            when "sort"              {repMsg = sortMsg(reqMsg, st);}
             when "getconfig"         {repMsg = getconfigMsg(reqMsg, st);}
             when "getmemused"        {repMsg = getmemusedMsg(reqMsg, st);}
             when "connect" {
