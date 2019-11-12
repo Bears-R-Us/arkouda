@@ -128,4 +128,5 @@ if __name__ == '__main__':
         sys.exit()
     ak.connect(sys.argv[1], int(sys.argv[2]))
     run_test(levels)
+    ak.disconnect()
     sys.exit()

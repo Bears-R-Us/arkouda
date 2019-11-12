@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import arkouda as ak
 import sys, os
@@ -30,3 +30,4 @@ print(f"newdf = ak.load_all({saveall})")
 newdf = ak.load_all(saveall)
 print(newdf)
 os.system('rm -rf /tmp/ak_save*')
+ak.disconnect()

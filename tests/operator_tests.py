@@ -145,5 +145,5 @@ if __name__ == '__main__':
         verbose = True
     ak.connect(server=sys.argv[1], port=int(sys.argv[2]))
     success = run_tests(verbose)
-    ak.shutdown()
+    ak.disconnect()
     sys.exit((1, 0)[success])

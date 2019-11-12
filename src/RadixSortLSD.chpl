@@ -13,12 +13,20 @@ module RadixSortLSD
     const numBuckets = 1 << bitsPerDigit; // these need to be const for comms/performance reasons
     const maskDigit = numBuckets-1; // these need to be const for comms/performance reasons
 
+    // For comm={none,ugni} use unorderedCopy since it's optimized for ugni and
+    // a local copy for none. For all other configs, small remote copies are
+    // slow, so we need to aggregate. Longer term aggregation should win on
+    // ugni too, but there is a memory overhead that needs tuning.
+    enum CopyMode {unordered, aggregated};
+    private param noneOrUgni = CHPL_COMM == "ugni" || CHPL_COMM == "none";
+    config const RSLSD_copyMode = if noneOrUgni then CopyMode.unordered else CopyMode.aggregated;
+    const copyMode = RSLSD_copyMode;
+
     use BlockDist;
     use BitOps;
     use AryUtil;
     use UnorderedCopy;
-    use BigInteger;
-    use Math only ceil;
+    use CommAggregation;
 
     inline proc getBitWidth(a: [?aD] int): int {
       var aMin = min reduce a;
@@ -31,14 +39,6 @@ module RadixSortLSD
     inline proc getBitWidth(a: [?aD] real): int{
       return numBits(real);
     }
-
-    /* inline proc getBitWidth(a: [?aD] bigint): int { */
-    /*   var width: int; */
-    /*   forall ai in a with (max reduce width) { */
-    /*     width reduce= ceil(ai.sizeinbase(2)): int; */
-    /*   } */
-    /*   return width; */
-    /* } */
 
     inline proc getBitWidth(a: [?aD] (uint, uint)): int {
       var highMax = max reduce [ai in a] ai[1];
@@ -78,10 +78,6 @@ module RadixSortLSD
       var shiftedKey: uint = shiftDouble(key: c_double, rshift: c_longlong): uint;
       return (shiftedKey & maskDigit):int;
     }
-
-    /* inline proc getDigit(key: bigint, rshift: int): int { */
-    /*   return ((key >> rshift) % (2**bitsPerDigit)): int; */
-    /* } */
 
     inline proc getDigit(key: 2*uint, rshift: int): int {
       if (rshift >= numBits(uint)) {
@@ -164,12 +160,20 @@ module RadixSortLSD
                             taskBucketCounts[bucket] += 1;
                         }
                         // write counts in to global counts in transposed order
-                        for bucket in bD {
-                            //globalCounts[calcGlobalIndex(bucket, loc.id, task)] = taskBucketCounts[bucket];
-                            // will/does this make a difference???
-                            unorderedCopy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], taskBucketCounts[bucket]);
+			if copyMode == CopyMode.unordered {
+			    for bucket in bD {
+				//globalCounts[calcGlobalIndex(bucket, loc.id, task)] = taskBucketCounts[bucket];
+				// will/does this make a difference???
+				unorderedCopy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], taskBucketCounts[bucket]);
+			    }
+			    unorderedCopyTaskFence();
+                        } else if copyMode == CopyMode.aggregated {
+			    var aggregator = new DstAggregator(int);
+			    for bucket in bD {
+				aggregator.copy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], taskBucketCounts[bucket]);
+			    }
+			    aggregator.flush();
                         }
-                        unorderedCopyTaskFence();
                     }//coforall task
                 }//on loc
             }//coforall loc
@@ -194,28 +198,47 @@ module RadixSortLSD
                         // calc task's indices from local domain's indices
                         var tD = calcBlock(task, lD.low, lD.high);
                         // read start pos in to globalStarts back from transposed order
-                        for bucket in bD {
-                            //taskBucketPos[bucket] = globalStarts[calcGlobalIndex(bucket, loc.id, task)];
-                            // will/does this make a difference???
-                            unorderedCopy(taskBucketPos[bucket], globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
-                        }
-                        unorderedCopyTaskFence();
-                        // calc new position and put (key,rank) pair there in kr1
-                        for i in tD {
-                            var bucket = getDigit(kr0[i][KEY], rshift); // calc bucket from key
-                            var pos = taskBucketPos[bucket];
-                            taskBucketPos[bucket] += 1;
-                            // kr1[pos] = kr0[i];
-                            if isTuple(t) {
-                              for param elem in 1..t.size {
-                                unorderedCopy(kr1[pos][KEY][elem], kr0[i][KEY][elem]);
-                              }
-                            } else {
-                              unorderedCopy(kr1[pos][KEY],  kr0[i][KEY]);
+			if copyMode == CopyMode.unordered {
+			    for bucket in bD {
+				//taskBucketPos[bucket] = globalStarts[calcGlobalIndex(bucket, loc.id, task)];
+				// will/does this make a difference???
+				unorderedCopy(taskBucketPos[bucket], globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
+			    }
+			    unorderedCopyTaskFence();
+                        } else if copyMode == CopyMode.aggregated {
+                            var aggregator = new SrcAggregator(int);
+                            for bucket in bD {
+                                aggregator.copy(taskBucketPos[bucket], globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
                             }
-                            unorderedCopy(kr1[pos][RANK], kr0[i][RANK]);
+                            aggregator.flush();
                         }
-                        unorderedCopyTaskFence();
+                        // calc new position and put (key,rank) pair there in kr1
+			if copyMode == CopyMode.unordered {
+                            for i in tD {
+				var bucket = getDigit(kr0[i][KEY], rshift); // calc bucket from key
+                                var pos = taskBucketPos[bucket];
+                                taskBucketPos[bucket] += 1;
+                                // kr1[pos] = kr0[i];
+                                if isTuple(t) {
+                                  for param elem in 1..t.size {
+                                    unorderedCopy(kr1[pos][KEY][elem], kr0[i][KEY][elem]);
+                                  }
+                                } else {
+                                  unorderedCopy(kr1[pos][KEY],  kr0[i][KEY]);
+                                }
+                                unorderedCopy(kr1[pos][RANK], kr0[i][RANK]);
+                            }
+                            unorderedCopyTaskFence();
+                        } else if copyMode == CopyMode.aggregated {
+			    var aggregator = new DstAggregator((t,int));
+			    for i in tD {
+				var bucket = getDigit(kr0[i][KEY], rshift); // calc bucket from key
+				var pos = taskBucketPos[bucket];
+				taskBucketPos[bucket] += 1;
+				aggregator.copy(kr1[pos], kr0[i]);
+			    }
+			    aggregator.flush();
+                        }
                     }//coforall task 
                 }//on loc
             }//coforall loc
@@ -303,12 +326,20 @@ module RadixSortLSD
                             taskBucketCounts[bucket] += 1;
                         }
                         // write counts in to global counts in transposed order
-                        for bucket in bD {
-                            //globalCounts[calcGlobalIndex(bucket, loc.id, task)] = taskBucketCounts[bucket];
-                            // will/does this make a difference???
-                            unorderedCopy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], taskBucketCounts[bucket]);
+			if copyMode == CopyMode.unordered {
+			    for bucket in bD {
+				//globalCounts[calcGlobalIndex(bucket, loc.id, task)] = taskBucketCounts[bucket];
+				// will/does this make a difference???
+				unorderedCopy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], taskBucketCounts[bucket]);
+			    }
+			    unorderedCopyTaskFence();
+                        } else if copyMode == CopyMode.aggregated {
+			    var aggregator = new DstAggregator(int);
+			    for bucket in bD {
+				aggregator.copy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], taskBucketCounts[bucket]);
+			    }
+			    aggregator.flush();
                         }
-                        unorderedCopyTaskFence();
                     }//coforall task
                 }//on loc
             }//coforall loc
@@ -333,21 +364,40 @@ module RadixSortLSD
                         // calc task's indices from local domain's indices
                         var tD = calcBlock(task, lD.low, lD.high);
                         // read start pos in to globalStarts back from transposed order
-                        for bucket in bD {
-                            //taskBucketPos[bucket] = globalStarts[calcGlobalIndex(bucket, loc.id, task)];
-                            // will/does this make a difference???
-                            unorderedCopy(taskBucketPos[bucket], globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
+			if copyMode == CopyMode.unordered {
+			    for bucket in bD {
+				//taskBucketPos[bucket] = globalStarts[calcGlobalIndex(bucket, loc.id, task)];
+				// will/does this make a difference???
+				unorderedCopy(taskBucketPos[bucket], globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
+			    }
+			    unorderedCopyTaskFence();
+                        } else if copyMode == CopyMode.aggregated {
+                            var aggregator = new SrcAggregator(int);
+                            for bucket in bD {
+                                aggregator.copy(taskBucketPos[bucket], globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
+                            }
+                            aggregator.flush();
                         }
-                        unorderedCopyTaskFence();
                         // calc new position and put (key,rank) pair there in kr1
-                        for i in tD {
-                            var bucket = getDigit(k0[i], rshift); // calc bucket from key
-                            var pos = taskBucketPos[bucket];
-                            taskBucketPos[bucket] += 1;
-                            // k1[pos] = k0[i];
-                            unorderedCopy(k1[pos], k0[i]);
+			if copyMode == CopyMode.unordered {
+                            for i in tD {
+                                var bucket = getDigit(k0[i], rshift); // calc bucket from key
+                                var pos = taskBucketPos[bucket];
+                                taskBucketPos[bucket] += 1;
+                                // k1[pos] = k0[i];
+				unorderedCopy(k1[pos], k0[i]);
+                            }
+                            unorderedCopyTaskFence();
+                        } else if copyMode == CopyMode.aggregated {
+			    var aggregator = new DstAggregator(t);
+                            for i in tD {
+                                var bucket = getDigit(k0[i], rshift); // calc bucket from key
+                                var pos = taskBucketPos[bucket];
+                                taskBucketPos[bucket] += 1;
+				aggregator.copy(k1[pos], k0[i]);
+                            }
+                            aggregator.flush();
                         }
-                        unorderedCopyTaskFence();
                     }//coforall task 
                 }//on loc
             }//coforall loc
