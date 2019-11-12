@@ -171,21 +171,21 @@ proc main() {
     writeln("%i: %s".format(i, strMatches[i]));
   }
 
-  for i in testStart..testStop {
-    var hashval = permStrings.murmurHash(permStrings.values.a[permStrings.offsets.a[i]..(permStrings.offsets.a[i+1]-1)]);
-    writeln("%i: %s, (%016xu, %016xu)".format(i, permStrings[i], hashval[1], hashval[2]));
-  }
+  /* for i in testStart..testStop { */
+  /*   var hashval = permStrings.murmurHash(permStrings.values.a[permStrings.offsets.a[i]..(permStrings.offsets.a[i+1]-1)]); */
+  /*   writeln("%i: %s, (%016xu, %016xu)".format(i, permStrings[i], hashval[1], hashval[2])); */
+  /* } */
 
-  // Manually hash strings and sort hashes
-  writeln();
-  var hashes = strings.hash();
-  var manPerm = radixSortLSD_ranks(hashes);
-  writeln("Sorts equal? ", && reduce (manPerm == perm.a));
-  writeln("Manually hashed values:");
-  for i in testStart..testStop {
-    var myStr = strings[manPerm[i]];
-    var myHash = hashes[manPerm[i]];
-    writeln("%i: %s, (%016xu, %016xu)".format(i, myStr, myHash[1], myHash[2]));
-  }
+  /* // Manually hash strings and sort hashes */
+  /* writeln(); */
+  /* var hashes = strings.hash(); */
+  /* var manPerm = radixSortLSD_ranks(hashes); */
+  /* writeln("Sorts equal? ", && reduce (manPerm == perm.a)); */
+  /* writeln("Manually hashed values:"); */
+  /* for i in testStart..testStop { */
+  /*   var myStr = strings[manPerm[i]]; */
+  /*   var myHash = hashes[manPerm[i]]; */
+  /*   writeln("%i: %s, (%016xu, %016xu)".format(i, myStr, myHash[1], myHash[2])); */
+  /* } */
   
 }

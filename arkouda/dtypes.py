@@ -16,6 +16,7 @@ dtype = np.dtype
 bool = np.bool
 int64 = np.int64
 float64 = np.float64
+str_ = np.str_
 
 def check_np_dtype(dt):
     """
@@ -49,6 +50,8 @@ def resolve_scalar_dtype(val):
     # Python float or np.float*
     elif isinstance(val, float) or (hasattr(val, 'dtype') and val.dtype.kind == 'f'):
         return 'float64'
+    elif isinstance(val, str) or isinstance(val, str_):
+        return 'str'
     # Other numpy dtype
     elif hasattr(val, 'dtype'):
         return val.dtype.name

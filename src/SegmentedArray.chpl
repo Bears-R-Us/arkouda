@@ -5,6 +5,7 @@ module SegmentedArray {
   use Crypto;
   use MurmurHash;
   use RadixSortLSD;
+  use SHA256Implementation only SHA256Digest;
 
   private config const DEBUG = false;
   
@@ -162,20 +163,20 @@ module SegmentedArray {
       return (gatheredOffsets, gatheredVals);
     }
 
-    inline proc hash2tuple(h: CryptoBuffer): (uint, uint) {
+    inline proc hash2tuple(h: CryptoBuffer): 2*uint(64) {
       var d = h.getBuffData();
-      var res: (uint, uint);
+      var res: 2*uint(64);
       for param i in 0..7 {
-        res[1] |= (d[i]: uint) << (7-i)*8;
-        res[2] |= (d[i+8]: uint) << (7-i)*8;
+        res[1] |= (d[i]: uint(64)) << (7-i)*8;
+        res[2] |= (d[i+8]: uint(64)) << (7-i)*8;
       }
       return res;
     }
 
-    inline proc chplHash(buf: [?D] uint(8)): 2*uint {
-      var res: 2*uint;
+    inline proc chplHash(buf: [?D] uint(8)): 2*uint(64) {
+      var res: 2*uint(64);
       for chunk in D by 16 {
-        var word: 2*uint;
+        var word: 2*uint(64);
         for i in chunk..min(chunk+16, D.high) {
           var shift = 7 - ((i - chunk) / 2);
           word[((i - chunk) % 2) + 1] |= buf[i] << shift;
@@ -186,15 +187,23 @@ module SegmentedArray {
       return res;
     }
 
-    proc cryptoHash(b: [] uint(8), hashFxn): 2*uint {
+    proc cryptoHash(b: [] uint(8), hashFxn): 2*uint(64) {
       var hasher = new owned Hash(hashFxn);
       var buf = new owned CryptoBuffer(b);
       const hashed = hasher.getDigest(buf);
       return hash2tuple(hashed);
     }
 
-    inline proc murmurHash(b: [] uint(8)): 2*uint {
+    inline proc murmurHash(b: [] uint(8)): 2*uint(64) {
       return MurmurHash3_128(b);
+    }
+
+    inline proc SHA256Hash(b: [] uint(8)): 2*uint(64) {
+      const h = SHA256Digest(b);
+      var res: 2*uint(64);
+      res[1] = ((h[1]:uint(64)) << 32) | (h[2]:uint(64));
+      res[2] = ((h[3]:uint(64)) << 32) | (h[4]:uint(64));
+      return res;
     }
 
     proc hash() {
@@ -210,31 +219,11 @@ module SegmentedArray {
       }
       const maxLen = max reduce lengths;
       const empty: [0..#maxLen] uint(8);
-      var hashes: [offsets.aD] (uint, uint);
-      [(o, l, h) in zip(oa, lengths, hashes)] h = cryptoHash(va[{o..#l}], Digest.SHA1);
-      // var hasher = new owned Hash(Digest.MD5);
-      /* forall (o, l, h) in zip(oa, lengths, hashes) */
-      /*   with (var hasher = new owned Hash(Digest.MD5), */
-      /*         var buf = new owned CryptoBuffer(empty)) { */
-      /*   // var buf = new owned CryptoBuffer(va[{o..#l}]); */
-      /*   // var hasher = new owned Hash(Digest.MD5); */
-      /*   // Load the buffer */
-      /*   var bufPtr = buf.getBuffPtr(); */
-      /*   for i in 0..#l { */
-      /*     bufPtr[i] = va[o+i]: c_uchar; */
-      /*   } */
-      /*   // Zero the rest of the buffer */
-      /*   for i in l..(maxLen-1) { */
-      /*     bufPtr[i] = 0: c_uchar; */
-      /*   } */
-      /*   // Hash the buffer */
-      /*   var hashbuf = hasher.getDigest(buf); */
-      /*   // h = new bigint(hashbuf.toHexString(), base=16); */
-      /*   // var hashbytes = hashbuf.getBuffData(); */
-      /*   // Convert to a tuple */
-      /*   h = hash2tuple(hashbuf); */
-      /*   // h = internalHash(va[{o..#l}]); */
-      /* } */
+      var hashes: [offsets.aD] 2*uint(64);
+      forall (o, l, h) in zip(oa, lengths, hashes) {
+        // h = cryptoHash(va[{o..#l}], Digest.SHA1);
+        h = SHA256Hash(va[{o..#l}]);
+      }
       return hashes;
     }
     
@@ -341,17 +330,13 @@ module SegmentedArray {
   proc segIntIndex(objtype: string, args: [] string, st: borrowed SymTab): string throws {
     var pn = "segIntIndex";
     select objtype {
-      when "string" {
-        /* var gsegs = st.lookup(args[1]); */
-        /* var segs = toSymEntry(gsegs, int); */
-        /* var gvals = st.lookup(args[2]); */
-        /* var vals = toSymEntry(gvals, uint(8)); */
-        /* var strings = new owned SegString(segs, vals); */
+      when "str" {
+        // args = (segName, valName, index)
         var strings = new owned SegString(args[1], args[2], st);
         var idx = try! args[3]:int;
         idx = convertPythonIndexToChapel(idx, strings.size);
         var s = strings[idx];
-        return try! "item %s %jt".format("string", s);
+        return try! "item %s %jt".format("str", s);
       }
       otherwise { return notImplementedError(pn, objtype); }
       }
@@ -370,7 +355,7 @@ module SegmentedArray {
   proc segSliceIndex(objtype: string, args: [] string, st: borrowed SymTab): string throws {
     var pn = "segSliceIndex";
     select objtype {
-      when "string" {
+      when "str" {
         /* var gsegs = st.lookup(args[1]); */
         /* var segs = toSymEntry(gsegs, int); */
         /* var gvals = st.lookup(args[2]); */
@@ -412,7 +397,7 @@ module SegmentedArray {
     var newSegName = st.nextName();
     var newValName = st.nextName();
     select objtype {
-      when "string" {
+      when "str" {
         /* var gsegs = st.lookup(args[1]); */
         /* var segs = toSymEntry(gsegs, int); */
         /* var gvals = st.lookup(args[2]); */
@@ -448,7 +433,7 @@ module SegmentedArray {
   }
 
   proc segBinopvvMsg(reqMsg: string, st: borrowed SymTab): string throws {
-    var pn = "segBinopvs";
+    var pn = "segBinopvv";
     var repMsg: string;
     var fields = reqMsg.split();
     var cmd = fields[1];
@@ -467,7 +452,7 @@ module SegmentedArray {
     /* var grvals = st.lookup(rvalName); */
     var rname = st.nextName();
     select (ltype, rtype) {
-    when ("string", "string") {
+    when ("str", "str") {
       /* var lvals = toSymEntry(glvals, uint(8)); */
       /* var rvals = toSymEntry(grvals, uint(8)); */
       /* var lstrings = SegString(lsegs, lvals); */
@@ -503,7 +488,7 @@ module SegmentedArray {
     var value = fields[7];
     var rname = st.nextName();
     select (objtype, valtype) {
-    when ("string", "string") {
+    when ("str", "str") {
       /* var vals = toSymEntry(gvals, uint(8)); */
       /* var strings = new owned SegString(segs, vals); */
       var strings = new owned SegString(segName, valName, st);
@@ -529,7 +514,7 @@ module SegmentedArray {
     var valName = fields[4];
     var rname = st.nextName();
     select (objtype) {
-    when "string" {
+    when "str" {
       var strings = new owned SegString(segName, valName, st);
       var iv = st.addEntry(rname, strings.size, int);
       iv.a = strings.argGroup();
