@@ -37,6 +37,8 @@ module SortMsg
 
       var gEnt: borrowed GenSymEntry = st.lookup(name);
 
+      // Sort the input pda and create a new symbol entry for
+      // the sorted pda.
       select (gEnt.dtype) {
         when (DType.Int64) {
           var e = toSymEntry(gEnt, int);
