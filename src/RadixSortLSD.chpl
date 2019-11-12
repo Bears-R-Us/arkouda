@@ -253,7 +253,7 @@ module RadixSortLSD
         
 	// find negative keys, they will appear together at the high end of the array
 	// if there are no negative keys then firstNegative will be aD.low
-        var hasNegatives: bool , firstNegative: int;
+        var hasNegatives: bool , firstNegative: int = aD.high + 1;
         // maxloc on bools returns the first index where condition is true
         if !isTuple(t) {
           (hasNegatives, firstNegative) = maxloc reduce zip([(key,rank) in kr1] (key < 0), aD);

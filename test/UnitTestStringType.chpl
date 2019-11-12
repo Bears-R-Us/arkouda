@@ -45,12 +45,14 @@ proc main() {
   }
 
   // strings[int]
+  writeln();
   reqMsg = "%s %s %s %s %s %i".format("segmentedIndexMsg", "intIndex", "string", segName, valName, testIndex);
   writeln(">>> ", reqMsg);
   repMsg = segmentedIndexMsg(reqMsg, st);
   writeln("<<< ", repMsg);
 
   // strings[slice]
+  writeln();
   reqMsg = "%s %s %s %s %s %i %i %i".format("segmentedIndexMsg", "sliceIndex", "string", segName, valName, testStart, testStop, 1);
   writeln(">>> ", reqMsg);
   repMsg = segmentedIndexMsg(reqMsg, st);
@@ -65,6 +67,7 @@ proc main() {
   }
 
   // strings[pdarray]
+  writeln();
   var cname = st.nextName();
   var gcountdown = st.addEntry(cname, new shared SymEntry(5, int));
   var countdown = toSymEntry(gcountdown, int);
@@ -82,6 +85,7 @@ proc main() {
   }
 
   // strings == val
+  writeln();
   reqMsg = "%s %s %s %s %s %s %s".format("segBinopvs", "==", "string", segName, valName, "string", testString);
   writeln(">>> ", reqMsg);
   repMsg = segBinopvsMsg(reqMsg, st);
@@ -102,6 +106,7 @@ proc main() {
   writeln("consecutive? ", consecutive);
 
   // group strings
+  writeln();
   reqMsg = "%s %s %s %s".format("segGroup", "string", segName, valName);
   writeln(">>> ", reqMsg);
   repMsg = segGroupMsg(reqMsg, st);
@@ -112,6 +117,7 @@ proc main() {
   var perm = toSymEntry(gperm, int);
 
   // permute strings
+  writeln();
   reqMsg = "%s %s %s %s %s %s".format("segmentedIndex", "pdarrayIndex", "string", segName, valName, permname);
   writeln(">>> ", reqMsg);
   repMsg = segmentedIndexMsg(reqMsg, st);
@@ -129,6 +135,7 @@ proc main() {
 
   // check that permuted strings grouped 
   // strings == val
+  writeln();
   reqMsg = "%s %s %s %s %s %s %s".format("segBinopvs", "==", "string", permSegName, permValName, "string", testString);
   writeln(">>> ", reqMsg);
   repMsg = segBinopvsMsg(reqMsg, st);
@@ -151,6 +158,7 @@ proc main() {
 
   // compress out the matches
   // strings[pdarray(bool)]
+  writeln();
   reqMsg = "%s %s %s %s %s %s".format("segmentedIndexMsg", "pdarrayIndex", "string", permSegName, permValName, aname);
   writeln(">>> ", reqMsg);
   repMsg = segmentedIndexMsg(reqMsg, st);
@@ -163,8 +171,21 @@ proc main() {
     writeln("%i: %s".format(i, strMatches[i]));
   }
 
-  for i in 5177..5183 {
-    var hashval = permStrings.internalHash(permStrings.values.a[permStrings.offsets.a[i]..(permStrings.offsets.a[i+1]-1)]);
-    writeln("%i: %s, (%i, %i)".format(i, permStrings[i], hashval[1], hashval[2]));
+  for i in testStart..testStop {
+    var hashval = permStrings.murmurHash(permStrings.values.a[permStrings.offsets.a[i]..(permStrings.offsets.a[i+1]-1)]);
+    writeln("%i: %s, (%016xu, %016xu)".format(i, permStrings[i], hashval[1], hashval[2]));
   }
+
+  // Manually hash strings and sort hashes
+  writeln();
+  var hashes = strings.hash();
+  var manPerm = radixSortLSD_ranks(hashes);
+  writeln("Sorts equal? ", && reduce (manPerm == perm.a));
+  writeln("Manually hashed values:");
+  for i in testStart..testStop {
+    var myStr = strings[manPerm[i]];
+    var myHash = hashes[manPerm[i]];
+    writeln("%i: %s, (%016xu, %016xu)".format(i, myStr, myHash[1], myHash[2]));
+  }
+  
 }

@@ -172,7 +172,7 @@ module SegmentedArray {
       return res;
     }
 
-    inline proc internalHash(buf: [?D] uint(8)): 2*uint {
+    inline proc chplHash(buf: [?D] uint(8)): 2*uint {
       var res: 2*uint;
       for chunk in D by 16 {
         var word: 2*uint;
@@ -186,14 +186,18 @@ module SegmentedArray {
       return res;
     }
 
-    proc hashBytes(b: [] uint(8)): 2*uint {
-      var hasher = new owned Hash(Digest.MD5);
+    proc cryptoHash(b: [] uint(8), hashFxn): 2*uint {
+      var hasher = new owned Hash(hashFxn);
       var buf = new owned CryptoBuffer(b);
       const hashed = hasher.getDigest(buf);
       return hash2tuple(hashed);
     }
 
-    proc argGroup() {
+    inline proc murmurHash(b: [] uint(8)): 2*uint {
+      return MurmurHash3_128(b);
+    }
+
+    proc hash() {
       ref oa = offsets.a;
       ref va = values.a;
       var lengths: [offsets.aD] int;
@@ -207,9 +211,7 @@ module SegmentedArray {
       const maxLen = max reduce lengths;
       const empty: [0..#maxLen] uint(8);
       var hashes: [offsets.aD] (uint, uint);
-      if DEBUG {writeln("before hashing");}
-      [(o, l, h) in zip(oa, lengths, hashes)] h = MurmurHash3_128(va[{o..#l}]);
-      if DEBUG {writeln("after hashing");}
+      [(o, l, h) in zip(oa, lengths, hashes)] h = cryptoHash(va[{o..#l}], Digest.SHA1);
       // var hasher = new owned Hash(Digest.MD5);
       /* forall (o, l, h) in zip(oa, lengths, hashes) */
       /*   with (var hasher = new owned Hash(Digest.MD5), */
@@ -233,10 +235,16 @@ module SegmentedArray {
       /*   h = hash2tuple(hashbuf); */
       /*   // h = internalHash(va[{o..#l}]); */
       /* } */
+      return hashes;
+    }
+    
+    proc argGroup() {
+      var hashes = this.hash();
       var iv = radixSortLSD_ranks(hashes);
       if DEBUG {
         var sortedHashes = [i in iv] hashes[i];
         var diffs = sortedHashes[(iv.domain.low+1)..#(iv.size-1)] - sortedHashes[(iv.domain.low)..#(iv.size-1)];
+        printAry("diffs = ", diffs);
         var nonDecreasing = [d in diffs] ((d[1] > 0) || ((d[1] == 0) && (d[2] >= 0)));
         writeln("Are hashes sorted? ", && reduce nonDecreasing);
       }

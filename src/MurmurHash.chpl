@@ -21,7 +21,7 @@ module MurmurHash {
     return h;
   }
 
-  proc MurmurHash3_128(blocks: [?D] uint(8), seed: uint(32) = 0): 2*uint(64) {
+  proc MurmurHash3_128(blocks: [?D] uint(8), seed: uint(32) = 8675309): 2*uint(64) {
     const nblocks: int = D.size / 16;
     const len = D.size;
     var h1 = seed, h2 = seed, h3 = seed, h4 = seed;
