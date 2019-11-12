@@ -93,6 +93,23 @@ def check_argsort(N):
 
 print("check argsort :", check_argsort(N))
 
+def check_sort(N):
+    # create np version
+    a = np.arange(N)
+    a = a[::-1]
+    a = np.sort(a)
+    a = ak.array(a)
+    # create ak version
+    b = ak.arange(N)
+    b = b[::-1]
+    b = ak.sort(b)
+    # print(a,b)
+    c = a == b
+    # print(type(c),c)
+    return pass_fail(c.all())
+
+print("check sort :", check_sort(N))
+
 def check_get_slice(N):
     # create np version
     a = np.ones(N)
