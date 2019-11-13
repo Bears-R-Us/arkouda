@@ -1,4 +1,5 @@
 from arkouda.pdarrayclass import pdarray, create_pdarray
+from arkouda.dtypes import *
 
 __all__ = ['Strings']
 

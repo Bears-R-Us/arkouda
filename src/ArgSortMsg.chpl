@@ -392,6 +392,14 @@ module ArgSortMsg
       return newIV;
     }
 
+    proc incrementalArgSort(s: SegString, iv: [?aD] int): [] int throws {
+      var newStr = s[iv];
+      var deltaIV = newStr.argGroup();
+      var newIV: [aD] int;
+      [(newIVi, idx) in zip(newIV, deltaIV)] unorderedCopy(newIVi, iv[idx]);
+      return newIV;
+    }
+
     /* Do a LSD radix sort across multiple arrays, where each array represents a digit.
      */
     /* proc coArgSort(arrays: [?D] GenSymEntry): [] int throws { */
@@ -415,20 +423,33 @@ module ArgSortMsg
       var fields = reqMsg.split();
       var cmd = fields[1];
       var n = try! fields[2]:int; // number of arrays to sort
-      var names = fields[3..];
       // Check that fields contains the stated number of arrays
-      if (n != names.size) { return try! incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(n, names.size)); }
+      if (fields.size != (2*n + 2)) { return try! incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(n, fields.size/2 - 1)); }
+      var names = fields[3..#n];
+      var types = fields[3+n..#n];
       /* var arrays: [0..#n] borrowed GenSymEntry; */
       var size: int;
       // Check that all arrays exist in the symbol table and have the same size
-      for (name, i) in zip(names, 1..) {
+      for (name, objtype, i) in zip(names, types, 1..) {
 	// arrays[i] = st.lookup(name): borrowed GenSymEntry;
-	var g: borrowed GenSymEntry = st.lookup(name);
+        var g: borrowed GenSymEntry;
+        select objtype {
+          when "pdarray" {
+            g = st.lookup(name);
+          }
+          when "str" {
+            var myNames = name.split('+');
+            g = st.lookup(myNames[1]);
+          }
+          otherwise {return unrecognizedDtypeError(pn, objtype);}
+        }
+        
 	if (i == 1) {
 	  size = g.size;
 	} else {
 	  if (g.size != size) { return incompatibleArgumentsError(pn, "Arrays must all be same size"); }
 	}
+        
       }
       // Initialize the permutation vector in the symbol table with the identity perm
       var rname = st.nextName();
@@ -437,16 +458,15 @@ module ArgSortMsg
       iv.a = 0..#size;
       // Starting with the last array, incrementally permute the IV by sorting each array
       for i in names.domain.low..names.domain.high by -1 {
-	var g: borrowed GenSymEntry = st.lookup(names[i]);
-	try {
-	  // Perform the coArgSort and store in the new SymEntry
-	  iv.a = incrementalArgSort(g, iv.a);
-	} catch e:ErrorWithMsg {
-	  // The only error thrown is for an unsupported dtype
-	  return notImplementedError(pn, e.msg);
-	} catch {
-	  return try! "Error: %s unknown cause".format(pn);
-	}
+        if (types[i] == "str") {
+          var myNames = names[i].split('+');
+          var strings = new owned SegString(myNames[1], myNames[2], st);
+          iv.a = incrementalArgSort(strings, iv.a);
+        } else {
+          var g: borrowed GenSymEntry = st.lookup(names[i]);
+          // Perform the coArgSort and store in the new SymEntry
+          iv.a = incrementalArgSort(g, iv.a);
+        }
       }
       return try! "created " + st.attrib(rname);
     }

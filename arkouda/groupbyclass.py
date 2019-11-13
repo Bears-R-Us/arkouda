@@ -1,6 +1,7 @@
 from arkouda.client import generic_msg, verbose
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.sorting import argsort, coargsort, local_argsort
+from arkouda.strings import Strings
 
 __all__ = ["GroupBy"]
 
@@ -47,6 +48,13 @@ class GroupBy:
                 self.permutation = local_argsort(keys)
             else:
                 self.permutation = argsort(keys)
+        elif isinstance(keys, Strings):
+            self.nkeys = 1
+            self.size = keys.size
+            if self.per_locale:
+                raise ValueError("per-locale groupby not supported on strings")
+            else:
+                self.permutation = keys.group()
         else:
             self.nkeys = len(keys)
             self.size = keys[0].size
