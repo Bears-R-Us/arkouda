@@ -67,28 +67,22 @@ module OperatorMsg
                         e.a = l.a * r.a;
                     }
                     when "/" { // truediv
-		        // Chapel will halt if any element of r.a is zero
-		                if || reduce (r.a == 0) {
-			                return "Error: Attempt to divide by zero";
-			            }
                         var e = st.addEntry(rname, l.size, real);
                         e.a = l.a:real / r.a:real;
                     } 
                     when "//" { // floordiv
-		        // Chapel will halt if any element of r.a is zero
-		        if || reduce (r.a == 0) {
-			  return "Error: Attempt to divide by zero";
-			}
                         var e = st.addEntry(rname, l.size, int);
-                        e.a = l.a / r.a;
+                        ref ea = e.a;
+                        ref la = l.a;
+                        ref ra = r.a;
+                        [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then li/ri else 0;
                     }
 		    when "%" { // modulo
-		        // Chapel will halt if any element of r.a is zero
-		        if || reduce (r.a == 0) {
-			  return "Error: Attempt to compute a modulus by zero";
-			}
                         var e = st.addEntry(rname, l.size, int);
-		        e.a = l.a % r.a;
+                        ref ea = e.a;
+                        ref la = l.a;
+                        ref ra = r.a;
+                        [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then li%ri else 0;
 		    }
                     when "<" {
                         var e = st.addEntry(rname, l.size, bool);
@@ -163,16 +157,10 @@ module OperatorMsg
                         e.a = l.a * r.a;
                     }
                     when "/" { // truediv
-                        if || reduce (r.a == 0) {
-			                return "Error: Attempt to divide by zero";
-			            }
                         var e = st.addEntry(rname, l.size, real);
                         e.a = l.a:real / r.a;
                     } 
                     when "//" { // floordiv
-                        if || reduce (r.a == 0) {
-			                return "Error: Attempt to divide by zero";
-			            }
                         var e = st.addEntry(rname, l.size, real);
                         e.a = floor((l.a / r.a));
                     }
@@ -225,16 +213,10 @@ module OperatorMsg
                         e.a = l.a * r.a;
                     }
                     when "/" { // truediv
-                        if || reduce (r.a == 0) {
-			                return "Error: Attempt to divide by zero";
-			            }
                         var e = st.addEntry(rname, l.size, real);
                         e.a = l.a / r.a:real;
                     } 
                     when "//" { // floordiv
-                        if || reduce (r.a == 0) {
-			                return "Error: Attempt to divide by zero";
-			            }
                         var e = st.addEntry(rname, l.size, real);
                         e.a = floor(l.a / r.a);
                     }
@@ -287,16 +269,10 @@ module OperatorMsg
                         e.a = l.a * r.a;
                     }
                     when "/" { // truediv
-                        if || reduce (r.a == 0) {
-			                return "Error: Attempt to divide by zero";
-			            }
                         var e = st.addEntry(rname, l.size, real);
                         e.a = l.a / r.a;
                     } 
                     when "//" { // floordiv
-                        if || reduce (r.a == 0) {
-			                return "Error: Attempt to divide by zero";
-			            }
                         var e = st.addEntry(rname, l.size, real);
                         e.a = floor(l.a / r.a);
                     }
@@ -480,28 +456,20 @@ module OperatorMsg
                         e.a = l.a * val;
                     }
                     when "/" { // truediv
-		        // Chapel will halt if val is zero
-		        if (val == 0) {
-			  return "Error: Attempt to divide by zero";
-			}
                         var e = st.addEntry(rname, l.size, real);
                         e.a = l.a:real / val:real;
                     } 
                     when "//" { // floordiv
-		        // Chapel will halt if any element of r.a is zero
-		        if (val == 0) {
-			  return "Error: Attempt to divide by zero";
-			}
                         var e = st.addEntry(rname, l.size, int);
-                        e.a = l.a / val;
+                        ref ea = e.a;
+                        ref la = l.a;
+                        [(ei,li) in zip(ea,la)] ei = if val != 0 then li/val else 0;
                     }
 		    when "%" { // modulo
-		      // Chapel will halt if val is zero
-		      if (val == 0) {
-			return "Error: Attempt to compute a modulus by zero";
-		      }
                         var e = st.addEntry(rname, l.size, int);
-		        e.a = l.a % val;
+                        ref ea = e.a;
+                        ref la = l.a;
+                        [(ei,li) in zip(ea,la)] ei = if val != 0 then li%val else 0;
 		    } 
                     when "<" {
                         var e = st.addEntry(rname, l.size, bool);
@@ -575,18 +543,10 @@ module OperatorMsg
                         e.a = l.a * val;
                     }
                     when "/" { // truediv
-                        // add check for division by zero!
-                        if (val == 0) {
-			              return "Error: Attempt to divide by zero";
-			            }
                         var e = st.addEntry(rname, l.size, real);
                         e.a = l.a:real / val;
                     } 
                     when "//" { // floordiv
-                        // add check for division by zero!
-                        if (val == 0) {
-			              return "Error: Attempt to divide by zero";
-			            }
                         var e = st.addEntry(rname, l.size, real);
                         e.a = floor(l.a:real / val);
                     }
@@ -639,18 +599,10 @@ module OperatorMsg
                         e.a = l.a * val;
                     }
                     when "/" { // truediv
-                        // add check for division by zero!
-                        if (val == 0) {
-			              return "Error: Attempt to divide by zero";
-			            }
                         var e = st.addEntry(rname, l.size, real);
                         e.a = l.a / val:real;
                     } 
                     when "//" { // floordiv
-                        // add check for division by zero!
-                        if (val == 0) {
-			              return "Error: Attempt to divide by zero";
-			            }
                         var e = st.addEntry(rname, l.size, real);
                         e.a = floor(l.a / val:real);
                     }
@@ -703,18 +655,10 @@ module OperatorMsg
                         e.a = l.a * val;
                     }
                     when "/" { // truediv
-                        // add check for division by zero!
-                        if (val == 0) {
-			              return "Error: Attempt to divide by zero";
-			            }
                         var e = st.addEntry(rname, l.size, real);
                         e.a = l.a / val;
                     } 
                     when "//" { // floordiv
-                        // add check for division by zero!
-                        if (val == 0) {
-			              return "Error: Attempt to divide by zero";
-			            }
                         var e = st.addEntry(rname, l.size, real);
                         e.a = floor(l.a / val);
                     }
@@ -896,28 +840,20 @@ module OperatorMsg
                         e.a = val * r.a;
                     }
                     when "/" { // truediv
-		        // Chapel will halt if any element of r.a is zero
-		        if || reduce (r.a == 0) {
-			  return "Error: Attempt to divide by zero";
-			}
                         var e = st.addEntry(rname, r.size, real);
                         e.a =  val:real / r.a:real;
                     } 
                     when "//" { // floordiv
-		        // Chapel will halt if any element of r.a is zero
-		        if || reduce (r.a == 0) {
-			  return "Error: Attempt to divide by zero";
-			}
                         var e = st.addEntry(rname, r.size, int);
-                        e.a = val / r.a;
+                        ref ea = e.a;
+                        ref ra = r.a;
+                        [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then val/ri else 0;
                     }
 		    when "%" { // modulo
-		        // Chapel will halt if any element of r.a is zero
-		        if || reduce (r.a == 0) {
-			  return "Error: Attempt to compute a modulus by zero";
-			}
                         var e = st.addEntry(rname, r.size, int);
-		        e.a = val % r.a;
+                        ref ea = e.a;
+                        ref ra = r.a;
+                        [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then val%ri else 0;
 		    }
                     when "<" {
                         var e = st.addEntry(rname, r.size, bool);
@@ -991,16 +927,10 @@ module OperatorMsg
                         e.a = val * r.a;
                     }
                     when "/" { // truediv
-                        if || reduce (r.a == 0) {
-			                 return "Error: Attempt to divide by zero";
-			            }
                         var e = st.addEntry(rname, r.size, real);
                         e.a = val:real / r.a;
                     }
                     when "//" { // floordiv
-                        if || reduce (r.a == 0) {
-			                 return "Error: Attempt to divide by zero";
-			            }
                         var e = st.addEntry(rname, r.size, real);
                         e.a = floor(val:real / r.a);
                     }
@@ -1053,18 +983,10 @@ module OperatorMsg
                         e.a = val * r.a;
                     }
                     when "/" { // truediv
-                        // add check for division by zero!
-                        if || reduce (r.a == 0) {
-			                 return "Error: Attempt to divide by zero";
-			            }
                         var e = st.addEntry(rname, r.size, real);
                         e.a = val / r.a:real;
                     } 
                     when "//" { // floordiv
-                        // add check for division by zero!
-                        if || reduce (r.a == 0) {
-			                 return "Error: Attempt to divide by zero";
-			            }
                         var e = st.addEntry(rname, r.size, real);
                         e.a = floor(val / r.a:real);
                     }
@@ -1117,16 +1039,10 @@ module OperatorMsg
                         e.a = val * r.a;
                     }
                     when "/" { // truediv
-                        if || reduce (r.a == 0) {
-			                 return "Error: Attempt to divide by zero";
-			            }
                         var e = st.addEntry(rname, r.size, real);
                         e.a = val / r.a;
                     } 
                     when "//" { // floordiv
-                        if || reduce (r.a == 0) {
-			                 return "Error: Attempt to divide by zero";
-			            }
                         var e = st.addEntry(rname, r.size, real);
                         e.a = floor(val / r.a);
                     }
@@ -1296,12 +1212,18 @@ module OperatorMsg
                     when "+=" { l.a += r.a; }
                     when "-=" { l.a -= r.a; }
                     when "*=" { l.a *= r.a; }
-                    when "//=" { 
-                        if || reduce(r.a==0){
-                            return "Error: Attempt to divide by zero";
-                        }
-                        l.a /= r.a; 
+                    when "//=" {
+                        //l.a /= r.a;
+                        ref la = l.a;
+                        ref ra = r.a;
+                        [(li,ri) in zip(la,ra)] li = if ri != 0 then li/ri else 0;
                     }//floordiv
+                    when "%=" {
+                        //l.a /= r.a;
+                        ref la = l.a;
+                        ref ra = r.a;
+                        [(li,ri) in zip(la,ra)] li = if ri != 0 then li%ri else 0;
+                    }
                     when "**=" { 
                         if || reduce (r.a<0){
                             return "Error: Attempt to exponentiate base of type Int64 to negative exponent";
@@ -1324,18 +1246,8 @@ module OperatorMsg
                     when "+=" {l.a += r.a;}
                     when "-=" {l.a -= r.a;}
                     when "*=" {l.a *= r.a;}
-                    when "/=" {
-                        if || reduce(r.a==0){
-                            return "Error: Attempt to divide by zero";
-                        }
-                        l.a /= r.a:real;
-                    } //truediv
-                    when "//=" {
-                        if || reduce(r.a==0){
-                            return "Error: Attempt to divide by zero";
-                        }
-                        l.a = floor(l.a / r.a);
-                    } //floordiv
+                    when "/=" {l.a /= r.a:real;} //truediv
+                    when "//=" {l.a = floor(l.a / r.a);} //floordiv
                     when "**=" { l.a **= r.a; }
                     otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
                 }
@@ -1349,12 +1261,7 @@ module OperatorMsg
                     when "-=" {l.a -= r.a;}
                     when "*=" {l.a *= r.a;}
                     when "/=" {l.a /= r.a;}//truediv
-                    when "//=" {
-                        if || reduce(r.a==0){
-                            return "Error: Attempt to divide by zero";
-                        }
-                        l.a = floor(l.a / r.a);
-                    }//floordiv
+                    when "//=" {l.a = floor(l.a / r.a);}//floordiv
                     when "**=" { l.a **= r.a; }
                     otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
                 }
@@ -1435,11 +1342,11 @@ module OperatorMsg
                     when "-=" { l.a -= val; }
                     when "*=" { l.a *= val; }
                     when "//=" { 
-                        if (val==0){
-                            return "Error: Attempt to divide by zero";
-                        }
-                        l.a /= val; 
+                        if val != 0 {l.a /= val;} else {l.a = 0;}
                     }//floordiv
+                    when "%=" { 
+                        if val != 0 {l.a %= val;} else {l.a = 0;}
+                    }
                     when "**=" { 
                         if (val<0){
                             return "Error: Attempt to exponentiate base of type Int64 to negative exponent";
@@ -1463,18 +1370,8 @@ module OperatorMsg
                     when "+=" {l.a += val;}
                     when "-=" {l.a -= val;}
                     when "*=" {l.a *= val;}
-                    when "/=" {
-                        if (val==0){
-                            return "Error: Attempt to divide by zero";
-                        }
-                        l.a /= val:real;
-                    } //truediv
-                    when "//=" {
-                        if (val==0){
-                            return "Error: Attempt to divide by zero";
-                        }
-                        l.a = floor(l.a / val);
-                    } //floordiv
+                    when "/=" {l.a /= val:real;} //truediv
+                    when "//=" {l.a = floor(l.a / val);} //floordiv
                     when "**=" { l.a **= val; }
                     otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
                 }
@@ -1487,17 +1384,8 @@ module OperatorMsg
                     when "+=" {l.a += val;}
                     when "-=" {l.a -= val;}
                     when "*=" {l.a *= val;}
-                    when "/=" {
-                        if (val==0){
-                            return "Error: Attempt to divide by zero";
-                        }
-                        l.a /= val;
-                    }//truediv
-                    when "//=" {
-                        if (val==0){
-                            return "Error: Attempt to divide by zero";
-                        }
-                        l.a = floor(l.a / val);
+                    when "/=" {l.a /= val;}//truediv
+                    when "//=" {l.a = floor(l.a / val);
                     }//floordiv
                     when "**=" { l.a **= val; }
                     otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
