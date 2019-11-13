@@ -162,7 +162,10 @@ module OperatorMsg
                     } 
                     when "//" { // floordiv
                         var e = st.addEntry(rname, l.size, real);
-                        e.a = floor((l.a / r.a));
+                        ref ea = e.a;
+                        ref la = l.a;
+                        ref ra = r.a;
+                        [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then floor(li:real/ri) else NAN;
                     }
                     when "<" {
                         var e = st.addEntry(rname, l.size, bool);
@@ -218,7 +221,10 @@ module OperatorMsg
                     } 
                     when "//" { // floordiv
                         var e = st.addEntry(rname, l.size, real);
-                        e.a = floor(l.a / r.a);
+                        ref ea = e.a;
+                        ref la = l.a;
+                        ref ra = r.a;
+                        [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then floor(li/ri:real) else NAN;
                     }
                     when "<" {
                         var e = st.addEntry(rname, l.size, bool);
@@ -274,7 +280,10 @@ module OperatorMsg
                     } 
                     when "//" { // floordiv
                         var e = st.addEntry(rname, l.size, real);
-                        e.a = floor(l.a / r.a);
+                        ref ea = e.a;
+                        ref la = l.a;
+                        ref ra = r.a;
+                        [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then floor(li/ri) else NAN;
                     }
                     when "<" {
                         var e = st.addEntry(rname, l.size, bool);
@@ -548,7 +557,9 @@ module OperatorMsg
                     } 
                     when "//" { // floordiv
                         var e = st.addEntry(rname, l.size, real);
-                        e.a = floor(l.a:real / val);
+                        ref ea = e.a;
+                        ref la = l.a;
+                        [(ei,li) in zip(ea,la)] ei = if val != 0 then floor(li:real / val) else NAN;
                     }
                     when "<" {
                         var e = st.addEntry(rname, l.size, bool);
@@ -604,7 +615,9 @@ module OperatorMsg
                     } 
                     when "//" { // floordiv
                         var e = st.addEntry(rname, l.size, real);
-                        e.a = floor(l.a / val:real);
+                        ref ea = e.a;
+                        ref la = l.a;
+                        [(ei,li) in zip(ea,la)] ei = if val != 0 then floor(li / val:real) else NAN;
                     }
                     when "<" {
                         var e = st.addEntry(rname, l.size, bool);
@@ -660,7 +673,9 @@ module OperatorMsg
                     } 
                     when "//" { // floordiv
                         var e = st.addEntry(rname, l.size, real);
-                        e.a = floor(l.a / val);
+                        ref ea = e.a;
+                        ref la = l.a;
+                        [(ei,li) in zip(ea,la)] ei = if val != 0 then floor(li / val) else NAN;
                     }
                     when "<" {
                         var e = st.addEntry(rname, l.size, bool);
@@ -932,7 +947,9 @@ module OperatorMsg
                     }
                     when "//" { // floordiv
                         var e = st.addEntry(rname, r.size, real);
-                        e.a = floor(val:real / r.a);
+                        ref ea = e.a;
+                        ref ra = r.a;
+                        [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then floor(val:real / ri) else NAN;
                     }
                     when "<" {
                         var e = st.addEntry(rname, r.size, bool);
@@ -988,7 +1005,9 @@ module OperatorMsg
                     } 
                     when "//" { // floordiv
                         var e = st.addEntry(rname, r.size, real);
-                        e.a = floor(val / r.a:real);
+                        ref ea = e.a;
+                        ref ra = r.a;
+                        [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then floor(val / ri:real) else NAN;
                     }
                     when "<" {
                         var e = st.addEntry(rname, r.size, bool);
@@ -1044,7 +1063,9 @@ module OperatorMsg
                     } 
                     when "//" { // floordiv
                         var e = st.addEntry(rname, r.size, real);
-                        e.a = floor(val / r.a);
+                        ref ea = e.a;
+                        ref ra = r.a;
+                        [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then floor(val / ri) else NAN;
                     }
                     when "<" {
                         var e = st.addEntry(rname, r.size, bool);
@@ -1247,7 +1268,11 @@ module OperatorMsg
                     when "-=" {l.a -= r.a;}
                     when "*=" {l.a *= r.a;}
                     when "/=" {l.a /= r.a:real;} //truediv
-                    when "//=" {l.a = floor(l.a / r.a);} //floordiv
+                    when "//=" { //floordiv
+                        ref la = l.a;
+                        ref ra = r.a;
+                        [(li,ri) in zip(la,ra)] li = if ri != 0 then floor(li / ri) else NAN;
+                    }
                     when "**=" { l.a **= r.a; }
                     otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
                 }
@@ -1261,7 +1286,11 @@ module OperatorMsg
                     when "-=" {l.a -= r.a;}
                     when "*=" {l.a *= r.a;}
                     when "/=" {l.a /= r.a;}//truediv
-                    when "//=" {l.a = floor(l.a / r.a);}//floordiv
+                    when "//=" { //floordiv
+                        ref la = l.a;
+                        ref ra = r.a;
+                        [(li,ri) in zip(la,ra)] li = if ri != 0 then floor(li / ri) else NAN;
+                    }
                     when "**=" { l.a **= r.a; }
                     otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
                 }
@@ -1371,7 +1400,9 @@ module OperatorMsg
                     when "-=" {l.a -= val;}
                     when "*=" {l.a *= val;}
                     when "/=" {l.a /= val:real;} //truediv
-                    when "//=" {l.a = floor(l.a / val);} //floordiv
+                    when "//=" { //floordiv
+                        if val != 0 {l.a = floor(l.a / val);} else {l.a = NAN;}
+                    }
                     when "**=" { l.a **= val; }
                     otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
                 }
@@ -1385,8 +1416,9 @@ module OperatorMsg
                     when "-=" {l.a -= val;}
                     when "*=" {l.a *= val;}
                     when "/=" {l.a /= val;}//truediv
-                    when "//=" {l.a = floor(l.a / val);
-                    }//floordiv
+                    when "//=" { //floordiv
+                        if val != 0 {l.a = floor(l.a / val);} else {l.a = NAN;}
+                    }
                     when "**=" { l.a **= val; }
                     otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
                 }
