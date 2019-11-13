@@ -69,6 +69,7 @@ def run_tests(verbose):
                         results['neither_implement'].append((expression, str(e)))
                     else: # arkouda implements with error, np does not implement
                         results['arkouda_minus_numpy'].append((expression, str(e), True))
+                    continue
                 # arkouda implements but not numpy
                 results['arkouda_minus_numpy'].append((expression, str(akres), False))
                 continue
@@ -107,6 +108,9 @@ def run_tests(verbose):
             results['both_implement'].append((expression, "", False, False, False))
 
     print("# ops not implemented by numpy or arkouda: {}".format(len(results['neither_implement'])))
+    if verbose:
+        for expression, err in results['neither_implement']:
+            print(expression)
     print("# ops implemented by numpy but not arkouda: {}".format(len(results['numpy_minus_arkouda'])))
     if verbose:
         for expression, err, flag in results['numpy_minus_arkouda']:
