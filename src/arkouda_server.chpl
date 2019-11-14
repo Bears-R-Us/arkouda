@@ -129,7 +129,7 @@ proc main() {
                 repMsg = "disconnected from arkouda server tcp://*:%t".format(ServerPort);
             }
             otherwise {
-                repMsg = "Error: unrecognized command: %s".format(reqMsg));
+                repMsg = "Error: unrecognized command: %s".format(reqMsg);
             }
         }
 
