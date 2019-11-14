@@ -25,24 +25,24 @@ module GenSymIO {
     } catch {
       return "Error: Could not write to memory buffer";
     }
-    var entry: shared GenSymEntry;
+    var rname = st.nextName();
     try {
       var tmpr = tmpf.reader(kind=iobig, start=0);
       if dtype == DType.Int64 {
 	var entryInt = new shared SymEntry(size, int);
 	tmpr.read(entryInt.a);
 	tmpr.close(); tmpf.close();
-	entry = entryInt;
+	st.addEntry(rname, entryInt);
       } else if dtype == DType.Float64 {
 	var entryReal = new shared SymEntry(size, real);
 	tmpr.read(entryReal.a);
 	tmpr.close(); tmpf.close();
-	entry = entryReal;
+	st.addEntry(rname, entryReal);
       } else if dtype == DType.Bool {
 	var entryBool = new shared SymEntry(size, bool);
 	tmpr.read(entryBool.a);
 	tmpr.close(); tmpf.close();
-	entry = entryBool;
+	st.addEntry(rname, entryBool);
       } else {
 	tmpr.close();
 	tmpf.close();
@@ -53,12 +53,10 @@ module GenSymIO {
     } catch {
       return "Error: Could not read from memory buffer into SymEntry";
     }
-    var rname = st.nextName();
-    st.addEntry(rname, entry);
     return try! "created " + st.attrib(rname);
   }
 
-  proc tondarrayMsg(reqMsg: string, st: borrowed SymTab): string {
+  proc tondarrayMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var arraystr: string;
     var fields = reqMsg.split();
     var entry = st.lookup(fields[2]);
@@ -160,7 +158,7 @@ module GenSymIO {
     }
   }
   
-  proc readhdfMsg(reqMsg: string, st: borrowed SymTab): string {
+  proc readhdfMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var repMsg: string;
     // reqMsg = "readhdf <dsetName> <nfiles> [<json_filenames>]"
     var fields = reqMsg.split(3);
@@ -459,7 +457,7 @@ module GenSymIO {
     return {low..high by stride};
   }
 
-  proc tohdfMsg(reqMsg, st: borrowed SymTab): string {
+  proc tohdfMsg(reqMsg, st: borrowed SymTab): string throws {
     // reqMsg = "tohdf <arrayName> <dsetName> <mode> [<json_filename>]"
     var fields = reqMsg.split(4);
     var cmd = fields[1];

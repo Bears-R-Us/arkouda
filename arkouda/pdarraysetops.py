@@ -43,15 +43,24 @@ def unique(pda, return_counts=False):
     array([1, 2, 3])
     """
     if isinstance(pda, pdarray):
-        repMsg = generic_msg("unique {} {}".format(pda.name, return_counts))
+        repMsg = generic_msg("unique {} {} {}".format(pda.name, 'pdarray', return_counts))
         if return_counts:
             vc = repMsg.split("+")
             if v: print(vc)
             return create_pdarray(vc[0]), create_pdarray(vc[1])
         else:
             return create_pdarray(repMsg)
+    elif isinstance(pda, Strings):
+        name = '{}+{}'.format(pda.offsets.name, pda.bytes.name)
+        repMsg = generic_msg("unique {} {} {}".format(name, pda.dtype.name, return_counts))
+        vc = repMsg.split('+')
+        if v: print(vc)
+        if return_counts:
+            return Strings(vc[0], vc[1]), create_pdarray(vc[2])
+        else:
+            return Strings(vc[0], vc[1])
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be pdarray or Strings {}".format(pda))
 
 def in1d(pda1, pda2, invert=False):
     """

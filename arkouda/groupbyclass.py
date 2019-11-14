@@ -72,14 +72,23 @@ class GroupBy:
         else:
             cmd = "findSegments"
         if self.nkeys == 1:
-            keynames = self.keys.name
+            mykeys = [self.keys]            
         else:
-            keynames = ' '.join([k.name for k in self.keys])
+            mykeys = self.keys
+        keynames = []
+        keytypes = []
+        for k in mykeys:
+            if isinstance(k, Strings):
+                keynames.append('{}+{}'.format(k.offsets.name, k.bytes.name))
+                keytypes.append(k.dtype.name)
+            elif isinstance(k, pdarray):
+                kaynames.append(k.name)
+                keytypes.append('pdarray')
         reqMsg = "{} {} {:n} {:n} {}".format(cmd,
                                              self.permutation.name,
                                              self.nkeys,
-                                             self.size,
-                                             keynames)
+                                             ' '.join(keynames),
+                                             ' '.join(keytypes))
         repMsg = generic_msg(reqMsg)
         segAttr, uniqAttr = repMsg.split("+")
         if verbose: print(segAttr, uniqAttr)

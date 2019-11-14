@@ -14,11 +14,26 @@ module SegmentedArray {
   class SegString {
     var offsets: borrowed SymEntry(int);
     var values: borrowed SymEntry(uint(8));
+    /* var offsetDom: makeDistDom(0).type; */
+    /* var offsets: [offsetDom] int; */
+    /* var valueDom: makeDistDom(0).type; */
+    /* var values: [valueDom] uint(8); */
     var size: int;
     var nBytes: int;
 
+    /* proc init(segments: [?sD] int, values: [?vD] uint(8)) { */
+    /*   offsetDom = sD; */
+    /*   offsets = segments; */
+    /*   valueDom = vD; */
+    /*   values = values; */
+    /*   size = sD.size; */
+    /*   nBytes = vD.size; */
+    /* } */
+    
     proc init(segments: borrowed SymEntry(int), values: borrowed SymEntry(uint(8))) {
+      // offsetDom = segments.aD;
       offsets = segments;
+      // valueDom = values.aD;
       values = values;
       size = segments.size;
       nBytes = values.size;
@@ -27,9 +42,11 @@ module SegmentedArray {
     proc init(segName: string, valName: string, st: borrowed SymTab) {
       var gs = try! st.lookup(segName);
       var segs = toSymEntry(gs, int): unmanaged SymEntry(int);
+      // offsetDom = segs.aD;
       offsets = segs;
       var vs = try! st.lookup(valName);
       var vals = toSymEntry(vs, uint(8)): unmanaged SymEntry(uint(8));
+      // valueDom = vals.aD;
       values = vals;
       size = segs.size;
       nBytes = vals.size;
@@ -86,9 +103,6 @@ module SegmentedArray {
       ref oa = offsets.a;
       const low = offsets.aD.low, high = offsets.aD.high;
       // Lengths of segments including null bytes
-      /* var lengths: [offsets.aD] int; */
-      /* lengths[low..#(size-1)] = oa[(low+1)..#(size-1)] - oa[low..#(size-1)]; */
-      /* lengths[high] = values.size - oa[high]; */
       var gatheredLengths: [D] int;
       [(gl, idx) in zip(gatheredLengths, iv)] {
         var l: int;
@@ -123,6 +137,7 @@ module SegmentedArray {
       var steps = + scan iv;
       var newSize = steps[high];
       var segInds = makeDistArray(newSize, int);
+      // Lengths of segments including null bytes
       var gatheredLengths = makeDistArray(newSize, int);
       forall (idx, present, i) in zip(D, iv, steps) {
         if present {
@@ -134,19 +149,6 @@ module SegmentedArray {
           }
         }
       }
-      // Lengths of segments including null bytes
-      /* var lengths: [offsets.aD] int; */
-      /* lengths[low..#(size-1)] = oa[(low+1)..#(size-1)] - oa[low..#(size-1)]; */
-      /* lengths[high] = values.size - oa[high]; */
-      /* [idx in offsets.aD] if (iv[idx] == true) { */
-      /*   var l: int; */
-      /*   if (idx == high) { */
-      /*     l = values.size - oa[high]; */
-      /*   } else { */
-      /*     l = oa[idx+1] - oa[idx]; */
-      /*   } */
-      /*   unorderedCopy(gatheredLengths[segInds[idx]], l); */
-      /* } */
       var gatheredOffsets = (+ scan gatheredLengths);
       var retBytes = gatheredOffsets[newSize-1];
       gatheredOffsets -= gatheredLengths;
@@ -453,12 +455,8 @@ module SegmentedArray {
     var rname = st.nextName();
     select (ltype, rtype) {
     when ("str", "str") {
-      /* var lvals = toSymEntry(glvals, uint(8)); */
-      /* var rvals = toSymEntry(grvals, uint(8)); */
-      /* var lstrings = SegString(lsegs, lvals); */
-      /* var rstrings = SegString(rsegs, rvals); */
-      var lstrings = SegString(lsegName, lvalName, st);
-      var rstrings = SegString(rsegName, rvalName, st);
+      var lstrings = new owned SegString(lsegName, lvalName, st);
+      var rstrings = new owned SegString(rsegName, rvalName, st);
       select op {
         when "==" {
           var e = st.addEntry(rname, lstrings.size, bool);

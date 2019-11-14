@@ -24,6 +24,7 @@ module ArgSortMsg
     use ServerErrorStrings;
 
     use RadixSortLSD;
+    use SegmentedArray;
     
     // thresholds for different sized sorts
     var lgSmall = 10;
@@ -393,8 +394,15 @@ module ArgSortMsg
     }
 
     proc incrementalArgSort(s: SegString, iv: [?aD] int): [] int throws {
-      var newStr = s[iv];
-      var deltaIV = newStr.argGroup();
+      var hashes = s.hash();
+      var newHashes: [aD] 2*uint;
+      forall (nh, idx) in zip(newHashes, iv) {
+        unorderedCopy(nh[1], hashes[idx][1]);
+        unorderedCopy(nh[2], hashes[idx][2]);
+      }
+      var deltaIV = radixSortLSD_ranks(newHashes);
+      // var (newOffsets, newVals) = s[iv];
+      // var deltaIV = newStr.argGroup();
       var newIV: [aD] int;
       [(newIVi, idx) in zip(newIV, deltaIV)] unorderedCopy(newIVi, iv[idx]);
       return newIV;
@@ -422,7 +430,7 @@ module ArgSortMsg
       var repMsg: string;
       var fields = reqMsg.split();
       var cmd = fields[1];
-      var n = try! fields[2]:int; // number of arrays to sort
+      var n = fields[2]:int; // number of arrays to sort
       // Check that fields contains the stated number of arrays
       if (fields.size != (2*n + 2)) { return try! incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(n, fields.size/2 - 1)); }
       var names = fields[3..#n];
@@ -432,22 +440,24 @@ module ArgSortMsg
       // Check that all arrays exist in the symbol table and have the same size
       for (name, objtype, i) in zip(names, types, 1..) {
 	// arrays[i] = st.lookup(name): borrowed GenSymEntry;
-        var g: borrowed GenSymEntry;
+        var thisSize: int;
         select objtype {
           when "pdarray" {
-            g = st.lookup(name);
+            var g = st.lookup(name);
+            thisSize = g.size;
           }
           when "str" {
             var myNames = name.split('+');
-            g = st.lookup(myNames[1]);
+            var g = st.lookup(myNames[1]);
+            thisSize = g.size;
           }
-          otherwise {return unrecognizedDtypeError(pn, objtype);}
+          otherwise {return unrecognizedTypeError(pn, objtype);}
         }
         
 	if (i == 1) {
-	  size = g.size;
+	  size = thisSize;
 	} else {
-	  if (g.size != size) { return incompatibleArgumentsError(pn, "Arrays must all be same size"); }
+	  if (thisSize != size) { return incompatibleArgumentsError(pn, "Arrays must all be same size"); }
 	}
         
       }

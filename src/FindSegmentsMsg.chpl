@@ -10,6 +10,7 @@ module FindSegmentsMsg
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     use PerLocaleHelper;
+    use SegmentedArray;
 
     use PrivateDist;
     use UnorderedCopy;
@@ -32,23 +33,42 @@ module FindSegmentsMsg
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
 	var pname = fields[2]; // permutation array
-	var nkeys = try! fields[3]:int; // number of key arrays
-	var size = try! fields[4]:int; // size of key arrays
-        var knames = fields[5..]; // key arrays
-	if (nkeys != knames.size) {
-	  return try! incompatibleArgumentsError(pn, "Expected %i key arrays, but got %i".format(nkeys, knames.size));
-	}
+	var nkeys = fields[3]:int; // number of key arrays
+	if (fields.size != (2*nkeys + 3)) { return incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(nkeys, (fields.size - 3)/2));}
+        var knames = fields[4..#nkeys]; // key arrays
+        var ktypes = fields[4+nkeys..#nkeys]; // objtypes
+        var size: int;
 	// Check all the argument arrays before doing anything
 	var gPerm = st.lookup(pname);
 	if (gPerm.dtype != DType.Int64) { return notImplementedError(pn,"(permutation dtype "+dtype2str(gPerm.dtype)+")"); }	
 	// var keyEntries: [0..#nkeys] borrowed GenSymEntry;
-	for (name, i) in zip(knames, 0..) {
-	  var g = st.lookup(name);
-	  if (g.size != size) { return try! incompatibleArgumentsError(pn, "Expected array of size %i, got size %i".format(size, g.size)); }
-	  if (g.dtype != DType.Int64) { return notImplementedError(pn,"(key array dtype "+dtype2str(g.dtype)+")");}
+	for (name, objtype, i) in zip(knames, ktypes, 1..) {
+      // var g: borrowed GenSymEntry;
+      var thisSize: int;
+      var thisType: DType;
+      select objtype {
+        when "pdarray" {
+          var g = st.lookup(name);
+          thisSize = g.size;
+          thisType = g.dtype;
+        }
+        when "str" {
+          var myNames = name.split('+');
+          var g = st.lookup(myNames[1]);
+          thisSize = g.size;
+          thisType = g.dtype;
+        }
+        otherwise {return unrecognizedTypeError(pn, objtype);}
+      }
+      if (i == 1) {
+        size = thisSize;
+      } else {
+        if (thisSize != size) { return try! incompatibleArgumentsError(pn, "Expected array of size %i, got size %i".format(size, thisSize)); }
+      }
+	  if (thisType != DType.Int64) { return notImplementedError(pn,"(key array dtype "+dtype2str(thisType)+")");}
 	}
 	
-	// At this point, all arg arrays exist, have the same size, and are int64 dtype
+	// At this point, all arg arrays exist, have the same size, and are int64 or string dtype
 	if (size == 0) {
 	  // Return two empty integer entries
 	  var n1 = st.nextName();
@@ -65,16 +85,48 @@ module FindSegmentsMsg
 	var ukeylocs: [paD] bool;
 	// First key is automatically present
 	ukeylocs[0] = true;
-	var permKey: [paD] int;
-	for name in knames {
-	  var g: borrowed GenSymEntry = st.lookup(name);
-	  var k = toSymEntry(g,int); // key array
-	  ref ka = k.a; // ref to key array
-	  // Permute the key array to grouped order
-	  [(s, p) in zip(permKey, pa)] { unorderedCopy(s, ka[p]); }
-	  // Find steps and update ukeylocs
-	  [(u, s, i) in zip(ukeylocs, permKey, paD)] if ((i > paD.low) && (permKey[i-1] != s))  { u = true; }
+	for (name, objtype) in zip(knames, ktypes) {
+      select objtype {
+        when "pdarray" {
+          var g: borrowed GenSymEntry = st.lookup(name);
+          var k = toSymEntry(g,int); // key array
+          ref ka = k.a; // ref to key array
+          // Permute the key array to grouped order
+          var permKey: [paD] int;
+          [(s, p) in zip(permKey, pa)] { unorderedCopy(s, ka[p]); }
+          // Find steps and update ukeylocs
+          [(u, s, i) in zip(ukeylocs, permKey, paD)] if ((i > paD.low) && (permKey[i-1] != s))  { u = true; }
+        }
+        when "str" {
+          var myNames = name.split('+');
+          var str = new owned SegString(myNames[1], myNames[2], st);
+          var (permOffsets, permVals) = str[pa];
+          const ref D = permOffsets.domain;
+          var permLengths: [D] int;
+          permLengths[{D.low..#(D.size-1)}] = permOffsets[{D.low+1..#(D.size-1)}] - permOffsets[{D.low..#(D.size-1)}];
+          permLengths[D.high] = permVals.domain.high - permOffsets[D.high] + 1;
+          // Find steps and update ukeylocs
+          // [(u, s, i) in zip(ukeylocs, permKey, paD)] if ((i > paD.low) && (permKey[i-1] != s))  { u = true; }
+          forall (u, o, l, i) in zip(ukeylocs, permOffsets, permLengths, D) {
+            if (i > D.low) {
+              // If string lengths don't match, mark a step
+              if (permLengths[i-1] != l) {
+                u = true;
+              } else {
+                // Have to compare bytes of previous string to current string
+                ref prev = permVals[{permOffsets[i-1]..#l}];
+                ref curr = permVals[{o..#l}];
+                // If any bytes differ, mark a step
+                if || reduce (prev != curr) {
+                  u = true;
+                }
+              }
+            }
+          } // forall
+        } // when "str"
+      } // select objtype
 	}
+    // All keys have been processed, all steps have been found
 	// +scan to compute segment position... 1-based because of inclusive-scan
 	var iv: [ukeylocs.domain] int = (+ scan ukeylocs);
 	// compute how many segments

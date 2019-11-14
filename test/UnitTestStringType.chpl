@@ -37,23 +37,20 @@ proc main() {
   printAry("Segment offsets: ", strings.offsets.a);
   printAry("Raw bytes: ", strings.values.a);
   writeln("Strings:");
-  /* for (i, start, end) in zip(0..#5, segs.a[0..#5], segs.a[1..#5]) { */
-  /*   writeln("%i: %s".format(i, interpretAsString(vals.a[start..end-1], copy=false))); */
-  /* } */
   for i in 0..#5 {
     writeln("%i: %s".format(i, strings[i]));
   }
 
   // strings[int]
   writeln();
-  reqMsg = "%s %s %s %s %s %i".format("segmentedIndexMsg", "intIndex", "string", segName, valName, testIndex);
+  reqMsg = "%s %s %s %s %s %i".format("segmentedIndexMsg", "intIndex", "str", segName, valName, testIndex);
   writeln(">>> ", reqMsg);
   repMsg = segmentedIndexMsg(reqMsg, st);
   writeln("<<< ", repMsg);
 
   // strings[slice]
   writeln();
-  reqMsg = "%s %s %s %s %s %i %i %i".format("segmentedIndexMsg", "sliceIndex", "string", segName, valName, testStart, testStop, 1);
+  reqMsg = "%s %s %s %s %s %i %i %i".format("segmentedIndexMsg", "sliceIndex", "str", segName, valName, testStart, testStop, 1);
   writeln(">>> ", reqMsg);
   repMsg = segmentedIndexMsg(reqMsg, st);
   writeln("<<< ", repMsg);
@@ -72,7 +69,7 @@ proc main() {
   var gcountdown = st.addEntry(cname, new shared SymEntry(5, int));
   var countdown = toSymEntry(gcountdown, int);
   countdown.a = [4, 3, 2, 1, 0];
-  reqMsg = "%s %s %s %s %s %s".format("segmentedIndexMsg", "pdarrayIndex", "string", segName, valName, cname);
+  reqMsg = "%s %s %s %s %s %s".format("segmentedIndexMsg", "pdarrayIndex", "str", segName, valName, cname);
   writeln(">>> ", reqMsg);
   repMsg = segmentedIndexMsg(reqMsg, st);
   writeln("<<< ", repMsg);
@@ -86,7 +83,7 @@ proc main() {
 
   // strings == val
   writeln();
-  reqMsg = "%s %s %s %s %s %s %s".format("segBinopvs", "==", "string", segName, valName, "string", testString);
+  reqMsg = "%s %s %s %s %s %s %s".format("segBinopvs", "==", "str", segName, valName, "str", testString);
   writeln(">>> ", reqMsg);
   repMsg = segBinopvsMsg(reqMsg, st);
   writeln("<<< ", repMsg);
@@ -107,7 +104,7 @@ proc main() {
 
   // group strings
   writeln();
-  reqMsg = "%s %s %s %s".format("segGroup", "string", segName, valName);
+  reqMsg = "%s %s %s %s".format("segGroup", "str", segName, valName);
   writeln(">>> ", reqMsg);
   repMsg = segGroupMsg(reqMsg, st);
   writeln("<<< ", repMsg);
@@ -118,7 +115,7 @@ proc main() {
 
   // permute strings
   writeln();
-  reqMsg = "%s %s %s %s %s %s".format("segmentedIndex", "pdarrayIndex", "string", segName, valName, permname);
+  reqMsg = "%s %s %s %s %s %s".format("segmentedIndex", "pdarrayIndex", "str", segName, valName, permname);
   writeln(">>> ", reqMsg);
   repMsg = segmentedIndexMsg(reqMsg, st);
   writeln("<<< ", repMsg);
@@ -136,7 +133,7 @@ proc main() {
   // check that permuted strings grouped 
   // strings == val
   writeln();
-  reqMsg = "%s %s %s %s %s %s %s".format("segBinopvs", "==", "string", permSegName, permValName, "string", testString);
+  reqMsg = "%s %s %s %s %s %s %s".format("segBinopvs", "==", "str", permSegName, permValName, "str", testString);
   writeln(">>> ", reqMsg);
   repMsg = segBinopvsMsg(reqMsg, st);
   writeln("<<< ", repMsg);
@@ -159,7 +156,7 @@ proc main() {
   // compress out the matches
   // strings[pdarray(bool)]
   writeln();
-  reqMsg = "%s %s %s %s %s %s".format("segmentedIndexMsg", "pdarrayIndex", "string", permSegName, permValName, aname);
+  reqMsg = "%s %s %s %s %s %s".format("segmentedIndexMsg", "pdarrayIndex", "str", permSegName, permValName, aname);
   writeln(">>> ", reqMsg);
   repMsg = segmentedIndexMsg(reqMsg, st);
   writeln("<<< ", repMsg);

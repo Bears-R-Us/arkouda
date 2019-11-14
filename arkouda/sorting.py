@@ -80,8 +80,16 @@ def coargsort(arrays):
     array([0, 1, 0, 1])
     """
     size = -1
+    anames = []
+    atypes = []
     for a in arrays:
-        if not isinstance(a, pdarray):
+        if isinstance(a, Strings):
+            anames.append('{}+{}'.format(a.offsets.name, a.bytes.name))
+            atypes.append(a.dtype.name)
+        elif isinstance(a, pdarray):
+            anames.append(a.name)
+            atypes.append('pdarray')
+        else:
             raise ValueError("Argument must be an iterable of pdarrays")
         if size == -1:
             size = a.size
@@ -89,7 +97,11 @@ def coargsort(arrays):
             raise ValueError("All pdarrays must have same size")
     if size == 0:
         return zeros(0, dtype=int64)
-    repMsg = generic_msg("coargsort {} {}".format(len(arrays), ' '.join([a.name for a in arrays])))
+    cmd = "coargsort"
+    reqMsg = "{} {:n} {} {}".format(cmd,
+                                    len(arrays),
+                                    ' '.join(anames),
+                                    ' '.join(atypes))
     return create_pdarray(repMsg)
 
 def local_argsort(pda):

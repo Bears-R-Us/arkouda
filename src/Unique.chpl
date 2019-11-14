@@ -22,6 +22,7 @@ module Unique
     use SymArrayDmap;
 
     use RadixSortLSD;
+    use SegmentedArray;
     use AryUtil;
 
     /* // thresholds for different unique counting algorithms */
@@ -473,6 +474,74 @@ module Unique
         }
 
         return (ukeys,counts);
+    }
+
+    proc uniqueGroup(str: SegString) throws {
+        if (str.size == 0) {
+            if v {writeln("zero size");try! stdout.flush();}
+            var uo = makeDistArray(0, int);
+            var uv = makeDistArray(0, uint(8));
+            var c = makeDistArray(0, int);
+            return (uo, uv, c);
+        }
+        var hashes = str.hash();
+        const aD = hashes.domain;
+        var perm: [aD] int;
+        var sorted: [aD] 2*uint;
+        if (isSorted(hashes)) {
+            perm = aD;
+            sorted = hashes; 
+        }
+        else {
+            perm = radixSortLSD_ranks(hashes);
+            // sorted = [i in perm] hashes[i];
+            [(s, p) in zip(sorted, perm)] {unorderedCopy(s[1], hashes[p][1]); unorderedCopy(s[2], hashes[p][2]);}
+        }
+
+        var truth: [aD] bool;
+        truth[0] = true;
+        [(t, s, i) in zip(truth, sorted, aD)] if i > aD.low { t = (sorted[i-1] != s); }
+        var allUnique: int = + reduce truth;
+        if (allUnique == aD.size) {
+            if v {writeln("early out already unique");try! stdout.flush();}
+            var uo = makeDistArray(aD.size, int);
+            var uv = makeDistArray(str.nBytes, uint(8));
+            var c = makeDistArray(aD.size, int);
+            uo = str.offsets.a; // a is already unique
+            uv = str.values.a;
+            c = 1; // c counts are all 1
+            return (uo, uv, c);
+        }
+        // +scan to compute segment position... 1-based because of inclusive-scan
+        var iv: [truth.domain] int = (+ scan truth);
+        // compute how many segments
+        var pop = iv[iv.size-1];
+        if v {writeln("pop = ",pop);try! stdout.flush();}
+
+        var segs = makeDistArray(pop, int);
+        var counts = makeDistArray(pop, int);
+        var uinds = makeDistArray(pop, int);
+        
+        // segment position... 1-based needs to be converted to 0-based because of inclusive-scan
+        // where ever a segment break (true value) is... that index is a segment start index
+        [i in truth.domain] if (truth[i] == true) {var idx = i; unorderedCopy(segs[iv[i]-1], idx);}
+        // pull out the first key in each segment as a unique key
+        // unique keys guaranteed to be sorted because keys are sorted
+        [i in segs.domain] unorderedCopy(uinds[i], perm[segs[i]]); // uinds[i] = perm[segs[i]];
+        // Gather the unique offsets and values (byte buffers)
+        var (uo, uv) = str[uinds];
+        // calc counts of each unique key using segs
+        forall i in segs.domain {
+            if i < segs.domain.high {
+                counts[i] = segs[i+1] - segs[i];
+            }
+            else
+            {
+                counts[i] = sorted.domain.high+1 - segs[i];
+            }
+        }
+
+        return (uo, uv, counts);
     }
     
 
