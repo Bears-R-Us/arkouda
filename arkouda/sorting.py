@@ -1,6 +1,7 @@
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros
+from arkouda.strings import Strings
 
 __all__ = ["argsort", "coargsort", "local_argsort", "sort"]
 
@@ -85,7 +86,7 @@ def coargsort(arrays):
     for a in arrays:
         if isinstance(a, Strings):
             anames.append('{}+{}'.format(a.offsets.name, a.bytes.name))
-            atypes.append(a.dtype.name)
+            atypes.append(a.objtype)
         elif isinstance(a, pdarray):
             anames.append(a.name)
             atypes.append('pdarray')

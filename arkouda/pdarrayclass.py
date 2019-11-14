@@ -55,6 +55,7 @@ class pdarray:
 
     BinOps = frozenset(["+", "-", "*", "/", "//", "%", "<", ">", "<=", ">=", "!=", "==", "&", "|", "^", "<<", ">>","**"])
     OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", "<<=", ">>=","**="])
+    objtype = "pdarray"
     
     def __init__(self, name, mydtype, size, ndim, shape, itemsize):
         self.name = name

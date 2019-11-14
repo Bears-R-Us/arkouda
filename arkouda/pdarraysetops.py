@@ -2,6 +2,7 @@ from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros, array
 from arkouda.sorting import argsort
+from arkouda.strings import Strings
 
 __all__ = ["unique", "in1d", "concatenate", "union1d", "intersect1d",
            "setdiff1d", "setxor1d"]
@@ -52,7 +53,7 @@ def unique(pda, return_counts=False):
             return create_pdarray(repMsg)
     elif isinstance(pda, Strings):
         name = '{}+{}'.format(pda.offsets.name, pda.bytes.name)
-        repMsg = generic_msg("unique {} {} {}".format(name, pda.dtype.name, return_counts))
+        repMsg = generic_msg("unique {} {} {}".format(name, pda.objtype, return_counts))
         vc = repMsg.split('+')
         if v: print(vc)
         if return_counts:

@@ -71,6 +71,7 @@ proc main() {
         when "segmentedIndex"    {repMsg = segmentedIndexMsg(reqMsg, st);}
         when "segmentedBinopvv"  {repMsg = segBinopvvMsg(reqMsg, st);}
         when "segmentedBinopvs"  {repMsg = segBinopvsMsg(reqMsg, st);}
+        when "segmentedGroup"    {repMsg = segGroupMsg(reqMsg, st);}
 	    when "lshdf"             {repMsg = lshdfMsg(reqMsg, st);}
 	    when "readhdf"           {repMsg = readhdfMsg(reqMsg, st);}
 	    when "tohdf"             {repMsg = tohdfMsg(reqMsg, st);}
@@ -128,7 +129,7 @@ proc main() {
                 repMsg = "disconnected from arkouda server tcp://*:%t".format(ServerPort);
             }
             otherwise {
-                if v {writeln("Error: unrecognized command: %s".format(reqMsg)); try! stdout.flush();}
+                repMsg = "Error: unrecognized command: %s".format(reqMsg));
             }
         }
 

@@ -2,6 +2,7 @@ import json, os
 
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
+from arkouda.strings import Strings
 
 __all__ = ["ls_hdf", "read_hdf", "read_all", "load", "get_datasets",
            "load_all", "save_all"]

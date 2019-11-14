@@ -80,7 +80,7 @@ class GroupBy:
         for k in mykeys:
             if isinstance(k, Strings):
                 keynames.append('{}+{}'.format(k.offsets.name, k.bytes.name))
-                keytypes.append(k.dtype.name)
+                keytypes.append(k.objtype)
             elif isinstance(k, pdarray):
                 kaynames.append(k.name)
                 keytypes.append('pdarray')
