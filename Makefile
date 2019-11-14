@@ -17,6 +17,7 @@ CHPL_DEBUG_FLAGS += --print-passes
 ifndef ARKOUDA_DEVELOPER
 CHPL_FLAGS += --fast
 endif
+CHPL_FLAGS += --ccflags="-Wno-incompatible-pointer-types"
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
 
 # --cache-remote does not work with ugni in Chapel 1.20
