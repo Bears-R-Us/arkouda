@@ -118,7 +118,7 @@ module ServerConfig
             var total = memoryUsed() + additionalAmount:uint;
             if total > getMemLimit() {
                 throw new owned ErrorWithMsg("Error: Operation would exceed memory limit ("
-                                             +total:string+","+getMemLimit:string+")");
+                                             +total:string+","+getMemLimit():string+")");
             }
         }
     }
