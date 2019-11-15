@@ -143,7 +143,6 @@ proc main() {
             repMsg = unknownError("");
         }
         
-        
         // send responses
         // send count for now
         repCount += 1;

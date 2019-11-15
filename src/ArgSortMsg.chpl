@@ -475,6 +475,10 @@ module ArgSortMsg
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
+        // check and throw if over memory limit
+        overMemLimit((5 * gEnt.size * gEnt.itemsize)
+                     + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+        
         select (gEnt.dtype) {
             when (DType.Int64) {
                 var e = toSymEntry(gEnt,int);

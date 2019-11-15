@@ -115,7 +115,7 @@ module ServerConfig
         // must set config var "-smemTrack=true"(compile time) or "--memTrack=true" (run time)
         // to use memoryUsed() procedure from Chapel's Memory module
         if (memTrack) {
-            var total = memoryUsed() + additionalAmount:uint;
+            var total = memoryUsed() + (additionalAmount:uint / numLocales:uint); // this is a per locale total
             if total > getMemLimit() {
                 throw new owned ErrorWithMsg("Error: Operation would exceed memory limit ("
                                              +total:string+","+getMemLimit():string+")");
