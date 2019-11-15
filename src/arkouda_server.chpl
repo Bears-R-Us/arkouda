@@ -13,6 +13,7 @@ use MultiTypeSymEntry;
 use MsgProcessing;
 use GenSymIO;
 use SymArrayDmap;
+use ServerErrorStrings;
 
 proc main() {
     writeln("arkouda server version = ",arkoudaVersion); try! stdout.flush();
