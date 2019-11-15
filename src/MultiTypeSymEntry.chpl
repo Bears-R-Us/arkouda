@@ -101,7 +101,7 @@ module MultiTypeSymEntry
         Verbose flag utility method
         */
         proc postinit() {
-            if v {write("aD = "); printOwnership(this.a);}
+            //if v {write("aD = "); printOwnership(this.a);}
         }
         /*
         Verbose flag utility method
