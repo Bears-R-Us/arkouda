@@ -29,7 +29,7 @@ module HistogramMsg
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
         // helper nested procedure
-        proc histogramHelper(type t) {
+        proc histogramHelper(type t) throws {
           var e = toSymEntry(gEnt,t);
           var aMin = min reduce e.a;
           var aMax = max reduce e.a;

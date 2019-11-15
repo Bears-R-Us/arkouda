@@ -48,7 +48,10 @@ module MultiTypeSymbolTable
 
         :returns: borrow of newly created `SymEntry(t)`
         */
-        proc addEntry(name: string, len: int, type t): borrowed SymEntry(t) {
+        proc addEntry(name: string, len: int, type t): borrowed SymEntry(t) throws {
+            // check and throw if memory limit would be exceeded
+            if t == bool {overMemLimit(len);} else {overMemLimit(len*numBytes(t));}
+            
             var entry = new shared SymEntry(len, t);
             if (tD.contains(name))
             {
@@ -73,7 +76,10 @@ module MultiTypeSymbolTable
 
         :returns: borrow of newly created GenSymEntry
         */
-        proc addEntry(name: string, in entry: shared GenSymEntry): borrowed GenSymEntry {
+        proc addEntry(name: string, in entry: shared GenSymEntry): borrowed GenSymEntry throws {
+            // check and throw if memory limit would be exceeded
+            overMemLimit(entry.size*entry.itemsize);
+
             if (tD.contains(name))
             {
                 if (v) {writeln("redefined symbol ",name);try! stdout.flush();}
@@ -99,7 +105,7 @@ module MultiTypeSymbolTable
 
         :returns: borrow of newly created GenSymEntry
         */
-        proc addEntry(name: string, len: int, dtype: DType): borrowed GenSymEntry {
+        proc addEntry(name: string, len: int, dtype: DType): borrowed GenSymEntry throws {
             select dtype {
                 when DType.Int64 { return addEntry(name, len, int); }
                 when DType.Float64 { return addEntry(name, len, real); }

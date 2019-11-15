@@ -6,6 +6,7 @@ use ServerConfig;
 
 use Time only;
 use ZMQ only;
+use Memory;
 
 use MultiTypeSymbolTable;
 use MultiTypeSymEntry;
@@ -15,7 +16,13 @@ use SymArrayDmap;
 
 proc main() {
     writeln("arkouda server version = ",arkoudaVersion); try! stdout.flush();
-
+    writeln("memory tracking = ", memTrack); try! stdout.flush();
+    if (memTrack) {
+        writeln("getMemLimit() = ",getMemLimit());
+        writeln("bytes of memoryUsed() = ",memoryUsed());
+        try! stdout.flush();
+    }
+    
     var st = new owned SymTab();
     var shutdownServer = false;
 
@@ -131,6 +138,8 @@ proc main() {
 
         } catch (e: UndefinedSymbolError) {
           repMsg = unknownSymbolError("", e.name);
+        } catch (e: ExceedMemoryError) {
+            repMsg = "Error: Operation would exceed memory limit ("+e.total:string+","+e.limit:string+")";
         } catch {
           repMsg = unknownError("");
         }
@@ -148,6 +157,8 @@ proc main() {
 	  try! stdout.flush();
 	}
         socket.send(repMsg);
+
+        if (memTrack) {writeln("bytes of memoryUsed() = ",memoryUsed()); try! stdout.flush();}
 
         // end timer for command processing
         if v{writeln("<<< ", cmd," took ", Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
