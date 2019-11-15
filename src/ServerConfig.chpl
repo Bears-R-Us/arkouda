@@ -6,8 +6,11 @@ module ServerConfig
     use ZMQ only;
     use HDF5.C_HDF5 only H5get_libversion;
     use SymArrayDmap only makeDistDom;
-    public use IO;
 
+    //use IO;
+
+    use ServerErrorStrings;
+    
     /*
     Verbose flag
     */
@@ -27,13 +30,6 @@ module ServerConfig
     Arkouda version
     */
     config param arkoudaVersion:string;
-
-    /*
-    Configure MyDmap on compile line by "-s MyDmap=0" or "-s MyDmap=1"
-    0 = Cyclic, 1 = Block. Cyclic may not work; we haven't tested it in a while.
-    BlockDist is the default.
-    */
-    config param MyDmap = 1;
     
     /*
     Hostname where I am running 
@@ -111,11 +107,6 @@ module ServerConfig
         return ((perLocaleMemLimit:real / 100.0) * here.physicalMemory()):uint; // checks on locale-0
     }
 
-    class ExceedMemoryError: Error {
-        var total:uint;
-        var limit:uint;
-    }
-    
     /*
     check used + amount is over the memory limit
     throw error if we would go over the limit
@@ -126,7 +117,8 @@ module ServerConfig
         if (memTrack) {
             var total = memoryUsed() + additionalAmount:uint;
             if total > getMemLimit() {
-                throw new owned ExceedMemoryError(total, getMemLimit());
+                throw new owned ErrorWithMsg("Error: Operation would exceed memory limit ("
+                                             +total:string+","+getMemLimit:string+")");
             }
         }
     }

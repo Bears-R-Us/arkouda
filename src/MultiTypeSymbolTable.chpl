@@ -6,10 +6,6 @@ module MultiTypeSymbolTable
     
     use MultiTypeSymEntry;
 
-    class UndefinedSymbolError: Error {
-      var name: string;
-    }
-
     /* symbol table */
     class SymTab
     {
@@ -137,13 +133,13 @@ module MultiTypeSymbolTable
         :type name: string
 
         :returns: sym entry or throws on error
-        :throws: `UndefinedSymbolError(name)`
+        :throws: `unkownSymbolError(name)`
         */
         proc lookup(name: string): borrowed GenSymEntry throws {
             if (!tD.contains(name) || tab[name] == nil)
             {
                 if (v) {writeln("undefined symbol ",name);try! stdout.flush();}
-                throw new owned UndefinedSymbolError(name);
+                throw new owned ErrorWithMsg(unknownSymbolError("", name));
             }
             else
             {
