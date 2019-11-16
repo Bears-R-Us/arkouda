@@ -47,32 +47,33 @@ module EfuncMsg
                 select efunc
                 {
                     when "abs" {
-                        var a = Math.abs(e.a);
-                        st.addEntry(rname, new shared SymEntry(a));
+                        var a = st.addEntry(rname, e.size, real);
+                        a.a = Math.abs(e.a);
+                        
                     }
                     when "log" {
-                        var a = Math.log(e.a);
-                        st.addEntry(rname, new shared SymEntry(a));
+                        var a = st.addEntry(rname, e.size, real);
+                        a.a = Math.log(e.a);
                     }
                     when "exp" {
-                        var a = Math.exp(e.a);
-                        st.addEntry(rname, new shared SymEntry(a));
+                        var a = st.addEntry(rname, e.size, real);
+                        a.a = Math.exp(e.a);
                     }
                     when "cumsum" {
-                        var a: [e.aD] int = + scan e.a; //try! writeln((a.type):string,(a.domain.type):string); try! stdout.flush();
-                        st.addEntry(rname, new shared SymEntry(a));
+                        var a = st.addEntry(rname, e.size, int);
+                        a.a = + scan e.a;
                     }
                     when "cumprod" {
-                        var a: [e.aD] int = * scan e.a; //try! writeln((a.type):string,(a.domain.type):string); try! stdout.flush();
-                        st.addEntry(rname, new shared SymEntry(a));
+                        var a= st.addEntry(rname, e.size, int);
+                        a.a = * scan e.a;
                     }
                     when "sin" {
-                        var a = Math.sin(e.a);
-                        st.addEntry(rname,new shared SymEntry(a));
+                        var a = st.addEntry(rname, e.size, real);
+                        a.a = Math.sin(e.a);
                     }
                     when "cos" {
-                        var a = Math.cos(e.a);
-                        st.addEntry(rname,new shared SymEntry(a));
+                        var a = st.addEntry(rname, e.size, real);
+                        a.a = Math.cos(e.a);
                     }
                     otherwise {return notImplementedError(pn,efunc,gEnt.dtype);}
                 }
@@ -82,32 +83,32 @@ module EfuncMsg
                 select efunc
                 {
                     when "abs" {
-                        var a = Math.abs(e.a);
-                        st.addEntry(rname, new shared SymEntry(a));
+                        var a = st.addEntry(rname, e.size, real);
+                        a.a = Math.abs(e.a);
                     }
                     when "log" {
-                        var a = Math.log(e.a);
-                        st.addEntry(rname, new shared SymEntry(a));
+                        var a = st.addEntry(rname, e.size, real);
+                        a.a = Math.log(e.a);
                     }
                     when "exp" {
-                        var a = Math.exp(e.a);
-                        st.addEntry(rname, new shared SymEntry(a));
+                        var a = st.addEntry(rname, e.size, real);
+                        a.a = Math.exp(e.a);
                     }
                     when "cumsum" {
-                        var a: [e.aD] real = + scan e.a;
-                        st.addEntry(rname, new shared SymEntry(a));
+                        var a = st.addEntry(rname, e.size, real);
+                        a.a = + scan e.a;
                     }
                     when "cumprod" {
-                        var a: [e.aD] real = * scan e.a;
-                        st.addEntry(rname, new shared SymEntry(a));
+                        var a = st.addEntry(rname, e.size, real);
+                        a.a = * scan e.a;
                     }
                     when "sin" {
-                        var a = Math.sin(e.a);
-                        st.addEntry(rname,new shared SymEntry(a));
+                        var a = st.addEntry(rname, e.size, real);
+                        a.a = Math.sin(e.a);
                     }
                     when "cos" {
-                        var a = Math.cos(e.a);
-                        st.addEntry(rname,new shared SymEntry(a));
+                        var a = st.addEntry(rname, e.size, real);
+                        a.a = Math.cos(e.a);
                     }
                     otherwise {return notImplementedError(pn,efunc,gEnt.dtype);}
                 }
@@ -118,13 +119,13 @@ module EfuncMsg
                 {
                     when "cumsum" {
                         var ia: [e.aD] int = (e.a:int); // make a copy of bools as ints blah!
-                        var a: [e.aD] int = + scan ia;
-                        st.addEntry(rname, new shared SymEntry(a));
+                        var a = st.addEntry(rname, e.size, int);
+                        a.a = + scan ia;
                     }
                     when "cumprod" {
                         var ia: [e.aD] int = (e.a:int); // make a copy of bools as ints blah!
-                        var a: [e.aD] int = * scan ia;
-                        st.addEntry(rname, new shared SymEntry(a));
+                        var a = st.addEntry(rname, e.size, int);
+                        a.a = * scan ia;
                     }
                     otherwise {return notImplementedError(pn,efunc,gEnt.dtype);}
                 }
