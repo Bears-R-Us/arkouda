@@ -75,7 +75,7 @@ module IndexingMsg
             ref ea = e.a;
             ref aa = a.a;
             [(elt,j) in zip(aa, slice)] elt = ea[j];
-            //[(elt,j) in zip(a, slice)] unorderedCopy(elt,ea[j]);
+            //[(elt,j) in zip(a.a, slice)] unorderedCopy(elt,ea[j]);
             return try! "created " + st.attrib(rname);
         }
         
@@ -136,7 +136,7 @@ module IndexingMsg
             var pop = iv[iv.size-1];
             if v {writeln("pop = ",pop,"last-scan = ",iv[iv.size-1]);try! stdout.flush();}
             var a = st.addEntry(rname, pop, XType);
-            //[i in e.aD] if (truth.a[i] == true) {a[iv[i]-1] = e.a[i];}// iv[i]-1 for zero base index
+            //[i in e.aD] if (truth.a[i] == true) {a.a[iv[i]-1] = e.a[i];}// iv[i]-1 for zero base index
             ref ead = e.aD;
             ref ea = e.a;
             ref trutha = truth.a;
