@@ -1,6 +1,7 @@
 use GenSymIO;
 use MultiTypeSymbolTable;
 use SegmentedArray;
+use SegmentedMsg;
 
 config const filename = "test-data/strings.hdf";
 config const dsetName = "segstring";
