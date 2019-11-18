@@ -35,14 +35,15 @@ module RandMsg
         select (dtype) {
             when (DType.Int64) {                
                 var t1 = Time.getCurrentTime();
-                var aD = makeDistDom(len);
-                var a = makeDistArray(len, int);
+                var e = st.addEntry(rname, len, int);
                 writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
                 
                 t1 = Time.getCurrentTime();
+                ref ea = e.a;
+                ref ead = e.aD;
                 coforall loc in Locales {
                     on loc {
-		      ref myA = a.localSlice[a.localSubdomain()];
+		      ref myA = ea.localSlice[ea.localSubdomain()];
 		      fillRandom(myA);
 		      [ai in myA] if (ai < 0) { ai = -ai; }
 		      const modulus = aMax - aMin;
@@ -50,46 +51,42 @@ module RandMsg
                     }
                 }
                 writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
-                
-                st.addEntry(rname, new shared SymEntry(a));
             }
             when (DType.Float64) {
                 var t1 = Time.getCurrentTime();
-                var aD = makeDistDom(len);
-                var a = makeDistArray(len, real);
+                var e = st.addEntry(rname, len, real);
                 writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
                 
                 t1 = Time.getCurrentTime();
+                ref ea = e.a;
+                ref ead = e.aD;
                 coforall loc in Locales {
                     on loc {
-		      ref myA = a.localSlice[a.localSubdomain()];
+		      ref myA = ea.localSlice[ea.localSubdomain()];
 		      fillRandom(myA);
 		      const scale = aMax - aMin;
 		      myA = scale*myA + aMin;
                     }
                 }
                 writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
-                
-                st.addEntry(rname, new shared SymEntry(a));                
             }
             when (DType.Bool) {
                 var t1 = Time.getCurrentTime();
-                var aD = makeDistDom(len);
-                var a = makeDistArray(len, bool);
+                var e = st.addEntry(rname, len, bool);
                 writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
                 
                 t1 = Time.getCurrentTime();
+                ref ea = e.a;
+                ref ead = e.aD;
                 coforall loc in Locales {
                     on loc {
-		      ref myA = a.localSlice[a.localSubdomain()];
+		      ref myA = ea.localSlice[ea.localSubdomain()];
 		      fillRandom(myA);
                         /* var R = new owned RandomStream(real); R.getNext(); */
                         /* [i in a.localSubdomain()] a[i] = (R.getNext() >= 0.5); */
                     }
                 }
                         writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
-                
-                st.addEntry(rname, new shared SymEntry(a));
             }            
             otherwise {return notImplementedError(pn,dtype);}
         }

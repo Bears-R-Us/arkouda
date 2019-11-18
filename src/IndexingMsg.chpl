@@ -71,11 +71,11 @@ module IndexingMsg
 
         proc sliceHelper(type t) throws {
             var e = toSymEntry(gEnt,t);
-            var a = makeDistArray(slice.size, t);
+            var a = st.addEntry(rname, slice.size, t);
             ref ea = e.a;
-            [(elt,j) in zip(a, slice)] elt = ea[j];
-            //[(elt,j) in zip(a, slice)] unorderedCopy(elt,ea[j]);
-            st.addEntry(rname, new shared SymEntry(a));
+            ref aa = a.a;
+            [(elt,j) in zip(aa, slice)] elt = ea[j];
+            //[(elt,j) in zip(a.a, slice)] unorderedCopy(elt,ea[j]);
             return try! "created " + st.attrib(rname);
         }
         
@@ -118,12 +118,13 @@ module IndexingMsg
             var ivMax = max reduce iv.a;
             if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
             if ivMax >= e.size {return try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);}
-            var a: [iv.aD] XType;
-            //[i in iv.aD] a[i] = e.a[iv.a[i]]; // bounds check iv[i] against e.aD?
+            var a = st.addEntry(rname, iv.size, XType);
+            //[i in iv.aD] a.a[i] = e.a[iv.a[i]]; // bounds check iv[i] against e.aD?
             ref a2 = e.a;
             ref iva = iv.a;
-            [(a1,idx) in zip(a,iva)] unorderedCopy(a1,a2[idx]); // bounds check iv[i] against e.aD?
-            st.addEntry(rname, new shared SymEntry(a));
+            ref aa = a.a;
+            [(a1,idx) in zip(aa,iva)] unorderedCopy(a1,a2[idx]); // bounds check iv[i] against e.aD?
+            
             return try! "created " + st.attrib(rname);
         }
 
@@ -134,13 +135,13 @@ module IndexingMsg
             var iv: [truth.aD] int = (+ scan truth.a);
             var pop = iv[iv.size-1];
             if v {writeln("pop = ",pop,"last-scan = ",iv[iv.size-1]);try! stdout.flush();}
-            var a = makeDistArray(pop, XType);
-            //[i in e.aD] if (truth.a[i] == true) {a[iv[i]-1] = e.a[i];}// iv[i]-1 for zero base index
+            var a = st.addEntry(rname, pop, XType);
+            //[i in e.aD] if (truth.a[i] == true) {a.a[iv[i]-1] = e.a[i];}// iv[i]-1 for zero base index
             ref ead = e.aD;
             ref ea = e.a;
             ref trutha = truth.a;
-            [i in ead] if (trutha[i] == true) {unorderedCopy(a[iv[i]-1], ea[i]);}// iv[i]-1 for zero base index
-            st.addEntry(rname, new shared SymEntry(a));
+            ref aa = a.a;
+            [i in ead] if (trutha[i] == true) {unorderedCopy(aa[iv[i]-1], ea[i]);}// iv[i]-1 for zero base index
             return try! "created " + st.attrib(rname);
         }
         
