@@ -82,9 +82,9 @@ class GroupBy:
                 keynames.append('{}+{}'.format(k.offsets.name, k.bytes.name))
                 keytypes.append(k.objtype)
             elif isinstance(k, pdarray):
-                kaynames.append(k.name)
-                keytypes.append('pdarray')
-        reqMsg = "{} {} {:n} {:n} {}".format(cmd,
+                keynames.append(k.name)
+                keytypes.append(k.objtype)
+        reqMsg = "{} {} {:n} {} {}".format(cmd,
                                              self.permutation.name,
                                              self.nkeys,
                                              ' '.join(keynames),

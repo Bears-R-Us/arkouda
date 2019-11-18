@@ -25,10 +25,10 @@ class Strings:
 
     def __str__(self):
         if self.size <= pdarrayIterThresh:
-            vals = [self[i] for i in range(self.size)]
+            vals = ["'{}'".format(self[i]) for i in range(self.size)]
         else:
-            vals = [self[i] for i in range(3)]
-            vals.append(' ... ')
+            vals = ["'{}'".format(self[i]) for i in range(3)]
+            vals.append('... ')
             vals.extend([self[i] for i in range(self.size-3, self.size)])
         return "[{}]".format(', '.join(vals))
 
@@ -45,7 +45,7 @@ class Strings:
                                                                  self.objtype,
                                                                  self.offsets.name,
                                                                  self.bytes.name,
-                                                                 other.dtype.name,
+                                                                 other.objtype,
                                                                  other.offsets.name,
                                                                  other.bytes.name)
         elif resolve_scalar_dtype(other) == 'str':
@@ -103,7 +103,7 @@ class Strings:
                                                          self.objtype,
                                                          self.offsets.name,
                                                          self.bytes.name,
-                                                         other.name)
+                                                         key.name)
             repMsg = generic_msg(msg)
             offsets, values = repMsg.split('+')
             return Strings(offsets, values)
