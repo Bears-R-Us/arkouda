@@ -6,6 +6,8 @@ module SegmentedArray {
   use RadixSortLSD;
   use Reflection;
   use PrivateDist;
+  use ServerConfig;
+  use Time only getCurrentTime;
 
   private config const DEBUG = false;
   
@@ -114,6 +116,8 @@ module SegmentedArray {
       if (ivMin < 0) || (ivMax >= offsets.size) {
         throw new owned OutOfBoundsError();
       }
+      if v {writeln("Computing lengths and offsets"); stdout.flush();}
+      var t1 = getCurrentTime();
       ref oa = offsets.a;
       const low = offsets.aD.low, high = offsets.aD.high;
       // Lengths of segments including null bytes
@@ -132,6 +136,11 @@ module SegmentedArray {
       // The total number of bytes in the gathered strings
       var retBytes = gatheredOffsets[D.high];
       gatheredOffsets -= gatheredLengths;
+      if v {
+        writeln(getCurrentTime() - t1, " seconds");
+        writeln("Copying values"); stdout.flush();
+        t1 = getCurrentTime();
+      }
       var gatheredVals = makeDistArray(retBytes, uint(8));
       ref va = values.a;
       // Copy string data to gathered result
@@ -140,6 +149,7 @@ module SegmentedArray {
           unorderedCopy(gatheredVals[go+pos], va[oa[idx]+pos]);
         }
       }
+      if v {writeln(getCurrentTime() - t1, " seconds"); stdout.flush();}
       return (gatheredOffsets, gatheredVals);
     }
 
@@ -149,6 +159,8 @@ module SegmentedArray {
       if (D != offsets.aD) {
         throw new owned OutOfBoundsError();
       }
+      if v {writeln("Computing lengths and offsets"); stdout.flush();}
+      var t1 = getCurrentTime();
       ref oa = offsets.a;
       const low = offsets.aD.low, high = offsets.aD.high;
       // Calculate the destination indices
@@ -175,6 +187,11 @@ module SegmentedArray {
       var gatheredOffsets = (+ scan gatheredLengths);
       var retBytes = gatheredOffsets[newSize-1];
       gatheredOffsets -= gatheredLengths;
+      if v {
+        writeln(getCurrentTime() - t1, " seconds");
+        writeln("Copying values"); stdout.flush();
+        t1 = getCurrentTime();
+      }
       var gatheredVals = makeDistArray(retBytes, uint(8));
       ref va = values.a;
       if DEBUG {
@@ -186,6 +203,7 @@ module SegmentedArray {
       forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, segInds) {
         gatheredVals[{go..#gl}] = va[{oa[idx]..#gl}];
       }
+      if v {writeln(getCurrentTime() - t1, " seconds"); stdout.flush();}
       return (gatheredOffsets, gatheredVals);
     }
 
@@ -200,19 +218,22 @@ module SegmentedArray {
       }
       ref oa = offsets.a;
       ref va = values.a;
+      if v {writeln("Computing segment lengths"); stdout.flush();}
+      var t1 = getCurrentTime();
       // Compute lengths of strings
-      var lengths: [offsets.aD] int;
-      forall (idx, l) in zip(offsets.aD, lengths) {
-        if (idx == offsets.aD.high) {
-          l = values.size - oa[idx];
-        } else {
-          l = oa[idx+1] - oa[idx];
-        }
-      }
+      var lengths = getLengths();
+      if v {
+        writeln(getCurrentTime() - t1, " seconds");
+        writeln("Hashing strings"); stdout.flush();
+        t1 = getCurrentTime();
+      }      
       // Hash each string
       forall (o, l, h) in zip(oa, lengths, hashes) {
-        h = sipHash128(va[{o..#l}], hashKey);
+        // localize the string bytes
+        const myBytes = va[{o..#l}];
+        h = sipHash128(myBytes, hashKey);
       }
+      if v {writeln(getCurrentTime() - t1, " seconds"); stdout.flush();}
       return hashes;
     }
 
@@ -232,6 +253,83 @@ module SegmentedArray {
         writeln("Are hashes sorted? ", && reduce nonDecreasing);
       }
       return iv;
+    }
+
+    proc getLengths() {
+      var lengths: [offsets.aD] int;
+      forall (idx, l) in zip(offsets.aD, lengths) {
+        if (idx == offsets.aD.high) {
+          l = values.size - oa[idx];
+        } else {
+          l = oa[idx+1] - oa[idx];
+        }
+      }
+      return lengths;
+    }
+
+    proc contains(substr: string) throws {
+      /* coforall loc in Locales { */
+      /*   on loc { */
+      /*     ref D = values.aD.localSubdomain(); */
+      /*     coforall task in here.maxTaskPar { */
+      /*       const mySubstr = substr.localize(); */
+      /*       const mySize = (D.size / here.maxTaskPar) + if (task < (D.size % here.maxTaskPar)) then 1 else 0; */
+      /*       const myStart = D.low + task * (D.size / here.maxTaskPar) + min(task, D.size % here.maxTaskPar); */
+      /*       var subind = 1; */
+      /*       for byte in values.localSlice[{myStart..#mySize}] { */
+      /*         if (byte != mySubstr[subind]) { */
+      /*           // No match; reset index */
+      /*           subind = 1; */
+      /*         } else { */
+      /*           if (subind == mySubstr.numBytes) { */
+      /*             // We have a match */
+      /*             // Lookup segment */
+                  
+      /*           } else { */
+      /*             // Still a candidate, but not yet a match */
+      /*             subind += 1; */
+      /*           } */
+      /*         } */
+      /*       } */
+      /*     } */
+      /*   } */
+      /* } */
+      var truth: [offsets.aD] bool;
+      if (size == 0) || (substr.size == 0) {
+        return truth;
+      }
+      var lengths = getLengths();
+      ref va = values.a;
+      var locSubstr: [PrivateDist] string;
+      coforall loc in Locales {
+        locSubstr[here.id] = substr.localize();
+      }
+      forall (o, l, t) in zip(offsets, lengths, truth) {
+        // Only compare if segment is long enough to contain substr
+        if (locSubstr[here.id].size <= l) {
+          // Execute where the bytes are
+          on va[o] {
+            const ref mySub = locSubstr[here.id];
+            var subInd = 1;
+            // Slide the substring over the bytes in this segment
+            for byte in va[{o..#(l-mySub.size)}] {
+              if (byte != mySub[subInd]) {
+                // Start over
+                subInd = 1;
+              } else {
+                if (subInd == mySub.size) {
+                  // Eureka
+                  unorderedCopy(t, true);
+                } else {
+                  // Keep going
+                  subInd += 1;
+                }
+              }
+            }
+          }
+        }
+      }
+      return truth;
     }
   }
 
@@ -315,6 +413,8 @@ module SegmentedArray {
     }
     // Hash all strings for fast comparison
     const hashes = mainStr.hash(hashKey);
+    if v {writeln("Making associative domains for test set on each locale"); stdout.flush();}
+    var t1 = getCurrentTime();
     // On each locale, make an associative domain with the hashes of the second array
     // parSafe=false because we are adding in serial and it's faster
     var localTestHashes: [PrivateSpace] domain(2*uint(64), parSafe=false);
@@ -327,10 +427,17 @@ module SegmentedArray {
         for h in testHashes {
           mySet += h;
         }
-        // Check membership of hashes in this locale's chunk of the array
-        [i in truth.localSubdomain()] truth[i] = mySet.contains(hashes[i]);
+        /* // Check membership of hashes in this locale's chunk of the array */
+        /* [i in truth.localSubdomain()] truth[i] = mySet.contains(hashes[i]); */
       }
     }
+    if v {
+      writeln(getCurrentTime() - t1, " seconds");
+      writeln("Testing membership"); stdout.flush();
+      t1 = getCurrentTime();
+    }
+    [i in truth] truth[i] = localTestHashes[here.id].contains(hashes[i]);
+    if v {writeln(getCurrentTime() - t1, " seconds"); stdout.flush();}
     return truth;
   }
 
