@@ -42,7 +42,7 @@ module ConcatenateMsg
         }
 
         // check and throw if memory limit would be exceeded
-        overMemLimit(size*dtypeSize(dtype));
+        overMemLimit(size * dtypeSize(dtype));
 
         // allocate a new array in the symboltable
         // and copy in arrays

@@ -430,6 +430,11 @@ module ArgSortMsg
 	  if (g.size != size) { return incompatibleArgumentsError(pn, "Arrays must all be same size"); }
 	}
       }
+
+      // check and throw if over memory limit
+      overMemLimit(((4 + names.size) * size * numBytes(int))
+                   + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+      
       // Initialize the permutation vector in the symbol table with the identity perm
       var rname = st.nextName();
       st.addEntry(rname, size, int);
@@ -476,7 +481,7 @@ module ArgSortMsg
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
         // check and throw if over memory limit
-        overMemLimit((5 * gEnt.size * gEnt.itemsize)
+        overMemLimit(((4 + 1) * gEnt.size * gEnt.itemsize)
                      + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
         
         select (gEnt.dtype) {
