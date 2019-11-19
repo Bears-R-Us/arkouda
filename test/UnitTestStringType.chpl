@@ -96,13 +96,15 @@ proc main() {
   var pop = steps[iv.aD.high];
   printAry("strings == %s: ".format(testString), iv.a);
   writeln("pop = ", pop);
-  var inds: [0..#pop] int;
-  [(idx, present, i) in zip(iv.aD, iv.a, steps)] if present {inds[i-1] = idx;}
-  printAry("inds: ", inds);
-  var diff = inds[1..#(pop-1)] - inds[0..#(pop-1)];
-  var consecutive = && reduce (diff == 1);
-  writeln("consecutive? ", consecutive);
-
+  if (pop > 0) {
+    var inds: [0..#pop] int;
+    [(idx, present, i) in zip(iv.aD, iv.a, steps)] if present {inds[i-1] = idx;}
+    printAry("inds: ", inds);
+    var diff = inds[1..#(pop-1)] - inds[0..#(pop-1)];
+    var consecutive = && reduce (diff == 1);
+    writeln("consecutive? ", consecutive);
+  }
+    
   // group strings
   writeln();
   reqMsg = "%s %s %s %s".format("segGroup", "str", segName, valName);
@@ -146,14 +148,16 @@ proc main() {
   pop = steps[iv.aD.high];
   printAry("strings == %s: ".format(testString), iv.a);
   writeln("pop = ", pop);
-  var permInds: [0..#pop] int;
-  [(idx, present, i) in zip(iv.aD, iv.a, steps)] if present {permInds[i-1] = idx;}
-  //printAry("permInds: ", permInds);
-  writeln("permInds: ", permInds);
-  var permDiff = permInds[1..#(pop-1)] - permInds[0..#(pop-1)];
-  consecutive = && reduce (permDiff == 1);
-  writeln("consecutive? ", consecutive);
-
+  if pop > 0 {
+    var permInds: [0..#pop] int;
+    [(idx, present, i) in zip(iv.aD, iv.a, steps)] if present {permInds[i-1] = idx;}
+    //printAry("permInds: ", permInds);
+    writeln("permInds: ", permInds);
+    var permDiff = permInds[1..#(pop-1)] - permInds[0..#(pop-1)];
+    var consecutive = && reduce (permDiff == 1);
+    writeln("consecutive? ", consecutive);
+  }
+    
   // compress out the matches
   // strings[pdarray(bool)]
   writeln();
@@ -171,7 +175,7 @@ proc main() {
 
   // In1d(strings, strSlice)
   writeln();
-  reqMsg = "%s %s %s %s %s %s %s".format("segIn1d", "str", segName, valName, "str", sliceSegName, sliceValName);
+  reqMsg = "%s %s %s %s %s %s %s %s".format("segIn1d", "str", segName, valName, "str", sliceSegName, sliceValName, "False");
   writeln(">>> ", reqMsg);
   repMsg = segIn1dMsg(reqMsg, st);
   writeln("<<< ", repMsg);

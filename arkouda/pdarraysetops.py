@@ -13,13 +13,13 @@ def unique(pda, return_counts=False):
     """
     Find the unique elements of an array.
 
-    Returns the sorted unique elements of an array. There is an optional
-    output in addition to the unique elements: the number of times each 
-    unique value comes up in the input array.
+    Returns the unique elements of an array, sorted if the values are integers. 
+    There is an optional output in addition to the unique elements: the number 
+    of times each unique value comes up in the input array.
 
     Parameters
     ----------
-    pda : pdarray
+    pda : pdarray or Strings
         Input array.
     return_counts : bool, optional
         If True, also return the number of times each unique item appears
@@ -27,17 +27,17 @@ def unique(pda, return_counts=False):
 
     Returns
     -------
-    unique : pdarray
-        The sorted unique values.
+    unique : pdarray or Strings
+        The unique values. If input dtype is int64, return values will be sorted.
     unique_counts : pdarray, optional
         The number of times each of the unique values comes up in the
         original array. Only provided if `return_counts` is True.
 
     Notes
     -----
-    Internally, this function checks to see whether `pda` is sorted and, if so,
+    For integer arrays, this function checks to see whether `pda` is sorted and, if so,
     whether it is already unique. This step can save considerable computation.
-    Otherwise, this function will sort `pda`.
+    Otherwise, this function will sort `pda`. For 
 
     Examples
     --------
@@ -74,10 +74,11 @@ def in1d(pda1, pda2, invert=False):
 
     Parameters
     ----------
-    pda1 : pdarray
+    pda1 : pdarray or Strings
         Input array.
-    pda2 : pdarray
-        The values against which to test each value of `pda1`.
+    pda2 : pdarray or Strings
+        The values against which to test each value of `pda1`. Must be the 
+        same type as `pda1`.
     invert : bool, optional
         If True, the values in the returned array are inverted (that is,
         False where an element of `pda1` is in `pda2` and True otherwise).
@@ -102,6 +103,15 @@ def in1d(pda1, pda2, invert=False):
     """
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         repMsg = generic_msg("in1d {} {} {}".format(pda1.name, pda2.name, invert))
+        return create_pdarray(repMsg)
+    elif isinstance(pda1, Strings) and isinstance(pda2, Strings):
+        repMsg = generic_msg("segmentedIn1d {} {} {} {} {} {} {}".format(pda1.objtype,
+                                                                         pda1.offsets.name,
+                                                                         pda1.bytes.name,
+                                                                         pda2.objtype,
+                                                                         pda2.offsets.name,
+                                                                         pda2.bytes.name,
+                                                                         invert))
         return create_pdarray(repMsg)
     else:
         raise TypeError("must be pdarray {} or {}".format(pda1,pda2))

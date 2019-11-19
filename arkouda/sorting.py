@@ -45,18 +45,19 @@ def argsort(pda):
 
 def coargsort(arrays):
     """
-    Return the permutation that sorts the rows (left-to-right), if the
-    input arrays are treated as columns.
+    Return the permutation that groups the rows (left-to-right), if the
+    input arrays are treated as columns. The permutation sorts numeric
+    columns, but not strings -- strings are grouped, but not ordered.
     
     Parameters
     ----------
-    arrays : iterable of pdarray
-        The columns (int64 or float64) to sort by row
+    arrays : iterable of pdarray or Strings
+        The columns (int64, float64, or Strings) to sort by row
 
     Returns
     -------
     pdarray, int64
-        The indices that permute the rows to sorted order
+        The indices that permute the rows to grouped order
 
     See Also
     --------
@@ -66,7 +67,9 @@ def coargsort(arrays):
     -----
     Uses a least-significant-digit radix sort, which is stable and resilient
     to non-uniformity in data but communication intensive. Starts with the
-    last array and moves forward.
+    last array and moves forward. This sort operates directly on numeric types,
+    but for Strings, it operates on a hash. Thus, while grouping of equivalent
+    strings is guaranteed, lexicographic ordering of the groups is not.
 
     Examples
     --------

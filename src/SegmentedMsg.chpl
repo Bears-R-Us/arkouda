@@ -208,13 +208,22 @@ module SegmentedMsg {
     var testObjtype = fields[5];
     var testSegName = fields[6];
     var testValName = fields[7];
+    var invert: bool;
+    if fields[8] == "True" {invert = true;}
+    else if fields[8] == "False" {invert = false;}
+    else {return "Error: Invalid argument in %s: %s (expected True or False)".format(pn, fields[8]);}
+    
     var rname = st.nextName();
     select (mainObjtype, testObjtype) {
     when ("str", "str") {
       var mainStr = new owned SegString(mainSegName, mainValName, st);
       var testStr = new owned SegString(testSegName, testValName, st);
       var e = st.addEntry(rname, mainStr.size, bool);
-      e.a = in1d(mainStr, testStr);
+      if invert {
+        e.a = !in1d(mainStr, testStr);
+      } else {
+        e.a = in1d(mainStr, testStr);
+      }
     }
     otherwise {return unrecognizedTypeError(pn, "("+mainObjtype+", "+testObjtype+")");}
     }

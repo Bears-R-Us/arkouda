@@ -7,12 +7,12 @@ __all__ = ["GroupBy"]
 
 class GroupBy:
     """
-    Group an array by value, usually in preparation for aggregating the 
-    within-group values of another array.
+    Group an array or list of arrays by value, usually in preparation 
+    for aggregating the within-group values of another array.
 
     Parameters
     ----------
-    keys : (list of) pdarray, int64
+    keys : (list of) pdarray, int64 or Strings
         The array to group by value, or if list, the column arrays to group by row
 
     Attributes
@@ -23,16 +23,17 @@ class GroupBy:
         The length of the array(s), i.e. number of rows
     permutation : pdarray
         The permutation that sorts the keys array(s) by value (row)
-    unique_keys : pdarray
-        The unique values of the keys array(s), in cosorted order
+    unique_keys : (list of) pdarray or Strings
+        The unique values of the keys array(s), in grouped order
     segments : pdarray
-        The start index of each group in the sorted array(s)
+        The start index of each group in the grouped array(s)
     unique_key_indices : pdarray
-        The first index in the unsorted keys array(s) where each unique value (row) occurs
+        The first index in the raw (ungrouped) keys array(s) where each 
+        unique value (row) occurs
 
     Notes
     -----
-    Only accepts pdarrays of int64 dtype.
+    Only accepts pdarrays of int64 dtype or Strings.
 
     """
     Reductions = frozenset(['sum', 'prod', 'mean',
@@ -111,8 +112,8 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : pdarray, int64
-            The unique keys, in sorted order
+        unique_keys : (list of) pdarray or Strings
+            The unique keys, in grouped order
         counts : pdarray, int64
             The number of times each unique key appears
         
@@ -140,8 +141,8 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : pdarray, int64
-            The unique keys, in sorted order
+        unique_keys : (list of) pdarray or Strings
+            The unique keys, in grouped order
         aggregates : pdarray
             One aggregate value per unique key in the GroupBy instance
 
@@ -180,8 +181,8 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : pdarray, int64
-            The unique keys, in sorted order
+        unique_keys : (list of) pdarray or Strings
+            The unique keys, in grouped order
         group_sums : pdarray
             One sum per unique key in the GroupBy instance
 
@@ -203,8 +204,8 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : pdarray, int64
-            The unique keys, in sorted order
+        unique_keys : (list of) pdarray or Strings
+            The unique keys, in grouped order
         group_products : pdarray, float64
             One product per unique key in the GroupBy instance
 
@@ -226,8 +227,8 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : pdarray, int64
-            The unique keys, in sorted order
+        unique_keys : (list of) pdarray or Strings
+            The unique keys, in grouped order
         group_means : pdarray, float64
             One mean value per unique key in the GroupBy instance
 
@@ -249,8 +250,8 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : pdarray, int64
-            The unique keys, in sorted order
+        unique_keys : (list of) pdarray or Strings
+            The unique keys, in grouped order
         group_minima : pdarray
             One minimum per unique key in the GroupBy instance
 
@@ -269,8 +270,8 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : pdarray, int64
-            The unique keys, in sorted order
+        unique_keys : (list of) pdarray or Strings
+            The unique keys, in grouped order
         group_maxima : pdarray
             One maximum per unique key in the GroupBy instance
 
@@ -289,8 +290,8 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : pdarray, int64
-            The unique keys, in sorted order
+        unique_keys : (list of) pdarray or Strings
+            The unique keys, in grouped order
         group_argminima : pdarray, int64
             One index per unique key in the GroupBy instance
 
@@ -321,8 +322,8 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : pdarray, int64
-            The unique keys, in sorted order
+        unique_keys : (list of) pdarray or Strings
+            The unique keys, in grouped order
         group_argmaxima : pdarray, int64
             One index per unique key in the GroupBy instance
 
@@ -348,13 +349,13 @@ class GroupBy:
 
         Parameters
         ----------
-        values : pdarray
+        values : pdarray, int64
             The values to group and find unique values
 
         Returns
         -------
-        unique_keys : pdarray, int64
-            The unique keys, in sorted order
+        unique_keys : (list of) pdarray or Strings
+            The unique keys, in grouped order
         group_nunique : pdarray, int64
             Number of unique values per unique key in the GroupBy instance
         """
@@ -367,13 +368,13 @@ class GroupBy:
 
         Parameters
         ----------
-        values : pdarray
+        values : pdarray, bool
             The values to group and reduce with "or"
 
         Returns
         -------
-        unique_keys : pdarray, int64
-            The unique keys, in sorted order
+        unique_keys : (list of) pdarray or Strings
+            The unique keys, in grouped order
         group_any : pdarray, bool
             One bool per unique key in the GroupBy instance
         """
@@ -386,13 +387,13 @@ class GroupBy:
 
         Parameters
         ----------
-        values : pdarray
+        values : pdarray, bool
             The values to group and reduce with "and"
 
         Returns
         -------
-        unique_keys : pdarray, int64
-            The unique keys, in sorted order
+        unique_keys : (list of) pdarray or Strings
+            The unique keys, in grouped order
         group_any : pdarray, bool
             One bool per unique key in the GroupBy instance
         """

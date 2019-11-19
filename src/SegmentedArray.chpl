@@ -40,7 +40,7 @@ module SegmentedArray {
     }
 
     proc this(idx: int): string throws {
-      if (idx < 0) || (idx >= offsets.size) {
+      if (idx < offsets.aD.low) || (idx > offsets.aD.high) {
         throw new owned OutOfBoundsError();
       }
       // Start index of the string
@@ -58,8 +58,11 @@ module SegmentedArray {
     }
 
     proc this(slice: range(stridable=true)) throws {
-      if (slice.low < 0) || (slice.high >= offsets.size) {
+      if (slice.low < offsets.aD.low) || (slice.high > offsets.aD.high) {
         throw new owned OutOfBoundsError();
+      }
+      if (size == 0) || (slice.size == 0) {
+        return (makeDistArray(0, int), makeDistArray(0, uint(8)));
       }
       // Start of bytearray slice
       var start = offsets.a[slice.low];
@@ -82,6 +85,9 @@ module SegmentedArray {
     }
 
     proc this(iv: [?D] int) throws {
+      if (D.size == 0) {
+        return (makeDistArray(0, int), makeDistArray(0, uint(8)));
+      }
       var ivMin = min reduce iv;
       var ivMax = max reduce iv;
       if (ivMin < 0) || (ivMax >= offsets.size) {
@@ -123,6 +129,9 @@ module SegmentedArray {
       // BUG: this is not segInds, this is steps. Need to compress and translate the index.
       var steps = + scan iv;
       var newSize = steps[high];
+      if (newSize == 0) {
+        return (makeDistArray(0, int), makeDistArray(0, uint(8)));
+      }
       var segInds = makeDistArray(newSize, int);
       // Lengths of segments including null bytes
       var gatheredLengths = makeDistArray(newSize, int);
@@ -153,6 +162,10 @@ module SegmentedArray {
     }
 
     proc hash(hashKey=defaultSipHashKey) throws {
+      var hashes: [offsets.aD] 2*uint(64);
+      if (size == 0) {
+        return hashes;
+      }
       ref oa = offsets.a;
       ref va = values.a;
       var lengths: [offsets.aD] int;
@@ -165,7 +178,6 @@ module SegmentedArray {
       }
       const maxLen = max reduce lengths;
       const empty: [0..#maxLen] uint(8);
-      var hashes: [offsets.aD] 2*uint(64);
       forall (o, l, h) in zip(oa, lengths, hashes) {
         h = sipHash128(va[{o..#l}], hashKey);
       }
@@ -186,22 +198,28 @@ module SegmentedArray {
     }
   }
   
-  proc ==(lss:SegString, rss:SegString) {
+  proc ==(lss:SegString, rss:SegString) throws {
+    if (lss.size != rss.size) {
+      throw new owned ArgumentError();
+    }
     ref oD = lss.offsets.aD;
+    var truth: [oD] bool;
+    if (lss.size == 0) {
+      return truth;
+    }
     ref lvalues = lss.values.a;
     ref loffsets = lss.offsets.a;
     ref rvalues = rss.values.a;
     ref roffsets = rss.offsets.a;
-    var truth: [oD] bool;
     forall (t, lo, ro, idx) in zip(truth, loffsets, roffsets, oD) {
       var llen: int;
       var rlen: int;
       if (idx == oD.high) {
-	llen = lvalues.size - lo - 1;
-	rlen = rvalues.size - ro - 1;
+        llen = lvalues.size - lo - 1;
+        rlen = rvalues.size - ro - 1;
       } else {
-	llen = loffsets[idx+1] - lo - 1;
-	rlen = roffsets[idx+1] - ro - 1;
+        llen = loffsets[idx+1] - lo - 1;
+        rlen = roffsets[idx+1] - ro - 1;
       }
       if (llen == rlen) {
         var allEqual = true;
@@ -223,16 +241,24 @@ module SegmentedArray {
   proc ==(ss:SegString, testStr: string) {
     ref oD = ss.offsets.aD;
     var truth: [oD] bool = true;
+    if (ss.size == 0) {
+      return truth;
+    }
     ref values = ss.values.a;
     ref offsets = ss.offsets.a;
     for (b, i) in zip(testStr.chpl_bytes(), 0..) {
       [(t, o, idx) in zip(truth, offsets, oD)] if (b != values[o+i]) {unorderedCopy(t, false);}
     }
+    // Check the length by checking that the next byte is null
+    [(t, o, idx) in zip(truth, offsets, oD)] if (0 != values[o+testStr.size]) {unorderedCopy(t, false);}
     return truth;
   }
 
-  proc in1d(mainStr: SegString, testStr: SegString, hashKey=defaultSipHashKey) throws {
+  proc in1d(mainStr: SegString, testStr: SegString, invert=false, hashKey=defaultSipHashKey) throws {
     var truth: [mainStr.offsets.aD] bool;
+    if (mainStr.size == 0) {
+      return truth;
+    }
     const hashes = mainStr.hash(hashKey);
     var localTestHashes: [PrivateSpace] domain(2*uint(64), parSafe=false);
     coforall loc in Locales {

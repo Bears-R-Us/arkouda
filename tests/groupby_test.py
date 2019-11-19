@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 SIZE = 10000
 GROUPS = 64
+with open(__file__, 'r') as f:
+    WORDS = np.array(f.read().split())
 
 def groupby_to_arrays(df, kname, vname, op, levels):
     g = df.groupby(kname)[vname]
@@ -18,21 +20,31 @@ def groupby_to_arrays(df, kname, vname, op, levels):
 def make_arrays():
     keys = np.random.randint(0, GROUPS, SIZE)
     keys2 = np.random.randint(0, GROUPS, SIZE)
+    words = np.random.choice(WORDS, GROUPS, replace=False)
+    keywords = np.random.choice(words, SIZE, replace=True)
     i = np.random.randint(0, SIZE//GROUPS, SIZE)
     f = np.random.randn(SIZE)
     b = (i % 2) == 0
-    d = {'keys':keys, 'keys2':keys2, 'int64':i, 'float64':f, 'bool':b}
+    d = {'keys':keys, 'keys2':keys2, 'keywords':keywords, 'int64':i, 'float64':f, 'bool':b}
     return d
+
+def compare_arrays(a1, a2):
+    if a1.dtype.kind != a2.dtype.kind:
+        return False
+    if a1.dtype.kind == 'U':
+        return set(a1) == set(a2)
+    else:
+        return np.allclose(a1, a2)
 
 def compare_keys(pdkeys, akkeys, levels, pdvals, akvals):
     if levels == 1:
         akkeys = akkeys.to_ndarray()
-        if not np.allclose(pdkeys, akkeys):
+        if not compare_arrays(pdkeys, akkeys):
             print("Different keys")
             return 1
     else:
         for l in range(levels):
-            if not np.allclose(pdkeys[l], akkeys[l].to_ndarray()):
+            if not compare_arrays(pdkeys[l], akkeys[l].to_ndarray()):
                 print("Different keys")
                 return 1
     if not np.allclose(pdvals, akvals):

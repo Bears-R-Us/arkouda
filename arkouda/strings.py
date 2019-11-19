@@ -1,7 +1,7 @@
 from arkouda.client import generic_msg, verbose, pdarrayIterThresh
 from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value
 from arkouda.dtypes import *
-from numpy import isscalar
+import numpy as np
 
 global verbose
 global pdarrayIterThresh
@@ -9,6 +9,27 @@ global pdarrayIterThresh
 __all__ = ['Strings']
 
 class Strings:
+    """
+    Represents an array of strings whose data resides on the 
+    arkouda server. The user should not call this class directly; 
+    rather its instances are created by other arkouda functions.
+
+    Attributes
+    ----------
+    offsets : pdarray
+        The starting indices for each string
+    bytes : pdarray
+        The raw bytes of all strings, joined by nulls
+    size : int
+        The number of strings in the array
+    nbytes : int
+        The total number of bytes in all strings
+    ndim : int
+        The rank of the array (currently only rank 1 arrays supported)
+    shape : tuple
+        The sizes of each dimension of the array
+    """
+    
     BinOps = frozenset(["==", "!="])
     objtype = "str"
     
@@ -26,6 +47,12 @@ class Strings:
         self.ndim = self.offsets.ndim
         self.shape = self.offsets.shape
 
+    def __iter__(self):
+        # to_ndarray will error if array is too large to bring back
+        a = self.to_ndarray()
+        for s in a:
+            yield s
+        
     def __len__(self):
         return self.shape[0]
 
@@ -73,7 +100,7 @@ class Strings:
         return self.binop(other, "!=")
 
     def __getitem__(self, key):
-        if isscalar(key) and resolve_scalar_dtype(key) == 'int64':
+        if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
             if (key >= 0 and key < self.size):
                 msg = "segmentedIndex {} {} {} {} {}".format('intIndex',
                                                              self.objtype,
@@ -117,11 +144,59 @@ class Strings:
             return NotImplemented
 
     def group(self):
+        """
+        Return the permutation that groups the array, placing equivalent 
+        strings together. This permutation does NOT sort the strings. All 
+        instances of the same string are guaranteed to lie in one contiguous 
+        block of the permuted array, but the blocks are not necessarily ordered.
+
+        Returns
+        -------
+        pdarray
+            The permutation that groups the array by value
+
+        See Also
+        --------
+        GroupBy, unique
+        """
         msg = "segmentedGroup {} {} {}".format(self.objtype, self.offsets.name, self.bytes.name)
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
     def to_ndarray(self):
+        """
+        Convert the array to a np.ndarray, transferring array data from the
+        arkouda server to Python. If the array exceeds a builtin size limit, 
+        a RuntimeError is raised.
+
+        Returns
+        -------
+        np.ndarray
+            A numpy ndarray with the same strings as this array
+
+        Notes
+        -----
+        The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
+        otherwise a ``RuntimeError`` will be raised. This is to protect the user
+        from overflowing the memory of the system on which the Python client
+        is running, under the assumption that the server is running on a
+        distributed system with much more memory than the client. The user
+        may override this limit by setting ak.maxTransferBytes to a larger
+        value, but proceed with caution.
+
+        See Also
+        --------
+        array
+
+        Examples
+        --------
+        >>> a = ak.array(["hello", "my", "world"])
+        >>> a.to_ndarray()
+        array(['hello', 'my', 'world'], dtype='<U5')
+
+        >>> type(a.to_ndarray())
+        numpy.ndarray
+        """
         # Get offsets and append total bytes for length calculation
         npoffsets = np.hstack((self.offsets.to_ndarray(), np.array([self.nbytes])))
         # Get contents of strings (will error if too large)
