@@ -11,6 +11,8 @@
 
 [Bill Reus' CLSAC 2019 talk](http://www.clsac.org/uploads/5/0/6/3/50633811/2019-reus-arkuda.pdf)
 
+(PAW-ATM) [talk](https://github.com/sourceryinstitute/PAW/raw/gh-pages/PAW-ATM19/presentations/PAW-ATM2019_talk11.pdf) and [abstract](https://github.com/sourceryinstitute/PAW/raw/gh-pages/PAW-ATM19/extendedAbstracts/PAW-ATM2019_abstract5.pdf)
+
 ## Abstract:
 Exploratory data analysis (EDA) is a prerequisite for all data
 science, as illustrated by the ubiquity of Jupyter notebooks, the
@@ -137,8 +139,13 @@ Multi-locale startup (user selects the number of locales):
 ```bash
 ./arkouda_server -nl 1
 ```
+Also can run server with memory checking turned on using
 
-By default, the server listens on port `5555` and prints verbose output. These options can be changed with command-line flags `--ServerPort=1234` and `--v=false`.
+```bash
+./arkouda_server --memTrack=true
+```
+
+By default, the server listens on port `5555` and prints verbose output. These options can be changed with command-line flags `--ServerPort=1234` and `--v=false`, Memory checking is turned off by default and turned on by using  `--memTrack=true`
 
 ## Testing arkouda_server
 
