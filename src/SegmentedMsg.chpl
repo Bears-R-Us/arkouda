@@ -3,14 +3,14 @@ module SegmentedMsg {
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
   
-  proc segmentedIndexMsg(reqMsg: string, st: borrowed SymTab): string {
+  proc segmentedIndexMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
     var fields = reqMsg.split();
     var cmd = fields[1];
-    var subcmd = fields[2];
-    var objtype = fields[3];
-    var args: [1..#(fields.size-3)] string = fields[4..];
+    var subcmd = fields[2]; // type of indexing to perform
+    var objtype = fields[3]; // what kind of segmented array
+    var args: [1..#(fields.size-3)] string = fields[4..]; // parsed by subroutines
     try {
       select subcmd {
         when "intIndex" {
@@ -23,7 +23,7 @@ module SegmentedMsg {
           return segPdarrayIndex(objtype, args, st);
         }
         otherwise {
-          return try! "Error: in %s, unknown subcommand %s".format(pn, subcmd);
+          return "Error: in %s, unknown subcommand %s".format(pn, subcmd);
         }
         }
     } catch e: OutOfBoundsError {
@@ -37,17 +37,20 @@ module SegmentedMsg {
     var pn = Reflection.getRoutineName();
     select objtype {
       when "str" {
-        // args = (segName, valName, index)
+        // Make a temporary strings array
         var strings = new owned SegString(args[1], args[2], st);
-        var idx = try! args[3]:int;
+        // Parse the index
+        var idx = args[3]:int;
+        // TO DO: in the future, we will force the client to handle this
         idx = convertPythonIndexToChapel(idx, strings.size);
         var s = strings[idx];
-        return try! "item %s %jt".format("str", s);
+        return "item %s %jt".format("str", s);
       }
       otherwise { return notImplementedError(pn, objtype); }
       }
   }
 
+  /* Allow Python-style negative indices. */
   proc convertPythonIndexToChapel(pyidx: int, high: int): int {
     var chplIdx: int;
     if (pyidx < 0) {
@@ -62,25 +65,26 @@ module SegmentedMsg {
     var pn = Reflection.getRoutineName();
     select objtype {
       when "str" {
-        /* var gsegs = st.lookup(args[1]); */
-        /* var segs = toSymEntry(gsegs, int); */
-        /* var gvals = st.lookup(args[2]); */
-        /* var vals = toSymEntry(gvals, uint(8)); */
-        /* var strings = new owned SegString(segs, vals); */
+        // Make a temporary string array
         var strings = new owned SegString(args[1], args[2], st);
-        var start = try! args[3]:int;
-        var stop = try! args[4]:int;
-        var stride = try! args[5]:int;
+        // Parse the slice parameters
+        var start = args[3]:int;
+        var stop = args[4]:int;
+        var stride = args[5]:int;
+        // Only stride-1 slices are allowed for now
         if (stride != 1) { return notImplementedError(pn, "stride != 1"); }
+        // TO DO: in the future, we will force the client to handle this
         var slice: range(stridable=true) = convertPythonSliceToChapel(start, stop, stride);
         var newSegName = st.nextName();
         var newValName = st.nextName();
+        // Compute the slice
         var (newSegs, newVals) = strings[slice];
+        // Store the resulting offsets and bytes arrays
         var newSegsEntry = new shared SymEntry(newSegs);
         var newValsEntry = new shared SymEntry(newVals);
         st.addEntry(newSegName, newSegsEntry);
         st.addEntry(newValName, newValsEntry);
-        return try! "created " + st.attrib(newSegName) + " +created " + st.attrib(newValName);
+        return "created " + st.attrib(newSegName) + " +created " + st.attrib(newValName);
       }
       otherwise {return notImplementedError(pn, objtype);}
       }
@@ -130,7 +134,7 @@ module SegmentedMsg {
       }
       otherwise {return notImplementedError(pn, objtype);}
       }
-    return try! "created " + st.attrib(newSegName) + "+created " + st.attrib(newValName);
+    return "created " + st.attrib(newSegName) + "+created " + st.attrib(newValName);
   }
 
   proc segBinopvvMsg(reqMsg: string, st: borrowed SymTab): string throws {
@@ -139,18 +143,14 @@ module SegmentedMsg {
     var fields = reqMsg.split();
     var cmd = fields[1];
     var op = fields[2];
-    var ltype = fields[3];
+    // Type and attrib names of left segmented array
+    var ltype = fields[3];   
     var lsegName = fields[4];
-    /* var glsegs = st.lookup(lsegName); */
-    /* var lsegs = toSymEntry(glsegs, int); */
     var lvalName = fields[5];
-    /* var glvals = st.lookup(lvalName); */
+    // Type and attrib names of right segmented array 
     var rtype = fields[6];
     var rsegName = fields[7];
-    /* var grsegs = st.lookup(rsegName); */
-    /* var rsegs = toSymEntry(grsegs, int); */
     var rvalName = fields[8];
-    /* var grvals = st.lookup(rvalName); */
     var rname = st.nextName();
     select (ltype, rtype) {
     when ("str", "str") {
@@ -166,7 +166,7 @@ module SegmentedMsg {
     }
     otherwise {return unrecognizedTypeError(pn, "("+ltype+", "+rtype+")");} 
     }
-    return try! "created " + st.attrib(rname);
+    return "created " + st.attrib(rname);
   }
 
   proc segBinopvsMsg(reqMsg: string, st: borrowed SymTab): string throws {
