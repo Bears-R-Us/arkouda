@@ -43,6 +43,11 @@ module GenSymIO {
 	tmpr.read(entryBool.a);
 	tmpr.close(); tmpf.close();
 	st.addEntry(rname, entryBool);
+      } else if dtype == DType.UInt8 {
+        var entryUInt = new shared SymEntry(size, uint(8));
+        tmpr.read(entryUInt.a);
+        tmpr.close(); tmpf.close();
+        st.addEntry(rname, entryUInt);
       } else {
 	tmpr.close();
 	tmpf.close();
@@ -70,6 +75,8 @@ module GenSymIO {
 	tmpw.write(toSymEntry(entry, real).a);
       } else if entry.dtype == DType.Bool {
 	tmpw.write(toSymEntry(entry, bool).a);
+      } else if entry.dtype == DType.UInt8 {
+        tmpw.write(toSymEntry(entry, uint(8)).a);
       } else {
 	return try! "Error: Unhandled dtype %s".format(entry.dtype);
       }

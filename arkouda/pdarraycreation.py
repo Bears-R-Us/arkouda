@@ -6,6 +6,7 @@ from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
 from arkouda.dtypes import dtype as akdtype
 from arkouda.pdarrayclass import pdarray, create_pdarray
+from arkouda.strings import Strings
 
 __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", "arange",
            "linspace", "randint"]
@@ -59,7 +60,23 @@ def array(a):
     # Only rank 1 arrays currently supported
     if a.ndim != 1:
         raise RuntimeError("Only rank-1 arrays supported")
-    # Check that dtype is supported in arkouda
+    # Check if array of strings
+    if a.dtype.kind == 'U':
+        # Length of each string, plus null byte terminator
+        lengths = np.array([len(elem) for elem in a]) + 1
+        # Compute zero-up segment offsets
+        offsets = np.cumsum(lengths) - lengths
+        # Allocate and fill bytes array with string segments
+        nbytes = offsets[-1] + lengths[-1]
+        if nbytes > maxTransferBytes:
+            raise RuntimeError("Creating pdarray would require transferring {} bytes, which exceeds allowed transfer size. Increase ak.maxTransferBytes to force.".format(nbytes))
+        values = np.zeros(nbytes, dtype=np.uint8)
+        for s, o in zip(a, offsets):
+            for i, b in enumerate(s.encode()):
+                values[o+i] = b
+        # Recurse to create pdarrays for offsets and values, then return Strings object
+        return Strings(array(offsets), array(values))
+    # If not strings, then check that dtype is supported in arkouda
     if a.dtype.name not in DTypes:
         raise RuntimeError("Unhandled dtype {}".format(a.dtype))
     # Do not allow arrays that are too large

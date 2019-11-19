@@ -4,6 +4,8 @@ module SegmentedArray {
   use UnorderedCopy;
   use SipHash;
   use RadixSortLSD;
+  use Reflection;
+  use PrivateDist;
 
   private config const DEBUG = false;
   
@@ -12,22 +14,9 @@ module SegmentedArray {
   class SegString {
     var offsets: borrowed SymEntry(int);
     var values: borrowed SymEntry(uint(8));
-    /* var offsetDom: makeDistDom(0).type; */
-    /* var offsets: [offsetDom] int; */
-    /* var valueDom: makeDistDom(0).type; */
-    /* var values: [valueDom] uint(8); */
     var size: int;
     var nBytes: int;
-
-    /* proc init(segments: [?sD] int, values: [?vD] uint(8)) { */
-    /*   offsetDom = sD; */
-    /*   offsets = segments; */
-    /*   valueDom = vD; */
-    /*   values = values; */
-    /*   size = sD.size; */
-    /*   nBytes = vD.size; */
-    /* } */
-    
+   
     proc init(segments: borrowed SymEntry(int), values: borrowed SymEntry(uint(8))) {
       // offsetDom = segments.aD;
       offsets = segments;
@@ -238,6 +227,24 @@ module SegmentedArray {
     ref offsets = ss.offsets.a;
     for (b, i) in zip(testStr.chpl_bytes(), 0..) {
       [(t, o, idx) in zip(truth, offsets, oD)] if (b != values[o+i]) {unorderedCopy(t, false);}
+    }
+    return truth;
+  }
+
+  proc in1d(mainStr: SegString, testStr: SegString, hashKey=defaultSipHashKey) throws {
+    var truth: [mainStr.offsets.aD] bool;
+    const hashes = mainStr.hash(hashKey);
+    var localTestHashes: [PrivateSpace] domain(2*uint(64), parSafe=false);
+    coforall loc in Locales {
+      on loc {
+        ref mySet = localTestHashes[here.id];
+        mySet.requestCapacity(testStr.size);
+        const testHashes = testStr.hash(hashKey);
+        for h in testHashes {
+          mySet += h;
+        }
+        [i in truth.localSubdomain()] truth[i] = mySet.contains(hashes[i]);
+      }
     }
     return truth;
   }

@@ -6,7 +6,8 @@ __all__ = ["DTypes", "dtype", "bool", "int64", "float64", "uint8", "str_", "chec
 # supported dtypes
 structDtypeCodes = {'int64': 'q',
                     'float64': 'd',
-                    'bool': '?'}
+                    'bool': '?',
+                    'uint8': 'B'}
 NUMBER_FORMAT_STRINGS = {'bool': '{}',
                          'int64': '{:n}',
                          'float64': '{:.17f}',

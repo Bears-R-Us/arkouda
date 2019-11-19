@@ -13,8 +13,14 @@ class Strings:
     objtype = "str"
     
     def __init__(self, offset_attrib, bytes_attrib):
-        self.offsets = create_pdarray(offset_attrib)
-        self.bytes = create_pdarray(bytes_attrib)
+        if isinstance(offset_attrib, pdarray):
+            self.offsets = offset_attrib
+        else:
+            self.offsets = create_pdarray(offset_attrib)
+        if isinstance(bytes_attrib, pdarray):
+            self.bytes = bytes_attrib
+        else:
+            self.bytes = create_pdarray(bytes_attrib)
         self.size = self.offsets.size
         self.nbytes = self.bytes.size
         self.ndim = self.offsets.ndim
@@ -114,3 +120,18 @@ class Strings:
         msg = "segmentedGroup {} {} {}".format(self.objtype, self.offsets.name, self.bytes.name)
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
+
+    def to_ndarray(self):
+        # Get offsets and append total bytes for length calculation
+        npoffsets = np.hstack((self.offsets.to_ndarray(), np.array([self.nbytes])))
+        # Get contents of strings (will error if too large)
+        npvalues = self.bytes.to_ndarray()
+        # Compute lengths, discounting null terminators
+        lengths = np.diff(npoffsets) - 1
+        # Numpy dtype is based on max string length
+        dt = '<U{}'.format(lengths.max())
+        res = np.empty(self.size, dtype=dt)
+        # Form a string from each segment and store in numpy array
+        for i, (o, l) in enumerate(zip(npoffsets, lengths)):
+            res[i] = np.str_(''.join(chr(b) for b in npvalues[o:o+l]))
+        return res

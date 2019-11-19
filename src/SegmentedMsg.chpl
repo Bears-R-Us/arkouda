@@ -4,7 +4,7 @@ module SegmentedMsg {
   use MultiTypeSymEntry;
   
   proc segmentedIndexMsg(reqMsg: string, st: borrowed SymTab): string {
-    var pn = "segmentedIndexMsg";
+    var pn = Reflection.getRoutineName();
     var repMsg: string;
     var fields = reqMsg.split();
     var cmd = fields[1];
@@ -34,7 +34,7 @@ module SegmentedMsg {
   }
   
   proc segIntIndex(objtype: string, args: [] string, st: borrowed SymTab): string throws {
-    var pn = "segIntIndex";
+    var pn = Reflection.getRoutineName();
     select objtype {
       when "str" {
         // args = (segName, valName, index)
@@ -59,7 +59,7 @@ module SegmentedMsg {
   }
 
   proc segSliceIndex(objtype: string, args: [] string, st: borrowed SymTab): string throws {
-    var pn = "segSliceIndex";
+    var pn = Reflection.getRoutineName();
     select objtype {
       when "str" {
         /* var gsegs = st.lookup(args[1]); */
@@ -99,16 +99,11 @@ module SegmentedMsg {
   }
 
   proc segPdarrayIndex(objtype: string, args: [] string, st: borrowed SymTab): string throws {
-    var pn = "segPdarrayIndex";
+    var pn = Reflection.getRoutineName();
     var newSegName = st.nextName();
     var newValName = st.nextName();
     select objtype {
       when "str" {
-        /* var gsegs = st.lookup(args[1]); */
-        /* var segs = toSymEntry(gsegs, int); */
-        /* var gvals = st.lookup(args[2]); */
-        /* var vals = toSymEntry(gvals, uint(8)); */
-        /* var strings = new owned SegString(segs, vals); */
         var strings = new owned SegString(args[1], args[2], st);
         var iname = args[3];
         var gIV: borrowed GenSymEntry = st.lookup(iname);
@@ -139,7 +134,7 @@ module SegmentedMsg {
   }
 
   proc segBinopvvMsg(reqMsg: string, st: borrowed SymTab): string throws {
-    var pn = "segBinopvv";
+    var pn = Reflection.getRoutineName();
     var repMsg: string;
     var fields = reqMsg.split();
     var cmd = fields[1];
@@ -175,24 +170,19 @@ module SegmentedMsg {
   }
 
   proc segBinopvsMsg(reqMsg: string, st: borrowed SymTab): string throws {
-    var pn = "segBinopvs";
+    var pn = Reflection.getRoutineName();
     var repMsg: string;
     var fields = reqMsg.split();
     var cmd = fields[1];
     var op = fields[2];
     var objtype = fields[3];
     var segName = fields[4];
-    /* var gsegs = st.lookup(segName); */
-    /* var segs = toSymEntry(gsegs, int); */
     var valName = fields[5];
-    /* var gvals = st.lookup(valName); */
     var valtype = fields[6];
     var value = fields[7];
     var rname = st.nextName();
     select (objtype, valtype) {
     when ("str", "str") {
-      /* var vals = toSymEntry(gvals, uint(8)); */
-      /* var strings = new owned SegString(segs, vals); */
       var strings = new owned SegString(segName, valName, st);
       select op {
         when "==" {
@@ -204,11 +194,35 @@ module SegmentedMsg {
     }
     otherwise {return unrecognizedTypeError(pn, "("+objtype+", "+valtype+")");} 
     }
-    return try! "created " + st.attrib(rname);
+    return "created " + st.attrib(rname);
+  }
+
+  proc segIn1dMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    var pn = Reflection.getRoutineName();
+    var repMsg: string;
+    var fields = reqMsg.split();
+    var cmd = fields[1];
+    var mainObjtype = fields[2];
+    var mainSegName = fields[3];
+    var mainValName = fields[4];
+    var testObjtype = fields[5];
+    var testSegName = fields[6];
+    var testValName = fields[7];
+    var rname = st.nextName();
+    select (mainObjtype, testObjtype) {
+    when ("str", "str") {
+      var mainStr = new owned SegString(mainSegName, mainValName, st);
+      var testStr = new owned SegString(testSegName, testValName, st);
+      var e = st.addEntry(rname, mainStr.size, bool);
+      e.a = in1d(mainStr, testStr);
+    }
+    otherwise {return unrecognizedTypeError(pn, "("+mainObjtype+", "+testObjtype+")");}
+    }
+    return "created " + st.attrib(rname);
   }
 
   proc segGroupMsg(reqMsg: string, st: borrowed SymTab): string throws {
-    var pn = "segGroupMsg";
+    var pn = Reflection.getRoutineName();
     var fields = reqMsg.split();
     var cmd = fields[1];
     var objtype = fields[2];

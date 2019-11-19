@@ -44,19 +44,19 @@ proc main() {
 
   // strings[int]
   writeln();
-  reqMsg = "%s %s %s %s %s %i".format("segmentedIndexMsg", "intIndex", "str", segName, valName, testIndex);
+  reqMsg = "%s %s %s %s %s %i".format("segmentedIndex", "intIndex", "str", segName, valName, testIndex);
   writeln(">>> ", reqMsg);
   repMsg = segmentedIndexMsg(reqMsg, st);
   writeln("<<< ", repMsg);
 
   // strings[slice]
   writeln();
-  reqMsg = "%s %s %s %s %s %i %i %i".format("segmentedIndexMsg", "sliceIndex", "str", segName, valName, testStart, testStop, 1);
+  reqMsg = "%s %s %s %s %s %i %i %i".format("segmentedIndex", "sliceIndex", "str", segName, valName, testStart, testStop, 1);
   writeln(">>> ", reqMsg);
   repMsg = segmentedIndexMsg(reqMsg, st);
   writeln("<<< ", repMsg);
-  var (a, b) = parseNames(repMsg);
-  var strSlice = new owned SegString(a, b, st);
+  var (sliceSegName, sliceValName) = parseNames(repMsg);
+  var strSlice = new owned SegString(sliceSegName, sliceValName, st);
   printAry("strSlice offsets: ", strSlice.offsets.a);
   printAry("strSlice raw bytes: ", strSlice.values.a);
   writeln("strSlice:");
@@ -70,11 +70,11 @@ proc main() {
   var gcountdown = st.addEntry(cname, new shared SymEntry(5, int));
   var countdown = toSymEntry(gcountdown, int);
   countdown.a = [4, 3, 2, 1, 0];
-  reqMsg = "%s %s %s %s %s %s".format("segmentedIndexMsg", "pdarrayIndex", "str", segName, valName, cname);
+  reqMsg = "%s %s %s %s %s %s".format("segmentedIndex", "pdarrayIndex", "str", segName, valName, cname);
   writeln(">>> ", reqMsg);
   repMsg = segmentedIndexMsg(reqMsg, st);
   writeln("<<< ", repMsg);
-  (a, b) = parseNames(repMsg);
+  var (a, b) = parseNames(repMsg);
   var strCountdown = new owned SegString(a, b, st);
   printAry("strCountdown offsets: ", strCountdown.offsets.a);
   printAry("strCountdown raw bytes: ", strCountdown.values.a);
@@ -168,6 +168,19 @@ proc main() {
   for i in 0..#strMatches.size {
     writeln("%i: %s".format(i, strMatches[i]));
   }
+
+  // In1d(strings, strSlice)
+  writeln();
+  reqMsg = "%s %s %s %s %s %s %s".format("segIn1d", "str", segName, valName, "str", sliceSegName, sliceValName);
+  writeln(">>> ", reqMsg);
+  repMsg = segIn1dMsg(reqMsg, st);
+  writeln("<<< ", repMsg);
+  fields = repMsg.split();
+  aname = fields[2];
+  giv = st.lookup(aname);
+  iv = toSymEntry(giv, bool);
+  pop = + reduce iv.a;
+  writeln("Found %t matches".format(pop));
 
   /* for i in testStart..testStop { */
   /*   var hashval = permStrings.murmurHash(permStrings.values.a[permStrings.offsets.a[i]..(permStrings.offsets.a[i+1]-1)]); */
