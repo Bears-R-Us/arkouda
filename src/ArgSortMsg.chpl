@@ -432,7 +432,7 @@ module ArgSortMsg
       }
 
       // check and throw if over memory limit
-      overMemLimit(((4 + names.size) * size * numBytes(int))
+      overMemLimit(((4 + 3) * size * numBytes(int))
                    + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
       
       // Initialize the permutation vector in the symbol table with the identity perm

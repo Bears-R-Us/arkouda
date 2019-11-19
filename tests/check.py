@@ -17,7 +17,7 @@ else:
     ak.connect()
 
 
-N = 1000000
+N = 1_000_000
 
 
 errors = False
