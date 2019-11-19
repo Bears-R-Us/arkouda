@@ -2,6 +2,34 @@ module SegmentedMsg {
   use SegmentedArray;
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
+
+  proc segmentedEfuncMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    var pn = Reflection.getRoutineName();
+    var repMsg: string;
+    var fields = reqMsg.split();
+    var cmd = fields[1];
+    var subcmd = fields[2];
+    var objtype = fields[3];
+    var segName = fields[4];
+    var valName = fields[5];
+    var valtype = fields[6];
+    var val = fields[7];
+    var rname = st.nextName();
+    select (objtype, valtype) {
+    when ("str", "str") {
+      var strings = new owned SegString(segName, valName, st);
+      select subcmd {
+        when "contains" {
+          var truth = st.addEntry(rname, strings.size, bool);
+          truth.a = strings.contains(val);
+        }
+        otherwise {return notImplementedError(pn, "subcmd: %s, (%s, %s)".format(subcmd, objtype, valtype));}
+      }
+    }
+    otherwise {return notImplementedError(pn, "(%s, %s)".format(objtype, valtype));}
+    }
+    return "created "+st.attrib(rname);
+  }
   
   proc segmentedIndexMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();

@@ -209,7 +209,7 @@ module SegmentedArray {
 
     /* Apply a hash function to all strings. This is useful for grouping
        and set membership. The hash used is SipHash128.*/
-    proc hash(hashKey=defaultSipHashKey) throws {
+    proc hash(const hashKey=defaultSipHashKey) throws {
       // 128-bit hash values represented as 2-tuples of uint(64)
       var hashes: [offsets.aD] 2*uint(64);
       // Early exit for zero-length result
@@ -232,6 +232,8 @@ module SegmentedArray {
         // localize the string bytes
         const myBytes = va[{o..#l}];
         h = sipHash128(myBytes, hashKey);
+        // Perf Note: localizing string bytes is ~3x faster on IB multilocale than this:
+        // h = sipHash128(va[{o..#l}]);
       }
       if v {writeln(getCurrentTime() - t1, " seconds"); stdout.flush();}
       return hashes;
@@ -257,6 +259,7 @@ module SegmentedArray {
 
     proc getLengths() {
       var lengths: [offsets.aD] int;
+      ref oa = offsets.a;
       forall (idx, l) in zip(offsets.aD, lengths) {
         if (idx == offsets.aD.high) {
           l = values.size - oa[idx];
@@ -299,21 +302,22 @@ module SegmentedArray {
         return truth;
       }
       var lengths = getLengths();
+      ref oa = offsets.a;
       ref va = values.a;
-      var locSubstr: [PrivateDist] string;
+      var locSubstr: [PrivateSpace] string;
       coforall loc in Locales {
         locSubstr[here.id] = substr.localize();
       }
-      forall (o, l, t) in zip(offsets, lengths, truth) {
+      forall (o, l, t) in zip(oa, lengths, truth) {
         // Only compare if segment is long enough to contain substr
-        if (locSubstr[here.id].size <= l) {
+        if (locSubstr[here.id].numBytes <= l) {
           // Execute where the bytes are
           on va[o] {
             const ref mySub = locSubstr[here.id];
             var subInd = 1;
             // Slide the substring over the bytes in this segment
-            for byte in va[{o..#(l-mySub.size)}] {
-              if (byte != mySub[subInd]) {
+            for byte in va[{o..#(l-mySub.numBytes)}] {
+              if (byte != mySub.byte[subInd]) {
                 // Start over
                 subInd = 1;
               } else {

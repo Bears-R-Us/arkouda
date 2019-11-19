@@ -9,6 +9,7 @@ config const testIndex = 0;
 config const testStart = 0;
 config const testStop = 5;
 config const testString = "Comp141988";
+config const testSubstr = "Comp";
 
 proc parseNames(msg) {
   var halves = msg.split('+', 1);
@@ -186,6 +187,19 @@ proc main() {
   pop = + reduce iv.a;
   writeln("Found %t matches".format(pop));
 
+  // Contains
+  writeln();
+  reqMsg = "%s %s %s %s %s %s %s".format("segEfunc", "contains", "str", segName, valName, "str", testSubstr);
+  writeln(">>> ", reqMsg);
+  repMsg = segmentedEfuncMsg(reqMsg, st);
+  writeln("<<< ", repMsg);
+  fields = repMsg.split();
+  aname = fields[2];
+  giv = st.lookup(aname);
+  iv = toSymEntry(giv, bool);
+  pop = + reduce iv.a;
+  writeln("Found %t strings containing %s".format(pop, testSubstr));
+  
   /* for i in testStart..testStop { */
   /*   var hashval = permStrings.murmurHash(permStrings.values.a[permStrings.offsets.a[i]..(permStrings.offsets.a[i+1]-1)]); */
   /*   writeln("%i: %s, (%016xu, %016xu)".format(i, permStrings[i], hashval[1], hashval[2])); */
