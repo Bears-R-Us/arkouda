@@ -27,7 +27,7 @@ module RadixSortLSD
     use AryUtil;
     use UnorderedCopy;
     use CommAggregation;
-    use IO;
+    //use IO;
 
     inline proc getBitWidth(a: [?aD] int): int {
       var aMin = min reduce a;

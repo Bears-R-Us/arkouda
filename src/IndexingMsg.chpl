@@ -69,7 +69,7 @@ module IndexingMsg
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
-        proc sliceHelper(type t) {
+        proc sliceHelper(type t) throws {
             var e = toSymEntry(gEnt,t);
             var a = st.addEntry(rname, slice.size, t);
             ref ea = e.a;
@@ -111,7 +111,7 @@ module IndexingMsg
         var gIV: borrowed GenSymEntry = st.lookup(iname);
 
         // gather indexing by integer index vector
-        proc ivInt64Helper(type XType) {
+        proc ivInt64Helper(type XType) throws {
             var e = toSymEntry(gX,XType);
             var iv = toSymEntry(gIV,int);
             var ivMin = min reduce iv.a;
@@ -129,7 +129,7 @@ module IndexingMsg
         }
 
         // compression boolean indexing by bool index vector
-        proc ivBoolHelper(type XType) {
+        proc ivBoolHelper(type XType) throws {
             var e = toSymEntry(gX,XType);
             var truth = toSymEntry(gIV,bool);
             var iv: [truth.aD] int = (+ scan truth.a);

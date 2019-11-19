@@ -1,11 +1,16 @@
 /* arkouda server config param and config const */
 module ServerConfig
 {
+    use Memory;
+    
     use ZMQ only;
     use HDF5.C_HDF5 only H5get_libversion;
     use SymArrayDmap only makeDistDom;
-    public use IO;
 
+    //use IO;
+
+    use ServerErrorStrings;
+    
     /*
     Verbose flag
     */
@@ -16,18 +21,16 @@ module ServerConfig
     */
     config const ServerPort = 5555;
 
+    /*
+    Memory usage limit -- percentage of physical memory
+    */
+    config const perLocaleMemLimit = 90;
+    
     /* 
     Arkouda version
     */
     config param arkoudaVersion:string;
-
-    /*
-    Configure MyDmap on compile line by "-s MyDmap=0" or "-s MyDmap=1"
-    0 = Cyclic, 1 = Block. Cyclic may not work; we haven't tested it in a while.
-    BlockDist is the default.
-    */
-    config param MyDmap = 1;
-
+    
     /*
     Hostname where I am running 
     */ 
@@ -47,8 +50,6 @@ module ServerConfig
 
     proc getConfig(): string {
         
-        use Memory;
-
         class LocaleConfig {
             var id: int;
             var name: string;
@@ -57,18 +58,18 @@ module ServerConfig
             var physicalMemory: int;
         }
         class Config {
-	        var arkoudaVersion: string;
-	        var ZMQVersion: string;
-	        var HDF5Version: string;
-	        var serverHostname: string;
+            var arkoudaVersion: string;
+            var ZMQVersion: string;
+            var HDF5Version: string;
+            var serverHostname: string;
             var ServerPort: int;
             var numLocales: int;
             var numPUs: int;
             var maxTaskPar: int;
             var physicalMemory: int;
-	        var distributionType: string;
+            var distributionType: string;
             var LocaleConfigs: [LocaleSpace] owned LocaleConfig =
-              [loc in LocaleSpace] new owned LocaleConfig();
+                [loc in LocaleSpace] new owned LocaleConfig();
         }
         var (Zmajor, Zminor, Zmicro) = ZMQ.version;
         var H5major: c_uint, H5minor: c_uint, H5micro: c_uint;
@@ -97,5 +98,29 @@ module ServerConfig
         var res: string = try! "%jt".format(cfg);
         return res;
     }
-    
+
+    /*
+    Get the memory limit for this server run
+    returns a percentage of the physical memory per locale
+    */
+    proc getMemLimit():uint {
+        return ((perLocaleMemLimit:real / 100.0) * here.physicalMemory()):uint; // checks on locale-0
+    }
+
+    /*
+    check used + amount is over the memory limit
+    throw error if we would go over the limit
+    */
+    proc overMemLimit(additionalAmount:int) throws {
+        // must set config var "-smemTrack=true"(compile time) or "--memTrack=true" (run time)
+        // to use memoryUsed() procedure from Chapel's Memory module
+        if (memTrack) {
+            var total = memoryUsed() + (additionalAmount:uint / numLocales:uint); // this is a per locale total
+            if total > getMemLimit() {
+                throw new owned ErrorWithMsg("Error: Operation would exceed memory limit ("
+                                             +total:string+","+getMemLimit():string+")");
+            }
+        }
+    }
+
 }

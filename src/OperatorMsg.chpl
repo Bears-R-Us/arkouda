@@ -446,6 +446,7 @@ module OperatorMsg
         if v {try! writeln("%s %s %s %s %s : %s".format(cmd,op,aname,dtype2str(dtype),value,rname));try! stdout.flush();}
 
         var left: borrowed GenSymEntry = st.lookup(aname);
+
         select (left.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
                 var l = toSymEntry(left,int);
@@ -835,7 +836,7 @@ module OperatorMsg
         if v {try! writeln("%s %s %s %s %s : %s".format(cmd,op,dtype2str(dtype),value,aname,rname));try! stdout.flush();}
 
         var right: borrowed GenSymEntry = st.lookup(aname);
-        if (right == nil) {return unknownSymbolError(pn, aname);}
+
         select (dtype, right.dtype) {
             when (DType.Int64, DType.Int64) {
                 var val = try! value:int;

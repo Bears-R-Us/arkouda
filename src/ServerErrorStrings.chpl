@@ -1,8 +1,11 @@
 /* error string to return to client... generate consistent error strings for notImplementedError */
 module ServerErrorStrings
 {
-    use ServerConfig;
-    use MultiTypeSymEntry;
+    use NumPyDType;
+    
+    class ErrorWithMsg: Error {
+      var msg: string;
+    }
 
     /* binary operator is not implemented for DTypes */
     proc notImplementedError(pname: string, ldtype: DType, op: string, rdtype: DType):string {
@@ -57,9 +60,6 @@ module ServerErrorStrings
       return try! "Error: %s: Incompatible arguments: %s".format(pname, reason);
     }
 
-    class ErrorWithMsg: Error {
-      var msg: string;
-    }
     
 }
 
