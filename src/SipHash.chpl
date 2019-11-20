@@ -69,8 +69,8 @@ module SipHash {
     var v1 = 0x646f72616e646f6d: uint(64);
     var v2 = 0x6c7967656e657261: uint(64);
     var v3 = 0x7465646279746573: uint(64);
-    var k0 = U8TO64_LE(k[kD.low..#8]);
-    var k1 = U8TO64_LE(k[kD.low+8..#8]);
+    const k0 = U8TO64_LE(k[kD.low..#8]);
+    const k1 = U8TO64_LE(k[kD.low+8..#8]);
     var m: uint(64);
     var i: int;
     const lastPos = D.low + D.size - (D.size % 8);
@@ -119,20 +119,7 @@ module SipHash {
         v3 ^= m;
         TRACE();
         for i in 0..#cROUNDS {
-          v0 += v1;
-          v1 = ROTL(v1, 13);
-          v1 ^= v0;
-          v0 = ROTL(v0, 32);
-          v2 += v3;
-          v3 = ROTL(v3, 16);
-          v3 ^= v2;
-          v0 += v3;
-          v3 = ROTL(v3, 21);
-          v3 ^= v0;
-          v2 += v1;
-          v1 = ROTL(v1, 17);
-          v1 ^= v2;
-          v2 = ROTL(v2, 32);
+          SIPROUND();
         }
 
         v0 ^= m;
@@ -164,20 +151,7 @@ module SipHash {
 
     TRACE();
     for i in 0..#cROUNDS {
-      v0 += v1;
-      v1 = ROTL(v1, 13);
-      v1 ^= v0;
-      v0 = ROTL(v0, 32);
-      v2 += v3;
-      v3 = ROTL(v3, 16);
-      v3 ^= v2;
-      v0 += v3;
-      v3 = ROTL(v3, 21);
-      v3 ^= v0;
-      v2 += v1;
-      v1 = ROTL(v1, 17);
-      v1 ^= v2;
-      v2 = ROTL(v2, 32);
+      SIPROUND();
     }
 
     v0 ^= b;
@@ -190,25 +164,11 @@ module SipHash {
 
     TRACE();
     for i in 0..#dROUNDS {
-      v0 += v1;
-      v1 = ROTL(v1, 13);
-      v1 ^= v0;
-      v0 = ROTL(v0, 32);
-      v2 += v3;
-      v3 = ROTL(v3, 16);
-      v3 ^= v2;
-      v0 += v3;
-      v3 = ROTL(v3, 21);
-      v3 ^= v0;
-      v2 += v1;
-      v1 = ROTL(v1, 17);
-      v1 ^= v2;
-      v2 = ROTL(v2, 32);
+      SIPROUND();
     }
 
     b = v0 ^ v1 ^ v2 ^ v3;
     var res: 2*uint(64);
-    // U64TO8_LE(res[1], b);
     res[1] = byte_reverse(b);
 
     if (outlen == 8) {
@@ -219,24 +179,10 @@ module SipHash {
 
     TRACE();
     for i in 0..#dROUNDS {
-      v0 += v1;
-      v1 = ROTL(v1, 13);
-      v1 ^= v0;
-      v0 = ROTL(v0, 32);
-      v2 += v3;
-      v3 = ROTL(v3, 16);
-      v3 ^= v2;
-      v0 += v3;
-      v3 = ROTL(v3, 21);
-      v3 ^= v0;
-      v2 += v1;
-      v1 = ROTL(v1, 17);
-      v1 ^= v2;
-      v2 = ROTL(v2, 32);
+      SIPROUND();
     }
     
     b = v0 ^ v1 ^ v2 ^ v3;
-    //U64TO8_LE(res[2], b);
     res[2] = byte_reverse(b);
 
     return res;
