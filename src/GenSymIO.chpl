@@ -248,8 +248,11 @@ module GenSymIO {
     if GenSymIO_DEBUG {
       writeln("Got subdomains and total length");
     }
-    select (isSegArray, dataclass, bytesize, isSigned) {
-    when (true, C_HDF5.H5T_INTEGER, 1, false) {
+    select (isSegArray, dataclass) {
+    when (true, C_HDF5.H5T_INTEGER) {
+      if (bytesize != 1) || isSigned {
+        return try! "Error: detected unhandled datatype: segmented? %t, class %i, size %i, signed? %t".format(isSegArray, dataclass, bytesize, isSigned);
+      }
       var entrySeg = new shared SymEntry(nSeg, int);
       read_files_into_distributed_array(entrySeg.a, segSubdoms, filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);
       var entryVal = new shared SymEntry(len, uint(8));
@@ -260,7 +263,7 @@ module GenSymIO {
       st.addEntry(valName, entryVal);
       return try! "created " + st.attrib(segName) + " +created " + st.attrib(valName);
     } 
-    when (false, C_HDF5.H5T_INTEGER, 8, true) {
+    when (false, C_HDF5.H5T_INTEGER) {
       var entryInt = new shared SymEntry(len, int);
       if GenSymIO_DEBUG {
 	writeln("Initialized int entry"); try! stdout.flush();
@@ -270,7 +273,7 @@ module GenSymIO {
       st.addEntry(rname, entryInt);
       return try! "created " + st.attrib(rname);
     }
-    when (false, C_HDF5.H5T_FLOAT, 8, true) {
+    when (false, C_HDF5.H5T_FLOAT) {
       var entryReal = new shared SymEntry(len, real);
       if GenSymIO_DEBUG {
 	writeln("Initialized float entry"); try! stdout.flush();
@@ -355,14 +358,14 @@ module GenSymIO {
     for (i, filename) in zip(FD, filenames) {
       var file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, C_HDF5.H5P_DEFAULT);
       var dims: [0..#1] C_HDF5.hsize_t; // Only rank 1 for now
-      var dsetRank: c_int;
-      // Verify 1D array
-      C_HDF5.H5LTget_dataset_ndims(file_id, dsetName.c_str(), dsetRank);
-      if dsetRank != 1 {
-	// TODO: change this to a throw
-	// halt("Expected 1D array, got rank " + dsetRank);
-	throw new owned HDF5RankError(dsetRank, filename, dsetName);
-      }
+//      var dsetRank: c_int;
+//      // Verify 1D array
+//      C_HDF5.H5LTget_dataset_ndims(file_id, dsetName.c_str(), dsetRank);
+//      if dsetRank != 1 {
+//	// TODO: change this to a throw
+//	// halt("Expected 1D array, got rank " + dsetRank);
+//	throw new owned HDF5RankError(dsetRank, filename, dsetName);
+//      }
       // Read array length into dims[0]
       C_HDF5.HDF5_WAR.H5LTget_dataset_info_WAR(file_id, dsetName.c_str(), c_ptrTo(dims), nil, nil);
       C_HDF5.H5Fclose(file_id);
