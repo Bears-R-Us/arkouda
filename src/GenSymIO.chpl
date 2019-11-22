@@ -5,6 +5,7 @@ module GenSymIO {
   use ServerErrorStrings;
   use FileSystem;
   use Sort;
+  use UnorderedCopy;
   config const GenSymIO_DEBUG = false;
   config const SEGARRAY_OFFSET_NAME = "segments";
   config const SEGARRAY_VALUE_NAME = "values";
@@ -255,6 +256,7 @@ module GenSymIO {
       }
       var entrySeg = new shared SymEntry(nSeg, int);
       read_files_into_distributed_array(entrySeg.a, segSubdoms, filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);
+      fixupSegBoundaries(entrySeg.a, segSubdoms, subdoms);
       var entryVal = new shared SymEntry(len, uint(8));
       read_files_into_distributed_array(entryVal.a, subdoms, filenames, dsetName + "/" + SEGARRAY_VALUE_NAME);
       var segName = st.nextName();
@@ -289,6 +291,25 @@ module GenSymIO {
     }
   }
 
+  proc fixupSegBoundaries(a: [?D] int, segSubdoms: [?fD] domain(1), valSubdoms: [fD] domain(1)) {
+    var boundaries: [fD] int; // First index of each region that needs to be raised
+    var diffs: [fD] int; // Amount each region must be raised over previous region
+    forall (i, sd, vd, b) in zip(fD, segSubdoms, valSubdoms, boundaries) {
+      b = sd.low; // Boundary is index of first segment in file
+      // Height increase of next region is number of bytes in current region
+      if (i < fD.high) {
+        diffs[i+1] = vd.size;
+      }
+    }
+    // Insert height increases at region boundaries
+    var sparseDiffs: [D] int;
+    [(b, d) in zip(boundaries, diffs)] unorderedCopy(sparseDiffs[b], d);
+    // Make plateaus from peaks
+    var corrections = + scan sparseDiffs;
+    // Raise the segment offsets by the plateaus
+    a += corrections;
+  }
+  
   /* Get the class of the HDF5 datatype for the dataset. */
   proc get_dtype(filename: string, dsetName: string) throws {
     const READABLE = (S_IRUSR | S_IRGRP | S_IROTH);
