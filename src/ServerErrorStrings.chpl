@@ -2,6 +2,7 @@
 module ServerErrorStrings
 {
     use NumPyDType;
+    use IO;
     
     class ErrorWithMsg: Error {
       var msg: string;

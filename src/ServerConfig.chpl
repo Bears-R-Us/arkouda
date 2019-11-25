@@ -7,7 +7,7 @@ module ServerConfig
     use HDF5.C_HDF5 only H5get_libversion;
     use SymArrayDmap only makeDistDom;
 
-    //use IO;
+    public use IO;
 
     use ServerErrorStrings;
     
