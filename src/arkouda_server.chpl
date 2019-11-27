@@ -67,7 +67,7 @@ proc main() {
             else {
                 writeln("reqMsg: ", reqMsg);
             }
-            writeln(">>> ",cmd," started at ",t1,"sec");
+            writeln(">>> %s started at %.17r sec".format(cmd, t1));
             try! stdout.flush();
         }
 
@@ -159,7 +159,7 @@ proc main() {
         if (memTrack) {writeln("bytes of memoryUsed() = ",memoryUsed()); try! stdout.flush();}
 
         // end timer for command processing
-        if v{writeln("<<< ", cmd," took ", Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
+        if v{writeln("<<< %s took %.17r sec".format(cmd, Time.getCurrentTime() - t1)); try! stdout.flush();}
     }
 
     writeln("requests = ",reqCount," responseCount = ",repCount);
