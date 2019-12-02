@@ -13,13 +13,17 @@ module RadixSortLSD
     const numBuckets = 1 << bitsPerDigit; // these need to be const for comms/performance reasons
     const maskDigit = numBuckets-1; // these need to be const for comms/performance reasons
 
-    // For comm={none,ugni} use unorderedCopy since it's optimized for ugni and
-    // a local copy for none. For all other configs, small remote copies are
-    // slow, so we need to aggregate. Longer term aggregation should win on
-    // ugni too, but there is a memory overhead that needs tuning.
+    // Select the mode for how small copies are initiated. For comm=none, there
+    // is no reason to aggregate. For most other configurations aggregation is
+    // always faster than unordered copy, so use it. Under comm=ugni, unordered
+    // copy is faster than aggregation for collecting metadata about sorting
+    // because the allocation and setup costs of aggregation costs are higher
+    // than the comm benefit for the relatively small number of items copied.
     enum CopyMode {unordered, aggregated};
     private param noneOrUgni = CHPL_COMM == "ugni" || CHPL_COMM == "none";
-    config const RSLSD_copyMode = if noneOrUgni then CopyMode.unordered else CopyMode.aggregated;
+    config const RSLSD_copyModeMeta = if noneOrUgni then CopyMode.unordered else CopyMode.aggregated;
+    config const RSLSD_copyMode = if CHPL_COMM == "none" then CopyMode.unordered else CopyMode.aggregated;
+    const copyModeMeta = RSLSD_copyModeMeta;
     const copyMode = RSLSD_copyMode;
 
     use BlockDist;
@@ -138,14 +142,14 @@ module RadixSortLSD
                             taskBucketCounts[bucket] += 1;
                         }
                         // write counts in to global counts in transposed order
-			if copyMode == CopyMode.unordered {
+			if copyModeMeta == CopyMode.unordered {
 			    for bucket in bD {
 				//globalCounts[calcGlobalIndex(bucket, loc.id, task)] = taskBucketCounts[bucket];
 				// will/does this make a difference???
 				unorderedCopy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], taskBucketCounts[bucket]);
 			    }
 			    unorderedCopyTaskFence();
-                        } else if copyMode == CopyMode.aggregated {
+                        } else if copyModeMeta == CopyMode.aggregated {
 			    var aggregator = new DstAggregator(int);
 			    for bucket in bD {
 				aggregator.copy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], taskBucketCounts[bucket]);
@@ -176,14 +180,14 @@ module RadixSortLSD
                         // calc task's indices from local domain's indices
                         var tD = calcBlock(task, lD.low, lD.high);
                         // read start pos in to globalStarts back from transposed order
-			if copyMode == CopyMode.unordered {
+			if copyModeMeta == CopyMode.unordered {
 			    for bucket in bD {
 				//taskBucketPos[bucket] = globalStarts[calcGlobalIndex(bucket, loc.id, task)];
 				// will/does this make a difference???
 				unorderedCopy(taskBucketPos[bucket], globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
 			    }
 			    unorderedCopyTaskFence();
-                        } else if copyMode == CopyMode.aggregated {
+                        } else if copyModeMeta == CopyMode.aggregated {
                             var aggregator = new SrcAggregator(int);
                             for bucket in bD {
                                 aggregator.copy(taskBucketPos[bucket], globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
@@ -296,14 +300,14 @@ module RadixSortLSD
                             taskBucketCounts[bucket] += 1;
                         }
                         // write counts in to global counts in transposed order
-			if copyMode == CopyMode.unordered {
+			if copyModeMeta == CopyMode.unordered {
 			    for bucket in bD {
 				//globalCounts[calcGlobalIndex(bucket, loc.id, task)] = taskBucketCounts[bucket];
 				// will/does this make a difference???
 				unorderedCopy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], taskBucketCounts[bucket]);
 			    }
 			    unorderedCopyTaskFence();
-                        } else if copyMode == CopyMode.aggregated {
+                        } else if copyModeMeta == CopyMode.aggregated {
 			    var aggregator = new DstAggregator(int);
 			    for bucket in bD {
 				aggregator.copy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], taskBucketCounts[bucket]);
@@ -334,14 +338,14 @@ module RadixSortLSD
                         // calc task's indices from local domain's indices
                         var tD = calcBlock(task, lD.low, lD.high);
                         // read start pos in to globalStarts back from transposed order
-			if copyMode == CopyMode.unordered {
+			if copyModeMeta == CopyMode.unordered {
 			    for bucket in bD {
 				//taskBucketPos[bucket] = globalStarts[calcGlobalIndex(bucket, loc.id, task)];
 				// will/does this make a difference???
 				unorderedCopy(taskBucketPos[bucket], globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
 			    }
 			    unorderedCopyTaskFence();
-                        } else if copyMode == CopyMode.aggregated {
+                        } else if copyModeMeta == CopyMode.aggregated {
                             var aggregator = new SrcAggregator(int);
                             for bucket in bD {
                                 aggregator.copy(taskBucketPos[bucket], globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
