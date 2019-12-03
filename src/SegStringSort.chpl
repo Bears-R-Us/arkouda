@@ -69,4 +69,48 @@ module SegStringSort {
     }
   }
   
+  proc getHeads(ss: SegString, lengths: [?D] int, pivot: int) {
+    ref va = ss.values.a;
+    var heads: [D] [0..#pivot] uint(8);
+    forall (o, l, h) in zip(ss.offsets.a, lengths, heads) {
+      const len = min(l, pivot);
+      for j in 0..#len {
+        unorderedCopy(h[j], va[o+j]);
+      }
+    }
+    return heads;
+  }
+  
+  proc getPivot(lengths: [?D] int): 2*int {
+    const NBINS = 2**16;
+    const BINDOM = {0..#NBINS};
+    var pBins: [PrivateSpace][BINDOM] int;
+    coforall loc in Locales {
+      on loc {
+        const lD = D.localSubdomain();
+        ref locLengths = lengths.localSlice[lD];
+        var locBins: [0..#numTasks][BINDOM] int;
+        coforall task in 0..#numTasks {
+          const tD = calcBlock(task, lD.low, lD.high);
+          for i in tD {
+            var bin = min(locLengths[i], NBINS-1);
+            // Count number of *bytes* in bin, not the number of strings
+            locBins[task][bin] += locLenghts[i];
+          }
+        }
+        pBins[here.id] = + reduce [task in 0..#numTasks] locBins[task];
+      }
+    }
+    const bins = + reduce [loc in PrivateSpace] pBins[loc];
+    // Number of bytes in strings longer than or equal to the current bin
+    const tailPop = (+ reduce bins) - (+ scan bins) + bins;
+    // Find the largest value of "long" such that long strings fit in one local subdomain
+    const singleLocale = (tailPop < (MEMFACTOR * D.localSubdomain().size));
+    var (dummy, pivot) = maxloc reduce zip(singleLocale, BINDOM);
+    // Pivot should be even and not less than MINBYTES
+    pivot = max(pivot + (pivot % 2), MINBYTES);
+    // How many strings are "short"?
+    const nShort = + reduce (lengths < pivot);
+    return (pivot, nShort);
+  }
 }
