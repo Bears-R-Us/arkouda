@@ -1,10 +1,11 @@
-from arkouda.client import generic_msg
+from arkouda.client import generic_msg, verbose
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros, array
 from arkouda.sorting import argsort
 
 __all__ = ["unique", "in1d", "concatenate", "union1d", "intersect1d",
            "setdiff1d", "setxor1d"]
+global verbose
 
 def unique(pda, return_counts=False):
     """
@@ -46,7 +47,7 @@ def unique(pda, return_counts=False):
         repMsg = generic_msg("unique {} {}".format(pda.name, return_counts))
         if return_counts:
             vc = repMsg.split("+")
-            if v: print(vc)
+            if verbose: print(vc)
             return create_pdarray(vc[0]), create_pdarray(vc[1])
         else:
             return create_pdarray(repMsg)
