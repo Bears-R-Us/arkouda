@@ -151,13 +151,18 @@ Memory checking is turned off by default and turned on by using  `--memTrack=tru
 
 ## Testing arkouda_server
 
-There is a small test program that connects to a running arkouda_server, runs a few computations, and shuts down the server. To run it, open a new terminal window in the arkouda directory and run
+There is a small test program that connects to a running arkouda_server, runs a few computations, and disconnects from the server. To run it, open a new terminal window in the arkouda directory and run
 
 ```bash
 python3 tests/check.py localhost 5555
 ```
 
 Substitute the correct hostname and port if you used a different configuration.
+
+Note that `check.py` doesn't shut down the server, permitting multiple
+Arkouda programs to be run against the same server instance.  The
+server can be shut down cleanly by running the `shutdown.py` script in
+the same directory.
 
 ## Contributing to Arkouda
 
