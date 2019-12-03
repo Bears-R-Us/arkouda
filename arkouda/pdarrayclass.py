@@ -107,13 +107,10 @@ class pdarray:
             msg = "binopvv {} {} {}".format(op, self.name, other.name)
             repMsg = generic_msg(msg)
             return create_pdarray(repMsg)
-        # pdarray binop array-like is not implemented
-        if hasattr(other, '__len__'): 
-            return NotImplemented
         # pdarray binop scalar
         dt = resolve_scalar_dtype(other)
         if dt not in DTypes:
-            raise TypeError("Unhandled scalar type: {} ({})".format(other, dt))
+            raise TypeError("Unhandled scalar type: {} ({})".format(other, type(other)))
         msg = "binopvs {} {} {} {}".format(op, self.name, dt, NUMBER_FORMAT_STRINGS[dt].format(other))
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
@@ -123,13 +120,10 @@ class pdarray:
     def r_binop(self, other, op):
         if op not in self.BinOps:
             raise ValueError("bad operator {}".format(op))
-        # pdarray binop array-like is not implemented
-        if hasattr(other, '__len__'): 
-            return NotImplemented
         # pdarray binop scalar
         dt = resolve_scalar_dtype(other)
         if dt not in DTypes:
-            raise TypeError("Unhandled scalar type: {} ({})".format(other, dt))
+            raise TypeError("Unhandled scalar type: {} ({})".format(other, type(other)))
         msg = "binopsv {} {} {} {}".format(op, dt, NUMBER_FORMAT_STRINGS[dt].format(other), self.name)
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
@@ -245,7 +239,7 @@ class pdarray:
             return self.binop(~0, "^")
         if self.dtype == bool:
             return self.binop(True, "^")
-        return NotImplemented
+        raise TypeError("Unhandled dtype: {} ({})".format(self, self.dtype))
 
     # op= operators
     def opeq(self, other, op):
@@ -257,15 +251,13 @@ class pdarray:
                 raise ValueError("size mismatch {} {}".format(self.size,other.size))
             generic_msg("opeqvv {} {} {}".format(op, self.name, other.name))
             return self
-        # pdarray op= array-like is not implemented
-        if hasattr(other, '__len__'): 
-            return NotImplemented
         # pdarray binop scalar
         # opeq requires scalar to be cast as pdarray dtype
         try:
             other = self.dtype.type(other)
         except: # Can't cast other as dtype of pdarray
-            return NotImplemented
+            raise TypeError("Unhandled scalar type: {} ({})".format(other, type(other)))
+            
         msg = "opeqvs {} {} {} {}".format(op, self.name, self.dtype.name, self.format_other(other))
         generic_msg(msg)
         return self
@@ -336,7 +328,7 @@ class pdarray:
             repMsg = generic_msg("[pdarray] {} {}".format(self.name, key.name))
             return create_pdarray(repMsg);
         else:
-            return NotImplemented
+            raise TypeError("Unhandled key type: {} ({})".format(key, type(key)))
 
     def __setitem__(self, key, value):
         if isinstance(key, int):
@@ -357,7 +349,7 @@ class pdarray:
             else:
                 generic_msg("[slice]=val {} {} {} {} {} {}".format(self.name, start, stop, stride, self.dtype.name, self.format_other(value)))
         else:
-            return NotImplemented
+            raise TypeError("Unhandled key type: {} ({})".format(key, type(key)))
 
     def __iter__(self):
         # to_ndarray will error if array is too large to bring back
