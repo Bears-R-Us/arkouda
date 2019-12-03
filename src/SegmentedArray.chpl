@@ -4,12 +4,14 @@ module SegmentedArray {
   use UnorderedCopy;
   use SipHash;
   use SegStringSort;
+  use RadixSortLSD only radixSortLSD_ranks;
   use Reflection;
   use PrivateDist;
   use ServerConfig;
   use Time only getCurrentTime;
 
   private config const DEBUG = false;
+  private config param useHash = false;
   
   class OutOfBoundsError: Error {}
 
@@ -243,30 +245,42 @@ module SegmentedArray {
        this permutation will not sort the strings, but all equivalent strings
        will fall in one contiguous block. */
     proc argGroup() throws {
-      // Hash all strings
-      var hashes = this.hash();
-      // Return the permutation that sorts the hashes
-      var iv = radixSortLSD_ranks(hashes);
-      if DEBUG {
-        var sortedHashes = [i in iv] hashes[i];
-        var diffs = sortedHashes[(iv.domain.low+1)..#(iv.size-1)] - sortedHashes[(iv.domain.low)..#(iv.size-1)];
-        printAry("diffs = ", diffs);
-        var nonDecreasing = [d in diffs] ((d[1] > 0) || ((d[1] == 0) && (d[2] >= 0)));
-        writeln("Are hashes sorted? ", && reduce nonDecreasing);
+      if useHash {
+        // Hash all strings
+        var hashes = this.hash();
+        // Return the permutation that sorts the hashes
+        var iv = radixSortLSD_ranks(hashes);
+        if DEBUG {
+          var sortedHashes = [i in iv] hashes[i];
+          var diffs = sortedHashes[(iv.domain.low+1)..#(iv.size-1)] - sortedHashes[(iv.domain.low)..#(iv.size-1)];
+          printAry("diffs = ", diffs);
+          var nonDecreasing = [d in diffs] ((d[1] > 0) || ((d[1] == 0) && (d[2] >= 0)));
+          writeln("Are hashes sorted? ", && reduce nonDecreasing);
+        }
+        return iv;
+      } else {
+        var iv = argsort();
+        return iv;
       }
-      return iv;
     }
 
     proc getLengths() {
       var lengths: [offsets.aD] int;
-      ref oa = offsets.a;
-      forall (idx, l) in zip(offsets.aD, lengths) {
-        if (idx == offsets.aD.high) {
-          l = values.size - oa[idx];
-        } else {
-          l = oa[idx+1] - oa[idx];
-        }
+      if (size == 0) {
+        return lengths;
       }
+      ref oa = offsets.a;
+      const low = offsets.aD.low;
+      const high = offsets.aD.high;
+      lengths[low..high-1] = (oa[low+1..high] - oa[low..high-1]);
+      lengths[high] = values.size - oa[high];
+      /* forall (idx, l) in zip(offsets.aD, lengths) { */
+      /*   if (idx == offsets.aD.high) { */
+      /*     l = values.size - oa[idx]; */
+      /*   } else { */
+      /*     l = oa[idx+1] - oa[idx]; */
+      /*   } */
+      /* } */
       return lengths;
     }
 
@@ -349,7 +363,7 @@ module SegmentedArray {
       ref va = values.a;
       // Compare each pair of strings byte-by-byte
       for pos in 0..#maxLen {
-        forall (o, l, d, i) in zip(oa, lengths, done, offsets.aD) {
+        forall (o, l, d, i) in zip(oa, lengths, done, offsets.aD) with (ref res) {
           if (!d) {
             // If either of the strings is exhausted, mark this entry done
             if (pos >= l) || (pos >= lengths[i-1]) {
@@ -379,7 +393,7 @@ module SegmentedArray {
       return res;
     }
 
-    proc argsort(checkSorted:bool=true): [offsets.aD] int {
+    proc argsort(checkSorted:bool=true): [offsets.aD] int throws {
       const ref D = offsets.aD;
       const ref va = values.a;
       if checkSorted && isSorted() {
@@ -464,7 +478,7 @@ module SegmentedArray {
 
   /* Test array of strings for membership in another array (set) of strings. Returns
      a boolean vector the same size as the first array. */
-  proc in1d(mainStr: SegString, testStr: SegString, invert=false, hashKey=defaultSipHashKey) throws {
+  proc in1d(mainStr: SegString, testStr: SegString, invert=false, hashKey=defaultSipHashKey) throws where useHash {
     var truth: [mainStr.offsets.aD] bool;
     // Early exit for zero-length result
     if (mainStr.size == 0) {
@@ -495,9 +509,77 @@ module SegmentedArray {
       writeln("Testing membership"); stdout.flush();
       t1 = getCurrentTime();
     }
-    [i in truth] truth[i] = localTestHashes[here.id].contains(hashes[i]);
+    [i in truth.domain] truth[i] = localTestHashes[here.id].contains(hashes[i]);
     if v {writeln(getCurrentTime() - t1, " seconds"); stdout.flush();}
     return truth;
+  }
+
+  private config const in1dSortThreshold = 64;
+  
+  proc in1d(mainStr: SegString, testStr: SegString, invert=false) throws where !useHash {
+    var truth: [mainStr.offsets.aD] bool;
+    // Early exit for zero-length result
+    if (mainStr.size == 0) {
+      return truth;
+    }
+    if (testStr.size <= in1dSortThreshold) {
+      for i in 0..#testStr.size {
+        truth |= (mainStr == testStr[i]);
+      }
+      return truth;
+    } else {
+      /* // This is inspired by numpy in1d */
+      /* const (uMain, revIdx) = mainStr.unique(returnInverse=true); */
+      /* const uTest = testStr.unique(); */
+      /* const ar = concat(uMain, uTest); */
+      /* const order = ar.argsort(); */
+      /* const sar = ar[order]; */
+      /* var flag: [sar.domain] bool; */
+      /* const first = sar.domain.low; */
+      /* const last = sar.domain.high; */
+      /* flag[last] = invert; */
+      /* if invert { */
+      /*   flag[first..last-1] = (sar[first+1..last] != sar[first..last-1]); */
+      /* } else { */
+      /*   flag[first..last-1] = (sar[first+1..last] == sar[first..last-1]); */
+      /* } */
+      /* var ret: [sar.domain] bool; */
+      /* [(ord, f) in zip(order, flag)] if f { unorderedCopy(ret[ord], true) }; */
+      /* unorderedCopyTaskFence(); */
+      /* var realRet: [mainStr.offsets.aD] bool; */
+      /* [(r, i) in zip(realRet, revIdx)] unorderedCopy(r, ret[i]); */
+      /* unorderedCopyTaskFence(); */
+      /* return realRet; */
+
+      if v {writeln("Making associative domains for test set on each locale"); stdout.flush();}
+      var t1 = getCurrentTime();
+      // On each locale, make an associative domain with the hashes of the second array
+      // parSafe=false because we are adding in serial and it's faster
+      var localTestDoms: [PrivateSpace] domain(string, parSafe=false);
+      coforall loc in Locales {
+        on loc {
+          const myTestStr = testStr;
+          // Local hashes of second array
+          ref mySet = localTestDoms[here.id];
+          mySet.requestCapacity(testStr.size);
+          for i in myTestStr.offsets.aD {
+            mySet += myTestStr[i];
+          }
+        /* // Check membership of hashes in this locale's chunk of the array */
+        /* [i in truth.localSubdomain()] truth[i] = mySet.contains(hashes[i]); */
+      }
+    }
+    if v {
+      writeln(getCurrentTime() - t1, " seconds");
+      writeln("Testing membership"); stdout.flush();
+      t1 = getCurrentTime();
+    }
+    forall i in truth.domain {
+      truth[i] = localTestDoms[here.id].contains(mainStr[i]);
+    }
+    if v {writeln(getCurrentTime() - t1, " seconds"); stdout.flush();}
+    return truth;
+    }
   }
 
   /* Convert an array of raw bytes into a Chapel string. */
