@@ -113,4 +113,41 @@ module SegStringSort {
     const nShort = + reduce (lengths < pivot);
     return (pivot, nShort);
   }
+  
+  proc gatherLongStrings(ss: SegString, lengths: [] int, longInds: [?D] int): [] (string, int) {
+    ref oa = ss.offsets.a;
+    ref va = ss.values.a;
+    const myD: domain(1) = D;
+    const myInds: [myD] (string, int);
+    forall (i, si) in zip(myInds, stringsWithInds) {
+      const l = lengths[i];
+      var buf: [0..#(l+1)] uint(8);
+      buf[{0..#l}] = va[{oa[i]..#l}];
+      si[1] = createStringWithBorrowedBuffer(c_ptrTo(buf), l, l+1);
+      si[2] = i;
+    }
+    return stringsWithInds;
+  }
+  
+  proc radixSortLSD_raw(const ref offsets: [?aD] int, const ref lengths: [aD] int, const ref values: [] uint(8), const ref inds: [aD] int, const pivot: int): [aD] int {
+    const numBuckets = 2**16;
+    type state = (uint(8), uint(8), int, int, int);
+    inline proc copyDigit(ref k: state, const off: int, const len: int, const rank: int, const right: int) {
+      if (len >= right) {
+        unorderedCopy(k[1], values[off+right-2]);
+        unorderedCopy(k[2], values[off+right-1]);
+      } else if (len == right - 1) {
+        unorderedCopy(k[1], values[off+right-2]);
+      }
+      unorderedCopy(k[3], off);
+      unorderedCopy(k[4], len);
+      unorderedCopy(k[5], rank);
+    }
+    var kr0: [aD] state;
+    forall (k, rank) in zip(kr0, inds) {
+      copyDigit(k, offsets[rank], lengths[rank], rank, pivot);
+    }
+    var kr1: [aD] state;
+    
+  }
 }
