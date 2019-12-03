@@ -3,7 +3,7 @@ module SegmentedArray {
   use MultiTypeSymEntry;
   use UnorderedCopy;
   use SipHash;
-  use RadixSortLSD;
+  use SegStringSort;
   use Reflection;
   use PrivateDist;
   use ServerConfig;
@@ -335,8 +335,63 @@ module SegmentedArray {
       }
       return truth;
     }
-  }
 
+    proc isSorted(): bool {
+      var res = true; // strings are sorted?
+      // Is this position done comparing with its predecessor?
+      var done: [offsets.aD] bool;
+      // First string has no predecessor, so comparison is automatically done
+      done[offsets.aD.low] = true;
+      // Do not check null terminators
+      const lengths = getLengths() - 1;
+      const maxLen = max reduce lengths;
+      ref oa = offsets.a;
+      ref va = values.a;
+      // Compare each pair of strings byte-by-byte
+      for pos in 0..#maxLen {
+        forall (o, l, d, i) in zip(oa, lengths, done, offsets.aD) {
+          if (!d) {
+            // If either of the strings is exhausted, mark this entry done
+            if (pos >= l) || (pos >= lengths[i-1]) {
+              unorderedCopy(d, true);
+            } else {
+              const prevByte = va[oa[i-1] + pos];
+              const currByte = va[o + pos];
+              // If we can already tell the pair is sorted, mark done
+              if (prevByte < currByte) {
+                unorderedCopy(d, true);
+              // If we can tell the pair is not sorted, the return is false
+              } else if (prevByte > currByte) {
+                res = false;
+              } // If we can't tell yet, keep checking
+            }
+          }
+        }
+        // If some pair is not sorted, return false
+        if !res {
+          return false;
+        // If all comparisons are conclusive, return true
+        } else if (&& reduce done) {
+          return true;
+        } // else keep going
+      }
+      // If we get to this point, it's because there is at least one pair of strings with length maxLen that are the same up to the last byte. That last byte determines res.
+      return res;
+    }
+
+    proc argsort(checkSorted:bool=true): [offsets.aD] int {
+      const ref D = offsets.aD;
+      const ref va = values.a;
+      if checkSorted && isSorted() {
+        var ranks: [D] int = [i in D] i;
+        return ranks;
+      }
+      var ranks = twoPhaseStringSort(this);
+      return ranks;
+    }
+
+  } // class SegString
+    
   /* Test for equality between two same-length arrays of strings. Returns
      a boolean vector of the same length. */
   proc ==(lss:SegString, rss:SegString) throws {
