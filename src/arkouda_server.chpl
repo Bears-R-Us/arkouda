@@ -59,7 +59,7 @@ proc main() {
         // peel off the command
         var fields = reqMsg.split(1);
         var cmd = fields[1];
-        var t2 = t1.elapsed();
+        var s0 = t1.elapsed();
         
         if v {
             if cmd == "array" { // has binary data in it's payload
@@ -68,7 +68,7 @@ proc main() {
             else {
                 writeln("reqMsg: ", reqMsg);
             }
-            writeln(">>> %s started at %.17r sec".format(cmd, t2));
+            writeln(">>> %s started at %.17r sec".format(cmd, s0));
             try! stdout.flush();
         }
 
@@ -160,7 +160,7 @@ proc main() {
         if (memTrack) {writeln("bytes of memoryUsed() = ",memoryUsed()); try! stdout.flush();}
 
         // end timer for command processing
-        if v{writeln("<<< %s took %.17r sec".format(cmd, t1.elapsed() - t2)); try! stdout.flush();}
+        if v{writeln("<<< %s took %.17r sec".format(cmd, t1.elapsed() - s0)); try! stdout.flush();}
     }
     t1.stop();
     
