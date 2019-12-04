@@ -35,12 +35,12 @@ proc main() {
 
     var reqCount: int = 0;
     var repCount: int = 0;
+    var t1 = new Timer();
+    t1.clear();
+    t1.start();
     while !shutdownServer {
         // receive requests
         var reqMsg = socket.recv(string);
-
-        // start timer for command processing
-        var t1 = Time.getCurrentTime();
 
         reqCount += 1;
 
@@ -59,6 +59,7 @@ proc main() {
         // peel off the command
         var fields = reqMsg.split(1);
         var cmd = fields[1];
+        var s0 = t1.elapsed();
         
         if v {
             if cmd == "array" { // has binary data in it's payload
@@ -67,7 +68,7 @@ proc main() {
             else {
                 writeln("reqMsg: ", reqMsg);
             }
-            writeln(">>> ",cmd," started at ",t1,"sec");
+            writeln(">>> %s started at %.17r sec".format(cmd, s0));
             try! stdout.flush();
         }
 
@@ -159,9 +160,10 @@ proc main() {
         if (memTrack) {writeln("bytes of memoryUsed() = ",memoryUsed()); try! stdout.flush();}
 
         // end timer for command processing
-        if v{writeln("<<< ", cmd," took ", Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
+        if v{writeln("<<< %s took %.17r sec".format(cmd, t1.elapsed() - s0)); try! stdout.flush();}
     }
-
-    writeln("requests = ",reqCount," responseCount = ",repCount);
+    t1.stop();
+    
+    writeln("requests = ",reqCount," responseCount = ",repCount," elapsed sec = ",t1.elapsed());
 }
 
