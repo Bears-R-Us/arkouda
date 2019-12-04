@@ -203,7 +203,7 @@ module SegStringSort {
     var globalStarts: [gD] int;
         
     // loop over digits
-    for rshift in {2..(pivot-2) by 2} {
+    for rshift in {2..#pivot by 2} {
       if v {writeln("rshift = ",rshift); stdout.flush();}
       // count digits
       coforall loc in Locales {
@@ -302,7 +302,7 @@ module SegStringSort {
         kr0 = kr1;
       }
     } // for rshift
-    var ranks = [(a, b, c, d, i) in kr1] i;
+    const ranks: [aD] int = [(a, b, c, d, i) in kr1] i;
     return ranks;
   }
 }
