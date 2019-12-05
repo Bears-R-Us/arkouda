@@ -21,7 +21,15 @@ module SegmentedMsg {
       select subcmd {
         when "contains" {
           var truth = st.addEntry(rname, strings.size, bool);
-          truth.a = strings.contains(val);
+          truth.a = strings.substringSearch(val, SearchMode.contains);
+        }
+        when "startswith" {
+          var truth = st.addEntry(rname, strings.size, bool);
+          truth.a = strings.substringSearch(val, SearchMode.startsWith);
+        }
+        when "endswith" {
+          var truth = st.addEntry(rname, strings.size, bool);
+          truth.a = strings.substringSearch(val, SearchMode.endsWith);
         }
         otherwise {return notImplementedError(pn, "subcmd: %s, (%s, %s)".format(subcmd, objtype, valtype));}
       }

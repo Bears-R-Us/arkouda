@@ -9,8 +9,7 @@ module SegStringSort {
   private config const numTasks = here.maxTaskPar;
   private config const MINBYTES = 8;
   private config const MEMFACTOR = 5;
-  // private config const flattenValues = false;
-  
+
   record StringIntComparator {
     proc keyPart(a: (string, int), i: int) {
       var len = a[1].numBytes;
@@ -56,19 +55,10 @@ module SegStringSort {
       [(h, s) in zip(highDom, stringsWithInds.domain)] unorderedCopy(gatherInds[h], stringsWithInds[s][2]);
       if v { writeln("Permuted long inds in %t seconds".format(getCurrentTime() - tl)); stdout.flush(); }
     }
-    /* if flattenValues { */
-    /*   if v { t = getCurrentTime(); } */
-    /*   const heads = getHeads(ss, lengths, pivot); */
-    /*   if v { writeln("Gathered all strings in %t seconds".format(getCurrentTime() - t)); stdout.flush(); t = getCurrentTime(); } */
-    /*   const ranks = radixSortLSD_heads(heads, gatherInds, pivot); */
-    /*   if v { writeln("Sorted ranks in %t seconds".format(getCurrentTime() - t)); stdout.flush(); } */
-    /*   return ranks; */
-    /* } else { */
     if v { t = getCurrentTime(); }
     const ranks = radixSortLSD_raw(ss.offsets.a, lengths, ss.values.a, gatherInds, pivot);
     if v { writeln("Sorted ranks in %t seconds".format(getCurrentTime() - t)); stdout.flush(); }
     return ranks;
-    /* } */
   }
   
   proc getHeads(ss: SegString, lengths: [?D] int, pivot: int) {
@@ -160,15 +150,17 @@ module SegStringSort {
     const numBuckets = 2**16;
     type state = (uint(8), uint(8), int, int, int);
     inline proc copyDigit(ref k: state, const off: int, const len: int, const rank: int, const right: int) {
-      if (len >= right) {
-        unorderedCopy(k[1], values[off+right-2]);
-        unorderedCopy(k[2], values[off+right-1]);
-      } else if (len == right - 1) {
-        unorderedCopy(k[1], values[off+right-2]);
-        unorderedCopy(k[2], 0: uint(8));
-      } else {
-        unorderedCopy(k[1], 0: uint(8));
-        unorderedCopy(k[2], 0: uint(8));
+      if (right > 0) {
+        if (len >= right) {
+          unorderedCopy(k[1], values[off+right-2]);
+          unorderedCopy(k[2], values[off+right-1]);
+        } else if (len == right - 1) {
+          unorderedCopy(k[1], values[off+right-2]);
+          unorderedCopy(k[2], 0: uint(8));
+        } else {
+          unorderedCopy(k[1], 0: uint(8));
+          unorderedCopy(k[2], 0: uint(8));
+        }
       }
       unorderedCopy(k[3], off);
       unorderedCopy(k[4], len);
@@ -178,15 +170,17 @@ module SegStringSort {
     inline proc copyDigit(ref k1: state, ref k0: state, const right: int, ref aggregator) {
       const off = k0[3];
       const len = k0[4];
-      if (len >= right) {
-        k0[1] = values[off+right-2];
-        k0[2] = values[off+right-1];
-      } else if (len == right - 1) {
-        k0[1] = values[off+right-2];
-        k0[2] = 0;
-      } else {
-        k0[1] = 0: uint(8);
-        k0[2] = 0: uint(8);
+      if (right > 0) {
+        if (len >= right) {
+          k0[1] = values[off+right-2];
+          k0[2] = values[off+right-1];
+        } else if (len == right - 1) {
+          k0[1] = values[off+right-2];
+          k0[2] = 0;
+        } else {
+          k0[1] = 0: uint(8);
+          k0[2] = 0: uint(8);
+        }
       }
       aggregator.copy(k1, k0);
     }

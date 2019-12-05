@@ -12,6 +12,7 @@ module SegmentedArray {
 
   private config const DEBUG = false;
   private config param useHash = false;
+  param SegmentedArrayUseHash = useHash;
   
   class OutOfBoundsError: Error {}
 
@@ -284,7 +285,7 @@ module SegmentedArray {
       return lengths;
     }
 
-    proc contains(substr: string) throws {
+    proc substringSearch(const substr: string, mode: SearchMode) throws {
       /* coforall loc in Locales { */
       /*   on loc { */
       /*     ref D = values.aD.localSubdomain(); */
@@ -315,7 +316,7 @@ module SegmentedArray {
       if (size == 0) || (substr.size == 0) {
         return truth;
       }
-      var lengths = getLengths();
+      var lengths = getLengths() - 1;
       ref oa = offsets.a;
       ref va = values.a;
       var locSubstr: [PrivateSpace] string;
@@ -328,21 +329,22 @@ module SegmentedArray {
           // Execute where the bytes are
           on va[o] {
             const ref mySub = locSubstr[here.id];
-            var subInd = 1;
-            // Slide the substring over the bytes in this segment
-            for byte in va[{o..#(l-mySub.numBytes)}] {
-              if (byte != mySub.byte[subInd]) {
-                // Start over
-                subInd = 1;
-              } else {
-                if (subInd == mySub.size) {
-                  // Eureka
-                  unorderedCopy(t, true);
-                } else {
-                  // Keep going
-                  subInd += 1;
-                }
+            const ref myVal = va[{o..#l}];
+            var res: bool;
+            select mode {
+              when SearchMode.contains {
+                res = segmentContains(myVal, mySub);
               }
+              when SearchMode.startsWith {
+                res = segmentStartsWith(myVal, mySub);
+              }
+              when SearchMode.endsWith {
+                res = segmentEndsWith(myVal, mySub);
+              }
+              otherwise { throw new owned UnknownSearchMode(); }
+            }
+            if res {
+              unorderedCopy(t, true);
             }
           }
         }
@@ -405,7 +407,53 @@ module SegmentedArray {
     }
 
   } // class SegString
-    
+
+  enum SearchMode { contains, startsWith, endsWith }
+  class UnknownSearchMode: Error {}
+  
+  inline proc segmentContains(const ref values: [?D] uint(8), const ref substr: string): bool {
+    var subInd = 1;
+    // Slide the substring over the bytes in this segment
+    for (byte, i) in zip(values, 0..) {
+      if (substr.numBytes - subInd + 1 > values.size - i) {
+        return false;
+      }
+      if (byte != substr.byte[subInd]) {
+        // Start over
+        subInd = 1;
+      } else {
+        if (subInd == substr.numBytes) {
+          // Eureka
+          return true;
+        } else {
+          // Keep going
+          subInd += 1;
+        }
+      }
+    }
+    return false;
+  }
+
+  inline proc segmentStartsWith(const ref values: [?D] uint(8), const ref substr: string): bool {
+    // Caller guarantees that values is at least as long as substr
+    for (vbyte, sbyte) in zip(values[{D.low..#substr.numBytes}], substr.chpl_bytes()) {
+      if (vbyte != sbyte) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  inline proc segmentEndsWith(const ref values: [?D] uint(8), const ref substr: string): bool {
+    // Caller guarantees that values is at least as long as substr
+    for (vbyte, sbyte) in zip(values[{(D.high-substr.numBytes+1)..#substr.numBytes}], substr.chpl_bytes()) {
+      if (vbyte != sbyte) {
+        return false;
+      }
+    }
+    return true;
+  }
+  
   /* Test for equality between two same-length arrays of strings. Returns
      a boolean vector of the same length. */
   proc ==(lss:SegString, rss:SegString) throws {
@@ -465,14 +513,15 @@ module SegmentedArray {
       return truth;
     }
     ref values = ss.values.a;
+    ref vD = ss.values.aD;
     ref offsets = ss.offsets.a;
     // Use a whole-array strategy, where the ith byte from every segment is checked simultaneously
     // This will do len(testStr) parallel loops, but loops will have low overhead
     for (b, i) in zip(testStr.chpl_bytes(), 0..) {
-      [(t, o, idx) in zip(truth, offsets, oD)] if (b != values[o+i]) {unorderedCopy(t, false);}
+      [(t, o, idx) in zip(truth, offsets, oD)] if ((o+i > vD.high) || (b != values[o+i])) {unorderedCopy(t, false);}
     }
     // Check the length by checking that the next byte is null
-    [(t, o, idx) in zip(truth, offsets, oD)] if (0 != values[o+testStr.size]) {unorderedCopy(t, false);}
+    [(t, o, idx) in zip(truth, offsets, oD)] if ((o+testStr.size > vD.high) || (0 != values[o+testStr.size])) {unorderedCopy(t, false);}
     return truth;
   }
 

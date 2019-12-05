@@ -134,6 +134,11 @@ proc main() {
     writeln("%i: %s".format(i, permStrings[i]));
   }
 
+  if !SegmentedArrayUseHash {
+    writeln("Checking if strings are sorted..."); stdout.flush();
+    writeln("Strings sorted? >>> ", permStrings.isSorted(), " <<<"); stdout.flush();
+  }
+  
   // check that permuted strings grouped 
   // strings == val
   writeln();
@@ -170,7 +175,7 @@ proc main() {
   var strMatches = new owned SegString(a, b, st);
   printAry("strMatches offsets: ", strMatches.offsets.a);
   printAry("strMatches raw bytes: ", strMatches.values.a);
-  for i in 0..#strMatches.size {
+  for i in 0..#min(strMatches.size, 5) {
     writeln("%i: %s".format(i, strMatches[i]));
   }
 
@@ -199,6 +204,32 @@ proc main() {
   iv = toSymEntry(giv, bool);
   pop = + reduce iv.a;
   writeln("Found %t strings containing %s".format(pop, testSubstr));
+
+  // Starts with
+  writeln();
+  reqMsg = "%s %s %s %s %s %s %s".format("segEfunc", "startswith", "str", segName, valName, "str", testSubstr);
+  writeln(">>> ", reqMsg);
+  repMsg = segmentedEfuncMsg(reqMsg, st);
+  writeln("<<< ", repMsg);
+  fields = repMsg.split();
+  aname = fields[2];
+  giv = st.lookup(aname);
+  iv = toSymEntry(giv, bool);
+  pop = + reduce iv.a;
+  writeln("Found %t strings starting with %s".format(pop, testSubstr));
+
+  // Ends with
+  writeln();
+  reqMsg = "%s %s %s %s %s %s %s".format("segEfunc", "endswith", "str", segName, valName, "str", testSubstr);
+  writeln(">>> ", reqMsg);
+  repMsg = segmentedEfuncMsg(reqMsg, st);
+  writeln("<<< ", repMsg);
+  fields = repMsg.split();
+  aname = fields[2];
+  giv = st.lookup(aname);
+  iv = toSymEntry(giv, bool);
+  pop = + reduce iv.a;
+  writeln("Found %t strings ending with %s".format(pop, testSubstr));
   
   /* for i in testStart..testStop { */
   /*   var hashval = permStrings.murmurHash(permStrings.values.a[permStrings.offsets.a[i]..(permStrings.offsets.a[i+1]-1)]); */
