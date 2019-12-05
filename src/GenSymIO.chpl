@@ -238,9 +238,11 @@ module GenSymIO {
     var nSeg: int;
     try {
       if isSegArray {
-	(segSubdoms, nSeg) = get_subdoms(filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);
+        (segSubdoms, nSeg) = get_subdoms(filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);
+        (subdoms, len) = get_subdoms(filenames, dsetName + "/" + SEGARRAY_VALUE_NAME);
+      } else {
+        (subdoms, len) = get_subdoms(filenames, dsetName);
       }
-      (subdoms, len) = get_subdoms(filenames, dsetName + "/" + SEGARRAY_VALUE_NAME);
     } catch e: HDF5RankError {
       return notImplementedError("readhdf", try! "Rank %i arrays".format(e.rank));
     } catch {

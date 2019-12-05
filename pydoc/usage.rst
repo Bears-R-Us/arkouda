@@ -16,3 +16,4 @@ Usage
    usage/argsort
    usage/setops
    usage/groupby
+   usage/strings

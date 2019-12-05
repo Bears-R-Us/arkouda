@@ -205,7 +205,7 @@ class Strings:
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
-    def startswith(self, substr):
+    def endswith(self, substr):
         """
         Check whether each element ends with the given substring.
 
