@@ -1,8 +1,6 @@
 
 module NumPyDType
 {
-    use ServerConfig;
-
     /* In chapel the types int and real defalut to int(64) and real(64).
        We also need other types like float32, int32, etc */
     enum DType {Int64, Float64, Bool, UInt8, UNDEF}; 

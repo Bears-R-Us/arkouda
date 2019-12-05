@@ -8,6 +8,7 @@ global verbose
 
 __all__ = ["unique", "in1d", "concatenate", "union1d", "intersect1d",
            "setdiff1d", "setxor1d"]
+global verbose
 
 def unique(pda, return_counts=False):
     """

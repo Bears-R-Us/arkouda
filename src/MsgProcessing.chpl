@@ -38,7 +38,7 @@ module MsgProcessing
 
     :returns: (string) response message
     */
-    proc createMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc createMsg(reqMsg: string, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -192,7 +192,7 @@ module MsgProcessing
 
     :returns: (string)
     */
-    proc arangeMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc arangeMsg(reqMsg: string, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -231,7 +231,7 @@ module MsgProcessing
 
     :returns: (string)
     */
-    proc linspaceMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc linspaceMsg(reqMsg: string, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];

@@ -46,6 +46,10 @@ module UniqueMsg
             if v {try! writeln("%s %s %t: %s %s".format(cmd, name, returnCounts, vname, cname));try! stdout.flush();}
         
             var gEnt: borrowed GenSymEntry = st.lookup(name);
+            // the upper limit here is the same as argsort/radixSortLSD_keys
+            // check and throw if over memory limit
+            overMemLimit(((4 + 1) * gEnt.size * gEnt.itemsize)
+                         + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
         
             select (gEnt.dtype) {
             when (DType.Int64) {
@@ -89,6 +93,10 @@ module UniqueMsg
             var valueName = st.nextName();
             var names = name.split('+');
             var str = new owned SegString(names[1], names[2], st);
+            // the upper limit here is the similar to argsort/radixSortLSD_keys, but with a few more scratch arrays
+            // check and throw if over memory limit
+            overMemLimit((8 * str.size * 8)
+                         + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
             var (uo, uv, c) = uniqueGroup(str);
             st.addEntry(offsetName, new shared SymEntry(uo));
             st.addEntry(valueName, new shared SymEntry(uv));
