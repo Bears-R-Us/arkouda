@@ -526,10 +526,13 @@ module Unique
           truth[0] = true;
           // truth[{1..aD.high}] = sorted[0..aD.high-1] != sorted[1..aD.high];
           forall (t, o, idx) in zip(truth, soff, aD) {
-            if (idx > aD.low) && (idx < aD.high) {
+            if (idx > aD.low) {
               const llen = o - soff[idx-1] - 1;
               const rlen = if (idx < aD.high) then (soff[idx+1] - 1 - o) else (sval.domain.high - o);
-              if (llen == rlen) {
+              if (llen != rlen) {
+                // If lengths differ, this is a step
+                unorderedCopy(t, true);
+              } else {
                 var allEqual = true;
                 for pos in 0..#llen {
                   if (sval[soff[idx-1]+pos] != sval[o+pos]) {
@@ -537,7 +540,7 @@ module Unique
                     break;
                   }
                 }
-                // Only if lengths and all bytes are equal, set result to true
+                // If lengths equal but bytes differ, this is a step
                 if !allEqual {
                   unorderedCopy(t, true);
                 }
