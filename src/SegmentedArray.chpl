@@ -828,7 +828,7 @@ module SegmentedArray {
     // Byte buffer is null-terminated, so length is buffer.size - 1
     // The contents of the buffer should be copied out because cBytes will go out of scope
     // var s = new string(cBytes, D.size-1, D.size, isowned=false, needToCopy=true);
-    var s = createStringWithNewBuffer(cBytes, D.size-1, D.size);
+    var s = try! createStringWithNewBuffer(cBytes, D.size-1, D.size);
     return s;
   }
 }

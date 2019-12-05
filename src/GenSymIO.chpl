@@ -7,16 +7,15 @@ module GenSymIO {
   use FileSystem;
   use Sort;
   use CommAggregation;
-
   config const GenSymIO_DEBUG = false;
   config const SEGARRAY_OFFSET_NAME = "segments";
   config const SEGARRAY_VALUE_NAME = "values";
 
-  proc arrayMsg(reqMsg: string, st: borrowed SymTab): string {
+  proc arrayMsg(reqMsg: bytes, st: borrowed SymTab): string {
     var repMsg: string;
     var fields = reqMsg.split(3);
-    var cmd = fields[1];
-    var dtype = str2dtype(fields[2]);
+    var cmd = try! fields[1].decode();
+    var dtype = str2dtype(try! fields[2].decode());
     var size = try! fields[3]:int;
     var data = fields[4];
     var tmpf:file; 
@@ -64,8 +63,8 @@ module GenSymIO {
     return try! "created " + st.attrib(rname);
   }
 
-  proc tondarrayMsg(reqMsg: string, st: borrowed SymTab): string throws {
-    var arraystr: string;
+  proc tondarrayMsg(reqMsg: string, st: borrowed SymTab): bytes throws {
+    var arrayBytes: bytes;
     var fields = reqMsg.split();
     var entry = st.lookup(fields[2]);
     var tmpf: file;
@@ -81,23 +80,30 @@ module GenSymIO {
       } else if entry.dtype == DType.UInt8 {
         tmpw.write(toSymEntry(entry, uint(8)).a);
       } else {
-        return try! "Error: Unhandled dtype %s".format(entry.dtype);
+	return try! b"Error: Unhandled dtype %s".format(entry.dtype);
       }
       tmpw.close();
     } catch {
       try! tmpf.close();
-      return "Error: Unable to write SymEntry to memory buffer";
+      return b"Error: Unable to write SymEntry to memory buffer";
     }
     try {
       var tmpr = tmpf.reader(kind=iobig, start=0);
-      tmpr.readstring(arraystr);
+      tmpr.readbytes(arrayBytes);
       tmpr.close();
       tmpf.close();
     } catch {
-      return "Error: Unable to copy array from memory buffer to string";
+      return b"Error: Unable to copy array from memory buffer to string";
     }
     //var repMsg = try! "Array: %i".format(arraystr.length) + arraystr;
-    return arraystr;
+    /*
+      Engin: fwiw, if you want to achieve the above, you can:
+
+        return b"Array: %i %|t".format(arrayBytes.length, arrayBytes);
+
+      But I think the main problem is how to separate the length from the data
+    */
+    return arrayBytes;
   }
 
   class DatasetNotFoundError: Error { proc init() {} }
