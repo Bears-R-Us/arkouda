@@ -142,8 +142,6 @@ proc main() {
                     if v {writeln("Error: unrecognized command: %s".format(reqMsg)); try! stdout.flush();}
                 }
             }
-        } catch (e: UndefinedSymbolError) {
-            repMsg = unknownSymbolError("", e.name);
         } catch (e: ErrorWithMsg) {
             repMsg = e.msg;
         } catch {
