@@ -2,6 +2,7 @@ use GenSymIO;
 use MultiTypeSymbolTable;
 use SegmentedArray;
 use SegmentedMsg;
+use UniqueMsg;
 
 config const filename = "test-data/strings.hdf";
 config const dsetName = "segstring";
@@ -18,6 +19,16 @@ proc parseNames(msg) {
   var fieldsB = halves[2].split();
   var nameB = fieldsB[2];
   return (nameA, nameB);
+}
+
+proc parseNames(msg, param k) {
+  var parts = msg.split('+', k-1);
+  var ret: k*string;
+  for param i in 1..k {
+    var fields = parts[i].split();
+    ret[i] = fields[2];
+  }
+  return ret;
 }
 
 proc main() {
@@ -178,6 +189,22 @@ proc main() {
   for i in 0..#min(strMatches.size, 5) {
     writeln("%i: %s".format(i, strMatches[i]));
   }
+
+  // Unique
+  writeln();
+  reqMsg = "%s %s %s %s".format("unique", "str", "+".join([permSegName, permValName]), "True");
+  writeln(">>> ", reqMsg);
+  repMsg = uniqueMsg(reqMsg, st);
+  writeln("<<< ", repMsg);
+  var (myA, myB, myC) = parseNames(repMsg, 3);
+  var uniqueStr = new owned SegString(myA, myB, st);
+  var gcounts = st.lookup(myC);
+  var counts = toSymEntry(gcounts, int);
+  writeln("Found %t unique strings".format(uniqueStr.size));
+  for i in 0..#min(uniqueStr.size, 5) {
+    writeln("%i: %i, %s".format(i, counts.a[i], uniqueStr[i]));
+  }
+  writeln("Sum of counts equals number of strings? >>> ", (+ reduce counts.a) == strings.size, " <<<");
 
   // In1d(strings, strSlice)
   writeln();

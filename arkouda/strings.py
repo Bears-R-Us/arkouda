@@ -143,6 +143,99 @@ class Strings:
         else:
             return NotImplemented
 
+    def contains(self, substr):
+        """
+        Check whether each element contains the given substring.
+
+        Parameters
+        ----------
+        substr : str
+            The substring to search for
+
+        Returns
+        -------
+        pdarray, bool
+            True for elements that contain substr, False otherwise
+
+        See Also
+        --------
+        Strings.startswith, Strings.endswith
+        """
+        if isinstance(substr, bytes):
+            substr = substr.decode()
+        if not isinstance(substr, str):
+            raise TypeError("Substring must be a string, not {}".format(type(substr)))
+        msg = "segmentedEfunc {} {} {} {} {} {}".format("contains",
+                                                        self.objtype,
+                                                        self.offsets.name,
+                                                        self.bytes.name,
+                                                        "str",
+                                                        substr)
+        repMsg = generic_msg(msg)
+        return create_pdarray(repMsg)
+
+    def startswith(self, substr):
+        """
+        Check whether each element starts with the given substring.
+
+        Parameters
+        ----------
+        substr : str
+            The prefix to search for
+
+        Returns
+        -------
+        pdarray, bool
+            True for elements that start with substr, False otherwise
+
+        See Also
+        --------
+        Strings.contains, Strings.endswith
+        """
+        if isinstance(substr, bytes):
+            substr = substr.decode()
+        if not isinstance(substr, str):
+            raise TypeError("Substring must be a string, not {}".format(type(substr)))
+        msg = "segmentedEfunc {} {} {} {} {} {}".format("startswith",
+                                                        self.objtype,
+                                                        self.offsets.name,
+                                                        self.bytes.name,
+                                                        "str",
+                                                        substr)
+        repMsg = generic_msg(msg)
+        return create_pdarray(repMsg)
+
+    def startswith(self, substr):
+        """
+        Check whether each element ends with the given substring.
+
+        Parameters
+        ----------
+        substr : str
+            The suffix to search for
+
+        Returns
+        -------
+        pdarray, bool
+            True for elements that end with substr, False otherwise
+
+        See Also
+        --------
+        Strings.contains, Strings.startswith
+        """
+        if isinstance(substr, bytes):
+            substr = substr.decode()
+        if not isinstance(substr, str):
+            raise TypeError("Substring must be a string, not {}".format(type(substr)))
+        msg = "segmentedEfunc {} {} {} {} {} {}".format("endswith",
+                                                        self.objtype,
+                                                        self.offsets.name,
+                                                        self.bytes.name,
+                                                        "str",
+                                                        substr)
+        repMsg = generic_msg(msg)
+        return create_pdarray(repMsg)
+
     def group(self):
         """
         Return the permutation that groups the array, placing equivalent 

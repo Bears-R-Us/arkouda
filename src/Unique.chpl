@@ -426,7 +426,7 @@ module Unique
         }
 
         var sorted: [aD] int;
-        if (isSorted(a)) {
+        if (AryUtil.isSorted(a)) {
             sorted = a; 
         }
         else {
@@ -484,23 +484,68 @@ module Unique
             var c = makeDistArray(0, int);
             return (uo, uv, c);
         }
-        var hashes = str.hash();
-        const aD = hashes.domain;
+        const aD = str.offsets.aD;
+        var truth: [aD] bool;
         var perm: [aD] int;
-        var sorted: [aD] 2*uint;
-        if (isSorted(hashes)) {
+        if SegmentedArrayUseHash {
+          var hashes = str.hash();
+          var sorted: [aD] 2*uint;
+          if (AryUtil.isSorted(hashes)) {
             perm = aD;
             sorted = hashes; 
-        }
-        else {
+          }
+          else {
             perm = radixSortLSD_ranks(hashes);
             // sorted = [i in perm] hashes[i];
             [(s, p) in zip(sorted, perm)] {unorderedCopy(s[1], hashes[p][1]); unorderedCopy(s[2], hashes[p][2]);}
+          }
+          truth[0] = true;
+          [(t, s, i) in zip(truth, sorted, aD)] if i > aD.low { t = (sorted[i-1] != s); }
+        } else {
+          var soff: [aD] int;
+          var sval: [str.values.aD] uint(8);
+          if str.isSorted() {
+            perm = aD;
+            soff = str.offsets.a;
+            sval = str.values.a;
+          } else {
+            perm = str.argsort();
+            // I do not understand nilability or how to make it work
+            /* var sortedSegs = new owned SymEntry(str.size, int)?; */
+            /* var sortedVals = new owned SymEntry(str.nBytes, uint(8))?; */
+            /* var (sortedSegsA, sortedValsA) = str[perm]; */
+            /* var sortedSegs = new owned SymEntry(sortedSegsA); */
+            /* var name1 = st.nextName(); */
+            /* st.addEntry(name1, sortedSegs); */
+            /* var sortedVals = new owned SymEntry(sortedValsA); */
+            /* var name2 = st.nextName(); */
+            /* st.addEntry(name2, sortedVals); */
+            /* var sorted = new owned SegString(name1, name2, st); */
+            (soff, sval) = str[perm];
+          }
+          truth[0] = true;
+          // truth[{1..aD.high}] = sorted[0..aD.high-1] != sorted[1..aD.high];
+          forall (t, o, idx) in zip(truth, soff, aD) {
+            if (idx > aD.low) && (idx < aD.high) {
+              const llen = o - soff[idx-1] - 1;
+              const rlen = if (idx < aD.high) then (soff[idx+1] - 1 - o) else (sval.domain.high - o);
+              if (llen == rlen) {
+                var allEqual = true;
+                for pos in 0..#llen {
+                  if (sval[soff[idx-1]+pos] != sval[o+pos]) {
+                    allEqual = false;
+                    break;
+                  }
+                }
+                // Only if lengths and all bytes are equal, set result to true
+                if !allEqual {
+                  unorderedCopy(t, true);
+                }
+              }
+            }
+          }
         }
-
-        var truth: [aD] bool;
-        truth[0] = true;
-        [(t, s, i) in zip(truth, sorted, aD)] if i > aD.low { t = (sorted[i-1] != s); }
+          
         var allUnique: int = + reduce truth;
         if (allUnique == aD.size) {
             if v {writeln("early out already unique");try! stdout.flush();}
@@ -513,7 +558,7 @@ module Unique
             return (uo, uv, c);
         }
         // +scan to compute segment position... 1-based because of inclusive-scan
-        var iv: [truth.domain] int = (+ scan truth);
+        var iv: [aD] int = (+ scan truth);
         // compute how many segments
         var pop = iv[iv.size-1];
         if v {writeln("pop = ",pop);try! stdout.flush();}
@@ -524,10 +569,10 @@ module Unique
         
         // segment position... 1-based needs to be converted to 0-based because of inclusive-scan
         // where ever a segment break (true value) is... that index is a segment start index
-        [i in truth.domain] if (truth[i] == true) {var idx = i; unorderedCopy(segs[iv[i]-1], idx);}
+        [i in aD] if (truth[i] == true) {var idx = i; unorderedCopy(segs[iv[i]-1], idx);}
         // pull out the first key in each segment as a unique key
         // unique keys guaranteed to be sorted because keys are sorted
-        [i in segs.domain] unorderedCopy(uinds[i], perm[segs[i]]); // uinds[i] = perm[segs[i]];
+        [(u, s) in zip(uinds, segs)] unorderedCopy(u, perm[s]); // uinds[i] = perm[segs[i]];
         // Gather the unique offsets and values (byte buffers)
         var (uo, uv) = str[uinds];
         // calc counts of each unique key using segs
@@ -537,7 +582,7 @@ module Unique
             }
             else
             {
-                counts[i] = sorted.domain.high+1 - segs[i];
+                counts[i] = aD.high+1 - segs[i];
             }
         }
 

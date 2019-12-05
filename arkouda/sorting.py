@@ -11,7 +11,7 @@ def argsort(pda):
     
     Parameters
     ----------
-    pda : pdarray
+    pda : pdarray or Strings
         The array to sort (int64 or float64)
 
     Returns
@@ -35,10 +35,10 @@ def argsort(pda):
     >>> a[perm]
     array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
     """
-    if isinstance(pda, pdarray):
+    if isinstance(pda, pdarray) or isinstance(pda, Strings):
         if pda.size == 0:
             return zeros(0, dtype=int64)
-        repMsg = generic_msg("argsort {}".format(pda.name))
+        repMsg = generic_msg("argsort {} {}".format(pda.objtype, pda.name))
         return create_pdarray(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
@@ -119,7 +119,7 @@ def local_argsort(pda):
 
 def sort(pda):
     """
-    Return a sorted copy of the array.
+    Return a sorted copy of the array. Only sorts numeric arrays; for Strings, use argsort.
     
     Parameters
     ----------
@@ -130,6 +130,10 @@ def sort(pda):
     -------
     pdarray, int64 or float64
         The sorted copy of pda
+
+    See Also
+    --------
+    argsort
 
     Notes
     -----

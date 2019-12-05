@@ -69,6 +69,7 @@ proc main() {
         // parse requests, execute requests, format responses
         select cmd
         {
+        when "segmentedEfunc"    {repMsg = segmentedEfuncMsg(reqMsg, st);}
         when "segmentedIndex"    {repMsg = segmentedIndexMsg(reqMsg, st);}
         when "segmentedBinopvv"  {repMsg = segBinopvvMsg(reqMsg, st);}
         when "segmentedBinopvs"  {repMsg = segBinopvsMsg(reqMsg, st);}

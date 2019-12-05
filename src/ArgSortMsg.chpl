@@ -497,28 +497,40 @@ module ArgSortMsg
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
-        var name = fields[2];
+        var objtype = fields[2];
+        var name = fields[3];
 
         // get next symbol name
         var ivname = st.nextName();
         if v {try! writeln("%s %s : %s %s".format(cmd, name, ivname));try! stdout.flush();}
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
+        select objtype {
+          when "pdarray" {
+            var gEnt: borrowed GenSymEntry = st.lookup(name);
 
-        select (gEnt.dtype) {
+            select (gEnt.dtype) {
             when (DType.Int64) {
-                var e = toSymEntry(gEnt,int);
-                var iv = argsortDefault(e.a);
-                st.addEntry(ivname, new shared SymEntry(iv));
+              var e = toSymEntry(gEnt,int);
+              var iv = argsortDefault(e.a);
+              st.addEntry(ivname, new shared SymEntry(iv));
             }
-	    when (DType.Float64) {
-	        var e = toSymEntry(gEnt, real);
-		var iv = argsortDefault(e.a);
-		st.addEntry(ivname, new shared SymEntry(iv));
-	    }
+            when (DType.Float64) {
+              var e = toSymEntry(gEnt, real);
+              var iv = argsortDefault(e.a);
+              st.addEntry(ivname, new shared SymEntry(iv));
+            }
             otherwise {return notImplementedError(pn,gEnt.dtype);}
+            }
+          }
+          when "str" {
+            var names = name.split();
+            var strings = new owned SegString(names[1], names[2], st);
+            var iv = strings.argsort();
+            st.addEntry(ivname, new shared SymEntry(iv));
+          }
+          otherwise {return notImplementedError(pn, objtype);}
         }
-        
+            
         return try! "created " + st.attrib(ivname);
     }
 
