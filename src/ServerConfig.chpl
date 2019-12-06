@@ -49,6 +49,7 @@ module ServerConfig
     }
 
     proc getConfig(): string {
+        use SysCTypes;
         
         class LocaleConfig {
             var id: int;
