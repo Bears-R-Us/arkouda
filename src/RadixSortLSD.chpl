@@ -46,29 +46,15 @@ module RadixSortLSD
         return ((key >> rshift) & maskDigit);
     }
 
-    proc shiftDouble(in key: real(64), rshift: int(64)) {
-      const ptrToReal = c_ptrTo(key);
-      const ptrToULL = ptrToReal: c_ptr(int(64));
-      const intkey = ptrToULL.deref();
-      return (intkey >> rshift);
+    inline proc realToUint(in r: real): uint {
+        var u: uint;
+        c_memcpy(c_ptrTo(u), c_ptrTo(r), numBytes(r.type));
+        return u;
     }
-    pragma "no doc" // Bug: chapel-lang/chapel#14250
-    /*
-    extern {
-      static inline unsigned long long shiftDouble(double key, long long rshift) {
-	// Reinterpret the bits of key as an unsigned 64-bit int (u long long)
-	// Unsigned because we want to left-extend with zeros
-	unsigned long long intkey = * (unsigned long long *) &key;
-	return (intkey >> rshift);
-      }
-    }
-    */
-    
-    inline proc getDigit(key: real, rshift: int): int {
-      use SysCTypes;
 
-      var shiftedKey: uint = shiftDouble(key: c_double, rshift: c_longlong): uint;
-      return (shiftedKey & maskDigit):int;
+    inline proc getDigit(key: real, rshift: int): int {
+        var keyu = realToUint(key);
+        return ((keyu >> rshift) & maskDigit):int;
     }
 
     inline proc isNeg(key) {
