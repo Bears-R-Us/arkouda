@@ -106,6 +106,7 @@ def coargsort(arrays):
                                     len(arrays),
                                     ' '.join(anames),
                                     ' '.join(atypes))
+    repMsg = generic_msg(reqMsg)
     return create_pdarray(repMsg)
 
 def local_argsort(pda):
