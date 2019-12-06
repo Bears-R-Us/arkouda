@@ -64,6 +64,8 @@ module RadixSortLSD
     */
     
     inline proc getDigit(key: real, rshift: int): int {
+      use SysCTypes;
+
       var shiftedKey: uint = shiftDouble(key: c_double, rshift: c_longlong): uint;
       return (shiftedKey & maskDigit):int;
     }
