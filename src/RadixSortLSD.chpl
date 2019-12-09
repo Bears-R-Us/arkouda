@@ -34,6 +34,7 @@ module RadixSortLSD
       var aMax = max reduce a;
       var wPos = if aMax >= 0 then numBits(int) - clz(aMax) else 0;
       var wNeg = if aMin < 0 then numBits(int) - clz(-aMin) + 1 else 0;
+      wNeg = min(wNeg, numBits(int));
       return max(wPos, wNeg);
     }
 
@@ -45,29 +46,23 @@ module RadixSortLSD
         return ((key >> rshift) & maskDigit);
     }
 
-    proc shiftDouble(in key: real(64), rshift: int(64)) {
-      const ptrToReal = c_ptrTo(key);
-      const ptrToULL = ptrToReal: c_ptr(int(64));
-      const intkey = ptrToULL.deref();
-      return (intkey >> rshift);
+    inline proc realToUint(in r: real): uint {
+        var u: uint;
+        c_memcpy(c_ptrTo(u), c_ptrTo(r), numBytes(r.type));
+        return u;
     }
-    pragma "no doc" // Bug: chapel-lang/chapel#14250
-    /*
-    extern {
-      static inline unsigned long long shiftDouble(double key, long long rshift) {
-	// Reinterpret the bits of key as an unsigned 64-bit int (u long long)
-	// Unsigned because we want to left-extend with zeros
-	unsigned long long intkey = * (unsigned long long *) &key;
-	return (intkey >> rshift);
-      }
-    }
-    */
-    
-    inline proc getDigit(key: real, rshift: int): int {
-      use SysCTypes;
 
-      var shiftedKey: uint = shiftDouble(key: c_double, rshift: c_longlong): uint;
-      return (shiftedKey & maskDigit):int;
+    inline proc getDigit(key: real, rshift: int): int {
+        var keyu = realToUint(key);
+        return ((keyu >> rshift) & maskDigit):int;
+    }
+
+    inline proc isNeg(key) {
+      if isReal(key) {
+        return signbit(key);
+      } else {
+        return key < 0;
+      }
     }
 
     // calculate sub-domain for task
@@ -232,7 +227,7 @@ module RadixSortLSD
 	// if there are no negative keys then firstNegative will be aD.low
         var hasNegatives: bool , firstNegative: int;
         // maxloc on bools returns the first index where condition is true
-        (hasNegatives, firstNegative) = maxloc reduce zip([(key,rank) in kr1] (key < 0), aD);
+        (hasNegatives, firstNegative) = maxloc reduce zip([(key,rank) in kr1] (isNeg(key)), aD);
         // Swap the ranks of the positive and negative keys, so that negatives come first
         // If real type, then negative keys will appear in descending order and
         // must be reversed
@@ -390,7 +385,7 @@ module RadixSortLSD
         // if there are no negative keys then firstNegative will be aD.low
         var hasNegatives: bool , firstNegative: int;
         // maxloc on bools returns the first index where condition is true
-        (hasNegatives, firstNegative) = maxloc reduce zip([key in k1] (key < 0), aD);
+        (hasNegatives, firstNegative) = maxloc reduce zip([key in k1] (isNeg(key)), aD);
         // Swap the ranks of the positive and negative keys, so that negatives come first
         // If real type, then negative keys will appear in descending order and
         // must be reversed
