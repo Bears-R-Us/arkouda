@@ -70,9 +70,13 @@ module UnitTestSort
       startDiag();
       var rankSortedA = radixSortLSD_ranks(A, checkSorted=false);
       endDiag("radixSortLSD_ranks", elemType, nElems, sortDesc);
-      var sortedA: [D] elemType = forall i in rankSortedA do A[i];
-      if printArrays { writeln(A); writeln(rankSortedA); writeln(sortedA); }
-      assert(isSorted(sortedA));
+      // TODO need faster rank sort verification. Could use aggregation,
+      // but seems like there should be a comm-free way to verify.
+      if mode == testMode.correctness {
+        var sortedA: [D] elemType = forall i in rankSortedA do A[i];
+        if printArrays { writeln(A); writeln(rankSortedA); writeln(sortedA); }
+        assert(isSorted(sortedA));
+      }
     }
   }
  
@@ -194,7 +198,15 @@ module UnitTestSort
 
     const D = newBlockDom({0..#nElems});
     var A: [D] perfElemType;
-    testSortRandVals(A, perfValRange, nElems);
+    var B: [D] perfValRange;
+    fillRandom(B);
+    A = B:perfElemType;
+
+    // Warmup
+    radixSortLSD_keys(A, checkSorted=false);
+    radixSortLSD_ranks(A, checkSorted=false);
+
+    testSort(A, perfElemType, nElems, "rand "+perfValRange:string+" vals");
   }
  
   proc main() {
