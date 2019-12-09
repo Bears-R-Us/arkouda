@@ -1,4 +1,5 @@
 module CommAggregation {
+  use SysCTypes;
 
   // TODO these parameters need to be tuned and size should be user-settable at
   // creation time. iters before yield should be based on numLocales & buffSize
@@ -50,27 +51,49 @@ module CommAggregation {
       // flushing their buffers.
       if bufferIdx == bufferSize {
         _flushBuffer(loc, bufferIdx);
-        itersSinceYield = 0;
       } else if itersSinceYield % maxItersBeforeYield == 0 {
         chpl_task_yield();
         itersSinceYield = 0;
-      } else {
-        itersSinceYield += 1;
       }
+      itersSinceYield += 1;
     }
 
     proc _flushBuffer(loc: int, ref bufferIdx) {
       const myBufferIdx = bufferIdx;
       if myBufferIdx == 0 then return;
+
+      //
+      // Allocate a remote buffer, PUT our data there, and then process the
+      // remote buffer. We do this with 2 ons + PUT instead of 1 on + GET in
+      // order to limit the lifetime of remote tasks for configurations that
+      // yield while doing comm.
+      //
+
+      // Allocate a remote buffer (and capture the address to it)
+      const origLoc = here.locale.id;
+      var remBufferPtr: c_ptr((c_void_ptr, elemType));
+      var remBufferPtrAddr = c_ptrTo(remBufferPtr);
       on Locales[loc] {
-        // GET the buffered dst addrs and src values, and assign
-        var localBuffer = buffer[loc][0..#myBufferIdx];
-        for (dstAddr, srcVal) in localBuffer {
+        var bufferPtr = c_malloc((c_void_ptr, elemType), myBufferIdx);
+        PUT(c_ptrTo(bufferPtr), origLoc, remBufferPtrAddr, c_sizeof(bufferPtr.type));
+      }
+
+      // Send our buffered data to the remote node's buffer
+      const size = myBufferIdx:size_t * c_sizeof((c_void_ptr, elemType));
+      PUT(c_ptrTo(buffer[loc][0]), loc, remBufferPtr, size);
+
+      // Process the remote buffer on the remote node
+      on Locales[loc] {
+        var bufferPtr = remBufferPtr;
+        for i in 0..myBufferIdx-1 {
+          var (dstAddr, srcVal) = bufferPtr[i];
           (dstAddr:c_ptr(elemType)).deref() = srcVal;
         }
+       c_free(bufferPtr);
       }
       bufferIdx = 0;
     }
+
   }
 
   /*
@@ -115,13 +138,11 @@ module CommAggregation {
 
       if bufferIdx == bufferSize {
         _flushBuffer(loc, bufferIdx);
-        itersSinceYield = 0;
       } else if itersSinceYield % maxItersBeforeYield == 0 {
         chpl_task_yield();
         itersSinceYield = 0;
-      } else {
-        itersSinceYield += 1;
       }
+      itersSinceYield += 1;
     }
 
     proc _flushBuffer(loc: int, ref bufferIdx) {
@@ -154,5 +175,9 @@ module CommAggregation {
   // TODO can this use c_ptrTo?
   private inline proc getAddr(const ref p): c_ptr(p.type) {
     return __primitive("_wide_get_addr", p): c_ptr(p.type);
+  }
+
+  private inline proc PUT(addr, node, rAddr, size) {
+    __primitive("chpl_comm_put", addr, node, rAddr, size);
   }
 }
