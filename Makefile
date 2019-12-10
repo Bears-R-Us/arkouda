@@ -85,13 +85,15 @@ ifneq ("$(wildcard $(VERSIONFILE))","")
 else
 	VERSION=$(shell date +'%Y.%m.%d')
 endif
-	# Version needs to be escape-quoted for chpl to interpret as string
-    CHPL_FLAGS += -sarkoudaVersion="\"$(VERSION)\""
+
+# Version needs to be escape-quoted for chpl to interpret as string
+CHPL_FLAGS_WITH_VERSION = $(CHPL_FLAGS)
+CHPL_FLAGS_WITH_VERSION += -sarkoudaVersion="\"$(VERSION)\""
 ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
 $(ARKOUDA_MAIN_MODULE): $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
-	$(CHPL) $(CHPL_DEBUG_FLAGS) $(CHPL_FLAGS) $(ARKOUDA_MAIN_SOURCE) -o $@
+	$(CHPL) $(CHPL_DEBUG_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) -o $@
 
 CLEAN_TARGETS += arkouda-clean
 .PHONY: arkouda-clean
