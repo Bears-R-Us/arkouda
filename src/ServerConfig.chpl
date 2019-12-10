@@ -10,9 +10,14 @@ module ServerConfig
     public use IO;
 
     use ServerErrorStrings;
+
+    /*
+    Logging flag
+    */
+    config const logging = true;
     
     /*
-    Verbose flag
+    Verbose debug flag
     */
     config const v = true;
 

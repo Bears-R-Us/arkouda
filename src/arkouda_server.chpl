@@ -46,7 +46,7 @@ proc main() {
 
         // shutdown server
         if reqMsg == "shutdown" {
-            if v {writeln("reqMsg: ", reqMsg); try! stdout.flush();}
+            if logging {writeln("reqMsg: ", reqMsg); try! stdout.flush();}
             shutdownServer = true;
             repCount += 1;
             socket.send("shutdown server (%i req)".format(repCount));
@@ -61,7 +61,7 @@ proc main() {
         var cmd = fields[1];
         var s0 = t1.elapsed();
         
-        if v {
+        if (logging) {
             if cmd == "array" { // has binary data in it's payload
                 writeln("reqMsg: ", cmd, " <binary-data>");
             }
@@ -134,7 +134,7 @@ proc main() {
                     repMsg = "disconnected from arkouda server tcp://*:%t".format(ServerPort);
                 }
                 otherwise {
-                    if v {writeln("Error: unrecognized command: %s".format(reqMsg)); try! stdout.flush();}
+                    if (logging) {writeln("Error: unrecognized command: %s".format(reqMsg)); try! stdout.flush();}
                 }
             }
             
@@ -147,7 +147,7 @@ proc main() {
         // send responses
         // send count for now
         repCount += 1;
-        if v {
+        if (logging) {
 	  if cmd == "tondarray" {
               writeln("repMsg:"," <binary-data>");
 	  } else {
@@ -157,10 +157,10 @@ proc main() {
 	}
         socket.send(repMsg);
 
-        if (memTrack) {writeln("bytes of memoryUsed() = ",memoryUsed()); try! stdout.flush();}
+        if (logging && memTrack) {writeln("bytes of memoryUsed() = ",memoryUsed()); try! stdout.flush();}
 
         // end timer for command processing
-        if v{writeln("<<< %s took %.17r sec".format(cmd, t1.elapsed() - s0)); try! stdout.flush();}
+        if (logging) {writeln("<<< %s took %.17r sec".format(cmd, t1.elapsed() - s0)); try! stdout.flush();}
     }
     t1.stop();
     
