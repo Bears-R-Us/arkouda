@@ -141,7 +141,7 @@ class Strings:
             offsets, values = repMsg.split('+')
             return Strings(offsets, values)
         else:
-            return NotImplemented
+            raise TypeError("unsupported pdarray index type {}".format(type(key)))
 
     def contains(self, substr):
         """
