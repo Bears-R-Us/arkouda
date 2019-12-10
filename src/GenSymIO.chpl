@@ -377,6 +377,8 @@ module GenSymIO {
   
   /* Get the subdomains of the distributed array represented by each file, as well as the total length of the array. */
   proc get_subdoms(filenames: [?FD] string, dsetName: string) throws {
+    use SysCTypes;
+
     var lengths: [FD] int;
     for (i, filename) in zip(FD, filenames) {
       var file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, C_HDF5.H5P_DEFAULT);

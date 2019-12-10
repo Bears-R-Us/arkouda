@@ -35,7 +35,7 @@ proc main() {
 
     var reqCount: int = 0;
     var repCount: int = 0;
-    var t1 = new Timer();
+    var t1 = new Time.Timer();
     t1.clear();
     t1.start();
     while !shutdownServer {

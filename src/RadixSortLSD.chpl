@@ -13,13 +13,17 @@ module RadixSortLSD
     const numBuckets = 1 << bitsPerDigit; // these need to be const for comms/performance reasons
     const maskDigit = numBuckets-1; // these need to be const for comms/performance reasons
 
-    // For comm={none,ugni} use unorderedCopy since it's optimized for ugni and
-    // a local copy for none. For all other configs, small remote copies are
-    // slow, so we need to aggregate. Longer term aggregation should win on
-    // ugni too, but there is a memory overhead that needs tuning.
+    // Select the mode for how small copies are initiated. For comm=none, there
+    // is no reason to aggregate. For most other configurations aggregation is
+    // always faster than unordered copy, so use it. Under comm=ugni, unordered
+    // copy is faster than aggregation for collecting metadata about sorting
+    // because the allocation and setup costs of aggregation costs are higher
+    // than the comm benefit for the relatively small number of items copied.
     enum CopyMode {unordered, aggregated};
     private param noneOrUgni = CHPL_COMM == "ugni" || CHPL_COMM == "none";
-    config const RSLSD_copyMode = if noneOrUgni then CopyMode.unordered else CopyMode.aggregated;
+    config const RSLSD_copyModeMeta = if noneOrUgni then CopyMode.unordered else CopyMode.aggregated;
+    config const RSLSD_copyMode = if CHPL_COMM == "none" then CopyMode.unordered else CopyMode.aggregated;
+    const copyModeMeta = RSLSD_copyModeMeta;
     const copyMode = RSLSD_copyMode;
 
     use BlockDist;
@@ -34,6 +38,7 @@ module RadixSortLSD
       var aMax = max reduce a;
       var wPos = if aMax >= 0 then numBits(int) - clz(aMax) else 0;
       var wNeg = if aMin < 0 then numBits(int) - clz(-aMin) + 1 else 0;
+      wNeg = min(wNeg, numBits(int));
       return max(wPos, wNeg);
     }
 
@@ -57,27 +62,23 @@ module RadixSortLSD
         return ((key >> rshift) & maskDigit);
     }
 
-    proc shiftDouble(in key: real(64), rshift: int(64)) {
-      const ptrToReal = c_ptrTo(key);
-      const ptrToULL = ptrToReal: c_ptr(int(64));
-      const intkey = ptrToULL.deref();
-      return (intkey >> rshift);
+    inline proc realToUint(in r: real): uint {
+        var u: uint;
+        c_memcpy(c_ptrTo(u), c_ptrTo(r), numBytes(r.type));
+        return u;
     }
-    pragma "no doc" // Bug: chapel-lang/chapel#14250
-    /*
-    extern {
-      static inline unsigned long long shiftDouble(double key, long long rshift) {
-	// Reinterpret the bits of key as an unsigned 64-bit int (u long long)
-	// Unsigned because we want to left-extend with zeros
-	unsigned long long intkey = * (unsigned long long *) &key;
-	return (intkey >> rshift);
-      }
-    }
-    */
-    
+
     inline proc getDigit(key: real, rshift: int): int {
-      var shiftedKey: uint = shiftDouble(key: c_double, rshift: c_longlong): uint;
-      return (shiftedKey & maskDigit):int;
+        var keyu = realToUint(key);
+        return ((keyu >> rshift) & maskDigit):int;
+    }
+
+    inline proc isNeg(key) {
+      if isReal(key) {
+        return signbit(key);
+      } else {
+        return key < 0;
+      }
     }
 
     inline proc getDigit(key: 2*uint, rshift: int): int {
@@ -161,14 +162,14 @@ module RadixSortLSD
                             taskBucketCounts[bucket] += 1;
                         }
                         // write counts in to global counts in transposed order
-			if copyMode == CopyMode.unordered {
+			if copyModeMeta == CopyMode.unordered {
 			    for bucket in bD {
 				//globalCounts[calcGlobalIndex(bucket, loc.id, task)] = taskBucketCounts[bucket];
 				// will/does this make a difference???
 				unorderedCopy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], taskBucketCounts[bucket]);
 			    }
 			    unorderedCopyTaskFence();
-                        } else if copyMode == CopyMode.aggregated {
+                        } else if copyModeMeta == CopyMode.aggregated {
 			    var aggregator = new DstAggregator(int);
 			    for bucket in bD {
 				aggregator.copy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], taskBucketCounts[bucket]);
@@ -199,14 +200,14 @@ module RadixSortLSD
                         // calc task's indices from local domain's indices
                         var tD = calcBlock(task, lD.low, lD.high);
                         // read start pos in to globalStarts back from transposed order
-			if copyMode == CopyMode.unordered {
+			if copyModeMeta == CopyMode.unordered {
 			    for bucket in bD {
 				//taskBucketPos[bucket] = globalStarts[calcGlobalIndex(bucket, loc.id, task)];
 				// will/does this make a difference???
 				unorderedCopy(taskBucketPos[bucket], globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
 			    }
 			    unorderedCopyTaskFence();
-                        } else if copyMode == CopyMode.aggregated {
+                        } else if copyModeMeta == CopyMode.aggregated {
                             var aggregator = new SrcAggregator(int);
                             for bucket in bD {
                                 aggregator.copy(taskBucketPos[bucket], globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
@@ -257,6 +258,8 @@ module RadixSortLSD
         var hasNegatives: bool , firstNegative: int = aD.high + 1;
         // maxloc on bools returns the first index where condition is true
         if !isTuple(t) {
+          // For now, the assumption is that tuples contain hashes and are unsigned
+          // We will need additional logic if we want to support arbitrary tuples
           (hasNegatives, firstNegative) = maxloc reduce zip([(key,rank) in kr1] (key < 0), aD);
         }
         // Swap the ranks of the positive and negative keys, so that negatives come first
@@ -327,14 +330,14 @@ module RadixSortLSD
                             taskBucketCounts[bucket] += 1;
                         }
                         // write counts in to global counts in transposed order
-			if copyMode == CopyMode.unordered {
+			if copyModeMeta == CopyMode.unordered {
 			    for bucket in bD {
 				//globalCounts[calcGlobalIndex(bucket, loc.id, task)] = taskBucketCounts[bucket];
 				// will/does this make a difference???
 				unorderedCopy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], taskBucketCounts[bucket]);
 			    }
 			    unorderedCopyTaskFence();
-                        } else if copyMode == CopyMode.aggregated {
+                        } else if copyModeMeta == CopyMode.aggregated {
 			    var aggregator = new DstAggregator(int);
 			    for bucket in bD {
 				aggregator.copy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], taskBucketCounts[bucket]);
@@ -365,14 +368,14 @@ module RadixSortLSD
                         // calc task's indices from local domain's indices
                         var tD = calcBlock(task, lD.low, lD.high);
                         // read start pos in to globalStarts back from transposed order
-			if copyMode == CopyMode.unordered {
+			if copyModeMeta == CopyMode.unordered {
 			    for bucket in bD {
 				//taskBucketPos[bucket] = globalStarts[calcGlobalIndex(bucket, loc.id, task)];
 				// will/does this make a difference???
 				unorderedCopy(taskBucketPos[bucket], globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
 			    }
 			    unorderedCopyTaskFence();
-                        } else if copyMode == CopyMode.aggregated {
+                        } else if copyModeMeta == CopyMode.aggregated {
                             var aggregator = new SrcAggregator(int);
                             for bucket in bD {
                                 aggregator.copy(taskBucketPos[bucket], globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
@@ -416,7 +419,7 @@ module RadixSortLSD
         // if there are no negative keys then firstNegative will be aD.low
         var hasNegatives: bool , firstNegative: int;
         // maxloc on bools returns the first index where condition is true
-        (hasNegatives, firstNegative) = maxloc reduce zip([key in k1] (key < 0), aD);
+        (hasNegatives, firstNegative) = maxloc reduce zip([key in k1] (isNeg(key)), aD);
         // Swap the ranks of the positive and negative keys, so that negatives come first
         // If real type, then negative keys will appear in descending order and
         // must be reversed
