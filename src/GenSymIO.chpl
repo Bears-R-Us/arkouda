@@ -1,11 +1,13 @@
 module GenSymIO {
   use HDF5;
+  use IO;
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
   use ServerErrorStrings;
   use FileSystem;
   use Sort;
   use UnorderedCopy;
+
   config const GenSymIO_DEBUG = false;
   config const SEGARRAY_OFFSET_NAME = "segments";
   config const SEGARRAY_VALUE_NAME = "values";

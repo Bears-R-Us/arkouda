@@ -1,7 +1,10 @@
 module SegmentedMsg {
+  use Reflection;
   use SegmentedArray;
+  use ServerErrorStrings;
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
+  use IO;
 
   proc segmentedEfuncMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();

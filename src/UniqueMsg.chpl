@@ -16,9 +16,10 @@ module UniqueMsg
     use Math only;
     use Reflection only;
     use UnorderedCopy;
-    
+
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
+    use SegmentedArray;
     use ServerErrorStrings;
 
     use Unique;
