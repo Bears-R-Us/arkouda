@@ -149,7 +149,7 @@ By default, the server listens on port `5555` and prints verbose output. These o
 
 Memory checking is turned off by default and turned on by using  `--memTrack=true`
 
-Logging messaged are independently controlled be the `--log=[true|false]` is on by default
+Logging messaged are independently controlled be the `--logging=[true|false]` is on by default
 
 Verbose debug messages are independently controlled by `--v=[true|false]` is on by default
 
