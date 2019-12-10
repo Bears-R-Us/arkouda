@@ -1,3 +1,5 @@
+.. _IO-label:
+
 **************
 Data I/O
 **************
@@ -13,15 +15,18 @@ Arkouda is designed to integrate with NumPy and Pandas, with arkouda handling la
 4. Run computations that filter or summarize the large dataset
 5. Pass the smaller result set back to Python as a NumPy array for plotting or inspection
 
-Below are the two functions that enable both sides of this transfer.
+Below are the functions that enable both sides of this transfer.
 
 .. autofunction:: arkouda.array
 		  
 .. autofunction:: arkouda.pdarray.to_ndarray
 
+.. autofunction:: arkouda.Strings.to_ndarray
 
 Large Datasets
 =================
+
+.. _data-preprocessing-label:
 
 Data Preprocessing
 ------------------

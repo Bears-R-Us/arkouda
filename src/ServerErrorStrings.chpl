@@ -15,6 +15,12 @@ module ServerErrorStrings
                                                                  op,
                                                                  dtype2str(rdtype));
     }
+    proc notImplementedError(pname: string, ldtype: string, op: string, rdtype: string):string {
+        return try! "Error: %s: %s %s %s not implemented".format(pname,
+                                                                 ldtype,
+                                                                 op,
+                                                                 rdtype);
+    }
     /* efunc is not implemented for DType */
     proc notImplementedError(pname: string, efunc: string, ldtype: DType):string {
         return try! "Error: %s: %s %s not implemented".format(pname,

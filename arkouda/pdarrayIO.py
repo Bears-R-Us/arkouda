@@ -2,6 +2,7 @@ import json, os
 
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
+from arkouda.strings import Strings
 
 __all__ = ["ls_hdf", "read_hdf", "read_all", "load", "get_datasets",
            "load_all", "save_all"]
@@ -55,7 +56,12 @@ def read_hdf(dsetName, filenames):
     if isinstance(filenames, str):
         filenames = [filenames]
     rep_msg = generic_msg("readhdf {} {:n} {}".format(dsetName, len(filenames), json.dumps(filenames)))
-    return create_pdarray(rep_msg)
+    # This is a hack to detect a string return type
+    # In the future, we should put the number and type into the return message
+    if '+' in rep_msg:
+        return Strings(*rep_msg.split('+'))
+    else:
+        return create_pdarray(rep_msg)
 
 def read_all(filenames, datasets=None):
     """

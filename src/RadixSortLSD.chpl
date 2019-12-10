@@ -45,6 +45,18 @@ module RadixSortLSD
     inline proc getBitWidth(a: [?aD] real): int{
       return numBits(real);
     }
+
+    inline proc getBitWidth(a: [?aD] (uint, uint)): int {
+      var highMax = max reduce [ai in a] ai[1];
+      var whigh = numBits(uint) - clz(highMax);
+      if (whigh == 0) {
+        var lowMax = max reduce [ai in a] ai[2];
+        var wlow = numBits(uint) - clz(lowMax);
+        return wlow: int;
+      } else {
+        return (whigh + numBits(uint)): int;
+      }
+    }
     
     inline proc getDigit(key: int, rshift: int): int {
         return ((key >> rshift) & maskDigit);
@@ -66,6 +78,14 @@ module RadixSortLSD
         return signbit(key);
       } else {
         return key < 0;
+      }
+    }
+
+    inline proc getDigit(key: 2*uint, rshift: int): int {
+      if (rshift >= numBits(uint)) {
+        return getDigit(key[1], rshift - numBits(uint));
+      } else {
+        return getDigit(key[2], rshift);
       }
     }
 
@@ -201,7 +221,13 @@ module RadixSortLSD
                                 var pos = taskBucketPos[bucket];
                                 taskBucketPos[bucket] += 1;
                                 // kr1[pos] = kr0[i];
-                                unorderedCopy(kr1[pos][KEY],  kr0[i][KEY]);
+                                if isTuple(t) {
+                                  for param elem in 1..t.size {
+                                    unorderedCopy(kr1[pos][KEY][elem], kr0[i][KEY][elem]);
+                                  }
+                                } else {
+                                  unorderedCopy(kr1[pos][KEY],  kr0[i][KEY]);
+                                }
                                 unorderedCopy(kr1[pos][RANK], kr0[i][RANK]);
                             }
                             unorderedCopyTaskFence();
@@ -229,9 +255,13 @@ module RadixSortLSD
         
 	// find negative keys, they will appear together at the high end of the array
 	// if there are no negative keys then firstNegative will be aD.low
-        var hasNegatives: bool , firstNegative: int;
+        var hasNegatives: bool , firstNegative: int = aD.high + 1;
         // maxloc on bools returns the first index where condition is true
-        (hasNegatives, firstNegative) = maxloc reduce zip([(key,rank) in kr1] (isNeg(key)), aD);
+        if !isTuple(t) {
+          // For now, the assumption is that tuples contain hashes and are unsigned
+          // We will need additional logic if we want to support arbitrary tuples
+          (hasNegatives, firstNegative) = maxloc reduce zip([(key,rank) in kr1] (key < 0), aD);
+        }
         // Swap the ranks of the positive and negative keys, so that negatives come first
         // If real type, then negative keys will appear in descending order and
         // must be reversed

@@ -25,6 +25,7 @@ module MsgProcessing
     public use FindSegmentsMsg;
     public use EfuncMsg;
     public use ConcatenateMsg;
+    public use SegmentedMsg;
     
     /* 
     Parse, execute, and respond to a create message 

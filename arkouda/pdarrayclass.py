@@ -23,6 +23,8 @@ def parse_single_value(msg):
         else:
             raise ValueError("unsupported value from server {} {}".format(mydtype.name, value))
     try:
+        if mydtype == str_:
+            return mydtype.type(value.strip('"'))
         return mydtype.type(value)
     except:
         raise ValueError("unsupported value from server {} {}".format(mydtype.name, value))
@@ -55,6 +57,7 @@ class pdarray:
 
     BinOps = frozenset(["+", "-", "*", "/", "//", "%", "<", ">", "<=", ">=", "!=", "==", "&", "|", "^", "<<", ">>","**"])
     OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", "<<=", ">>=","**="])
+    objtype = "pdarray"
     
     def __init__(self, name, mydtype, size, ndim, shape, itemsize):
         self.name = name

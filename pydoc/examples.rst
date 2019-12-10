@@ -11,11 +11,13 @@ DataFrames (e.g. from ``pandas``) are a useful abstraction for working with tabu
 
 .. code-block:: python
 
+   >>> userName = ak.array(['Alice', 'Bob', 'Alice', 'Carol', 'Bob', 'Alice'])
    >>> userID = ak.array([111, 222, 111, 333, 222, 111])
    >>> item = ak.array([0, 0, 1, 1, 2, 0])
    >>> day = ak.array([5, 5, 6, 5, 6, 6])
    >>> amount = ak.array([0.5, 0.6, 1.1, 1.2, 4.3, 0.6])
-   >>> data = {'userID': userID, 'item': item, 'day': day, 'amount': amount}
+   >>> data = {'userName': userName, 'userID': userID,
+               'item': item, 'day': day, 'amount': amount}
 
 Selection
 ---------
@@ -27,7 +29,8 @@ The ``df.loc[condition]`` syntax is useful for selecting subsets of data by valu
    >>> condition = (data['userID'] == 111) & (data['amount'] < 1.0)
    >>> u1 = {col: a[condition] for col, a in data.items()}
    >>> u1
-   {'userID': array([111, 111]),
+   {'userName': array(['Alice', 'Alice']),
+    'userID': array([111, 111]),
     'item': array([0, 0]),
     'day': array([5, 6]),
     'amount': array([0.5, 0.59999999999999998])}
@@ -69,13 +72,13 @@ Often, it is useful to load data in arkouda and bring back a small subset of the
    >>> subset = data
    >>> df = pd.DataFrame({col: a.to_ndarray() for col, a in subset.items()})
    >>> df
-      amount  day  item  userID
-      0     0.5    5     0     111
-      1     0.6    5     0     222
-      2     1.1    6     1     111
-      3     1.2    5     1     333
-      4     4.3    6     2     222
-      5     0.6    6     0     111
+      amount  day  item  userID userName
+      0     0.5    5     0     111    Alice
+      1     0.6    5     0     222      Bob
+      2     1.1    6     1     111    Alice
+      3     1.2    5     1     333    Carol
+      4     4.3    6     2     222      Bob
+      5     0.6    6     0     111    Alice
 
 Graphs
 ======

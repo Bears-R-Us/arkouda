@@ -1,21 +1,25 @@
 import numpy as np
 import builtins
 
-__all__ = ["DTypes", "dtype", "bool", "int64", "float64", "check_np_dtype", "translate_np_dtype", "resolve_scalar_dtype"]
+__all__ = ["DTypes", "dtype", "bool", "int64", "float64", "uint8", "str_", "check_np_dtype", "translate_np_dtype", "resolve_scalar_dtype"]
 
 # supported dtypes
 structDtypeCodes = {'int64': 'q',
                     'float64': 'd',
-                    'bool': '?'}
-DTypes = frozenset(structDtypeCodes.keys())
+                    'bool': '?',
+                    'uint8': 'B'}
 NUMBER_FORMAT_STRINGS = {'bool': '{}',
                          'int64': '{:n}',
-                         'float64': '{:.17f}'}
+                         'float64': '{:.17f}',
+                         'uint8': '{:n}'}
 
 dtype = np.dtype
 bool = np.bool
 int64 = np.int64
 float64 = np.float64
+uint8 = np.uint8
+str_ = np.str_
+DTypes = frozenset(["bool", "int64", "float64", "uint8", "str"])
 
 def check_np_dtype(dt):
     """
@@ -32,7 +36,7 @@ def translate_np_dtype(dt):
     """
     # Assert that dt is one of the arkouda supported dtypes
     check_np_dtype(dt)
-    trans = {'i': 'int', 'f': 'float', 'b': 'bool'}
+    trans = {'i': 'int', 'f': 'float', 'b': 'bool', 'u': 'uint'}
     kind = trans[dt.kind]
     return kind, dt.itemsize
 
@@ -49,6 +53,8 @@ def resolve_scalar_dtype(val):
     # Python float or np.float*
     elif isinstance(val, float) or (hasattr(val, 'dtype') and val.dtype.kind == 'f'):
         return 'float64'
+    elif isinstance(val, str) or isinstance(val, str_):
+        return 'str'
     # Other numpy dtype
     elif hasattr(val, 'dtype'):
         return val.dtype.name
