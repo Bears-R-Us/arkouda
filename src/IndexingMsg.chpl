@@ -8,7 +8,7 @@ module IndexingMsg
     use MultiTypeSymEntry;
     use MultiTypeSymbolTable;
 
-    use UnorderedCopy;
+    use CommAggregation;
 
     /* intIndex "a[int]" response to __getitem__(int) */
     proc intIndexMsg(reqMsg: string, st: borrowed SymTab):string throws {
@@ -74,8 +74,9 @@ module IndexingMsg
             var a = st.addEntry(rname, slice.size, t);
             ref ea = e.a;
             ref aa = a.a;
-            [(elt,j) in zip(aa, slice)] elt = ea[j];
-            //[(elt,j) in zip(a.a, slice)] unorderedCopy(elt,ea[j]);
+            forall (elt,j) in zip(aa, slice) with (var agg = newSrcAggregator(t)) {
+              agg.copy(elt,ea[j]);
+            }
             return try! "created " + st.attrib(rname);
         }
         
@@ -123,7 +124,9 @@ module IndexingMsg
             ref a2 = e.a;
             ref iva = iv.a;
             ref aa = a.a;
-            [(a1,idx) in zip(aa,iva)] unorderedCopy(a1,a2[idx]); // bounds check iv[i] against e.aD?
+            forall (a1,idx) in zip(aa,iva) with (var agg = newSrcAggregator(XType)) {
+              agg.copy(a1,a2[idx]);
+            }
             
             return try! "created " + st.attrib(rname);
         }
@@ -141,7 +144,11 @@ module IndexingMsg
             ref ea = e.a;
             ref trutha = truth.a;
             ref aa = a.a;
-            [i in ead] if (trutha[i] == true) {unorderedCopy(aa[iv[i]-1], ea[i]);}// iv[i]-1 for zero base index
+            forall (i, eai) in zip(ead, ea) with (var agg = newDstAggregator(XType)) {
+              if (trutha[i] == true) {
+                agg.copy(aa[iv[i]-1], eai);
+              }
+            }
             return try! "created " + st.attrib(rname);
         }
         
@@ -275,7 +282,9 @@ module IndexingMsg
             // [i in iv.a] e.a[i] = val;
             ref iva = iv.a;
             ref ea = e.a;
-            [i in iva] unorderedCopy(ea[i],val);
+            forall i in iva with (var agg = newDstAggregator(dtype)) {
+              agg.copy(ea[i],val);
+            }
             return try! "%s success".format(pn);
         }
 
@@ -292,7 +301,11 @@ module IndexingMsg
             ref ead = e.aD;
             ref ea = e.a;
             ref trutha = truth.a;
-            [i in ead] if (trutha[i] == true) {unorderedCopy(ea[i],val);}
+            forall i in ead with (var agg = newDstAggregator(dtype)) {
+              if (trutha[i] == true) {
+                agg.copy(ea[i],val);
+              }
+            }
             return try! "%s success".format(pn);
         }
         
@@ -353,7 +366,9 @@ module IndexingMsg
             ref iva = iv.a;
             ref ya = y.a;
             ref ea = e.a;
-            [(i,v) in zip(iva,ya)] unorderedCopy(ea[i],v);
+            forall (i,v) in zip(iva,ya) with (var agg = newDstAggregator(t)) {
+              agg.copy(ea[i],v);
+            }
             return try! "%s success".format(pn);
         }
 
@@ -372,7 +387,11 @@ module IndexingMsg
             ref ead = e.aD;
             ref ea = e.a;
             ref trutha = truth.a;
-            [i in ead] if (trutha[i] == true) {unorderedCopy(ea[i],ya[iv[i]-1]);}
+            forall (eai, i) in zip(ea, ead) with (var agg = newSrcAggregator(t)) {
+              if (trutha[i] == true) {
+                agg.copy(eai,ya[iv[i]-1]);
+              }
+            }
             return try! "%s success".format(pn);
         }
 
