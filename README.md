@@ -149,6 +149,10 @@ By default, the server listens on port `5555` and prints verbose output. These o
 
 Memory checking is turned off by default and turned on by using  `--memTrack=true`
 
+Logging messaged are independently controlled be the `--log=[true|false]`
+
+Verbose debug messages are independently controlled by `--v=true|false`
+
 ## Testing arkouda_server
 
 There is a small test program that connects to a running arkouda_server, runs a few computations, and disconnects from the server. To run it, open a new terminal window in the arkouda directory and run
