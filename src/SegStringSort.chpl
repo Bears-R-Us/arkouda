@@ -5,6 +5,8 @@ module SegStringSort {
   use IO;
   use RadixSortLSD only copyMode, CopyMode;
   use CommAggregation;
+  use PrivateDist;
+
   private config const v = true;
   private config const numTasks = here.maxTaskPar;
   private config const MINBYTES = 8;

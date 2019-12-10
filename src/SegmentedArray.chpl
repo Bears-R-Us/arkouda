@@ -1,4 +1,5 @@
 module SegmentedArray {
+  use AryUtil;
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
   use UnorderedCopy;
