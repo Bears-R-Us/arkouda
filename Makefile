@@ -22,12 +22,6 @@ endif
 CHPL_FLAGS += --ccflags="-Wno-incompatible-pointer-types"
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
 
-# --cache-remote does not work with ugni in Chapel 1.20
-COMM = $(shell $(CHPL_HOME)/util/chplenv/chpl_comm.py 2>/dev/null)
-ifneq ($(COMM),ugni)
-CHPL_FLAGS += --cache-remote
-endif
-
 # add-path: Append custom paths for non-system software.
 # Note: Darwin `ld` only supports `-rpath <path>`, not `-rpath=<paths>`.
 define add-path
