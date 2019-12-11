@@ -3,7 +3,6 @@ module SegStringSort {
   use Sort;
   use Time;
   use IO;
-  use RadixSortLSD only copyMode, CopyMode;
   use CommAggregation;
   use PrivateDist;
 
@@ -22,7 +21,6 @@ module SegStringSort {
   }
   
   proc twoPhaseStringSort(ss: SegString): [ss.offsets.aD] int throws {
-    if v { writeln("Copy mode = %t".format(copyMode)); stdout.flush(); }
     var t = getCurrentTime();
     const lengths = ss.getLengths();
     if v { writeln("Found lengths in %t seconds".format(getCurrentTime() - t)); stdout.flush(); t = getCurrentTime(); }
@@ -219,20 +217,11 @@ module SegStringSort {
               taskBucketCounts[bucket] += 1;
             }
             // write counts in to global counts in transposed order
-			if copyMode == CopyMode.unordered {
-              for bucket in bD {
-				//globalCounts[calcGlobalIndex(bucket, loc.id, task)] = taskBucketCounts[bucket];
-				// will/does this make a difference???
-				unorderedCopy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], taskBucketCounts[bucket]);
-              }
-              unorderedCopyTaskFence();
-            } else if copyMode == CopyMode.aggregated {
-              var aggregator = new DstAggregator(int);
-              for bucket in bD {
-				aggregator.copy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], taskBucketCounts[bucket]);
-              }
-              aggregator.flush();
+            var aggregator = newDstAggregator(int);
+            for bucket in bD {
+              aggregator.copy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], taskBucketCounts[bucket]);
             }
+            aggregator.flush();
           }//coforall task
         }//on loc
       }//coforall loc
@@ -254,36 +243,21 @@ module SegStringSort {
             // calc task's indices from local domain's indices
             var tD = calcBlock(task, lD.low, lD.high);
             // read start pos in to globalStarts back from transposed order
-			if copyMode == CopyMode.unordered {
-              for bucket in bD {
-				//taskBucketPos[bucket] = globalStarts[calcGlobalIndex(bucket, loc.id, task)];
-				// will/does this make a difference???
-				unorderedCopy(taskBucketPos[bucket], globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
-              }
-              unorderedCopyTaskFence();
-            } else if copyMode == CopyMode.aggregated {
-              var aggregator = new SrcAggregator(int);
+            {
+              var aggregator = newSrcAggregator(int);
               for bucket in bD {
                 aggregator.copy(taskBucketPos[bucket], globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
               }
               aggregator.flush();
             }
             // calc new position and put (key,rank) pair there in kr1
-			if copyMode == CopyMode.unordered {
+            {
+              var aggregator = newDstAggregator(state);
               for i in tD {
-				var bucket = (kr0[i][1]:int << 8) | (kr0[i][2]:int); // calc bucket from key
+                var bucket = (kr0[i][1]:int << 8) | (kr0[i][2]:int); // calc bucket from key
                 var pos = taskBucketPos[bucket];
                 taskBucketPos[bucket] += 1;
-                copyDigit(kr1[pos], kr0[i][3], kr0[i][4], kr0[i][5], pivot - rshift);
-              }
-              unorderedCopyTaskFence();
-            } else if copyMode == CopyMode.aggregated {
-              var aggregator = new DstAggregator(state);
-              for i in tD {
-				var bucket = (kr0[i][1]:int << 8) | (kr0[i][2]:int); // calc bucket from key
-				var pos = taskBucketPos[bucket];
-				taskBucketPos[bucket] += 1;
-				copyDigit(kr1[pos], kr0[i], pivot - rshift, aggregator);
+                copyDigit(kr1[pos], kr0[i], pivot - rshift, aggregator);
               }
               aggregator.flush();
             }
