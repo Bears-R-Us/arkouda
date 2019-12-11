@@ -6,10 +6,14 @@ module SegStringSort {
   use CommAggregation;
   use PrivateDist;
 
-  private config const v = true;
-  private config const numTasks = here.maxTaskPar;
-  private config const MINBYTES = 8;
-  private config const MEMFACTOR = 5;
+  private config const SSS_v = true;
+  private const v = SSS_v;
+  private config const SSS_numTasks = here.maxTaskPar;
+  private const numTasks = SSS_numTasks;
+  private config const SSS_MINBYTES = 8;
+  private const MINBYTES = SSS_MINBYTES;
+  private config const SSS_MEMFACTOR = 5;
+  private const MEMFACTOR = SSS_MEMFACTOR;
 
   record StringIntComparator {
     proc keyPart(a: (string, int), i: int) {
