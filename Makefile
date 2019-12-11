@@ -31,6 +31,43 @@ endef
 #                               ^ no space after comma
 -include Makefile.paths # Add entries to this file.
 
+.PHONY: install-deps
+install-deps: install-zmq install-hdf5
+
+DEP_DIR := dep
+DEP_INSTALL_DIR := $(ARKOUDA_PROJECT_DIR)/$(DEP_DIR)
+DEP_BUILD_DIR := $(ARKOUDA_PROJECT_DIR)/$(DEP_DIR)/build
+
+ZMQ_VER := 4.3.2
+ZMQ_NAME_VER := zeromq-$(ZMQ_VER)
+ZMQ_BUILD_DIR := $(DEP_BUILD_DIR)/$(ZMQ_NAME_VER)
+ZMQ_INSTALL_DIR := $(DEP_INSTALL_DIR)/zeromq-install
+ZMQ_LINK := https://github.com/zeromq/libzmq/releases/download/v$(ZMQ_VER)/$(ZMQ_NAME_VER).tar.gz
+install-zmq:
+	@echo "Installing ZeroMQ"
+	rm -rf $(ZMQ_BUILD_DIR) $(ZMQ_INSTALL_DIR)
+	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
+	cd $(DEP_BUILD_DIR) && curl -sL $(ZMQ_LINK) | tar xz
+	cd $(ZMQ_BUILD_DIR) && ./configure --prefix=$(ZMQ_INSTALL_DIR) CFLAGS=-O3 CXXFLAGS=-O3 && make && make install
+	rm -r $(ZMQ_BUILD_DIR)
+	echo '$$(eval $$(call add-path,$(ZMQ_INSTALL_DIR)))' >> Makefile.paths
+
+HDF5_MAJ_MIN_VER := 1.10
+HDF5_VER := 1.10.5
+HDF5_NAME_VER := hdf5-$(HDF5_VER)
+HDF5_BUILD_DIR := $(DEP_BUILD_DIR)/$(HDF5_NAME_VER)
+HDF5_INSTALL_DIR := $(DEP_INSTALL_DIR)/hdf5-install
+HDF5_LINK :=  https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-$(HDF5_MAJ_MIN_VER)/$(HDF5_NAME_VER)/src/$(HDF5_NAME_VER).tar.gz
+install-hdf5:
+	@echo "Installing HDF5"
+	rm -rf $(HDF5_BUILD_DIR) $(HDF5_INSTALL_DIR)
+	mkdir -p $(DEP_INSTALL_DIR) $(DEP_BUILD_DIR)
+	cd $(DEP_BUILD_DIR) && curl -sL $(HDF5_LINK) | tar xz
+	cd $(HDF5_BUILD_DIR) && ./configure --prefix=$(HDF5_INSTALL_DIR) --enable-optimization=high --enable-hl && make && make install
+	rm -rf $(HDF5_BUILD_DIR)
+	echo '$$(eval $$(call add-path,$(HDF5_INSTALL_DIR)))' >> Makefile.paths
+
+
 # System Environment
 ifdef LD_RUN_PATH
 CHPL_FLAGS += --ldflags="-Wl,-rpath=$(LD_RUN_PATH)"
