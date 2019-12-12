@@ -44,9 +44,15 @@ module RadixSortLSD
         return (whigh + numBits(uint)): int;
       }
     }
-    
-    inline proc getDigit(key: int, rshift: int): int {
-        return ((key >> rshift) & maskDigit);
+
+    // Get the digit for the current rshift. In order to correctly sort
+    // negatives, we have to invert the signbit if we're looking at the last
+    // digit and the array contained negative values.
+    inline proc getDigit(key: int, rshift: int, last: bool, negs: bool): int {
+      const invertSignBit = last && negs;
+      const xor = (invertSignBit:uint << (RSLSD_bitsPerDigit-1));
+      const keyu = key:uint;
+      return (((keyu >> rshift) & (maskDigit:uint)) ^ xor):int;
     }
 
     inline proc realToUint(in r: real): uint {
@@ -55,9 +61,20 @@ module RadixSortLSD
         return u;
     }
 
-    inline proc getDigit(key: real, rshift: int): int {
-        var keyu = realToUint(key);
-        return ((keyu >> rshift) & maskDigit):int;
+    // Get the digit for the current rshift. In order to correctly sort
+    // negatives, we have to invert the entire key if it's negative, and invert
+    // just the signbit for positive values when looking at the last digit.
+    inline proc getDigit(key: real, rshift: int, last: bool, negs: bool): int {
+      const invertSignBit = last && negs;
+      var keyu = realToUint(key);
+      var signbitSet = keyu >> (numBits(keyu.type)-1) == 1;
+      var xor = 0:uint;
+      if signbitSet {
+        keyu = ~keyu;
+      } else {
+        xor = (invertSignBit:uint << (RSLSD_bitsPerDigit-1));
+      }
+      return (((keyu >> rshift) & (maskDigit:uint)) ^ xor):int;
     }
 
     inline proc isNeg(key) {
@@ -68,11 +85,11 @@ module RadixSortLSD
       }
     }
 
-    inline proc getDigit(key: 2*uint, rshift: int): int {
+    inline proc getDigit(key: 2*uint, rshift: int, last: bool, negs: bool): int {
       if (rshift >= numBits(uint)) {
-        return getDigit(key[1], rshift - numBits(uint));
+        return getDigit(key[1], rshift - numBits(uint), last, negs);
       } else {
-        return getDigit(key[2], rshift);
+        return getDigit(key[2], rshift, last, negs);
       }
     }
 
@@ -114,6 +131,7 @@ module RadixSortLSD
         }
         
         var nBits = getBitWidth(a);
+        var negs = isNeg(min reduce a);
         if vv {writeln("type = ", t:string, ", nBits = ", nBits);}
         
         // form (key,rank) vector
@@ -129,6 +147,7 @@ module RadixSortLSD
         
         // loop over digits
         for rshift in {0..#nBits by bitsPerDigit} {
+            const last = (rshift + bitsPerDigit) >= nBits;
             if vv {writeln("rshift = ",rshift);}
             // count digits
             coforall loc in Locales {
@@ -145,7 +164,7 @@ module RadixSortLSD
                         if vv {writeln((loc.id,task,tD));}
                         // count digits in this task's part of the array
                         for i in tD {
-                            var bucket = getDigit(kr0[i][KEY], rshift); // calc bucket from key
+                            var bucket = getDigit(kr0[i][KEY], rshift, last, negs); // calc bucket from key
                             taskBucketCounts[bucket] += 1;
                         }
                         // write counts in to global counts in transposed order
@@ -189,7 +208,7 @@ module RadixSortLSD
                         {
                             var aggregator = newDstAggregator((t,int));
                             for i in tD {
-                                var bucket = getDigit(kr0[i][KEY], rshift); // calc bucket from key
+                                var bucket = getDigit(kr0[i][KEY], rshift, last, negs); // calc bucket from key
                                 var pos = taskBucketPos[bucket];
                                 taskBucketPos[bucket] += 1;
                                 aggregator.copy(kr1[pos], kr0[i]);
@@ -202,37 +221,12 @@ module RadixSortLSD
             
             // copy back to k0 and r0 for next iteration
 	    // Only do this if there are more digits left
-	    // If this is the last digit, the negative-swapping code will copy the ranks
-	    if (rshift + bitsPerDigit) < nBits {
+	    if !last {
                 kr0 = kr1;
 	    }
         } // for rshift
-        
-	// find negative keys, they will appear together at the high end of the array
-	// if there are no negative keys then firstNegative will be aD.low
-        var hasNegatives: bool , firstNegative: int = aD.high + 1;
-        // maxloc on bools returns the first index where condition is true
-        if !isTuple(t) {
-          // For now, the assumption is that tuples contain hashes and are unsigned
-          // We will need additional logic if we want to support arbitrary tuples
-          (hasNegatives, firstNegative) = maxloc reduce zip([(key,rank) in kr1] (key < 0), aD);
-        }
-        // Swap the ranks of the positive and negative keys, so that negatives come first
-        // If real type, then negative keys will appear in descending order and
-        // must be reversed
-        const negStride = if (isRealType(t) && hasNegatives) then -1 else 1;
-        const numNegatives = aD.high - firstNegative + 1;
-        if vv {writeln("hasNegatives? ", hasNegatives, ", negStride = ", negStride,
-                       ", firstNegative = ", firstNegative, ", numNegatives = ", numNegatives);}
-        
-        var ranks: [aD] int;
-        // Copy negatives to the beginning
-        [((key, rank), i) in zip(kr1[firstNegative..], aD.low..aD.low+numNegatives-1 by negStride)] unorderedCopy(ranks[i], rank);
-        // Copy positives to the end
-        [((key, rank), i) in zip(kr1[..firstNegative-1], aD.low+numNegatives..)] unorderedCopy(ranks[i], rank);
-        // No need to copy keys, because we are only returning ranks
-        
-        
+
+        var ranks: [aD] int = [(key, rank) in kr1] rank;
         return ranks;
         
     }//proc radixSortLSD_ranks
@@ -253,6 +247,8 @@ module RadixSortLSD
         
         // calc max value in bit position
         var nBits = getBitWidth(a);
+        var negs = isNeg(min reduce a);
+
         if vv {writeln("type = ", t:string, ", nBits = ", nBits);}
         
         var k0: [aD] t = a;
@@ -265,6 +261,7 @@ module RadixSortLSD
         
         // loop over digits
         for rshift in {0..#nBits by bitsPerDigit} {
+            const last = (rshift + bitsPerDigit) >= nBits;
             if vv {writeln("rshift = ",rshift);}
             // count digits
             coforall loc in Locales {
@@ -281,7 +278,7 @@ module RadixSortLSD
                         if vv {writeln((loc.id,task,tD));}
                         // count digits in this task's part of the array
                         for i in tD {
-                            var bucket = getDigit(k0[i], rshift); // calc bucket from key
+                            var bucket = getDigit(k0[i], rshift, last, negs); // calc bucket from key
                             taskBucketCounts[bucket] += 1;
                         }
                         // write counts in to global counts in transposed order
@@ -325,7 +322,7 @@ module RadixSortLSD
                         {
                             var aggregator = newDstAggregator(t);
                             for i in tD {
-                                var bucket = getDigit(k0[i], rshift); // calc bucket from key
+                                var bucket = getDigit(k0[i], rshift, last, negs); // calc bucket from key
                                 var pos = taskBucketPos[bucket];
                                 taskBucketPos[bucket] += 1;
                                 aggregator.copy(k1[pos], k0[i]);
@@ -338,32 +335,12 @@ module RadixSortLSD
             
             // copy back to k0 for next iteration
             // Only do this if there are more digits left
-	    // If this is the last digit, the negative-swapping code will copy the ranks
-	    if (rshift + bitsPerDigit) < nBits {
+	    if !last {
                 k0 = k1;
 	    }
             
         }//for rshift
-        
-	// find negative keys, they will appear together at the high end of the array
-        // if there are no negative keys then firstNegative will be aD.low
-        var hasNegatives: bool , firstNegative: int;
-        // maxloc on bools returns the first index where condition is true
-        (hasNegatives, firstNegative) = maxloc reduce zip([key in k1] (isNeg(key)), aD);
-        // Swap the ranks of the positive and negative keys, so that negatives come first
-        // If real type, then negative keys will appear in descending order and
-        // must be reversed
-        const negStride = if (isRealType(t) && hasNegatives) then -1 else 1;
-        const numNegatives = aD.high - firstNegative + 1;
-        if vv {writeln("hasNegatives? ", hasNegatives, ", negStride = ", negStride,
-                       ", firstNegative = ", firstNegative, ", numNegatives = ", numNegatives);}
-        // Copy negatives to the beginning
-        [(key, i) in zip(k1[firstNegative..], aD.low..aD.low+numNegatives-1 by negStride)] unorderedCopy(k0[i], key);
-        // Copy positives to the end
-        [(key, i) in zip(k1[..firstNegative-1], aD.low+numNegatives..)] unorderedCopy(k0[i], key);
-        
-        return k0;
-        
+        return k1;
     }//proc radixSortLSD_keys
     
 }
