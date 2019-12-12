@@ -114,11 +114,12 @@ module FindSegmentsMsg
                 u = true;
               } else {
                 // Have to compare bytes of previous string to current string
-                ref prev = permVals[{permOffsets[i-1]..#l}];
-                ref curr = permVals[{o..#l}];
                 // If any bytes differ, mark a step
-                if || reduce (prev != curr) {
-                  u = true;
+                for pos in 0..#l {
+                  if permVals[permOffsets[i-1]+pos] != permVals[o+pos] {
+                    u = true;
+                    break;
+                  }
                 }
               }
             }
