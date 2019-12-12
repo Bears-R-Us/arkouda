@@ -20,28 +20,35 @@ module RadixSortLSD
     use CommAggregation;
     use IO;
 
-    inline proc getBitWidth(a: [?aD] int): int {
+    inline proc getBitWidth(a: [?aD] int): (int, bool) {
       var aMin = min reduce a;
       var aMax = max reduce a;
       var wPos = if aMax >= 0 then numBits(int) - clz(aMax) else 0;
       var wNeg = if aMin < 0 then numBits(int) - clz(-aMin) + 1 else 0;
       wNeg = min(wNeg, numBits(int));
-      return max(wPos, wNeg);
+      const bitWidth = max(wPos, wNeg);
+      const negs = aMin < 0;
+      return (bitWidth, negs);
     }
 
-    inline proc getBitWidth(a: [?aD] real): int{
-      return numBits(real);
+    inline proc getBitWidth(a: [?aD] real): (int, bool) {
+      const bitWidth = numBits(real);
+      const negs = signbit(min reduce a);
+      return (bitWidth, negs);
     }
 
-    inline proc getBitWidth(a: [?aD] (uint, uint)): int {
+    inline proc getBitWidth(a: [?aD] (uint, uint)): (int, bool) {
+      const negs = false;
       var highMax = max reduce [ai in a] ai[1];
       var whigh = numBits(uint) - clz(highMax);
       if (whigh == 0) {
         var lowMax = max reduce [ai in a] ai[2];
         var wlow = numBits(uint) - clz(lowMax);
-        return wlow: int;
+        const bitWidth = wlow: int;
+        return (bitWidth, negs);
       } else {
-        return (whigh + numBits(uint)): int;
+        const bitWidth = (whigh + numBits(uint)): int;
+        return (bitWidth, negs);
       }
     }
 
@@ -130,8 +137,7 @@ module RadixSortLSD
             }
         }
         
-        var nBits = getBitWidth(a);
-        var negs = isNeg(min reduce a);
+        var (nBits, negs) = getBitWidth(a);
         if vv {writeln("type = ", t:string, ", nBits = ", nBits);}
         
         // form (key,rank) vector
@@ -246,8 +252,7 @@ module RadixSortLSD
         }
         
         // calc max value in bit position
-        var nBits = getBitWidth(a);
-        var negs = isNeg(min reduce a);
+        var (nBits, negs) = getBitWidth(a);
 
         if vv {writeln("type = ", t:string, ", nBits = ", nBits);}
         
