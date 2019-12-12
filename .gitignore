@@ -21,3 +21,5 @@ Untitled.ipynb
 dist/
 arkouda.egg-info/
 build/
+dep/*-install/
+dep/build/
