@@ -16,7 +16,6 @@ module RadixSortLSD
     use BlockDist;
     use BitOps;
     use AryUtil;
-    use UnorderedCopy;
     use CommAggregation;
     use IO;
 
@@ -62,18 +61,13 @@ module RadixSortLSD
       return (((keyu >> rshift) & (maskDigit:uint)) ^ xor):int;
     }
 
-    inline proc realToUint(in r: real): uint {
-        var u: uint;
-        c_memcpy(c_ptrTo(u), c_ptrTo(r), numBytes(r.type));
-        return u;
-    }
-
     // Get the digit for the current rshift. In order to correctly sort
     // negatives, we have to invert the entire key if it's negative, and invert
     // just the signbit for positive values when looking at the last digit.
-    inline proc getDigit(key: real, rshift: int, last: bool, negs: bool): int {
+    inline proc getDigit(in key: real, rshift: int, last: bool, negs: bool): int {
       const invertSignBit = last && negs;
-      var keyu = realToUint(key);
+      var keyu: uint;
+      c_memcpy(c_ptrTo(keyu), c_ptrTo(key), numBytes(key.type));
       var signbitSet = keyu >> (numBits(keyu.type)-1) == 1;
       var xor = 0:uint;
       if signbitSet {
@@ -82,14 +76,6 @@ module RadixSortLSD
         xor = (invertSignBit:uint << (RSLSD_bitsPerDigit-1));
       }
       return (((keyu >> rshift) & (maskDigit:uint)) ^ xor):int;
-    }
-
-    inline proc isNeg(key) {
-      if isReal(key) {
-        return signbit(key);
-      } else {
-        return key < 0;
-      }
     }
 
     inline proc getDigit(key: 2*uint, rshift: int, last: bool, negs: bool): int {
