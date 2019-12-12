@@ -23,8 +23,7 @@ module RadixSortLSD
       var aMin = min reduce a;
       var aMax = max reduce a;
       var wPos = if aMax >= 0 then numBits(int) - clz(aMax) else 0;
-      var wNeg = if aMin < 0 then numBits(int) - clz(-aMin) + 1 else 0;
-      wNeg = min(wNeg, numBits(int));
+      var wNeg = if aMin < 0 then numBits(int) - clz((-aMin)-1) + 1 else 0;
       const bitWidth = max(wPos, wNeg);
       const negs = aMin < 0;
       return (bitWidth, negs);
