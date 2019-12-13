@@ -472,8 +472,9 @@ module ArgSortMsg
       var iv = toSymEntry(st.lookup(rname), int);
       iv.a = 0..#size;
       // Starting with the last array, incrementally permute the IV by sorting each array
-      for i in names.domain.low..names.domain.high by -1 {
-        if (types[i] == "str") {
+      for (i, j) in zip(names.domain.low..names.domain.high by -1,
+                        types.domain.low..types.domain.high by -1) {
+        if (types[j] == "str") {
           var myNames = names[i].split('+');
           var strings = new owned SegString(myNames[1], myNames[2], st);
           iv.a = incrementalArgSort(strings, iv.a);
