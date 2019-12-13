@@ -23,7 +23,7 @@ def make_arkouda_server():
        has a timeout of an hour"""
     proc = Popen(["make"], shell=True, stdout=PIPE, stderr=PIPE)
     print("Installing Arkouda server...")
-
+    
     try:
         out, err = proc.communicate(timeout=3600)
         exitcode = proc.returncode
@@ -40,10 +40,13 @@ def make_arkouda_server():
 
 def install_in_py_prefix():
     """Move the chpl compiled arkouda_server executable to the current python prefix"""
-    prefix_bin = sys.prefix.strip("..")
+    prefix_target = os.path.join(os.path.abspath(sys.prefix), "bin", "arkouda_server")
     if os.path.isfile("arkouda_server"):
-        shutil.move("arkouda_server", prefix_bin)
-        print("Installing Arkouda server to " + prefix_bin)
+        # Overwrite existing executable, if any
+        if os.path.isfile(prefix_target):
+            os.remove(prefix_target)
+        shutil.move("arkouda_server", prefix_target)
+        print("Installing Arkouda server to " + prefix_target)
     else:
         raise ArkoudaBuildError("Build passed but arkouda_server not found")
 
