@@ -1,0 +1,9 @@
+connected to arkouda server tcp://*:5555
+size of index array = 100,000,000
+size of values array = 100,000,000
+number of trials =  6
+>>> arkouda gather
+numLocales = 512, num_indices = 51,200,000,000 ; num_values = 51,200,000,000
+Average time = 2.5228 sec
+Average rate = 453.62 GiB/sec
+
