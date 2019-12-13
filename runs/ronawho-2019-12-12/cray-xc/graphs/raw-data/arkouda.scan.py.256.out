@@ -1,0 +1,12 @@
+connected to arkouda server tcp://*:5555
+array size = 100,000,000
+number of trials =  6
+>>> arkouda scan
+numLocales = 256, N = 25,600,000,000
+cumsum, final value = -4361393339571929088
+  Average time = 0.8337 sec
+  Average rate = 457.58 GiB/sec
+cumprod, final value = 0
+  Average time = 0.8444 sec
+  Average rate = 451.79 GiB/sec
+

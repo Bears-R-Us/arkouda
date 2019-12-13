@@ -1,0 +1,8 @@
+connected to arkouda server tcp://*:5555
+array size = 2,147,483,648
+number of trials =  1
+>>> arkouda stream
+numLocales = 16, N = 34,359,738,368
+Average time = 2.2655 sec
+Average rate = 339.00 GiB/sec
+
