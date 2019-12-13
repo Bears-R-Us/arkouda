@@ -1,5 +1,5 @@
 module PerLocaleHelper {
-  use UnorderedCopy;
+  use CommAggregation;
   
   /*
   Takes a sorted array, computes the segments and unique keys.
@@ -23,7 +23,12 @@ module PerLocaleHelper {
 
     // segment position... 1-based needs to be converted to 0-based because of inclusive-scan
     // where ever a segment break is... that index is a segment start index
-    [i in D] if (truth[i] == true) {var idx = i; unorderedCopy(segs[iv[i]-1], idx);}
+    forall i in D with (var agg = newDstAggregator(int)) {
+      if (truth[i] == true) {
+        var idx = i;
+        agg.copy(segs[iv[i]-1], idx);
+      }
+    }
     // pull out the first key in each segment as a unique value
     [i in segs.domain] ukeys[i] = sorted[segs[i]];
     return (segs, ukeys);

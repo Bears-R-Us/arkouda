@@ -5,7 +5,7 @@ module ReductionMsg
     use Time only;
     use Math only;
     use Reflection only;
-    use UnorderedCopy;
+    use CommAggregation;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -943,7 +943,9 @@ module ReductionMsg
 
     proc expandKeys(kD, segments: [?sD] int): [kD] int {
       var truth: [kD] bool;
-      [i in segments] unorderedCopy(truth[i], true);
+      forall i in segments with (var agg = newDstAggregator(bool)) {
+        agg.copy(truth[i], true);
+      }
       var keys = (+ scan truth) - 1;
       return keys;
     }
@@ -961,12 +963,19 @@ module ReductionMsg
       /* Sort.TwoArrayRadixSort.twoArrayRadixSort(toSort); */
       var firstIV = radixSortLSD_ranks(values);
       var intermediate: [kD] int;
-      [(ii, idx) in zip(intermediate, firstIV)] unorderedCopy(ii, keys[idx]);
+      forall (ii, idx) in zip(intermediate, firstIV) with (var agg = newSrcAggregator(int)) {
+        agg.copy(ii, keys[idx]);
+      }
       var deltaIV = radixSortLSD_ranks(intermediate);
       var IV: [kD] int;
-      [(IVi, idx) in zip(IV, deltaIV)] unorderedCopy(IVi, firstIV[idx]); // IV = firstIV[deltaIV];
+      forall (IVi, idx) in zip(IV, deltaIV) with (var agg = newSrcAggregator(int)) {
+       agg.copy(IVi, firstIV[idx]);
+      }
       var sortedKV: [kD] (int, int);
-      [(kvi, idx) in zip(sortedKV, IV)] {unorderedCopy(kvi[1], keys[idx]); unorderedCopy(kvi[2], values[idx]);}
+      forall (kvi, idx) in zip(sortedKV, IV) with (var agg = newSrcAggregator(int)) {
+        agg.copy(kvi[1], keys[idx]); 
+        agg.copy(kvi[2], values[idx]);
+      }
       if v {writeln("sort time = ", Time.getCurrentTime() - t1); try! stdout.flush();}
       if v {writeln("Finding unique (key, value) pairs..."); try! stdout.flush();}
       var truth: [kD] bool;
@@ -981,7 +990,12 @@ module ReductionMsg
       var hD: domain(1) dmapped Block(boundingBox={0..#pop}) = {0..#pop};
       // save off only the key from each pair (now there will be nunique of each key)
       var keyhits: [hD] int;
-      [i in truth.domain] if (truth[i]) { var key = sortedKV[i][1]; unorderedCopy(keyhits[count[i]-1], key); }
+      forall i in truth.domain with (var agg = newDstAggregator(int)) {
+        if (truth[i]) {
+          var key = sortedKV[i][1];
+          agg.copy(keyhits[count[i]-1], key);
+        }
+      }
       if v {writeln("time = ", Time.getCurrentTime() - t1); try! stdout.flush();}
       if v {writeln("Finding unique keys and num unique vals per key."); try! stdout.flush(); t1 = Time.getCurrentTime();}
       // find steps in keys
@@ -994,7 +1008,12 @@ module ReductionMsg
       // get step indices and take diff to get number of times each key appears
       var stepInds: [nD] int;
       stepInds[nKeysPresent] = keyhits.size;
-      [i in hD] if (truth2[i]) { var idx = i; unorderedCopy(stepInds[kiv[i]-1], idx); }
+      forall i in hD with (var agg = newSrcAggregator(int)) {
+        if (truth2[i]) {
+          var idx = i;
+          agg.copy(stepInds[kiv[i]-1], idx);
+        }
+      }
       var nunique = stepInds[1..#nKeysPresent] - stepInds[0..#nKeysPresent];
       // if every key is present, we're done
       if (nKeysPresent == sD.size) {
@@ -1110,7 +1129,7 @@ module ReductionMsg
               var myRange = (max reduce myVals) - myMin + 1;
               localHistArgSort(perm, myVals, myMin, myRange);
               var sorted: [low..high] int;
-              [(s, idx) in zip(sorted, perm)] unorderedCopy(s, myVals[idx]);
+              [(s, idx) in zip(sorted, perm)] s = myVals[idx];
               var (mySegs, myUvals) = segsAndUkeysFromSortedArray(sorted);
               var keyInd = i - myD.low;
               forall v in myUvals with (ref globalValFlags) {
@@ -1148,7 +1167,7 @@ module ReductionMsg
               var myRange = (max reduce myVals) - myMin + 1;
               localHistArgSort(perm, myVals, myMin, myRange);
               var sorted: [low..high] int;
-              [(s, idx) in zip(sorted, perm)] unorderedCopy(s, myVals[idx]);
+              [(s, idx) in zip(sorted, perm)] s = myVals[idx];
               var (mySegs, myUvals) = segsAndUkeysFromSortedArray(sorted);
               var keyInd = i - myD.low;
               forall v in myUvals {
