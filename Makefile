@@ -70,8 +70,34 @@ install-hdf5:
 
 # System Environment
 ifdef LD_RUN_PATH
-CHPL_FLAGS += --ldflags="-Wl,-rpath=$(LD_RUN_PATH)"
+#CHPL_FLAGS += --ldflags="-Wl,-rpath=$(LD_RUN_PATH)"
+# This pattern handles multiple paths separated by :
+TEMP_FLAGS = $(patsubst %,--ldflags="-Wl+-rpath+%",$(strip $(subst :, ,$(LD_RUN_PATH))))
+# The comma hack is necessary because commas can't appear in patsubst args
+comma:= ,
+CHPL_FLAGS += $(subst +,$(comma),$(TEMP_FLAGS))
 endif
+
+ifdef LD_LIBRARY_PATH
+CHPL_FLAGS += $(patsubst %,-L%,$(strip $(subst :, ,$(LD_LIBRARY_PATH))))
+endif
+
+.PHONY: check-deps
+check-deps: check-zmq check-hdf5
+
+ZMQ_CHECK = $(DEP_INSTALL_DIR)/checkZMQ.chpl
+check-zmq: $(ZMQ_CHECK)
+	@echo "Checking for ZMQ"
+	$(CHPL) $(CHPL_FLAGS) $< -o $(DEP_INSTALL_DIR)/$@
+	$(DEP_INSTALL_DIR)/$@ -nl 1
+	rm -f $(DEP_INSTALL_DIR)/$@
+
+HDF5_CHECK = $(DEP_INSTALL_DIR)/checkHDF5.chpl
+check-hdf5: $(HDF5_CHECK)
+	@echo "Checking for HDF5"
+	$(CHPL) $(CHPL_FLAGS) $< -o $(DEP_INSTALL_DIR)/$@
+	$(DEP_INSTALL_DIR)/$@ -nl 1
+	rm -f $(DEP_INSTALL_DIR)/$@
 
 ALL_TARGETS := $(ARKOUDA_MAIN_MODULE)
 .PHONY: all
@@ -123,7 +149,7 @@ CHPL_FLAGS_WITH_VERSION += -sarkoudaVersion="\"$(VERSION)\""
 ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
-$(ARKOUDA_MAIN_MODULE): $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
+$(ARKOUDA_MAIN_MODULE): check-deps $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
 	$(CHPL) $(CHPL_DEBUG_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) -o $@
 
 CLEAN_TARGETS += arkouda-clean

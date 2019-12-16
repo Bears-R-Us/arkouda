@@ -4,7 +4,7 @@ recursive-include pydoc *.py *.rst Makefile make.bat
 recursive-include test *
 recursive-include tests *
 recursive-include benchmarks *
-recursive-include scripts *
+recursive-include dep *
 include LICENSE
 include Makefile
 include VERSION
