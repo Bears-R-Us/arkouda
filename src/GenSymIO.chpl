@@ -1,12 +1,14 @@
 module GenSymIO {
   use HDF5;
-  use ServerConfig;
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
   use ServerErrorStrings;
   use FileSystem;
   use Sort;
+  use UnorderedCopy;
   config const GenSymIO_DEBUG = false;
+  config const SEGARRAY_OFFSET_NAME = "segments";
+  config const SEGARRAY_VALUE_NAME = "values";
 
   proc arrayMsg(reqMsg: string, st: borrowed SymTab): string {
     var repMsg: string;
@@ -24,46 +26,40 @@ module GenSymIO {
     } catch {
       return "Error: Could not write to memory buffer";
     }
+    var rname = st.nextName();
     try {
-      const entry: shared GenSymEntry = readEntry();
-      const rname = st.nextName();
-      st.addEntry(rname, entry);
-      return try! "created " + st.attrib(rname);
-    } catch err: UnhandledDataTypeError {
-      return try! "Error: Unhandled data type %s".format(err.dtype);
-    } catch {
-      return "Error: Could not read from memory buffer into SymEntry";
-    }
-
-    class UnhandledDataTypeError: Error {
-      var dtype: DType;
-    }
-
-    proc readEntry(): shared GenSymEntry throws {
       var tmpr = tmpf.reader(kind=iobig, start=0);
       if dtype == DType.Int64 {
 	var entryInt = new shared SymEntry(size, int);
 	tmpr.read(entryInt.a);
 	tmpr.close(); tmpf.close();
-	return entryInt;
+	st.addEntry(rname, entryInt);
       } else if dtype == DType.Float64 {
 	var entryReal = new shared SymEntry(size, real);
 	tmpr.read(entryReal.a);
 	tmpr.close(); tmpf.close();
-	return entryReal;
+	st.addEntry(rname, entryReal);
       } else if dtype == DType.Bool {
 	var entryBool = new shared SymEntry(size, bool);
 	tmpr.read(entryBool.a);
 	tmpr.close(); tmpf.close();
-	return entryBool;
+	st.addEntry(rname, entryBool);
+      } else if dtype == DType.UInt8 {
+        var entryUInt = new shared SymEntry(size, uint(8));
+        tmpr.read(entryUInt.a);
+        tmpr.close(); tmpf.close();
+        st.addEntry(rname, entryUInt);
       } else {
 	tmpr.close();
 	tmpf.close();
-	throw new owned UnhandledDataTypeError(dtype);
+	return try! "Error: Unhandled data type %s".format(fields[2]);
       }
       tmpr.close();
       tmpf.close();
+    } catch {
+      return "Error: Could not read from memory buffer into SymEntry";
     }
+    return try! "created " + st.attrib(rname);
   }
 
   proc tondarrayMsg(reqMsg: string, st: borrowed SymTab): string throws {
@@ -80,6 +76,8 @@ module GenSymIO {
 	tmpw.write(toSymEntry(entry, real).a);
       } else if entry.dtype == DType.Bool {
 	tmpw.write(toSymEntry(entry, bool).a);
+      } else if entry.dtype == DType.UInt8 {
+        tmpw.write(toSymEntry(entry, uint(8)).a);
       } else {
 	return try! "Error: Unhandled dtype %s".format(entry.dtype);
       }
@@ -103,7 +101,8 @@ module GenSymIO {
   class DatasetNotFoundError: Error { proc init() {} }
   class NotHDF5FileError: Error { proc init() {} }
   class MismatchedAppendError: Error { proc init() {} }
-
+  class SegArrayError: Error { proc init() {} }
+  
   proc decode_json(json: string, size: int) throws {
     var f = opentmp();
     var w = f.writer();
@@ -167,7 +166,7 @@ module GenSymIO {
     }
   }
   
-  proc readhdfMsg(reqMsg: string, st: borrowed SymTab): string {
+  proc readhdfMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var repMsg: string;
     // reqMsg = "readhdf <dsetName> <nfiles> [<json_filenames>]"
     var fields = reqMsg.split(3);
@@ -198,10 +197,14 @@ module GenSymIO {
     } else {
       filenames = filelist;
     }
-    var dclasses: [filenames.domain] C_HDF5.hid_t;
-    for (i, fname) in zip(filenames.domain, filenames) {
+    
+    var segArrayFlags: [filedom] bool;
+    var dclasses: [filedom] C_HDF5.hid_t;
+    var bytesizes: [filedom] int;
+    var signFlags: [filedom] bool;
+    for (i, fname) in zip(filedom, filenames) {
       try {
-	dclasses[i] = get_dtype(fname, dsetName);
+	(segArrayFlags[i], dclasses[i], bytesizes[i], signFlags[i]) = get_dtype(fname, dsetName);
       } catch e: FileNotFoundError {
 	return try! "Error: file not found: %s".format(fname);
       } catch e: PermissionError {
@@ -210,24 +213,36 @@ module GenSymIO {
 	return try! "Error: dataset %s not found in file %s".format(dsetName, fname);
       } catch e: NotHDF5FileError {
 	return try! "Error: cannot open as HDF5 file %s".format(fname);
+      } catch e: SegArrayError {
+	return try! "Error: expecte segmented array but could not find sub-datasets '%s' and '%s'".format(SEGARRAY_OFFSET_NAME, SEGARRAY_VALUE_NAME);
       } catch {
 	// Need a catch-all for non-throwing function
 	return try! "Error: unknown cause";
       }
     }
-    const dataclass = dclasses[dclasses.domain.first];
-    for (i, dc) in zip(dclasses.domain, dclasses) {
-      if dc != dataclass {
-	return try! "Error: inconsistent dtype in dataset %s of file %s".format(dsetName, filenames[i]);
+    const isSegArray = segArrayFlags[filedom.first];
+    const dataclass = dclasses[filedom.first];
+    const bytesize = bytesizes[filedom.first];
+    const isSigned = signFlags[filedom.first];
+    for (name, sa, dc, bs, sf) in zip(filenames, segArrayFlags, dclasses, bytesizes, signFlags) {
+      if (sa != isSegArray) || (dc != dataclass) || (bs != bytesize) || (sf != isSigned) {
+	return try! "Error: inconsistent dtype in dataset %s of file %s".format(dsetName, name);
       }
     }
     if GenSymIO_DEBUG {
       writeln("Verified all dtypes across files");
     }
-    var subdoms: [filenames.domain] domain(1);
+    var subdoms: [filedom] domain(1);
+    var segSubdoms: [filedom] domain(1);
     var len: int;
+    var nSeg: int;
     try {
-      (subdoms, len) = get_subdoms(filenames, dsetName);
+      if isSegArray {
+        (segSubdoms, nSeg) = get_subdoms(filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);
+        (subdoms, len) = get_subdoms(filenames, dsetName + "/" + SEGARRAY_VALUE_NAME);
+      } else {
+        (subdoms, len) = get_subdoms(filenames, dsetName);
+      }
     } catch e: HDF5RankError {
       return notImplementedError("readhdf", try! "Rank %i arrays".format(e.rank));
     } catch {
@@ -236,42 +251,65 @@ module GenSymIO {
     if GenSymIO_DEBUG {
       writeln("Got subdomains and total length");
     }
-    try {
-    var entry: shared GenSymEntry = computeEntry(dataclass);
-    var rname = st.nextName();
-    st.addEntry(rname, entry);
-    return try! "created " + st.attrib(rname);
-    } catch e: UnhandledHDFSDataTypeError {
-      return try! "Error: detected unhandled datatype code %i".format(dataclass);
-    } catch {
-      return "Unexpected error";
-    }
-
-    class UnhandledHDFSDataTypeError: Error {
-    }
-
-    // This assumes that dataclass has already been validated above in
-    // validateDataClass() and that only expected dataclass values
-    // will be sent in.  If this is not the case, a halt occurs.
-    proc computeEntry(dataclass: C_HDF5.hid_t): shared GenSymEntry throws {
-    if dataclass == C_HDF5.H5T_INTEGER {
+    select (isSegArray, dataclass) {
+    when (true, C_HDF5.H5T_INTEGER) {
+      if (bytesize != 1) || isSigned {
+        return try! "Error: detected unhandled datatype: segmented? %t, class %i, size %i, signed? %t".format(isSegArray, dataclass, bytesize, isSigned);
+      }
+      var entrySeg = new shared SymEntry(nSeg, int);
+      read_files_into_distributed_array(entrySeg.a, segSubdoms, filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);
+      fixupSegBoundaries(entrySeg.a, segSubdoms, subdoms);
+      var entryVal = new shared SymEntry(len, uint(8));
+      read_files_into_distributed_array(entryVal.a, subdoms, filenames, dsetName + "/" + SEGARRAY_VALUE_NAME);
+      var segName = st.nextName();
+      st.addEntry(segName, entrySeg);
+      var valName = st.nextName();
+      st.addEntry(valName, entryVal);
+      return try! "created " + st.attrib(segName) + " +created " + st.attrib(valName);
+    } 
+    when (false, C_HDF5.H5T_INTEGER) {
       var entryInt = new shared SymEntry(len, int);
       if GenSymIO_DEBUG {
 	writeln("Initialized int entry"); try! stdout.flush();
       }
       read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
-      return entryInt;
-    } else if dataclass == C_HDF5.H5T_FLOAT {
+      var rname = st.nextName();
+      st.addEntry(rname, entryInt);
+      return try! "created " + st.attrib(rname);
+    }
+    when (false, C_HDF5.H5T_FLOAT) {
       var entryReal = new shared SymEntry(len, real);
       if GenSymIO_DEBUG {
 	writeln("Initialized float entry"); try! stdout.flush();
       }
       read_files_into_distributed_array(entryReal.a, subdoms, filenames, dsetName);
-      return entryReal;
-    } else {
-      throw new owned UnhandledHDFSDataTypeError();
+      var rname = st.nextName();
+      st.addEntry(rname, entryReal);
+      return try! "created " + st.attrib(rname);
+    }
+    otherwise {
+      return try! "Error: detected unhandled datatype: segmented? %t, class %i, size %i, signed? %t".format(isSegArray, dataclass, bytesize, isSigned);
+    }
     }
   }
+
+  proc fixupSegBoundaries(a: [?D] int, segSubdoms: [?fD] domain(1), valSubdoms: [fD] domain(1)) {
+    var boundaries: [fD] int; // First index of each region that needs to be raised
+    var diffs: [fD] int; // Amount each region must be raised over previous region
+    forall (i, sd, vd, b) in zip(fD, segSubdoms, valSubdoms, boundaries) {
+      b = sd.low; // Boundary is index of first segment in file
+      // Height increase of next region is number of bytes in current region
+      if (i < fD.high) {
+        diffs[i+1] = vd.size;
+      }
+    }
+    // Insert height increases at region boundaries
+    var sparseDiffs: [D] int;
+    [(b, d) in zip(boundaries, diffs)] unorderedCopy(sparseDiffs[b], d);
+    // Make plateaus from peaks
+    var corrections = + scan sparseDiffs;
+    // Raise the segment offsets by the plateaus
+    a += corrections;
   }
   
   /* Get the class of the HDF5 datatype for the dataset. */
@@ -290,13 +328,45 @@ module GenSymIO {
     if !C_HDF5.H5Lexists(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT) {
       throw new owned DatasetNotFoundError();
     }
-    var dset = C_HDF5.H5Dopen(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT);   
+    var dataclass: C_HDF5.H5T_class_t;
+    var bytesize: int;
+    var isSigned: bool;
+    var isSegArray: bool;
+    try {
+      (dataclass, bytesize, isSigned) = get_dataset_info(file_id, dsetName);
+      isSegArray = false;
+    } catch e:DatasetNotFoundError {
+      var group = C_HDF5.H5Gopen2(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT);
+      if (group < 0) {
+	throw new owned SegArrayError();
+      }
+      var offsetDset = dsetName + "/" + SEGARRAY_OFFSET_NAME;
+      var valueDset = dsetName + "/" + SEGARRAY_VALUE_NAME;
+      var (offsetClass, offsetByteSize, offsetSign) = try get_dataset_info(file_id, offsetDset);
+      if (offsetClass != C_HDF5.H5T_INTEGER) {
+	throw new owned SegArrayError();
+      }
+      try (dataclass, bytesize, isSigned) = get_dataset_info(file_id, valueDset);
+      isSegArray = true;
+    } catch e {
+      throw e;
+    }
+    C_HDF5.H5Fclose(file_id);
+    return (isSegArray, dataclass, bytesize, isSigned);
+  }
+
+  proc get_dataset_info(file_id, dsetName) throws {
+    var dset = C_HDF5.H5Dopen(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT);
+    if (dset < 0) {
+      throw new owned DatasetNotFoundError();
+    }
     var datatype = C_HDF5.H5Dget_type(dset);
     var dataclass = C_HDF5.H5Tget_class(datatype);
+    var bytesize = C_HDF5.H5Tget_size(datatype):int;
+    var isSigned = (C_HDF5.H5Tget_sign(datatype) == C_HDF5.H5T_SGN_2);
     C_HDF5.H5Tclose(datatype);
     C_HDF5.H5Dclose(dset);
-    C_HDF5.H5Fclose(file_id);
-    return dataclass;
+    return (dataclass, bytesize, isSigned);
   }
 
   class HDF5RankError: Error {
@@ -307,18 +377,20 @@ module GenSymIO {
   
   /* Get the subdomains of the distributed array represented by each file, as well as the total length of the array. */
   proc get_subdoms(filenames: [?FD] string, dsetName: string) throws {
+    use SysCTypes;
+
     var lengths: [FD] int;
     for (i, filename) in zip(FD, filenames) {
       var file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, C_HDF5.H5P_DEFAULT);
       var dims: [0..#1] C_HDF5.hsize_t; // Only rank 1 for now
-      var dsetRank: c_int;
-      // Verify 1D array
-      C_HDF5.H5LTget_dataset_ndims(file_id, dsetName.c_str(), dsetRank);
-      if dsetRank != 1 {
-	// TODO: change this to a throw
-	// halt("Expected 1D array, got rank " + dsetRank);
-	throw new owned HDF5RankError(dsetRank, filename, dsetName);
-      }
+//      var dsetRank: c_int;
+//      // Verify 1D array
+//      C_HDF5.H5LTget_dataset_ndims(file_id, dsetName.c_str(), dsetRank);
+//      if dsetRank != 1 {
+//	// TODO: change this to a throw
+//	// halt("Expected 1D array, got rank " + dsetRank);
+//	throw new owned HDF5RankError(dsetRank, filename, dsetName);
+//      }
       // Read array length into dims[0]
       C_HDF5.HDF5_WAR.H5LTget_dataset_info_WAR(file_id, dsetName.c_str(), c_ptrTo(dims), nil, nil);
       C_HDF5.H5Fclose(file_id);

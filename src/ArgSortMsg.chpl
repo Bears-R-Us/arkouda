@@ -24,6 +24,7 @@ module ArgSortMsg
     use ServerErrorStrings;
 
     use RadixSortLSD;
+    use SegmentedArray;
     
     // thresholds for different sized sorts
     var lgSmall = 10;
@@ -392,6 +393,21 @@ module ArgSortMsg
       return newIV;
     }
 
+    proc incrementalArgSort(s: SegString, iv: [?aD] int): [] int throws {
+      var hashes = s.hash();
+      var newHashes: [aD] 2*uint;
+      forall (nh, idx) in zip(newHashes, iv) {
+        unorderedCopy(nh[1], hashes[idx][1]);
+        unorderedCopy(nh[2], hashes[idx][2]);
+      }
+      var deltaIV = radixSortLSD_ranks(newHashes);
+      // var (newOffsets, newVals) = s[iv];
+      // var deltaIV = newStr.argGroup();
+      var newIV: [aD] int;
+      [(newIVi, idx) in zip(newIV, deltaIV)] unorderedCopy(newIVi, iv[idx]);
+      return newIV;
+    }
+
     /* Do a LSD radix sort across multiple arrays, where each array represents a digit.
      */
     /* proc coArgSort(arrays: [?D] GenSymEntry): [] int throws { */
@@ -414,22 +430,42 @@ module ArgSortMsg
       var repMsg: string;
       var fields = reqMsg.split();
       var cmd = fields[1];
-      var n = try! fields[2]:int; // number of arrays to sort
-      var names = fields[3..];
+      var n = fields[2]:int; // number of arrays to sort
       // Check that fields contains the stated number of arrays
-      if (n != names.size) { return try! incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(n, names.size)); }
+      if (fields.size != (2*n + 2)) { return try! incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(n, fields.size/2 - 1)); }
+      var names = fields[3..#n];
+      var types = fields[3+n..#n];
       /* var arrays: [0..#n] borrowed GenSymEntry; */
       var size: int;
       // Check that all arrays exist in the symbol table and have the same size
-      for (name, i) in zip(names, 1..) {
+      for (name, objtype, i) in zip(names, types, 1..) {
 	// arrays[i] = st.lookup(name): borrowed GenSymEntry;
-	var g: borrowed GenSymEntry = st.lookup(name);
+        var thisSize: int;
+        select objtype {
+          when "pdarray" {
+            var g = st.lookup(name);
+            thisSize = g.size;
+          }
+          when "str" {
+            var myNames = name.split('+');
+            var g = st.lookup(myNames[1]);
+            thisSize = g.size;
+          }
+          otherwise {return unrecognizedTypeError(pn, objtype);}
+        }
+        
 	if (i == 1) {
-	  size = g.size;
+	  size = thisSize;
 	} else {
-	  if (g.size != size) { return incompatibleArgumentsError(pn, "Arrays must all be same size"); }
+	  if (thisSize != size) { return incompatibleArgumentsError(pn, "Arrays must all be same size"); }
 	}
+        
       }
+
+      // check and throw if over memory limit
+      overMemLimit(((4 + 3) * size * numBytes(int))
+                   + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+      
       // Initialize the permutation vector in the symbol table with the identity perm
       var rname = st.nextName();
       st.addEntry(rname, size, int);
@@ -437,16 +473,15 @@ module ArgSortMsg
       iv.a = 0..#size;
       // Starting with the last array, incrementally permute the IV by sorting each array
       for i in names.domain.low..names.domain.high by -1 {
-	var g: borrowed GenSymEntry = st.lookup(names[i]);
-	try {
-	  // Perform the coArgSort and store in the new SymEntry
-	  iv.a = incrementalArgSort(g, iv.a);
-	} catch e:ErrorWithMsg {
-	  // The only error thrown is for an unsupported dtype
-	  return notImplementedError(pn, e.msg);
-	} catch {
-	  return try! "Error: %s unknown cause".format(pn);
-	}
+        if (types[i] == "str") {
+          var myNames = names[i].split('+');
+          var strings = new owned SegString(myNames[1], myNames[2], st);
+          iv.a = incrementalArgSort(strings, iv.a);
+        } else {
+          var g: borrowed GenSymEntry = st.lookup(names[i]);
+          // Perform the coArgSort and store in the new SymEntry
+          iv.a = incrementalArgSort(g, iv.a);
+        }
       }
       return try! "created " + st.attrib(rname);
     }
@@ -467,28 +502,46 @@ module ArgSortMsg
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
-        var name = fields[2];
+        var objtype = fields[2];
+        var name = fields[3];
 
         // get next symbol name
         var ivname = st.nextName();
         if v {try! writeln("%s %s : %s %s".format(cmd, name, ivname));try! stdout.flush();}
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-
-        select (gEnt.dtype) {
-            when (DType.Int64) {
-                var e = toSymEntry(gEnt,int);
-                var iv = argsortDefault(e.a);
-                st.addEntry(ivname, new shared SymEntry(iv));
-            }
-	    when (DType.Float64) {
-	        var e = toSymEntry(gEnt, real);
-		var iv = argsortDefault(e.a);
-		st.addEntry(ivname, new shared SymEntry(iv));
-	    }
-            otherwise {return notImplementedError(pn,gEnt.dtype);}
-        }
+        select objtype {
+          when "pdarray" {
+            var gEnt: borrowed GenSymEntry = st.lookup(name);
+            // check and throw if over memory limit
+            overMemLimit(((4 + 1) * gEnt.size * gEnt.itemsize)
+                         + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
         
+            select (gEnt.dtype) {
+            when (DType.Int64) {
+              var e = toSymEntry(gEnt,int);
+              var iv = argsortDefault(e.a);
+              st.addEntry(ivname, new shared SymEntry(iv));
+            }
+            when (DType.Float64) {
+              var e = toSymEntry(gEnt, real);
+              var iv = argsortDefault(e.a);
+              st.addEntry(ivname, new shared SymEntry(iv));
+            }
+            otherwise {return notImplementedError(pn,gEnt.dtype);}
+            }
+          }
+          when "str" {
+            var names = name.split();
+            var strings = new owned SegString(names[1], names[2], st);
+            // check and throw if over memory limit
+            overMemLimit((8 * strings.size * 8)
+                         + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+            var iv = strings.argsort();
+            st.addEntry(ivname, new shared SymEntry(iv));
+          }
+          otherwise {return notImplementedError(pn, objtype);}
+        }
+            
         return try! "created " + st.attrib(ivname);
     }
 

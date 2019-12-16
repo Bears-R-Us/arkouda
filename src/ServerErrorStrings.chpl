@@ -1,8 +1,12 @@
 /* error string to return to client... generate consistent error strings for notImplementedError */
 module ServerErrorStrings
 {
-    use ServerConfig;
-    use MultiTypeSymEntry;
+    use NumPyDType;
+    use IO;
+    
+    class ErrorWithMsg: Error {
+      var msg: string;
+    }
 
     /* binary operator is not implemented for DTypes */
     proc notImplementedError(pname: string, ldtype: DType, op: string, rdtype: DType):string {
@@ -10,6 +14,12 @@ module ServerErrorStrings
                                                                  dtype2str(ldtype),
                                                                  op,
                                                                  dtype2str(rdtype));
+    }
+    proc notImplementedError(pname: string, ldtype: string, op: string, rdtype: string):string {
+        return try! "Error: %s: %s %s %s not implemented".format(pname,
+                                                                 ldtype,
+                                                                 op,
+                                                                 rdtype);
     }
     /* efunc is not implemented for DType */
     proc notImplementedError(pname: string, efunc: string, ldtype: DType):string {
@@ -57,9 +67,6 @@ module ServerErrorStrings
       return try! "Error: %s: Incompatible arguments: %s".format(pname, reason);
     }
 
-    class ErrorWithMsg: Error {
-      var msg: string;
-    }
     
 }
 

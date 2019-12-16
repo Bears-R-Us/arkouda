@@ -25,6 +25,7 @@ module MsgProcessing
     public use FindSegmentsMsg;
     public use EfuncMsg;
     public use ConcatenateMsg;
+    public use SegmentedMsg;
     
     /* 
     Parse, execute, and respond to a create message 
@@ -37,7 +38,7 @@ module MsgProcessing
 
     :returns: (string) response message
     */
-    proc createMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc createMsg(reqMsg: string, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -191,7 +192,7 @@ module MsgProcessing
 
     :returns: (string)
     */
-    proc arangeMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc arangeMsg(reqMsg: string, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -205,17 +206,17 @@ module MsgProcessing
         if v {try! writeln("%s %i %i %i : %i , %s".format(cmd, start, stop, stride, len, rname));try! stdout.flush();}
         
         var t1 = Time.getCurrentTime();
-        var aD = makeDistDom(len);
-        var a = makeDistArray(len, int);
+        var e = st.addEntry(rname, len, int);
         writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
 
         t1 = Time.getCurrentTime();
-        forall i in aD {
-            a[i] = start + (i * stride);
+        ref ea = e.a;
+        ref ead = e.aD;
+        forall (ei, i) in zip(ea,ead) {
+            ei = start + (i * stride);
         }
         writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
 
-        st.addEntry(rname, new shared SymEntry(a));
         return try! "created " + st.attrib(rname);
     }            
 
@@ -230,7 +231,7 @@ module MsgProcessing
 
     :returns: (string)
     */
-    proc linspaceMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc linspaceMsg(reqMsg: string, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
@@ -244,19 +245,19 @@ module MsgProcessing
         if v {try! writeln("%s %r %r %i : %r , %s".format(cmd, start, stop, len, stride, rname));try! stdout.flush();}
 
         var t1 = Time.getCurrentTime();
-        var aD = makeDistDom(len);
-        var a = makeDistArray(len, real);
+        var e = st.addEntry(rname, len, real);
         writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
 
         t1 = Time.getCurrentTime();
-        forall i in aD {
-            a[i] = start + (i * stride);
+        ref ea = e.a;
+        ref ead = e.aD;
+        forall (ei, i) in zip(ea,ead) {
+            ei = start + (i * stride);
         }
-        a[0] = start;
-        a[len-1] = stop;
+        ea[0] = start;
+        ea[len-1] = stop;
         writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
 
-        st.addEntry(rname, new shared SymEntry(a));
         return try! "created " + st.attrib(rname);
     }
 

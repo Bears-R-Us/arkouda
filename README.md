@@ -11,6 +11,8 @@
 
 [Bill Reus' CLSAC 2019 talk](http://www.clsac.org/uploads/5/0/6/3/50633811/2019-reus-arkuda.pdf)
 
+(PAW-ATM) [talk](https://github.com/sourceryinstitute/PAW/raw/gh-pages/PAW-ATM19/presentations/PAW-ATM2019_talk11.pdf) and [abstract](https://github.com/sourceryinstitute/PAW/raw/gh-pages/PAW-ATM19/extendedAbstracts/PAW-ATM2019_abstract5.pdf)
+
 ## Abstract:
 Exploratory data analysis (EDA) is a prerequisite for all data
 science, as illustrated by the ubiquity of Jupyter notebooks, the
@@ -53,7 +55,7 @@ optimized HPC libraries on massive datasets, all within the same
 interactive session.
 
 ## Requirements:
- * requires chapel 1.20.0 with the --legacy-classes flag
+ * requires chapel 1.20.0
  * requires zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * requires python 3.6 or greater
  * requires numpy
@@ -137,18 +139,34 @@ Multi-locale startup (user selects the number of locales):
 ```bash
 ./arkouda_server -nl 1
 ```
+Also can run server with memory checking turned on using
 
-By default, the server listens on port `5555` and prints verbose output. These options can be changed with command-line flags `--ServerPort=1234` and `--v=false`.
+```bash
+./arkouda_server --memTrack=true
+```
+
+By default, the server listens on port `5555` and prints verbose output. These options can be changed with command-line flags `--ServerPort=1234` and `--v=false`
+
+Memory checking is turned off by default and turned on by using  `--memTrack=true`
+
+Logging messaged are independently controlled be the `--logging=[true|false]` is on by default
+
+Verbose debug messages are independently controlled by `--v=[true|false]` is on by default
 
 ## Testing arkouda_server
 
-There is a small test program that connects to a running arkouda_server, runs a few computations, and shuts down the server. To run it, open a new terminal window in the arkouda directory and run
+There is a small test program that connects to a running arkouda_server, runs a few computations, and disconnects from the server. To run it, open a new terminal window in the arkouda directory and run
 
 ```bash
 python3 tests/check.py localhost 5555
 ```
 
 Substitute the correct hostname and port if you used a different configuration.
+
+Note that `check.py` doesn't shut down the server, permitting multiple
+Arkouda programs to be run against the same server instance.  The
+server can be shut down cleanly by running the `shutdown.py` script in
+the same directory.
 
 ## Contributing to Arkouda
 

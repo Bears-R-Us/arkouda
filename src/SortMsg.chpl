@@ -37,6 +37,10 @@ module SortMsg
 
       var gEnt: borrowed GenSymEntry = st.lookup(name);
 
+      // check and throw if over memory limit
+      overMemLimit(((2 + 1) * gEnt.size * gEnt.itemsize)
+                   + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+      
       // Sort the input pda and create a new symbol entry for
       // the sorted pda.
       select (gEnt.dtype) {

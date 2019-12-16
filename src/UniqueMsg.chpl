@@ -29,58 +29,87 @@ module UniqueMsg
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
-        var name = fields[2];
+        var objtype = fields[2];
+        var name = fields[3];
         // flag to return counts of each unique value
         // same size as unique array
         var returnCounts: bool;
-        if fields[3] == "True" {returnCounts = true;}
-        else if fields[3] == "False" {returnCounts = false;}
-        else {return try! "Error: %s: %s".format(pn,fields[3]);}
+        if fields[4] == "True" {returnCounts = true;}
+        else if fields[4] == "False" {returnCounts = false;}
+        else {return try! "Error: %s: %s".format(pn,fields[4]);}
+        select objtype {
+          when "pdarray" {
+            // get next symbol name for unique
+            var vname = st.nextName();
+            // get next symbol anme for counts
+            var cname = st.nextName();
+            if v {try! writeln("%s %s %t: %s %s".format(cmd, name, returnCounts, vname, cname));try! stdout.flush();}
         
-        // get next symbol name for unique
-        var vname = st.nextName();
-        // get next symbol anme for counts
-        var cname = st.nextName();
-        if v {try! writeln("%s %s %t: %s %s".format(cmd, name, returnCounts, vname, cname));try! stdout.flush();}
+            var gEnt: borrowed GenSymEntry = st.lookup(name);
+            // the upper limit here is the same as argsort/radixSortLSD_keys
+            // check and throw if over memory limit
+            overMemLimit(((4 + 1) * gEnt.size * gEnt.itemsize)
+                         + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
         
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-        
-        select (gEnt.dtype) {
+            select (gEnt.dtype) {
             when (DType.Int64) {
-                var e = toSymEntry(gEnt,int);
+              var e = toSymEntry(gEnt,int);
                 
-                /* var eMin:int = min reduce e.a; */
-                /* var eMax:int = max reduce e.a; */
+              /* var eMin:int = min reduce e.a; */
+              /* var eMax:int = max reduce e.a; */
                 
-                /* // how many bins in histogram */
-                /* var bins = eMax-eMin+1; */
-                /* if v {try! writeln("bins = %t".format(bins));try! stdout.flush();} */
+              /* // how many bins in histogram */
+              /* var bins = eMax-eMin+1; */
+              /* if v {try! writeln("bins = %t".format(bins));try! stdout.flush();} */
 
-                /* if (bins <= mBins) { */
-                /*     if v {try! writeln("bins <= %t".format(mBins));try! stdout.flush();} */
-                /*     var (aV,aC) = uniquePerLocHistGlobHist(e.a, eMin, eMax); */
-                /*     st.addEntry(vname, new shared SymEntry(aV)); */
-                /*     if returnCounts {st.addEntry(cname, new shared SymEntry(aC));} */
-                /* } */
-                /* else { */
-                /*     if v {try! writeln("bins = %t".format(bins));try! stdout.flush();} */
-                /*     var (aV,aC) = uniquePerLocAssocParUnsafeGlobAssocParUnsafe(e.a, eMin, eMax); */
-                /*     st.addEntry(vname, new shared SymEntry(aV)); */
-                /*     if returnCounts {st.addEntry(cname, new shared SymEntry(aC));} */
-                /* } */
+              /* if (bins <= mBins) { */
+              /*     if v {try! writeln("bins <= %t".format(mBins));try! stdout.flush();} */
+              /*     var (aV,aC) = uniquePerLocHistGlobHist(e.a, eMin, eMax); */
+              /*     st.addEntry(vname, new shared SymEntry(aV)); */
+              /*     if returnCounts {st.addEntry(cname, new shared SymEntry(aC));} */
+              /* } */
+              /* else { */
+              /*     if v {try! writeln("bins = %t".format(bins));try! stdout.flush();} */
+              /*     var (aV,aC) = uniquePerLocAssocParUnsafeGlobAssocParUnsafe(e.a, eMin, eMax); */
+              /*     st.addEntry(vname, new shared SymEntry(aV)); */
+              /*     if returnCounts {st.addEntry(cname, new shared SymEntry(aC));} */
+              /* } */
 
-                var (aV,aC) = uniqueSort(e.a);
-                st.addEntry(vname, new shared SymEntry(aV));
-                if returnCounts {st.addEntry(cname, new shared SymEntry(aC));}
+              var (aV,aC) = uniqueSort(e.a);
+              st.addEntry(vname, new shared SymEntry(aV));
+              if returnCounts {st.addEntry(cname, new shared SymEntry(aC));}
                     
             }
             otherwise {return notImplementedError("unique",gEnt.dtype);}
-        }
+            }
         
-        var s = try! "created " + st.attrib(vname);
-        if returnCounts {s += " +created " + st.attrib(cname);}
+            var s = try! "created " + st.attrib(vname);
+            if returnCounts {s += " +created " + st.attrib(cname);}
 
-        return s;
+            return s;
+          }
+          when "str" {
+            var offsetName = st.nextName();
+            var valueName = st.nextName();
+            var names = name.split('+');
+            var str = new owned SegString(names[1], names[2], st);
+            // the upper limit here is the similar to argsort/radixSortLSD_keys, but with a few more scratch arrays
+            // check and throw if over memory limit
+            overMemLimit((8 * str.size * 8)
+                         + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+            var (uo, uv, c) = uniqueGroup(str);
+            st.addEntry(offsetName, new shared SymEntry(uo));
+            st.addEntry(valueName, new shared SymEntry(uv));
+            var s = try! "created " + st.attrib(offsetName) + " +created " + st.attrib(valueName);
+            if returnCounts {
+              var countName = st.nextName();
+              st.addEntry(countName, new shared SymEntry(c));
+              s += " +created " + st.attrib(countName);
+            }
+            return s;
+          }
+          otherwise { return notImplementedError(Reflection.getRoutineName(), objtype); }
+        }
     }
     
     /* value_counts takes a pdarray and returns two pdarrays unique values and counts for each value */

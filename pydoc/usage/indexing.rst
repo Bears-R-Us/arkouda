@@ -1,3 +1,5 @@
+.. _indexing-label:
+
 ************************
 Indexing and Assignment
 ************************

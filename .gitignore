@@ -11,6 +11,7 @@ arkouda_server_llvm_real
 __pycache__/
 .ipynb_checkpoints/
 .vscode/
+.local/
 doc/
 docs/
 test-bin/

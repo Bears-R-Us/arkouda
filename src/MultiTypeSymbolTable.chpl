@@ -6,10 +6,6 @@ module MultiTypeSymbolTable
     
     use MultiTypeSymEntry;
 
-    class UndefinedSymbolError: Error {
-      var name: string;
-    }
-
     /* symbol table */
     class SymTab
     {
@@ -48,7 +44,10 @@ module MultiTypeSymbolTable
 
         :returns: borrow of newly created `SymEntry(t)`
         */
-        proc addEntry(name: string, len: int, type t): borrowed SymEntry(t) {
+        proc addEntry(name: string, len: int, type t): borrowed SymEntry(t) throws {
+            // check and throw if memory limit would be exceeded
+            if t == bool {overMemLimit(len);} else {overMemLimit(len*numBytes(t));}
+            
             var entry = new shared SymEntry(len, t);
             if (tD.contains(name))
             {
@@ -73,7 +72,10 @@ module MultiTypeSymbolTable
 
         :returns: borrow of newly created GenSymEntry
         */
-        proc addEntry(name: string, in entry: shared GenSymEntry): borrowed GenSymEntry {
+        proc addEntry(name: string, in entry: shared GenSymEntry): borrowed GenSymEntry throws {
+            // check and throw if memory limit would be exceeded
+            overMemLimit(entry.size*entry.itemsize);
+
             if (tD.contains(name))
             {
                 if (v) {writeln("redefined symbol ",name);try! stdout.flush();}
@@ -99,7 +101,7 @@ module MultiTypeSymbolTable
 
         :returns: borrow of newly created GenSymEntry
         */
-        proc addEntry(name: string, len: int, dtype: DType): borrowed GenSymEntry {
+        proc addEntry(name: string, len: int, dtype: DType): borrowed GenSymEntry throws {
             select dtype {
                 when DType.Int64 { return addEntry(name, len, int); }
                 when DType.Float64 { return addEntry(name, len, real); }
@@ -131,13 +133,13 @@ module MultiTypeSymbolTable
         :type name: string
 
         :returns: sym entry or throws on error
-        :throws: `UndefinedSymbolError(name)`
+        :throws: `unkownSymbolError(name)`
         */
         proc lookup(name: string): borrowed GenSymEntry throws {
             if (!tD.contains(name) || tab[name] == nil)
             {
                 if (v) {writeln("undefined symbol ",name);try! stdout.flush();}
-                throw new owned UndefinedSymbolError(name);
+                throw new owned ErrorWithMsg(unknownSymbolError("", name));
             }
             else
             {

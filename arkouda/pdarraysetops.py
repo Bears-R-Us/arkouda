@@ -1,22 +1,26 @@
-from arkouda.client import generic_msg
+from arkouda.client import generic_msg, verbose
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros, array
 from arkouda.sorting import argsort
+from arkouda.strings import Strings
+
+global verbose
 
 __all__ = ["unique", "in1d", "concatenate", "union1d", "intersect1d",
            "setdiff1d", "setxor1d"]
+global verbose
 
 def unique(pda, return_counts=False):
     """
     Find the unique elements of an array.
 
-    Returns the sorted unique elements of an array. There is an optional
-    output in addition to the unique elements: the number of times each 
-    unique value comes up in the input array.
+    Returns the unique elements of an array, sorted if the values are integers. 
+    There is an optional output in addition to the unique elements: the number 
+    of times each unique value comes up in the input array.
 
     Parameters
     ----------
-    pda : pdarray
+    pda : pdarray or Strings
         Input array.
     return_counts : bool, optional
         If True, also return the number of times each unique item appears
@@ -24,17 +28,17 @@ def unique(pda, return_counts=False):
 
     Returns
     -------
-    unique : pdarray
-        The sorted unique values.
+    unique : pdarray or Strings
+        The unique values. If input dtype is int64, return values will be sorted.
     unique_counts : pdarray, optional
         The number of times each of the unique values comes up in the
         original array. Only provided if `return_counts` is True.
 
     Notes
     -----
-    Internally, this function checks to see whether `pda` is sorted and, if so,
+    For integer arrays, this function checks to see whether `pda` is sorted and, if so,
     whether it is already unique. This step can save considerable computation.
-    Otherwise, this function will sort `pda`.
+    Otherwise, this function will sort `pda`. For 
 
     Examples
     --------
@@ -43,15 +47,24 @@ def unique(pda, return_counts=False):
     array([1, 2, 3])
     """
     if isinstance(pda, pdarray):
-        repMsg = generic_msg("unique {} {}".format(pda.name, return_counts))
+        repMsg = generic_msg("unique {} {} {}".format(pda.objtype, pda.name, return_counts))
         if return_counts:
             vc = repMsg.split("+")
-            if v: print(vc)
+            if verbose: print(vc)
             return create_pdarray(vc[0]), create_pdarray(vc[1])
         else:
             return create_pdarray(repMsg)
+    elif isinstance(pda, Strings):
+        name = '{}+{}'.format(pda.offsets.name, pda.bytes.name)
+        repMsg = generic_msg("unique {} {} {}".format(pda.objtype, name, return_counts))
+        vc = repMsg.split('+')
+        if verbose: print(vc)
+        if return_counts:
+            return Strings(vc[0], vc[1]), create_pdarray(vc[2])
+        else:
+            return Strings(vc[0], vc[1])
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be pdarray or Strings {}".format(pda))
 
 def in1d(pda1, pda2, invert=False):
     """
@@ -62,10 +75,11 @@ def in1d(pda1, pda2, invert=False):
 
     Parameters
     ----------
-    pda1 : pdarray
+    pda1 : pdarray or Strings
         Input array.
-    pda2 : pdarray
-        The values against which to test each value of `pda1`.
+    pda2 : pdarray or Strings
+        The values against which to test each value of `pda1`. Must be the 
+        same type as `pda1`.
     invert : bool, optional
         If True, the values in the returned array are inverted (that is,
         False where an element of `pda1` is in `pda2` and True otherwise).
@@ -90,6 +104,15 @@ def in1d(pda1, pda2, invert=False):
     """
     if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         repMsg = generic_msg("in1d {} {} {}".format(pda1.name, pda2.name, invert))
+        return create_pdarray(repMsg)
+    elif isinstance(pda1, Strings) and isinstance(pda2, Strings):
+        repMsg = generic_msg("segmentedIn1d {} {} {} {} {} {} {}".format(pda1.objtype,
+                                                                         pda1.offsets.name,
+                                                                         pda1.bytes.name,
+                                                                         pda2.objtype,
+                                                                         pda2.offsets.name,
+                                                                         pda2.bytes.name,
+                                                                         invert))
         return create_pdarray(repMsg)
     else:
         raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
