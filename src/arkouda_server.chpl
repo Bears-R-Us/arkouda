@@ -48,11 +48,11 @@ proc main() {
         }
 
         var repMsg: string;
-        
+
         // peel off the command
         var fields = reqMsg.split(1);
         var cmd = fields[1];
-        
+
         if v {
             if cmd == "array" { // has binary data in it's payload
                 writeln("reqMsg: ", cmd, " <binary-data>");
@@ -65,7 +65,7 @@ proc main() {
         }
 
         try {
-        
+
         // parse requests, execute requests, format responses
         select cmd
         {
@@ -108,9 +108,9 @@ proc main() {
             when "[slice]"           {repMsg = sliceIndexMsg(reqMsg, st);}
             when "[pdarray]"         {repMsg = pdarrayIndexMsg(reqMsg, st);}
             when "[int]=val"         {repMsg = setIntIndexToValueMsg(reqMsg, st);}
-            when "[pdarray]=val"     {repMsg = setPdarrayIndexToValueMsg(reqMsg, st);}            
-            when "[pdarray]=pdarray" {repMsg = setPdarrayIndexToPdarrayMsg(reqMsg, st);}            
-            when "[slice]=val"       {repMsg = setSliceIndexToValueMsg(reqMsg, st);}            
+            when "[pdarray]=val"     {repMsg = setPdarrayIndexToValueMsg(reqMsg, st);}
+            when "[pdarray]=pdarray" {repMsg = setPdarrayIndexToPdarrayMsg(reqMsg, st);}
+            when "[slice]=val"       {repMsg = setSliceIndexToValueMsg(reqMsg, st);}
             when "[slice]=pdarray"   {repMsg = setSliceIndexToPdarrayMsg(reqMsg, st);}
             when "argsort"           {repMsg = argsortMsg(reqMsg, st);}
 	    when "coargsort"         {repMsg = coargsortMsg(reqMsg, st);}
@@ -135,8 +135,8 @@ proc main() {
         } catch {
           repMsg = unknownError("");
         }
-        
-        
+
+
         // send responses
         // send count for now
         repCount += 1;
@@ -156,4 +156,3 @@ proc main() {
 
     writeln("requests = ",reqCount," responseCount = ",repCount);
 }
-
