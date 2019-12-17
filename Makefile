@@ -250,14 +250,8 @@ CLEAN_TARGETS += doc-clean
 doc-clean:
 	$(RM) -r $(DOC_DIR)
 
-COMM = $(shell $(CHPL_HOME)/util/chplenv/chpl_comm.py 2>/dev/null)
-ifneq ($(COMM),none)
-NUM_LOCALES := -nl 2
-endif
-SERVER_CONNECTION_INFO := $(ARKOUDA_PROJECT_DIR)/ak-server-info
 check:
-	$(ARKOUDA_PROJECT_DIR)/arkouda_server --serverConnectionInfo   $(SERVER_CONNECTION_INFO) $(NUM_LOCALES) &>/dev/null &
-	$(ARKOUDA_PROJECT_DIR)/tests/check.py --server-connection-info $(SERVER_CONNECTION_INFO) --shutdown-server
+	@$(ARKOUDA_PROJECT_DIR)/util/test/checkInstall
 
 #################
 #### Test.mk ####

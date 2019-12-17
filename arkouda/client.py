@@ -1,4 +1,5 @@
-import zmq, json, os
+import zmq, json, os, time
+import socket as std_socket
 import warnings, pkg_resources
 
 __all__ = ["verbose", "pdarrayIterThresh", "maxTransferBytes",
@@ -40,8 +41,37 @@ def set_defaults():
     maxTransferBytes = maxTransferBytesDefVal
 
 
+def get_server_and_port(server_connection_info):
+    while True:
+        try:
+            with open(server_connection_info, 'r') as f:
+                (hostname, port) = f.readline().split(':')
+                port = int(port)
+                if hostname == std_socket.gethostname():
+                    hostname = 'localhost'
+                return (hostname, port)
+        except (ValueError, FileNotFoundError) as e:
+            time.sleep(1)
+            continue
+
+def get_default_server_and_port():
+    (server, port) = ("localhost", 5555)
+    server_connection_info = os.getenv('ARKOUDA_SERVER_CONNECTION_INFO')
+    if server_connection_info:
+        (server, port) = get_server_and_port(server_connection_info)
+    return (server, port)
+
+def get_default_sever():
+    (server, port) = get_default_server_and_port()
+    return server
+
+def get_default_port():
+    (server, port) = get_default_server_and_port()
+    return port
+
+
 # create context, request end of socket, and connect to it
-def connect(server = "localhost", port = 5555):
+def connect(server = get_default_sever(), port = get_default_port()):
     """
     Connect to a running arkouda server.
 

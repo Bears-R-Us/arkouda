@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+function log_info()
+{
+    local msg=$@
+    echo "[Info] ${msg}"
+}
+
+log_info "Running '`basename $0`'"
+
+DFLT_ARKOUDA_PROJECT_DIR=$(cd $(dirname $(dirname $(dirname $0))) ; pwd)
+ARKOUDA_PROJECT_DIR=${1:-"$DFLT_ARKOUDA_PROJECT_DIR"}
+
+SERVER="$ARKOUDA_PROJECT_DIR/arkouda_server"
+
+if "${SERVER}" --about | grep -q "CHPL_COMM: none"; then
+  NUM_LOCALES=1
+else
+  NUM_LOCALES=2
+fi
+
+export ARKOUDA_SERVER_CONNECTION_INFO="${ARKOUDA_PROJECT_DIR}/ak-server-info"
+rm -f "${ARKOUDA_SERVER_CONNECTION_INFO}"
+
+log_info "Starting '${SERVER} -nl ${NUM_LOCALES}'"
+"${SERVER}" -nl ${NUM_LOCALES} >/dev/null &
+
+log_info "Runing checks.py"
+"${ARKOUDA_PROJECT_DIR}/tests/check.py"
+check_status=$?
+
+log_info "Stopping server"
+"${ARKOUDA_PROJECT_DIR}/tests/shutdown.py" >/dev/null
+wait
+
+if [ $check_status -eq 0 ]; then
+  log_info "Success running checks!"
+else
+  log_info "Error running checks"
+fi
+
+exit $check_status
