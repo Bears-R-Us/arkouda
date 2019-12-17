@@ -3,6 +3,14 @@ name: CI
 on: [push]
 
 jobs:
+  lint_job:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: look for tabs
+      run: |
+        ! git --no-pager grep -n $'\t' -- '*.chpl'
+
   std_job:
     runs-on: ubuntu-latest
     container:
