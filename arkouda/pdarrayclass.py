@@ -73,6 +73,11 @@ class pdarray:
         except:
             pass
 
+    def __bool__(self):
+        if self.size != 1:
+            raise ValueError("The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()")
+        return self[0]
+
     def __len__(self):
         return self.shape[0]
 
