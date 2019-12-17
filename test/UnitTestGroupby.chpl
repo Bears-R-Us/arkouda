@@ -33,15 +33,15 @@ module UnitTestGroupby
   proc show(k:[?D] int, v:[D] int, n=5) {
     if (D.size <= 2*n) {
       for (ki, vi) in zip(k, v) {
-	try! writeln("%5i: %5i".format(ki, vi));
+        try! writeln("%5i: %5i".format(ki, vi));
       }
     } else {
       for (ki, vi) in zip(k[D.low..#n], v[D.low..#n]) {
-	try! writeln("%5i: %5i".format(ki, vi));
+        try! writeln("%5i: %5i".format(ki, vi));
       }
       writeln("...");
       for (ki, vi) in zip(k[D.high-n+1..#n], v[D.high-n+1..#n]) {
-	try! writeln("%5i: %5i".format(ki, vi));
+        try! writeln("%5i: %5i".format(ki, vi));
       }
     }
   }
@@ -49,15 +49,15 @@ module UnitTestGroupby
   proc show(k:[?D] int, n=5) {
     if (D.size <= 2*n) {
       for ki in k {
-	try! writeln("%5i".format(ki));
+        try! writeln("%5i".format(ki));
       }
     } else {
       for ki in k[D.low..#n] {
-	try! writeln("%5i".format(ki));
+        try! writeln("%5i".format(ki));
       }
       writeln("...");
       for ki in k[D.high-n+1..#n] {
-	try! writeln("%5i".format(ki));
+        try! writeln("%5i".format(ki));
       }
     }
   }

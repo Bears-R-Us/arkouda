@@ -211,10 +211,10 @@ module RadixSortLSD
             }//coforall loc
             
             // copy back to k0 and r0 for next iteration
-	    // Only do this if there are more digits left
-	    if !last {
+            // Only do this if there are more digits left
+            if !last {
                 kr0 = kr1;
-	    }
+            }
         } // for rshift
 
         var ranks: [aD] int = [(key, rank) in kr1] rank;
@@ -325,9 +325,9 @@ module RadixSortLSD
             
             // copy back to k0 for next iteration
             // Only do this if there are more digits left
-	    if !last {
+            if !last {
                 k0 = k1;
-	    }
+            }
             
         }//for rshift
         return k1;

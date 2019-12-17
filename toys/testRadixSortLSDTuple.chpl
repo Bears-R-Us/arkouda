@@ -19,16 +19,16 @@ module testRadixSortLSDTuple
 
         fillRandom(A, 241);
         if isIntegral(t) {
-	  if posOnly {
-	    [a in A] a = if a < 0 then -a else a;
-	  }
-	  A %= nRange;
-	} else if isRealType(t) {
-	  if !posOnly {
-	    A = 2*A - 1;
-	  }
-	  A *= nRange;
-	}
+          if posOnly {
+            [a in A] a = if a < 0 then -a else a;
+          }
+          A %= nRange;
+        } else if isRealType(t) {
+          if !posOnly {
+            A = 2*A - 1;
+          }
+          A *= nRange;
+        }
         
         printAry("A = ",A);
         
@@ -56,8 +56,8 @@ module testRadixSortLSDTuple
       var dummy: args;
       var arrays = for i in 0..#nt do makeArray(dummy[i], D);
       for (a, i) in zip(arrays, 1..) {
-	fillRandom(a, i);
-	printAry("arrays[", i, "] = ", a);
+        fillRandom(a, i);
+        printAry("arrays[", i, "] = ", a);
       }
         
         var timer:Timer;
@@ -69,22 +69,22 @@ module testRadixSortLSDTuple
                 " (", 8.0*nVals/timer.elapsed()/1024.0/1024.0, " MiB/s)");
 
         printAry("iv = ", iv);
-	var sorted = for a in arrays do a[iv];
-	for (s, i) in zip(sorted, 1..) {
-	  printAry("arrays[", i, "][iv] = ", s);
-	}
-	var allSorted = true;
-	forall i in D with (&& reduce allSorted) {
-	  if i < D.high {
-	    for j in 1..nt {
-	      if (sorted[j][i] < sorted[j][i+1]) {
-		break;
-	      } else if sorted[j][i] > sorted[j][i+1] {
-		allSorted reduce= false;
-	      }
-	    }
-	  }
-	}
+        var sorted = for a in arrays do a[iv];
+        for (s, i) in zip(sorted, 1..) {
+          printAry("arrays[", i, "][iv] = ", s);
+        }
+        var allSorted = true;
+        forall i in D with (&& reduce allSorted) {
+          if i < D.high {
+            for j in 1..nt {
+              if (sorted[j][i] < sorted[j][i+1]) {
+                break;
+              } else if sorted[j][i] > sorted[j][i+1] {
+                allSorted reduce= false;
+              }
+            }
+          }
+        }
         writeln("allSorted? ", allSorted);
     }
 
@@ -131,16 +131,16 @@ module testRadixSortLSDTuple
         writeln("numBuckets = ",numBuckets);
         writeln("maskDigit = ",maskDigit);
 
-	// testDigit();
+        // testDigit();
         // testSimple();
         testIt(NVALS, NRANGE,true, int);
         testIt(NVALS, NRANGE,false, int);
-	testIt(NVALS, NRANGE, true, real);
-	testIt(NVALS, NRANGE, false, real);
-	// testTuple(NVALS, (NRANGE, NRANGE*NRANGE, (NRANGE**0.5):int), (false, true, false), (int, int, int));
-	// testTuple(NVALS, (NRANGE, NRANGE*NRANGE, 1), (false, false, true), (real, int, real));
-	testTuple(NVALS, (int, int, int));
-	testTuple(NVALS, (real, int, real));
+        testIt(NVALS, NRANGE, true, real);
+        testIt(NVALS, NRANGE, false, real);
+        // testTuple(NVALS, (NRANGE, NRANGE*NRANGE, (NRANGE**0.5):int), (false, true, false), (int, int, int));
+        // testTuple(NVALS, (NRANGE, NRANGE*NRANGE, 1), (false, false, true), (real, int, real));
+        testTuple(NVALS, (int, int, int));
+        testTuple(NVALS, (real, int, real));
     }
 
 

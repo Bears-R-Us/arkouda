@@ -60,8 +60,8 @@ module UnitTestArgSort
         // sort it and return iv in symbol table
         cmd = "localArgsort";
         var aname = parseName(repMsg); // get name from randint reply msg
-	var orig = toSymEntry(st.lookup(aname), int);
-	writeIntArray(orig.a, filename+".original");
+        var orig = toSymEntry(st.lookup(aname), int);
+        writeIntArray(orig.a, filename+".original");
         reqMsg = try! "%s %s".format(cmd, aname);
         t1 = Time.getCurrentTime();
         repMsg = localArgsortMsg(reqMsg, st);
@@ -71,8 +71,8 @@ module UnitTestArgSort
         // apply iv to pdarray return sorted array
         cmd = "[pdarray]";
         var ivname = parseName(repMsg); // get name from argsort reply msg
-	var iv = toSymEntry(st.lookup(ivname), int);
-	writeIntArray(iv.a, filename+".permutation");
+        var iv = toSymEntry(st.lookup(ivname), int);
+        writeIntArray(iv.a, filename+".permutation");
         reqMsg = try! "%s %s %s".format(cmd, aname, ivname);
         t1 = Time.getCurrentTime();
         repMsg = pdarrayIndexMsg(reqMsg, st);
@@ -83,8 +83,8 @@ module UnitTestArgSort
         cmd = "reduction";
         var subCmd = "is_locally_sorted";
         var bname = parseName(repMsg); // get name from [pdarray] reply msg
-	var locSorted = toSymEntry(st.lookup(bname), int);
-	writeIntArray(locSorted.a, filename+".locally_sorted");
+        var locSorted = toSymEntry(st.lookup(bname), int);
+        writeIntArray(locSorted.a, filename+".locally_sorted");
         reqMsg = try! "%s %s %s".format(cmd, subCmd, bname);
         t1 = Time.getCurrentTime();
         repMsg = reductionMsg(reqMsg, st);

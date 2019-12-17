@@ -35,7 +35,7 @@ module MultiTypeSymEntry
 
         proc init(type etype, len: int = 0) {
             this.dtype = whichDtype(etype);
-	    this.itemsize = dtypeSize(this.dtype);
+            this.itemsize = dtypeSize(this.dtype);
             this.size = len;
             this.shape = (len,);
         }

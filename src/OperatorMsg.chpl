@@ -77,13 +77,13 @@ module OperatorMsg
                         ref ra = r.a;
                         [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then li/ri else 0;
                     }
-		    when "%" { // modulo
+                    when "%" { // modulo
                         var e = st.addEntry(rname, l.size, int);
                         ref ea = e.a;
                         ref la = l.a;
                         ref ra = r.a;
                         [(ei,li,ri) in zip(ea,la,ra)] ei = if ri != 0 then li%ri else 0;
-		    }
+                    }
                     when "<" {
                         var e = st.addEntry(rname, l.size, bool);
                         e.a = l.a < r.a;
@@ -316,105 +316,105 @@ module OperatorMsg
                     otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
                 }
             }
-	    when (DType.Bool, DType.Bool) {
-	        var l = toSymEntry(left, bool);
-		var r = toSymEntry(right, bool);
-		select op {
-		    when "|" {
+            when (DType.Bool, DType.Bool) {
+                var l = toSymEntry(left, bool);
+                var r = toSymEntry(right, bool);
+                select op {
+                    when "|" {
                         var e = st.addEntry(rname, l.size, bool);
-		        e.a = l.a | r.a;
-		    }
-		    when "&" {
+                        e.a = l.a | r.a;
+                    }
+                    when "&" {
                         var e = st.addEntry(rname, l.size, bool);
-		        e.a = l.a & r.a;
-		    }
-		    when "^" {
+                        e.a = l.a & r.a;
+                    }
+                    when "^" {
                         var e = st.addEntry(rname, l.size, bool);
-		        e.a = l.a ^ r.a;
-		    }
+                        e.a = l.a ^ r.a;
+                    }
                     when "==" {
                         var e = st.addEntry(rname, l.size, bool);
                         e.a = l.a == r.a;
                     }
-		    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
-		}
-	    }
-	    when (DType.Bool, DType.Int64) {
-	        var l = toSymEntry(left, bool);
-		var r = toSymEntry(right, int);
-		select op {
-		    when "+" {
+                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
+                }
+            }
+            when (DType.Bool, DType.Int64) {
+                var l = toSymEntry(left, bool);
+                var r = toSymEntry(right, int);
+                select op {
+                    when "+" {
                         var e = st.addEntry(rname, l.size, int);
-		        e.a = l.a:int + r.a;
-		    }
-		    when "-" {
+                        e.a = l.a:int + r.a;
+                    }
+                    when "-" {
                         var e = st.addEntry(rname, l.size, int);
-		        e.a = l.a:int - r.a;
-		    }
-		    when "*" {
+                        e.a = l.a:int - r.a;
+                    }
+                    when "*" {
                         var e = st.addEntry(rname, l.size, int);
-		        e.a = l.a:int * r.a;
-		    }
-		    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
-		}
-	    }
-	    when (DType.Int64, DType.Bool) {
-	        var l = toSymEntry(left, int);
-		var r = toSymEntry(right, bool);
-		select op {
-		    when "+" {
+                        e.a = l.a:int * r.a;
+                    }
+                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
+                }
+            }
+            when (DType.Int64, DType.Bool) {
+                var l = toSymEntry(left, int);
+                var r = toSymEntry(right, bool);
+                select op {
+                    when "+" {
                         var e = st.addEntry(rname, l.size, int);
-		        e.a = l.a + r.a:int;
-		    }
-		    when "-" {
+                        e.a = l.a + r.a:int;
+                    }
+                    when "-" {
                         var e = st.addEntry(rname, l.size, int);
-		        e.a = l.a - r.a:int;
-		    }
-		    when "*" {
+                        e.a = l.a - r.a:int;
+                    }
+                    when "*" {
                         var e = st.addEntry(rname, l.size, int);
-		        e.a = l.a * r.a:int;
-		    }
-		    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
-		}
-	    }
-	    when (DType.Bool, DType.Float64) {
-	        var l = toSymEntry(left, bool);
-		var r = toSymEntry(right, real);
-		select op {
-		    when "+" {
+                        e.a = l.a * r.a:int;
+                    }
+                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
+                }
+            }
+            when (DType.Bool, DType.Float64) {
+                var l = toSymEntry(left, bool);
+                var r = toSymEntry(right, real);
+                select op {
+                    when "+" {
                         var e = st.addEntry(rname, l.size, real);
-		        e.a = l.a:real + r.a;
-		    }
-		    when "-" {
+                        e.a = l.a:real + r.a;
+                    }
+                    when "-" {
                         var e = st.addEntry(rname, l.size, real);
-		        e.a = l.a:real - r.a;
-		    }
-		    when "*" {
+                        e.a = l.a:real - r.a;
+                    }
+                    when "*" {
                         var e = st.addEntry(rname, l.size, real);
-		        e.a = l.a:real * r.a;
-		    }
-		    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
-		}
-	    }
-	    when (DType.Float64, DType.Bool) {
-	        var l = toSymEntry(left, real);
-		var r = toSymEntry(right, bool);
-		select op {
-		    when "+" {
+                        e.a = l.a:real * r.a;
+                    }
+                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
+                }
+            }
+            when (DType.Float64, DType.Bool) {
+                var l = toSymEntry(left, real);
+                var r = toSymEntry(right, bool);
+                select op {
+                    when "+" {
                         var e = st.addEntry(rname, l.size, real);
-		        e.a = l.a + r.a:real;
-		    }
-		    when "-" {
+                        e.a = l.a + r.a:real;
+                    }
+                    when "-" {
                         var e = st.addEntry(rname, l.size, real);
-		        e.a = l.a - r.a:real;
-		    }
-		    when "*" {
+                        e.a = l.a - r.a:real;
+                    }
+                    when "*" {
                         var e = st.addEntry(rname, l.size, real);
-		        e.a = l.a * r.a:real;
-		    }
-		    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
-		}
-	    }
+                        e.a = l.a * r.a:real;
+                    }
+                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
+                }
+            }
             otherwise {return unrecognizedTypeError(pn,
                                                     "("+dtype2str(left.dtype)+","+dtype2str(right.dtype)+")");}
         }
@@ -475,12 +475,12 @@ module OperatorMsg
                         ref la = l.a;
                         [(ei,li) in zip(ea,la)] ei = if val != 0 then li/val else 0;
                     }
-		    when "%" { // modulo
+                    when "%" { // modulo
                         var e = st.addEntry(rname, l.size, int);
                         ref ea = e.a;
                         ref la = l.a;
                         [(ei,li) in zip(ea,la)] ei = if val != 0 then li%val else 0;
-		    } 
+                    } 
                     when "<" {
                         var e = st.addEntry(rname, l.size, bool);
                         e.a = l.a < val;
@@ -709,101 +709,101 @@ module OperatorMsg
                     otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
                 }
             }
-	    when (DType.Bool, DType.Bool) {
-	        var l = toSymEntry(left, bool);
-		var val = try! value.toLower():bool;
-		select op {
-		    when "|" {
+            when (DType.Bool, DType.Bool) {
+                var l = toSymEntry(left, bool);
+                var val = try! value.toLower():bool;
+                select op {
+                    when "|" {
                         var e = st.addEntry(rname, l.size, bool);
-		        e.a = l.a | val;
-		    }
-		    when "&" {
+                        e.a = l.a | val;
+                    }
+                    when "&" {
                         var e = st.addEntry(rname, l.size, bool);
-		        e.a = l.a & val;
-		    }
-		    when "^" {
+                        e.a = l.a & val;
+                    }
+                    when "^" {
                         var e = st.addEntry(rname, l.size, bool);
-		        e.a = l.a ^ val;
-		    }
+                        e.a = l.a ^ val;
+                    }
                     otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
-		}
-	    }
-	    when (DType.Bool, DType.Int64) {
-	        var l = toSymEntry(left, bool);
-		var val = try! value:int;
-		select op {
-		    when "+" {
+                }
+            }
+            when (DType.Bool, DType.Int64) {
+                var l = toSymEntry(left, bool);
+                var val = try! value:int;
+                select op {
+                    when "+" {
                         var e = st.addEntry(rname, l.size, int);
                         e.a = l.a:int + val;
-		    }
-		    when "-" {
+                    }
+                    when "-" {
                         var e = st.addEntry(rname, l.size, int);
                         e.a = l.a:int - val;
-		    }
-		    when "*" {
+                    }
+                    when "*" {
                         var e = st.addEntry(rname, l.size, int);
                         e.a = l.a:int * val;
-		    }
+                    }
                     otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
-		}
-	    }
-	    when (DType.Int64, DType.Bool) {
-	        var l = toSymEntry(left, int);
-		var val = try! value.toLower():bool;
-		select op {
-		    when "+" {
+                }
+            }
+            when (DType.Int64, DType.Bool) {
+                var l = toSymEntry(left, int);
+                var val = try! value.toLower():bool;
+                select op {
+                    when "+" {
                         var e = st.addEntry(rname, l.size, int);
                         e.a = l.a + val:int;
-		    }
-		    when "-" {
+                    }
+                    when "-" {
                         var e = st.addEntry(rname, l.size, int);
                         e.a = l.a - val:int;
-		    }
-		    when "*" {
+                    }
+                    when "*" {
                         var e = st.addEntry(rname, l.size, int);
                         e.a = l.a * val:int;
-		    }
+                    }
                     otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
-		}
-	    }
-	    when (DType.Bool, DType.Float64) {
-	        var l = toSymEntry(left, bool);
-		var val = try! value:real;
-		select op {
-		    when "+" {
+                }
+            }
+            when (DType.Bool, DType.Float64) {
+                var l = toSymEntry(left, bool);
+                var val = try! value:real;
+                select op {
+                    when "+" {
                         var e = st.addEntry(rname, l.size, real);
                         e.a = l.a:real + val;
-		    }
-		    when "-" {
+                    }
+                    when "-" {
                         var e = st.addEntry(rname, l.size, real);
                         e.a = l.a:real - val;
-		    }
-		    when "*" {
+                    }
+                    when "*" {
                         var e = st.addEntry(rname, l.size, real);
                         e.a = l.a:real * val;
-		    }
+                    }
                     otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
-		}
-	    }
-	    when (DType.Float64, DType.Bool) {
-	        var l = toSymEntry(left, real);
-		var val = try! value.toLower():bool;
-		select op {
-		    when "+" {
+                }
+            }
+            when (DType.Float64, DType.Bool) {
+                var l = toSymEntry(left, real);
+                var val = try! value.toLower():bool;
+                select op {
+                    when "+" {
                         var e = st.addEntry(rname, l.size, real);
                         e.a = l.a + val:real;
-		    }
-		    when "-" {
+                    }
+                    when "-" {
                         var e = st.addEntry(rname, l.size, real);
                         e.a = l.a - val:real;
-		    }
-		    when "*" {
+                    }
+                    when "*" {
                         var e = st.addEntry(rname, l.size, real);
                         e.a = l.a * val:real;
-		    }
+                    }
                     otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
-		}
-	    }
+                }
+            }
             otherwise {return unrecognizedTypeError(pn,
                                                     "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");}
         }
@@ -865,12 +865,12 @@ module OperatorMsg
                         ref ra = r.a;
                         [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then val/ri else 0;
                     }
-		    when "%" { // modulo
+                    when "%" { // modulo
                         var e = st.addEntry(rname, r.size, int);
                         ref ea = e.a;
                         ref ra = r.a;
                         [(ei,ri) in zip(ea,ra)] ei = if ri != 0 then val%ri else 0;
-		    }
+                    }
                     when "<" {
                         var e = st.addEntry(rname, r.size, bool);
                         e.a = val < r.a;
@@ -1099,101 +1099,101 @@ module OperatorMsg
                     otherwise {return notImplementedError(pn,dtype,op,right.dtype);}
                 }
             }
-	    when (DType.Bool, DType.Bool) {
-	        var val = try! value.toLower():bool;
-		var r = toSymEntry(right, bool);
-		select op {
-		    when "|" {
+            when (DType.Bool, DType.Bool) {
+                var val = try! value.toLower():bool;
+                var r = toSymEntry(right, bool);
+                select op {
+                    when "|" {
                         var e = st.addEntry(rname, r.size, bool);
- 		        e.a = val | r.a;
-		    }
-		    when "&" {
+                         e.a = val | r.a;
+                    }
+                    when "&" {
                         var e = st.addEntry(rname, r.size, bool);
- 		        e.a = val & r.a;
-		    }
-		    when "^" {
+                         e.a = val & r.a;
+                    }
+                    when "^" {
                         var e = st.addEntry(rname, r.size, bool);
- 		        e.a = val ^ r.a;
-		    }
+                         e.a = val ^ r.a;
+                    }
                     otherwise {return notImplementedError(pn,dtype,op,right.dtype);}
-		}
-	    }
-	    when (DType.Bool, DType.Int64) {
-	        var val = try! value.toLower():bool;
-		var r = toSymEntry(right, int);
-		select op {
-		    when "+" {
+                }
+            }
+            when (DType.Bool, DType.Int64) {
+                var val = try! value.toLower():bool;
+                var r = toSymEntry(right, int);
+                select op {
+                    when "+" {
                         var e = st.addEntry(rname, r.size, int);
                         e.a = val:int + r.a;
-		    }
-		    when "-" {
+                    }
+                    when "-" {
                         var e = st.addEntry(rname, r.size, int);
                         e.a = val:int - r.a;
-		    }
-		    when "*" {
+                    }
+                    when "*" {
                         var e = st.addEntry(rname, r.size, int);
                         e.a = val:int * r.a;
-		    }
+                    }
                     otherwise {return notImplementedError(pn,dtype,op,right.dtype);}
-		}
-	    }
-	    when (DType.Int64, DType.Bool) {
-		var val = try! value:int;
-		var r = toSymEntry(right, bool);
-		select op {
-		    when "+" {
+                }
+            }
+            when (DType.Int64, DType.Bool) {
+                var val = try! value:int;
+                var r = toSymEntry(right, bool);
+                select op {
+                    when "+" {
                         var e = st.addEntry(rname, r.size, int);
                         e.a = val + r.a:int;
-		    }
-		    when "-" {
+                    }
+                    when "-" {
                         var e = st.addEntry(rname, r.size, int);
                         e.a = val - r.a:int;
-		    }
-		    when "*" {
+                    }
+                    when "*" {
                         var e = st.addEntry(rname, r.size, int);
                         e.a = val * r.a:int;
-		    }
+                    }
                     otherwise {return notImplementedError(pn,dtype,op,right.dtype);}
-		}
-	    }
-	    when (DType.Bool, DType.Float64) {
-	        var val = try! value.toLower():bool;
-		var r = toSymEntry(right, real);
-		select op {
-		    when "+" {
+                }
+            }
+            when (DType.Bool, DType.Float64) {
+                var val = try! value.toLower():bool;
+                var r = toSymEntry(right, real);
+                select op {
+                    when "+" {
                         var e = st.addEntry(rname, r.size, real);
                         e.a = val:real + r.a;
-		    }
-		    when "-" {
+                    }
+                    when "-" {
                         var e = st.addEntry(rname, r.size, real);
                         e.a = val:real - r.a;
-		    }
-		    when "*" {
+                    }
+                    when "*" {
                         var e = st.addEntry(rname, r.size, real);
                         e.a = val:real * r.a;
-		    }
+                    }
                     otherwise {return notImplementedError(pn,dtype,op,right.dtype);}
-		}
-	    }
-	    when (DType.Float64, DType.Bool) {
-		var val = try! value:real;
-		var r = toSymEntry(right, bool);
-		select op {
-		    when "+" {
+                }
+            }
+            when (DType.Float64, DType.Bool) {
+                var val = try! value:real;
+                var r = toSymEntry(right, bool);
+                select op {
+                    when "+" {
                         var e = st.addEntry(rname, r.size, real);
                         e.a = val + r.a:real;
-		    }
-		    when "-" {
+                    }
+                    when "-" {
                         var e = st.addEntry(rname, r.size, real);
                         e.a = val - r.a:real;
-		    }
-		    when "*" {
+                    }
+                    when "*" {
                         var e = st.addEntry(rname, r.size, real);
                         e.a = val * r.a:real;
-		    }
+                    }
                     otherwise {return notImplementedError(pn,dtype,op,right.dtype);}
-		}
-	    }
+                }
+            }
             otherwise {return unrecognizedTypeError(pn,
                                                     "("+dtype2str(dtype)+","+dtype2str(right.dtype)+")");}
         }
@@ -1296,39 +1296,39 @@ module OperatorMsg
                     otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
                 }
             }
-	    when (DType.Bool, DType.Bool) {
-	        var l = toSymEntry(left, bool);
-		var r = toSymEntry(right, bool);
-		select op
-		{
-		    when "|=" {l.a |= r.a;}
-		    when "&=" {l.a &= r.a;}
-		    when "^=" {l.a ^= r.a;}
-		    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
-		}
-	    }
-	    when (DType.Int64, DType.Bool) {
-	        var l = toSymEntry(left, int);
-		var r = toSymEntry(right, bool);
-		select op
-		{ 
-		    when "+=" {l.a += r.a:int;}
-		    when "-=" {l.a -= r.a:int;}
-		    when "*=" {l.a *= r.a:int;}
-  		    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
-		}
-	    }
-	    when (DType.Float64, DType.Bool) {
-	        var l = toSymEntry(left, real);
-		var r = toSymEntry(right, bool);
-		select op
-		{
-		    when "+=" {l.a += r.a:real;}
-		    when "-=" {l.a -= r.a:real;}
-		    when "*=" {l.a *= r.a:real;}
-  		    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
-		}
-	    }
+            when (DType.Bool, DType.Bool) {
+                var l = toSymEntry(left, bool);
+                var r = toSymEntry(right, bool);
+                select op
+                {
+                    when "|=" {l.a |= r.a;}
+                    when "&=" {l.a &= r.a;}
+                    when "^=" {l.a ^= r.a;}
+                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
+                }
+            }
+            when (DType.Int64, DType.Bool) {
+                var l = toSymEntry(left, int);
+                var r = toSymEntry(right, bool);
+                select op
+                { 
+                    when "+=" {l.a += r.a:int;}
+                    when "-=" {l.a -= r.a:int;}
+                    when "*=" {l.a *= r.a:int;}
+                      otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
+                }
+            }
+            when (DType.Float64, DType.Bool) {
+                var l = toSymEntry(left, real);
+                var r = toSymEntry(right, bool);
+                select op
+                {
+                    when "+=" {l.a += r.a:real;}
+                    when "-=" {l.a -= r.a:real;}
+                    when "*=" {l.a *= r.a:real;}
+                      otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
+                }
+            }
             otherwise {return unrecognizedTypeError(pn,
                                                     "("+dtype2str(left.dtype)+","+dtype2str(right.dtype)+")");}
         }
@@ -1424,26 +1424,26 @@ module OperatorMsg
                     otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
                 }
             }
-	    when (DType.Int64, DType.Bool) {
-	        var l = toSymEntry(left, int);
-		var val = try! value: bool;
-		select op {
-		    when "+=" {l.a += val:int;}
-		    when "-=" {l.a -= val:int;}
-		    when "*=" {l.a *= val:int;}
-		    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
-		}
-	    }
-	    when (DType.Float64, DType.Bool) {
-	        var l = toSymEntry(left, real);
-		var val = try! value: bool;
-		select op {
-		    when "+=" {l.a += val:real;}
-		    when "-=" {l.a -= val:real;}
-		    when "*=" {l.a *= val:real;}
-		    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
-		}
-	    }
+            when (DType.Int64, DType.Bool) {
+                var l = toSymEntry(left, int);
+                var val = try! value: bool;
+                select op {
+                    when "+=" {l.a += val:int;}
+                    when "-=" {l.a -= val:int;}
+                    when "*=" {l.a *= val:int;}
+                    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
+                }
+            }
+            when (DType.Float64, DType.Bool) {
+                var l = toSymEntry(left, real);
+                var val = try! value: bool;
+                select op {
+                    when "+=" {l.a += val:real;}
+                    when "-=" {l.a -= val:real;}
+                    when "*=" {l.a *= val:real;}
+                    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
+                }
+            }
             otherwise {return unrecognizedTypeError(pn,
                                                     "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");}
         }
