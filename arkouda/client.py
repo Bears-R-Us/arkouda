@@ -41,37 +41,29 @@ def set_defaults():
     maxTransferBytes = maxTransferBytesDefVal
 
 
-def get_server_and_port(server_connection_info):
-    while True:
-        try:
-            with open(server_connection_info, 'r') as f:
-                (hostname, port) = f.readline().split(':')
-                port = int(port)
-                if hostname == std_socket.gethostname():
-                    hostname = 'localhost'
-                return (hostname, port)
-        except (ValueError, FileNotFoundError) as e:
-            time.sleep(1)
-            continue
-
+# Reads server:port information from the ARKOUDA_SERVER_CONNECTION_INFO file if
+# set, otherwise uses localhost:5555
 def get_default_server_and_port():
     (server, port) = ("localhost", 5555)
     server_connection_info = os.getenv('ARKOUDA_SERVER_CONNECTION_INFO')
     if server_connection_info:
-        (server, port) = get_server_and_port(server_connection_info)
+        while True:
+            try:
+                with open(server_connection_info, 'r') as f:
+                    (server, port) = f.readline().split(':')
+                    port = int(port)
+                    if server == std_socket.gethostname():
+                        server = 'localhost'
+                    break
+            except (ValueError, FileNotFoundError) as e:
+                time.sleep(1)
+                continue
     return (server, port)
 
-def get_default_sever():
-    (server, port) = get_default_server_and_port()
-    return server
 
-def get_default_port():
-    (server, port) = get_default_server_and_port()
-    return port
-
-
+(serverDefVal, portDefVal) = get_default_server_and_port()
 # create context, request end of socket, and connect to it
-def connect(server = get_default_sever(), port = get_default_port()):
+def connect(server = serverDefVal, port = portDefVal):
     """
     Connect to a running arkouda server.
 
@@ -82,6 +74,10 @@ def connect(server = get_default_sever(), port = get_default_port()):
         machine). Defaults to `localhost`.
     port : int, optional
         The port of the server. Defaults to 5555.
+
+    The default server/port can be read from a file located at
+    `$ARKOUDA_SERVER_CONNECTION_INFO` that contains `server:port`
+    
 
     Returns
     -------
