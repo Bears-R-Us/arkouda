@@ -22,3 +22,12 @@ jobs:
         apt-get update && apt-get install -y libhdf5-dev libzmq3-dev python3-pip
         echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" > Makefile.paths
         ARKOUDA_DEVELOPER=true make
+
+  mac_job:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: mac comm=none
+      run: |
+        brew install hdf5 zeromq chapel
+        ARKOUDA_DEVELOPER=true make
