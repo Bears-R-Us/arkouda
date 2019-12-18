@@ -19,16 +19,16 @@ module testRadixSortLSD
 
         fillRandom(A, 241);
         if isIntegral(t) {
-	  if posOnly {
-	    [a in A] a = if a < 0 then -a else a;
-	  }
-	  A %= nRange;
-	} else if isRealType(t) {
-	  if !posOnly {
-	    A = 2*A - 1;
-	  }
-	  A *= nRange;
-	}
+          if posOnly {
+            [a in A] a = if a < 0 then -a else a;
+          }
+          A %= nRange;
+        } else if isRealType(t) {
+          if !posOnly {
+            A = 2*A - 1;
+          }
+          A *= nRange;
+        }
         
         printAry("A = ",A);
         writeln(">> radixSortLSD_ranks");
@@ -95,14 +95,14 @@ module testRadixSortLSD
         writeln("maskDigit = ",maskDigit);
 
         testSimple();
-	writeln("Testing positive int");
+        writeln("Testing positive int");
         testIt(NVALS, NRANGE,true, int);
-	writeln("Testing negative int");
+        writeln("Testing negative int");
         testIt(NVALS, NRANGE,false, int);
-	writeln("Testing positive real");
-	testIt(NVALS, NRANGE, true, real);
-	writeln("Testing negative real");
-	testIt(NVALS, NRANGE, false, real);
+        writeln("Testing positive real");
+        testIt(NVALS, NRANGE, true, real);
+        writeln("Testing negative real");
+        testIt(NVALS, NRANGE, false, real);
     }
 
 

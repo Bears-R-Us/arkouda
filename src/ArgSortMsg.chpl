@@ -367,24 +367,24 @@ module ArgSortMsg
       var deltaIV: [aD] int;
       // Discover the dtype of the entry holding the keys array
       select g.dtype {
-	when DType.Int64 {
-	  var e = toSymEntry(g, int);
-	  // Permute the keys array with the initial iv
-	  var newa: [e.aD] int;
-	  ref olda = e.a;
-	  // Effectively: newa = olda[iv]
-	  [(newai, idx) in zip(newa, iv)] unorderedCopy(newai, olda[idx]);
-	  // Generate the next incremental permutation
-	  deltaIV = radixSortLSD_ranks(newa);
-	}
-	when DType.Float64 {
-	  var e = toSymEntry(g, real);
-	  var newa: [e.aD] real;
-	  ref olda = e.a;
-	  [(newai, idx) in zip(newa, iv)] unorderedCopy(newai, olda[idx]);
-	  deltaIV = radixSortLSD_ranks(newa);
-	}
-	otherwise { throw new owned ErrorWithMsg(dtype2str(g.dtype)); }
+        when DType.Int64 {
+          var e = toSymEntry(g, int);
+          // Permute the keys array with the initial iv
+          var newa: [e.aD] int;
+          ref olda = e.a;
+          // Effectively: newa = olda[iv]
+          [(newai, idx) in zip(newa, iv)] unorderedCopy(newai, olda[idx]);
+          // Generate the next incremental permutation
+          deltaIV = radixSortLSD_ranks(newa);
+        }
+        when DType.Float64 {
+          var e = toSymEntry(g, real);
+          var newa: [e.aD] real;
+          ref olda = e.a;
+          [(newai, idx) in zip(newa, iv)] unorderedCopy(newai, olda[idx]);
+          deltaIV = radixSortLSD_ranks(newa);
+        }
+        otherwise { throw new owned ErrorWithMsg(dtype2str(g.dtype)); }
       }
       // The output permutation is the composition of the initial and incremental permutations
       var newIV: [aD] int;
@@ -417,7 +417,7 @@ module ArgSortMsg
     /*   var cumulativeIV: [aD] int = aD.low..aD.high; */
     /*   // Starting with the last array, incrementally permute the IV by sorting each array */
     /*   for i in D.low..D.high-1 by -1 { */
-    /* 	try cumulativeIV = incrementalArgSort(arrays[i], cumulativeIV); */
+    /*         try cumulativeIV = incrementalArgSort(arrays[i], cumulativeIV); */
     /*   } */
     /*   return cumulativeIV; */
     /* } */
@@ -439,7 +439,7 @@ module ArgSortMsg
       var size: int;
       // Check that all arrays exist in the symbol table and have the same size
       for (name, objtype, i) in zip(names, types, 1..) {
-	// arrays[i] = st.lookup(name): borrowed GenSymEntry;
+        // arrays[i] = st.lookup(name): borrowed GenSymEntry;
         var thisSize: int;
         select objtype {
           when "pdarray" {
@@ -454,11 +454,11 @@ module ArgSortMsg
           otherwise {return unrecognizedTypeError(pn, objtype);}
         }
         
-	if (i == 1) {
-	  size = thisSize;
-	} else {
-	  if (thisSize != size) { return incompatibleArgumentsError(pn, "Arrays must all be same size"); }
-	}
+        if (i == 1) {
+          size = thisSize;
+        } else {
+          if (thisSize != size) { return incompatibleArgumentsError(pn, "Arrays must all be same size"); }
+        }
         
       }
 
@@ -563,12 +563,12 @@ module ArgSortMsg
         select (gEnt.dtype) {
             when (DType.Int64) {
                 var e = toSymEntry(gEnt,int);
-		var iv = perLocaleArgSort(e.a);
-		st.addEntry(ivname, new shared SymEntry(iv));
-	    }
-	    otherwise {return notImplementedError(pn,gEnt.dtype);}
-	}
-	return try! "created " + st.attrib(ivname);
+                var iv = perLocaleArgSort(e.a);
+                st.addEntry(ivname, new shared SymEntry(iv));
+            }
+            otherwise {return notImplementedError(pn,gEnt.dtype);}
+        }
+        return try! "created " + st.attrib(ivname);
     }
     
     proc perLocaleArgSort(a:[?aD] int):[aD] int {
@@ -586,23 +586,23 @@ module ArgSortMsg
     proc perLocaleArgCountSort(a:[?aD] int):[aD] int {
       var iv: [aD] int;
       coforall loc in Locales {
-	on loc {
-	  //ref myIV = iv[iv.localSubdomain()];
-	  var myIV: [0..#iv.localSubdomain().size] int;
-	  ref myA = a.localSlice[a.localSubdomain()];
-	  // Calculate number of histogram bins
-	  var locMin = min reduce myA;
-	  var locMax = max reduce myA;
-	  var bins = locMax - locMin + 1;
-	  if (bins <= mBins) {
-	    if (v && here.id==0) {try! writeln("bins %i <= %i; using localHistArgSort".format(bins, mBins));}
-	    localHistArgSort(myIV, myA, locMin, bins);
-	  } else {
-	    if (v && here.id==0) {try! writeln("bins %i > %i; using localAssocArgSort".format(bins, mBins));}
-	    localAssocArgSort(myIV, myA);
-	  }
-	  iv.localSlice[iv.localSubdomain()] = myIV;
-	}
+        on loc {
+          //ref myIV = iv[iv.localSubdomain()];
+          var myIV: [0..#iv.localSubdomain().size] int;
+          ref myA = a.localSlice[a.localSubdomain()];
+          // Calculate number of histogram bins
+          var locMin = min reduce myA;
+          var locMax = max reduce myA;
+          var bins = locMax - locMin + 1;
+          if (bins <= mBins) {
+            if (v && here.id==0) {try! writeln("bins %i <= %i; using localHistArgSort".format(bins, mBins));}
+            localHistArgSort(myIV, myA, locMin, bins);
+          } else {
+            if (v && here.id==0) {try! writeln("bins %i > %i; using localAssocArgSort".format(bins, mBins));}
+            localAssocArgSort(myIV, myA);
+          }
+          iv.localSlice[iv.localSubdomain()] = myIV;
+        }
       }
       return iv;
     }
@@ -614,21 +614,21 @@ module ArgSortMsg
       // Make counts for each value in a
       var hist: [binDom] atomic int;
       forall val in a with (ref hist, ref binDom) {
-	if !binDom.contains(val) {
-	  binDom += val;
-	}
-	hist[val].add(1);
+        if !binDom.contains(val) {
+          binDom += val;
+        }
+        hist[val].add(1);
       }
       // Need the bins in sorted order as a dense array
       var sortedBins: [0..#binDom.size] int;
       for (s, b) in zip(sortedBins, binDom) {
-	s = b;
+        s = b;
       }
       Sort.sort(sortedBins);
       // Make an associative array that translates from value to dense, sorted bin index
       var val2bin: [binDom] int;
       forall (i, v) in zip(sortedBins.domain, sortedBins) {
-	val2bin[v] = i;
+        val2bin[v] = i;
       }
       // Get segment offsets in correct order
       var counts = [b in sortedBins] hist[b].read();
@@ -636,11 +636,11 @@ module ArgSortMsg
       // Now insert the a_index into iv
       var binpos: [sortedBins.domain] atomic int;
       forall (aidx, val) in zip(D, a) with (ref binpos, ref iv) {
-	// Use val's bin to determine where in iv to put a_index
-	var bin = val2bin[val];
-	// ividx is the offset of val's bin plus a running counter
-	var ividx = offsets[bin] + binpos[bin].fetchAdd(1);
-	iv[ividx] = aidx;
+        // Use val's bin to determine where in iv to put a_index
+        var bin = val2bin[val];
+        // ividx is the offset of val's bin plus a running counter
+        var ividx = offsets[bin] + binpos[bin].fetchAdd(1);
+        iv[ividx] = aidx;
       }
     }
 }

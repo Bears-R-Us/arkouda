@@ -30,10 +30,10 @@ module ServerErrorStrings
     /* efunc is not implemented for DTypes */
     proc notImplementedError(pname: string, efunc: string, dt1: DType, dt2: DType, dt3: DType): string {
       return try! "Error: %s: %s %s %s %s not implemented".format(pname,
-								  efunc,
-								  dtype2str(dt1),
-								  dtype2str(dt2),
-								  dtype2str(dt3));
+                                                                  efunc,
+                                                                  dtype2str(dt1),
+                                                                  dtype2str(dt2),
+                                                                  dtype2str(dt3));
     }
     /* algorthm is not implemented for DType */
     proc notImplementedError(pname: string, dtype: DType):string {

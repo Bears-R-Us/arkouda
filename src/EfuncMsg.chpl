@@ -155,57 +155,57 @@ module EfuncMsg
         var cmd = fields[1];
         var efunc = fields[2];
         var name1 = fields[3];
-	var name2 = fields[4];
-	var name3 = fields[5];
+        var name2 = fields[4];
+        var name3 = fields[5];
         var rname = st.nextName();
-	if v {try! writeln("%s %s %s %s %s %s : %s".format(cmd,efunc,name1,name2,name3,rname));try! stdout.flush();}
+        if v {try! writeln("%s %s %s %s %s %s : %s".format(cmd,efunc,name1,name2,name3,rname));try! stdout.flush();}
 
         var g1: borrowed GenSymEntry = st.lookup(name1);
-	var g2: borrowed GenSymEntry = st.lookup(name2);
-	var g3: borrowed GenSymEntry = st.lookup(name3);
-	if !((g1.size == g2.size) && (g2.size == g3.size)) {
-	  return "Error: size mismatch in arguments to "+pn;
-	}
+        var g2: borrowed GenSymEntry = st.lookup(name2);
+        var g3: borrowed GenSymEntry = st.lookup(name3);
+        if !((g1.size == g2.size) && (g2.size == g3.size)) {
+          return "Error: size mismatch in arguments to "+pn;
+        }
         select (g1.dtype, g2.dtype, g3.dtype) {
-	when (DType.Bool, DType.Int64, DType.Int64) {
-	  var e1 = toSymEntry(g1, bool);
-	  var e2 = toSymEntry(g2, int);
-	  var e3 = toSymEntry(g3, int);
-	  select efunc {
-	    when "where" {
-	      var a = where_helper(e1.a, e2.a, e3.a, 0);
-	      st.addEntry(rname, new shared SymEntry(a));
-	    }
-	    otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,g3.dtype);}
-	    } 
-	}
-	when (DType.Bool, DType.Float64, DType.Float64) {
-	  var e1 = toSymEntry(g1, bool);
-	  var e2 = toSymEntry(g2, real);
-	  var e3 = toSymEntry(g3, real);
-	  select efunc {
-	    when "where" {
-	      var a = where_helper(e1.a, e2.a, e3.a, 0);
-	      st.addEntry(rname, new shared SymEntry(a));
-	    }
-	    otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,g3.dtype);}
-	    } 
-	}
-	when (DType.Bool, DType.Bool, DType.Bool) {
-	  var e1 = toSymEntry(g1, bool);
-	  var e2 = toSymEntry(g2, bool);
-	  var e3 = toSymEntry(g3, bool);
-	  select efunc {
-	    when "where" {
-	      var a = where_helper(e1.a, e2.a, e3.a, 0);
-	      st.addEntry(rname, new shared SymEntry(a));
-	    }
-	    otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,g3.dtype);}
-	    } 
-	}
-	otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,g3.dtype);}
-	}
-	return try! "created " + st.attrib(rname);
+        when (DType.Bool, DType.Int64, DType.Int64) {
+          var e1 = toSymEntry(g1, bool);
+          var e2 = toSymEntry(g2, int);
+          var e3 = toSymEntry(g3, int);
+          select efunc {
+            when "where" {
+              var a = where_helper(e1.a, e2.a, e3.a, 0);
+              st.addEntry(rname, new shared SymEntry(a));
+            }
+            otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,g3.dtype);}
+            } 
+        }
+        when (DType.Bool, DType.Float64, DType.Float64) {
+          var e1 = toSymEntry(g1, bool);
+          var e2 = toSymEntry(g2, real);
+          var e3 = toSymEntry(g3, real);
+          select efunc {
+            when "where" {
+              var a = where_helper(e1.a, e2.a, e3.a, 0);
+              st.addEntry(rname, new shared SymEntry(a));
+            }
+            otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,g3.dtype);}
+            } 
+        }
+        when (DType.Bool, DType.Bool, DType.Bool) {
+          var e1 = toSymEntry(g1, bool);
+          var e2 = toSymEntry(g2, bool);
+          var e3 = toSymEntry(g3, bool);
+          select efunc {
+            when "where" {
+              var a = where_helper(e1.a, e2.a, e3.a, 0);
+              st.addEntry(rname, new shared SymEntry(a));
+            }
+            otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,g3.dtype);}
+            } 
+        }
+        otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,g3.dtype);}
+        }
+        return try! "created " + st.attrib(rname);
     }
 
     /*
@@ -227,57 +227,57 @@ module EfuncMsg
         var cmd = fields[1];
         var efunc = fields[2];
         var name1 = fields[3];
-	var name2 = fields[4];
-	var dtype = str2dtype(fields[5]);
-	var value = fields[6];
+        var name2 = fields[4];
+        var dtype = str2dtype(fields[5]);
+        var value = fields[6];
         var rname = st.nextName();
-	if v {try! writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,name2,dtype,value,rname));try! stdout.flush();}
+        if v {try! writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,name2,dtype,value,rname));try! stdout.flush();}
 
         var g1: borrowed GenSymEntry = st.lookup(name1);
-	var g2: borrowed GenSymEntry = st.lookup(name2);
-	if !(g1.size == g2.size) {
-	  return "Error: size mismatch in arguments to "+pn;
-	}
+        var g2: borrowed GenSymEntry = st.lookup(name2);
+        if !(g1.size == g2.size) {
+          return "Error: size mismatch in arguments to "+pn;
+        }
         select (g1.dtype, g2.dtype, dtype) {
-	when (DType.Bool, DType.Int64, DType.Int64) {
-	  var e1 = toSymEntry(g1, bool);
-	  var e2 = toSymEntry(g2, int);
-	  var val = try! value:int;
-	  select efunc {
-	    when "where" {
-	      var a = where_helper(e1.a, e2.a, val, 1);
-	      st.addEntry(rname, new shared SymEntry(a));
-	    }
-	    otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,dtype);}
-	    } 
-	}
-	when (DType.Bool, DType.Float64, DType.Float64) {
-	  var e1 = toSymEntry(g1, bool);
-	  var e2 = toSymEntry(g2, real);
-	  var val = try! value:real;
-	  select efunc {
-	    when "where" {
-	      var a = where_helper(e1.a, e2.a, val, 1);
-	      st.addEntry(rname, new shared SymEntry(a));
-	    }
-	    otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,dtype);}
-	    } 
-	}
-	when (DType.Bool, DType.Bool, DType.Bool) {
-	  var e1 = toSymEntry(g1, bool);
-	  var e2 = toSymEntry(g2, bool);
-	  var val = try! value.toLower():bool;
-	  select efunc {
-	    when "where" {
-	      var a = where_helper(e1.a, e2.a, val, 1);
-	      st.addEntry(rname, new shared SymEntry(a));
-	    }
-	    otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,dtype);}
-	    } 
-	}
-	otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,dtype);}
-	}
-	return try! "created " + st.attrib(rname);
+        when (DType.Bool, DType.Int64, DType.Int64) {
+          var e1 = toSymEntry(g1, bool);
+          var e2 = toSymEntry(g2, int);
+          var val = try! value:int;
+          select efunc {
+            when "where" {
+              var a = where_helper(e1.a, e2.a, val, 1);
+              st.addEntry(rname, new shared SymEntry(a));
+            }
+            otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,dtype);}
+            } 
+        }
+        when (DType.Bool, DType.Float64, DType.Float64) {
+          var e1 = toSymEntry(g1, bool);
+          var e2 = toSymEntry(g2, real);
+          var val = try! value:real;
+          select efunc {
+            when "where" {
+              var a = where_helper(e1.a, e2.a, val, 1);
+              st.addEntry(rname, new shared SymEntry(a));
+            }
+            otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,dtype);}
+            } 
+        }
+        when (DType.Bool, DType.Bool, DType.Bool) {
+          var e1 = toSymEntry(g1, bool);
+          var e2 = toSymEntry(g2, bool);
+          var val = try! value.toLower():bool;
+          select efunc {
+            when "where" {
+              var a = where_helper(e1.a, e2.a, val, 1);
+              st.addEntry(rname, new shared SymEntry(a));
+            }
+            otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,dtype);}
+            } 
+        }
+        otherwise {return notImplementedError(pn,efunc,g1.dtype,g2.dtype,dtype);}
+        }
+        return try! "created " + st.attrib(rname);
     }
 
     /*
@@ -299,57 +299,57 @@ module EfuncMsg
         var cmd = fields[1];
         var efunc = fields[2];
         var name1 = fields[3];
-	var dtype = str2dtype(fields[4]);
-	var value = fields[5];
-	var name2 = fields[6];
+        var dtype = str2dtype(fields[4]);
+        var value = fields[5];
+        var name2 = fields[6];
         var rname = st.nextName();
-	if v {try! writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,dtype,value,name2,rname));try! stdout.flush();}
+        if v {try! writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,dtype,value,name2,rname));try! stdout.flush();}
 
         var g1: borrowed GenSymEntry = st.lookup(name1);
-	var g2: borrowed GenSymEntry = st.lookup(name2);
-	if !(g1.size == g2.size) {
-	  return "Error: size mismatch in arguments to "+pn;
-	}
+        var g2: borrowed GenSymEntry = st.lookup(name2);
+        if !(g1.size == g2.size) {
+          return "Error: size mismatch in arguments to "+pn;
+        }
         select (g1.dtype, dtype, g2.dtype) {
-	when (DType.Bool, DType.Int64, DType.Int64) {
-	  var e1 = toSymEntry(g1, bool);
-	  var val = try! value:int;
-	  var e2 = toSymEntry(g2, int);
-	  select efunc {
-	    when "where" {
-	      var a = where_helper(e1.a, val, e2.a, 2);
-	      st.addEntry(rname, new shared SymEntry(a));
-	    }
-	    otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype,g2.dtype);}
-	    } 
-	}
-	when (DType.Bool, DType.Float64, DType.Float64) {
-	  var e1 = toSymEntry(g1, bool);
-	  var val = try! value:real;
-	  var e2 = toSymEntry(g2, real);
-	  select efunc {
-	    when "where" {
-	      var a = where_helper(e1.a, val, e2.a, 2);
-	      st.addEntry(rname, new shared SymEntry(a));
-	    }
-	    otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype,g2.dtype);}
-	    } 
-	}
-	when (DType.Bool, DType.Bool, DType.Bool) {
-	  var e1 = toSymEntry(g1, bool);
-	  var val = try! value.toLower():bool;
-	  var e2 = toSymEntry(g2, bool);
-	  select efunc {
-	    when "where" {
-	      var a = where_helper(e1.a, val, e2.a, 2);
-	      st.addEntry(rname, new shared SymEntry(a));
-	    }
-	    otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype,g2.dtype);}
-	    } 
-	}
-	otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype,g2.dtype);}
-	}
-	return try! "created " + st.attrib(rname);
+        when (DType.Bool, DType.Int64, DType.Int64) {
+          var e1 = toSymEntry(g1, bool);
+          var val = try! value:int;
+          var e2 = toSymEntry(g2, int);
+          select efunc {
+            when "where" {
+              var a = where_helper(e1.a, val, e2.a, 2);
+              st.addEntry(rname, new shared SymEntry(a));
+            }
+            otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype,g2.dtype);}
+            } 
+        }
+        when (DType.Bool, DType.Float64, DType.Float64) {
+          var e1 = toSymEntry(g1, bool);
+          var val = try! value:real;
+          var e2 = toSymEntry(g2, real);
+          select efunc {
+            when "where" {
+              var a = where_helper(e1.a, val, e2.a, 2);
+              st.addEntry(rname, new shared SymEntry(a));
+            }
+            otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype,g2.dtype);}
+            } 
+        }
+        when (DType.Bool, DType.Bool, DType.Bool) {
+          var e1 = toSymEntry(g1, bool);
+          var val = try! value.toLower():bool;
+          var e2 = toSymEntry(g2, bool);
+          select efunc {
+            when "where" {
+              var a = where_helper(e1.a, val, e2.a, 2);
+              st.addEntry(rname, new shared SymEntry(a));
+            }
+            otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype,g2.dtype);}
+            } 
+        }
+        otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype,g2.dtype);}
+        }
+        return try! "created " + st.attrib(rname);
     }
 
     /*
@@ -371,54 +371,54 @@ module EfuncMsg
         var cmd = fields[1];
         var efunc = fields[2];
         var name1 = fields[3];
-	var dtype1 = str2dtype(fields[4]);
-	var value1 = fields[5];
-	var dtype2 = str2dtype(fields[6]);
-	var value2 = fields[7];
+        var dtype1 = str2dtype(fields[4]);
+        var value1 = fields[5];
+        var dtype2 = str2dtype(fields[6]);
+        var value2 = fields[7];
         var rname = st.nextName();
-	if v {try! writeln("%s %s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,dtype1,value1,dtype2,value2,rname));try! stdout.flush();}
+        if v {try! writeln("%s %s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,dtype1,value1,dtype2,value2,rname));try! stdout.flush();}
 
         var g1: borrowed GenSymEntry = st.lookup(name1);
         select (g1.dtype, dtype1, dtype1) {
-	when (DType.Bool, DType.Int64, DType.Int64) {
-	  var e1 = toSymEntry(g1, bool);
-	  var val1 = try! value1:int;
-	  var val2 = try! value2:int;
-	  select efunc {
-	    when "where" {
-	      var a = where_helper(e1.a, val1, val2, 3);
-	      st.addEntry(rname, new shared SymEntry(a));
-	    }
-	    otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype1,dtype2);}
-	    } 
-	}
-	when (DType.Bool, DType.Float64, DType.Float64) {
-	  var e1 = toSymEntry(g1, bool);
-	  var val1 = try! value1:real;
-	  var val2 = try! value2:real;
-	  select efunc {
-	    when "where" {
-	      var a = where_helper(e1.a, val1, val2, 3);
-	      st.addEntry(rname, new shared SymEntry(a));
-	    }
-	    otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype1,dtype2);}
-	    } 
-	}
-	when (DType.Bool, DType.Bool, DType.Bool) {
-	  var e1 = toSymEntry(g1, bool);
-	  var val1 = try! value1.toLower():bool;
-	  var val2 = try! value2.toLower():bool;
-	  select efunc {
-	    when "where" {
-	      var a = where_helper(e1.a, val1, val2, 3);
-	      st.addEntry(rname, new shared SymEntry(a));
-	    }
-	    otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype1,dtype2);}
-	    } 
-	}
-	otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype1,dtype2);}
-	}
-	return try! "created " + st.attrib(rname);
+        when (DType.Bool, DType.Int64, DType.Int64) {
+          var e1 = toSymEntry(g1, bool);
+          var val1 = try! value1:int;
+          var val2 = try! value2:int;
+          select efunc {
+            when "where" {
+              var a = where_helper(e1.a, val1, val2, 3);
+              st.addEntry(rname, new shared SymEntry(a));
+            }
+            otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype1,dtype2);}
+            } 
+        }
+        when (DType.Bool, DType.Float64, DType.Float64) {
+          var e1 = toSymEntry(g1, bool);
+          var val1 = try! value1:real;
+          var val2 = try! value2:real;
+          select efunc {
+            when "where" {
+              var a = where_helper(e1.a, val1, val2, 3);
+              st.addEntry(rname, new shared SymEntry(a));
+            }
+            otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype1,dtype2);}
+            } 
+        }
+        when (DType.Bool, DType.Bool, DType.Bool) {
+          var e1 = toSymEntry(g1, bool);
+          var val1 = try! value1.toLower():bool;
+          var val2 = try! value2.toLower():bool;
+          select efunc {
+            when "where" {
+              var a = where_helper(e1.a, val1, val2, 3);
+              st.addEntry(rname, new shared SymEntry(a));
+            }
+            otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype1,dtype2);}
+            } 
+        }
+        otherwise {return notImplementedError(pn,efunc,g1.dtype,dtype1,dtype2);}
+        }
+        return try! "created " + st.attrib(rname);
     }
 
     /* The 'where' function takes a boolean array and two other arguments A and B, and 
@@ -443,7 +443,7 @@ module EfuncMsg
     proc where_helper(cond:[?D] bool, A:[D] ?t, B:[D] t, param kind):[D] t where (kind == 0) {
       var C:[D] t;
       forall (ch, a, b, c) in zip(cond, A, B, C) {
-	c = if ch then a else b;
+        c = if ch then a else b;
       }
       return C;
     }
@@ -465,7 +465,7 @@ module EfuncMsg
     proc where_helper(cond:[?D] bool, A:[D] ?t, b:t, param kind):[D] t where (kind == 1) {
       var C:[D] t;
       forall (ch, a, c) in zip(cond, A, C) {
-	c = if ch then a else b;
+        c = if ch then a else b;
       }
       return C;
     }
@@ -487,7 +487,7 @@ module EfuncMsg
     proc where_helper(cond:[?D] bool, a:?t, B:[D] t, param kind):[D] t where (kind == 2) {
       var C:[D] t;
       forall (ch, b, c) in zip(cond, B, C) {
-	c = if ch then a else b;
+        c = if ch then a else b;
       }
       return C;
     }
@@ -509,7 +509,7 @@ module EfuncMsg
     proc where_helper(cond:[?D] bool, a:?t, b:t, param kind):[D] t where (kind == 3) {
       var C:[D] t;
       forall (ch, c) in zip(cond, C) {
-	c = if ch then a else b;
+        c = if ch then a else b;
       }
       return C;
     }    
