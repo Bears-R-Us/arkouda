@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Run an arkouda client program, automatically starting/stopping the server.
-Assumes that the client takes `hostname port` the first positional arguments.
+Assumes the client takes `hostname port` as the first positional arguments.
 """
 
 import argparse
@@ -17,6 +17,6 @@ args, client_args = parser.parse_known_args()
 numlocales = args.numLocales or get_arkouda_numlocales()
 
 start_arkouda_server(numlocales)
-ret = run_client_live([args.client] + client_args)
+ret = run_client_live(args.client, client_args)
 stop_arkouda_server()
 sys.exit(ret)

@@ -12,7 +12,7 @@ from util import *
 logging.basicConfig(level=logging.INFO)
 
 start_arkouda_server(get_arkouda_numlocales())
-ret = run_client_live([os.path.join(get_arkouda_home(), 'tests', 'check.py')])
+ret = run_client_live(os.path.join(get_arkouda_home(), 'tests', 'check.py'))
 stop_arkouda_server()
 print('{} running checks'.format('Error' if ret else 'Success'))
 sys.exit(ret)
