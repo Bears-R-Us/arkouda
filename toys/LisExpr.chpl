@@ -197,11 +197,6 @@ module LisExpr
 
     inline proc not(l: borrowed GenValue): owned GenValue throws {
         return new owned Value((! isTrue(l)):int);
-        /* select (l.vt) { */
-        /*     when (VT.I) {return new owned Value((! (l.toValue(int).v != 0)):int);} */
-        /*     when (VT.R) {return new owned Value((! (l.toValue(real).v != 0.0)):int);} */
-        /*     otherwise {throw new owned ErrorWithMsg("not implemented");} */
-        /* } */
     }
 
     inline proc isTrue(gv: borrowed GenValue): bool throws {
@@ -239,7 +234,7 @@ module LisExpr
         /* lookup symbol and throw error if not found */
         proc lookup(name: string): borrowed GenValue throws {
             if (!tD.contains(name) || tab[name] == nil) {
-                throw new owned ErrorWithMsg("undefined symbol error (%s)".format(name));
+                throw new owned ErrorWithMsg("undefined symbol error (%t)".format(name));
             }
             return tab[name]!;
         }
@@ -395,49 +390,110 @@ module LisExpr
             }
         }
     }
-    
-    /* test */
-    proc main() {
-        
-        // very simple scheme
-        // all symbols are in a predifined map
-        var prog3 =
-            "(set! ans (if (and (>= elt 5) (<= elt 5)) (+ elt 100) (- elt 10)))";
 
+    proc test_parse(prog: string): bool {
+        var f = true;
         try {
-            writeln(prog3);
-            var tokens = tokenize(prog3);
+            writeln(prog);
+            var tokens = tokenize(prog);
             for tok in tokens {
                 write("{"); write(tok); write("}");
             }
             writeln("");
-
-            writeln(parse(prog3));
-
+            
+            writeln(parse(prog));
+        }
+        catch e: ErrorWithMsg {
+            writeln(e.msg);
+            f = false;
+        }
+        catch {
+            writeln("unkown error!");
+            f = false;
+        }
+        
+        return f;
+    }
+    
+    proc test_eval(prog: string): bool {
+        var f = true;
+        try {
             var N = 10;
             var D = {0..#N};
             var A: [D] int = D;
             var B: [D] int;
-
+            
             // this could have the advantage of not creating array temps like the rest of arkouda does
             // forall (a,b) in zip(A,B) with (var ast = try! parse(prog3), var env = new owned Env()) {
-            forall (a,b) in zip(A,B) {
-                var ast = parse(prog3); // parse and check the program
+            //forall (a,b) in zip(A,B) {
+            for (a,b) in zip(A,B) {
+                var ast = parse(prog); // parse and check the program
                 var env = new owned Env(); // allocate the env for variables
                 // addEnrtry redefines values for already existing entries
                 env.addEntry("elt",a); // add a symbol called "elt" and value for a
-                eval(ast,env); // eval the program in the enviroment which creates the symbol "ans"
-                var ans = env.lookup("ans").toValue(int).v; // retrieve value for ans
-                b = ans; // put answer into b
+                
+                // this version does the eval the in the enviroment which creates the symbol "ans"
+                //var ans = env.lookup("ans").toValue(int).v; // retrieve value for ans
+                //b = ans;
+
+                // this version just returns the GenValue from the eval call
+                var ans = eval(ast,env);
+                b = ans.toValue(int).v; // put answer into b
             }
             writeln(A);
             writeln(B);
         }
         catch e: ErrorWithMsg {
             writeln(e.msg);
+            f = false;
         }
         catch {
             writeln("unkown error!");
+            f = false;
         }
+
+        return f;
+    }
+
+    proc test_parse_then_eval(prog: string) {
+        if test_parse(prog) {test_eval(prog);} else {writeln("error!");}
+    }
+    
+    /* test */
+    proc main() {
+
+        // very simple scheme
+        // all symbols are in a predifined map
+
+        // syntax error
+        writeln(">>> Syntax error");
+        var prog = "(set! ans (if (and (>= elt 5) (<= elt 5)) (+ elt 100 (- elt 10)))";
+        test_parse_then_eval(prog);
+
+        // syntax error
+        writeln(">>> Syntax error");
+        prog = "(set! ans (if (and (>= elt 5 (<= elt 5)) (+ elt 100) (- elt 10)))";
+        test_parse_then_eval(prog);
+
+        // eval error
+        writeln(">>> Eval error: unkown symbol");
+        prog = "(if (and (>= a 5) (<= elt 5)) (+ elt 100) (- elt 10))";
+        test_parse_then_eval(prog);
+
+        // eval error
+        writeln(">>> Eval error: wrong numbe of args");
+        prog = "(if (and (>= elt 5) (<= elt 5 1)) (+ elt 100) (- elt 10))";
+        test_parse_then_eval(prog);
+
+        // this returns the answer from the eval and also sets "ans" in the env
+        writeln(">>> ans symbol");
+        prog = "(set! ans (if (and (>= elt 5) (<= elt 5)) (+ elt 100) (- elt 10)))";
+        test_parse_then_eval(prog);
+
+        // this one only returns the answer from the eval
+        writeln(">>> val returned from eval");
+        prog = "(if (and (>= elt 5) (<= elt 5)) (+ elt 100) (- elt 10))";
+        test_parse_then_eval(prog);
+
     }
 }
