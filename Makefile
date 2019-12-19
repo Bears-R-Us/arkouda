@@ -250,6 +250,9 @@ CLEAN_TARGETS += doc-clean
 doc-clean:
 	$(RM) -r $(DOC_DIR)
 
+check:
+	@$(ARKOUDA_PROJECT_DIR)/util/test/checkInstall
+
 #################
 #### Test.mk ####
 #################
