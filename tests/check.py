@@ -26,6 +26,21 @@ def pass_fail(f):
     errors = errors or not f
     return ("Passed" if f else "Failed")
 
+def check_bool(N):
+    a = ak.arange(N)
+    b = ak.ones(N)
+    try:
+        c = a and b
+    except ValueError:
+        correct = True
+    except:
+        correct = False
+    d = ak.array([1])
+    correct = correct and (d and 5)
+    return pass_fail(correct)
+
+print("check boolean :", check_bool(N))
+
 def check_arange(N):
     # create np version
     a = np.arange(N)
