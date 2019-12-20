@@ -38,7 +38,11 @@ def argsort(pda):
     if isinstance(pda, pdarray) or isinstance(pda, Strings):
         if pda.size == 0:
             return zeros(0, dtype=int64)
-        repMsg = generic_msg("argsort {} {}".format(pda.objtype, pda.name))
+        if isinstance(pda, Strings):
+            name = '{}+{}'.format(pda.offsets.name, pda.bytes.name)
+        else:
+            name = pda.name
+        repMsg = generic_msg("argsort {} {}".format(pda.objtype, name))
         return create_pdarray(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
