@@ -68,6 +68,13 @@ if __name__ == '__main__':
     assert((inds == matches).all())
     print("in1d and iter passed")
 
+    # argsort
+    akperm = ak.argsort(strings)
+    aksorted = strings[akperm].to_ndarray()
+    npsorted = np.sort(test_strings)
+    assert((aksorted == npsorted).all())
+    print("argsort passed")
+    
     # unique
     akuniq = ak.unique(strings)
     akset = set(akuniq.to_ndarray())

@@ -532,7 +532,7 @@ module ArgSortMsg
             }
           }
           when "str" {
-            var names = name.split();
+            var names = name.split('+');
             var strings = new owned SegString(names[1], names[2], st);
             // check and throw if over memory limit
             overMemLimit((8 * strings.size * 8)
