@@ -1,5 +1,6 @@
 import json, struct
 import numpy as np
+from numba import cuda
 
 from arkouda.client import generic_msg, verbose, maxTransferBytes, pdarrayIterThresh
 from arkouda.dtypes import *
@@ -492,6 +493,55 @@ class pdarray:
         fmt = '>{:n}{}'.format(self.size, structDtypeCodes[self.dtype.name])
         # Return a numpy ndarray
         return np.array(struct.unpack(fmt, rep_msg))
+
+    def to_cuda(self):
+        """
+        Convert the array to a Numba DeviceND array, transferring array data from the
+        arkouda server to Python via ndarray. If the array exceeds a builtin size limit, 
+        a RuntimeError is raised.
+
+        Returns
+        -------
+        numba.DeviceNDArray
+            A Numba ndarray with the same attributes and data as the pdarray; on GPU
+
+        Notes
+        -----
+        The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
+        otherwise a ``RuntimeError`` will be raised. This is to protect the user
+        from overflowing the memory of the system on which the Python client
+        is running, under the assumption that the server is running on a
+        distributed system with much more memory than the client. The user
+        may override this limit by setting ak.maxTransferBytes to a larger
+        value, but proceed with caution.
+
+        See Also
+        --------
+        array
+
+        Examples
+        --------
+        >>> a = ak.arange(0, 5, 1)
+        >>> a.to_ndarray()
+        array([0, 1, 2, 3, 4])
+
+        >>> type(a.to_ndarray())
+        numpy.ndarray
+        """
+        # Total number of bytes in the array data
+        arraybytes = self.size * self.dtype.itemsize
+        # Guard against overflowing client memory
+        if arraybytes > maxTransferBytes:
+            raise RuntimeError("Array exceeds allowed size for transfer. Increase ak.maxTransferBytes to allow")
+        # The reply from the server will be a bytes object
+        rep_msg = generic_msg("tondarray {}".format(self.name), recv_bytes=True)
+        # Make sure the received data has the expected length
+        if len(rep_msg) != self.size*self.dtype.itemsize:
+            raise RuntimeError("Expected {} bytes but received {}".format(self.size*self.dtype.itemsize, len(rep_msg)))
+        # Use struct to interpret bytes as a big-endian numeric array
+        fmt = '>{:n}{}'.format(self.size, structDtypeCodes[self.dtype.name])
+        # Return a numpy ndarray
+        return cuda.to_device(np.array(struct.unpack(fmt, rep_msg)))
 
     def save(self, prefix_path, dataset='array', mode='truncate'):
         """
