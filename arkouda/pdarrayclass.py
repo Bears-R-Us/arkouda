@@ -522,11 +522,11 @@ class pdarray:
         Examples
         --------
         >>> a = ak.arange(0, 5, 1)
-        >>> a.to_ndarray()
+        >>> a.to_cuda()
         array([0, 1, 2, 3, 4])
 
-        >>> type(a.to_ndarray())
-        numpy.ndarray
+        >>> type(a.to_cuda())
+        numpy.devicendarray
         """
         # Total number of bytes in the array data
         arraybytes = self.size * self.dtype.itemsize
@@ -540,8 +540,8 @@ class pdarray:
             raise RuntimeError("Expected {} bytes but received {}".format(self.size*self.dtype.itemsize, len(rep_msg)))
         # Use struct to interpret bytes as a big-endian numeric array
         fmt = '>{:n}{}'.format(self.size, structDtypeCodes[self.dtype.name])
-        # Return a numpy ndarray
-        return cuda.to_device(np.array(struct.unpack(fmt, rep_msg)))
+        # Return a numba devicendarray
+        return cuda.to_device(struct.unpack(fmt, rep_msg))
 
     def save(self, prefix_path, dataset='array', mode='truncate'):
         """
