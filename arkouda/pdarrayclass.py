@@ -1,6 +1,10 @@
 import json, struct
 import numpy as np
-from numba import cuda
+try:
+    from numba import cuda
+except ModuleNotFoundError as error:
+    print(error)
+    print('CUDA is not enabled or installed. Consult documentation.')
 
 from arkouda.client import generic_msg, verbose, maxTransferBytes, pdarrayIterThresh
 from arkouda.dtypes import *
