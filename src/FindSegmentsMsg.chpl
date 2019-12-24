@@ -13,7 +13,7 @@ module FindSegmentsMsg
     use SegmentedArray;
 
     use PrivateDist;
-    use UnorderedCopy;
+    use CommAggregation;
 
     /*
 
@@ -93,7 +93,9 @@ module FindSegmentsMsg
           ref ka = k.a; // ref to key array
           // Permute the key array to grouped order
           var permKey: [paD] int;
-          [(s, p) in zip(permKey, pa)] { unorderedCopy(s, ka[p]); }
+          forall (s, p) in zip(permKey, pa) with (var agg = newSrcAggregator(int)) { 
+            agg.copy(s, ka[p]);
+          }
           // Find steps and update ukeylocs
           [(u, s, i) in zip(ukeylocs, permKey, paD)] if ((i > paD.low) && (permKey[i-1] != s))  { u = true; }
         }
@@ -140,13 +142,22 @@ module FindSegmentsMsg
         ref saD = segs.aD;
         // segment position... 1-based needs to be converted to 0-based because of inclusive-scan
         // where ever a segment break (true value) is... that index is a segment start index
-        [i in ukeylocs.domain] if (ukeylocs[i] == true) {var idx = i; unorderedCopy(sa[iv[i]-1], idx);}
+        forall i in ukeylocs.domain with (var agg = newDstAggregator(int)) {
+          if (ukeylocs[i] == true) {
+            var idx = i; 
+            agg.copy(sa[iv[i]-1], idx);
+          }
+        }
         // Create SymEntry to hold indices of unique keys in original (unpermuted) key arrays
         var uname = st.nextName(); // unique key indices
         var ukeyinds = st.addEntry(uname, pop, int);
         ref uka = ukeyinds.a;
         // Segment boundaries are in terms of permuted arrays, so invert the permutation to get back to original index
-        [(s, i) in zip(sa, saD)] { unorderedCopy(uka[i], pa[s]); }
+        forall (s, i) in zip(sa, saD) {
+          // TODO convert to aggreation, which side is remote though?
+          use UnorderedCopy;
+          unorderedCopy(uka[i], pa[s]);
+        }
         // Return entry names of segments and unique key indices
         return try! "created " + st.attrib(sname) + " +created " + st.attrib(uname);
     }
@@ -189,11 +200,9 @@ module FindSegmentsMsg
         on loc {
           var (locSegs, locUkeys) = segsAndUkeysFromSortedArray(perLocSorted.localSlice[perLocSorted.localSubdomain()]);
           localSegments[here.id] = new Segments(locUkeys, locSegs);
-          forall k in locUkeys with (ref globalRelKeys) {
+          forall k in locUkeys with (ref globalRelKeys, var agg = newDstAggregator(bool)) {
             // This does not need to be atomic, because race conditions will result in the correct answer
-            globalRelKeys[k - minKey] = true;
-            // would like to use unorderedCopy here but get non-lvalue error
-            // unorderedCopy(globalRelKeys[k - minKey], 1);
+            agg.copy(globalRelKeys[k - minKey], true);
           }
         }
       }
@@ -204,13 +213,12 @@ module FindSegmentsMsg
       var numKeys = relKey2ind[keyDom.high] + 1;
       if v {writeln("Global unique keys: ", numKeys); try! stdout.flush();}
       var globalUkeys = makeDistArray(numKeys, int);
-      forall (relKey, present, ind) in zip(keyDom, globalRelKeys, relKey2ind) {
-              if present {
+      forall (relKey, present, ind) in zip(keyDom, globalRelKeys, relKey2ind) 
+        with (var agg = newDstAggregator(int)) {
+        if present {
           // globalUkeys guaranteed to be sorted because ind and relKey monotonically increasing
-                globalUkeys[ind] = relKey + minKey;
-          // would like to use unorderedCopy here but get non-lvalue error
-          // unorderedCopy(globalUkeys[ind], relKey + minKey);
-              }
+          agg.copy(globalUkeys[ind], relKey + minKey);
+        }
       }
       if v {timer.stop(); writeln("time = ", timer.elapsed(), " sec"); try! stdout.flush(); timer.clear();}
 

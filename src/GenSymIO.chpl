@@ -6,7 +6,7 @@ module GenSymIO {
   use ServerErrorStrings;
   use FileSystem;
   use Sort;
-  use UnorderedCopy;
+  use CommAggregation;
 
   config const GenSymIO_DEBUG = false;
   config const SEGARRAY_OFFSET_NAME = "segments";
@@ -307,7 +307,9 @@ module GenSymIO {
     }
     // Insert height increases at region boundaries
     var sparseDiffs: [D] int;
-    [(b, d) in zip(boundaries, diffs)] unorderedCopy(sparseDiffs[b], d);
+    forall (b, d) in zip(boundaries, diffs) with (var agg = newDstAggregator(int)) {
+      agg.copy(sparseDiffs[b], d);
+    }
     // Make plateaus from peaks
     var corrections = + scan sparseDiffs;
     // Raise the segment offsets by the plateaus

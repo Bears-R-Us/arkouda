@@ -21,6 +21,7 @@ module Unique
 
     use SymArrayDmap;
 
+    use CommAggregation;
     use RadixSortLSD;
     use SegmentedArray;
     use AryUtil;
@@ -457,7 +458,12 @@ module Unique
         
         // segment position... 1-based needs to be converted to 0-based because of inclusive-scan
         // where ever a segment break (true value) is... that index is a segment start index
-        [i in truth.domain] if (truth[i] == true) {var idx = i; unorderedCopy(segs[iv[i]-1], idx);}
+        forall i in truth.domain with (var agg = newDstAggregator(int)) {
+          if (truth[i] == true) {
+            var idx = i; 
+            agg.copy(segs[iv[i]-1], idx);
+          }
+        }
         // pull out the first key in each segment as a unique key
         // unique keys guaranteed to be sorted because keys are sorted
         [i in segs.domain] ukeys[i] = sorted[segs[i]];
@@ -497,7 +503,9 @@ module Unique
           else {
             perm = radixSortLSD_ranks(hashes);
             // sorted = [i in perm] hashes[i];
-            [(s, p) in zip(sorted, perm)] {unorderedCopy(s[1], hashes[p][1]); unorderedCopy(s[2], hashes[p][2]);}
+            forall (s, p) in zip(sorted, perm) with (var agg = newSrcAggregator(2*uint)) {
+              agg.copy(s, hashes[p]);
+            }
           }
           truth[0] = true;
           [(t, s, i) in zip(truth, sorted, aD)] if i > aD.low { t = (sorted[i-1] != s); }
@@ -531,7 +539,7 @@ module Unique
               const rlen = if (idx < aD.high) then (soff[idx+1] - 1 - o) else (sval.domain.high - o);
               if (llen != rlen) {
                 // If lengths differ, this is a step
-                unorderedCopy(t, true);
+                t = true;
               } else {
                 var allEqual = true;
                 for pos in 0..#llen {
@@ -542,7 +550,7 @@ module Unique
                 }
                 // If lengths equal but bytes differ, this is a step
                 if !allEqual {
-                  unorderedCopy(t, true);
+                  t = true;
                 }
               }
             }
@@ -572,10 +580,17 @@ module Unique
         
         // segment position... 1-based needs to be converted to 0-based because of inclusive-scan
         // where ever a segment break (true value) is... that index is a segment start index
-        [i in aD] if (truth[i] == true) {var idx = i; unorderedCopy(segs[iv[i]-1], idx);}
+        forall i in aD with (var agg = newDstAggregator(int)) {
+          if (truth[i] == true) {
+            var idx = i;
+            agg.copy(segs[iv[i]-1], idx);
+          }
+        }
         // pull out the first key in each segment as a unique key
         // unique keys guaranteed to be sorted because keys are sorted
-        [(u, s) in zip(uinds, segs)] unorderedCopy(u, perm[s]); // uinds[i] = perm[segs[i]];
+        forall (u, s) in zip(uinds, segs) with (var agg = newSrcAggregator(int)) {
+          agg.copy(u, perm[s]); // uinds[i] = perm[segs[i]];
+        }
         // Gather the unique offsets and values (byte buffers)
         var (uo, uv) = str[uinds];
         // calc counts of each unique key using segs

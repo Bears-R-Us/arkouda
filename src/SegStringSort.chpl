@@ -37,11 +37,12 @@ module SegStringSort {
     var longLocs = + scan isLong;
     locs -= longLocs;
     var gatherInds: [ss.offsets.aD] int;
-    forall (i, l, ll, t) in zip(ss.offsets.aD, locs, longLocs, isLong) {
+    forall (i, l, ll, t) in zip(ss.offsets.aD, locs, longLocs, isLong) 
+      with (var agg = newDstAggregator(int)) {
       if !t {
-        unorderedCopy(gatherInds[l], i);
+        agg.copy(gatherInds[l], i);
       } else {
-        unorderedCopy(gatherInds[longStart+ll-1], i);
+        agg.copy(gatherInds[longStart+ll-1], i);
       }
     }
     if v { writeln("Partitioned short/long strings in %t seconds".format(getCurrentTime() - t)); stdout.flush(); }
@@ -56,7 +57,9 @@ module SegStringSort {
       const myComparator = new StringIntComparator();
       sort(stringsWithInds, comparator=myComparator);
       if v { writeln("Sorted long strings in %t seconds".format(getCurrentTime() - tl)); stdout.flush(); tl = getCurrentTime(); }
-      [(h, s) in zip(highDom, stringsWithInds.domain)] unorderedCopy(gatherInds[h], stringsWithInds[s][2]);
+      forall (h, s) in zip(highDom, stringsWithInds.domain) with (var agg = newDstAggregator(int)) {
+        agg.copy(gatherInds[h], stringsWithInds[s][2]);
+      }
       if v { writeln("Permuted long inds in %t seconds".format(getCurrentTime() - tl)); stdout.flush(); }
     }
     if v { t = getCurrentTime(); }
@@ -71,6 +74,8 @@ module SegStringSort {
     forall (o, l, h) in zip(ss.offsets.a, lengths, heads) {
       const len = min(l, pivot);
       for j in 0..#len {
+        // TODO which one is local
+        use UnorderedCopy;
         unorderedCopy(h[j], va[o+j]);
       }
     }
@@ -154,6 +159,8 @@ module SegStringSort {
     const numBuckets = 2**16;
     type state = (uint(8), uint(8), int, int, int);
     inline proc copyDigit(ref k: state, const off: int, const len: int, const rank: int, const right: int) {
+      // TODO can we only use the aggregated version?
+      use UnorderedCopy;
       if (right > 0) {
         if (len >= right) {
           unorderedCopy(k[1], values[off+right-2]);
