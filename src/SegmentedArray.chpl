@@ -124,17 +124,20 @@ module SegmentedArray {
       var t1 = getCurrentTime();
       ref oa = offsets.a;
       const low = offsets.aD.low, high = offsets.aD.high;
-      // Lengths of segments including null bytes
-      var gatheredLengths: [D] int;
-      forall (gl, idx) in zip(gatheredLengths, iv) with (var agg = new SrcAggregator(int)) {
-        var l: int;
+      // Gather the right and left boundaries of the indexed strings
+      // NOTE: cannot compute lengths inside forall because agg.copy will
+      // experience race condition with loop-private variable
+      var right: [D] int, left: [D] int;
+      forall (r, l, idx) in zip(right, left, iv) with (var agg = new SrcAggregator(int)) {
         if (idx == high) {
-          l = values.size - oa[high];
+          agg.copy(r, values.size);
         } else {
-          l = oa[idx+1] - oa[idx];
+          agg.copy(r, oa[idx+1]);
         }
-        agg.copy(gl, l);
+        agg.copy(l, oa[idx]);
       }
+      // Lengths of segments including null bytes
+      var gatheredLengths: [D] int = right - left;
       // The returned offsets are the 0-up cumulative lengths
       var gatheredOffsets = (+ scan gatheredLengths);
       // The total number of bytes in the gathered strings
@@ -461,12 +464,28 @@ module SegmentedArray {
   /* Test for equality between two same-length arrays of strings. Returns
      a boolean vector of the same length. */
   proc ==(lss:SegString, rss:SegString) throws {
+    return compare(lss, rss, true);
+  }
+
+  /* Test for inequality between two same-length arrays of strings. Returns
+     a boolean vector of the same length. */
+  proc !=(lss:SegString, rss:SegString) throws {
+    return compare(lss, rss, false);
+  }
+
+  /* Element-wise comparison of two same-length arrays of strings. The
+     polarity parameter determines whether the comparison checks for 
+     equality (polarity=true, result is true where elements are equal) 
+     or inequality (polarity=false, result is true where elements differ). */
+  private proc compare(lss:SegString, rss:SegString, param polarity: bool) throws {
     // String arrays must be same size
     if (lss.size != rss.size) {
       throw new owned ArgumentError();
     }
     ref oD = lss.offsets.aD;
-    var truth: [oD] bool;
+    // Start by assuming all elements differ, then correct for those that are equal
+    // This translates to an initial value of false for == and true for !=
+    var truth: [oD] bool = !polarity;
     // Early exit for zero-length result
     if (lss.size == 0) {
       return truth;
@@ -498,9 +517,10 @@ module SegmentedArray {
             break;
           }
         }
-        // Only if lengths and all bytes are equal, set result to true
+        // Only if lengths and all bytes are equal, override the default value
         if allEqual {
-          agg.copy(t, true);
+          // For ==, the output should be true; for !=, false
+          agg.copy(t, polarity);
         }
       }
     }
@@ -510,9 +530,25 @@ module SegmentedArray {
   /* Test an array of strings for equality against a constant string. Return a boolean
      vector the same size as the array. */
   proc ==(ss:SegString, testStr: string) {
+    return compare(ss, testStr, true);
+  }
+  
+  /* Test an array of strings for inequality against a constant string. Return a boolean
+     vector the same size as the array. */
+  proc !=(ss:SegString, testStr: string) {
+    return compare(ss, testStr, false);
+  }
+
+  /* Element-wise comparison of an arrays of string against a target string. 
+     The polarity parameter determines whether the comparison checks for 
+     equality (polarity=true, result is true where elements equal target) 
+     or inequality (polarity=false, result is true where elements differ from 
+     target). */
+  proc compare(ss:SegString, testStr: string, param polarity: bool) {
     ref oD = ss.offsets.aD;
-    // Initialize to true, then set non-matching entries to false along the way
-    var truth: [oD] bool = true;
+    // Initially assume all elements equal the target string, then correct errors
+    // For ==, this means everything starts true; for !=, everything starts false
+    var truth: [oD] bool = polarity;
     // Early exit for zero-length result
     if (ss.size == 0) {
       return truth;
@@ -525,14 +561,18 @@ module SegmentedArray {
     for (b, i) in zip(testStr.chpl_bytes(), 0..) {
       forall (t, o, idx) in zip(truth, offsets, oD) with (var agg = newDstAggregator(bool)) {
         if ((o+i > vD.high) || (b != values[o+i])) {
-          agg.copy(t, false);
+          // Strings are not equal, so change the output
+          // For ==, output is now false; for !=, output is now true
+          agg.copy(t, !polarity);
         }
       }
     }
     // Check the length by checking that the next byte is null
     forall (t, o, idx) in zip(truth, offsets, oD) with (var agg = newDstAggregator(bool)) {
       if ((o+testStr.size > vD.high) || (0 != values[o+testStr.size])) {
-        agg.copy(t, false);
+        // Strings are not equal, so change the output
+        // For ==, output is now false; for !=, output is now true
+        agg.copy(t, !polarity);
       }
     }
     return truth;
