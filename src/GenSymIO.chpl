@@ -17,7 +17,7 @@ module GenSymIO {
     var dtype = str2dtype(fields[2]);
     var size = try! fields[3]:int;
     var data = fields[4];
-    var tmpf:file; 
+    var tmpf:file;
     try {
       tmpf = openmem();
       var tmpw = tmpf.writer(kind=iobig);
@@ -102,7 +102,7 @@ module GenSymIO {
   class NotHDF5FileError: Error { proc init() {} }
   class MismatchedAppendError: Error { proc init() {} }
   class SegArrayError: Error { proc init() {} }
-  
+
   proc decode_json(json: string, size: int) throws {
     var f = opentmp();
     var w = f.writer();
@@ -158,14 +158,14 @@ module GenSymIO {
     } catch {
       return "Error: failed to spawn process and read output";
     }
-    
+
     if exitCode != 0 {
       return try! "Error: %s".format(repMsg);
     } else {
       return repMsg;
     }
   }
-  
+
   proc readhdfMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var repMsg: string;
     // reqMsg = "readhdf <dsetName> <nfiles> [<json_filenames>]"
@@ -197,7 +197,7 @@ module GenSymIO {
     } else {
       filenames = filelist;
     }
-    
+
     var segArrayFlags: [filedom] bool;
     var dclasses: [filedom] C_HDF5.hid_t;
     var bytesizes: [filedom] int;
@@ -266,7 +266,7 @@ module GenSymIO {
       var valName = st.nextName();
       st.addEntry(valName, entryVal);
       return try! "created " + st.attrib(segName) + " +created " + st.attrib(valName);
-    } 
+    }
     when (false, C_HDF5.H5T_INTEGER) {
       var entryInt = new shared SymEntry(len, int);
       if GenSymIO_DEBUG {
@@ -293,6 +293,12 @@ module GenSymIO {
     }
   }
 
+  /* Read multiple unique hdf5 datasets from an hdf5 file and those coresponding
+  datasets accross multiple hdf5 files. */
+  proc readAllHdfMsg(reqMsg: string, st: borrowed SymTab): string throws {
+
+  }
+
   proc fixupSegBoundaries(a: [?D] int, segSubdoms: [?fD] domain(1), valSubdoms: [fD] domain(1)) {
     var boundaries: [fD] int; // First index of each region that needs to be raised
     var diffs: [fD] int; // Amount each region must be raised over previous region
@@ -311,7 +317,7 @@ module GenSymIO {
     // Raise the segment offsets by the plateaus
     a += corrections;
   }
-  
+
   /* Get the class of the HDF5 datatype for the dataset. */
   proc get_dtype(filename: string, dsetName: string) throws {
     const READABLE = (S_IRUSR | S_IRGRP | S_IROTH);
@@ -374,7 +380,7 @@ module GenSymIO {
     var filename: string;
     var dsetName: string;
   }
-  
+
   /* Get the subdomains of the distributed array represented by each file, as well as the total length of the array. */
   proc get_subdoms(filenames: [?FD] string, dsetName: string) throws {
     use SysCTypes;
@@ -405,7 +411,7 @@ module GenSymIO {
     }
     return (subdoms, (+ reduce lengths));
   }
-	
+
   /* This function gets called when A is a BlockDist array. */
   proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), filenames: [FD] string, dsetName: string) where (MyDmap == 1) {
     if GenSymIO_DEBUG {
@@ -417,7 +423,7 @@ module GenSymIO {
 	var locFiles = filenames;
 	var locFiledoms = filedomains;
 	var locDset = dsetName;
-	/* On this locale, find all files containing data that belongs in 
+	/* On this locale, find all files containing data that belongs in
 	   this locale's chunk of A */
 	for (filedom, filename) in zip(locFiledoms, locFiles) {
 	  var isopen = false;
@@ -462,7 +468,7 @@ module GenSymIO {
 	}
       }
   }
-	
+
   /* This function is called when A is a CyclicDist array. */
   proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), filenames: [FD] string, dsetName: string) where (MyDmap == 0) {
     use CyclicDist;
@@ -480,7 +486,7 @@ module GenSymIO {
       C_HDF5.H5Fclose(file_id);
     }
   }
-	
+
   proc domain_intersection(d1: domain(1), d2: domain(1)) {
     var low = max(d1.low, d2.low);
     var high = min(d1.high, d2.high);
@@ -542,10 +548,10 @@ module GenSymIO {
   }
 
   proc write1DDistArray(filename, mode, dsetName, A) throws {
-    /* Output is 1 file per locale named <filename>_<loc>, and a dataset 
-       named <dsetName> is created in each one. If mode==1 (append) and the 
-       correct number of files already exists, then a new dataset named 
-       <dsetName> will be created in each. Strongly recommend only using 
+    /* Output is 1 file per locale named <filename>_<loc>, and a dataset
+       named <dsetName> is created in each one. If mode==1 (append) and the
+       correct number of files already exists, then a new dataset named
+       <dsetName> will be created in each. Strongly recommend only using
        append mode to write arrays with the same domain. */
 
     var warnFlag = false;
@@ -590,7 +596,7 @@ module GenSymIO {
 	  throw new owned FileNotFoundError();
 	}
 	C_HDF5.H5Fclose(file_id);
-      } 
+      }
     }
     coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) do on loc {
 	const myFilename = filenames[idx];
@@ -602,7 +608,7 @@ module GenSymIO {
 	var dims: [0..#1] C_HDF5.hsize_t;
 	dims[0] = locDom.size: C_HDF5.hsize_t;
 	var myDsetName = "/" + dsetName;
-	
+
 	use C_HDF5.HDF5_WAR;
 	H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
 			     getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
@@ -610,5 +616,5 @@ module GenSymIO {
       }
     return warnFlag;
   }
-    
+
 }
