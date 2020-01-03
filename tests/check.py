@@ -26,6 +26,21 @@ def pass_fail(f):
     errors = errors or not f
     return ("Passed" if f else "Failed")
 
+def check_bool(N):
+    a = ak.arange(N)
+    b = ak.ones(N)
+    try:
+        c = a and b
+    except ValueError:
+        correct = True
+    except:
+        correct = False
+    d = ak.array([1])
+    correct = correct and (d and 5)
+    return pass_fail(correct)
+
+print("check boolean :", check_bool(N))
+
 def check_arange(N):
     # create np version
     a = np.arange(N)
@@ -243,7 +258,7 @@ def check_get_integer_idx(N):
     # create ak version
     b = ak.arange(N)
     v2 = b[N//2]
-    return pass_fail(v1 == v2)
+    return pass_fail(v1 == v2) and pass_fail(a[-1] == b[-1])
 
 print("check get integer idx :", check_get_integer_idx(N))
 
@@ -251,12 +266,14 @@ def check_set_integer_idx(N):
     # create np version
     a = np.arange(N)
     a[N//2] = -1
+    a[-1] = -1
     v1 = a[N//2]
     # create ak version
     b = ak.arange(N)
     b[N//2] = -1
+    b[-1] = -1
     v2 = b[N//2]
-    return pass_fail(v1 == v2)
+    return pass_fail(v1 == v2) and pass_fail(a[-1] == b[-1])
 
 print("check set integer idx = value:", check_set_integer_idx(N))
 

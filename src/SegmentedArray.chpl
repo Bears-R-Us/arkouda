@@ -2,7 +2,7 @@ module SegmentedArray {
   use AryUtil;
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
-  use UnorderedCopy;
+  use CommAggregation;
   use SipHash;
   use SegStringSort;
   use RadixSortLSD only radixSortLSD_ranks;
@@ -124,17 +124,20 @@ module SegmentedArray {
       var t1 = getCurrentTime();
       ref oa = offsets.a;
       const low = offsets.aD.low, high = offsets.aD.high;
-      // Lengths of segments including null bytes
-      var gatheredLengths: [D] int;
-      [(gl, idx) in zip(gatheredLengths, iv)] {
-        var l: int;
+      // Gather the right and left boundaries of the indexed strings
+      // NOTE: cannot compute lengths inside forall because agg.copy will
+      // experience race condition with loop-private variable
+      var right: [D] int, left: [D] int;
+      forall (r, l, idx) in zip(right, left, iv) with (var agg = new SrcAggregator(int)) {
         if (idx == high) {
-          l = values.size - oa[high];
+          agg.copy(r, values.size);
         } else {
-          l = oa[idx+1] - oa[idx];
+          agg.copy(r, oa[idx+1]);
         }
-        unorderedCopy(gl, l);
+        agg.copy(l, oa[idx]);
       }
+      // Lengths of segments including null bytes
+      var gatheredLengths: [D] int = right - left;
       // The returned offsets are the 0-up cumulative lengths
       var gatheredOffsets = (+ scan gatheredLengths);
       // The total number of bytes in the gathered strings
@@ -150,6 +153,8 @@ module SegmentedArray {
       // Copy string data to gathered result
       forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, iv) {
         for pos in 0..#gl {
+          // TODO I think the dst is local?
+          use UnorderedCopy;
           unorderedCopy(gatheredVals[go+pos], va[oa[idx]+pos]);
         }
       }
@@ -324,7 +329,7 @@ module SegmentedArray {
       coforall loc in Locales {
         locSubstr[here.id] = substr.localize();
       }
-      forall (o, l, t) in zip(oa, lengths, truth) {
+      forall (o, l, t) in zip(oa, lengths, truth) with (var agg = newDstAggregator(bool)) {
         // Only compare if segment is long enough to contain substr
         if (locSubstr[here.id].numBytes <= l) {
           // Execute where the bytes are
@@ -345,7 +350,7 @@ module SegmentedArray {
               otherwise { throw new owned UnknownSearchMode(); }
             }
             if res {
-              unorderedCopy(t, true);
+              agg.copy(t, true);
             }
           }
         }
@@ -366,17 +371,18 @@ module SegmentedArray {
       ref va = values.a;
       // Compare each pair of strings byte-by-byte
       for pos in 0..#maxLen {
-        forall (o, l, d, i) in zip(oa, lengths, done, offsets.aD) with (ref res) {
+        forall (o, l, d, i) in zip(oa, lengths, done, offsets.aD) 
+          with (ref res, var agg = newDstAggregator(bool)) {
           if (!d) {
             // If either of the strings is exhausted, mark this entry done
             if (pos >= l) || (pos >= lengths[i-1]) {
-              unorderedCopy(d, true);
+              agg.copy(d, true);
             } else {
               const prevByte = va[oa[i-1] + pos];
               const currByte = va[o + pos];
               // If we can already tell the pair is sorted, mark done
               if (prevByte < currByte) {
-                unorderedCopy(d, true);
+                agg.copy(d, true);
               // If we can tell the pair is not sorted, the return is false
               } else if (prevByte > currByte) {
                 res = false;
@@ -458,12 +464,28 @@ module SegmentedArray {
   /* Test for equality between two same-length arrays of strings. Returns
      a boolean vector of the same length. */
   proc ==(lss:SegString, rss:SegString) throws {
+    return compare(lss, rss, true);
+  }
+
+  /* Test for inequality between two same-length arrays of strings. Returns
+     a boolean vector of the same length. */
+  proc !=(lss:SegString, rss:SegString) throws {
+    return compare(lss, rss, false);
+  }
+
+  /* Element-wise comparison of two same-length arrays of strings. The
+     polarity parameter determines whether the comparison checks for 
+     equality (polarity=true, result is true where elements are equal) 
+     or inequality (polarity=false, result is true where elements differ). */
+  private proc compare(lss:SegString, rss:SegString, param polarity: bool) throws {
     // String arrays must be same size
     if (lss.size != rss.size) {
       throw new owned ArgumentError();
     }
     ref oD = lss.offsets.aD;
-    var truth: [oD] bool;
+    // Start by assuming all elements differ, then correct for those that are equal
+    // This translates to an initial value of false for == and true for !=
+    var truth: [oD] bool = !polarity;
     // Early exit for zero-length result
     if (lss.size == 0) {
       return truth;
@@ -474,7 +496,8 @@ module SegmentedArray {
     ref roffsets = rss.offsets.a;
     // Compare segments in parallel
     // Segments are guaranteed to be on same locale, but bytes are not
-    forall (t, lo, ro, idx) in zip(truth, loffsets, roffsets, oD) {
+    forall (t, lo, ro, idx) in zip(truth, loffsets, roffsets, oD) 
+      with (var agg = newDstAggregator(bool)) {
       var llen: int;
       var rlen: int;
       if (idx == oD.high) {
@@ -494,9 +517,10 @@ module SegmentedArray {
             break;
           }
         }
-        // Only if lengths and all bytes are equal, set result to true
+        // Only if lengths and all bytes are equal, override the default value
         if allEqual {
-          unorderedCopy(t, true);
+          // For ==, the output should be true; for !=, false
+          agg.copy(t, polarity);
         }
       }
     }
@@ -506,9 +530,25 @@ module SegmentedArray {
   /* Test an array of strings for equality against a constant string. Return a boolean
      vector the same size as the array. */
   proc ==(ss:SegString, testStr: string) {
+    return compare(ss, testStr, true);
+  }
+  
+  /* Test an array of strings for inequality against a constant string. Return a boolean
+     vector the same size as the array. */
+  proc !=(ss:SegString, testStr: string) {
+    return compare(ss, testStr, false);
+  }
+
+  /* Element-wise comparison of an arrays of string against a target string. 
+     The polarity parameter determines whether the comparison checks for 
+     equality (polarity=true, result is true where elements equal target) 
+     or inequality (polarity=false, result is true where elements differ from 
+     target). */
+  proc compare(ss:SegString, testStr: string, param polarity: bool) {
     ref oD = ss.offsets.aD;
-    // Initialize to true, then set non-matching entries to false along the way
-    var truth: [oD] bool = true;
+    // Initially assume all elements equal the target string, then correct errors
+    // For ==, this means everything starts true; for !=, everything starts false
+    var truth: [oD] bool = polarity;
     // Early exit for zero-length result
     if (ss.size == 0) {
       return truth;
@@ -519,10 +559,22 @@ module SegmentedArray {
     // Use a whole-array strategy, where the ith byte from every segment is checked simultaneously
     // This will do len(testStr) parallel loops, but loops will have low overhead
     for (b, i) in zip(testStr.chpl_bytes(), 0..) {
-      [(t, o, idx) in zip(truth, offsets, oD)] if ((o+i > vD.high) || (b != values[o+i])) {unorderedCopy(t, false);}
+      forall (t, o, idx) in zip(truth, offsets, oD) with (var agg = newDstAggregator(bool)) {
+        if ((o+i > vD.high) || (b != values[o+i])) {
+          // Strings are not equal, so change the output
+          // For ==, output is now false; for !=, output is now true
+          agg.copy(t, !polarity);
+        }
+      }
     }
     // Check the length by checking that the next byte is null
-    [(t, o, idx) in zip(truth, offsets, oD)] if ((o+testStr.size > vD.high) || (0 != values[o+testStr.size])) {unorderedCopy(t, false);}
+    forall (t, o, idx) in zip(truth, offsets, oD) with (var agg = newDstAggregator(bool)) {
+      if ((o+testStr.size > vD.high) || (0 != values[o+testStr.size])) {
+        // Strings are not equal, so change the output
+        // For ==, output is now false; for !=, output is now true
+        agg.copy(t, !polarity);
+      }
+    }
     return truth;
   }
 

@@ -200,6 +200,10 @@ module SegmentedMsg {
           var e = st.addEntry(rname, lstrings.size, bool);
           e.a = (lstrings == rstrings);
         }
+        when "!=" {
+          var e = st.addEntry(rname, lstrings.size, bool);
+          e.a = (lstrings != rstrings);
+        }
         otherwise {return notImplementedError(pn, ltype, op, rtype);}
         }
     }
@@ -227,6 +231,10 @@ module SegmentedMsg {
         when "==" {
           var e = st.addEntry(rname, strings.size, bool);
           e.a = (strings == value);
+        }
+        when "!=" {
+          var e = st.addEntry(rname, strings.size, bool);
+          e.a = (strings != value);
         }
         otherwise {return notImplementedError(pn, objtype, op, valtype);}
         }

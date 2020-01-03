@@ -2,6 +2,9 @@ from arkouda.client import generic_msg, verbose
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.sorting import argsort, coargsort, local_argsort
 from arkouda.strings import Strings
+from arkouda.pdarraycreation import array, zeros, arange
+from arkouda.pdarraysetops import concatenate
+from arkouda.numeric import cumsum
 
 __all__ = ["GroupBy"]
 
@@ -39,20 +42,25 @@ class GroupBy:
     Reductions = frozenset(['sum', 'prod', 'mean',
                             'min', 'max', 'argmin', 'argmax',
                             'nunique', 'any', 'all'])
-    def __init__(self, keys):    
+    def __init__(self, keys, assume_sorted=False):
+        self.assume_sorted = assume_sorted
         self.per_locale = False
         self.keys = keys
         if isinstance(keys, pdarray):
             self.nkeys = 1
             self.size = keys.size
-            if self.per_locale:
+            if assume_sorted:
+                self.permutation = arange(self.size)
+            elif self.per_locale:
                 self.permutation = local_argsort(keys)
             else:
                 self.permutation = argsort(keys)
         elif isinstance(keys, Strings):
             self.nkeys = 1
             self.size = keys.size
-            if self.per_locale:
+            if assume_sorted:
+                self.permutation = arange(self.size)
+            elif self.per_locale:
                 raise ValueError("per-locale groupby not supported on strings")
             else:
                 self.permutation = keys.group()
@@ -62,7 +70,10 @@ class GroupBy:
             for k in keys:
                 if k.size != self.size:
                     raise ValueError("Key arrays must all be same size")
-            self.permutation = coargsort(keys)
+            if assume_sorted:
+                self.permutation = arange(self.size)
+            else:
+                self.permutation = coargsort(keys)
             
         # self.permuted_keys = self.keys[self.permutation]
         self.find_segments()
@@ -153,7 +164,10 @@ class GroupBy:
             raise ValueError("Attempt to group array using key array of different length")
         if operator not in self.Reductions:
             raise ValueError("Unsupported reduction: {}\nMust be one of {}".format(operator, self.Reductions))
-        permuted_values = values[self.permutation]
+        if self.assume_sorted:
+            permuted_values = values
+        else:
+            permuted_values = values[self.permutation]
         if self.per_locale:
             cmd = "segmentedLocalRdx"
         else:
@@ -398,3 +412,55 @@ class GroupBy:
             One bool per unique key in the GroupBy instance
         """
         return self.aggregate(values, "all")
+
+    def broadcast(self, values):
+        """
+        Fill each group's segment with a constant value.
+
+        Parameters
+        ----------
+        values : pdarray
+            The values to put in each group's segment
+
+        Returns
+        -------
+        pdarray
+            The broadcast values
+
+        Notes
+        -----
+        This function is a sparse analog of ``np.broadcast``. If a
+        GroupBy object represents a sparse matrix (tensor), then
+        this function takes a (dense) column vector and replicates
+        each value to the non-zero elements in the corresponding row.
+
+        The returned array is in permuted (grouped) order. To get
+        back to the order of the array on which GroupBy was called,
+        the user must invert the permutation (see below).
+
+        Examples
+        --------
+        >>> a = ak.array([0, 1, 0, 1, 0])
+        >>> values = ak.array([3, 5])
+        >>> g = ak.GroupBy(a)
+        # Result is in grouped order
+        >>> g.broadcast(values)
+        array([3, 3, 3, 5, 5]
+
+        >>> b = ak.zeros_like(a)
+        # Result is in original order
+        >>> b[g.permutation] = g.broadcast(values)
+        >>> b
+        array([3, 5, 3, 5, 3])
+        """
+
+        if not isinstance(values, pdarray):
+            raise ValueError("Vals must be pdarray")
+        if values.size != self.segments.size:
+            raise ValueError("Must have one value per segment")
+        temp = zeros(self.size, values.dtype)
+        if values.size == 0:
+            return temp
+        diffs = concatenate((array([values[0]]), values[1:] - values[:-1]))
+        temp[self.segments] = diffs
+        return cumsum(temp)
