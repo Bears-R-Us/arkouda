@@ -415,11 +415,7 @@ module GenSymIO {
     }
     return (subdoms, (+ reduce lengths));
   }
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> master
   /* This function gets called when A is a BlockDist array. */
   proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), filenames: [FD] string, dsetName: string) where (MyDmap == 1) {
     if GenSymIO_DEBUG {
@@ -427,7 +423,6 @@ module GenSymIO {
       writeln("Filedomains: ", filedomains); try! stdout.flush();
     }
     coforall loc in A.targetLocales() do on loc {
-<<<<<<< HEAD
 	// Create local copies of args
 	var locFiles = filenames;
 	var locFiledoms = filedomains;
@@ -478,12 +473,11 @@ module GenSymIO {
       }
   }
 
-=======
         // Create local copies of args
         var locFiles = filenames;
         var locFiledoms = filedomains;
         var locDset = dsetName;
-        /* On this locale, find all files containing data that belongs in 
+        /* On this locale, find all files containing data that belongs in
            this locale's chunk of A */
         for (filedom, filename) in zip(locFiledoms, locFiles) {
           var isopen = false;
@@ -526,10 +520,7 @@ module GenSymIO {
             C_HDF5.H5Fclose(file_id);
           }
         }
-      }
-  }
-        
->>>>>>> master
+
   /* This function is called when A is a CyclicDist array. */
   proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), filenames: [FD] string, dsetName: string) where (MyDmap == 0) {
     use CyclicDist;
@@ -547,11 +538,8 @@ module GenSymIO {
       C_HDF5.H5Fclose(file_id);
     }
   }
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> master
+
   proc domain_intersection(d1: domain(1), d2: domain(1)) {
     var low = max(d1.low, d2.low);
     var high = min(d1.high, d2.high);
@@ -649,7 +637,7 @@ module GenSymIO {
         warnFlag = true;
       }
       for loc in 0..#A.targetLocales().size {
-<<<<<<< HEAD
+
 	// when done with a coforall over locales, only locale 0's file gets created correctly.
 	// The other locales' files have corrupted headers.
 	//filenames[loc] = try! "%s_LOCALE%s%s".format(prefix, loc:string, extension);
@@ -679,7 +667,7 @@ module GenSymIO {
 	H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
 			     getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
 	C_HDF5.H5Fclose(myFileID);
-=======
+
         // when done with a coforall over locales, only locale 0's file gets created correctly.
         // The other locales' files have corrupted headers.
         //filenames[loc] = try! "%s_LOCALE%s%s".format(prefix, loc:string, extension);
@@ -692,7 +680,7 @@ module GenSymIO {
           throw new owned FileNotFoundError();
         }
         C_HDF5.H5Fclose(file_id);
-      } 
+      }
     }
     coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) do on loc {
         const myFilename = filenames[idx];
@@ -704,12 +692,11 @@ module GenSymIO {
         var dims: [0..#1] C_HDF5.hsize_t;
         dims[0] = locDom.size: C_HDF5.hsize_t;
         var myDsetName = "/" + dsetName;
-        
+
         use C_HDF5.HDF5_WAR;
         H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
                              getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
         C_HDF5.H5Fclose(myFileID);
->>>>>>> master
       }
     return warnFlag;
   }
