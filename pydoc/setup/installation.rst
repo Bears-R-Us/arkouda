@@ -66,15 +66,6 @@ If you are planning to contribute to arkouda as a developer, you may wish to ins
 Troubleshooting
 ****************
 
-Legacy classes
-=====================
-
-Error: The build fails because ``--legacy-classes`` is not recognized
-
-Cause: A version of Chapel older than 1.20.0 is being used
-
-Solution: Either upgrade Chapel or manually remove the ``--legacy-classes`` flag from the Arkouda ``Makefile``.
-
 Chapel not built for this configuration
 ==========================================
 
