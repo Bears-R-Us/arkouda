@@ -90,14 +90,14 @@ check-zmq: $(ZMQ_CHECK)
 	@echo "Checking for ZMQ"
 	$(CHPL) $(CHPL_FLAGS) $< -o $(DEP_INSTALL_DIR)/$@
 	$(DEP_INSTALL_DIR)/$@ -nl 1
-	rm -f $(DEP_INSTALL_DIR)/$@
+	@rm -f $(DEP_INSTALL_DIR)/$@ $(DEP_INSTALL_DIR)/$@_real
 
 HDF5_CHECK = $(DEP_INSTALL_DIR)/checkHDF5.chpl
 check-hdf5: $(HDF5_CHECK)
 	@echo "Checking for HDF5"
 	$(CHPL) $(CHPL_FLAGS) $< -o $(DEP_INSTALL_DIR)/$@
 	$(DEP_INSTALL_DIR)/$@ -nl 1
-	rm -f $(DEP_INSTALL_DIR)/$@
+	@rm -f $(DEP_INSTALL_DIR)/$@ $(DEP_INSTALL_DIR)/$@_real
 
 ALL_TARGETS := $(ARKOUDA_MAIN_MODULE)
 .PHONY: all
