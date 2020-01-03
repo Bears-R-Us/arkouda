@@ -32,17 +32,17 @@ module FindSegmentsMsg
         var repMsg: string; // response message
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
-	var pname = fields[2]; // permutation array
-	var nkeys = fields[3]:int; // number of key arrays
-	if (fields.size != (2*nkeys + 3)) { return incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(nkeys, (fields.size - 3)/2));}
+        var pname = fields[2]; // permutation array
+        var nkeys = fields[3]:int; // number of key arrays
+        if (fields.size != (2*nkeys + 3)) { return incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(nkeys, (fields.size - 3)/2));}
         var knames = fields[4..#nkeys]; // key arrays
         var ktypes = fields[4+nkeys..#nkeys]; // objtypes
         var size: int;
-	// Check all the argument arrays before doing anything
-	var gPerm = st.lookup(pname);
-	if (gPerm.dtype != DType.Int64) { return notImplementedError(pn,"(permutation dtype "+dtype2str(gPerm.dtype)+")"); }	
-	// var keyEntries: [0..#nkeys] borrowed GenSymEntry;
-	for (name, objtype, i) in zip(knames, ktypes, 1..) {
+        // Check all the argument arrays before doing anything
+        var gPerm = st.lookup(pname);
+        if (gPerm.dtype != DType.Int64) { return notImplementedError(pn,"(permutation dtype "+dtype2str(gPerm.dtype)+")"); }        
+        // var keyEntries: [0..#nkeys] borrowed GenSymEntry;
+        for (name, objtype, i) in zip(knames, ktypes, 1..) {
       // var g: borrowed GenSymEntry;
       var thisSize: int;
       var thisType: DType;
@@ -65,27 +65,27 @@ module FindSegmentsMsg
       } else {
         if (thisSize != size) { return try! incompatibleArgumentsError(pn, "Expected array of size %i, got size %i".format(size, thisSize)); }
       }
-	  if (thisType != DType.Int64) { return notImplementedError(pn,"(key array dtype "+dtype2str(thisType)+")");}
-	}
-	
-	// At this point, all arg arrays exist, have the same size, and are int64 or string dtype
-	if (size == 0) {
-	  // Return two empty integer entries
-	  var n1 = st.nextName();
-	  st.addEntry(n1, 0, int);
-	  var n2 = st.nextName();
-	  st.addEntry(n2, 0, int);
-	  return try! "created " + st.attrib(n1) + " +created " + st.attrib(n1);
-	}
-	// Permutation that groups the keys
-	var perm = toSymEntry(gPerm, int);
-	ref pa = perm.a; // ref to actual permutation array
-	ref paD = perm.aD; // ref to domain
-	// Unique key indices; true where first value of each unique key occurs
-	var ukeylocs: [paD] bool;
-	// First key is automatically present
-	ukeylocs[0] = true;
-	for (name, objtype) in zip(knames, ktypes) {
+          if (thisType != DType.Int64) { return notImplementedError(pn,"(key array dtype "+dtype2str(thisType)+")");}
+        }
+        
+        // At this point, all arg arrays exist, have the same size, and are int64 or string dtype
+        if (size == 0) {
+          // Return two empty integer entries
+          var n1 = st.nextName();
+          st.addEntry(n1, 0, int);
+          var n2 = st.nextName();
+          st.addEntry(n2, 0, int);
+          return try! "created " + st.attrib(n1) + " +created " + st.attrib(n1);
+        }
+        // Permutation that groups the keys
+        var perm = toSymEntry(gPerm, int);
+        ref pa = perm.a; // ref to actual permutation array
+        ref paD = perm.aD; // ref to domain
+        // Unique key indices; true where first value of each unique key occurs
+        var ukeylocs: [paD] bool;
+        // First key is automatically present
+        ukeylocs[0] = true;
+        for (name, objtype) in zip(knames, ktypes) {
       select objtype {
         when "pdarray" {
           var g: borrowed GenSymEntry = st.lookup(name);
@@ -114,40 +114,41 @@ module FindSegmentsMsg
                 u = true;
               } else {
                 // Have to compare bytes of previous string to current string
-                ref prev = permVals[{permOffsets[i-1]..#l}];
-                ref curr = permVals[{o..#l}];
                 // If any bytes differ, mark a step
-                if || reduce (prev != curr) {
-                  u = true;
+                for pos in 0..#l {
+                  if permVals[permOffsets[i-1]+pos] != permVals[o+pos] {
+                    u = true;
+                    break;
+                  }
                 }
               }
             }
           } // forall
         } // when "str"
       } // select objtype
-	}
+        }
     // All keys have been processed, all steps have been found
-	// +scan to compute segment position... 1-based because of inclusive-scan
-	var iv: [ukeylocs.domain] int = (+ scan ukeylocs);
-	// compute how many segments
-	var pop = iv[iv.size-1];
-	if v {writeln("pop = ",pop,"last-scan = ",iv[iv.size-1]);try! stdout.flush();}
-	// Create SymEntry to hold segment boundaries
+        // +scan to compute segment position... 1-based because of inclusive-scan
+        var iv: [ukeylocs.domain] int = (+ scan ukeylocs);
+        // compute how many segments
+        var pop = iv[iv.size-1];
+        if v {writeln("pop = ",pop,"last-scan = ",iv[iv.size-1]);try! stdout.flush();}
+        // Create SymEntry to hold segment boundaries
         var sname = st.nextName(); // segments
-	var segs = st.addEntry(sname, pop, int);
-	ref sa = segs.a;
-	ref saD = segs.aD;
-	// segment position... 1-based needs to be converted to 0-based because of inclusive-scan
-	// where ever a segment break (true value) is... that index is a segment start index
-	[i in ukeylocs.domain] if (ukeylocs[i] == true) {var idx = i; unorderedCopy(sa[iv[i]-1], idx);}
-	// Create SymEntry to hold indices of unique keys in original (unpermuted) key arrays
+        var segs = st.addEntry(sname, pop, int);
+        ref sa = segs.a;
+        ref saD = segs.aD;
+        // segment position... 1-based needs to be converted to 0-based because of inclusive-scan
+        // where ever a segment break (true value) is... that index is a segment start index
+        [i in ukeylocs.domain] if (ukeylocs[i] == true) {var idx = i; unorderedCopy(sa[iv[i]-1], idx);}
+        // Create SymEntry to hold indices of unique keys in original (unpermuted) key arrays
         var uname = st.nextName(); // unique key indices
-	var ukeyinds = st.addEntry(uname, pop, int);
-	ref uka = ukeyinds.a;
-	// Segment boundaries are in terms of permuted arrays, so invert the permutation to get back to original index
-	[(s, i) in zip(sa, saD)] { unorderedCopy(uka[i], pa[s]); }
-	// Return entry names of segments and unique key indices
-	return try! "created " + st.attrib(sname) + " +created " + st.attrib(uname);
+        var ukeyinds = st.addEntry(uname, pop, int);
+        ref uka = ukeyinds.a;
+        // Segment boundaries are in terms of permuted arrays, so invert the permutation to get back to original index
+        [(s, i) in zip(sa, saD)] { unorderedCopy(uka[i], pa[s]); }
+        // Return entry names of segments and unique key indices
+        return try! "created " + st.attrib(sname) + " +created " + st.attrib(uname);
     }
 
     proc findLocalSegmentsMsg(reqMsg: string, st: borrowed SymTab): string throws {
@@ -166,8 +167,8 @@ module FindSegmentsMsg
         select (kEnt.dtype) {
             when (DType.Int64) {
                 var k = toSymEntry(kEnt,int); // key array
-		var minKey = min reduce k.a;
-		var keyRange = (max reduce k.a) - minKey + 1;
+                var minKey = min reduce k.a;
+                var keyRange = (max reduce k.a) - minKey + 1;
                 var (segs, ukeys) = perLocFindSegsAndUkeys(k.a, minKey, keyRange);
                 st.addEntry(sname, new shared SymEntry(segs));
                 st.addEntry(uname, new shared SymEntry(ukeys));
@@ -185,16 +186,16 @@ module FindSegmentsMsg
       var globalRelKeys:[keyDom] bool;
       var localSegments: [PrivateSpace] Segments;
       coforall loc in Locales {
-	on loc {
-	  var (locSegs, locUkeys) = segsAndUkeysFromSortedArray(perLocSorted.localSlice[perLocSorted.localSubdomain()]);
-	  localSegments[here.id] = new Segments(locUkeys, locSegs);
-	  forall k in locUkeys with (ref globalRelKeys) {
-	    // This does not need to be atomic, because race conditions will result in the correct answer
-	    globalRelKeys[k - minKey] = true;
-	    // would like to use unorderedCopy here but get non-lvalue error
-	    // unorderedCopy(globalRelKeys[k - minKey], 1);
-	  }
-	}
+        on loc {
+          var (locSegs, locUkeys) = segsAndUkeysFromSortedArray(perLocSorted.localSlice[perLocSorted.localSubdomain()]);
+          localSegments[here.id] = new Segments(locUkeys, locSegs);
+          forall k in locUkeys with (ref globalRelKeys) {
+            // This does not need to be atomic, because race conditions will result in the correct answer
+            globalRelKeys[k - minKey] = true;
+            // would like to use unorderedCopy here but get non-lvalue error
+            // unorderedCopy(globalRelKeys[k - minKey], 1);
+          }
+        }
       }
       if v {timer.stop(); writeln("time = ", timer.elapsed(), " sec"); try! stdout.flush(); timer.clear();}
 
@@ -204,12 +205,12 @@ module FindSegmentsMsg
       if v {writeln("Global unique keys: ", numKeys); try! stdout.flush();}
       var globalUkeys = makeDistArray(numKeys, int);
       forall (relKey, present, ind) in zip(keyDom, globalRelKeys, relKey2ind) {
-      	if present {
-	  // globalUkeys guaranteed to be sorted because ind and relKey monotonically increasing
-      	  globalUkeys[ind] = relKey + minKey;
-	  // would like to use unorderedCopy here but get non-lvalue error
-	  // unorderedCopy(globalUkeys[ind], relKey + minKey);
-      	}
+              if present {
+          // globalUkeys guaranteed to be sorted because ind and relKey monotonically increasing
+                globalUkeys[ind] = relKey + minKey;
+          // would like to use unorderedCopy here but get non-lvalue error
+          // unorderedCopy(globalUkeys[ind], relKey + minKey);
+              }
       }
       if v {timer.stop(); writeln("time = ", timer.elapsed(), " sec"); try! stdout.flush(); timer.clear();}
 
@@ -217,22 +218,22 @@ module FindSegmentsMsg
       var globalSegments = makeDistArray(numKeys*numLocales, int);
       globalSegments = -1;
       coforall loc in Locales {
-	on loc {
-	  ref mySeg = localSegments[here.id].s;
-	  ref myKey = localSegments[here.id].k;
-	  forall (offset, key) in zip(mySeg, myKey) {
-	    var segInd = globalSegments.localSubdomain().low + relKey2ind[key - minKey];
-	    globalSegments[segInd] = offset;
-	  }
-	  var last = D.localSubdomain().high + 1;
-	  for i in globalSegments.localSubdomain() by -1 {
-	    if globalSegments[i] == -1 {
-	      globalSegments[i] = last;
-	    } else {
-	      last = globalSegments[i];
-	    }
-	  }
-	}
+        on loc {
+          ref mySeg = localSegments[here.id].s;
+          ref myKey = localSegments[here.id].k;
+          forall (offset, key) in zip(mySeg, myKey) {
+            var segInd = globalSegments.localSubdomain().low + relKey2ind[key - minKey];
+            globalSegments[segInd] = offset;
+          }
+          var last = D.localSubdomain().high + 1;
+          for i in globalSegments.localSubdomain() by -1 {
+            if globalSegments[i] == -1 {
+              globalSegments[i] = last;
+            } else {
+              last = globalSegments[i];
+            }
+          }
+        }
       }
       if v {timer.stop(); writeln("time = ", timer.elapsed(), " sec"); try! stdout.flush(); timer.clear();}
       return (globalSegments, globalUkeys);
@@ -245,14 +246,14 @@ module FindSegmentsMsg
       var s:[dom] int;
 
       proc init() {
-	n = 0;
+        n = 0;
       }
 
       proc init(keys:[?D] int, segs:[D] int) {
-	n = D.size;
-	dom = D;
-	k = keys;
-	s = segs;
+        n = D.size;
+        dom = D;
+        k = keys;
+        s = segs;
       }
     }
 }

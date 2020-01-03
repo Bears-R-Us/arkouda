@@ -65,44 +65,44 @@ module UnitTestFindSegments
         // sort it and return iv in symbol table
         cmd = "localArgsort";
         var aname = parseName(repMsg); // get name from randint reply msg
-	var orig = toSymEntry(st.lookup(aname), int);
-	writeIntArray(orig.a, filename+".original");
+        var orig = toSymEntry(st.lookup(aname), int);
+        writeIntArray(orig.a, filename+".original");
         reqMsg = try! "%s %s".format(cmd, aname);
         t1 = Time.getCurrentTime();
         repMsg = localArgsortMsg(reqMsg, st);
         writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
-	writeln(repMsg);
+        writeln(repMsg);
 
-	// Get back the iv and apply to return locally sorted keys
+        // Get back the iv and apply to return locally sorted keys
         var ivname = parseName(repMsg); // get name from argsort reply msg
-	var iv = toSymEntry(st.lookup(ivname), int);
-	writeIntArray(iv.a, filename+".permutation");
-	cmd = "[pdarray]";
+        var iv = toSymEntry(st.lookup(ivname), int);
+        writeIntArray(iv.a, filename+".permutation");
+        cmd = "[pdarray]";
         reqMsg = try! "%s %s %s".format(cmd, aname, ivname);
         t1 = Time.getCurrentTime();
         repMsg = pdarrayIndexMsg(reqMsg, st);
         writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
         writeln(repMsg);
-	var sortedname = parseName(repMsg);
-	var sorted = toSymEntry(st.lookup(sortedname), int);
-	writeIntArray(sorted.a, filename+".permuted");
+        var sortedname = parseName(repMsg);
+        var sorted = toSymEntry(st.lookup(sortedname), int);
+        writeIntArray(sorted.a, filename+".permuted");
 
-	// use array and iv to find local segments
-	cmd = "findLocalSegments";
-	reqMsg = try! "%s %s %s".format(cmd, aname, ivname);
-	writeln(reqMsg);
-	t1 = Time.getCurrentTime();
+        // use array and iv to find local segments
+        cmd = "findLocalSegments";
+        reqMsg = try! "%s %s %s".format(cmd, aname, ivname);
+        writeln(reqMsg);
+        t1 = Time.getCurrentTime();
         repMsg = findLocalSegmentsMsg(reqMsg, st);
-	writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
         writeln(repMsg);
 
-	// check for correct local segmentation of result
-	var (segname, ukeysname) = parseTwoNames(repMsg);
-	var segs = toSymEntry(st.lookup(segname), int);
-	var ukeys = toSymEntry(st.lookup(ukeysname), int);
-	writeIntArray(segs.a, filename+".segments");
-	writeIntArray(ukeys.a, filename+".unique_keys");
-	writeln("Checking if correctly segmented...");
+        // check for correct local segmentation of result
+        var (segname, ukeysname) = parseTwoNames(repMsg);
+        var segs = toSymEntry(st.lookup(segname), int);
+        var ukeys = toSymEntry(st.lookup(ukeysname), int);
+        writeIntArray(segs.a, filename+".segments");
+        writeIntArray(ukeys.a, filename+".unique_keys");
+        writeln("Checking if correctly segmented...");
         t1 = Time.getCurrentTime();
         var answer = is_locally_segmented(sorted.a, segs.a, ukeys.a);
         writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
@@ -113,34 +113,34 @@ module UnitTestFindSegments
       var globalTruths:[LocaleSpace] bool;
       var valsChecked: atomic int;
       coforall loc in Locales {
-	on loc {
-	  var hereCorrect: bool;
-	  var locChecked = 0;
-	  var myKeys = ukeys;
-	  local {
-	    var segDom = segs.localSubdomain();
-	    var truths:[segDom] bool;
-	    forall segInd in segDom with (ref truths, + reduce locChecked) {
-	      var key = myKeys[segInd - segDom.low];
-	      var low = segs[segInd];
-	      var high: int;
-	      if (segInd == segDom.high) || (segs[segInd + 1] > sorted.localSubdomain().high) {
-		high = sorted.localSubdomain().high;
-	      } else {
-		high = segs[segInd + 1] - 1;
-	      }
-	      if (high >= low) {
-		truths[segInd] = && reduce (sorted[low..high] == key);
-	      } else {
-		truths[segInd] = true;
-	      }
-	      locChecked += high - low + 1;
-	    }
-	    hereCorrect = && reduce truths;
-	  }
-	  globalTruths[here.id] = hereCorrect;
-	  valsChecked.add(locChecked);
-	}
+        on loc {
+          var hereCorrect: bool;
+          var locChecked = 0;
+          var myKeys = ukeys;
+          local {
+            var segDom = segs.localSubdomain();
+            var truths:[segDom] bool;
+            forall segInd in segDom with (ref truths, + reduce locChecked) {
+              var key = myKeys[segInd - segDom.low];
+              var low = segs[segInd];
+              var high: int;
+              if (segInd == segDom.high) || (segs[segInd + 1] > sorted.localSubdomain().high) {
+                high = sorted.localSubdomain().high;
+              } else {
+                high = segs[segInd + 1] - 1;
+              }
+              if (high >= low) {
+                truths[segInd] = && reduce (sorted[low..high] == key);
+              } else {
+                truths[segInd] = true;
+              }
+              locChecked += high - low + 1;
+            }
+            hereCorrect = && reduce truths;
+          }
+          globalTruths[here.id] = hereCorrect;
+          valsChecked.add(locChecked);
+        }
       }
       return (&& reduce globalTruths) && (valsChecked.read() == sorted.size);
     }

@@ -147,11 +147,13 @@ Also can run server with memory checking turned on using
 
 By default, the server listens on port `5555` and prints verbose output. These options can be changed with command-line flags `--ServerPort=1234` and `--v=false`
 
-Memory checking is turned off by default and turned on by using  `--memTrack=true`
+Memory checking is turned off by default and turned on by using `--memTrack=true`
 
-Logging messaged are independently controlled be the `--logging=[true|false]` is on by default
+Logging messages are turned on by default and turned off by using `--logging=false`
 
-Verbose debug messages are independently controlled by `--v=[true|false]` is on by default
+Verbose messages are turned on by default and turned off by using  `--v=false`
+
+Other command line options are available, view them by using `--help`
 
 ## Testing arkouda_server
 

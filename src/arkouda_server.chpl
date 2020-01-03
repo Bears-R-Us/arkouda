@@ -227,13 +227,13 @@ proc main() {
         // send count for now
         repCount += 1;
         if (logging) {
-	  if cmd == "tondarray" {
+          if cmd == "tondarray" {
               writeln("repMsg:"," <binary-data>");
-	  } else {
-	    writeln("repMsg:",repMsg);
-	  }
-	  try! stdout.flush();
-	}
+          } else {
+            writeln("repMsg:",repMsg);
+          }
+          try! stdout.flush();
+        }
         socket.send(repMsg);
 
         if (logging && memTrack) {writeln("bytes of memoryUsed() = ",memoryUsed()); try! stdout.flush();}

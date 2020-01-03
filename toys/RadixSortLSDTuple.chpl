@@ -28,10 +28,10 @@ module RadixSortLSDTuple
 
     extern {
       unsigned long long shiftDouble(double key, long long rshift) {
-	// Reinterpret the bits of key as an unsigned 64-bit int (u long long)
-	// Unsigned because we want to left-extend with zeros
-	unsigned long long intkey = * (unsigned long long *)&key;
-	return (intkey >> rshift);
+        // Reinterpret the bits of key as an unsigned 64-bit int (u long long)
+        // Unsigned because we want to left-extend with zeros
+        unsigned long long intkey = * (unsigned long long *)&key;
+        return (intkey >> rshift);
       }
     }
     
@@ -48,9 +48,9 @@ module RadixSortLSDTuple
     proc getDigit(key: ?t , field: int, rshift: int): int where isTuple(t) {
       //return ((key[field] >> rshift) & maskDigit);
       for param i in 1..t.size {
-	if (i == field) {
-	  return getDigit(key[i], rshift);
-	}
+        if (i == field) {
+          return getDigit(key[i], rshift);
+        }
       }
     }
 
@@ -84,7 +84,7 @@ module RadixSortLSDTuple
 
     inline proc copyElement(out dst: ?t, in src: t) where isTuple(t) {
       for param i in 1..t.size {
-	unorderedCopy(dst[i], src[i]);
+        unorderedCopy(dst[i], src[i]);
       }
     }
 
@@ -110,29 +110,29 @@ module RadixSortLSDTuple
       var mins: t;
       var maxes: t;
       for param i in 1..t.size {
-	mins[i] = max(firstElem[i].type);
-	maxes[i] = min(firstElem[i].type);
+        mins[i] = max(firstElem[i].type);
+        maxes[i] = min(firstElem[i].type);
       }
       var bitWidths: rt;
       forall tup in a with (ref mins, ref maxes) {
-	for param i in 1..t.size {
-	  mins[i] = min(mins[i], tup[i]);
-	  maxes[i] = max(maxes[i], tup[i]);
-	}
+        for param i in 1..t.size {
+          mins[i] = min(mins[i], tup[i]);
+          maxes[i] = max(maxes[i], tup[i]);
+        }
       }
       for param i in 1..t.size {
-	// (lb, ub, w) in zip(mins, maxes, bitWidths) {
-	if isRealType(firstElem[i].type) {
-	  bitWidths[i] = numBits(firstElem[i].type);
-	} else if isIntegral(firstElem[i].type) {
-	  var wPos = if maxes[i] >= 0 then numBits(firstElem[i].type) - clz(maxes[i]) else 0;
-	  var wNeg = if mins[i] < 0 then numBits(firstElem[i].type) - clz(-mins[i]) + 1 else 0;
-	  bitWidths[i] = max(wPos, wNeg);
-	}
+        // (lb, ub, w) in zip(mins, maxes, bitWidths) {
+        if isRealType(firstElem[i].type) {
+          bitWidths[i] = numBits(firstElem[i].type);
+        } else if isIntegral(firstElem[i].type) {
+          var wPos = if maxes[i] >= 0 then numBits(firstElem[i].type) - clz(maxes[i]) else 0;
+          var wNeg = if mins[i] < 0 then numBits(firstElem[i].type) - clz(-mins[i]) + 1 else 0;
+          bitWidths[i] = max(wPos, wNeg);
+        }
       }
       return bitWidths;
     }
-	  
+          
     /* Radix Sort Least Significant Digit
        radix sort a block distributed array
        returning a permutation vector also as a block distributed array */
@@ -158,12 +158,12 @@ module RadixSortLSDTuple
         var globalCounts: [gD] int;
         var globalStarts: [gD] int;
 
-	// loop over tuple fields
-	for param field in 1..bitWidths.size by -1 {
-	  const width = bitWidths[field];
-	  if vv {writeln("field = ", field, ", type = ", firstElem[field].type:string, ", width = ", width);}
-	  // loop over digits
-	  for rshift in {0..#width by bitsPerDigit} {
+        // loop over tuple fields
+        for param field in 1..bitWidths.size by -1 {
+          const width = bitWidths[field];
+          if vv {writeln("field = ", field, ", type = ", firstElem[field].type:string, ", width = ", width);}
+          // loop over digits
+          for rshift in {0..#width by bitsPerDigit} {
             if vv {writeln("rshift = ",rshift);}
             // count digits
             coforall loc in Locales {
@@ -180,8 +180,8 @@ module RadixSortLSDTuple
                         // if vv {writeln((loc.id,task,tD));}
                         // count digits in this task's part of the array
                         for i in tD {
-			  var bucket = getDigit(kr0[i][KEY], field, rshift); // calc bucket from key
-			  taskBucketCounts[bucket] += 1;
+                          var bucket = getDigit(kr0[i][KEY], field, rshift); // calc bucket from key
+                          taskBucketCounts[bucket] += 1;
                         }
                         // write counts in to global counts in transposed order
                         for bucket in bD {
@@ -216,12 +216,12 @@ module RadixSortLSDTuple
                         }
                         // calc new position and put (key,rank) pair there in kr1
                         for i in tD {
-			  var bucket = getDigit(kr0[i][KEY], field, rshift); // calc bucket from key
+                          var bucket = getDigit(kr0[i][KEY], field, rshift); // calc bucket from key
                             var pos = taskBucketPos[bucket];
                             taskBucketPos[bucket] += 1;
                             // kr1[pos] = kr0[i];
                             //unorderedCopy(kr1[pos][KEY], kr0[i][KEY]);
-			    copyElement(kr1[pos][KEY], kr0[i][KEY]);
+                            copyElement(kr1[pos][KEY], kr0[i][KEY]);
                             unorderedCopy(kr1[pos][RANK], kr0[i][RANK]);
                         }
                     }//coforall task 
@@ -229,34 +229,34 @@ module RadixSortLSDTuple
             }//coforall loc
 
             // copy back to kr0 for next iteration
-	    // Only do this if there are more digits left in this tuple element
-	    // If this is the end of the tuple element, the negative-swapping code will perform the copy
-	    if (rshift + bitsPerDigit) < width {
-	      kr0 = kr1;
-	    }
-	  }//for rshift
-	  
-	  // At the end of every tuple element, check for negative keys
-	  // Negative keys will appear in order at the high end of the array
-	  // if there are no negative keys then firstNegative will correspond to the lowest positive key in location 0
-	  var hasNegatives: bool , firstNegative: int;
-	  if (bitWidths.size > 1) { // elements are tuples
-	    (hasNegatives, firstNegative) = maxloc reduce zip([(key, rank) in kr1] (key[field] < 0), aD);
-	  } else { // elements are ints or reals
-	    (hasNegatives, firstNegative) = maxloc reduce zip([(key, rank) in kr1] (key < 0), aD);
-	  }
-	  // Swap the positive and negative keys, so that negatives come first
-	  // If real type, then negative keys will appear in descending order and must be reversed
-	  const negStride = if (isRealType(firstElem[field].type) && hasNegatives) then -1 else 1;
-	  const numNegatives = aD.high - firstNegative + 1;
-	  if vv {writeln("hasNegatives? ", hasNegatives, ", negStride = ", negStride, ", firstNegative = ", firstNegative, ", numNegatives = ", numNegatives);}
-	  // Copy negatives to the beginning
-	  [((key, rank), i) in zip(kr1[firstNegative..], aD.low..aD.low+numNegatives-1 by negStride)] { copyElement(kr0[i][KEY], key); unorderedCopy(kr0[i][RANK], rank); }
-	  // Copy positives to the end
-	  [((key, rank), i) in zip(kr1[..firstNegative-1], aD.low+numNegatives..)] { copyElement(kr0[i][KEY], key); unorderedCopy(kr0[i][RANK], rank); }
-	}// for (width, field)
+            // Only do this if there are more digits left in this tuple element
+            // If this is the end of the tuple element, the negative-swapping code will perform the copy
+            if (rshift + bitsPerDigit) < width {
+              kr0 = kr1;
+            }
+          }//for rshift
+          
+          // At the end of every tuple element, check for negative keys
+          // Negative keys will appear in order at the high end of the array
+          // if there are no negative keys then firstNegative will correspond to the lowest positive key in location 0
+          var hasNegatives: bool , firstNegative: int;
+          if (bitWidths.size > 1) { // elements are tuples
+            (hasNegatives, firstNegative) = maxloc reduce zip([(key, rank) in kr1] (key[field] < 0), aD);
+          } else { // elements are ints or reals
+            (hasNegatives, firstNegative) = maxloc reduce zip([(key, rank) in kr1] (key < 0), aD);
+          }
+          // Swap the positive and negative keys, so that negatives come first
+          // If real type, then negative keys will appear in descending order and must be reversed
+          const negStride = if (isRealType(firstElem[field].type) && hasNegatives) then -1 else 1;
+          const numNegatives = aD.high - firstNegative + 1;
+          if vv {writeln("hasNegatives? ", hasNegatives, ", negStride = ", negStride, ", firstNegative = ", firstNegative, ", numNegatives = ", numNegatives);}
+          // Copy negatives to the beginning
+          [((key, rank), i) in zip(kr1[firstNegative..], aD.low..aD.low+numNegatives-1 by negStride)] { copyElement(kr0[i][KEY], key); unorderedCopy(kr0[i][RANK], rank); }
+          // Copy positives to the end
+          [((key, rank), i) in zip(kr1[..firstNegative-1], aD.low+numNegatives..)] { copyElement(kr0[i][KEY], key); unorderedCopy(kr0[i][RANK], rank); }
+        }// for (width, field)
 
-	// Output just the ranks for argsort
+        // Output just the ranks for argsort
         ranks = [(key, rank) in kr0] rank;
         return ranks;
         

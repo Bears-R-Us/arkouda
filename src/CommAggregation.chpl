@@ -1,11 +1,32 @@
 module CommAggregation {
   use SysCTypes;
+  use UnorderedCopy;
 
   // TODO these parameters need to be tuned and size should be user-settable at
   // creation time. iters before yield should be based on numLocales & buffSize
   private config const maxItersBeforeYield = 4096;
   private config const dstBuffSize = 4096;
   private config const srcBuffSize = 4096;
+
+
+  /* Creates a new destination aggregator (dst/lhs will be remote). */
+  proc newDstAggregator(type elemType, param useUnorderedCopy=false) {
+    if CHPL_COMM == "none" || useUnorderedCopy {
+      return new DstUnorderedAggregator(elemType);
+    } else {
+      return new DstAggregator(elemType);
+    }
+  }
+
+  /* Creates a new source aggregator (src/rhs will be remote). */
+  proc newSrcAggregator(type elemType, param useUnorderedCopy=false) {
+    // SrcAggregator is not currently optimized for ugni
+    if CHPL_COMM == "none" || CHPL_COMM =="ugni" || useUnorderedCopy {
+      return new SrcUnorderedAggregator(elemType);
+    } else {
+      return new SrcAggregator(elemType);
+    }
+  }
 
   /*
    * Aggregates copy(ref dst, src). Optimized for when src is local.
@@ -20,10 +41,6 @@ module CommAggregation {
     var buffer: [myLocaleSpace][0..#bufferSize] (c_void_ptr, elemType);
     var bufferIdxs: [myLocaleSpace] int;
 
-    proc init(type elemType) {
-      this.elemType = elemType;
-    }
-
     proc deinit() {
       flush();
     }
@@ -34,7 +51,7 @@ module CommAggregation {
       }
     }
 
-    inline proc copy(ref dst: elemType, srcVal: elemType) {
+    inline proc copy(ref dst: elemType, const in srcVal: elemType) {
       // Get the locale of dst and the local address on that locale
       const loc = dst.locale.id;
       const dstAddr = getAddr(dst);
@@ -93,8 +110,26 @@ module CommAggregation {
       }
       bufferIdx = 0;
     }
-
   }
+
+
+
+  /* "Aggregator" that uses unordered copy instead of actually aggregating */
+  pragma "no doc"
+  record DstUnorderedAggregator {
+    type elemType;
+
+    proc deinit() {
+      flush();
+    }
+    proc flush() {
+      unorderedCopyTaskFence();
+    }
+    inline proc copy(ref dst: elemType, const in srcVal: elemType) {
+      unorderedCopyWrapper(dst, srcVal);
+    }
+  }
+
 
   /*
    * Aggregates copy(ref dst, const ref src). Only works when dst is local.
@@ -109,10 +144,6 @@ module CommAggregation {
     var dstBuffer: [myLocaleSpace][0..#bufferSize] c_void_ptr;
     var srcBuffer: [myLocaleSpace][0..#bufferSize] c_void_ptr;
     var bufferIdxs: [myLocaleSpace] int;
-
-    proc init(type elemType) {
-      this.elemType = elemType;
-    }
 
     proc deinit() {
       flush();
@@ -169,6 +200,44 @@ module CommAggregation {
       }
 
       bufferIdx = 0;
+    }
+  }
+
+  /* "Aggregator" that uses unordered copy instead of actually aggregating */
+  pragma "no doc"
+  record SrcUnorderedAggregator {
+    type elemType;
+
+    proc deinit() {
+      flush();
+    }
+    proc flush() {
+      unorderedCopyTaskFence();
+    }
+    inline proc copy(ref dst: elemType, const ref src: elemType) {
+      assert(dst.locale.id == here.id);
+      unorderedCopyWrapper(dst, src);
+    }
+  }
+
+  //
+  // Helper routines
+  //
+
+  // Unordered copy wrapper that also supports tuples. In 1.20 this will call
+  // unorderedCopy for each tuple element, but in 1.21 it is a single call.
+  private inline proc unorderedCopyWrapper(ref dst, const ref src): void {
+    use Reflection;
+    // Always resolves in 1.21, only resolves for numeric/bool types in 1.20
+    if canResolve("unorderedCopy", dst, src) {
+      unorderedCopy(dst, src);
+    } else if isTuple(dst) && isTuple(src) {
+      for param i in 1..dst.size {
+        unorderedCopyWrapper(dst(i), src(i));
+      }
+    } else {
+      compilerWarning("Missing optimized unorderedCopy for " + dst.type:string);
+      dst = src;
     }
   }
 
