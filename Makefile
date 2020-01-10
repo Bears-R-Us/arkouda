@@ -20,7 +20,7 @@ endif
 # need this to avoid a slew of warnings from HDF5 on some platforms
 # --ccflags="-Wno-incompatible-pointer-types"
 CHPL_FLAGS += --ccflags="-Wno-incompatible-pointer-types"
-CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
+CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq -lmpi
 
 # add-path: Append custom paths for non-system software.
 # Note: Darwin `ld` only supports `-rpath <path>`, not `-rpath=<paths>`.

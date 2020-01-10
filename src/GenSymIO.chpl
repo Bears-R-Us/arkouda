@@ -7,6 +7,9 @@ module GenSymIO {
   use FileSystem;
   use Sort;
   use CommAggregation;
+
+  use Chapel120;
+
   config const GenSymIO_DEBUG = false;
   config const SEGARRAY_OFFSET_NAME = "segments";
   config const SEGARRAY_VALUE_NAME = "values";
