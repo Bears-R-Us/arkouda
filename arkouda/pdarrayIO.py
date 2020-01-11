@@ -9,7 +9,7 @@ __all__ = ["ls_hdf", "read_hdf", "read_all", "load", "get_datasets",
 
 def ls_hdf(filename):
     """
-    This function calls the h5ls utility on a filename visible to the arkouda 
+    This function calls the h5ls utility on a filename visible to the arkouda
     server.
 
     Parameters
@@ -19,14 +19,14 @@ def ls_hdf(filename):
 
     Returns
     -------
-    str 
+    str
         The string output of `h5ls <filename>` from the server
     """
     return generic_msg("lshdf {}".format(json.dumps([filename])))
 
 def read_hdf(dsetName, filenames):
     """
-    Read a single dataset from multiple HDF5 files into an arkouda pdarray. 
+    Read a single dataset from multiple HDF5 files into an arkouda pdarray.
 
     Parameters
     ----------
@@ -46,9 +46,9 @@ def read_hdf(dsetName, filenames):
 
     Notes
     -----
-    If filenames is a string, it is interpreted as a shell expression 
-    (a single filename is a valid expression, so it will work) and is 
-    expanded with glob to read all matching files. Use ``get_datasets`` to 
+    If filenames is a string, it is interpreted as a shell expression
+    (a single filename is a valid expression, so it will work) and is
+    expanded with glob to read all matching files. Use ``get_datasets`` to
     show the names of datasets in HDF5 files.
 
     If dsetName is not present in all files, a RuntimeError is raised.
@@ -66,7 +66,7 @@ def read_hdf(dsetName, filenames):
 def read_all(filenames, datasets=None):
     """
     Read multiple datasets from multiple HDF5 files.
-    
+
     Parameters
     ----------
     filenames : list or str
@@ -82,39 +82,61 @@ def read_all(filenames, datasets=None):
     See Also
     --------
     read_hdf, get_datasets, ls_hdf
-    
+
     Notes
     -----
-    If filenames is a string, it is interpreted as a shell expression 
-    (a single filename is a valid expression, so it will work) and is 
+    If filenames is a string, it is interpreted as a shell expression
+    (a single filename is a valid expression, so it will work) and is
     expanded with glob to read all matching files. This is done separately
     for each dataset, so if new matching files appear during ``read_all``,
-    some datasets will contain more data than others. 
+    some datasets will contain more data than others.
 
     If datasets is None, infer the names of datasets from the first file
-    and read all of them. Use ``get_datasets`` to show the names of datasets in 
+    and read all of them. Use ``get_datasets`` to show the names of datasets in
     HDF5 files.
 
     If not all datasets are present in all HDF5 files, a RuntimeError
-    is raised.
-    """
+    is raised.a
+    #alldatasets = get_datasets(filenames[0])
+    #if datasets is None:
+    #    datasets = alldatasets
+    #else: # ensure dataset(s) exist
+    #    if isinstance(datasets, str):
+    #        datasets = [datasets]
+    #    nonexistent = set(datasets) - set(get_datasets(filenames[0]))
+    #    if len(nonexistent) > 0:
+    #        raise ValueError("Dataset(s) not found: {}".format(nonexistent))
+
+    # Old iterative call to chapel during which datasets can be written to,
+    # resulting in new or removed datasets causing an error due to lack
+    # of uniform datasets across all hdf5 files.
+    #return {dset:read_hdf(dset, filenames) for dset in datasets}
+
+    #for dset in datasets:
+        #testing
+        #print(dset)
+        #print("read_all iteration")
+
     if isinstance(filenames, str):
         filenames = [filenames]
-    alldatasets = get_datasets(filenames[0])
-    if datasets is None:
-        datasets = alldatasets
-    else: # ensure dataset(s) exist
-        if isinstance(datasets, str):
-            datasets = [datasets]
-        nonexistent = set(datasets) - set(get_datasets(filenames[0]))
-        if len(nonexistent) > 0:
-            raise ValueError("Dataset(s) not found: {}".format(nonexistent))
-    return {dset:read_hdf(dset, filenames) for dset in datasets}
+    if isinstance(datasets, str):
+        datasets = [datasets]
+
+    rep_msg = generic_msg("readAllHdf {:n} {} {:n} {}".format(len(datasets), json.dumps(datasets), len(filenames), json.dumps(filenames)))
+
+        #testing
+        #print(rep_msg)
+
+    if '+' in rep_msg:
+        return Strings(*rep_msg.split('+'))
+    else:
+        return create_pdarray(rep_msg)
+
 
 def load(path_prefix, dataset='array'):
     """
-    Load a pdarray previously saved with ``pdarray.save()``. 
-    
+    Load a pdarray previously saved with ``pdarray.save()``.
+
     Parameters
     ----------
     path_prefix : str
@@ -148,7 +170,7 @@ def get_datasets(filename):
     -------
     list of str
         Names of the datasets in the file
-    
+
     See Also
     --------
     ls_hdf
@@ -156,11 +178,11 @@ def get_datasets(filename):
     rep_msg = ls_hdf(filename)
     datasets = [line.split()[0] for line in rep_msg.splitlines()]
     return datasets
-            
+
 def load_all(path_prefix):
     """
-    Load multiple pdarray previously saved with ``save_all()``. 
-    
+    Load multiple pdarray previously saved with ``save_all()``.
+
     Parameters
     ----------
     path_prefix : str
@@ -192,7 +214,7 @@ def save_all(columns, path_prefix, names=None, mode='truncate'):
     names : list of str
         Dataset names for the pdarrays
     mode : {'truncate' | 'append'}
-        By default, truncate (overwrite) the output files if they exist. 
+        By default, truncate (overwrite) the output files if they exist.
         If 'append', attempt to create new dataset in existing files.
 
     See Also
@@ -202,10 +224,10 @@ def save_all(columns, path_prefix, names=None, mode='truncate'):
     Notes
     -----
     Creates one file per locale containing that locale's chunk of each pdarray.
-    If columns is a dictionary, the keys are used as the HDF5 dataset names. 
-    Otherwise, if no names are supplied, 0-up integers are used. By default, 
-    any existing files at path_prefix will be overwritten, unless the user 
-    specifies the 'append' mode, in which case arkouda will attempt to add 
+    If columns is a dictionary, the keys are used as the HDF5 dataset names.
+    Otherwise, if no names are supplied, 0-up integers are used. By default,
+    any existing files at path_prefix will be overwritten, unless the user
+    specifies the 'append' mode, in which case arkouda will attempt to add
     <columns> as new datasets to existing files. If the wrong number of files
     is present or dataset names already exist, a RuntimeError is raised.
     """

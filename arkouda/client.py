@@ -23,7 +23,7 @@ socket = None
 connected = False
 
 # verbose flag for arkouda module
-verboseDefVal = False
+verboseDefVal = True
 verbose = verboseDefVal
 # threshold for __iter__() to limit comms to arkouda_server
 pdarrayIterThreshDefVal = 100
@@ -34,7 +34,7 @@ AllSymbols = "__AllSymbols__"
 
 # reset settings to default values
 def set_defaults():
-    global verbose, verboseDefVal, pdarrayIterThresh, pdarrayIterThreshDefVal 
+    global verbose, verboseDefVal, pdarrayIterThresh, pdarrayIterThreshDefVal
     verbose = verboseDefVal
     pdarrayIterThresh  = pdarrayIterThreshDefVal
     maxTransferBytes = maxTransferBytesDefVal
@@ -48,7 +48,7 @@ def connect(server = "localhost", port = 5555):
     Parameters
     ----------
     server : str, optional
-        The hostname of the server (must be visible to the current 
+        The hostname of the server (must be visible to the current
         machine). Defaults to `localhost`.
     port : int, optional
         The port of the server. Defaults to 5555.
@@ -89,7 +89,7 @@ def connect(server = "localhost", port = 5555):
     conf = get_config()
     if conf['arkoudaVersion'] != __version__:
         warnings.warn("Version mismatch between client ({}) and server ({}); this may cause some commands to fail or behave incorrectly! Updating arkouda is strongly recommended.".format(__version__, conf['arkoudaVersion']), RuntimeWarning)
-    
+
 
 # message arkouda server to shutdown server
 def disconnect():
@@ -98,7 +98,7 @@ def disconnect():
     """
 
     global socket, pspStr, connected, verbose
-    
+
     if socket is not None:
         # send disconnect message to server
         message = "disconnect"
@@ -111,7 +111,7 @@ def disconnect():
         connected = False
     else:
         print("not connected; cannot disconnect")
-    
+
 # message arkouda server to shutdown server
 def shutdown():
     """
@@ -119,7 +119,7 @@ def shutdown():
     """
 
     global socket, pspStr, connected, verbose
-    
+
     # send shutdown message to server
     message = "shutdown"
     if verbose: print("[Python] Sending request: %s" % message)
@@ -129,14 +129,13 @@ def shutdown():
     socket.disconnect(pspStr)
     print(message)
     connected = False
-    
+
 # send message to arkouda server and check for server side error
 def generic_msg(message, send_bytes=False, recv_bytes=False):
     global socket, pspStr, connected, verbose
 
     if not connected:
         raise RuntimeError("Not connected to a server")
-    
     if send_bytes:
         socket.send(message)
     else:
@@ -148,7 +147,10 @@ def generic_msg(message, send_bytes=False, recv_bytes=False):
             if message.startswith(b"Error:"): raise RuntimeError(message.decode())
             elif message.startswith(b"Warning:"): warnings.warn(message)
         else:
+
+            ### (Delte after use) function called in test ###
             message = socket.recv_string()
+
             if verbose: print("[Python] Received response: %s" % message)
             # raise errors sent back from the server
             if message.startswith("Error:"): raise RuntimeError(message)
@@ -159,9 +161,13 @@ def generic_msg(message, send_bytes=False, recv_bytes=False):
         socket = context.socket(zmq.REQ)
         socket.connect(pspStr)
         raise e
+
+    #testing flow
+    print(message)
+
     return message
 
-# query the server to get configuration 
+# query the server to get configuration
 def get_config():
     """
     Get runtime information about the server.
@@ -178,7 +184,7 @@ def get_config():
     """
     return json.loads(generic_msg("getconfig"))
 
-# query the server to get pda memory used 
+# query the server to get pda memory used
 def get_mem_used():
     """
     Compute the amount of memory used by objects in the server's symbol table.

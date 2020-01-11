@@ -23,7 +23,7 @@ proc main() {
         writeln("bytes of memoryUsed() = ",memoryUsed());
         try! stdout.flush();
     }
-    
+
     var st = new owned SymTab();
     var shutdownServer = false;
 
@@ -56,12 +56,12 @@ proc main() {
         }
 
         var repMsg: string;
-        
+
         // peel off the command
         var fields = reqMsg.split(1);
         var cmd = fields[1];
         var s0 = t1.elapsed();
-        
+
         if (logging) {
             if cmd == "array" { // has binary data in it's payload
                 writeln("reqMsg: ", cmd, " <binary-data>");
@@ -85,6 +85,7 @@ proc main() {
                 when "segmentedIn1d"     {repMsg = segIn1dMsg(reqMsg, st);}
                 when "lshdf"             {repMsg = lshdfMsg(reqMsg, st);}
                 when "readhdf"           {repMsg = readhdfMsg(reqMsg, st);}
+                when "readAllHdf"        {repMsg = readAllHdfMsg(reqMsg, st);}
                 when "tohdf"             {repMsg = tohdfMsg(reqMsg, st);}
                 when "array"             {repMsg = arrayMsg(reqMsg, st);}
                 when "create"            {repMsg = createMsg(reqMsg, st);}
@@ -122,9 +123,9 @@ proc main() {
                 when "[slice]"           {repMsg = sliceIndexMsg(reqMsg, st);}
                 when "[pdarray]"         {repMsg = pdarrayIndexMsg(reqMsg, st);}
                 when "[int]=val"         {repMsg = setIntIndexToValueMsg(reqMsg, st);}
-                when "[pdarray]=val"     {repMsg = setPdarrayIndexToValueMsg(reqMsg, st);}            
-                when "[pdarray]=pdarray" {repMsg = setPdarrayIndexToPdarrayMsg(reqMsg, st);}            
-                when "[slice]=val"       {repMsg = setSliceIndexToValueMsg(reqMsg, st);}            
+                when "[pdarray]=val"     {repMsg = setPdarrayIndexToValueMsg(reqMsg, st);}
+                when "[pdarray]=pdarray" {repMsg = setPdarrayIndexToPdarrayMsg(reqMsg, st);}
+                when "[slice]=val"       {repMsg = setSliceIndexToValueMsg(reqMsg, st);}
                 when "[slice]=pdarray"   {repMsg = setSliceIndexToPdarrayMsg(reqMsg, st);}
                 when "argsort"           {repMsg = argsortMsg(reqMsg, st);}
                 when "coargsort"         {repMsg = coargsortMsg(reqMsg, st);}
@@ -148,7 +149,7 @@ proc main() {
         } catch {
             repMsg = unknownError("");
         }
-        
+
         // send responses
         // send count for now
         repCount += 1;
@@ -169,7 +170,7 @@ proc main() {
     }
     t1.stop();
     deleteServerConnectionInfo();
-    
+
     writeln("requests = ",reqCount," responseCount = ",repCount," elapsed sec = ",t1.elapsed());
 }
 
@@ -191,4 +192,3 @@ proc deleteServerConnectionInfo() {
         }
     }
 }
-
