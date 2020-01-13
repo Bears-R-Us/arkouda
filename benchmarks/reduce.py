@@ -35,9 +35,9 @@ def time_ak_reduce(N_per_locale, trials, dtype, random):
 
     for op, t in tavg.items():
         print("{} = {}".format(op, results[op]))
-        print("  Average time = {:.4f} sec".format(t))
+        print("  {} Average time = {:.4f} sec".format(op, t))
         bytes_per_sec = (a.size * a.itemsize) / t
-        print("  Average rate = {:.2f} GiB/sec".format(bytes_per_sec/2**30))
+        print("  {} Average rate = {:.2f} GiB/sec".format(op, bytes_per_sec/2**30))
 
 def time_np_reduce(N, trials, dtype, random):
     print(">>> numpy reduce")
@@ -64,9 +64,9 @@ def time_np_reduce(N, trials, dtype, random):
 
     for op, t in tavg.items():
         print("{} = {}".format(op, results[op]))
-        print("  Average time = {:.4f} sec".format(t))
+        print("  {} Average time = {:.4f} sec".format(op, t))
         bytes_per_sec = (a.size * a.itemsize) / t
-        print("  Average rate = {:.2f} GiB/sec".format(bytes_per_sec/2**30))
+        print("  {} Average rate = {:.2f} GiB/sec".format(op, bytes_per_sec/2**30))
     
 def create_parser():
     parser = argparse.ArgumentParser(description="Measure performance of reductions over arrays.")
