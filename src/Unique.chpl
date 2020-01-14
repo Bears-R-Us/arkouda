@@ -522,15 +522,23 @@ module Unique
         return (ukeys,counts);
     }
 
-    proc uniqueGroup(str: SegString) throws {
+    proc uniqueGroup(str: SegString, returnInverse = false) throws {
         if (str.size == 0) {
             if v {writeln("zero size");try! stdout.flush();}
             var uo = makeDistArray(0, int);
             var uv = makeDistArray(0, uint(8));
             var c = makeDistArray(0, int);
-            return (uo, uv, c);
+            var inv = makeDistArray(0, int);
+            return (uo, uv, c, inv);
         }
         const aD = str.offsets.aD;
+        var invD: aD.type;
+        if returnInverse {
+          invD = aD;
+        } else {
+          invD = {0..-1};
+        }
+        var inv: [invD] int;
         var truth: [aD] bool;
         var perm: [aD] int;
         if SegmentedArrayUseHash {
@@ -596,7 +604,23 @@ module Unique
             }
           }
         }
-          
+        var (uo, uv, c) = uniqueFromTruth(str, perm, truth);
+        if returnInverse {
+            var segs = (+ scan c) - c;
+            var bcast: [invD] int;
+            forall s in segs with (var agg = newDstAggregator(int)) {
+                agg.copy(bcast[s], 1);
+            }
+            bcast[0] = 0;
+            bcast = (+ scan bcast);
+            forall (p, b) in zip(perm, bcast) with (var agg = newDstAggregator(int)) {
+                agg.copy(inv[p], b);
+            }
+        }
+        return (uo, uv, c, inv);
+    }
+
+    proc uniqueFromTruth(str: SegString, perm: [?aD] int, truth: [aD] bool) throws {
         var allUnique: int = + reduce truth;
         if (allUnique == aD.size) {
             if v {writeln("early out already unique");try! stdout.flush();}
