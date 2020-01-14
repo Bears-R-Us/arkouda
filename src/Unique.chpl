@@ -434,6 +434,46 @@ module Unique
             sorted = radixSortLSD_keys(a);
         }
 
+        var (u, c) = uniqueFromSorted(sorted);
+        return (u, c);
+    }
+
+    proc uniqueSortWithInverse(a: [?aD] int) {
+        if (aD.size == 0) {
+            if v {writeln("zero size");try! stdout.flush();}
+            var u = makeDistArray(0, int);
+            var c = makeDistArray(0, int);
+            var inv = makeDistArray(0, int);
+            return (u, c, inv);
+        }
+        var perm: [aD] int;
+        var sorted: [aD] int;
+        if (AryUtil.isSorted(a)) {
+            [(i, p) in zip(aD, perm)] p = i;
+            sorted = a; 
+        }
+        else {
+            perm = radixSortLSD_ranks(a);
+            forall (p, s) in zip(perm, sorted) with (var agg = newSrcAggregator(int)) {
+                agg.copy(s, a[p]);
+            }
+        }
+        var (u, c) = uniqueFromSorted(sorted);
+        var segs = (+ scan c) - c;
+        var bcast: [aD] int;
+        forall s in segs with (var agg = newDstAggregator(int)) {
+            agg.copy(bcast[s], 1);
+        }
+        bcast[0] = 0;
+        bcast = (+ scan bcast);
+        var inv: [aD] int;
+        forall (p, b) in zip(perm, bcast) with (var agg = newDstAggregator(int)) {
+            agg.copy(inv[p], b);
+        }
+        return (u, c, inv);
+    }
+    
+    proc uniqueFromSorted(sorted: [?aD] int) {
         var truth: [aD] bool;
         truth[0] = true;
         [(t, s, i) in zip(truth, sorted, aD)] if i > aD.low { t = (sorted[i-1] != s); }
@@ -442,7 +482,7 @@ module Unique
             if v {writeln("early out already unique");try! stdout.flush();}
             var u = makeDistArray(aD.size, int);
             var c = makeDistArray(aD.size, int);
-            u = a; // a is already unique
+            u = sorted; // array is already unique
             c = 1; // c counts are all 1
             return (u, c);
         }

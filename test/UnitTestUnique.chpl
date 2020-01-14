@@ -78,7 +78,24 @@ module UnitTestUnique
 
         writeln("aV1.size = ",aV1.size);
         writeln("totalCounts = ",+ reduce aC1); try! stdout.flush();
-
+        var present: [aDom] bool;
+        forall (x, p) in zip(a, present) {
+          for u in aV1 {
+            if (x == u) {
+              p = true;
+              break;
+            }
+          }
+        }
+        writeln("all values present? >>> ", && reduce present, " <<<"); try! stdout.flush();
+        writeln("testing return_inverse...");
+        var (aV2, aC2, inv) = uniqueSortWithInverse(a);
+        writeln("values and counts match? >>> ", (&& reduce (aV2 == aV1)) && (&& reduce (aC2 == aC1)), " <<<" );
+        var a2: [aDom] int;
+        forall (x, idx) in zip(a2, inv) {
+            x = aV2[idx];
+        }
+        writeln("original array correctly reconstructed from inverse? >>> ", && reduce (a == a2), " <<<");
     }
 
     config const N = 1_000_000; // length of array
