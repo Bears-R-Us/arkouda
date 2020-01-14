@@ -50,12 +50,20 @@ module UnitTestIn1d
             expected = n:real;
         }
 
-        writeln(">>> in1d");
+        writeln(">>> in1dAr2PerLocAssoc");
         var t1 = Time.getCurrentTime();
         // returns a boolean vector
         var truth = in1dAr2PerLocAssoc(a, b);
         writeln("total time = ", Time.getCurrentTime() - t1, "sec"); try! stdout.flush();
         writeln("<<< #a[i] in b = ", + reduce truth, " (expected ", expected, ")");try! stdout.flush();
+
+        writeln(">>> in1dSort");
+        t1 = Time.getCurrentTime();
+        var truth2 = in1dSort(a, b);
+        writeln("total time = ", Time.getCurrentTime() - t1, "sec"); try! stdout.flush();
+        writeln("<<< #a[i] in b = ", + reduce truth2, " (expected ", expected, ")");try! stdout.flush();
+
+        writeln("Results of both strategies match? >>> ", && reduce (truth == truth2), " <<<");
     }
 
     config const N = 1_000_000;

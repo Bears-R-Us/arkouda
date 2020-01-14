@@ -2,6 +2,8 @@
 module In1d
 {
     use ServerConfig;
+    use Unique;
+    use CommAggregation;
 
     use Time only;
     use Math only;
@@ -110,5 +112,52 @@ module In1d
         
         return truth;
     }
+
+    /* For each value in the first array, check membership in the second array. This 
+       implementation uses a sort, which is best when the second array is large because 
+       it scales well in both time and memory.
+
+       :arg ar1: array to broadcast in parallel over ar2
+       :type ar1: [] int
     
+       :arg ar2: array to be broadcast over in parallel
+       :type ar2: [] int
+    
+       :returns truth: the distributed boolean array containing the result of ar1 being broadcast over ar2
+       :type truth: [] bool
+     */
+    proc in1dSort(ar1: [?aD1] int, ar2: [?aD2] int) {
+        /* General strategy: unique both arrays, find the intersecting values, 
+           then map back to the original domain of ar1.
+         */
+        // Need the inverse index to map back from unique domain to original domain later
+        var (u1, c1, inv) = uniqueSortWithInverse(ar1);
+        var (u2, c2) = uniqueSort(ar2);
+        // Concatenate the two unique arrays
+        const D = makeDistDom(u1.size + u2.size);
+        var ar: [D] int;
+        ar[{0..#u1.size}] = u1;
+        ar[{u1.size..#u2.size}] = u2;
+        // Sort unique arrays together to find duplicates
+        var order = radixSortLSD_ranks(ar);
+        var sar: [D] int;
+        forall (s, o) in zip(sar, order) with (var agg = newSrcAggregator(int)) {
+            agg.copy(s, ar[o]);
+        }
+        // Duplicates correspond to values in both arrays
+        var flag: [D] bool;
+        flag[{D.low..D.high-1}] = (sar[{D.low+1..D.high}] == sar[{D.low..D.high-1}]);
+        // Get the indices of values from u1 that are also in u2
+        // Because sort is stable, original index of left duplicate will always be in u1
+        var ret: [D] bool;
+        forall (o, f) in zip(order, flag) with (var agg = newDstAggregator(bool)) {
+            agg.copy(ret[o], f);
+        }
+        // Use the inverse index to map from u1 domain to ar1 domain
+        var truth: [aD1] bool;
+        forall (t, idx) in zip(truth, inv) with (var agg = newSrcAggregator(bool)) {
+            agg.copy(t, ret[idx]);
+        }
+        return truth;
+    }
 }
