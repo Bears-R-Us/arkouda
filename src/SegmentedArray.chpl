@@ -57,6 +57,32 @@ module SegmentedArray {
       nBytes = vals.size;
     }
 
+    proc init(segments: [] int, values: [] uint(8), st: borrowed SymTab) {
+      var segName = st.nextName();
+      var valName = st.nextName();
+      var segEntry = new shared SymEntry(segments);
+      var valEntry = new shared SymEntry(values);
+      try! st.addEntry(segName, segEntry);
+      try! st.addEntry(valName, valEntry);
+      this.init(segName, valName, st);
+    }
+
+    proc show(n: int = 3) throws {
+      if (size >= 2*n) {
+        for i in 0..#n {
+          writeln(this[i]);
+        }
+        writeln("...");
+        for i in size-n..#n {
+          writeln(this[i]);
+        }
+      } else {
+        for i in 0..#size {
+          writeln(this[i]);
+        }
+      }
+    }
+
     /* Retrieve one string from the array */
     proc this(idx: int): string throws {
       if (idx < offsets.aD.low) || (idx > offsets.aD.high) {
@@ -372,17 +398,17 @@ module SegmentedArray {
       // Compare each pair of strings byte-by-byte
       for pos in 0..#maxLen {
         forall (o, l, d, i) in zip(oa, lengths, done, offsets.aD) 
-          with (ref res, var agg = newDstAggregator(bool)) {
+          with (ref res) {
           if (!d) {
             // If either of the strings is exhausted, mark this entry done
             if (pos >= l) || (pos >= lengths[i-1]) {
-              agg.copy(d, true);
+              d = true;
             } else {
               const prevByte = va[oa[i-1] + pos];
               const currByte = va[o + pos];
               // If we can already tell the pair is sorted, mark done
               if (prevByte < currByte) {
-                agg.copy(d, true);
+                d = true;
               // If we can tell the pair is not sorted, the return is false
               } else if (prevByte > currByte) {
                 res = false;
@@ -394,9 +420,10 @@ module SegmentedArray {
         if !res {
           return false;
         // If all comparisons are conclusive, return true
-        } else if (&& reduce done) {
-          return true;
-        } // else keep going
+        }
+        /* else if (&& reduce done) { */
+        /*   return true; */
+        /* } // else keep going */
       }
       // If we get to this point, it's because there is at least one pair of strings with length maxLen that are the same up to the last byte. That last byte determines res.
       return res;
@@ -406,6 +433,7 @@ module SegmentedArray {
       const ref D = offsets.aD;
       const ref va = values.a;
       if checkSorted && isSorted() {
+        if DEBUG { writeln("argsort called on already sorted array"); stdout.flush(); }
         var ranks: [D] int = [i in D] i;
         return ranks;
       }
@@ -616,6 +644,17 @@ module SegmentedArray {
     return truth;
   }
 
+  proc concat(s1: [] int, v1: [] uint(8), s2: [] int, v2: [] uint(8)) throws {
+    // TO DO: extend to axis == 1
+    var segs = makeDistArray(s1.size + s2.size, int);
+    var vals = makeDistArray(v1.size + v2.size, uint(8));
+    segs[{0..#s1.size}] = s1;
+    segs[{s1.size..#s2.size}] = s2 + v1.size;
+    vals[{0..#v1.size}] = v1;
+    vals[{v1.size..#v2.size}] = v2;
+    return (segs, vals);
+  }
+
   private config const in1dSortThreshold = 64;
   
   proc in1d(mainStr: SegString, testStr: SegString, invert=false) throws where !useHash {
@@ -630,58 +669,91 @@ module SegmentedArray {
       }
       return truth;
     } else {
-      /* // This is inspired by numpy in1d */
-      /* const (uMain, revIdx) = mainStr.unique(returnInverse=true); */
-      /* const uTest = testStr.unique(); */
-      /* const ar = concat(uMain, uTest); */
-      /* const order = ar.argsort(); */
-      /* const sar = ar[order]; */
-      /* var flag: [sar.domain] bool; */
-      /* const first = sar.domain.low; */
-      /* const last = sar.domain.high; */
-      /* flag[last] = invert; */
-      /* if invert { */
-      /*   flag[first..last-1] = (sar[first+1..last] != sar[first..last-1]); */
-      /* } else { */
-      /*   flag[first..last-1] = (sar[first+1..last] == sar[first..last-1]); */
-      /* } */
-      /* var ret: [sar.domain] bool; */
-      /* [(ord, f) in zip(order, flag)] if f { unorderedCopy(ret[ord], true) }; */
-      /* unorderedCopyTaskFence(); */
-      /* var realRet: [mainStr.offsets.aD] bool; */
-      /* [(r, i) in zip(realRet, revIdx)] unorderedCopy(r, ret[i]); */
-      /* unorderedCopyTaskFence(); */
-      /* return realRet; */
-
-      if v {writeln("Making associative domains for test set on each locale"); stdout.flush();}
-      var t1 = getCurrentTime();
-      // On each locale, make an associative domain with the hashes of the second array
-      // parSafe=false because we are adding in serial and it's faster
-      var localTestDoms: [PrivateSpace] domain(string, parSafe=false);
-      coforall loc in Locales {
-        on loc {
-          const myTestStr = testStr;
-          // Local hashes of second array
-          ref mySet = localTestDoms[here.id];
-          mySet.requestCapacity(testStr.size);
-          for i in myTestStr.offsets.aD {
-            mySet += myTestStr[i];
-          }
-        /* // Check membership of hashes in this locale's chunk of the array */
-        /* [i in truth.localSubdomain()] truth[i] = mySet.contains(hashes[i]); */
+      // This is inspired by numpy in1d
+      const (uoMain, uvMain, cMain, revIdx) = uniqueGroup(mainStr, returnInverse=true);
+      const (uoTest, uvTest, cTest, revTest) = uniqueGroup(testStr);
+      const (segs, vals) = concat(uoMain, uvMain, uoTest, uvTest);
+      if DEBUG {writeln("Unique strings in first array: %t\nUnique strings in second array: %t\nConcat length: %t".format(uoMain.size, uoTest.size, segs.size)); try! stdout.flush();}
+      var st = new owned SymTab();
+      const ar = new owned SegString(segs, vals, st);
+      const order = ar.argsort(checkSorted=false);
+      const (sortedSegs, sortedVals) = ar[order];
+      const sar = new owned SegString(sortedSegs, sortedVals, st);
+      if DEBUG { writeln("Sorted concatenated unique strings:"); sar.show(10); stdout.flush(); }
+      const D = sortedSegs.domain;
+      // First compare lengths and only check pairs whose lengths are equal (because gathering them is expensive)
+      var idx: [D] bool;
+      const lengths = sar.getLengths();
+      // Gather right-hand elements of equal-length pairs
+      idx[{D.low+1..D.high}] = (lengths[{D.low+1..D.high}] == lengths[{D.low..D.high-1}]);
+      idx[D.low] = false;
+      var (rightSegs, rightVals) = sar[idx];
+      var right = new owned SegString(rightSegs, rightVals, st);
+      if DEBUG {writeln("Equal-length pairs from right: ", (+ reduce idx)); right.show(5); try! stdout.flush();}
+      
+      // Now gather left-hand elements of equal-length pairs
+      idx[{D.low..D.high-1}] = (lengths[{D.low+1..D.high}] == lengths[{D.low..D.high-1}]);
+      idx[D.high] = false;
+      // For translating bool to int index
+      const idxLocs = (+ scan idx) - 1;
+      var (leftSegs, leftVals) = sar[idx];
+      var left = new owned SegString(leftSegs, leftVals, st);
+      if DEBUG {writeln("Equal-length pairs from left: ", (+ reduce idx)); left.show(5); try! stdout.flush();}
+      // Update places where lengths are equal with result of comparison
+      var flag: [D] bool = idx;
+      var same = (left == right);
+      if DEBUG {writeln("Duplicate pairs: %t / %t / %t".format(+ reduce same, left.size, sar.size)); try! stdout.flush();}
+      forall (f, l) in zip(flag, idxLocs) with (var agg = newSrcAggregator(bool)) {
+        if f {
+          agg.copy(f, same[l]);
+        }
       }
+      if DEBUG {writeln("Flag pop: ", + reduce flag); try! stdout.flush();}
+      // Now flag contains true for left-hand elements of duplicate pairs
+      if invert {flag = !flag;}
+      // Permute back to unique order
+      var ret: [D] bool;
+      forall (o, f) in zip(order, flag) with (var agg = newDstAggregator(bool)) {
+        agg.copy(ret[o], f);
+      }
+      if DEBUG {writeln("Ret pop: ", + reduce ret); try! stdout.flush();}
+      // Broadcast back to original (pre-unique) order
+      var truth: [mainStr.offsets.aD] bool;
+      forall (t, i) in zip(truth, revIdx) with (var agg = newSrcAggregator(bool)) {
+        agg.copy(t, ret[i]);
+      }
+      return truth;
     }
-    if v {
-      writeln(getCurrentTime() - t1, " seconds");
-      writeln("Testing membership"); stdout.flush();
-      t1 = getCurrentTime();
-    }
-    forall i in truth.domain {
-      truth[i] = localTestDoms[here.id].contains(mainStr[i]);
-    }
-    if v {writeln(getCurrentTime() - t1, " seconds"); stdout.flush();}
-    return truth;
-    }
+    // Below is analogous to in1dAr2PerLocAssoc, very slow for strings
+    /*   if v {writeln("Making associative domains for test set on each locale"); stdout.flush();} */
+    /*   var t1 = getCurrentTime(); */
+    /*   // On each locale, make an associative domain with the hashes of the second array */
+    /*   // parSafe=false because we are adding in serial and it's faster */
+    /*   var localTestDoms: [PrivateSpace] domain(string, parSafe=false); */
+    /*   coforall loc in Locales { */
+    /*     on loc { */
+    /*       const myTestStr = testStr; */
+    /*       // Local hashes of second array */
+    /*       ref mySet = localTestDoms[here.id]; */
+    /*       mySet.requestCapacity(testStr.size); */
+    /*       for i in myTestStr.offsets.aD { */
+    /*         mySet += myTestStr[i]; */
+    /*       } */
+    /*     /\* // Check membership of hashes in this locale's chunk of the array *\/ */
+    /*     /\* [i in truth.localSubdomain()] truth[i] = mySet.contains(hashes[i]); *\/ */
+    /*   } */
+    /* } */
+    /* if v { */
+    /*   writeln(getCurrentTime() - t1, " seconds"); */
+    /*   writeln("Testing membership"); stdout.flush(); */
+    /*   t1 = getCurrentTime(); */
+    /* } */
+    /* forall i in truth.domain { */
+    /*   truth[i] = localTestDoms[here.id].contains(mainStr[i]); */
+    /* } */
+    /* if v {writeln(getCurrentTime() - t1, " seconds"); stdout.flush();} */
+    /* return truth; */
+    /* } */
   }
 
   /* Convert an array of raw bytes into a Chapel string. */
