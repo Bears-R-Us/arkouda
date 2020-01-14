@@ -8,7 +8,7 @@ module GenSymIO {
   use Sort;
   use CommAggregation;
 
-  config const GenSymIO_DEBUG = false;
+  config const GenSymIO_DEBUG = true;
   config const SEGARRAY_OFFSET_NAME = "segments";
   config const SEGARRAY_VALUE_NAME = "values";
 
@@ -310,23 +310,22 @@ module GenSymIO {
     var jsonfiles = arrays[2];
     var dsetlist: [0..#ndsets] string;
     var filelist: [0..#nfiles] string;
-
     try {
       dsetlist = decode_json(jsondsets, ndsets);
     } catch {
       return try! "Error: could not decode json dataset names via tempfile (%i files: %s)".format(ndsets, jsondsets);
     }
-
     try {
       filelist = decode_json(jsonfiles, nfiles);
     } catch {
       return try! "Error: could not decode json filenames via tempfile (%i files: %s)".format(nfiles, jsonfiles);
     }
-
     var dsetdom = dsetlist.domain;
     var dsetnames: [dsetdom] string;
     var filedom = filelist.domain;
     var filenames: [filedom] string;
+
+    writeln("filedom = ", filedom);
 
     // error checking for lists sizes of 1 for both dataset and file
     if dsetlist.size == 1 {
@@ -344,7 +343,6 @@ module GenSymIO {
     } else {
       dsetnames = dsetlist;
     }
-
     if filelist.size == 1 {
       var tmp = glob(filelist[0]);
       if GenSymIO_DEBUG {
@@ -360,10 +358,10 @@ module GenSymIO {
     } else {
       filenames = filelist;
     }
-
-    //changing back to 1 dataset
+    // !!!changing back to 1 dataset !!!
     var dsetName = dsetnames[0];
-    writeln("dsetName = ", dsetName);
+    //writeln("dsetName = ", dsetName);
+    writeln("dsetNames = ", dsetnames);
     writeln("filenames = ", filenames);
 
     var segArrayFlags: [filedom] bool;
@@ -371,14 +369,14 @@ module GenSymIO {
     var bytesizes: [filedom] int;
     var signFlags: [filedom] bool;
 
-    writeln("segArrayFlags = ", segArrayFlags);
-    writeln("dclasses = ", dclasses);
-    writeln("bytesizes = ", bytesizes);
-    writeln("signFlags = ", signFlags);
+    //writeln("segArrayFlags = ", segArrayFlags);
+    //writeln("dclasses = ", dclasses);
+    //writeln("bytesizes = ", bytesizes);
+    //writeln("signFlags = ", signFlags);
 
     //may need error checking for dsets
     for (i, fname) in zip(filedom, filenames) {
-      writeln(i);
+      //writeln(i);
       try {
         (segArrayFlags[i], dclasses[i], bytesizes[i], signFlags[i]) = get_dtype(fname, dsetName);
       } catch e: FileNotFoundError {
@@ -401,18 +399,39 @@ module GenSymIO {
     const dataclass = dclasses[filedom.first];
     const bytesize = bytesizes[filedom.first];
     const isSigned = signFlags[filedom.first];
+
+    //writeln("isSegArray = ", segArrayFlags);
+    //writeln("dataclass= ", dclasses);
+    //writeln("bytesize = ", bytesizes);
+    //writeln("isSigned = ", signFlags);
+
     for (name, sa, dc, bs, sf) in zip(filenames, segArrayFlags, dclasses, bytesizes, signFlags) {
+
+      //writeln("name = ", name);
+      //writeln("sa= ", sa);
+      //writeln("dc = ", dclasses);
+      //writeln("bs = ", bytesizes);
+      //writeln("sf = ", sf);
+
       if (sa != isSegArray) || (dc != dataclass) || (bs != bytesize) || (sf != isSigned) {
         return try! "Error: inconsistent dtype in dataset %s of file %s".format(dsetName, name);
       }
     }
+
     if GenSymIO_DEBUG {
       writeln("Verified all dtypes across files");
     }
+
     var subdoms: [filedom] domain(1);
     var segSubdoms: [filedom] domain(1);
     var len: int;
     var nSeg: int;
+
+    //writeln("subdoms = ", subdoms);
+    //writeln("segSubdoms = ", segSubdoms);
+    //writeln("len = ", len);
+    //writeln("nSeg = ", nSeg);
+
     try {
       if isSegArray {
         (segSubdoms, nSeg) = get_subdoms(filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);
@@ -429,9 +448,21 @@ module GenSymIO {
       writeln("Got subdomains and total length");
     }
 
+    //writeln("subdoms = ", subdoms);
+    //writeln("segSubdoms = ", segSubdoms);
+    //writeln("len = ", len);
+    //writeln("nSeg = ", nSeg);
 
+    //writeln("isSegArray = ", isSegArray);
+    //writeln("dataclass = ", dataclass);
 
     select (isSegArray, dataclass) {
+
+
+      //writeln("C_HDF5.H5T_INTEGER = ", C_HDF5.H5T_INTEGER);
+      //writeln("C_HDF5.H5T_FLOAT = ", C_HDF5.H5T_FLOAT);
+
+      /* to make more robust
       when (true, C_HDF5.H5T_INTEGER) {
         if (bytesize != 1) || isSigned {
           return try! "Error: detected unhandled datatype: segmented? %t, class %i, size %i, signed? %t".format(isSegArray, dataclass, bytesize, isSigned);
@@ -447,16 +478,35 @@ module GenSymIO {
         st.addEntry(valName, entryVal);
         return try! "created " + st.attrib(segName) + " +created " + st.attrib(valName);
       }
+      */
+
       when (false, C_HDF5.H5T_INTEGER) {
         var entryInt = new shared SymEntry(len, int);
+
+        //writeln("entryInt = ", entryInt);
+
         if GenSymIO_DEBUG {
           writeln("Initialized int entry"); try! stdout.flush();
         }
+
+        writeln("entryInt.a = ", entryInt.a);
+        writeln("subdoms = ", subdoms);
+        writeln("filenames = ", filenames);
+        writeln("dsetName = ", dsetName);
+
+        //potential location for iteration
+
         read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
+
         var rname = st.nextName();
         st.addEntry(rname, entryInt);
+
+        //writeln(st.attrib(rname));
+
         return try! "created " + st.attrib(rname);
       }
+
+      /* to make more robust
       when (false, C_HDF5.H5T_FLOAT) {
         var entryReal = new shared SymEntry(len, real);
         if GenSymIO_DEBUG {
@@ -467,10 +517,14 @@ module GenSymIO {
         st.addEntry(rname, entryReal);
         return try! "created " + st.attrib(rname);
       }
+      */
+
       otherwise {
         return try! "Error: detected unhandled datatype: segmented? %t, class %i, size %i, signed? %t".format(isSegArray, dataclass, bytesize, isSigned);
       }
+
     }
+
   }
 
   proc fixupSegBoundaries(a: [?D] int, segSubdoms: [?fD] domain(1), valSubdoms: [fD] domain(1)) {

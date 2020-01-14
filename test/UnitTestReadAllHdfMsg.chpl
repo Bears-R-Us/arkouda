@@ -4,7 +4,6 @@ use SegmentedArray;
 use SegmentedMsg;
 use UniqueMsg;
 
-// need to change for PR
 config const filename2 = "../../../data/hdf/netflow_day-02.h5";
 config const filename3 = "../../../data/hdf/netflow_day-03.h5";
 config const filename4 = "../../../data/hdf/netflow_day-04.h5";
@@ -39,7 +38,9 @@ proc parseNames(msg, param k) {
 proc main() {
   var st = new owned SymTab();
   var cmd = "readAllHdf";
-  var reqMsg = "%s %i %i %jt | %jt".format(cmd, 2, 3, ['Time','Duration'], [filename2,filename3,filename4]);
+  var reqMsg = "%s %i %i %jt | %jt".format(cmd, 11, 3,
+     ['Time','Duration', 'SrcDevice', 'DstDevice', 'Protocol', 'SrcPort', 'DstPort', 'SrcPackets', 'DstPackets', 'SrcBytes', 'DstBytes'],
+     [filename2,filename3,filename4]);
   writeln(">>> ", reqMsg);
   var repMsg = readAllHdfMsg(reqMsg, st);
   writeln("<<< ", repMsg);
@@ -62,12 +63,15 @@ proc main() {
   //  writeln("%i: %s".format(i, strings[i]));
   //}
 
-  /* // strings[int]
+  /*
+
+  // strings[int]
   writeln();
   reqMsg = "%s %s %s %s %s %i".format("segmentedIndex", "intIndex", "str", segName, valName, testIndex);
   writeln(">>> ", reqMsg);
   repMsg = segmentedIndexMsg(reqMsg, st);
   writeln("<<< ", repMsg);
+
 
   // strings[slice]
   writeln();
