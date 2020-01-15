@@ -38,8 +38,9 @@ proc parseNames(msg, param k) {
 proc main() {
   var st = new owned SymTab();
   var cmd = "readAllHdf";
-  var reqMsg = "%s %i %i %jt | %jt".format(cmd, 11, 3,
-     ['Time','Duration', 'SrcDevice', 'DstDevice', 'Protocol', 'SrcPort', 'DstPort', 'SrcPackets', 'DstPackets', 'SrcBytes', 'DstBytes'],
+  var reqMsg = "%s %i %i %jt | %jt".format(cmd, 1, 3,
+     ['Time'],
+     //['Time','Duration', 'SrcDevice', 'DstDevice', 'Protocol', 'SrcPort', 'DstPort', 'SrcPackets', 'DstPackets', 'SrcBytes', 'DstBytes'],
      [filename2,filename3,filename4]);
   writeln(">>> ", reqMsg);
   var repMsg = readAllHdfMsg(reqMsg, st);
