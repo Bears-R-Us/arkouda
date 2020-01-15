@@ -99,7 +99,7 @@ module UnitTestIn1d
         writeln("Results of both strategies match? >>> ", && reduce (truth == truth2), " <<<");
     }
 
-    proc test_strings(n: int, m: int, minLen: int, maxLen: int, coverage: real) throws {
+    proc test_strings(n: int, m: int, minLen: int, maxLen: int, coverage: real, thorough: bool) throws {
         writeln("(n, m, minLen, maxLen)");
         writeln((n, m, minLen, maxLen)); try! stdout.flush();
 
@@ -113,7 +113,19 @@ module UnitTestIn1d
         var truth = in1d(str1, str2);
         writeln("total time = ", Time.getCurrentTime() - t1, "sec"); try! stdout.flush();
         writeln("<<< #str1[i] in str2 = ", + reduce truth, " (expected ", expected, ")");try! stdout.flush();
-
+        if thorough {
+          var res: [truth.domain] bool;
+          forall i in 0..#str1.size {
+            const s = str1[i];
+            for j in 0..#str2.size {
+              if (s == str2[j]) {
+                res[i] = true;
+                break;
+              }
+            }
+          }
+          writeln("Long check passed? >>> ", && reduce (truth == res), " <<<");
+        }
     }
 
     config const N = 10_000;
@@ -123,11 +135,12 @@ module UnitTestIn1d
     config const MINLEN = 0;
     config const MAXLEN = 10;
     config const COVERAGE = 0.5;
+    config const longCheck = false;
 
     proc main() {
         test_in1d(N, M, NVALS);
         if testStrings {
-          try! test_strings(N, M, MINLEN, MAXLEN, COVERAGE);
+          try! test_strings(N, M, MINLEN, MAXLEN, COVERAGE, longCheck);
         }
     }
     
