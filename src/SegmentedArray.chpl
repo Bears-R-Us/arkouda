@@ -9,6 +9,7 @@ module SegmentedArray {
   use Reflection;
   use PrivateDist;
   use ServerConfig;
+  use Unique;
   use Time only getCurrentTime;
 
   private config const DEBUG = false;
