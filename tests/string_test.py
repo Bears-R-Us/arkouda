@@ -6,7 +6,7 @@ import sys
 
 ak.verbose = False
 
-N = 10000
+N = 1000
 
 # test_strings = np.array(['These are', 'some', 'interesting',
 #                          '~!@#$%^&*()_+', 'strings', '8675309.',
@@ -55,7 +55,7 @@ if __name__ == '__main__':
     print("pdarray bool index passed")
 
     # in1d and iter
-    more_words = np.random.choice(base_words, 10)
+    more_words = np.random.choice(base_words, 100)
     akwords = ak.array(more_words)
     matches = ak.in1d(strings, akwords)
     # Every word in matches should be in the target set

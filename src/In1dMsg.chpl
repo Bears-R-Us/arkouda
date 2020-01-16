@@ -56,7 +56,7 @@ module In1dMsg
 
                 // brute force if below small bound
                 if (ar2.size <= sBound) {
-                    if v {try! writeln("%t <= %t".format(ar2.size,sBound)); try! stdout.flush();}
+                    if v {try! writeln("%t <= %t, using GlobalAr2Bcast".format(ar2.size,sBound)); try! stdout.flush();}
 
                     var truth = in1dGlobalAr2Bcast(ar1.a, ar2.a);
                     if (invert) {truth = !truth;}
@@ -65,15 +65,21 @@ module In1dMsg
                 }
                 // per locale assoc domain if below medium bound
                 else if (ar2.size <= mBound) {
-                    if v {try! writeln("%t <= %t".format(ar2.size,mBound)); try! stdout.flush();}
+                    if v {try! writeln("%t <= %t, using Ar2PerLocAssoc".format(ar2.size,mBound)); try! stdout.flush();}
                     
                     var truth = in1dAr2PerLocAssoc(ar1.a, ar2.a);
                     if (invert) {truth = !truth;}
                     
                     st.addEntry(rname, new shared SymEntry(truth));
                 }
-                // error if above medium bound
-                else {return try! "Error: %s: ar2 size too large %t".format(pn,ar2.size);}
+                // sort-based strategy if above medium bound
+                else {
+                    if v {try! writeln("%t > %t, using sort-based strategy".format(ar2.size, mBound)); try! stdout.flush();}
+                    var truth = in1dSort(ar1.a, ar2.a);
+                    if (invert) {truth = !truth;}
+
+                    st.addEntry(rname, new shared SymEntry(truth));
+                }
                 
             }
             otherwise {return notImplementedError(pn,gAr1.dtype,"in",gAr2.dtype);}
