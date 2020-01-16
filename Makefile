@@ -146,11 +146,18 @@ endif
 # Version needs to be escape-quoted for chpl to interpret as string
 CHPL_FLAGS_WITH_VERSION = $(CHPL_FLAGS)
 CHPL_FLAGS_WITH_VERSION += -sarkoudaVersion="\"$(VERSION)\""
+
+ifeq ("$(shell chpl --version | sed -n "s/chpl version 1\.\([0-9]*\).*/\1/p")", "20")
+	CHPL_COMPAT_FLAGS := -sversion120=true --no-overload-sets-checks
+else
+	CHPL_COMPAT_FLAGS := -sversion120=false
+endif
+
 ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
 $(ARKOUDA_MAIN_MODULE): check-deps $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
-	$(CHPL) $(CHPL_DEBUG_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) -o $@
+	$(CHPL) $(CHPL_DEBUG_FLAGS) $(CHPL_COMPAT_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) -o $@
 
 CLEAN_TARGETS += arkouda-clean
 .PHONY: arkouda-clean

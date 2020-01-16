@@ -13,12 +13,12 @@ module Chapel120 {
   use ZMQ;
   use IO;
 
-  proc Socket.recv(type T: bytes) where version120 {
+  proc Socket.recv(type T: bytes) throws where version120 {
     // there is no validation in 1.20, so use string for ZMQ but return bytes
     return this.recv(string):bytes;
   }
 
-  proc Socket.send(msg: bytes) where version120 {
+  proc Socket.send(msg: bytes) throws where version120 {
     // there is no validation in 1.20, so use string for ZMQ but return bytes
     this.send(convertToString(msg));
   }
