@@ -378,6 +378,7 @@ module GenSymIO {
     var dclasses: [filedom] C_HDF5.hid_t;
     var bytesizes: [filedom] int;
     var signFlags: [filedom] bool;
+    var rnames: string;
     for dsetName in dsetnames do {
       for (i, fname) in zip(filedom, filenames) {
         try {
@@ -422,12 +423,10 @@ module GenSymIO {
       if GenSymIO_DEBUG {
         writeln("Verified all dtypes across files for dataset ", dsetName);
       }
-
       var subdoms: [filedom] domain(1);
       var segSubdoms: [filedom] domain(1);
       var len: int;
       var nSeg: int;
-
       try {
         if isSegArray {
           (segSubdoms, nSeg) = get_subdoms(filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);
@@ -487,7 +486,8 @@ module GenSymIO {
           read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
           var rname = st.nextName();
           st.addEntry(rname, entryInt);
-          writeln(st.attrib(rname));
+          rnames = rnames + st.attrib(rname) + " ";
+          //writeln(st.attrib(rname));
           //return try! "created " + st.attrib(rname);
         }
         /*
@@ -507,7 +507,7 @@ module GenSymIO {
         }
       }
     }
-    return try! "created " + ;
+    return try! "created " + rnames;
   }
 
   proc fixupSegBoundaries(a: [?D] int, segSubdoms: [?fD] domain(1), valSubdoms: [fD] domain(1)) {
