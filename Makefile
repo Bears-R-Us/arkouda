@@ -13,6 +13,10 @@ default: $(DEFAULT_TARGET)
 VERBOSE ?= 0
 
 CHPL := chpl
+ifeq ("$(shell chpl --version | sed -n "s/chpl version 1\.\([0-9]*\).*/\1/p")", "20")
+  CHPL_VERSION_120 := 1
+endif
+
 CHPL_DEBUG_FLAGS += --print-passes
 ifndef ARKOUDA_DEVELOPER
 CHPL_FLAGS += --fast
@@ -20,7 +24,10 @@ endif
 # need this to avoid a slew of warnings from HDF5 on some platforms
 # --ccflags="-Wno-incompatible-pointer-types"
 CHPL_FLAGS += --ccflags="-Wno-incompatible-pointer-types"
-CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq -lmpi
+CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
+ifndef CHPL_VERSION_120
+  CHPL_FLAGS += -lmpi
+endif
 
 # add-path: Append custom paths for non-system software.
 # Note: Darwin `ld` only supports `-rpath <path>`, not `-rpath=<paths>`.
@@ -147,7 +154,7 @@ endif
 CHPL_FLAGS_WITH_VERSION = $(CHPL_FLAGS)
 CHPL_FLAGS_WITH_VERSION += -sarkoudaVersion="\"$(VERSION)\""
 
-ifeq ("$(shell chpl --version | sed -n "s/chpl version 1\.\([0-9]*\).*/\1/p")", "20")
+ifdef CHPL_VERSION_120
 	CHPL_COMPAT_FLAGS := -sversion120=true --no-overload-sets-checks
 else
 	CHPL_COMPAT_FLAGS := -sversion120=false
