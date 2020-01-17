@@ -46,7 +46,7 @@ proc main() {
 
     proc sendRepMsg(repMsg: ?t) where t==string || t==bytes {
         repCount += 1;
-        if v {
+        if logging {
           if t==bytes {
               writeln("repMsg:"," <binary-data>");
           } else {
@@ -99,7 +99,7 @@ proc main() {
                     }
                     sendRepMsg(unknownError(""));
                 }
-                if v { writeln("reqMsg: ", reqMsg); }
+                if logging { writeln("reqMsg: ", reqMsg); }
 
                 const fields = reqMsg.split(1);
                 const cmd = fields[1];

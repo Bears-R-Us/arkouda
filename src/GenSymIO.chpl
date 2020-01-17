@@ -83,7 +83,7 @@ module GenSymIO {
       } else if entry.dtype == DType.UInt8 {
         tmpw.write(toSymEntry(entry, uint(8)).a);
       } else {
-	return try! b"Error: Unhandled dtype %s".format(entry.dtype);
+        return try! b"Error: Unhandled dtype %s".format(entry.dtype);
       }
       tmpw.close();
     } catch {
