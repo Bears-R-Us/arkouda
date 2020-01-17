@@ -522,7 +522,7 @@ module Unique
         return (ukeys,counts);
     }
 
-    proc uniqueGroup(str: SegString, returnInverse = false) throws {
+    proc uniqueGroup(str: SegString, returnInverse = false, assumeSorted=false) throws {
         if (str.size == 0) {
             if v {writeln("zero size");try! stdout.flush();}
             var uo = makeDistArray(0, int);
@@ -544,7 +544,7 @@ module Unique
         if SegmentedArrayUseHash {
           var hashes = str.hash();
           var sorted: [aD] 2*uint;
-          if (AryUtil.isSorted(hashes)) {
+          if (assumeSorted || AryUtil.isSorted(hashes)) {
             perm = aD;
             sorted = hashes; 
           }
@@ -560,7 +560,7 @@ module Unique
         } else {
           var soff: [aD] int;
           var sval: [str.values.aD] uint(8);
-          if str.isSorted() {
+          if assumeSorted {
             perm = aD;
             soff = str.offsets.a;
             sval = str.values.a;

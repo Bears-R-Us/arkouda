@@ -456,10 +456,10 @@ module SegmentedArray {
     /*   return res; */
     /* } */
 
-    proc argsort(checkSorted:bool=true): [offsets.aD] int throws {
+    proc argsort(checkSorted:bool=false): [offsets.aD] int throws {
       const ref D = offsets.aD;
       const ref va = values.a;
-      if checkSorted && isSorted() {
+      if checkSorted && false { // isSorted() {
         if DEBUG { writeln("argsort called on already sorted array"); stdout.flush(); }
         var ranks: [D] int = [i in D] i;
         return ranks;
