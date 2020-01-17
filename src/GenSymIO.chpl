@@ -453,7 +453,6 @@ module GenSymIO {
       writeln("dataclass = ", dataclass);
       */
       select (isSegArray, dataclass) {
-
         /*
         when (true, C_HDF5.H5T_INTEGER) {
           if (bytesize != 1) || isSigned {
@@ -471,7 +470,6 @@ module GenSymIO {
           return try! "created " + st.attrib(segName) + " +created " + st.attrib(valName);
         }
         */
-
         when (false, C_HDF5.H5T_INTEGER) {
           var entryInt = new shared SymEntry(len, int);
           if GenSymIO_DEBUG {
@@ -486,7 +484,7 @@ module GenSymIO {
           read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
           var rname = st.nextName();
           st.addEntry(rname, entryInt);
-          rnames = rnames + st.attrib(rname) + " ";
+          rnames = rnames + st.attrib(rname) + " + ";
           //writeln(st.attrib(rname));
           //return try! "created " + st.attrib(rname);
         }
@@ -507,7 +505,8 @@ module GenSymIO {
         }
       }
     }
-    return try! "created " + rnames;
+    //rnames = rnames[:-3];
+    return try! "created " + (rnames.strip(" + ", leading = false, trailing = true));
   }
 
   proc fixupSegBoundaries(a: [?D] int, segSubdoms: [?fD] domain(1), valSubdoms: [fD] domain(1)) {

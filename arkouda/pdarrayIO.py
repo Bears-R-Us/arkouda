@@ -65,7 +65,7 @@ def read_hdf(dsetName, filenames):
 
 def read_all(filenames, datasets=None):
     """
-    Read multiple datasets from multiple HDF5 files.
+    Read datasets from HDF5 files.
 
     Parameters
     ----------
@@ -87,9 +87,8 @@ def read_all(filenames, datasets=None):
     -----
     If filenames is a string, it is interpreted as a shell expression
     (a single filename is a valid expression, so it will work) and is
-    expanded with glob to read all matching files. This is done separately
-    for each dataset, so if new matching files appear during ``read_all``,
-    some datasets will contain more data than others.
+    expanded with glob to read all matching files. All datasets and files are
+    passed to the server in a single function.
 
     If datasets is None, infer the names of datasets from the first file
     and read all of them. Use ``get_datasets`` to show the names of datasets in
@@ -106,35 +105,20 @@ def read_all(filenames, datasets=None):
     #    nonexistent = set(datasets) - set(get_datasets(filenames[0]))
     #    if len(nonexistent) > 0:
     #        raise ValueError("Dataset(s) not found: {}".format(nonexistent))
-
-    # Old iterative call to chapel during which datasets can be written to,
-    # resulting in new or removed datasets causing an error due to lack
-    # of uniform datasets across all hdf5 files.
-    #return {dset:read_hdf(dset, filenames) for dset in datasets}
-
-    #for dset in datasets:
-        #testing
-        #print(dset)
-        #print("read_all iteration")
-
+    """
     if isinstance(filenames, str):
         filenames = [filenames]
     if isinstance(datasets, str):
         datasets = [datasets]
-
-    rep_msg = generic_msg("readAllHdf {:n} {} {:n} {}".format(len(datasets), json.dumps(datasets), len(filenames), json.dumps(filenames)))
-
-        #testing
-        #print(rep_msg)
-
+    rep_msg = generic_msg("readAllHdf {:n} {:n} {} | {}".format(len(datasets), len(filenames), json.dumps(datasets), json.dumps(filenames)))
     if '+' in rep_msg:
         return Strings(*rep_msg.split('+'))
     else:
         return create_pdarray(rep_msg)
 
-
 def load(path_prefix, dataset='array'):
     """
+
     Load a pdarray previously saved with ``pdarray.save()``.
 
     Parameters
