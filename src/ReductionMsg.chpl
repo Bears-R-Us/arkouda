@@ -1008,7 +1008,7 @@ module ReductionMsg
       // get step indices and take diff to get number of times each key appears
       var stepInds: [nD] int;
       stepInds[nKeysPresent] = keyhits.size;
-      forall i in hD with (var agg = newSrcAggregator(int)) {
+      forall i in hD with (var agg = newDstAggregator(int)) {
         if (truth2[i]) {
           var idx = i;
           agg.copy(stepInds[kiv[i]-1], idx);
