@@ -1,10 +1,5 @@
 import json, struct
 import numpy as np
-try:
-    from numba import cuda
-except ModuleNotFoundError as error:
-    print(error)
-    print('CUDA is not enabled or installed. Consult documentation.')
 
 from arkouda.client import generic_msg, verbose, maxTransferBytes, pdarrayIterThresh
 from arkouda.dtypes import *
@@ -532,6 +527,12 @@ class pdarray:
         >>> type(a.to_cuda())
         numpy.devicendarray
         """
+        try:
+            from numba import cuda
+        except ModuleNotFoundError as error:
+            print(error)
+            print('CUDA is not enabled or installed. Consult documentation.')
+        
         # Total number of bytes in the array data
         arraybytes = self.size * self.dtype.itemsize
         # Guard against overflowing client memory
