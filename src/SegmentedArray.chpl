@@ -329,16 +329,11 @@ module SegmentedArray {
         }
       }
       if DEBUG { t.stop(); writeln("localizing substring took %t seconds".format(t.elapsed())); stdout.flush(); t.clear(); t.start(); }
-      /* const lD = {0..#substr.numBytes}; */
-      /* var locBuf: [PrivateSpace] [lD] uint(8); */
-      /* coforall loc in Locales { */
-      /*   var locSubstr = substr.localize(); */
-      /*   [(locBuf[here.id] */
-      forall (o, l, t) in zip(oa, lengths, truth) {
+      forall (o, l, t) in zip(oa, lengths, truth) with (var agg = newDstAggregator(bool)) {
         // Only compare if segment is long enough to contain substr
         if (locSubstr[here.id].numBytes <= l) {
           // Execute where the bytes are
-          // on va[o] {
+          on va[o] {
             const ref mySub = locSubstr[here.id];
             const ref myVal = va[{o..#l}];
             var res: bool;
@@ -355,9 +350,10 @@ module SegmentedArray {
               otherwise { throw new owned UnknownSearchMode(); }
             }
             if res {
-              t = true;
+              // t might not be local anymore because of on statement
+              agg.copy(t, true);
             }
-            // }
+          }
         }
       }
       if DEBUG { t.stop(); writeln("actual search took %t seconds".format(t.elapsed())); stdout.flush(); }
