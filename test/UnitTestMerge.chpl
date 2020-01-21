@@ -1,6 +1,7 @@
 use Merge;
 use RadixSortLSD;
 use Random;
+use RandArray;
 
 proc testBinarySearch(size, trials) {
   var a = makeDistArray(size, int);
@@ -21,14 +22,35 @@ proc testBinarySearch(size, trials) {
   return true;
 }
 
-proc testMerge(n, m, minlen, maxlen) {
-  var a = makeDistArray(n, int);
-  fillInt(a, nmin, nmax);
-  var sa = radixSortLSD_keys(a);
-  var b = makeDistArray(m, int);
-  fillInt(b, mmin, mmax);
-  var sb = radixSortLSD_keys(b);
-  
+proc testMerge(n, m, minLen, maxLen) {
+  var st = new owned SymTab();
+  var t = new Timer();
+  writeln("Generating random strings..."); stdout.flush();
+  t.start();
+  var (asegs, avals) = newRandStrings(n, minLen, maxLen, charSet.Uppercase);
+  var astrings = new owned SegString(asegs, avals, st);
+  var (bsegs, bvals) = newRandStrings(m, minLen, maxLen, charSet.Uppercase);
+  var bstrings = new owned SegString(bsegs, bvals, st);
+  t.stop();
+  writeln("%t seconds".format(t.elapsed())); stdout.flush(); t.clear();
+  writeln("Sorting each array separately..."); stdout.flush();
+  t.start();
+  var aperm = astrings.argsort();
+  var (sasegs, savals) = astrings[aperm];
+  var sa = new owned SegString(sasegs, savals, st);
+  var bperm = bstrings.argsort();
+  var (sbsegs, sbvals) = bstrings[bperm];
+  var sb = new owned SegString(sbsegs, sbvals, st);
+  t.stop();
+  writeln("%t seconds".format(t.elapsed())); stdout.flush(); t.clear();
+  writeln("Merging sorted arrays..."); stdout.flush();
+  t.start();
+  var (cperm, csegs, cvals) = mergeSorted(sa, sb);
+  t.stop();
+  writeln("%t seconds".format(t.elapsed())); stdout.flush(); t.clear();
+  var cstrings = new owned SegString(csegs, cvals, st);
+  cstrings.show(5);
+  writeln("Result is sorted? >>> ", cstrings.isSorted(), " <<<");
 }
 
 config const N = 1_000;
@@ -39,6 +61,6 @@ config const MAXLEN = 10;
 
 proc main() {
   if testBinarySearch(N, TRIALS) {
-    testMerge(N, M, NMIN, NMAX, MMIN, MMAX);
+    testMerge(N, M, MINLEN, MAXLEN);
   }
 }

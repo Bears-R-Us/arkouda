@@ -3,7 +3,7 @@ module Merge {
 
   /* Given a *sorted*, zero-up array, use binary search to find the index of the first element that is greater than or equal to a target.
    */
-  proc binarySearch(a, x) {
+  proc binarySearch(a, x) throws {
     var l = 0;
     var r = a.size;
     while l <= r {
@@ -23,8 +23,19 @@ module Merge {
     return l;
   }
 
-  proc mergeSorted(left: SegString, right: SegString) {
-    const bigIsLeft = (left.size >= right);
+  inline proc findStart(loc, task, s: SegString) throws {
+    ref va = s.values.a;
+    var i = va.localSubdomain().low;
+    ref oa = s.offsets.a;
+    if && reduce (oa < i) {
+      return va.size;
+    } else {
+      return binarySearch(oa, i);
+    }    
+  }
+
+  proc mergeSorted(left: SegString, right: SegString) throws {
+    const bigIsLeft = (left.size >= right.size);
     ref big = if bigIsLeft then left else right;
     ref small = if bigIsLeft then right else left;
     const size = big.size + small.size;
