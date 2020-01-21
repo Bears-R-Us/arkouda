@@ -529,9 +529,12 @@ class pdarray:
         """
         try:
             from numba import cuda
-        except ModuleNotFoundError as error:
-            print(error)
-            print('CUDA is not enabled or installed. Consult documentation.')
+            if not(cuda.is_available()):
+                raise ImportError('CUDA is not available. Check for the CUDA toolkit and ensure a GPU is installed.')
+                return
+        except:
+            raise ModuleNotFoundError('Numba is not enabled or installed and is required for GPU support.')
+            return
         
         # Total number of bytes in the array data
         arraybytes = self.size * self.dtype.itemsize
