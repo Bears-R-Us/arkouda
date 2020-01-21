@@ -119,6 +119,8 @@ def zeros(size, dtype=np.float64):
     >>> ak.zeros(5, dtype=ak.bool)
     array([False, False, False, False, False])
     """
+    if not np.isscalar(size):
+        raise TypeError("size must be a scalar, not {}".format(type(size)))
     dtype = akdtype(dtype) # normalize dtype
     # check dtype for error
     if dtype.name not in DTypes:
@@ -156,6 +158,8 @@ def ones(size, dtype=float64):
     >>> ak.ones(5, dtype=ak.bool)
     array([True, True, True, True, True])
     """
+    if not np.isscalar(size):
+        raise TypeError("size must be a scalar, not {}".format(type(size)))
     dtype = akdtype(dtype) # normalize dtype
     # check dtype for error
     if dtype.name not in DTypes:
@@ -276,6 +280,9 @@ def arange(*args):
         stop = args[1]
         stride = args[2]
 
+    if not all((np.isscalar(start), np.isscalar(stop), np.isscalar(stride))):
+        raise TypeError("all arguments must be scalars")
+
     if stride == 0:
         raise ZeroDivisionError("division by zero")
 
@@ -315,6 +322,8 @@ def linspace(start, stop, length):
     >>> ak.linspace(0, 1, 5)
     array([0, 0.25, 0.5, 0.75, 1])
     """
+    if not all((np.isscalar(start), np.isscalar(stop), np.isscalar(length))):
+        raise TypeError("all arguments must be scalars")
     starttype = resolve_scalar_dtype(start)
     startstr = NUMBER_FORMAT_STRINGS[starttype].format(start)
     stoptype = resolve_scalar_dtype(stop)
@@ -365,6 +374,8 @@ def randint(low, high, size, dtype=int64):
     """
     # TO DO: separate out into int and float versions
     # TO DO: float version should accept non-integer low and high
+    if not all((np.isscalar(low), np.isscalar(high), np.isscalar(size))):
+        raise TypeError("all arguments must be scalars")
     dtype = akdtype(dtype) # normalize dtype
     # check dtype for error
     if dtype.name not in DTypes:

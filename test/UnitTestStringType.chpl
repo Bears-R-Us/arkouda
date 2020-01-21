@@ -116,6 +116,20 @@ proc main() {
     var consecutive = && reduce (diff == 1);
     writeln("consecutive? ", consecutive);
   }
+
+  // strings != val
+  writeln();
+  reqMsg = "%s %s %s %s %s %s %s".format("segBinopvs", "!=", "str", segName, valName, "str", testString);
+  writeln(">>> ", reqMsg);
+  repMsg = segBinopvsMsg(reqMsg, st);
+  writeln("<<< ", repMsg);
+  fields = repMsg.split();
+  aname = fields[2];
+  var giv2 = st.lookup(aname);
+  var iv2 = toSymEntry(giv2, bool);
+  printAry("strings != %s: ".format(testString), iv2.a);
+  var check = (&& reduce (iv.a != iv2.a));
+  writeln("All strings should either be equal or not equal to testStr: >>> ", check, " <<<");
     
   // group strings
   writeln();

@@ -76,7 +76,7 @@ class pdarray:
     def __bool__(self):
         if self.size != 1:
             raise ValueError("The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()")
-        return self[0]
+        return bool(self[0])
 
     def __len__(self):
         return self.shape[0]
@@ -315,13 +315,17 @@ class pdarray:
     # overload a[] to treat like list
     def __getitem__(self, key):
         if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
+            orig_key = key
+            if key < 0:
+                # Interpret negative key as offset from end of array
+                key += self.size
             if (key >= 0 and key < self.size):
                 repMsg = generic_msg("[int] {} {}".format(self.name, key))
                 fields = repMsg.split()
                 # value = fields[2]
                 return parse_single_value(' '.join(fields[1:]))
             else:
-                raise IndexError("[int] {} is out of bounds with size {}".format(key,self.size))
+                raise IndexError("[int] {} is out of bounds with size {}".format(orig_key,self.size))
         if isinstance(key, slice):
             (start,stop,stride) = key.indices(self.size)
             if verbose: print(start,stop,stride)
@@ -339,11 +343,15 @@ class pdarray:
             raise TypeError("Unhandled key type: {} ({})".format(key, type(key)))
 
     def __setitem__(self, key, value):
-        if isinstance(key, int):
+        if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
+            orig_key = key
+            if key < 0:
+                # Interpret negative key as offset from end of array
+                key += self.size
             if (key >= 0 and key < self.size):
                 generic_msg("[int]=val {} {} {} {}".format(self.name, key, self.dtype.name, self.format_other(value)))
             else:
-                raise IndexError("index {} is out of bounds with size {}".format(key,self.size))
+                raise IndexError("index {} is out of bounds with size {}".format(orig_key,self.size))
         elif isinstance(key, pdarray):
             if isinstance(value, pdarray):
                 generic_msg("[pdarray]=pdarray {} {} {}".format(self.name,key.name,value.name))

@@ -15,7 +15,6 @@ module UniqueMsg
     use Time only;
     use Math only;
     use Reflection only;
-    use UnorderedCopy;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -98,7 +97,7 @@ module UniqueMsg
             // check and throw if over memory limit
             overMemLimit((8 * str.size * 8)
                          + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
-            var (uo, uv, c) = uniqueGroup(str);
+            var (uo, uv, c, inv) = uniqueGroup(str);
             st.addEntry(offsetName, new shared SymEntry(uo));
             st.addEntry(valueName, new shared SymEntry(uv));
             var s = try! "created " + st.attrib(offsetName) + " +created " + st.attrib(valueName);

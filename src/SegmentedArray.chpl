@@ -2,13 +2,14 @@ module SegmentedArray {
   use AryUtil;
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
-  use UnorderedCopy;
+  use CommAggregation;
   use SipHash;
   use SegStringSort;
   use RadixSortLSD only radixSortLSD_ranks;
   use Reflection;
   use PrivateDist;
   use ServerConfig;
+  use Unique;
   use Time only getCurrentTime;
 
   private config const DEBUG = false;
@@ -55,6 +56,32 @@ module SegmentedArray {
       values = vals;
       size = segs.size;
       nBytes = vals.size;
+    }
+
+    proc init(segments: [] int, values: [] uint(8), st: borrowed SymTab) {
+      var segName = st.nextName();
+      var valName = st.nextName();
+      var segEntry = new shared SymEntry(segments);
+      var valEntry = new shared SymEntry(values);
+      try! st.addEntry(segName, segEntry);
+      try! st.addEntry(valName, valEntry);
+      this.init(segName, valName, st);
+    }
+
+    proc show(n: int = 3) throws {
+      if (size >= 2*n) {
+        for i in 0..#n {
+          writeln(this[i]);
+        }
+        writeln("...");
+        for i in size-n..#n {
+          writeln(this[i]);
+        }
+      } else {
+        for i in 0..#size {
+          writeln(this[i]);
+        }
+      }
     }
 
     /* Retrieve one string from the array */
@@ -124,17 +151,20 @@ module SegmentedArray {
       var t1 = getCurrentTime();
       ref oa = offsets.a;
       const low = offsets.aD.low, high = offsets.aD.high;
-      // Lengths of segments including null bytes
-      var gatheredLengths: [D] int;
-      [(gl, idx) in zip(gatheredLengths, iv)] {
-        var l: int;
+      // Gather the right and left boundaries of the indexed strings
+      // NOTE: cannot compute lengths inside forall because agg.copy will
+      // experience race condition with loop-private variable
+      var right: [D] int, left: [D] int;
+      forall (r, l, idx) in zip(right, left, iv) with (var agg = new SrcAggregator(int)) {
         if (idx == high) {
-          l = values.size - oa[high];
+          agg.copy(r, values.size);
         } else {
-          l = oa[idx+1] - oa[idx];
+          agg.copy(r, oa[idx+1]);
         }
-        unorderedCopy(gl, l);
+        agg.copy(l, oa[idx]);
       }
+      // Lengths of segments including null bytes
+      var gatheredLengths: [D] int = right - left;
       // The returned offsets are the 0-up cumulative lengths
       var gatheredOffsets = (+ scan gatheredLengths);
       // The total number of bytes in the gathered strings
@@ -150,6 +180,8 @@ module SegmentedArray {
       // Copy string data to gathered result
       forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, iv) {
         for pos in 0..#gl {
+          // TODO I think the dst is local?
+          use UnorderedCopy;
           unorderedCopy(gatheredVals[go+pos], va[oa[idx]+pos]);
         }
       }
@@ -276,55 +308,28 @@ module SegmentedArray {
       const high = offsets.aD.high;
       lengths[low..high-1] = (oa[low+1..high] - oa[low..high-1]);
       lengths[high] = values.size - oa[high];
-      /* forall (idx, l) in zip(offsets.aD, lengths) { */
-      /*   if (idx == offsets.aD.high) { */
-      /*     l = values.size - oa[idx]; */
-      /*   } else { */
-      /*     l = oa[idx+1] - oa[idx]; */
-      /*   } */
-      /* } */
       return lengths;
     }
 
     proc substringSearch(const substr: string, mode: SearchMode) throws {
-      /* coforall loc in Locales { */
-      /*   on loc { */
-      /*     ref D = values.aD.localSubdomain(); */
-      /*     coforall task in here.maxTaskPar { */
-      /*       const mySubstr = substr.localize(); */
-      /*       const mySize = (D.size / here.maxTaskPar) + if (task < (D.size % here.maxTaskPar)) then 1 else 0; */
-      /*       const myStart = D.low + task * (D.size / here.maxTaskPar) + min(task, D.size % here.maxTaskPar); */
-      /*       var subind = 1; */
-      /*       for byte in values.localSlice[{myStart..#mySize}] { */
-      /*         if (byte != mySubstr[subind]) { */
-      /*           // No match; reset index */
-      /*           subind = 1; */
-      /*         } else { */
-      /*           if (subind == mySubstr.numBytes) { */
-      /*             // We have a match */
-      /*             // Lookup segment */
-                  
-      /*           } else { */
-      /*             // Still a candidate, but not yet a match */
-      /*             subind += 1; */
-      /*           } */
-      /*         } */
-      /*       } */
-      /*     } */
-      /*   } */
-      /* } */
       var truth: [offsets.aD] bool;
       if (size == 0) || (substr.size == 0) {
         return truth;
       }
+      var t = new Timer();
+      if DEBUG { t.start(); }
       var lengths = getLengths() - 1;
+      if DEBUG { t.stop(); writeln("getLengths() took %t seconds".format(t.elapsed())); stdout.flush(); t.clear(); t.start(); }
       ref oa = offsets.a;
       ref va = values.a;
       var locSubstr: [PrivateSpace] string;
       coforall loc in Locales {
-        locSubstr[here.id] = substr.localize();
+        on loc {
+          locSubstr[here.id] = substr.localize();
+        }
       }
-      forall (o, l, t) in zip(oa, lengths, truth) {
+      if DEBUG { t.stop(); writeln("localizing substring took %t seconds".format(t.elapsed())); stdout.flush(); t.clear(); t.start(); }
+      forall (o, l, t) in zip(oa, lengths, truth) with (var agg = newDstAggregator(bool)) {
         // Only compare if segment is long enough to contain substr
         if (locSubstr[here.id].numBytes <= l) {
           // Execute where the bytes are
@@ -345,61 +350,92 @@ module SegmentedArray {
               otherwise { throw new owned UnknownSearchMode(); }
             }
             if res {
-              unorderedCopy(t, true);
+              // t might not be local anymore because of on statement
+              agg.copy(t, true);
             }
           }
         }
       }
+      if DEBUG { t.stop(); writeln("actual search took %t seconds".format(t.elapsed())); stdout.flush(); }
       return truth;
     }
 
     proc isSorted(): bool {
-      var res = true; // strings are sorted?
-      // Is this position done comparing with its predecessor?
-      var done: [offsets.aD] bool;
-      // First string has no predecessor, so comparison is automatically done
-      done[offsets.aD.low] = true;
-      // Do not check null terminators
-      const lengths = getLengths() - 1;
-      const maxLen = max reduce lengths;
+      if (size < 2) {
+        return true;
+      }
       ref oa = offsets.a;
       ref va = values.a;
-      // Compare each pair of strings byte-by-byte
-      for pos in 0..#maxLen {
-        forall (o, l, d, i) in zip(oa, lengths, done, offsets.aD) with (ref res) {
-          if (!d) {
-            // If either of the strings is exhausted, mark this entry done
-            if (pos >= l) || (pos >= lengths[i-1]) {
-              unorderedCopy(d, true);
-            } else {
-              const prevByte = va[oa[i-1] + pos];
-              const currByte = va[o + pos];
-              // If we can already tell the pair is sorted, mark done
-              if (prevByte < currByte) {
-                unorderedCopy(d, true);
-              // If we can tell the pair is not sorted, the return is false
-              } else if (prevByte > currByte) {
-                res = false;
-              } // If we can't tell yet, keep checking
-            }
+      var ascending: [offsets.aD] bool;
+      const high = offsets.aD.high;
+      forall (i, a) in zip(offsets.aD, ascending) {
+        if (i < high) {
+          var asc: bool;
+          const ref left = va[oa[i]..oa[i+1]-1];
+          if (i < high - 1) {
+            const ref right = va[oa[i+1]..oa[i+2]-1];
+            a = (memcmp(left, right) <= 0);
+          } else { // i == high - 1
+            const ref right = va[oa[i+1]..values.aD.high];
+            a = (memcmp(left, right) <= 0);
           }
-        }
-        // If some pair is not sorted, return false
-        if !res {
-          return false;
-        // If all comparisons are conclusive, return true
-        } else if (&& reduce done) {
-          return true;
-        } // else keep going
+        } else { // i == high
+          a = true;
+        } 
       }
-      // If we get to this point, it's because there is at least one pair of strings with length maxLen that are the same up to the last byte. That last byte determines res.
-      return res;
+      return (&& reduce ascending);
     }
+    
+    /* proc isSorted(): bool { */
+    /*   var res = true; // strings are sorted? */
+    /*   // Is this position done comparing with its predecessor? */
+    /*   var done: [offsets.aD] bool; */
+    /*   // First string has no predecessor, so comparison is automatically done */
+    /*   done[offsets.aD.low] = true; */
+    /*   // Do not check null terminators */
+    /*   const lengths = getLengths() - 1; */
+    /*   const maxLen = max reduce lengths; */
+    /*   ref oa = offsets.a; */
+    /*   ref va = values.a; */
+    /*   // Compare each pair of strings byte-by-byte */
+    /*   for pos in 0..#maxLen { */
+    /*     forall (o, l, d, i) in zip(oa, lengths, done, offsets.aD)  */
+    /*       with (ref res) { */
+    /*       if (!d) { */
+    /*         // If either of the strings is exhausted, mark this entry done */
+    /*         if (pos >= l) || (pos >= lengths[i-1]) { */
+    /*           d = true; */
+    /*         } else { */
+    /*           const prevByte = va[oa[i-1] + pos]; */
+    /*           const currByte = va[o + pos]; */
+    /*           // If we can already tell the pair is sorted, mark done */
+    /*           if (prevByte < currByte) { */
+    /*             d = true; */
+    /*           // If we can tell the pair is not sorted, the return is false */
+    /*           } else if (prevByte > currByte) { */
+    /*             res = false; */
+    /*           } // If we can't tell yet, keep checking */
+    /*         } */
+    /*       } */
+    /*     } */
+    /*     // If some pair is not sorted, return false */
+    /*     if !res { */
+    /*       return false; */
+    /*     // If all comparisons are conclusive, return true */
+    /*     } */
+    /*     /\* else if (&& reduce done) { *\/ */
+    /*     /\*   return true; *\/ */
+    /*     /\* } // else keep going *\/ */
+    /*   } */
+    /*   // If we get to this point, it's because there is at least one pair of strings with length maxLen that are the same up to the last byte. That last byte determines res. */
+    /*   return res; */
+    /* } */
 
-    proc argsort(checkSorted:bool=true): [offsets.aD] int throws {
+    proc argsort(checkSorted:bool=false): [offsets.aD] int throws {
       const ref D = offsets.aD;
       const ref va = values.a;
-      if checkSorted && isSorted() {
+      if checkSorted && false { // isSorted() {
+        if DEBUG { writeln("argsort called on already sorted array"); stdout.flush(); }
         var ranks: [D] int = [i in D] i;
         return ranks;
       }
@@ -408,6 +444,19 @@ module SegmentedArray {
     }
 
   } // class SegString
+
+  inline proc memcmp(const ref x: [?xD] uint(8), const ref y: [?yD] uint(8)): int {
+    const l = min(x.size, y.size);
+    var ret = 0;
+    for (i, j) in zip(xD.low..#l, yD.low..#l) {
+      ret = x[i] - y[j];
+      if (ret != 0) {
+        break;
+      }
+    }
+    return ret;
+  }
+
 
   enum SearchMode { contains, startsWith, endsWith }
   class UnknownSearchMode: Error {}
@@ -458,12 +507,28 @@ module SegmentedArray {
   /* Test for equality between two same-length arrays of strings. Returns
      a boolean vector of the same length. */
   proc ==(lss:SegString, rss:SegString) throws {
+    return compare(lss, rss, true);
+  }
+
+  /* Test for inequality between two same-length arrays of strings. Returns
+     a boolean vector of the same length. */
+  proc !=(lss:SegString, rss:SegString) throws {
+    return compare(lss, rss, false);
+  }
+
+  /* Element-wise comparison of two same-length arrays of strings. The
+     polarity parameter determines whether the comparison checks for 
+     equality (polarity=true, result is true where elements are equal) 
+     or inequality (polarity=false, result is true where elements differ). */
+  private proc compare(lss:SegString, rss:SegString, param polarity: bool) throws {
     // String arrays must be same size
     if (lss.size != rss.size) {
       throw new owned ArgumentError();
     }
     ref oD = lss.offsets.aD;
-    var truth: [oD] bool;
+    // Start by assuming all elements differ, then correct for those that are equal
+    // This translates to an initial value of false for == and true for !=
+    var truth: [oD] bool = !polarity;
     // Early exit for zero-length result
     if (lss.size == 0) {
       return truth;
@@ -474,7 +539,8 @@ module SegmentedArray {
     ref roffsets = rss.offsets.a;
     // Compare segments in parallel
     // Segments are guaranteed to be on same locale, but bytes are not
-    forall (t, lo, ro, idx) in zip(truth, loffsets, roffsets, oD) {
+    forall (t, lo, ro, idx) in zip(truth, loffsets, roffsets, oD) 
+      with (var agg = newDstAggregator(bool)) {
       var llen: int;
       var rlen: int;
       if (idx == oD.high) {
@@ -494,9 +560,10 @@ module SegmentedArray {
             break;
           }
         }
-        // Only if lengths and all bytes are equal, set result to true
+        // Only if lengths and all bytes are equal, override the default value
         if allEqual {
-          unorderedCopy(t, true);
+          // For ==, the output should be true; for !=, false
+          agg.copy(t, polarity);
         }
       }
     }
@@ -506,9 +573,25 @@ module SegmentedArray {
   /* Test an array of strings for equality against a constant string. Return a boolean
      vector the same size as the array. */
   proc ==(ss:SegString, testStr: string) {
+    return compare(ss, testStr, true);
+  }
+  
+  /* Test an array of strings for inequality against a constant string. Return a boolean
+     vector the same size as the array. */
+  proc !=(ss:SegString, testStr: string) {
+    return compare(ss, testStr, false);
+  }
+
+  /* Element-wise comparison of an arrays of string against a target string. 
+     The polarity parameter determines whether the comparison checks for 
+     equality (polarity=true, result is true where elements equal target) 
+     or inequality (polarity=false, result is true where elements differ from 
+     target). */
+  proc compare(ss:SegString, testStr: string, param polarity: bool) {
     ref oD = ss.offsets.aD;
-    // Initialize to true, then set non-matching entries to false along the way
-    var truth: [oD] bool = true;
+    // Initially assume all elements equal the target string, then correct errors
+    // For ==, this means everything starts true; for !=, everything starts false
+    var truth: [oD] bool = polarity;
     // Early exit for zero-length result
     if (ss.size == 0) {
       return truth;
@@ -519,10 +602,22 @@ module SegmentedArray {
     // Use a whole-array strategy, where the ith byte from every segment is checked simultaneously
     // This will do len(testStr) parallel loops, but loops will have low overhead
     for (b, i) in zip(testStr.chpl_bytes(), 0..) {
-      [(t, o, idx) in zip(truth, offsets, oD)] if ((o+i > vD.high) || (b != values[o+i])) {unorderedCopy(t, false);}
+      forall (t, o, idx) in zip(truth, offsets, oD) with (var agg = newDstAggregator(bool)) {
+        if ((o+i > vD.high) || (b != values[o+i])) {
+          // Strings are not equal, so change the output
+          // For ==, output is now false; for !=, output is now true
+          agg.copy(t, !polarity);
+        }
+      }
     }
     // Check the length by checking that the next byte is null
-    [(t, o, idx) in zip(truth, offsets, oD)] if ((o+testStr.size > vD.high) || (0 != values[o+testStr.size])) {unorderedCopy(t, false);}
+    forall (t, o, idx) in zip(truth, offsets, oD) with (var agg = newDstAggregator(bool)) {
+      if ((o+testStr.size > vD.high) || (0 != values[o+testStr.size])) {
+        // Strings are not equal, so change the output
+        // For ==, output is now false; for !=, output is now true
+        agg.copy(t, !polarity);
+      }
+    }
     return truth;
   }
 
@@ -564,6 +659,17 @@ module SegmentedArray {
     return truth;
   }
 
+  proc concat(s1: [] int, v1: [] uint(8), s2: [] int, v2: [] uint(8)) throws {
+    // TO DO: extend to axis == 1
+    var segs = makeDistArray(s1.size + s2.size, int);
+    var vals = makeDistArray(v1.size + v2.size, uint(8));
+    segs[{0..#s1.size}] = s1;
+    segs[{s1.size..#s2.size}] = s2 + v1.size;
+    vals[{0..#v1.size}] = v1;
+    vals[{v1.size..#v2.size}] = v2;
+    return (segs, vals);
+  }
+
   private config const in1dSortThreshold = 64;
   
   proc in1d(mainStr: SegString, testStr: SegString, invert=false) throws where !useHash {
@@ -578,58 +684,115 @@ module SegmentedArray {
       }
       return truth;
     } else {
-      /* // This is inspired by numpy in1d */
-      /* const (uMain, revIdx) = mainStr.unique(returnInverse=true); */
-      /* const uTest = testStr.unique(); */
-      /* const ar = concat(uMain, uTest); */
-      /* const order = ar.argsort(); */
-      /* const sar = ar[order]; */
-      /* var flag: [sar.domain] bool; */
-      /* const first = sar.domain.low; */
-      /* const last = sar.domain.high; */
-      /* flag[last] = invert; */
-      /* if invert { */
-      /*   flag[first..last-1] = (sar[first+1..last] != sar[first..last-1]); */
-      /* } else { */
-      /*   flag[first..last-1] = (sar[first+1..last] == sar[first..last-1]); */
-      /* } */
-      /* var ret: [sar.domain] bool; */
-      /* [(ord, f) in zip(order, flag)] if f { unorderedCopy(ret[ord], true) }; */
-      /* unorderedCopyTaskFence(); */
-      /* var realRet: [mainStr.offsets.aD] bool; */
-      /* [(r, i) in zip(realRet, revIdx)] unorderedCopy(r, ret[i]); */
-      /* unorderedCopyTaskFence(); */
-      /* return realRet; */
-
-      if v {writeln("Making associative domains for test set on each locale"); stdout.flush();}
-      var t1 = getCurrentTime();
-      // On each locale, make an associative domain with the hashes of the second array
-      // parSafe=false because we are adding in serial and it's faster
-      var localTestDoms: [PrivateSpace] domain(string, parSafe=false);
-      coforall loc in Locales {
-        on loc {
-          const myTestStr = testStr;
-          // Local hashes of second array
-          ref mySet = localTestDoms[here.id];
-          mySet.requestCapacity(testStr.size);
-          for i in myTestStr.offsets.aD {
-            mySet += myTestStr[i];
+      // This is inspired by numpy in1d
+      const (uoMain, uvMain, cMain, revIdx) = uniqueGroup(mainStr, returnInverse=true);
+      const (uoTest, uvTest, cTest, revTest) = uniqueGroup(testStr);
+      const (segs, vals) = concat(uoMain, uvMain, uoTest, uvTest);
+      if DEBUG {writeln("Unique strings in first array: %t\nUnique strings in second array: %t\nConcat length: %t".format(uoMain.size, uoTest.size, segs.size)); try! stdout.flush();}
+      var st = new owned SymTab();
+      const ar = new owned SegString(segs, vals, st);
+      const order = ar.argsort();
+      const (sortedSegs, sortedVals) = ar[order];
+      const sar = new owned SegString(sortedSegs, sortedVals, st);
+      if DEBUG { writeln("Sorted concatenated unique strings:"); sar.show(10); stdout.flush(); }
+      const D = sortedSegs.domain;
+      // First compare lengths and only check pairs whose lengths are equal (because gathering them is expensive)
+      var flag: [D] bool;
+      const lengths = sar.getLengths();
+      const ref saro = sar.offsets.a;
+      const ref sarv = sar.values.a;
+      const high = D.high;
+      forall (i, f, o, l) in zip(D, flag, saro, lengths) {
+        if (i < high) && (l == lengths[i+1]) {
+          const ref left = sarv[o..saro[i+1]-1];
+          var eq: bool;
+          if (i < high - 1) {
+            const ref right = sarv[saro[i+1]..saro[i+2]-1];
+            eq = (memcmp(left, right) == 0);
+          } else {
+            const ref right = sarv[saro[i+1]..sar.values.aD.high];
+            eq = (memcmp(left, right) == 0);
           }
-        /* // Check membership of hashes in this locale's chunk of the array */
-        /* [i in truth.localSubdomain()] truth[i] = mySet.contains(hashes[i]); */
+          if eq {
+            f = true;
+            flag[i+1] = true;
+          }
+        }
       }
+      /* // Gather right-hand elements of equal-length pairs */
+      /* var idx: [D] bool; */
+      /* idx[{D.low+1..D.high}] = (lengths[{D.low+1..D.high}] == lengths[{D.low..D.high-1}]); */
+      /* idx[D.low] = false; */
+      /* var (rightSegs, rightVals) = sar[idx]; */
+      /* var right = new owned SegString(rightSegs, rightVals, st); */
+      /* if DEBUG {writeln("Equal-length pairs from right: ", (+ reduce idx)); right.show(5); try! stdout.flush();} */
+      
+      /* // Now gather left-hand elements of equal-length pairs */
+      /* idx[{D.low..D.high-1}] = (lengths[{D.low+1..D.high}] == lengths[{D.low..D.high-1}]); */
+      /* idx[D.high] = false; */
+      /* // For translating bool to int index */
+      /* const idxLocs = (+ scan idx) - 1; */
+      /* var (leftSegs, leftVals) = sar[idx]; */
+      /* var left = new owned SegString(leftSegs, leftVals, st); */
+      /* if DEBUG {writeln("Equal-length pairs from left: ", (+ reduce idx)); left.show(5); try! stdout.flush();} */
+      /* // Update places where lengths are equal with result of comparison */
+      /* var flag: [D] bool = idx; */
+      /* var same = (left == right); */
+      /* if DEBUG {writeln("Duplicate pairs: %t / %t / %t".format(+ reduce same, left.size, sar.size)); try! stdout.flush();} */
+      /* forall (i, t, f, l) in zip(D, idx, flag, idxLocs) with (var agg = newSrcAggregator(bool)) { */
+      /*   if t { */
+      /*     agg.copy(f, same[l]); */
+      /*     on flag[i+1] { */
+      /*       agg.copy(flag[i+1], same[l]); */
+      /*     } */
+      /*   } */
+      /* } */
+      if DEBUG {writeln("Flag pop: ", + reduce flag); try! stdout.flush();}
+      // Now flag contains true for both elements of duplicate pairs
+      if invert {flag = !flag;}
+      // Permute back to unique order
+      var ret: [D] bool;
+      forall (o, f) in zip(order, flag) with (var agg = newDstAggregator(bool)) {
+        agg.copy(ret[o], f);
+      }
+      if DEBUG {writeln("Ret pop: ", + reduce ret); try! stdout.flush();}
+      // Broadcast back to original (pre-unique) order
+      var truth: [mainStr.offsets.aD] bool;
+      forall (t, i) in zip(truth, revIdx) with (var agg = newSrcAggregator(bool)) {
+        agg.copy(t, ret[i]);
+      }
+      return truth;
     }
-    if v {
-      writeln(getCurrentTime() - t1, " seconds");
-      writeln("Testing membership"); stdout.flush();
-      t1 = getCurrentTime();
-    }
-    forall i in truth.domain {
-      truth[i] = localTestDoms[here.id].contains(mainStr[i]);
-    }
-    if v {writeln(getCurrentTime() - t1, " seconds"); stdout.flush();}
-    return truth;
-    }
+    // Below is analogous to in1dAr2PerLocAssoc, very slow for strings
+    /*   if v {writeln("Making associative domains for test set on each locale"); stdout.flush();} */
+    /*   var t1 = getCurrentTime(); */
+    /*   // On each locale, make an associative domain with the hashes of the second array */
+    /*   // parSafe=false because we are adding in serial and it's faster */
+    /*   var localTestDoms: [PrivateSpace] domain(string, parSafe=false); */
+    /*   coforall loc in Locales { */
+    /*     on loc { */
+    /*       const myTestStr = testStr; */
+    /*       // Local hashes of second array */
+    /*       ref mySet = localTestDoms[here.id]; */
+    /*       mySet.requestCapacity(testStr.size); */
+    /*       for i in myTestStr.offsets.aD { */
+    /*         mySet += myTestStr[i]; */
+    /*       } */
+    /*     /\* // Check membership of hashes in this locale's chunk of the array *\/ */
+    /*     /\* [i in truth.localSubdomain()] truth[i] = mySet.contains(hashes[i]); *\/ */
+    /*   } */
+    /* } */
+    /* if v { */
+    /*   writeln(getCurrentTime() - t1, " seconds"); */
+    /*   writeln("Testing membership"); stdout.flush(); */
+    /*   t1 = getCurrentTime(); */
+    /* } */
+    /* forall i in truth.domain { */
+    /*   truth[i] = localTestDoms[here.id].contains(mainStr[i]); */
+    /* } */
+    /* if v {writeln(getCurrentTime() - t1, " seconds"); stdout.flush();} */
+    /* return truth; */
+    /* } */
   }
 
   /* Convert an array of raw bytes into a Chapel string. */
@@ -640,7 +803,7 @@ module SegmentedArray {
     // Byte buffer is null-terminated, so length is buffer.size - 1
     // The contents of the buffer should be copied out because cBytes will go out of scope
     // var s = new string(cBytes, D.size-1, D.size, isowned=false, needToCopy=true);
-    var s = createStringWithNewBuffer(cBytes, D.size-1, D.size);
+    var s = try! createStringWithNewBuffer(cBytes, D.size-1, D.size);
     return s;
   }
 }

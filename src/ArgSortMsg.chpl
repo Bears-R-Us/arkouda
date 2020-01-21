@@ -13,8 +13,7 @@ module ArgSortMsg
     
     use PrivateDist;
 
-    use UnorderedCopy;
-    use UnorderedAtomics;
+    use CommAggregation;
 
     use AryUtil;
     use PerLocaleHelper;
@@ -373,7 +372,9 @@ module ArgSortMsg
           var newa: [e.aD] int;
           ref olda = e.a;
           // Effectively: newa = olda[iv]
-          [(newai, idx) in zip(newa, iv)] unorderedCopy(newai, olda[idx]);
+          forall (newai, idx) in zip(newa, iv) with (var agg = newSrcAggregator(int)) {
+            agg.copy(newai, olda[idx]);
+          }
           // Generate the next incremental permutation
           deltaIV = radixSortLSD_ranks(newa);
         }
@@ -381,7 +382,9 @@ module ArgSortMsg
           var e = toSymEntry(g, real);
           var newa: [e.aD] real;
           ref olda = e.a;
-          [(newai, idx) in zip(newa, iv)] unorderedCopy(newai, olda[idx]);
+          forall (newai, idx) in zip(newa, iv) with (var agg = newSrcAggregator(real)) {
+            agg.copy(newai, olda[idx]);
+          }
           deltaIV = radixSortLSD_ranks(newa);
         }
         otherwise { throw new owned ErrorWithMsg(dtype2str(g.dtype)); }
@@ -389,22 +392,25 @@ module ArgSortMsg
       // The output permutation is the composition of the initial and incremental permutations
       var newIV: [aD] int;
       // Effectively: newIV = iv[deltaIV] 
-      [(newIVi, idx) in zip(newIV, deltaIV)] unorderedCopy(newIVi, iv[idx]);
+      forall (newIVi, idx) in zip(newIV, deltaIV) with (var agg = newSrcAggregator(int)) {
+        agg.copy(newIVi, iv[idx]);
+      }
       return newIV;
     }
 
     proc incrementalArgSort(s: SegString, iv: [?aD] int): [] int throws {
       var hashes = s.hash();
       var newHashes: [aD] 2*uint;
-      forall (nh, idx) in zip(newHashes, iv) {
-        unorderedCopy(nh[1], hashes[idx][1]);
-        unorderedCopy(nh[2], hashes[idx][2]);
+      forall (nh, idx) in zip(newHashes, iv) with (var agg = newSrcAggregator((2*uint))) {
+        agg.copy(nh, hashes[idx]);
       }
       var deltaIV = radixSortLSD_ranks(newHashes);
       // var (newOffsets, newVals) = s[iv];
       // var deltaIV = newStr.argGroup();
       var newIV: [aD] int;
-      [(newIVi, idx) in zip(newIV, deltaIV)] unorderedCopy(newIVi, iv[idx]);
+      forall (newIVi, idx) in zip(newIV, deltaIV) with (var agg = newSrcAggregator(int)) {
+        agg.copy(newIVi, iv[idx]);
+      }
       return newIV;
     }
 
@@ -532,7 +538,7 @@ module ArgSortMsg
             }
           }
           when "str" {
-            var names = name.split();
+            var names = name.split('+');
             var strings = new owned SegString(names[1], names[2], st);
             // check and throw if over memory limit
             overMemLimit((8 * strings.size * 8)

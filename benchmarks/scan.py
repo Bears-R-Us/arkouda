@@ -35,9 +35,9 @@ def time_ak_scan(N_per_locale, trials, dtype, random):
 
     for op, t in tavg.items():
         print("{}, final value = {}".format(op, final_values[op]))
-        print("  Average time = {:.4f} sec".format(t))
+        print("  {} Average time = {:.4f} sec".format(op, t))
         bytes_per_sec = (a.size * a.itemsize * 2) / t
-        print("  Average rate = {:.2f} GiB/sec".format(bytes_per_sec/2**30))
+        print("  {} Average rate = {:.2f} GiB/sec".format(op, bytes_per_sec/2**30))
 
 def time_np_scan(N, trials, dtype, random):
     print(">>> numpy scan")
@@ -64,9 +64,9 @@ def time_np_scan(N, trials, dtype, random):
 
     for op, t in tavg.items():
         print("{}, final value = {}".format(op, final_values[op]))
-        print("  Average time = {:.4f} sec".format(t))
+        print("  {} Average time = {:.4f} sec".format(op, t))
         bytes_per_sec = (a.size * a.itemsize * 2) / t
-        print("  Average rate = {:.2f} GiB/sec".format(bytes_per_sec/2**30))
+        print("  {} Average rate = {:.2f} GiB/sec".format(op, bytes_per_sec/2**30))
 
 def create_parser():
     parser = argparse.ArgumentParser(description="Measure the performance of scans (cumulative reductions) over arrays.")

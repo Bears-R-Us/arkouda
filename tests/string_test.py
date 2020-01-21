@@ -6,7 +6,7 @@ import sys
 
 ak.verbose = False
 
-N = 10000
+N = 1000
 
 # test_strings = np.array(['These are', 'some', 'interesting',
 #                          '~!@#$%^&*()_+', 'strings', '8675309.',
@@ -55,7 +55,7 @@ if __name__ == '__main__':
     print("pdarray bool index passed")
 
     # in1d and iter
-    more_words = np.random.choice(base_words, 10)
+    more_words = np.random.choice(base_words, 100)
     akwords = ak.array(more_words)
     matches = ak.in1d(strings, akwords)
     # Every word in matches should be in the target set
@@ -68,6 +68,13 @@ if __name__ == '__main__':
     assert((inds == matches).all())
     print("in1d and iter passed")
 
+    # argsort
+    akperm = ak.argsort(strings)
+    aksorted = strings[akperm].to_ndarray()
+    npsorted = np.sort(test_strings)
+    assert((aksorted == npsorted).all())
+    print("argsort passed")
+    
     # unique
     akuniq = ak.unique(strings)
     akset = set(akuniq.to_ndarray())
