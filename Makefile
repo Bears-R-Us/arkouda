@@ -13,6 +13,10 @@ default: $(DEFAULT_TARGET)
 VERBOSE ?= 0
 
 CHPL := chpl
+ifeq ("$(shell chpl --version | sed -n "s/chpl version 1\.\([0-9]*\).*/\1/p")", "20")
+  CHPL_VERSION_120 := 1
+endif
+
 CHPL_DEBUG_FLAGS += --print-passes
 ifndef ARKOUDA_DEVELOPER
 CHPL_FLAGS += --fast
@@ -21,6 +25,9 @@ endif
 # --ccflags="-Wno-incompatible-pointer-types"
 CHPL_FLAGS += --ccflags="-Wno-incompatible-pointer-types"
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
+ifndef CHPL_VERSION_120
+  CHPL_FLAGS += -lmpi
+endif
 
 # add-path: Append custom paths for non-system software.
 # Note: Darwin `ld` only supports `-rpath <path>`, not `-rpath=<paths>`.
@@ -146,11 +153,18 @@ endif
 # Version needs to be escape-quoted for chpl to interpret as string
 CHPL_FLAGS_WITH_VERSION = $(CHPL_FLAGS)
 CHPL_FLAGS_WITH_VERSION += -sarkoudaVersion="\"$(VERSION)\""
+
+ifdef CHPL_VERSION_120
+	CHPL_COMPAT_FLAGS := -sversion120=true --no-overload-sets-checks
+else
+	CHPL_COMPAT_FLAGS := -sversion120=false
+endif
+
 ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
 $(ARKOUDA_MAIN_MODULE): check-deps $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
-	$(CHPL) $(CHPL_DEBUG_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) -o $@
+	$(CHPL) $(CHPL_DEBUG_FLAGS) $(CHPL_COMPAT_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) -o $@
 
 CLEAN_TARGETS += arkouda-clean
 .PHONY: arkouda-clean
