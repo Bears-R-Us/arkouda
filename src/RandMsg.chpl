@@ -5,7 +5,7 @@ module RandMsg
     use Time only;
     use Math only;
     use Reflection only;
-    use Random; // include everything from Random
+    use RandArray;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -39,17 +39,16 @@ module RandMsg
                 writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
                 
                 t1 = Time.getCurrentTime();
-                ref ea = e.a;
-                ref ead = e.aD;
-                coforall loc in Locales {
-                    on loc {
-                      ref myA = ea.localSlice[ea.localSubdomain()];
-                      fillRandom(myA);
-                      [ai in myA] if (ai < 0) { ai = -ai; }
-                      const modulus = aMax - aMin;
-                      myA = (myA % modulus) + aMin;
-                    }
-                }
+                fillInt(e.a, aMin, aMax);
+                writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+            }
+            when (DType.UInt8) {                
+                var t1 = Time.getCurrentTime();
+                var e = st.addEntry(rname, len, uint(8));
+                writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+                
+                t1 = Time.getCurrentTime();
+                fillUInt(e.a, aMin, aMax);
                 writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
             }
             when (DType.Float64) {
@@ -58,16 +57,7 @@ module RandMsg
                 writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
                 
                 t1 = Time.getCurrentTime();
-                ref ea = e.a;
-                ref ead = e.aD;
-                coforall loc in Locales {
-                    on loc {
-                      ref myA = ea.localSlice[ea.localSubdomain()];
-                      fillRandom(myA);
-                      const scale = aMax - aMin;
-                      myA = scale*myA + aMin;
-                    }
-                }
+                fillReal(e.a, aMin, aMax);
                 writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
             }
             when (DType.Bool) {
@@ -76,17 +66,8 @@ module RandMsg
                 writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
                 
                 t1 = Time.getCurrentTime();
-                ref ea = e.a;
-                ref ead = e.aD;
-                coforall loc in Locales {
-                    on loc {
-                      ref myA = ea.localSlice[ea.localSubdomain()];
-                      fillRandom(myA);
-                        /* var R = new owned RandomStream(real); R.getNext(); */
-                        /* [i in a.localSubdomain()] a[i] = (R.getNext() >= 0.5); */
-                    }
-                }
-                        writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+                fillBool(e.a);
+                writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
             }            
             otherwise {return notImplementedError(pn,dtype);}
         }

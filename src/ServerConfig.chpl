@@ -8,6 +8,7 @@ module ServerConfig
     use SymArrayDmap only makeDistDom;
 
     public use IO;
+    private use SysCTypes;
 
     use ServerErrorStrings;
 

@@ -4,6 +4,7 @@ module In1d
     use ServerConfig;
     use Unique;
     use CommAggregation;
+    use RadixSortLSD;
 
     use Time only;
     use Math only;
