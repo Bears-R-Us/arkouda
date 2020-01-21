@@ -308,54 +308,27 @@ module SegmentedArray {
       const high = offsets.aD.high;
       lengths[low..high-1] = (oa[low+1..high] - oa[low..high-1]);
       lengths[high] = values.size - oa[high];
-      /* forall (idx, l) in zip(offsets.aD, lengths) { */
-      /*   if (idx == offsets.aD.high) { */
-      /*     l = values.size - oa[idx]; */
-      /*   } else { */
-      /*     l = oa[idx+1] - oa[idx]; */
-      /*   } */
-      /* } */
       return lengths;
     }
 
     proc substringSearch(const substr: string, mode: SearchMode) throws {
-      /* coforall loc in Locales { */
-      /*   on loc { */
-      /*     ref D = values.aD.localSubdomain(); */
-      /*     coforall task in here.maxTaskPar { */
-      /*       const mySubstr = substr.localize(); */
-      /*       const mySize = (D.size / here.maxTaskPar) + if (task < (D.size % here.maxTaskPar)) then 1 else 0; */
-      /*       const myStart = D.low + task * (D.size / here.maxTaskPar) + min(task, D.size % here.maxTaskPar); */
-      /*       var subind = 1; */
-      /*       for byte in values.localSlice[{myStart..#mySize}] { */
-      /*         if (byte != mySubstr[subind]) { */
-      /*           // No match; reset index */
-      /*           subind = 1; */
-      /*         } else { */
-      /*           if (subind == mySubstr.numBytes) { */
-      /*             // We have a match */
-      /*             // Lookup segment */
-                  
-      /*           } else { */
-      /*             // Still a candidate, but not yet a match */
-      /*             subind += 1; */
-      /*           } */
-      /*         } */
-      /*       } */
-      /*     } */
-      /*   } */
-      /* } */
       var truth: [offsets.aD] bool;
       if (size == 0) || (substr.size == 0) {
         return truth;
       }
+      var t = new Timer();
+      if DEBUG { t.start(); }
       var lengths = getLengths() - 1;
+      if DEBUG { t.stop(); writeln("getLengths() took %t seconds".format(t.elapsed())); stdout.flush(); t.clear(); t.start(); }
       ref oa = offsets.a;
       ref va = values.a;
       var locSubstr: [PrivateSpace] string;
       coforall loc in Locales {
-        locSubstr[here.id] = substr.localize();
+        on loc {
+          locSubstr[here.id] = substr.localize();
+        }
       }
+      if DEBUG { t.stop(); writeln("localizing substring took %t seconds".format(t.elapsed())); stdout.flush(); t.clear(); t.start(); }
       forall (o, l, t) in zip(oa, lengths, truth) with (var agg = newDstAggregator(bool)) {
         // Only compare if segment is long enough to contain substr
         if (locSubstr[here.id].numBytes <= l) {
@@ -377,11 +350,13 @@ module SegmentedArray {
               otherwise { throw new owned UnknownSearchMode(); }
             }
             if res {
+              // t might not be local anymore because of on statement
               agg.copy(t, true);
             }
           }
         }
       }
+      if DEBUG { t.stop(); writeln("actual search took %t seconds".format(t.elapsed())); stdout.flush(); }
       return truth;
     }
 
