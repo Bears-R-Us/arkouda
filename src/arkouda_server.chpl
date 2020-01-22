@@ -112,6 +112,12 @@ proc main() {
                     // here we know that everything is strings
                     select cmd
                     {
+                        when "segmentedEfunc"    {repMsg = segmentedEfuncMsg(reqMsg, st);}
+                        when "segmentedIndex"    {repMsg = segmentedIndexMsg(reqMsg, st);}
+                        when "segmentedBinopvv"  {repMsg = segBinopvvMsg(reqMsg, st);}
+                        when "segmentedBinopvs"  {repMsg = segBinopvsMsg(reqMsg, st);}
+                        when "segmentedGroup"    {repMsg = segGroupMsg(reqMsg, st);}
+                        when "segmentedIn1d"     {repMsg = segIn1dMsg(reqMsg, st);}
                         when "lshdf"             {repMsg = lshdfMsg(reqMsg, st);}
                         when "readhdf"           {repMsg = readhdfMsg(reqMsg, st);}
                         when "tohdf"             {repMsg = tohdfMsg(reqMsg, st);}
