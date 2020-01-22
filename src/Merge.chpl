@@ -1,20 +1,23 @@
 module Merge {
   use SegmentedArray;
+  use RadixSortLSD only numTasks, calcBlock;
 
+  private config const DEBUG = false;
+  
   /* Given a *sorted*, zero-up array, use binary search to find the index of the first element that is greater than or equal to a target.
    */
   proc binarySearch(a, x) throws {
     var l = 0;
-    var r = a.size;
+    var r = a.size - 1;
     while l <= r {
-      var mid = l + (r - l)/2;
+      var mid = l + (r - l + 1)/2;
       if a[mid] < x {
         l = mid + 1;
       } else if a[mid] > x {
         r = mid - 1;
       } else { // this[mid] == s
         // Find the *first* match
-        while a[mid] == x {
+        while (mid >= 0) && (a[mid] == x) {
           mid -= 1;
         }
         return mid + 1;
@@ -23,9 +26,12 @@ module Merge {
     return l;
   }
 
+  //const numTasks = RadixSortLSD.numTasks;
   inline proc findStart(loc, task, s: SegString) throws {
     ref va = s.values.a;
-    var i = va.localSubdomain().low;
+    const lD = va.localSubdomain();
+    const tD = RadixSortLSD.calcBlock(task, lD.low, lD.high);
+    const i = tD.low;
     ref oa = s.offsets.a;
     if && reduce (oa < i) {
       return va.size;
@@ -43,7 +49,6 @@ module Merge {
     var perm = makeDistArray(size, int);
     var segs = makeDistArray(size, int);
     var vals = makeDistArray(nBytes, uint(8));
-    const numTasks = here.maxTaskPar;
     const tD = {0..#numTasks};
     // Element: (bigStart, bigStop, smallStart, smallStop)
     param BI = 1, BF = 2, SI = 3, SF = 4;
@@ -69,23 +74,33 @@ module Merge {
         }
       }
     }
-    // barrier    
+    // barrier
+    if DEBUG {writeln("Starting second coforall");}
     coforall loc in Locales {
       on loc {
+        if DEBUG {writeln("Inside loc"); stdout.flush();}
         ref biga = big.offsets.a;
         ref smalla = small.offsets.a;
         coforall task in tD {
           var bigPos = bounds[loc.id][task][BI];
+          const bigEnd = bounds[loc.id][task][BF];
           var smallPos = bounds[loc.id][task][SI];
+          const smallEnd = bounds[loc.id][task][SF];
           var outPos = bigPos + smallPos;
           const end = bounds[loc.id][task][BF] + bounds[loc.id][task][SF] + 1;
           var outOffset = biga[bigPos] + smalla[smallPos];
           var bigS = big[bigPos];
           var smallS = small[smallPos];
+          if DEBUG && (numLocales == 1) { writeln("Task %t init: bigPos = %t, smallPos = %t, outPos = %t, end = %t, outOffset = %t, bigS = %s, smallS = %s".format(task, bigPos, smallPos, outPos, end, outOffset, bigS, smallS)); stdout.flush(); }
           // leapfrog the two arrays until all the output has been filled
           while outPos <= end {
             // take from the big array until it leapfrogs the small
-            while bigS <= smallS {
+            while (bigPos <= bigEnd) && (bigS <= smallS) {
+              if DEBUG {
+                if (outPos > perm.domain.high) { writeln("OOB: outPos = %t not in %t".format(outPos, perm.domain)); stdout.flush();}
+                if (bigPos > big.offsets.aD.high) { writeln("OOB: bigPos = %t not in %t".format(bigPos, big.offsets.aD)); stdout.flush();}
+                if (outOffset + bigS.numBytes >= vals.size) { writeln("OOB: (outOffset = %t + bigS.numBytes = %t) not in %t".format(outOffset, bigS.numBytes, vals.domain)); stdout.flush();}
+              } 
               if bigIsLeft {
                 perm[outPos] = bigPos;
               } else {
@@ -97,10 +112,17 @@ module Merge {
               outPos += 1;
               outOffset += l + 1;
               bigPos += 1;
-              bigS = big[bigPos];
+              if (bigPos <= bigEnd) {
+                bigS = big[bigPos];
+              }
             }
             // take from the small array until it catches up with the big
-            while smallS < bigS {
+            while (smallPos <= smallEnd) && (smallS < bigS) {
+              if DEBUG {
+                if (outPos > perm.domain.high) { writeln("OOB: outPos = %t not in %t".format(outPos, perm.domain)); stdout.flush();}
+                if (smallPos > small.offsets.aD.high) { writeln("OOB: smallPos = %t not in %t".format(smallPos, small.offsets.aD)); stdout.flush();}
+                if (outOffset + bigS.numBytes >= vals.size) { writeln("OOB: (outOffset = %t + smallS.numBytes = %t) not in %t".format(outOffset, smallS.numBytes, vals.domain)); stdout.flush();}
+              }
               if bigIsLeft {
                 perm[outPos] = smallPos + big.size;
               } else {
@@ -112,7 +134,9 @@ module Merge {
               outPos += 1;
               outOffset += l + 1;
               smallPos += 1;
-              smallS = small[smallPos];
+              if (smallPos <= smallEnd) {
+                smallS = small[smallPos];
+              }
             }
           }
         }

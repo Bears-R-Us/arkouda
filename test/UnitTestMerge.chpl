@@ -8,6 +8,16 @@ proc testBinarySearch(size, trials) {
   fillRandom(a);
   var b = radixSortLSD_keys(a);
   var R = new RandomStream(int);
+  const fixed = [min(int), b[0], b[size-1], max(int)];
+  const ans = [0, 0, size-1, size];
+  for (i, f, an) in zip(0..3, fixed, ans) {
+    var hit = binarySearch(b, f);
+    if hit != an {
+      writeln("Binary search failed on fixed round ", i); stdout.flush();
+      writeln("x = %t, res = %t, b[res] = %t, ans = %t".format(f, hit, b[hit], an)); stdout.flush();
+      return false;
+    }
+  }
   for t in 0..#trials {
     var x = R.getNext();
     var hit = binarySearch(b, x);
@@ -37,10 +47,10 @@ proc testMerge(n, m, minLen, maxLen) {
   t.start();
   var aperm = astrings.argsort();
   var (sasegs, savals) = astrings[aperm];
-  var sa = new owned SegString(sasegs, savals, st);
+  var sa = new shared SegString(sasegs, savals, st);
   var bperm = bstrings.argsort();
   var (sbsegs, sbvals) = bstrings[bperm];
-  var sb = new owned SegString(sbsegs, sbvals, st);
+  var sb = new shared SegString(sbsegs, sbvals, st);
   t.stop();
   writeln("%t seconds".format(t.elapsed())); stdout.flush(); t.clear();
   writeln("Merging sorted arrays..."); stdout.flush();
