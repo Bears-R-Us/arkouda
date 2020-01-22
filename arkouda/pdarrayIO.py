@@ -91,8 +91,8 @@ def read_all(filenames, datasets=None, iterative=False):
     (a single filename is a valid expression, so it will work) and is
     expanded with glob to read all matching files.
 
-    If iterative is true each dataset name and file names are passed to
-    the server as independent sequential strings while if iterative is false
+    If iterative == True each dataset name and file names are passed to
+    the server as independent sequential strings while if iterative == False
     all dataset names and file names are passed to the server in a single
     string.
 
