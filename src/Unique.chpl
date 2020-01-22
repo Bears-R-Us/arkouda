@@ -434,6 +434,46 @@ module Unique
             sorted = radixSortLSD_keys(a);
         }
 
+        var (u, c) = uniqueFromSorted(sorted);
+        return (u, c);
+    }
+
+    proc uniqueSortWithInverse(a: [?aD] int) {
+        if (aD.size == 0) {
+            if v {writeln("zero size");try! stdout.flush();}
+            var u = makeDistArray(0, int);
+            var c = makeDistArray(0, int);
+            var inv = makeDistArray(0, int);
+            return (u, c, inv);
+        }
+        var perm: [aD] int;
+        var sorted: [aD] int;
+        if (AryUtil.isSorted(a)) {
+            [(i, p) in zip(aD, perm)] p = i;
+            sorted = a; 
+        }
+        else {
+            perm = radixSortLSD_ranks(a);
+            forall (p, s) in zip(perm, sorted) with (var agg = newSrcAggregator(int)) {
+                agg.copy(s, a[p]);
+            }
+        }
+        var (u, c) = uniqueFromSorted(sorted);
+        var segs = (+ scan c) - c;
+        var bcast: [aD] int;
+        forall s in segs with (var agg = newDstAggregator(int)) {
+            agg.copy(bcast[s], 1);
+        }
+        bcast[0] = 0;
+        bcast = (+ scan bcast);
+        var inv: [aD] int;
+        forall (p, b) in zip(perm, bcast) with (var agg = newDstAggregator(int)) {
+            agg.copy(inv[p], b);
+        }
+        return (u, c, inv);
+    }
+    
+    proc uniqueFromSorted(sorted: [?aD] int) {
         var truth: [aD] bool;
         truth[0] = true;
         [(t, s, i) in zip(truth, sorted, aD)] if i > aD.low { t = (sorted[i-1] != s); }
@@ -442,7 +482,7 @@ module Unique
             if v {writeln("early out already unique");try! stdout.flush();}
             var u = makeDistArray(aD.size, int);
             var c = makeDistArray(aD.size, int);
-            u = a; // a is already unique
+            u = sorted; // array is already unique
             c = 1; // c counts are all 1
             return (u, c);
         }
@@ -482,21 +522,29 @@ module Unique
         return (ukeys,counts);
     }
 
-    proc uniqueGroup(str: SegString) throws {
+    proc uniqueGroup(str: SegString, returnInverse = false, assumeSorted=false) throws {
         if (str.size == 0) {
             if v {writeln("zero size");try! stdout.flush();}
             var uo = makeDistArray(0, int);
             var uv = makeDistArray(0, uint(8));
             var c = makeDistArray(0, int);
-            return (uo, uv, c);
+            var inv = makeDistArray(0, int);
+            return (uo, uv, c, inv);
         }
         const aD = str.offsets.aD;
+        var invD: aD.type;
+        if returnInverse {
+          invD = aD;
+        } else {
+          invD = {0..-1};
+        }
+        var inv: [invD] int;
         var truth: [aD] bool;
         var perm: [aD] int;
         if SegmentedArrayUseHash {
           var hashes = str.hash();
           var sorted: [aD] 2*uint;
-          if (AryUtil.isSorted(hashes)) {
+          if (assumeSorted || AryUtil.isSorted(hashes)) {
             perm = aD;
             sorted = hashes; 
           }
@@ -512,7 +560,7 @@ module Unique
         } else {
           var soff: [aD] int;
           var sval: [str.values.aD] uint(8);
-          if str.isSorted() {
+          if assumeSorted {
             perm = aD;
             soff = str.offsets.a;
             sval = str.values.a;
@@ -556,7 +604,23 @@ module Unique
             }
           }
         }
-          
+        var (uo, uv, c) = uniqueFromTruth(str, perm, truth);
+        if returnInverse {
+            var segs = (+ scan c) - c;
+            var bcast: [invD] int;
+            forall s in segs with (var agg = newDstAggregator(int)) {
+                agg.copy(bcast[s], 1);
+            }
+            bcast[0] = 0;
+            bcast = (+ scan bcast);
+            forall (p, b) in zip(perm, bcast) with (var agg = newDstAggregator(int)) {
+                agg.copy(inv[p], b);
+            }
+        }
+        return (uo, uv, c, inv);
+    }
+
+    proc uniqueFromTruth(str: SegString, perm: [?aD] int, truth: [aD] bool) throws {
         var allUnique: int = + reduce truth;
         if (allUnique == aD.size) {
             if v {writeln("early out already unique");try! stdout.flush();}

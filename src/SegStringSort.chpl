@@ -125,7 +125,7 @@ module SegStringSort {
       const l = lengths[i];
       var buf: [0..#(l+1)] uint(8);
       buf[{0..#l}] = va[{oa[i]..#l}];
-      si[1] = createStringWithBorrowedBuffer(c_ptrTo(buf), l, l+1);
+      si[1] = try! createStringWithBorrowedBuffer(c_ptrTo(buf), l, l+1);
       si[2] = i;
     }
     return stringsWithInds;
