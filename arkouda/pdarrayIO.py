@@ -63,7 +63,7 @@ def read_hdf(dsetName, filenames):
     else:
         return create_pdarray(rep_msg)
 
-def read_all(filenames, datasets=None):
+def read_all(filenames, datasets=None, iterative=False):
     """
     Read datasets from HDF5 files.
 
@@ -73,6 +73,8 @@ def read_all(filenames, datasets=None):
         Either a list of filenames or shell expression
     datasets : list or str or None
         (List of) name(s) of dataset(s) to read (default: all available)
+    iterative : boolean
+        Interative (True), or Single (False) functions call(s) to server
 
     Returns
     -------
@@ -87,8 +89,12 @@ def read_all(filenames, datasets=None):
     -----
     If filenames is a string, it is interpreted as a shell expression
     (a single filename is a valid expression, so it will work) and is
-    expanded with glob to read all matching files. All datasets and files are
-    passed to the server in a single function.
+    expanded with glob to read all matching files.
+
+    If iterative is true each dataset name and file names are passed to
+    the server as independent sequential strings while if iterative is false
+    all dataset names and file names are passed to the server in a single
+    string.
 
     If datasets is None, infer the names of datasets from the first file
     and read all of them. Use ``get_datasets`` to show the names of datasets in
@@ -96,25 +102,29 @@ def read_all(filenames, datasets=None):
 
     If not all datasets are present in all HDF5 files, a RuntimeError
     is raised.a
-    #alldatasets = get_datasets(filenames[0])
-    #if datasets is None:
-    #    datasets = alldatasets
-    #else: # ensure dataset(s) exist
-    #    if isinstance(datasets, str):
-    #        datasets = [datasets]
-    #    nonexistent = set(datasets) - set(get_datasets(filenames[0]))
-    #    if len(nonexistent) > 0:
-    #        raise ValueError("Dataset(s) not found: {}".format(nonexistent))
+
     """
     if isinstance(filenames, str):
         filenames = [filenames]
+    if datasets is None:
+        datasets = get_datasets(filenames[0])
     if isinstance(datasets, str):
         datasets = [datasets]
-    rep_msg = generic_msg("readAllHdf {:n} {:n} {} | {}".format(len(datasets), len(filenames), json.dumps(datasets), json.dumps(filenames)))
-    if '+' in rep_msg:
-        return Strings(*rep_msg.split('+'))
-    else:
-        return create_pdarray(rep_msg)
+    else: # ensure dataset(s) exist
+        if isinstance(datasets, str):
+            datasets = [datasets]
+        nonexistent = set(datasets) - set(get_datasets(filenames[0]))
+        if len(nonexistent) > 0:
+            raise ValueError("Dataset(s) not found: {}".format(nonexistent))
+
+    if iterative == True: # iterative calls to server readhdf
+        return {dset:read_hdf(dset, filenames) for dset in datasets}
+    else:  # single call to server readAllHdf
+        rep_msg = generic_msg("readAllHdf {:n} {:n} {} | {}".format(len(datasets), len(filenames), json.dumps(datasets), json.dumps(filenames)))
+        if '+' in rep_msg:
+            return Strings(*rep_msg.split('+'))
+        else:
+            return create_pdarray(rep_msg)
 
 def load(path_prefix, dataset='array'):
     """
