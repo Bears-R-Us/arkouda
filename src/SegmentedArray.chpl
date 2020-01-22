@@ -10,7 +10,7 @@ module SegmentedArray {
   use PrivateDist;
   use ServerConfig;
   use Unique;
-  use Time only getCurrentTime;
+  use Time only Timer, getCurrentTime;
 
   private config const DEBUG = false;
   private config param useHash = false;

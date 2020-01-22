@@ -3,6 +3,7 @@ module RandArray {
   use SegmentedArray;
   use ServerErrorStrings;
   use Map;
+  use SipHash;
 
   proc fillInt(a:[] ?t, const aMin, const aMax) where isIntType(t) {
     coforall loc in Locales {
