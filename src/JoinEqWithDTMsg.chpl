@@ -6,23 +6,86 @@ module JoinEqWithDTMsg
     use Math only;
     use Sort only;
     use Reflection only;
+    use PrivateDist;
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     use AryUtil;
-  
 
+    param ABS_DT = 0;
+    param POS_DT = 1;
+    param TRUE_DT = 2;
+    
+    // operator overloads so + reduce and + scan can work on atomic int arrays
+    proc +(x: atomic int, y: atomic int) {
+        return x.read() + y.read();
+    }
+    proc +=(X: [?D] int, Y: [D] atomic int) {
+        [i in D] {X[i] += Y[i].read();}
+    }
+
+    /*
+      Stole this code from Bill's Merge.chpl until we merge the PR's
+      This version does not throw exceptions
+      Given a *sorted*, zero-up array, use binary search to find the index of the first element that is greater than or equal to a target.
+     */
+    proc binarySearch(a: [?D] int, x: int): int {
+        var l = 0;
+        var r = a.size - 1;
+        while l <= r {
+            var mid = l + (r - l + 1)/2;
+            if a[mid] < x {
+                l = mid + 1;
+            } else if a[mid] > x {
+                r = mid - 1;
+            } else { // this[mid] == s
+                // Find the *first* match
+                while (mid >= 0) && (a[mid] == x) {
+                    mid -= 1;
+                }
+                return mid + 1;
+            } 
+        }
+        return l;
+    }
+
+    // find matching value in ukeys and return found flag and range for segment
+    proc findMatch(v: int, seg: [?segD] int, ukeys: [segD] int, perm: [?aD] int): (bool, range) {
+
+        var found = false;
+        var segNum = binarySearch(ukeys, v); // returns index of >= value
+        var segRange: range;
+
+        if (v == ukeys[segNum]) {
+            found = true;
+            if (segNum == seg.domain.high) {
+                segRange = (seg[segNum])..(perm.domain.high);
+            }
+            else {
+                segRange = (seg[segNum])..(seg[segNum+1] -1);
+            }
+        }
+        else {
+            found = false;
+            segRange = 1..0; // empty range
+        }
+
+        return (found, segRange);
+    }
+
+    // core join on equality with delta time predicate logic 
     proc joinEqWithDT(a1: [?a1D] int,
-                      seg: [?segD] int,  ukeys: [?segD] int, perm: [?a2D] int,
+                      seg: [?segD] int,  ukeys: [segD] int, perm: [?a2D] int,
                       t1: [a1D] int, t2: [a2D] int, dt: int, pred: int,
-                      resLimitPerLocale: int): ([] int, [] int) {
+                      resLimitPerLocale: int) {
 
         // allocate result arrays per locale
-        var locResI: [PrivateSpace] [resLimitPerLocale] int;
-        var locResj: [PrivateSpace] [resLimitPerLocale] int;
+        var locResI: [PrivateSpace] [0..#resLimitPerLocale] int;
+        var locResj: [PrivateSpace] [0..#resLimitPerLocale] int;
 
         // atomic result counter per locale
         var resCounters: [PrivateSpace] atomic int;
+        var locNumResults: [PrivateSpace] int;
         
         coforall loc in Locales {
             on loc {
@@ -33,44 +96,67 @@ module JoinEqWithDTMsg
                     if (found) {
                         var t1_i = t1[i];
                         // all j's come from the original a2 array
-                        // so all the values from Perm over the segment for the value
-                        for j in g2Perm_a[j_seg] {
+                        // so all the values from perm over the segment for the value
+                        for j in perm[j_seg] {
                             var addResFlag = false;
                             var t2_j = t2[j];
                             select pred {
-                                    when Pred.absDT {
+                                    when ABS_DT {
                                         if (t1_i <= t2_j) {
-                                            addResFlag = ((t1_i + dt) >= t2_j);
+                                            addResFlag = ((t2_j - t1_i) <= dt);
                                         } else {
-                                            addResFlag = ((t1_i - dt) <= t2_j);
+                                            addResFlag = ((t1_i - t2_j) <= dt);
                                         }
                                     }
-                                    when Pred.posDT {
+                                    when POS_DT {
+                                        if (t1_i <= t2_j) {
+                                            addResFlag = ((t2_j - t1_i) <= dt);
+                                        }
+                                        else {
+                                            addResFlag = false;
+                                        }
                                     }
-                                    when Pred.trueDT {
+                                    when TRUE_DT {
+                                        addResFlag = true;
                                     }
-                                    otherwise { }
+                                    otherwise {writeln("OOPS! bad predicate number!"); }
                                 }
                             if addResFlag {
-                                pos = resCounters[here.id].fetchAdd(1);
-                                locResI[pos] = i;
-                                locResI[pos] = j;
+                                var pos = resCounters[here.id].fetchAdd(1);
+                                if (pos < resLimitPerLocale) {
+                                    locResI[pos] = i;
+                                    locResI[pos] = j;
+                                }
+                                else {
+                                    
+                                }
                             }
                         }
                     }
+                }
+                // set locNumResults to correct value
+                if (resCounters[here.id].read() > resLimitPerLocale) {
+                    locNumResults[here.id] = resLimitPerLocale;
+                }
+                else {
+                    locNumResults[here.id] = resCounters[here.id].read();
                 }
             }
         }
 
         // +scan for all the local result ends
         // last value should be total results
+        var resEnds: [PrivateSpace] int = + scan locNumResults;
+        var numResults: int = resEnds[resEnds.domain.high];
         
         // allocate result arrays
         var resI = makeDistArray(numResults, int);
         var resJ = makeDistArray(numResults, int);
 
-        // move resulta per local to result arrays
+        // move results per locale to result arrays
 
+        // return result arrays
+        return (resI, resJ);
     }
     
     /* 
@@ -98,7 +184,7 @@ module JoinEqWithDTMsg
         var t2_name = fields[7];
         var dt = try! fields[8]:int;
         var pred = fields[9]:int;
-        var resLimitPerLocale = try! fields[10]:int;
+        var resLimit = try! fields[10]:int;
         
         // get next symbol names for results
         var resI_name = st.nextName();
@@ -114,7 +200,7 @@ module JoinEqWithDTMsg
         }
         
         // check and throw if over memory limit
-        overMemLimit(resLimitPerLocale*2*8);
+        overMemLimit(resLimit*4*8);
         
         // lookup arguments and check types
         // !!!!! check for DType.Int64 on all of these !!!!!
@@ -163,11 +249,13 @@ module JoinEqWithDTMsg
             throw new owned ErrorWithMsg(incompatibleArgumentsError(pn, "a2 and t2 must be same size"));
         }
         var t2 = toSymEntry(t2Ent, int);
-        
+
+        var resLimitPerLocale: int = resLimit / numLocales;
+
         // call the join and return the result arrays
         var (resI, resJ) = joinEqWithDT(a1.a,
                                         g2Seg.a, g2Ukeys.a, g2Perm.a, // derived from a2
-                                        t1.a, t2.a, dt, pred, resLimitPerlocale);
+                                        t1.a, t2.a, dt, pred, resLimitPerLocale);
         
         // puth results in the symbol table
         st.addEntry(resI_name, new shared SymEntry(resI));
