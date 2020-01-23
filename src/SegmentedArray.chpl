@@ -10,7 +10,7 @@ module SegmentedArray {
   use PrivateDist;
   use ServerConfig;
   use Unique;
-  use Time only getCurrentTime;
+  use Time only Timer, getCurrentTime;
 
   private config const DEBUG = false;
   private config param useHash = false;
@@ -312,6 +312,46 @@ module SegmentedArray {
     }
 
     proc substringSearch(const substr: string, mode: SearchMode) throws {
+      var hits: [offsets.aD] bool;  // the answer
+      if (size == 0) || (substr.size == 0) {
+        return hits;
+      }
+      var t = new Timer();
+      // Find the start position of every occurence of substr in the flat bytes array
+      // Start by making a right-truncated subdomain representing all valid starting positions for substr of given length
+      var D: subdomain(values.aD) = values.aD[values.aD.low..#(values.size - substr.numBytes)];
+      // Every start position is valid until proven otherwise
+      var truth: [D] bool = true;
+      if DEBUG {writeln("Checking bytes of substr"); stdout.flush(); t.start();}
+      // Shift the flat values one byte at a time and check against corresponding byte of substr
+      for (i, b) in zip(values.aD.low.., substr.chpl_bytes()) {
+        truth &= (values.a[D.translate(i)] == b);
+      }
+      // Determine whether each segment contains a hit
+      // Do this by taking the difference in the cumulative number of hits at the end vs the beginning of the segment
+      if DEBUG {t.stop(); writeln("took %t seconds\nscanning...".format(t.elapsed())); stdout.flush(); t.clear(); t.start();}
+      // Cumulative number of hits up to (and excluding) this point
+      var numHits = (+ scan truth) - truth;
+      if DEBUG {t.stop(); writeln("took %t seconds\nTranslating to segments...".format(t.elapsed())); stdout.flush(); t.clear(); t.start();}
+      // Need to ignore segment(s) at the end of the array that are too short to contain substr
+      const tail = + reduce (offsets.a > D.high);
+      // oD is the right-truncated domain representing segments that are candidates for containing substr
+      var oD: subdomain(offsets.aD) = offsets.aD[offsets.aD.low..#(offsets.size - tail - 1)];
+      ref oa = offsets.a;
+      if mode == SearchMode.contains {
+        // Find segments where at least one hit occurred between the start and end of the segment
+        hits[oD] = (numHits[oa[oD.translate(1)]] - numHits[oa[oD]]) > 0;
+      } else if mode == SearchMode.startsWith {
+        // First position of segment must be a hit
+        hits[oD] = truth[oa[oD]];
+      } else if mode == SearchMode.endsWith {
+        // Position where substr aligns with end of segment must be a hit
+        hits[oD] = truth[oa[oD.translate(1)] - substr.numBytes - 1];
+      }
+      return hits;
+    }
+
+    proc substringSearch(const substr: string, mode: SearchMode) throws where false {
       var truth: [offsets.aD] bool;
       if (size == 0) || (substr.size == 0) {
         return truth;

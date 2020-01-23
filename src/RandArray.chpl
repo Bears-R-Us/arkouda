@@ -3,6 +3,7 @@ module RandArray {
   use SegmentedArray;
   use ServerErrorStrings;
   use Map;
+  use SipHash;
 
   proc fillInt(a:[] ?t, const aMin, const aMax) where isIntType(t) {
     coforall loc in Locales {
@@ -61,7 +62,7 @@ module RandArray {
     Binary
   }
 
-  var charBounds: map(false, charSet, 2*int);
+  var charBounds: map(keyType=charSet, valType=2*int, parSafe=false);
   charBounds[charSet.Uppercase] = (65, 91);
   charBounds[charSet.Lowercase] = (97, 123);
   charBounds[charSet.Numeric] = (48, 58);
