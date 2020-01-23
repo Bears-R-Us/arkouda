@@ -14,36 +14,63 @@ module JoinEqWithDTMsg
 
     proc joinEqWithDT(a1: [?a1D] int,
                       seg: [?segD] int,  ukeys: [?segD] int, perm: [?a2D] int,
-                      t1: [a1D] int, t2: [a2D] int, dt: int, resLimitPerLocale: int): ([] int, [] int) {
+                      t1: [a1D] int, t2: [a2D] int, dt: int, pred: int,
+                      resLimitPerLocale: int): ([] int, [] int) {
+
+        // allocate result arrays per locale
+        var locResI: [PrivateSpace] [resLimitPerLocale] int;
+        var locResj: [PrivateSpace] [resLimitPerLocale] int;
+
+        // atomic result counter per locale
+        var resCounters: [PrivateSpace] atomic int;
         
-        // allocate result arrays
-        var resI = makeDistArray(resLimitPerLocale*numLocales, int);
-        var resJ = makeDistArray(resLimitPerLocale*numLocales, int);
-        
-        // atomic result counter
-        var resCounter: atomic int = 0;
-        
-        forall i in a1_a.domain() {
-            // find matching value(unique key in g2) and
-            // return found flag and a range for the segment of that value(unique key)
-            var (found, seg) = findMatch(a1_a[i], g2Seg_a, g2Ukeys_a, g2Perm_a);
-            if (found) {
-                // all j's come from the original a2 array
-                // so all the values from Perm over the segment for the value
-                for j in g2Perm_a[seg] {
-                    // if eval(pred) {
-                    //     fetch-and-inc(resCounter)
-                    //     resI[resCounter] = i
-                    //     resJ[resCounter] = j
-                    // }
-                    
+        coforall loc in Locales {
+            on loc {
+                forall i in a1.localSubdomain() {
+                    // find matching value(unique key in g2) and
+                    // return found flag and a range for the segment of that value(unique key)
+                    var (found, j_seg) = findMatch(a1[i], seg, ukeys, perm);
+                    if (found) {
+                        var t1_i = t1[i];
+                        // all j's come from the original a2 array
+                        // so all the values from Perm over the segment for the value
+                        for j in g2Perm_a[j_seg] {
+                            var addResFlag = false;
+                            var t2_j = t2[j];
+                            select pred {
+                                    when Pred.absDT {
+                                        if (t1_i <= t2_j) {
+                                            addResFlag = ((t1_i + dt) >= t2_j);
+                                        } else {
+                                            addResFlag = ((t1_i - dt) <= t2_j);
+                                        }
+                                    }
+                                    when Pred.posDT {
+                                    }
+                                    when Pred.trueDT {
+                                    }
+                                    otherwise { }
+                                }
+                            if addResFlag {
+                                pos = resCounters[here.id].fetchAdd(1);
+                                locResI[pos] = i;
+                                locResI[pos] = j;
+                            }
+                        }
+                    }
                 }
             }
-            
         }
+
+        // +scan for all the local result ends
+        // last value should be total results
         
-        
-        
+        // allocate result arrays
+        var resI = makeDistArray(numResults, int);
+        var resJ = makeDistArray(numResults, int);
+
+        // move resulta per local to result arrays
+
     }
     
     /* 
@@ -70,15 +97,15 @@ module JoinEqWithDTMsg
         var t1_name = fields[6];
         var t2_name = fields[7];
         var dt = try! fields[8]:int;
-        var pred = fields[9];
-        var resLimit = try! fields[10]:int;
+        var pred = fields[9]:int;
+        var resLimitPerLocale = try! fields[10]:int;
         
         // get next symbol names for results
         var resI_name = st.nextName();
         var resJ_name = st.nextName();
         
         if v {
-            try! writeln("%s %s %s %s %s %s %s %t, %s : %s %s".format(cmd, a1_name,
+            try! writeln("%s %s %s %s %s %s %t %t, %s : %s %s".format(cmd, a1_name,
                                                                       g2Seg_name, g2Ukeys_name, g2Perm_name,
                                                                       t1_name, t2_name,
                                                                       dt, pred,
@@ -87,7 +114,7 @@ module JoinEqWithDTMsg
         }
         
         // check and throw if over memory limit
-        overMemLimit(resLimit*2*8);
+        overMemLimit(resLimitPerLocale*2*8);
         
         // lookup arguments and check types
         // !!!!! check for DType.Int64 on all of these !!!!!
@@ -139,7 +166,7 @@ module JoinEqWithDTMsg
         
         // call the join and return the result arrays
         var (resI, resJ) = joinEqWithDT(a1.a,
-                                        g2Seg.a, g2Ukeys.a, g2Perm.a,
+                                        g2Seg.a, g2Ukeys.a, g2Perm.a, // derived from a2
                                         t1.a, t2.a, dt, pred, resLimitPerlocale);
         
         // puth results in the symbol table
