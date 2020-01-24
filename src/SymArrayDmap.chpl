@@ -17,6 +17,7 @@ module SymArrayDmap
     config param MyDmap:Dmap = defaultDmap;
 
     public use BlockDist;
+    use Map;
 
     /* 
     Makes a domain distributed according to :param:`MyDmap`.
@@ -24,7 +25,7 @@ module SymArrayDmap
     :arg size: size of domain
     :type size: int
     */
-    proc makeDistDom(size:int) {
+    proc rawMakeDistDom(size:int) {
         select MyDmap
         {
             when Dmap.defaultRectangular {
@@ -41,6 +42,19 @@ module SymArrayDmap
                 halt("Unsupported distribution " + MyDmap:string);
             }
         }
+    }
+
+    class BoxedDistDom {
+      const size: int;
+      const d = rawMakeDistDom(size);
+    }
+    var tab: map(int, shared BoxedDistDom);
+
+    proc makeDistDom(size:int) const ref {
+      if !tab.contains(size) {
+        tab.add(size, new shared BoxedDistDom(size));
+      }
+      return tab.getReference(size).d;
     }
     
     /* 
