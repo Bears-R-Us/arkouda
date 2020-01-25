@@ -17,7 +17,7 @@ proc main() {
   var hashes: [DD2] 2*uint(64);
   var t = getCurrentTime();
   forall (h, i) in zip(hashes, DD2) with (const key = defaultSipHashKey) {
-    h = sipHash128(buf[{i*INPUTSIZE..#INPUTSIZE}], key);
+    h = sipHash128(buf, i*INPUTSIZE..#INPUTSIZE, key);
   }
   var elapsed = getCurrentTime() - t;
   writeln("Hashed %i blocks (%i bytes) in %.2dr seconds\nRate = %.2dr MB/s".format(NINPUTS, NINPUTS*INPUTSIZE, elapsed, (NINPUTS*INPUTSIZE)/(1024*1024*elapsed)));
