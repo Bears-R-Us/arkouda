@@ -20,5 +20,5 @@ proc main() {
     h = sipHash128(buf[{i*INPUTSIZE..#INPUTSIZE}], key);
   }
   var elapsed = getCurrentTime() - t;
-  writeln("Hashed %i blocks (%i bytes) in %t seconds\nRate = %t MB/s".format(NINPUTS, NINPUTS*INPUTSIZE, elapsed, (NINPUTS*INPUTSIZE)/(1024*1024*elapsed)));
+  writeln("Hashed %i blocks (%i bytes) in %.2dr seconds\nRate = %.2dr MB/s".format(NINPUTS, NINPUTS*INPUTSIZE, elapsed, (NINPUTS*INPUTSIZE)/(1024*1024*elapsed)));
 }
