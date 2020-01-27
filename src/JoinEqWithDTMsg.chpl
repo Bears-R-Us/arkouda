@@ -85,6 +85,7 @@ module JoinEqWithDTMsg
 
         // atomic result counter per locale
         var resCounters: [PrivateSpace] atomic int;
+        // actual number of results per locale
         var locNumResults: [PrivateSpace] int;
         
         coforall loc in Locales {
