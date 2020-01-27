@@ -12,9 +12,9 @@ module JoinEqWithDTMsg
     use ServerErrorStrings;
     use AryUtil;
 
-    param ABS_DT = 0;
-    param POS_DT = 1;
-    param TRUE_DT = 2;
+    param TRUE_DT = 0;
+    param ABS_DT = 1;
+    param POS_DT = 2;
     
     // operator overloads so + reduce and + scan can work on atomic int arrays
     proc +(x: atomic int, y: atomic int) {
@@ -128,7 +128,7 @@ module JoinEqWithDTMsg
                                     locResI[pos] = j;
                                 }
                                 else {
-                                    
+                                    break;
                                 }
                             }
                         }
