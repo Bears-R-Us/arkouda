@@ -81,7 +81,7 @@ module JoinEqWithDTMsg
 
         // allocate result arrays per locale
         var locResI: [PrivateSpace] [0..#resLimitPerLocale] int;
-        var locResj: [PrivateSpace] [0..#resLimitPerLocale] int;
+        var locResJ: [PrivateSpace] [0..#resLimitPerLocale] int;
 
         // atomic result counter per locale
         var resCounters: [PrivateSpace] atomic int;
@@ -90,50 +90,61 @@ module JoinEqWithDTMsg
         coforall loc in Locales {
             on loc {
                 forall i in a1.localSubdomain() {
-                    // find matching value(unique key in g2) and
-                    // return found flag and a range for the segment of that value(unique key)
-                    var (found, j_seg) = findMatch(a1[i], seg, ukeys, perm);
-                    if (found) {
-                        var t1_i = t1[i];
-                        // all j's come from the original a2 array
-                        // so all the values from perm over the segment for the value
-                        for j in perm[j_seg] {
-                            var addResFlag = false;
-                            var t2_j = t2[j];
-                            select pred {
-                                    when ABS_DT {
-                                        if (t1_i <= t2_j) {
-                                            addResFlag = ((t2_j - t1_i) <= dt);
-                                        } else {
-                                            addResFlag = ((t1_i - t2_j) <= dt);
+                    // more space in result list???
+                    if (resCounters[here.id].read() < resLimitPerLocale) {
+                        // find matching value(unique key in g2) and
+                        // return found flag and a range for the segment of that value(unique key)
+                        var (found, j_seg) = findMatch(a1[i], seg, ukeys, perm);
+                        // if there is a matching value in ukeys
+                        if (found) {
+                            var t1_i = t1[i];
+                            // all j's come from the original a2 array
+                            // so all the values from perm over the segment for the value
+                            for j in perm[j_seg] {
+                                var addResFlag = false;
+                                var t2_j = t2[j];
+                                // which predicate to use
+                                select pred {
+                                        // absolute difference predicate
+                                        when ABS_DT {
+                                            if (t1_i <= t2_j) {
+                                                addResFlag = ((t2_j - t1_i) <= dt);
+                                            } else {
+                                                addResFlag = ((t1_i - t2_j) <= dt);
+                                            }
                                         }
-                                    }
-                                    when POS_DT {
-                                        if (t1_i <= t2_j) {
-                                            addResFlag = ((t2_j - t1_i) <= dt);
+                                        // positive difference predicate
+                                        when POS_DT {
+                                            if (t1_i <= t2_j) {
+                                                addResFlag = ((t2_j - t1_i) <= dt);
+                                            }
+                                            else {
+                                                addResFlag = false;
+                                            }
                                         }
-                                        else {
-                                            addResFlag = false;
+                                        // always true predicate
+                                        when TRUE_DT {
+                                            addResFlag = true;
                                         }
+                                        otherwise {writeln("OOPS! bad predicate number!"); }
                                     }
-                                    when TRUE_DT {
-                                        addResFlag = true;
+                                // add result to list if predicate was true
+                                if addResFlag {
+                                    var pos = resCounters[here.id].fetchAdd(1);
+                                    // add result if there is still room in the result list
+                                    if (pos < resLimitPerLocale) {
+                                        locResI[here.id][pos] = i;
+                                        locResJ[here.id][pos] = j;
                                     }
-                                    otherwise {writeln("OOPS! bad predicate number!"); }
+                                    // there is no room left in list then break out of for loop
+                                    else { break; }
                                 }
-                            if addResFlag {
-                                var pos = resCounters[here.id].fetchAdd(1);
-                                if (pos < resLimitPerLocale) {
-                                    locResI[pos] = i;
-                                    locResI[pos] = j;
-                                }
-                                else {
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
+                                // if there is no room left in list then break out of for loop
+                                if (resCounters[here.id].read() >= resLimitPerLocale) { break; }
+                            } // for j
+                        } // if (found)
+                    } // if more space in result list
+                } // forall i
                 // set locNumResults to correct value
                 if (resCounters[here.id].read() > resLimitPerLocale) {
                     locNumResults[here.id] = resLimitPerLocale;
@@ -141,8 +152,8 @@ module JoinEqWithDTMsg
                 else {
                     locNumResults[here.id] = resCounters[here.id].read();
                 }
-            }
-        }
+            } // on loc
+        } // forall i
 
         // +scan for all the local result ends
         // last value should be total results
@@ -154,7 +165,17 @@ module JoinEqWithDTMsg
         var resJ = makeDistArray(numResults, int);
 
         // move results per locale to result arrays
-
+        coforall loc in Locales {
+            on loc {
+                // construct start and end for array assignment
+                var gEnd: int = resEnds[here.id] - 1;
+                var gStart: int = gEnd - locNumResults[here.id];
+                // copy local results into global results
+                resI[{gStart..gEnd}] = locResI[here.id][{0..#locNumResults[here.id]}];
+                resJ[{gStart..gEnd}] = locResJ[here.id][{0..#locNumResults[here.id]}];                
+            }
+        }
+        
         // return result arrays
         return (resI, resJ);
     }
