@@ -355,7 +355,7 @@ module SegmentedArray {
       var truth: [D] bool = true;
       if DEBUG {writeln("Checking bytes of substr"); stdout.flush(); t.start();}
       // Shift the flat values one byte at a time and check against corresponding byte of substr
-      for (i, b) in zip(values.aD.low.., substr.chpl_bytes()) {
+      for (i, b) in zip(0.., substr.chpl_bytes()) {
         truth &= (values.a[D.translate(i)] == b);
       }
       // Determine whether each segment contains a hit
@@ -367,17 +367,21 @@ module SegmentedArray {
       // Need to ignore segment(s) at the end of the array that are too short to contain substr
       const tail = + reduce (offsets.a > D.high);
       // oD is the right-truncated domain representing segments that are candidates for containing substr
-      var oD: subdomain(offsets.aD) = offsets.aD[offsets.aD.low..#(offsets.size - tail - 1)];
+      var oD: subdomain(offsets.aD) = offsets.aD[offsets.aD.low..#(offsets.size - tail)];
       ref oa = offsets.a;
       if mode == SearchMode.contains {
         // Find segments where at least one hit occurred between the start and end of the segment
-        hits[oD] = (numHits[oa[oD.translate(1)]] - numHits[oa[oD]]) > 0;
+        // hits[oD] = (numHits[oa[oD.translate(1)]] - numHits[oa[oD]]) > 0;
+        hits[{oD.low..oD.high-1}] = (numHits[oa[{oD.low+1..oD.high}]] - numHits[oa[{oD.low..oD.high-1}]]) > 0;
+        hits[oD.high] = (numHits[D.high] + truth[D.high] - numHits[oa[oD.high]]) > 0;
       } else if mode == SearchMode.startsWith {
         // First position of segment must be a hit
         hits[oD] = truth[oa[oD]];
       } else if mode == SearchMode.endsWith {
         // Position where substr aligns with end of segment must be a hit
-        hits[oD] = truth[oa[oD.translate(1)] - substr.numBytes - 1];
+        // -1 for null byte
+        hits[{oD.low..oD.high-1}] = truth[oa[{oD.low+1..oD.high}] - substr.numBytes - 1];
+        hits[oD.high] = truth[D.high];
       }
       return hits;
     }
