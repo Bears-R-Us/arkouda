@@ -13,7 +13,7 @@ module SegmentedArray {
   use Time only Timer, getCurrentTime;
 
   private config const DEBUG = false;
-  private config param useHash = false;
+  private config param useHash = true;
   param SegmentedArrayUseHash = useHash;
   
   class OutOfBoundsError: Error {}
@@ -616,7 +616,7 @@ module SegmentedArray {
     if v {writeln("Hashing strings"); stdout.flush(); t.start();}
     const hashes = mainStr.hash(hashKey);
     if v {
-      t.stop(); writeln("%t seconds".format(t.elapsed)); t.clear();
+      t.stop(); writeln("%t seconds".format(t.elapsed())); t.clear();
       writeln("Making associative domains for test set on each locale"); stdout.flush(); t.start();
     }
     // On each locale, make an associative domain with the hashes of the second array
