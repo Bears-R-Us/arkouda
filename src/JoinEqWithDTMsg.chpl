@@ -52,24 +52,30 @@ module JoinEqWithDTMsg
     // find matching value in ukeys and return found flag and range for segment
     proc findMatch(v: int, seg: [?segD] int, ukeys: [segD] int, perm: [?aD] int): (bool, range) {
 
+        // default is not found and zero length segment
         var found = false;
-        var segNum = binarySearch(ukeys, v); // returns index of >= value
-        var segRange: range;
+        var segRange: range = 1..0;
 
-        if (v == ukeys[segNum]) {
-            found = true;
-            if (segNum == seg.domain.high) {
-                segRange = (seg[segNum])..(perm.domain.high);
-            }
-            else {
-                segRange = (seg[segNum])..(seg[segNum+1] -1);
+        // binary search unique keys to find segment number
+        // returns index of >= value
+        var segNum = binarySearch(ukeys, v);
+
+        // if v was greater than all ukeys segNum is greater than all segments
+        if (segNum <= seg.domain.high) {
+            // found!
+            if (v == ukeys[segNum]) {
+                found = true;
+                // last segment?
+                if (segNum == seg.domain.high) {
+                    segRange = (seg[segNum])..(perm.domain.high);
+                }
+                // otherwise
+                else {
+                    segRange = (seg[segNum])..(seg[segNum+1] -1);
+                }
             }
         }
-        else {
-            found = false;
-            segRange = 1..0; // empty range
-        }
-
+        
         return (found, segRange);
     }
 
@@ -79,6 +85,8 @@ module JoinEqWithDTMsg
                       t1: [a1D] int, t2: [a2D] int, dt: int, pred: int,
                       resLimitPerLocale: int) {
 
+        writeln("resLimitPerLocale = ", resLimitPerLocale);
+        
         // allocate result arrays per locale
         var locResI: [PrivateSpace] [0..#resLimitPerLocale] int;
         var locResJ: [PrivateSpace] [0..#resLimitPerLocale] int;
@@ -96,6 +104,7 @@ module JoinEqWithDTMsg
                         // find matching value(unique key in g2) and
                         // return found flag and a range for the segment of that value(unique key)
                         var (found, j_seg) = findMatch(a1[i], seg, ukeys, perm);
+                        //writeln((a1[i], found, j_seg));
                         // if there is a matching value in ukeys
                         if (found) {
                             var t1_i = t1[i];
@@ -154,12 +163,14 @@ module JoinEqWithDTMsg
                     locNumResults[here.id] = resCounters[here.id].read();
                 }
             } // on loc
-        } // forall i
+        } // coforall loc
 
         // +scan for all the local result ends
         // last value should be total results
         var resEnds: [PrivateSpace] int = + scan locNumResults;
         var numResults: int = resEnds[resEnds.domain.high];
+        //writeln(resEnds);
+        writeln("numResults = ",numResults);
         
         // allocate result arrays
         var resI = makeDistArray(numResults, int);
@@ -170,7 +181,8 @@ module JoinEqWithDTMsg
             on loc {
                 // construct start and end for array assignment
                 var gEnd: int = resEnds[here.id] - 1;
-                var gStart: int = gEnd - locNumResults[here.id];
+                var gStart: int = resEnds[here.id] - locNumResults[here.id];
+                //writeln((gStart, gEnd));
                 // copy local results into global results
                 resI[{gStart..gEnd}] = locResI[here.id][{0..#locNumResults[here.id]}];
                 resJ[{gStart..gEnd}] = locResJ[here.id][{0..#locNumResults[here.id]}];                
@@ -213,16 +225,16 @@ module JoinEqWithDTMsg
         var resJ_name = st.nextName();
         
         if v {
-            try! writeln("%s %s %s %s %s %s %t %t, %s : %s %s".format(cmd, a1_name,
-                                                                      g2Seg_name, g2Ukeys_name, g2Perm_name,
-                                                                      t1_name, t2_name,
-                                                                      dt, pred,
-                                                                      resI_name, resJ_name));
+            try! writeln("%s %s %s %s %s %s %s %t %t %t : %s %s".format(cmd, a1_name,
+                                                                        g2Seg_name, g2Ukeys_name, g2Perm_name,
+                                                                        t1_name, t2_name,
+                                                                        dt, pred, resLimit,
+                                                                        resI_name, resJ_name));
             try! stdout.flush();
         }
         
         // check and throw if over memory limit
-        overMemLimit(resLimit*4*8);
+        overMemLimit(resLimit*6*8);
         
         // lookup arguments and check types
         // !!!!! check for DType.Int64 on all of these !!!!!
@@ -271,6 +283,10 @@ module JoinEqWithDTMsg
             throw new owned ErrorWithMsg(incompatibleArgumentsError(pn, "a2 and t2 must be same size"));
         }
         var t2 = toSymEntry(t2Ent, int);
+
+        if (pred < 0) || (pred > 2) {
+            throw new owned ErrorWithMsg(incompatibleArgumentsError(pn, "bad predicate number"));
+        }
 
         var resLimitPerLocale: int = resLimit / numLocales;
 
