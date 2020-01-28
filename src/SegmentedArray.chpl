@@ -609,7 +609,7 @@ module SegmentedArray {
 
   /* Test array of strings for membership in another array (set) of strings. Returns
      a boolean vector the same size as the first array. */
-  proc in1d(mainStr: SegString, testStr: SegString, invert=false, hashKey=defaultSipHashKey) throws where useHash {
+  proc in1d(mainStr: SegString, testStr: SegString, invert=false) throws where useHash {
     var truth: [mainStr.offsets.aD] bool;
     // Early exit for zero-length result
     if (mainStr.size == 0) {
@@ -618,7 +618,7 @@ module SegmentedArray {
     // Hash all strings for fast comparison
     var t = new Timer();
     if v {writeln("Hashing strings"); stdout.flush(); t.start();}
-    const hashes = mainStr.hash(hashKey);
+    const hashes = mainStr.hash();
     if v {
       t.stop(); writeln("%t seconds".format(t.elapsed())); t.clear();
       writeln("Making associative domains for test set on each locale"); stdout.flush(); t.start();
@@ -631,7 +631,7 @@ module SegmentedArray {
         // Local hashes of second array
         ref mySet = localTestHashes[here.id];
         mySet.requestCapacity(testStr.size);
-        const testHashes = testStr.hash(hashKey);
+        const testHashes = testStr.hash();
         for h in testHashes {
           mySet += h;
         }
