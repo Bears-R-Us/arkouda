@@ -1,5 +1,5 @@
 module SipHash {
-
+  
   param cROUNDS = 2;
   param dROUNDS = 4;
 
@@ -49,28 +49,25 @@ module SipHash {
     return c;
   }
   
-  proc sipHash64(msg: [] uint(8), D, k: [?kD] uint(8)): uint(64) throws {
-    var res = computeSipHash(msg, D, k, 8);
+  proc sipHash64(msg: [] uint(8), D): uint(64) throws {
+    var res = computeSipHash(msg, D, 8);
     return res[1];
   }
 
-  proc sipHash128(msg: [] uint(8), D, k: [?kD] uint(8)): 2*uint(64) throws {
-    return computeSipHash(msg, D, k, 16);
+  proc sipHash128(msg: [] uint(8), D): 2*uint(64) throws {
+    return computeSipHash(msg, D, 16);
   }
   
-  private proc computeSipHash(msg: [] uint(8), D,  k: [?kD] uint(8), param outlen: int) throws {
+  private proc computeSipHash(msg: [] uint(8), D, param outlen: int) throws {
     if !((outlen == 8) || (outlen == 16)) {
-      throw new owned ArgumentError();
-    }
-    if (kD.size != 16) {
       throw new owned ArgumentError();
     }
     var v0 = 0x736f6d6570736575: uint(64);
     var v1 = 0x646f72616e646f6d: uint(64);
     var v2 = 0x6c7967656e657261: uint(64);
     var v3 = 0x7465646279746573: uint(64);
-    const k0 = U8TO64_LE(k, kD.low..#8);
-    const k1 = U8TO64_LE(k, kD.low+8..#8);
+    const k0 = 0xf0e1d2c3b4a59687: uint(64);
+    const k1 = 0x79695a4b3c2d1e0f: uint(64);
     var m: uint(64);
     var i: int;
     const lastPos = D.low + D.size - (D.size % 8);

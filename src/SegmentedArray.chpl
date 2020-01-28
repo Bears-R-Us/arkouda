@@ -277,7 +277,7 @@ module SegmentedArray {
 
     /* Apply a hash function to all strings. This is useful for grouping
        and set membership. The hash used is SipHash128.*/
-    proc hash(const hashKey=defaultSipHashKey) throws {
+    proc hash() throws {
       // 128-bit hash values represented as 2-tuples of uint(64)
       var hashes: [offsets.aD] 2*uint(64);
       // Early exit for zero-length result
@@ -292,7 +292,7 @@ module SegmentedArray {
       // TO DO: test on clause with aggregator
       forall (o, l, h) in zip(oa, lengths, hashes) {
         const myRange = o..#l;
-        h = sipHash128(va, myRange, hashKey);
+        h = sipHash128(va, myRange);
         /* // localize the string bytes */
         /* const myBytes = va[{o..#l}]; */
         /* h = sipHash128(myBytes, hashKey); */
