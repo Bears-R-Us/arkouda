@@ -4,6 +4,7 @@ use BlockDist;
 
 config const NINPUTS = 10_000;
 config const INPUTSIZE = 8;
+config param COMMDEBUG = false;
 
 proc main() {
   const D1 = {0..#(NINPUTS*INPUTSIZE)}; 
@@ -15,10 +16,12 @@ proc main() {
   const D2 = {0..#NINPUTS};
   const DD2: domain(1) dmapped Block(boundingBox=D2) = D2;
   var hashes: [DD2] 2*uint(64);
+  if COMMDEBUG { startCommDiagnostics(); }
   var t = getCurrentTime();
-  forall (h, i) in zip(hashes, DD2) with (const key = defaultSipHashKey) {
-    h = sipHash128(buf[{i*INPUTSIZE..#INPUTSIZE}], key);
+  forall (h, i) in zip(hashes, DD2) {
+    h = sipHash128(buf, i*INPUTSIZE..#INPUTSIZE);
   }
   var elapsed = getCurrentTime() - t;
-  writeln("Hashed %i blocks (%i bytes) in %t seconds\nRate = %t MB/s".format(NINPUTS, NINPUTS*INPUTSIZE, elapsed, (NINPUTS*INPUTSIZE)/(1024*1024*elapsed)));
+  if COMMDEBUG { stopCommDiagnostics(); writeln(getCommDiagnostics());}
+  writeln("Hashed %i blocks (%i bytes) in %.2dr seconds\nRate = %.2dr MB/s".format(NINPUTS, NINPUTS*INPUTSIZE, elapsed, (NINPUTS*INPUTSIZE)/(1024*1024*elapsed)));
 }

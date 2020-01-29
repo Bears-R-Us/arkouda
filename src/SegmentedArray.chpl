@@ -13,7 +13,7 @@ module SegmentedArray {
   use Time only Timer, getCurrentTime;
 
   private config const DEBUG = false;
-  private config param useHash = false;
+  private config param useHash = true;
   param SegmentedArrayUseHash = useHash;
   
   class OutOfBoundsError: Error {}
@@ -176,15 +176,39 @@ module SegmentedArray {
         t1 = getCurrentTime();
       }
       var gatheredVals = makeDistArray(retBytes, uint(8));
-      ref va = values.a;
-      // Copy string data to gathered result
-      forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, iv) {
-        for pos in 0..#gl {
-          // TODO I think the dst is local?
-          use UnorderedCopy;
-          unorderedCopy(gatheredVals[go+pos], va[oa[idx]+pos]);
-        }
+      
+      // Compute the src index for each byte in gatheredVals
+      /* For performance, we will do this with a scan, so first we need an array
+         with the difference in index between the current and previous byte. For
+         the interior of a segment, this is just one, but at the segment boundary,
+         it is the difference between the src offset of the current segment ("left")
+         and the src index of the last byte in the previous segment (right - 1).
+       */
+      var srcIdx = makeDistArray(retBytes, int);
+      srcIdx = 1;
+      var diffs: [D] int;
+      diffs[D.low] = left[D.low]; // first offset is not affected by scan
+      diffs[{D.low+1..D.high}] = left[{D.low+1..D.high}] - (right[{D.low..D.high-1}] - 1);
+      // Set srcIdx to diffs at segment boundaries
+      forall (go, d) in zip(gatheredOffsets, diffs) with (var agg = newDstAggregator(int)) {
+        agg.copy(srcIdx[go], d);
       }
+      srcIdx = + scan srcIdx;
+      // Now srcIdx has a dst-local copy of the source index and vals can be efficiently gathered
+      ref va = values.a;
+      forall (v, si) in zip(gatheredVals, srcIdx) with (var agg = newSrcAggregator(uint(8))) {
+        agg.copy(v, va[si]);
+      }
+      
+      /* ref va = values.a; */
+      /* // Copy string data to gathered result */
+      /* forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, iv) { */
+      /*   for pos in 0..#gl { */
+      /*     // TODO I think the dst is local? */
+      /*     use UnorderedCopy; */
+      /*     unorderedCopy(gatheredVals[go+pos], va[oa[idx]+pos]); */
+      /*   } */
+      /* } */
       if v {writeln(getCurrentTime() - t1, " seconds"); stdout.flush();}
       return (gatheredOffsets, gatheredVals);
     }
@@ -202,50 +226,58 @@ module SegmentedArray {
       // Calculate the destination indices
       var steps = + scan iv;
       var newSize = steps[high];
+      steps -= iv;
       // Early return for zero-length result
       if (newSize == 0) {
         return (makeDistArray(0, int), makeDistArray(0, uint(8)));
       }
       var segInds = makeDistArray(newSize, int);
-      // Lengths of dest segments including null bytes
-      var gatheredLengths = makeDistArray(newSize, int);
-      forall (idx, present, i) in zip(D, iv, steps) {
-        if present {
-          segInds[i-1] = idx;
-          if (idx == high) {
-            gatheredLengths[i-1] = values.size - oa[high];
-          } else {
-            gatheredLengths[i-1] = oa[idx+1] - oa[idx];
-          }
+      forall (t, dst, idx) in zip(iv, steps, D) with (var agg = newDstAggregator(int)) {
+        if t {
+          agg.copy(segInds[dst], idx);
         }
       }
-      // Make dest offsets from lengths
-      var gatheredOffsets = (+ scan gatheredLengths);
-      var retBytes = gatheredOffsets[newSize-1];
-      gatheredOffsets -= gatheredLengths;
-      if v {
-        writeln(getCurrentTime() - t1, " seconds");
-        writeln("Copying values"); stdout.flush();
-        t1 = getCurrentTime();
-      }
-      var gatheredVals = makeDistArray(retBytes, uint(8));
-      ref va = values.a;
-      if DEBUG {
-        printAry("gatheredOffsets: ", gatheredOffsets);
-        printAry("gatheredLengths: ", gatheredLengths);
-        printAry("segInds: ", segInds);
-      }
-      // Copy string bytes from src to dest
-      forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, segInds) {
-        gatheredVals[{go..#gl}] = va[{oa[idx]..#gl}];
-      }
-      if v {writeln(getCurrentTime() - t1, " seconds"); stdout.flush();}
-      return (gatheredOffsets, gatheredVals);
+      return this[segInds];
+      
+      /* // Lengths of dest segments including null bytes */
+      /* var gatheredLengths = makeDistArray(newSize, int); */
+      /* forall (idx, present, i) in zip(D, iv, steps) { */
+      /*   if present { */
+      /*     segInds[i-1] = idx; */
+      /*     if (idx == high) { */
+      /*       gatheredLengths[i-1] = values.size - oa[high]; */
+      /*     } else { */
+      /*       gatheredLengths[i-1] = oa[idx+1] - oa[idx]; */
+      /*     } */
+      /*   } */
+      /* } */
+      /* // Make dest offsets from lengths */
+      /* var gatheredOffsets = (+ scan gatheredLengths); */
+      /* var retBytes = gatheredOffsets[newSize-1]; */
+      /* gatheredOffsets -= gatheredLengths; */
+      /* if v { */
+      /*   writeln(getCurrentTime() - t1, " seconds"); */
+      /*   writeln("Copying values"); stdout.flush(); */
+      /*   t1 = getCurrentTime(); */
+      /* } */
+      /* var gatheredVals = makeDistArray(retBytes, uint(8)); */
+      /* ref va = values.a; */
+      /* if DEBUG { */
+      /*   printAry("gatheredOffsets: ", gatheredOffsets); */
+      /*   printAry("gatheredLengths: ", gatheredLengths); */
+      /*   printAry("segInds: ", segInds); */
+      /* } */
+      /* // Copy string bytes from src to dest */
+      /* forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, segInds) { */
+      /*   gatheredVals[{go..#gl}] = va[{oa[idx]..#gl}]; */
+      /* } */
+      /* if v {writeln(getCurrentTime() - t1, " seconds"); stdout.flush();} */
+      /* return (gatheredOffsets, gatheredVals); */
     }
 
     /* Apply a hash function to all strings. This is useful for grouping
        and set membership. The hash used is SipHash128.*/
-    proc hash(const hashKey=defaultSipHashKey) throws {
+    proc hash() throws {
       // 128-bit hash values represented as 2-tuples of uint(64)
       var hashes: [offsets.aD] 2*uint(64);
       // Early exit for zero-length result
@@ -254,24 +286,19 @@ module SegmentedArray {
       }
       ref oa = offsets.a;
       ref va = values.a;
-      if v {writeln("Computing segment lengths"); stdout.flush();}
-      var t1 = getCurrentTime();
       // Compute lengths of strings
       var lengths = getLengths();
-      if v {
-        writeln(getCurrentTime() - t1, " seconds");
-        writeln("Hashing strings"); stdout.flush();
-        t1 = getCurrentTime();
-      }      
       // Hash each string
+      // TO DO: test on clause with aggregator
       forall (o, l, h) in zip(oa, lengths, hashes) {
-        // localize the string bytes
-        const myBytes = va[{o..#l}];
-        h = sipHash128(myBytes, hashKey);
-        // Perf Note: localizing string bytes is ~3x faster on IB multilocale than this:
-        // h = sipHash128(va[{o..#l}]);
+        const myRange = o..#l;
+        h = sipHash128(va, myRange);
+        /* // localize the string bytes */
+        /* const myBytes = va[{o..#l}]; */
+        /* h = sipHash128(myBytes, hashKey); */
+        /* // Perf Note: localizing string bytes is ~3x faster on IB multilocale than this: */
+        /* // h = sipHash128(va[{o..#l}]); */
       }
-      if v {writeln(getCurrentTime() - t1, " seconds"); stdout.flush();}
       return hashes;
     }
 
@@ -279,11 +306,15 @@ module SegmentedArray {
        this permutation will not sort the strings, but all equivalent strings
        will fall in one contiguous block. */
     proc argGroup() throws {
+      var t = new Timer();
       if useHash {
         // Hash all strings
+        if v { writeln("Hashing strings"); stdout.flush(); t.start(); }
         var hashes = this.hash();
+        if v { t.stop(); writeln("hashing took %t seconds\nSorting hashes".format(t.elapsed())); stdout.flush(); t.clear(); t.start(); }
         // Return the permutation that sorts the hashes
         var iv = radixSortLSD_ranks(hashes);
+        if v { t.stop(); writeln("sorting took %t seconds".format(t.elapsed())); stdout.flush(); }
         if DEBUG {
           var sortedHashes = [i in iv] hashes[i];
           var diffs = sortedHashes[(iv.domain.low+1)..#(iv.size-1)] - sortedHashes[(iv.domain.low)..#(iv.size-1)];
@@ -324,7 +355,7 @@ module SegmentedArray {
       var truth: [D] bool = true;
       if DEBUG {writeln("Checking bytes of substr"); stdout.flush(); t.start();}
       // Shift the flat values one byte at a time and check against corresponding byte of substr
-      for (i, b) in zip(values.aD.low.., substr.chpl_bytes()) {
+      for (i, b) in zip(0.., substr.chpl_bytes()) {
         truth &= (values.a[D.translate(i)] == b);
       }
       // Determine whether each segment contains a hit
@@ -336,68 +367,23 @@ module SegmentedArray {
       // Need to ignore segment(s) at the end of the array that are too short to contain substr
       const tail = + reduce (offsets.a > D.high);
       // oD is the right-truncated domain representing segments that are candidates for containing substr
-      var oD: subdomain(offsets.aD) = offsets.aD[offsets.aD.low..#(offsets.size - tail - 1)];
+      var oD: subdomain(offsets.aD) = offsets.aD[offsets.aD.low..#(offsets.size - tail)];
       ref oa = offsets.a;
       if mode == SearchMode.contains {
         // Find segments where at least one hit occurred between the start and end of the segment
-        hits[oD] = (numHits[oa[oD.translate(1)]] - numHits[oa[oD]]) > 0;
+        // hits[oD] = (numHits[oa[oD.translate(1)]] - numHits[oa[oD]]) > 0;
+        hits[{oD.low..oD.high-1}] = (numHits[oa[{oD.low+1..oD.high}]] - numHits[oa[{oD.low..oD.high-1}]]) > 0;
+        hits[oD.high] = (numHits[D.high] + truth[D.high] - numHits[oa[oD.high]]) > 0;
       } else if mode == SearchMode.startsWith {
         // First position of segment must be a hit
         hits[oD] = truth[oa[oD]];
       } else if mode == SearchMode.endsWith {
         // Position where substr aligns with end of segment must be a hit
-        hits[oD] = truth[oa[oD.translate(1)] - substr.numBytes - 1];
+        // -1 for null byte
+        hits[{oD.low..oD.high-1}] = truth[oa[{oD.low+1..oD.high}] - substr.numBytes - 1];
+        hits[oD.high] = truth[D.high];
       }
       return hits;
-    }
-
-    proc substringSearch(const substr: string, mode: SearchMode) throws where false {
-      var truth: [offsets.aD] bool;
-      if (size == 0) || (substr.size == 0) {
-        return truth;
-      }
-      var t = new Timer();
-      if DEBUG { t.start(); }
-      var lengths = getLengths() - 1;
-      if DEBUG { t.stop(); writeln("getLengths() took %t seconds".format(t.elapsed())); stdout.flush(); t.clear(); t.start(); }
-      ref oa = offsets.a;
-      ref va = values.a;
-      var locSubstr: [PrivateSpace] string;
-      coforall loc in Locales {
-        on loc {
-          locSubstr[here.id] = substr.localize();
-        }
-      }
-      if DEBUG { t.stop(); writeln("localizing substring took %t seconds".format(t.elapsed())); stdout.flush(); t.clear(); t.start(); }
-      forall (o, l, t) in zip(oa, lengths, truth) with (var agg = newDstAggregator(bool)) {
-        // Only compare if segment is long enough to contain substr
-        if (locSubstr[here.id].numBytes <= l) {
-          // Execute where the bytes are
-          on va[o] {
-            const ref mySub = locSubstr[here.id];
-            const ref myVal = va[{o..#l}];
-            var res: bool;
-            select mode {
-              when SearchMode.contains {
-                res = segmentContains(myVal, mySub);
-              }
-              when SearchMode.startsWith {
-                res = segmentStartsWith(myVal, mySub);
-              }
-              when SearchMode.endsWith {
-                res = segmentEndsWith(myVal, mySub);
-              }
-              otherwise { throw new owned UnknownSearchMode(); }
-            }
-            if res {
-              // t might not be local anymore because of on statement
-              agg.copy(t, true);
-            }
-          }
-        }
-      }
-      if DEBUG { t.stop(); writeln("actual search took %t seconds".format(t.elapsed())); stdout.flush(); }
-      return truth;
     }
 
     proc isSorted(): bool {
@@ -411,13 +397,13 @@ module SegmentedArray {
       forall (i, a) in zip(offsets.aD, ascending) {
         if (i < high) {
           var asc: bool;
-          const ref left = va[oa[i]..oa[i+1]-1];
+          const left = oa[i]..oa[i+1]-1;
           if (i < high - 1) {
-            const ref right = va[oa[i+1]..oa[i+2]-1];
-            a = (memcmp(left, right) <= 0);
+            const right = oa[i+1]..oa[i+2]-1;
+            a = (memcmp(va, left, va, right) <= 0);
           } else { // i == high - 1
-            const ref right = va[oa[i+1]..values.aD.high];
-            a = (memcmp(left, right) <= 0);
+            const right = oa[i+1]..values.aD.high;
+            a = (memcmp(va, left, va, right) <= 0);
           }
         } else { // i == high
           a = true;
@@ -474,7 +460,7 @@ module SegmentedArray {
     proc argsort(checkSorted:bool=false): [offsets.aD] int throws {
       const ref D = offsets.aD;
       const ref va = values.a;
-      if checkSorted && false { // isSorted() {
+      if checkSorted && isSorted() {
         if DEBUG { writeln("argsort called on already sorted array"); stdout.flush(); }
         var ranks: [D] int = [i in D] i;
         return ranks;
@@ -485,14 +471,17 @@ module SegmentedArray {
 
   } // class SegString
 
-  inline proc memcmp(const ref x: [?xD] uint(8), const ref y: [?yD] uint(8)): int {
-    const l = min(x.size, y.size);
+  inline proc memcmp(const ref x: [] uint(8), const xinds, const ref y: [] uint(8), const yinds): int {
+    const l = min(xinds.size, yinds.size);
     var ret = 0;
-    for (i, j) in zip(xD.low..#l, yD.low..#l) {
+    for (i, j) in zip(xinds.low..#l, yinds.low..#l) {
       ret = x[i] - y[j];
       if (ret != 0) {
         break;
       }
+    }
+    if (ret == 0) {
+      ret = xinds.size - yinds.size;
     }
     return ret;
   }
@@ -500,49 +489,6 @@ module SegmentedArray {
 
   enum SearchMode { contains, startsWith, endsWith }
   class UnknownSearchMode: Error {}
-  
-  inline proc segmentContains(const ref values: [?D] uint(8), const ref substr: string): bool {
-    var subInd = 1;
-    // Slide the substring over the bytes in this segment
-    for (byte, i) in zip(values, 0..) {
-      if (substr.numBytes - subInd + 1 > values.size - i) {
-        return false;
-      }
-      if (byte != substr.byte[subInd]) {
-        // Start over
-        subInd = 1;
-      } else {
-        if (subInd == substr.numBytes) {
-          // Eureka
-          return true;
-        } else {
-          // Keep going
-          subInd += 1;
-        }
-      }
-    }
-    return false;
-  }
-
-  inline proc segmentStartsWith(const ref values: [?D] uint(8), const ref substr: string): bool {
-    // Caller guarantees that values is at least as long as substr
-    for (vbyte, sbyte) in zip(values[{D.low..#substr.numBytes}], substr.chpl_bytes()) {
-      if (vbyte != sbyte) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  inline proc segmentEndsWith(const ref values: [?D] uint(8), const ref substr: string): bool {
-    // Caller guarantees that values is at least as long as substr
-    for (vbyte, sbyte) in zip(values[{(D.high-substr.numBytes+1)..#substr.numBytes}], substr.chpl_bytes()) {
-      if (vbyte != sbyte) {
-        return false;
-      }
-    }
-    return true;
-  }
   
   /* Test for equality between two same-length arrays of strings. Returns
      a boolean vector of the same length. */
@@ -663,16 +609,20 @@ module SegmentedArray {
 
   /* Test array of strings for membership in another array (set) of strings. Returns
      a boolean vector the same size as the first array. */
-  proc in1d(mainStr: SegString, testStr: SegString, invert=false, hashKey=defaultSipHashKey) throws where useHash {
+  proc in1d(mainStr: SegString, testStr: SegString, invert=false) throws where useHash {
     var truth: [mainStr.offsets.aD] bool;
     // Early exit for zero-length result
     if (mainStr.size == 0) {
       return truth;
     }
     // Hash all strings for fast comparison
-    const hashes = mainStr.hash(hashKey);
-    if v {writeln("Making associative domains for test set on each locale"); stdout.flush();}
-    var t1 = getCurrentTime();
+    var t = new Timer();
+    if v {writeln("Hashing strings"); stdout.flush(); t.start();}
+    const hashes = mainStr.hash();
+    if v {
+      t.stop(); writeln("%t seconds".format(t.elapsed())); t.clear();
+      writeln("Making associative domains for test set on each locale"); stdout.flush(); t.start();
+    }
     // On each locale, make an associative domain with the hashes of the second array
     // parSafe=false because we are adding in serial and it's faster
     var localTestHashes: [PrivateSpace] domain(2*uint(64), parSafe=false);
@@ -681,7 +631,7 @@ module SegmentedArray {
         // Local hashes of second array
         ref mySet = localTestHashes[here.id];
         mySet.requestCapacity(testStr.size);
-        const testHashes = testStr.hash(hashKey);
+        const testHashes = testStr.hash();
         for h in testHashes {
           mySet += h;
         }
@@ -690,12 +640,11 @@ module SegmentedArray {
       }
     }
     if v {
-      writeln(getCurrentTime() - t1, " seconds");
-      writeln("Testing membership"); stdout.flush();
-      t1 = getCurrentTime();
+      t.stop(); writeln("%t seconds".format(t.elapsed())); t.clear();
+      writeln("Testing membership"); stdout.flush(); t.start();
     }
     [i in truth.domain] truth[i] = localTestHashes[here.id].contains(hashes[i]);
-    if v {writeln(getCurrentTime() - t1, " seconds"); stdout.flush();}
+    if v {t.stop(); writeln("%t seconds".format(t.elapsed())); stdout.flush();}
     return truth;
   }
 
@@ -744,14 +693,14 @@ module SegmentedArray {
       const high = D.high;
       forall (i, f, o, l) in zip(D, flag, saro, lengths) {
         if (i < high) && (l == lengths[i+1]) {
-          const ref left = sarv[o..saro[i+1]-1];
+          const left = o..saro[i+1]-1;
           var eq: bool;
           if (i < high - 1) {
-            const ref right = sarv[saro[i+1]..saro[i+2]-1];
-            eq = (memcmp(left, right) == 0);
+            const right = saro[i+1]..saro[i+2]-1;
+            eq = (memcmp(sarv, left, sarv, right) == 0);
           } else {
-            const ref right = sarv[saro[i+1]..sar.values.aD.high];
-            eq = (memcmp(left, right) == 0);
+            const ref right = saro[i+1]..sar.values.aD.high;
+            eq = (memcmp(sarv, left, sarv, right) == 0);
           }
           if eq {
             f = true;
@@ -759,34 +708,6 @@ module SegmentedArray {
           }
         }
       }
-      /* // Gather right-hand elements of equal-length pairs */
-      /* var idx: [D] bool; */
-      /* idx[{D.low+1..D.high}] = (lengths[{D.low+1..D.high}] == lengths[{D.low..D.high-1}]); */
-      /* idx[D.low] = false; */
-      /* var (rightSegs, rightVals) = sar[idx]; */
-      /* var right = new owned SegString(rightSegs, rightVals, st); */
-      /* if DEBUG {writeln("Equal-length pairs from right: ", (+ reduce idx)); right.show(5); try! stdout.flush();} */
-      
-      /* // Now gather left-hand elements of equal-length pairs */
-      /* idx[{D.low..D.high-1}] = (lengths[{D.low+1..D.high}] == lengths[{D.low..D.high-1}]); */
-      /* idx[D.high] = false; */
-      /* // For translating bool to int index */
-      /* const idxLocs = (+ scan idx) - 1; */
-      /* var (leftSegs, leftVals) = sar[idx]; */
-      /* var left = new owned SegString(leftSegs, leftVals, st); */
-      /* if DEBUG {writeln("Equal-length pairs from left: ", (+ reduce idx)); left.show(5); try! stdout.flush();} */
-      /* // Update places where lengths are equal with result of comparison */
-      /* var flag: [D] bool = idx; */
-      /* var same = (left == right); */
-      /* if DEBUG {writeln("Duplicate pairs: %t / %t / %t".format(+ reduce same, left.size, sar.size)); try! stdout.flush();} */
-      /* forall (i, t, f, l) in zip(D, idx, flag, idxLocs) with (var agg = newSrcAggregator(bool)) { */
-      /*   if t { */
-      /*     agg.copy(f, same[l]); */
-      /*     on flag[i+1] { */
-      /*       agg.copy(flag[i+1], same[l]); */
-      /*     } */
-      /*   } */
-      /* } */
       if DEBUG {writeln("Flag pop: ", + reduce flag); try! stdout.flush();}
       // Now flag contains true for both elements of duplicate pairs
       if invert {flag = !flag;}
@@ -803,36 +724,6 @@ module SegmentedArray {
       }
       return truth;
     }
-    // Below is analogous to in1dAr2PerLocAssoc, very slow for strings
-    /*   if v {writeln("Making associative domains for test set on each locale"); stdout.flush();} */
-    /*   var t1 = getCurrentTime(); */
-    /*   // On each locale, make an associative domain with the hashes of the second array */
-    /*   // parSafe=false because we are adding in serial and it's faster */
-    /*   var localTestDoms: [PrivateSpace] domain(string, parSafe=false); */
-    /*   coforall loc in Locales { */
-    /*     on loc { */
-    /*       const myTestStr = testStr; */
-    /*       // Local hashes of second array */
-    /*       ref mySet = localTestDoms[here.id]; */
-    /*       mySet.requestCapacity(testStr.size); */
-    /*       for i in myTestStr.offsets.aD { */
-    /*         mySet += myTestStr[i]; */
-    /*       } */
-    /*     /\* // Check membership of hashes in this locale's chunk of the array *\/ */
-    /*     /\* [i in truth.localSubdomain()] truth[i] = mySet.contains(hashes[i]); *\/ */
-    /*   } */
-    /* } */
-    /* if v { */
-    /*   writeln(getCurrentTime() - t1, " seconds"); */
-    /*   writeln("Testing membership"); stdout.flush(); */
-    /*   t1 = getCurrentTime(); */
-    /* } */
-    /* forall i in truth.domain { */
-    /*   truth[i] = localTestDoms[here.id].contains(mainStr[i]); */
-    /* } */
-    /* if v {writeln(getCurrentTime() - t1, " seconds"); stdout.flush();} */
-    /* return truth; */
-    /* } */
   }
 
   /* Convert an array of raw bytes into a Chapel string. */

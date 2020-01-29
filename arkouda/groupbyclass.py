@@ -17,6 +17,8 @@ class GroupBy:
     ----------
     keys : (list of) pdarray, int64 or Strings
         The array to group by value, or if list, the column arrays to group by row
+    assume_sorted : bool
+        If True, assume keys is already sorted (Default: False)
 
     Attributes
     ----------
@@ -42,8 +44,9 @@ class GroupBy:
     Reductions = frozenset(['sum', 'prod', 'mean',
                             'min', 'max', 'argmin', 'argmax',
                             'nunique', 'any', 'all'])
-    def __init__(self, keys, assume_sorted=False):
+    def __init__(self, keys, assume_sorted=False, hash_strings=True):
         self.assume_sorted = assume_sorted
+        self.hash_strings = hash_strings
         self.per_locale = False
         self.keys = keys
         if isinstance(keys, pdarray):
@@ -89,16 +92,23 @@ class GroupBy:
             mykeys = self.keys
         keynames = []
         keytypes = []
+        effectiveKeys = self.nkeys
         for k in mykeys:
             if isinstance(k, Strings):
-                keynames.append('{}+{}'.format(k.offsets.name, k.bytes.name))
-                keytypes.append(k.objtype)
+                if self.hash_strings:
+                    h1, h2 = k.hash()
+                    keynames.extend([h1.name, h2.name])
+                    keytypes.extend([h1.objtype, h2.objtype])
+                    effectiveKeys += 1
+                else:
+                    keynames.append('{}+{}'.format(k.offsets.name, k.bytes.name))
+                    keytypes.append(k.objtype)
             elif isinstance(k, pdarray):
                 keynames.append(k.name)
                 keytypes.append(k.objtype)
         reqMsg = "{} {} {:n} {} {}".format(cmd,
                                              self.permutation.name,
-                                             self.nkeys,
+                                             effectiveKeys,
                                              ' '.join(keynames),
                                              ' '.join(keytypes))
         repMsg = generic_msg(reqMsg)
