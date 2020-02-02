@@ -74,7 +74,7 @@ def read_all(filenames, datasets=None, iterative=False):
     datasets : list or str or None
         (List of) name(s) of dataset(s) to read (default: all available)
     iterative : boolean
-        Interative (True), or Single (False) functions call(s) to server
+        Iterative (True) or Single (False) function call(s) to server
 
     Returns
     -------
@@ -107,6 +107,7 @@ def read_all(filenames, datasets=None, iterative=False):
     if isinstance(filenames, str):
         filenames = [filenames]
     if datasets is None:
+        print("None")
         datasets = get_datasets(filenames[0])
     if isinstance(datasets, str):
         datasets = [datasets]
@@ -121,6 +122,17 @@ def read_all(filenames, datasets=None, iterative=False):
         return {dset:read_hdf(dset, filenames) for dset in datasets}
     else:  # single call to server readAllHdf
         rep_msg = generic_msg("readAllHdf {:n} {:n} {} | {}".format(len(datasets), len(filenames), json.dumps(datasets), json.dumps(filenames)))
+        #print(rep_msg[8:])
+        if ',' in rep_msg:
+            #print(datasets)
+            #print(rep_msg.split(','))
+            #for rm in rep_msg.split(','):
+                #print(type(rm))
+                #print(rm)
+                #pdArray = create_pdarray(rm)
+                #print(type(pdArray))
+            return {dset:create_pdarray(rm) for dset, rm in zip(datasets, rep_msg.split(' , '))}
+            #return Strings(*rep_msg.split('+'))
         if '+' in rep_msg:
             return Strings(*rep_msg.split('+'))
         else:

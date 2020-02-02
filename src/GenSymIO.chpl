@@ -10,7 +10,7 @@ module GenSymIO {
 
   use Chapel120;
 
-  config const GenSymIO_DEBUG = false;
+  config const GenSymIO_DEBUG = true;
   config const SEGARRAY_OFFSET_NAME = "segments";
   config const SEGARRAY_VALUE_NAME = "values";
 
@@ -347,6 +347,7 @@ module GenSymIO {
     var filedom = filelist.domain;
     var dsetnames: [dsetdom] string;
     var filenames: [filedom] string;
+    /*
     if dsetlist.size == 1 {
       var tmp = glob(dsetlist[0]);
       if GenSymIO_DEBUG {
@@ -362,6 +363,9 @@ module GenSymIO {
     } else {
       dsetnames = dsetlist;
     }
+    */
+    dsetnames = dsetlist;
+
     if filelist.size == 1 {
       var tmp = glob(filelist[0]);
       if GenSymIO_DEBUG {
@@ -457,12 +461,12 @@ module GenSymIO {
       if GenSymIO_DEBUG {
         writeln("Got subdomains and total length for dataset ", dsetName);
       }
-      /*
+
       writeln("isSegArray = ", isSegArray);
+      /*
       writeln("dataclass = ", dataclass);
       */
       select (isSegArray, dataclass) {
-        /*
         when (true, C_HDF5.H5T_INTEGER) {
           if (bytesize != 1) || isSigned {
             return try! "Error: detected unhandled datatype: segmented? %t, class %i, size %i, signed? %t".format(isSegArray, dataclass, bytesize, isSigned);
@@ -476,9 +480,10 @@ module GenSymIO {
           st.addEntry(segName, entrySeg);
           var valName = st.nextName();
           st.addEntry(valName, entryVal);
-          return try! "created " + st.attrib(segName) + " +created " + st.attrib(valName);
+          rnames = rnames + "created " + st.attrib(segName) + " +created " + st.attrib(valName) + " , ";
+          //writeln(st.attrib(rname));
+          //return try! "created " + st.attrib(segName) + " +created " + st.attrib(valName);
         }
-        */
         when (false, C_HDF5.H5T_INTEGER) {
           var entryInt = new shared SymEntry(len, int);
           if GenSymIO_DEBUG {
@@ -493,11 +498,10 @@ module GenSymIO {
           read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
           var rname = st.nextName();
           st.addEntry(rname, entryInt);
-          rnames = rnames + st.attrib(rname) + " + ";
+          rnames = rnames + "created " + st.attrib(rname) + " , ";
           //writeln(st.attrib(rname));
           //return try! "created " + st.attrib(rname);
         }
-        /*
         when (false, C_HDF5.H5T_FLOAT) {
           var entryReal = new shared SymEntry(len, real);
           if GenSymIO_DEBUG {
@@ -506,16 +510,19 @@ module GenSymIO {
           read_files_into_distributed_array(entryReal.a, subdoms, filenames, dsetName);
           var rname = st.nextName();
           st.addEntry(rname, entryReal);
-          return try! "created " + st.attrib(rname);
+          rnames = rnames + "created " + st.attrib(rname) + " , ";
+          //writeln(st.attrib(rname));
+          //return try! "created " + st.attrib(rname);
         }
-        */
         otherwise {
           return try! "Error: detected unhandled datatype: segmented? %t, class %i, size %i, signed? %t".format(isSegArray, dataclass, bytesize, isSigned);
         }
       }
     }
     //rnames = rnames[:-3];
-    return try! "created " + (rnames.strip(" + ", leading = false, trailing = true));
+    //return try! "created " + (rnames.strip(" , ", leading = false, trailing = true));
+    return try! rnames.strip(" , ", leading = false, trailing = true);
+
   }
 
   proc fixupSegBoundaries(a: [?D] int, segSubdoms: [?fD] domain(1), valSubdoms: [fD] domain(1)) {

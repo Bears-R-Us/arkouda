@@ -11,9 +11,10 @@ config const filename4 = "../../../data/hdf/netflow_day-04.h5";
 proc main() {
   var st = new owned SymTab();
   var cmd = "readAllHdf";
-  var reqMsg = "%s %i %i %jt | %jt".format(cmd, 7, 3,
+  var reqMsg = "%s %i %i %jt | %jt".format(cmd, 2, 3,
      //['Time'],
-     ['Time','Duration', 'Protocol', 'SrcPackets', 'DstPackets', 'SrcBytes', 'DstBytes'],
+     ['start', 'duration'],
+     //['Time','Duration', 'Protocol', 'SrcPackets', 'DstPackets', 'SrcBytes', 'DstBytes'],
      //['Time','Duration', 'SrcDevice', 'DstDevice', 'Protocol', 'SrcPort', 'DstPort', 'SrcPackets', 'DstPackets', 'SrcBytes', 'DstBytes'],
      [filename2,filename3,filename4]);
   writeln(">>> ", reqMsg);
