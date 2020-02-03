@@ -501,6 +501,64 @@ class pdarray:
         # Return a numpy ndarray
         return np.array(struct.unpack(fmt, rep_msg))
 
+    def to_cuda(self):
+        """
+        Convert the array to a Numba DeviceND array, transferring array data from the
+        arkouda server to Python via ndarray. If the array exceeds a builtin size limit, 
+        a RuntimeError is raised.
+
+        Returns
+        -------
+        numba.DeviceNDArray
+            A Numba ndarray with the same attributes and data as the pdarray; on GPU
+
+        Notes
+        -----
+        The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
+        otherwise a ``RuntimeError`` will be raised. This is to protect the user
+        from overflowing the memory of the system on which the Python client
+        is running, under the assumption that the server is running on a
+        distributed system with much more memory than the client. The user
+        may override this limit by setting ak.maxTransferBytes to a larger
+        value, but proceed with caution.
+
+        See Also
+        --------
+        array
+
+        Examples
+        --------
+        >>> a = ak.arange(0, 5, 1)
+        >>> a.to_cuda()
+        array([0, 1, 2, 3, 4])
+
+        >>> type(a.to_cuda())
+        numpy.devicendarray
+        """
+        try:
+            from numba import cuda
+            if not(cuda.is_available()):
+                raise ImportError('CUDA is not available. Check for the CUDA toolkit and ensure a GPU is installed.')
+                return
+        except:
+            raise ModuleNotFoundError('Numba is not enabled or installed and is required for GPU support.')
+            return
+        
+        # Total number of bytes in the array data
+        arraybytes = self.size * self.dtype.itemsize
+        # Guard against overflowing client memory
+        if arraybytes > maxTransferBytes:
+            raise RuntimeError("Array exceeds allowed size for transfer. Increase ak.maxTransferBytes to allow")
+        # The reply from the server will be a bytes object
+        rep_msg = generic_msg("tondarray {}".format(self.name), recv_bytes=True)
+        # Make sure the received data has the expected length
+        if len(rep_msg) != self.size*self.dtype.itemsize:
+            raise RuntimeError("Expected {} bytes but received {}".format(self.size*self.dtype.itemsize, len(rep_msg)))
+        # Use struct to interpret bytes as a big-endian numeric array
+        fmt = '>{:n}{}'.format(self.size, structDtypeCodes[self.dtype.name])
+        # Return a numba devicendarray
+        return cuda.to_device(struct.unpack(fmt, rep_msg))
+
     def save(self, prefix_path, dataset='array', mode='truncate'):
         """
         Save the pdarray to HDF5. The result is a collection of HDF5 files,
