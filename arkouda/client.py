@@ -23,7 +23,7 @@ socket = None
 connected = False
 
 # verbose flag for arkouda module
-verboseDefVal = True
+verboseDefVal = False
 verbose = verboseDefVal
 # threshold for __iter__() to limit comms to arkouda_server
 pdarrayIterThreshDefVal = 100
