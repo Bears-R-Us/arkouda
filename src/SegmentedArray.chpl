@@ -25,8 +25,10 @@ module SegmentedArray {
      operations.
    */
   class SegString {
+    var offsetName: string;
     // Start indices of individual strings
     var offsets: borrowed SymEntry(int);
+    var valueName: string;
     // Bytes of all strings, joined by nulls
     var values: borrowed SymEntry(uint(8));
     // Number of strings
@@ -34,23 +36,25 @@ module SegmentedArray {
     // Total number of bytes in all strings, including nulls
     var nBytes: int;
 
-    /* This initializer is used when the SymEntries for offsets and values are
-       already in the namespace. */
-    proc init(segments: borrowed SymEntry(int), values: borrowed SymEntry(uint(8))) {
-      offsets = segments;
-      values = values;
-      size = segments.size;
-      nBytes = values.size;
-    }
+    /* /\* This initializer is used when the SymEntries for offsets and values are */
+    /*    already in the namespace. *\/ */
+    /* proc init(segments: borrowed SymEntry(int), values: borrowed SymEntry(uint(8))) { */
+    /*   offsets = segments; */
+    /*   values = values; */
+    /*   size = segments.size; */
+    /*   nBytes = values.size; */
+    /* } */
 
     /* This initializer is the most common, and is used when only the server
        names of the SymEntries are known. It handles the lookup. */
     proc init(segName: string, valName: string, st: borrowed SymTab) {
+      offsetName = segName;
       // The try! is needed here because init cannot throw
       var gs = try! st.lookup(segName);
       // I want this to be borrowed, but that give a lifetime error
       var segs = toSymEntry(gs, int): unmanaged SymEntry(int);
       offsets = segs;
+      valueName = valName;
       var vs = try! st.lookup(valName);
       var vals = toSymEntry(vs, uint(8)): unmanaged SymEntry(uint(8));
       values = vals;
@@ -59,13 +63,13 @@ module SegmentedArray {
     }
 
     proc init(segments: [] int, values: [] uint(8), st: borrowed SymTab) {
-      var segName = st.nextName();
-      var valName = st.nextName();
+      var oName = st.nextName();
       var segEntry = new shared SymEntry(segments);
+      try! st.addEntry(oName, segEntry);
+      var vName = st.nextName();
       var valEntry = new shared SymEntry(values);
-      try! st.addEntry(segName, segEntry);
-      try! st.addEntry(valName, valEntry);
-      this.init(segName, valName, st);
+      try! st.addEntry(vName, valEntry);
+      this.init(oName, vName, st);
     }
 
     proc show(n: int = 3) throws {
@@ -347,36 +351,40 @@ module SegmentedArray {
       return lengths;
     }
 
+    proc findSubstringInBytes(const substr: string) {
+      // Find the start position of every occurence of substr in the flat bytes array
+      // Start by making a right-truncated subdomain representing all valid starting positions for substr of given length
+      var D: subdomain(values.aD) = values.aD[values.aD.low..#(values.size - substr.numBytes)];
+      // Every start position is valid until proven otherwise
+      var truth: [D] bool = true;
+      // Shift the flat values one byte at a time and check against corresponding byte of substr
+      for (i, b) in zip(0.., substr.chpl_bytes()) {
+        truth &= (values.a[D.translate(i)] == b);
+      }
+      return truth;
+    }
+    
     proc substringSearch(const substr: string, mode: SearchMode) throws {
       var hits: [offsets.aD] bool;  // the answer
       if (size == 0) || (substr.size == 0) {
         return hits;
       }
       var t = new Timer();
-      // Find the start position of every occurence of substr in the flat bytes array
-      // Start by making a right-truncated subdomain representing all valid starting positions for substr of given length
-      var D: subdomain(values.aD) = values.aD[values.aD.low..#(values.size - substr.numBytes)];
-      // Every start position is valid until proven otherwise
-      var truth: [D] bool = true;
       if DEBUG {writeln("Checking bytes of substr"); stdout.flush(); t.start();}
-      // Shift the flat values one byte at a time and check against corresponding byte of substr
-      for (i, b) in zip(0.., substr.chpl_bytes()) {
-        truth &= (values.a[D.translate(i)] == b);
-      }
-      // Determine whether each segment contains a hit
-      // Do this by taking the difference in the cumulative number of hits at the end vs the beginning of the segment
-      if DEBUG {t.stop(); writeln("took %t seconds\nscanning...".format(t.elapsed())); stdout.flush(); t.clear(); t.start();}
-      // Cumulative number of hits up to (and excluding) this point
-      var numHits = (+ scan truth) - truth;
+      const truth = findSubstringInBytes(substr);
+      const D = truth.domain;
       if DEBUG {t.stop(); writeln("took %t seconds\nTranslating to segments...".format(t.elapsed())); stdout.flush(); t.clear(); t.start();}
       // Need to ignore segment(s) at the end of the array that are too short to contain substr
       const tail = + reduce (offsets.a > D.high);
       // oD is the right-truncated domain representing segments that are candidates for containing substr
       var oD: subdomain(offsets.aD) = offsets.aD[offsets.aD.low..#(offsets.size - tail)];
+      if DEBUG {t.stop(); writeln("took %t seconds\ndetermining answer...".format(t.elapsed())); stdout.flush(); t.clear(); t.start();}
       ref oa = offsets.a;
       if mode == SearchMode.contains {
-        // Find segments where at least one hit occurred between the start and end of the segment
-        // hits[oD] = (numHits[oa[oD.translate(1)]] - numHits[oa[oD]]) > 0;
+        // Determine whether each segment contains a hit
+        // Do this by taking the difference in the cumulative number of hits at the end vs the beginning of the segment  
+        // Cumulative number of hits up to (and excluding) this point
+        var numHits = (+ scan truth) - truth;
         hits[{oD.low..oD.high-1}] = (numHits[oa[{oD.low+1..oD.high}]] - numHits[oa[{oD.low..oD.high-1}]]) > 0;
         hits[oD.high] = (numHits[D.high] + truth[D.high] - numHits[oa[oD.high]]) > 0;
       } else if mode == SearchMode.startsWith {
@@ -388,7 +396,76 @@ module SegmentedArray {
         hits[{oD.low..oD.high-1}] = truth[oa[{oD.low+1..oD.high}] - substr.numBytes - 1];
         hits[oD.high] = truth[D.high];
       }
+      if DEBUG {t.stop(); writeln("took %t seconds".format(t.elapsed())); stdout.flush();}
       return hits;
+    }
+
+    proc split(const substr: string, const maxSplit: int) {
+      const sbytes = substr.numBytes;
+      var nSplits: [offsets.aD] int;
+      var ret: [0..#maxSplit] shared SegString;
+      const truth = findSubstringInBytes(substr);
+      const D = truth.domain;
+      const tail = + reduce (offsets.a > D.high);
+      var oD: subdomain(offsets.aD) = offsets.aD[offsets.aD.low..#(offsets.size - tail)];
+      ref oa = offsets.a;
+      var numHits = (+ scan truth) - truth;
+      nSplits[{oD.low..oD.high-1}] = (numHits[oa[{oD.low+1..oD.high}]] - numHits[oa[{oD.low..oD.high-1}]]);
+      var splits: [0..maxSplit] StringSplitter = for s in 0..maxSplit do new StringSplitter();
+      for s in splits {
+        s.D = offsets.aD;
+      }
+      const lengths = getLengths() - 1;
+      forall (i, o, l) in zip(offsets.aD, oa, lengths) {
+        splits[0].originalOffsets[i] = o;
+        var splitNum = 1;
+        const myHits = truth[{o..#(l-1)}];
+        var j = o + 1;
+        var lastOffset = o;
+        while j <= o + l - sbytes {
+          if myHits[j] {
+            splits[splitNum-1].lengths[i] = j - lastOffset;
+            splits[splitNum].originalOffsets[i] = j + sbytes;
+            lastOffset = j + sbytes;
+            splitNum += 1;
+            if splitNum > maxSplit {
+              splits[splitNum-1].lengths[i] = l - (j + sbytes - lastOffset);
+              break;
+            }
+            j += sbytes;
+          } else {
+            j += 1;
+          }
+        }
+        if splitNum <= maxSplit {
+          splits[splitNum-1].lengths[i] = o + l - lastOffset;
+          lastOffset = o + l;
+        }
+        while splitNum <= maxSplit {          
+          splits[splitNum].originalOffsets[i] = lastOffset;
+          splits[splitNum].lengths[i] = 0;
+          splitNum += 1;
+        }
+      }
+      // var totalBytes = for s in 0..maxSplit do (+ reduce (splits[s].lengths + 1));
+      var results: [0..maxSplit] SplitResult = for s in 0..maxSplit do new SplitResult();
+      ref va = values.a;
+      for s in 0..maxSplit {
+        var tempLen = splits[s].lengths + 1;
+        var segs = (+ scan tempLen);
+        var b = segs[segs.domain.high];
+        segs -= tempLen;
+        results[s].resize(size, b);
+        // results[s].resize(b);
+        results[s].splitOffsets = segs;
+        ref myvals = results[s].splitValues;
+        forall (myo, o, l) in zip(segs, splits[s].originalOffsets, splits[s].lengths) {
+          for i in 0..#l {
+            unorderedCopy(myvals[myo+i], va[o+i]);
+          }
+        }
+      }
+      return (nSplits, results);
     }
 
     proc isSorted(): bool {
@@ -475,6 +552,34 @@ module SegmentedArray {
     }
 
   } // class SegString
+
+  record StringSplitter {
+    var D: makeDistDom(10).type;
+    var originalOffsets: [D] int;
+    var lengths: [D] int;
+  }
+
+  record SplitResult {
+    var size: int;
+    var nBytes: int;
+    var oD: makeDistDom(10).type;
+    var splitOffsets: [oD] int;
+    var vD: makeDistDom(10).type;
+    var splitValues: [vD] uint(8);
+
+    proc resize(s: int, nb: int) {
+      size = s;
+      nBytes = nb;
+      oD = makeDistDom(size);
+      vD = makeDistDom(nBytes);
+    }
+    
+    /* proc resize(b: int) { */
+    /*   totalBytes = b; */
+    /*   vD = makeDistDom(b); */
+    /* } */
+  }
+
 
   inline proc memcmp(const ref x: [] uint(8), const xinds, const ref y: [] uint(8), const yinds): int {
     const l = min(xinds.size, yinds.size);
