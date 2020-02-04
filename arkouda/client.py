@@ -147,10 +147,7 @@ def generic_msg(message, send_bytes=False, recv_bytes=False):
             if message.startswith(b"Error:"): raise RuntimeError(message.decode())
             elif message.startswith(b"Warning:"): warnings.warn(message)
         else:
-
-            ### (Delte after use) function called in test ###
             message = socket.recv_string()
-
             if verbose: print("[Python] Received response: %s" % message)
             # raise errors sent back from the server
             if message.startswith("Error:"): raise RuntimeError(message)
@@ -161,10 +158,6 @@ def generic_msg(message, send_bytes=False, recv_bytes=False):
         socket = context.socket(zmq.REQ)
         socket.connect(pspStr)
         raise e
-
-    #testing flow
-    print(message)
-
     return message
 
 # query the server to get configuration

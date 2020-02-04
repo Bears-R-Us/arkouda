@@ -12,28 +12,24 @@ if len(sys.argv) < 3:
 ak.connect(sys.argv[1], sys.argv[2])
 ak.verbose = False    #client verbose Flag
 cwd = os.getcwd()
-allfiles = glob(cwd+'/../converter/netflow_day-*.hdf')
-if len(sys.argv) > 2:
+allfiles = glob(cwd+'/../converter/netflow_day-1*.hdf')
+if len(sys.argv) > 3:
     allfiles = sys.argv[3:]
 
-#read all
-#print(f"df = ak.read_all({allfiles},['Time', 'Duration', 'Protocol'])")
-#pdArrayDictionary = ak.read_all(allfiles, ['Time', 'Duration', 'Protocol','SrcDevice'],True)
-#pdArrayDictionary = ak.read_all(allfiles, ['Time', 'SrcDevice'],True)
-#pdArrayDictionary = ak.read_all(allfiles, ['Time', 'SrcDevice'],True)
-#pdArray = ak.read_all(allfiles, 'start', True)
 start = time.time()
-pdArrayDictionary1 = ak.read_all(allfiles, iterative=True)
+pdArrayDictionary1 = ak.read_all(allfiles, ['dstIP','start'], iterative=True)
 end = time.time()
 t1 = end - start
+print("read_all(iterative=True) seconds: %.3f" % (t1))
+for key, value in pdArrayDictionary1.items():
+    print(key,type(value),value)
+
 start = time.time()
-pdArrayDictionary2 = ak.read_all(allfiles)
+pdArrayDictionary2 = ak.read_all(allfiles, ['dstIP','start'])
 end = time.time()
 t2 = end - start
-
-print("read_all(iterative=True) seconds: %.3f \nread_all(iterative=False) seconds: %.3f" % (t1, t2))
-
-#for key, value in pdArrayDictionary2.items():
-#    print(key,type(value),value)
+print("read_all() seconds: %.3f" % (t2))
+for key, value in pdArrayDictionary2.items():
+    print(key,type(value),value)
 
 ak.disconnect()

@@ -78,8 +78,10 @@ def read_all(filenames, datasets=None, iterative=False):
 
     Returns
     -------
-    dict of pdarrays
-        Dictionary of {datasetName: pdarray}
+    For a single dataset returns an Arkouda pdarray or an Arkouda Sring and
+    for multiple datasets returns a dictionary of Ardkouda pdarrays and
+    Arkouda Strings.
+        Dictionary of {datasetName: pdarray or String}
 
     See Also
     --------
@@ -107,7 +109,6 @@ def read_all(filenames, datasets=None, iterative=False):
     if isinstance(filenames, str):
         filenames = [filenames]
     if datasets is None:
-        print("None")
         datasets = get_datasets(filenames[0])
     if isinstance(datasets, str):
         datasets = [datasets]
@@ -117,23 +118,30 @@ def read_all(filenames, datasets=None, iterative=False):
         nonexistent = set(datasets) - set(get_datasets(filenames[0]))
         if len(nonexistent) > 0:
             raise ValueError("Dataset(s) not found: {}".format(nonexistent))
-
     if iterative == True: # iterative calls to server readhdf
         return {dset:read_hdf(dset, filenames) for dset in datasets}
     else:  # single call to server readAllHdf
         rep_msg = generic_msg("readAllHdf {:n} {:n} {} | {}".format(len(datasets), len(filenames), json.dumps(datasets), json.dumps(filenames)))
-        #print(rep_msg[8:])
         if ',' in rep_msg:
-            #print(datasets)
-            #print(rep_msg.split(','))
-            #for rm in rep_msg.split(','):
-                #print(type(rm))
-                #print(rm)
-                #pdArray = create_pdarray(rm)
-                #print(type(pdArray))
-            return {dset:create_pdarray(rm) for dset, rm in zip(datasets, rep_msg.split(' , '))}
-            #return Strings(*rep_msg.split('+'))
-        if '+' in rep_msg:
+            rep_msgs = rep_msg.split(' , ')
+            #print("rep_msgs (type, value) = (", type(rep_msgs),", ", rep_msgs,")\n")
+            #for rm in rep_msgs:
+            #    if('+' in rm):
+            #        surprise = Strings(*rm.split('+'))
+            #        print("surprise (type, value) = (", type(surprise), ",", surprise,")\n")
+            d = dict()
+            for dset, rm in zip(datasets, rep_msgs):
+                    if('+' in rm): #String
+                        #tv = Strings(*rm.split('+'))
+                        #print("(type, value) = (", type(tv), ",", tv,")\n")
+                        d[dset]=Strings(*rm.split('+'))
+                    else:
+                        #tv = Strings(*rm.split('+'))
+                        #print("(type, value) = (", type(tv), ",", tv,")\n")
+                        d[dset]=create_pdarray(rm)
+            return d
+            #return {dset:create_pdarray(rm) for dset, rm in zip(datasets, rep_msgs)}
+        elif '+' in rep_msg:
             return Strings(*rep_msg.split('+'))
         else:
             return create_pdarray(rep_msg)
