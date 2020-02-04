@@ -1,4 +1,5 @@
 module SipHash {
+  private use CommPrimitives;
   private use AryUtil;
   
   param cROUNDS = 2;
@@ -69,8 +70,22 @@ module SipHash {
 
   proc sipHash128(msg: [] uint(8), D): 2*uint(64) {
     if contiguousIndices(msg) {
-      if msg[D.low].locale.id == here.id && msg[D.high].locale.id == here.id {
-        return computeSipHash(c_ptrTo(msg[D.low]), 0..#D.size, 16);
+      ref start = msg[D.low];
+      ref end = msg[D.high];
+      const startLocale = start.locale.id;
+      const endLocale = end.locale.id;
+      const hereLocale = here.id;
+      const l = D.size;
+      if startLocale == endLocale {
+        if startLocale == hereLocale {
+          return computeSipHash(c_ptrTo(start), 0..#l, 16);
+        } else {
+          var a = c_malloc(msg.eltType, l);
+          GET(a, startLocale, getAddr(start), l);
+          var h = computeSipHash(a, 0..#l, 16);
+          c_free(a);
+          return h;
+        }
       }
     }
     return computeSipHash(msg, D, 16);
