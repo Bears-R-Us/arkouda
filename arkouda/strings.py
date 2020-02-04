@@ -143,6 +143,19 @@ class Strings:
         else:
             raise TypeError("unsupported pdarray index type {}".format(type(key)))
 
+    def get_lengths(self):
+        """
+        Return the length of each string in the array.
+
+        Returns
+        -------
+        pdarray, int
+            The length of each string
+        """
+        msg = "segmentLengths {} {} {}".format(self.objtype, self.offsets.name, self.bytes.name)
+        repMsg = generic_msg(msg)
+        return create_pdarray(repMsg)
+
     def contains(self, substr):
         """
         Check whether each element contains the given substring.

@@ -6,6 +6,26 @@ module SegmentedMsg {
   use MultiTypeSymEntry;
   use IO;
 
+  proc segmentLengthsMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    var pn = Reflection.getRoutineName();
+    var fields = reqMsg.split();
+    var cmd = fields[1];
+    var objtype = fields[2];
+    var segName = fields[3];
+    var valName = fields[4];
+    var rname = st.nextName();
+    select objtype {
+      when "str" {
+        var strings = new owned SegString(segName, valName, st);
+        var lengths = st.addEntry(rname, strings.size, int);
+        // Do not include the null terminator in the length
+        lengths.a = strings.getLengths() - 1;
+      }
+      otherwise {return notImplementedError(pn, "%s".format(objtype));}
+    }
+    return "created "+st.attrib(rname);
+  }
+
   proc segmentedEfuncMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
