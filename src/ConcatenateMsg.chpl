@@ -27,7 +27,7 @@ module ConcatenateMsg
         if (n != names.size) { return try! incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(n, names.size)); }
         /* var arrays: [0..#n] borrowed GenSymEntry; */
         var size: int = 0;
-        var nbytes: int = 0              
+        var nbytes: int = 0;          
         var dtype: DType;
         // Check that all arrays exist in the symbol table and have the same size
         for (rawName, i) in zip(names, 1..) {
@@ -35,13 +35,13 @@ module ConcatenateMsg
             var name: string;
             select objtype {
                 when "str" {
-                    nameFields = rawName.split('+');
+                    var nameFields = rawName.split('+');
                     name = nameFields[1];
                     var valName = nameFields[2];
-                    var gval = st.lookup(name);
+                    var gval = st.lookup(valName);
                     nbytes += gval.size;
                 }
-                when pdarray {
+                when "pdarray" {
                     name = rawName;
                 }
                 otherwise { return notImplementedError(pn, objtype); }
@@ -66,15 +66,15 @@ module ConcatenateMsg
                 var valName = st.nextName();
                 var evals = st.addEntry(valName, nbytes, uint(8));
                 var segStart = 0;
-                var segOffset = 0;
                 var valStart = 0;
                 for (rawName, i) in zip(names, 1..) {
                     var nameFields = rawName.split('+');
                     var thisSegs = toSymEntry(st.lookup(nameFields[1]), int);
                     var thisVals = toSymEntry(st.lookup(nameFields[2]), uint(8));
-                    esegs.a[{segStart..#thisSegs.size}] = thisSegs.a + segOffset;
+                    esegs.a[{segStart..#thisSegs.size}] = thisSegs.a + valStart;
                     evals.a[{valStart..#thisVals.size}] = thisVals.a;
-                    segOffset += thisVals.size;
+                    segStart += thisSegs.size;
+                    valStart += thisVals.size;
                 }
                 return "created " + st.attrib(segName) + "+created " + st.attrib(valName);
             }
@@ -137,6 +137,7 @@ module ConcatenateMsg
 
                 return try! "created " + st.attrib(rname);
             }
+            otherwise { return notImplementedError(pn, objtype); }
         }
     }
     
