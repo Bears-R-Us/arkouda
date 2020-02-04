@@ -7,6 +7,7 @@ config const N: int = 10_000;
 config const MINLEN: int = 1;
 config const MAXLEN: int = 20;
 config const SUBSTRING: string = "hi";
+config const DEBUG = false;
 
 proc make_strings(substr, n, minLen, maxLen, characters, mode, st) {
   const nb = substr.numBytes;
@@ -17,6 +18,8 @@ proc make_strings(substr, n, minLen, maxLen, characters, mode, st) {
   var r: [segs.domain] int;
   fillInt(r, 0, 100);
   var present = (r < 5) & (lengths >= nb);
+  present[present.domain.high] = true;
+  present[present.domain.low] = true;
   forall (p, rn, o, l) in zip(present, r, segs, lengths) {
     if p {
       var i: int;

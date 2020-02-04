@@ -236,12 +236,34 @@ class Strings:
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
+    def hash(self):
+        """
+        Compute a 128-bit hash of each string.
+
+        Returns
+        -------
+        (pdarray, pdarray)
+            A pair of int64 pdarrays. The ith hash value is the concatenation
+            of the ith values from each array.
+
+        Notes
+        -----
+        The implementation uses SipHash128, a fast and balanced hash function (used
+        by Python for dictionaries and sets). For realistic numbers of strings (up
+        to about 10**15), the probability of a collision between two 128-bit hash
+        values is negligible. 
+        """
+        msg = "segmentedHash {} {} {}".format(self.objtype, self.offsets.name, self.bytes.name)
+        repMsg = generic_msg(msg)
+        h1, h2 = repMsg.split('+')
+        return create_pdarray(h1), create_pdarray(h2)
+        
     def group(self):
         """
         Return the permutation that groups the array, placing equivalent 
-        strings together. This permutation does NOT sort the strings. All 
-        instances of the same string are guaranteed to lie in one contiguous 
-        block of the permuted array, but the blocks are not necessarily ordered.
+        strings together. All instances of the same string are guaranteed to lie 
+        in one contiguous block of the permuted array, but the blocks are not 
+        necessarily ordered.
 
         Returns
         -------
@@ -251,6 +273,14 @@ class Strings:
         See Also
         --------
         GroupBy, unique
+
+        Notes
+        -----
+        If the arkouda server is compiled with "-sSegmentedArray.useHash=true", 
+        then arkouda uses 128-bit hash values to group strings, rather than sorting
+        the strings directly. This method is fast, but the resulting permutation
+        merely groups equivalent strings and does not sort them. If the "useHash"
+        parameter is false, then a full sort is performed.        
         """
         msg = "segmentedGroup {} {} {}".format(self.objtype, self.offsets.name, self.bytes.name)
         repMsg = generic_msg(msg)
