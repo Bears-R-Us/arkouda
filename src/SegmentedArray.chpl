@@ -176,39 +176,42 @@ module SegmentedArray {
         t1 = getCurrentTime();
       }
       var gatheredVals = makeDistArray(retBytes, uint(8));
-      
-      // Compute the src index for each byte in gatheredVals
-      /* For performance, we will do this with a scan, so first we need an array
-         with the difference in index between the current and previous byte. For
-         the interior of a segment, this is just one, but at the segment boundary,
-         it is the difference between the src offset of the current segment ("left")
-         and the src index of the last byte in the previous segment (right - 1).
-       */
-      var srcIdx = makeDistArray(retBytes, int);
-      srcIdx = 1;
-      var diffs: [D] int;
-      diffs[D.low] = left[D.low]; // first offset is not affected by scan
-      diffs[{D.low+1..D.high}] = left[{D.low+1..D.high}] - (right[{D.low..D.high-1}] - 1);
-      // Set srcIdx to diffs at segment boundaries
-      forall (go, d) in zip(gatheredOffsets, diffs) with (var agg = newDstAggregator(int)) {
-        agg.copy(srcIdx[go], d);
+      // For comm layer with poor small-message performance, use aggregation
+      // at the expense of memory. Otherwise, unorderedCopy is faster and smaller.
+      if !(CHPL_COMM == 'none' || CHPL_COMM == 'ugni') {
+        // Compute the src index for each byte in gatheredVals
+        /* For performance, we will do this with a scan, so first we need an array
+           with the difference in index between the current and previous byte. For
+           the interior of a segment, this is just one, but at the segment boundary,
+           it is the difference between the src offset of the current segment ("left")
+           and the src index of the last byte in the previous segment (right - 1).
+        */
+        var srcIdx = makeDistArray(retBytes, int);
+        srcIdx = 1;
+        var diffs: [D] int;
+        diffs[D.low] = left[D.low]; // first offset is not affected by scan
+        diffs[{D.low+1..D.high}] = left[{D.low+1..D.high}] - (right[{D.low..D.high-1}] - 1);
+        // Set srcIdx to diffs at segment boundaries
+        forall (go, d) in zip(gatheredOffsets, diffs) with (var agg = newDstAggregator(int)) {
+          agg.copy(srcIdx[go], d);
+        }
+        srcIdx = + scan srcIdx;
+        // Now srcIdx has a dst-local copy of the source index and vals can be efficiently gathered
+        ref va = values.a;
+        forall (v, si) in zip(gatheredVals, srcIdx) with (var agg = newSrcAggregator(uint(8))) {
+          agg.copy(v, va[si]);
+        }
+      } else {      
+        ref va = values.a;
+        // Copy string data to gathered result
+        forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, iv) {
+          for pos in 0..#gl {
+            // Note: do not replace this unorderedCopy with aggregation
+            use UnorderedCopy;
+            unorderedCopy(gatheredVals[go+pos], va[oa[idx]+pos]);
+          }
+        }
       }
-      srcIdx = + scan srcIdx;
-      // Now srcIdx has a dst-local copy of the source index and vals can be efficiently gathered
-      ref va = values.a;
-      forall (v, si) in zip(gatheredVals, srcIdx) with (var agg = newSrcAggregator(uint(8))) {
-        agg.copy(v, va[si]);
-      }
-      
-      /* ref va = values.a; */
-      /* // Copy string data to gathered result */
-      /* forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, iv) { */
-      /*   for pos in 0..#gl { */
-      /*     // TODO I think the dst is local? */
-      /*     use UnorderedCopy; */
-      /*     unorderedCopy(gatheredVals[go+pos], va[oa[idx]+pos]); */
-      /*   } */
-      /* } */
       if v {writeln(getCurrentTime() - t1, " seconds"); stdout.flush();}
       return (gatheredOffsets, gatheredVals);
     }
