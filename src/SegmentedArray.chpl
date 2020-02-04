@@ -186,6 +186,7 @@ module SegmentedArray {
            it is the difference between the src offset of the current segment ("left")
            and the src index of the last byte in the previous segment (right - 1).
         */
+        if DEBUG { writeln("Using aggregation at the expense of memory"); stdout.flush(); }
         var srcIdx = makeDistArray(retBytes, int);
         srcIdx = 1;
         var diffs: [D] int;
@@ -201,7 +202,8 @@ module SegmentedArray {
         forall (v, si) in zip(gatheredVals, srcIdx) with (var agg = newSrcAggregator(uint(8))) {
           agg.copy(v, va[si]);
         }
-      } else {      
+      } else {
+        if DEBUG { writeln("Using unorderedCopy"); stdout.flush(); }
         ref va = values.a;
         // Copy string data to gathered result
         forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, iv) {

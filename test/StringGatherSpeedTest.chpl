@@ -24,6 +24,6 @@ proc testPermute(n:int, meanLen: numeric) {
 
 proc main() {
   var (elapsed, size) = testPermute(N, MEANLEN);
-  writeln("Permuted %i strings (%i bytes) in %t seconds".format(N, size, elapsed()));
-  writeln("Rate = %t MB/s".format(size / (1024 * 1024 * elapsed())));
+  writeln("Permuted %i strings (%i bytes) in %t seconds".format(N, size, elapsed));
+  writeln("Rate = %t MB/s".format(size / (1024 * 1024 * elapsed)));
 }
