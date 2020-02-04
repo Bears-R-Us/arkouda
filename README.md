@@ -66,10 +66,17 @@ interactive session.
 brew install chapel
 # you can also install python3 with brew
 brew install python3
-# the arkouda python client is available via pip
-# pip will automatically install python dependencies (zmq and numpy)
-# however, pip will not build the arkouda server (see below)
-pip3 install arkouda
+# !!! the standard way of installing through pip3 installs an old version of arkouda
+# !!! the arkouda python client is available via pip
+# !!! pip will automatically install python dependencies (zmq and numpy)
+# !!! however, pip will not build the arkouda server (see below)
+# !!!pip3 install arkouda
+#
+# install the version of the arkouda python package which came with the arkouda_server
+# if you plan on editing the arkouda python package use the -e flag
+# from the local arkouda repo/directory run...
+pip3 install -e ./arkouda
+#
 # these packages are nice but not a requirement
 pip3 install pandas
 pip3 install jupyter
