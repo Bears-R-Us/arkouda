@@ -504,7 +504,7 @@ class pdarray:
     def to_cuda(self):
         """
         Convert the array to a Numba DeviceND array, transferring array data from the
-        arkouda server to Python via ndarray. If the array exceeds a builtin size limit, 
+        arkouda server to Python via ndarray. If the array exceeds a builtin size limit,
         a RuntimeError is raised.
 
         Returns
@@ -543,7 +543,7 @@ class pdarray:
         except:
             raise ModuleNotFoundError('Numba is not enabled or installed and is required for GPU support.')
             return
-        
+
         # Total number of bytes in the array data
         arraybytes = self.size * self.dtype.itemsize
         # Guard against overflowing client memory
@@ -623,8 +623,6 @@ def create_pdarray(repMsg):
     The user should not call this function directly.
     """
     fields = repMsg.split()
-    #print("fields = ", fields)
-    #print("fields[0] = ", fields[0])
     name = fields[1]
     mydtype = fields[2]
     size = int(fields[3])

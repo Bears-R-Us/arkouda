@@ -124,23 +124,13 @@ def read_all(filenames, datasets=None, iterative=False):
         rep_msg = generic_msg("readAllHdf {:n} {:n} {} | {}".format(len(datasets), len(filenames), json.dumps(datasets), json.dumps(filenames)))
         if ',' in rep_msg:
             rep_msgs = rep_msg.split(' , ')
-            #print("rep_msgs (type, value) = (", type(rep_msgs),", ", rep_msgs,")\n")
-            #for rm in rep_msgs:
-            #    if('+' in rm):
-            #        surprise = Strings(*rm.split('+'))
-            #        print("surprise (type, value) = (", type(surprise), ",", surprise,")\n")
             d = dict()
             for dset, rm in zip(datasets, rep_msgs):
                     if('+' in rm): #String
-                        #tv = Strings(*rm.split('+'))
-                        #print("(type, value) = (", type(tv), ",", tv,")\n")
                         d[dset]=Strings(*rm.split('+'))
                     else:
-                        #tv = Strings(*rm.split('+'))
-                        #print("(type, value) = (", type(tv), ",", tv,")\n")
                         d[dset]=create_pdarray(rm)
             return d
-            #return {dset:create_pdarray(rm) for dset, rm in zip(datasets, rep_msgs)}
         elif '+' in rep_msg:
             return Strings(*rep_msg.split('+'))
         else:

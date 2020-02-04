@@ -310,7 +310,7 @@ module GenSymIO {
   proc readAllHdfMsg(reqMsg: string, st: borrowed SymTab): string throws {
     // reqMsg = "readAllHdf <ndsets> <nfiles> [<json_dsetname>] | [<json_filenames>]"
     var repMsg: string;
-    // Need a more robust delimiter then " | "
+    // May need a more robust delimiter then " | "
     var fields = reqMsg.split(3);
     var arrays = fields[4].split(" | ",1);
     var cmd = fields[1];
@@ -318,15 +318,6 @@ module GenSymIO {
     var nfiles = try! fields[3]:int;
     var jsondsets = arrays[1];
     var jsonfiles = arrays[2];
-    /*
-    writeln("fields = ", fields);
-    writeln("arrays = ", arrays);
-    writeln("cmd = ", cmd);
-    writeln("ndsets = ", ndsets);
-    writeln("nfiles = ", nfiles);
-    writeln("jsondsets = ", jsondsets);
-    writeln("jsonfiles = ", jsonfiles);
-    */
     var dsetlist: [0..#ndsets] string;
     var filelist: [0..#nfiles] string;
     try {
@@ -339,33 +330,11 @@ module GenSymIO {
     } catch {
       return try! "Error: could not decode json filenames via tempfile (%i files: %s)".format(nfiles, jsonfiles);
     }
-    /*
-    writeln("dsetlist = ", dsetlist);
-    writeln("filelist = ", filelist);
-    */
     var dsetdom = dsetlist.domain;
     var filedom = filelist.domain;
     var dsetnames: [dsetdom] string;
     var filenames: [filedom] string;
-    /*
-    if dsetlist.size == 1 {
-      var tmp = glob(dsetlist[0]);
-      if GenSymIO_DEBUG {
-        writeln(try! "glob expanded %s to %i files".format(dsetlist[0], tmp.size));
-      }
-      if tmp.size == 0 {
-        return try! "Error: no files matching %s".format(dsetlist[0]);
-      }
-      // Glob returns filenames in weird order. Sort for consistency
-      // sort(tmp);
-      dsetdom = tmp.domain;
-      dsetnames = tmp;
-    } else {
-      dsetnames = dsetlist;
-    }
-    */
     dsetnames = dsetlist;
-
     if filelist.size == 1 {
       var tmp = glob(filelist[0]);
       if GenSymIO_DEBUG {
@@ -381,12 +350,6 @@ module GenSymIO {
     } else {
       filenames = filelist;
     }
-    /*
-    writeln("dsetdom = ", dsetdom);
-    writeln("filedom = ", filedom);
-    writeln("dsetnames = ", dsetnames);
-    writeln("filenames = ", filenames);
-    */
     var segArrayFlags: [filedom] bool;
     var dclasses: [filedom] C_HDF5.hid_t;
     var bytesizes: [filedom] int;
@@ -410,25 +373,12 @@ module GenSymIO {
           // Need a catch-all for non-throwing function
           return try! "Error: unknown cause";
         }
-        /*
-        writeln("segArrayFlags = ", segArrayFlags);
-        writeln("dclasses = ", dclasses);
-        writeln("bytesizes = ", bytesizes);
-        writeln("signFlags = ", signFlags);
-        */
       }
       const isSegArray = segArrayFlags[filedom.first];
       const dataclass = dclasses[filedom.first];
       const bytesize = bytesizes[filedom.first];
       const isSigned = signFlags[filedom.first];
       for (name, sa, dc, bs, sf) in zip(filenames, segArrayFlags, dclasses, bytesizes, signFlags) {
-        /*
-        writeln("name = ", name);
-        writeln("sa= ", sa);
-        writeln("dc = ", dclasses);
-        writeln("bs = ", bytesizes);
-        writeln("sf = ", sf);
-        */
         if (sa != isSegArray) || (dc != dataclass) || (bs != bytesize) || (sf != isSigned) {
           return try! "Error: inconsistent dtype in dataset %s of file %s".format(dsetName, name);
         }
@@ -452,20 +402,9 @@ module GenSymIO {
       } catch {
         return try! "Error: unknown cause";
       }
-      /*
-      writeln("subdoms = ", subdoms);
-      writeln("segSubdoms = ", segSubdoms);
-      writeln("len = ", len);
-      writeln("nSeg = ", nSeg);
-      */
       if GenSymIO_DEBUG {
         writeln("Got subdomains and total length for dataset ", dsetName);
       }
-
-      writeln("isSegArray = ", isSegArray);
-      /*
-      writeln("dataclass = ", dataclass);
-      */
       select (isSegArray, dataclass) {
         when (true, C_HDF5.H5T_INTEGER) {
           if (bytesize != 1) || isSigned {
@@ -481,26 +420,16 @@ module GenSymIO {
           var valName = st.nextName();
           st.addEntry(valName, entryVal);
           rnames = rnames + "created " + st.attrib(segName) + " +created " + st.attrib(valName) + " , ";
-          //writeln(st.attrib(rname));
-          //return try! "created " + st.attrib(segName) + " +created " + st.attrib(valName);
         }
         when (false, C_HDF5.H5T_INTEGER) {
           var entryInt = new shared SymEntry(len, int);
           if GenSymIO_DEBUG {
             writeln("Initialized int entry for dataset ", dsetName); try! stdout.flush();
           }
-          /*
-          writeln("entryInt.a = ", entryInt.a);
-          writeln("subdoms = ", subdoms);
-          writeln("filenames = ", filenames);
-          writeln("dsetName = ", dsetName);
-          */
           read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
           var rname = st.nextName();
           st.addEntry(rname, entryInt);
           rnames = rnames + "created " + st.attrib(rname) + " , ";
-          //writeln(st.attrib(rname));
-          //return try! "created " + st.attrib(rname);
         }
         when (false, C_HDF5.H5T_FLOAT) {
           var entryReal = new shared SymEntry(len, real);
@@ -511,18 +440,13 @@ module GenSymIO {
           var rname = st.nextName();
           st.addEntry(rname, entryReal);
           rnames = rnames + "created " + st.attrib(rname) + " , ";
-          //writeln(st.attrib(rname));
-          //return try! "created " + st.attrib(rname);
         }
         otherwise {
           return try! "Error: detected unhandled datatype: segmented? %t, class %i, size %i, signed? %t".format(isSegArray, dataclass, bytesize, isSigned);
         }
       }
     }
-    //rnames = rnames[:-3];
-    //return try! "created " + (rnames.strip(" , ", leading = false, trailing = true));
     return try! rnames.strip(" , ", leading = false, trailing = true);
-
   }
 
   proc fixupSegBoundaries(a: [?D] int, segSubdoms: [?fD] domain(1), valSubdoms: [fD] domain(1)) {

@@ -12,24 +12,24 @@ if len(sys.argv) < 3:
 ak.connect(sys.argv[1], sys.argv[2])
 ak.verbose = False    #client verbose Flag
 cwd = os.getcwd()
-allfiles = glob(cwd+'/../converter/netflow_day-1*.hdf')
+allfiles = glob(cwd+'/../converter/netflow_day-*.hdf')
 if len(sys.argv) > 3:
     allfiles = sys.argv[3:]
 
 start = time.time()
-pdArrayDictionary1 = ak.read_all(allfiles, ['dstIP','start'], iterative=True)
+dictionary1 = ak.read_all(allfiles, iterative=True)
 end = time.time()
 t1 = end - start
 print("read_all(iterative=True) seconds: %.3f" % (t1))
-for key, value in pdArrayDictionary1.items():
-    print(key,type(value),value)
+for key, value in dictionary1.items():
+    print(key,type(value),value,len(value))
 
 start = time.time()
-pdArrayDictionary2 = ak.read_all(allfiles, ['dstIP','start'])
+dictionary2 = ak.read_all(allfiles)
 end = time.time()
 t2 = end - start
 print("read_all() seconds: %.3f" % (t2))
-for key, value in pdArrayDictionary2.items():
-    print(key,type(value),value)
+for key, value in dictionary2.items():
+    print(key,type(value),value,len(value))
 
 ak.disconnect()
