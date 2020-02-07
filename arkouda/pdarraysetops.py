@@ -141,18 +141,33 @@ def concatenate(arrays):
     array([1, 2, 3, 4, 5, 6])
     """
     size = 0
+    objtype = None
     dtype = None
+    names = []
+    if len(a) < 1:
+        raise ValueError("concatenate called on empty iterable")
     for a in arrays:
-        if not isinstance(a, pdarray):
-            raise ValueError("Argument must be an iterable of pdarrays")
-        if dtype == None:
-            dtype = a.dtype
-        elif dtype != a.dtype:
-            raise ValueError("All pdarrays must have same dtype")
+        if not isinstance(a, pdarray) and not isinstance(a, Strings):
+            raise ValueError("Argument must be an iterable of pdarrays or Strings")
+        if objtype == None:
+            objtype = a.objtype
+        if objtype == "pdarray":
+            if dtype == None:
+                dtype = a.dtype
+            elif dtype != a.dtype:
+                raise ValueError("All pdarrays must have same dtype")
+            names.append(a.name)
+        elif objtype == "str":
+            names.append('{}+{}'.format(a.offsets.name, a.values.name))
+        else:
+            raise NotImplementedError("concatenate not implemented for object type {}".format(objtype))
         size += a.size
     if size == 0:
-        return zeros(0, dtype=int64)
-    repMsg = generic_msg("concatenate {} {}".format(len(arrays), ' '.join([a.name for a in arrays])))
+        if objtype == "pdarray":
+            return zeros_like(a[0])
+        else:
+            return a[0]
+    repMsg = generic_msg("concatenate {} {} {}".format(len(arrays), objtype, ' '.join(names)))
     return create_pdarray(repMsg)
 
 # (A1 | A2) Set Union: elements are in one or the other or both
