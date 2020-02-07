@@ -20,7 +20,7 @@ def unique(pda, return_counts=False):
 
     Parameters
     ----------
-    pda : pdarray or Strings
+    pda : pdarray or Strings or Categorical
         Input array.
     return_counts : bool, optional
         If True, also return the number of times each unique item appears
@@ -77,7 +77,7 @@ def in1d(pda1, pda2, invert=False):
 
     Parameters
     ----------
-    pda1 : pdarray or Strings
+    pda1 : pdarray or Strings or Categorical
         Input array.
     pda2 : pdarray or Strings
         The values against which to test each value of `pda1`. Must be the 
@@ -127,7 +127,7 @@ def concatenate(arrays):
 
     Parameters
     ----------
-    arrays : iterable of ``pdarray``
+    arrays : iterable of ``pdarray`` or Strings or Categorical
         The arrays to concatenate. Must all have same dtype.
 
     Returns

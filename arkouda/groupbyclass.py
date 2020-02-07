@@ -90,7 +90,7 @@ class GroupBy:
         if self.nkeys == 1:
             # for Categorical
             if hasattr(self.keys, 'segments') and self.keys.segments is not None:
-                self.unique_keys = self.keys.index
+                self.unique_keys = self.keys.categories
                 self.segments = self.keys.segments
                 return
             else:
@@ -111,9 +111,9 @@ class GroupBy:
                     keynames.append('{}+{}'.format(k.offsets.name, k.bytes.name))
                     keytypes.append(k.objtype)
             # for Categorical
-            elif hasattr(k, 'values'):
-                keynames.append(k.values.name)
-                keytypes.append(k.values.objtype)
+            elif hasattr(k, 'codes'):
+                keynames.append(k.codes.name)
+                keytypes.append(k.codes.objtype)
             elif isinstance(k, pdarray):
                 keynames.append(k.name)
                 keytypes.append(k.objtype)
