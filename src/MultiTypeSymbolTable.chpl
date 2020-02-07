@@ -12,6 +12,11 @@ module MultiTypeSymbolTable
         /*
         Associative domain of strings
         */
+        var registry: domain(string);
+
+        /*
+        Associative domain of strings
+        */
         var tD: domain(string);
 
         /*
@@ -28,6 +33,37 @@ module MultiTypeSymbolTable
             return "id_"+ nid:string;
         }
 
+        proc regName(name: string, userDefinedName: string) throws {
+
+            // check to see if name is defined
+            if (!tD.contains(name) || tab[name] == nil) {
+                if (v) {writeln("regName: undefined symbol ",name);try! stdout.flush();}
+                throw new owned ErrorWithMsg(unknownSymbolError("regName", name));
+            }
+
+            // check to see if userDefinedName is defined
+            if (registry.contains(userDefinedName))
+            {
+                if (v) {writeln("regName: redefined symbol ",userDefinedName);try! stdout.flush();}
+            }
+            
+            registry += userDefinedName; // add user defined name to registry
+            tD += userDefinedName; // add user defined name to symbol table
+            tab[userDefinedName] = tab[name]; // point at same shared table entry
+        }
+
+        proc unregName(name: string) throws {
+            
+            // check to see if name is defined
+            if (!registry.contains(name) || !tD.contains(name) || tab[name] == nil)  {
+                if (v) {writeln("unregName: undefined symbol ",name);try! stdout.flush();}
+                throw new owned ErrorWithMsg(unknownSymbolError("regName", name));
+            }
+            tab[name] = nil; // clear out entry for name
+            registry -= name; // take name out of registry
+            tD -= name; // take name out of symbol table
+        }
+        
         // is it an error to redefine an entry? ... probably not
         // this addEntry takes stuff to create a new SymEntry
 
@@ -49,13 +85,13 @@ module MultiTypeSymbolTable
             if t == bool {overMemLimit(len);} else {overMemLimit(len*numBytes(t));}
             
             var entry = new shared SymEntry(len, t);
-            if (tD.contains(name))
-            {
+            if (tD.contains(name)) {
                 if (v) {writeln("redefined symbol ",name);try! stdout.flush();}
             }
-            else
+            else {
                 tD += name;
-
+            }
+            
             ref tableEntry = tab[name];
             tableEntry = entry;
             return tableEntry!.borrow().toSymEntry(t);
@@ -76,13 +112,13 @@ module MultiTypeSymbolTable
             // check and throw if memory limit would be exceeded
             overMemLimit(entry.size*entry.itemsize);
 
-            if (tD.contains(name))
-            {
+            if (tD.contains(name)) {
                 if (v) {writeln("redefined symbol ",name);try! stdout.flush();}
             }
-            else
+            else {
                 tD += name;
-
+            }
+            
             ref tableEntry = tab[name];
             tableEntry = entry;
             return tableEntry!.borrow();
@@ -117,13 +153,13 @@ module MultiTypeSymbolTable
         :type name: string
         */
         proc deleteEntry(name: string) {
-            if (tD.contains(name))
-            {
+            if (tD.contains(name) && !registry.contains(name)) {
                 tab[name] = nil;
                 tD -= name;
             }
-            else
-                if (v) {writeln("unkown symbol ",name);try! stdout.flush();}
+            else {
+                if (v) {writeln("deleteEntry: unkown symbol ",name);try! stdout.flush();}
+            }
         }
         
         /*
