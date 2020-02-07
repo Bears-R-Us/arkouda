@@ -10,8 +10,8 @@ __all__ = ['Strings']
 
 class Strings:
     """
-    Represents an array of strings whose data resides on the 
-    arkouda server. The user should not call this class directly; 
+    Represents an array of strings whose data resides on the
+    arkouda server. The user should not call this class directly;
     rather its instances are created by other arkouda functions.
 
     Attributes
@@ -29,10 +29,10 @@ class Strings:
     shape : tuple
         The sizes of each dimension of the array
     """
-    
+
     BinOps = frozenset(["==", "!="])
     objtype = "str"
-    
+
     def __init__(self, offset_attrib, bytes_attrib):
         if isinstance(offset_attrib, pdarray):
             self.offsets = offset_attrib
@@ -52,7 +52,7 @@ class Strings:
         a = self.to_ndarray()
         for s in a:
             yield s
-        
+
     def __len__(self):
         return self.shape[0]
 
@@ -92,7 +92,7 @@ class Strings:
             raise ValueError("Strings: {} not supported between Strings and {}".format(op, type(other)))
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
-        
+
     def __eq__(self, other):
         return self.binop(other, "==")
 
@@ -236,12 +236,34 @@ class Strings:
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
+    def hash(self):
+        """
+        Compute a 128-bit hash of each string.
+
+        Returns
+        -------
+        (pdarray, pdarray)
+            A pair of int64 pdarrays. The ith hash value is the concatenation
+            of the ith values from each array.
+
+        Notes
+        -----
+        The implementation uses SipHash128, a fast and balanced hash function (used
+        by Python for dictionaries and sets). For realistic numbers of strings (up
+        to about 10**15), the probability of a collision between two 128-bit hash
+        values is negligible.
+        """
+        msg = "segmentedHash {} {} {}".format(self.objtype, self.offsets.name, self.bytes.name)
+        repMsg = generic_msg(msg)
+        h1, h2 = repMsg.split('+')
+        return create_pdarray(h1), create_pdarray(h2)
+
     def group(self):
         """
-        Return the permutation that groups the array, placing equivalent 
-        strings together. This permutation does NOT sort the strings. All 
-        instances of the same string are guaranteed to lie in one contiguous 
-        block of the permuted array, but the blocks are not necessarily ordered.
+        Return the permutation that groups the array, placing equivalent
+        strings together. All instances of the same string are guaranteed to lie
+        in one contiguous block of the permuted array, but the blocks are not
+        necessarily ordered.
 
         Returns
         -------
@@ -251,6 +273,14 @@ class Strings:
         See Also
         --------
         GroupBy, unique
+
+        Notes
+        -----
+        If the arkouda server is compiled with "-sSegmentedArray.useHash=true",
+        then arkouda uses 128-bit hash values to group strings, rather than sorting
+        the strings directly. This method is fast, but the resulting permutation
+        merely groups equivalent strings and does not sort them. If the "useHash"
+        parameter is false, then a full sort is performed.
         """
         msg = "segmentedGroup {} {} {}".format(self.objtype, self.offsets.name, self.bytes.name)
         repMsg = generic_msg(msg)
@@ -259,7 +289,7 @@ class Strings:
     def to_ndarray(self):
         """
         Convert the array to a np.ndarray, transferring array data from the
-        arkouda server to Python. If the array exceeds a builtin size limit, 
+        arkouda server to Python. If the array exceeds a builtin size limit,
         a RuntimeError is raised.
 
         Returns

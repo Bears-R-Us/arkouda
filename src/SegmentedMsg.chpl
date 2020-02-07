@@ -41,6 +41,32 @@ module SegmentedMsg {
     }
     return "created "+st.attrib(rname);
   }
+
+  proc segmentedHashMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    var pn = Reflection.getRoutineName();
+    var repMsg: string;
+    var fields = reqMsg.split();
+    var cmd = fields[1];
+    var objtype = fields[2];
+    var segName = fields[3];
+    var valName = fields[4];
+    select objtype {
+    when "str" {
+      var strings = new owned SegString(segName, valName, st);
+      var hashes = strings.hash();
+      var name1 = st.nextName();
+      var hash1 = st.addEntry(name1, hashes.size, int);
+      var name2 = st.nextName();
+      var hash2 = st.addEntry(name2, hashes.size, int);
+      forall (h, h1, h2) in zip(hashes, hash1.a, hash2.a) {
+        h1 = h[1]:int;
+        h2 = h[2]:int;
+      }
+      return "created " + st.attrib(name1) + "+created " + st.attrib(name2);
+    }
+    otherwise {return notImplementedError(pn, objtype);}
+    }
+  }
   
   proc segmentedIndexMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
