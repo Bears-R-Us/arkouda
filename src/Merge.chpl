@@ -95,7 +95,7 @@ module Merge {
           // leapfrog the two arrays until all the output has been filled
           while outPos <= end {
             // take from the big array until it leapfrogs the small
-            while (bigPos <= bigEnd) && (bigS <= smallS) {
+            while (bigPos <= bigEnd) && ((smallPos > smallEnd) || (bigS <= smallS)) {
               if DEBUG {
                 if (outPos > perm.domain.high) { writeln("OOB: outPos = %t not in %t".format(outPos, perm.domain)); stdout.flush();}
                 if (bigPos > big.offsets.aD.high) { writeln("OOB: bigPos = %t not in %t".format(bigPos, big.offsets.aD)); stdout.flush();}
@@ -117,7 +117,7 @@ module Merge {
               }
             }
             // take from the small array until it catches up with the big
-            while (smallPos <= smallEnd) && (smallS < bigS) {
+            while (smallPos <= smallEnd) && ((bigPos > bigEnd) || (smallS < bigS)) {
               if DEBUG {
                 if (outPos > perm.domain.high) { writeln("OOB: outPos = %t not in %t".format(outPos, perm.domain)); stdout.flush();}
                 if (smallPos > small.offsets.aD.high) { writeln("OOB: smallPos = %t not in %t".format(smallPos, small.offsets.aD)); stdout.flush();}

@@ -46,7 +46,9 @@ def unique(pda, return_counts=False):
     >>> ak.unique(A)
     array([1, 2, 3])
     """
-    if isinstance(pda, pdarray):
+    if hasattr(pda, 'unique'):
+        return pda.unique()
+    elif isinstance(pda, pdarray):
         repMsg = generic_msg("unique {} {} {}".format(pda.objtype, pda.name, return_counts))
         if return_counts:
             vc = repMsg.split("+")
@@ -102,7 +104,9 @@ def in1d(pda1, pda2, invert=False):
     equivalent to ``ak.array([item in b for item in a])``, but is much
     faster and scales to arbitrarily large ``a``.
     """
-    if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+    if hasattr(pda1, 'in1d'):
+        return pda1.in1d(pda2)
+    elif isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         repMsg = generic_msg("in1d {} {} {}".format(pda1.name, pda2.name, invert))
         return create_pdarray(repMsg)
     elif isinstance(pda1, Strings) and isinstance(pda2, Strings):

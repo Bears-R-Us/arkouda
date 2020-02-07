@@ -25,8 +25,8 @@ class Categorical:
         elif len(args) == 2:
             if not isinstance(args[0], pdarray) or args[0].dtype != int64:
                 raise TypeError("Values must be pdarray of int64")
-            if not isinstance(args[1], pdarray) and not isinstance(args[1], Strings):
-                raise TypeError("Index must be pdarray of int64 or Strings")
+            if not isinstance(args[1], Strings):
+                raise TypeError("Index must be Strings")
             self.values = args[0]
             self.index = args[1]
             if 'permutation' in kwargs:
@@ -116,22 +116,33 @@ class Categorical:
     def merge(self, other):
         if not isinstance(other, Categorical):
             raise TypeError("Categorical: can only merge with another Categorical")
-        msg = "segmentedMerge {} {} {} {} {} {}".format(self.index.objtype,
-                                                           self.index.offsets.name,
-                                                           self.index.bytes.name,
-                                                           other.index.objtype,
-                                                           other.index.offsets.name,
-                                                           other.index.bytes.name)
-        repMsg = generic_msg(msg)
-        perm_attrib, seg_attrib, val_attrib = repMsg.split('+')
-        perm = create_pdarray(perm_attrib)
-        index = Strings(seg_attrib, val_attrib)
-    #     return create_pdarray(repMsg)
+        if (self.index.size == other.index.size) and (self.index == other.index):
+            newvals = concatenate((self.values, other.values))
+            return Categorical(newvals, self.index)
+        else:
+            g = ak.GroupBy(concatenate((self.index, other.index)))
+            newidx = g.unique_keys
+            wherediditgo = zeros(newidx.size, dtype=int64)
+            wherediditgo[g.permutation] = arange(newidx.size)
+            oldvals = concatenate((self.values, other.values + self.index.size))
+            newvals = wherediditgo[oldvals]
+            return Categorical(newvals, newidx)
+    #     msg = "segmentedMerge {} {} {} {} {} {}".format(self.index.objtype,
+    #                                                        self.index.offsets.name,
+    #                                                        self.index.bytes.name,
+    #                                                        other.index.objtype,
+    #                                                        other.index.offsets.name,
+    #                                                        other.index.bytes.name)
+    #     repMsg = generic_msg(msg)
+    #     perm_attrib, seg_attrib, val_attrib = repMsg.split('+')
+    #     perm = create_pdarray(perm_attrib)
+    #     index = Strings(seg_attrib, val_attrib)
+    # #     return create_pdarray(repMsg)
         
-    # def merge(self, other):
-    #     perm = self.argmerge(other)
-    #     index = concatenate((self.index, other.index))[perm]
-        values = zeros(self.size + other.size, int64)
-        values[:self.size] = perm[self.values]
-        values[self.size:] = perm[other.values + self.index.size]
-        return Categorical(values, index)
+    # # def merge(self, other):
+    # #     perm = self.argmerge(other)
+    # #     index = concatenate((self.index, other.index))[perm]
+    #     values = zeros(self.size + other.size, int64)
+    #     values[:self.size] = perm[self.values]
+    #     values[self.size:] = perm[other.values + self.index.size]
+    #     return Categorical(values, index)

@@ -37,9 +37,9 @@ proc testMerge(n, m, minLen, maxLen) {
   var t = new Timer();
   writeln("Generating random strings..."); stdout.flush();
   t.start();
-  var (asegs, avals) = newRandStrings(n, minLen, maxLen, charSet.Uppercase);
+  var (asegs, avals) = newRandStringsUniformLength(n, minLen, maxLen, charSet.Uppercase);
   var astrings = new owned SegString(asegs, avals, st);
-  var (bsegs, bvals) = newRandStrings(m, minLen, maxLen, charSet.Uppercase);
+  var (bsegs, bvals) = newRandStringsUniformLength(m, minLen, maxLen, charSet.Uppercase);
   var bstrings = new owned SegString(bsegs, bvals, st);
   t.stop();
   writeln("%t seconds".format(t.elapsed())); stdout.flush(); t.clear();
@@ -60,7 +60,19 @@ proc testMerge(n, m, minLen, maxLen) {
   writeln("%t seconds".format(t.elapsed())); stdout.flush(); t.clear();
   var cstrings = new owned SegString(csegs, cvals, st);
   cstrings.show(5);
-  writeln("Result is sorted? >>> ", cstrings.isSorted(), " <<<");
+  var ascending = cstrings.isAscending();
+  var sorted = && reduce (ascending <= 0);
+  writeln("Result is sorted? >>> ", sorted, " <<<");
+  if !sorted {
+    var pos = 0;
+    for i in 0..#5 {
+      while (pos < cstrings.size) && (ascending[pos] <= 0) {
+        pos += 1;
+      }
+      writeln("\n%i: %i\n%s\n%s".format(pos, ascending[pos], cstrings[pos], cstrings[pos+1])); stdout.flush();
+      pos += 1;
+    }
+  }
 }
 
 config const N = 1_000;
