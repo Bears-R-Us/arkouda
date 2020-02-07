@@ -1,17 +1,20 @@
 from arkouda.strings import Strings
 from arkouda.pdarrayclass import pdarray
 from arkouda.groupbyclass import GroupBy
-from arkouda.pdarraycreation import zeros
-from arkouda.dtypes import int64
+from arkouda.pdarraycreation import zeros, zeros_like, arange
+from arkouda.dtypes import int64, resolve_scalar_dtype
 from arkouda.sorting import argsort
+from arkouda.client import pdarrayIterThresh
+from arkouda.pdarraysetops import unique, concatenate, in1d
+import numpy as np
 
 __all__ = ['Categorical']
 
 class Categorical:
     BinOps = frozenset(["==", "!="])
     objtype = "category"
-    self.permutation = None
-    self.segments = None
+    permutation = None
+    segments = None
     
     def __init__(self, *args, **kwargs):
         if len(args) == 1:
@@ -38,11 +41,14 @@ class Categorical:
         self.ndim = self.values.ndim
         self.shape = self.values.shape
 
-    def __iter__(self):
-        inds = self.values.to_ndarray()
-        for i in inds:
-            yield self.index[i]
+    def to_ndarray(self):
+        idx = self.index.to_ndarray()
+        valcodes = self.values.to_ndarray()
+        return idx[valcodes]
 
+    def __iter__(self):
+        return iter(self.to_ndarray())
+        
     def __len__(self):
         return self.shape[0]
 
@@ -61,15 +67,21 @@ class Categorical:
     def binop(self, other, op):
         if op not in self.BinOps:
             raise NotImplementedError("Categorical: unsupported operator: {}".format(op))
+        if np.isscalar(other) and resolve_scalar_dtype(other) == "str":
+            idxresult = self.index.binop(other, op)
+            return idxresult[self.values]
         if self.size != other.size:
-            raise ValueError("Strings: size mismatch {} {}".format(self.size, other.size))
+            raise ValueError("Categorical {}: size mismatch {} {}".format(op, self.size, other.size))
         if isinstance(other, Categorical):
             if self.index.name == other.index.name:
                 return self.values.binop(other.values, op)
             else:
                 raise NotImplementedError("Operations between Categoricals with different indices not yet implemented")
         else:
-            raise NotImplementedError("Operations between Categorical and non-Categorical not yet implemented")
+            raise NotImplementedError("Operations between Categorical and non-Categorical not yet implemented. Consider converting operands to Categorical.")
+
+    def r_binop(self, other, op):
+        return self.binop(other, op)
 
     def __eq__(self, other):
         return self.binop(other, "==")
@@ -81,12 +93,14 @@ class Categorical:
         if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
             return self.index[self.values[key]]
         else:
-            vals = self.values[key]
-            g = GroupBy(vals)
-            idx = self.index[g.unique_keys]
-            newvals = zeros(vals.size, int64)
-            newvals[g.permutation] = g.broadcast(arange(idx.size))
-            return Categorical(newvals, idx, permutation=g.permutation, segments=g.segments)
+            return Categorical(self.values[key], self.index)
+
+    def reset_index(self):
+        g = GroupBy(self.values)
+        idx = self.index[g.unique_keys]
+        newvals = zeros(self.values.size, int64)
+        newvals[g.permutation] = g.broadcast(arange(idx.size))
+        return Categorical(newvals, idx, permutation=g.permutation, segments=g.segments)
 
     def contains(self, substr):
         indexcontains = self.index.contains(substr)
@@ -107,24 +121,48 @@ class Categorical:
     def unique(self):
         return Categorical(arange(self.index.size), self.index)
 
-    def argsort(self):
+    def group(self):
         if self.permutation is None:
             return argsort(self.values)
         else:
             return self.permutation
 
-    def merge(self, other):
-        if not isinstance(other, Categorical):
-            raise TypeError("Categorical: can only merge with another Categorical")
-        if (self.index.size == other.index.size) and (self.index == other.index):
-            newvals = concatenate((self.values, other.values))
+    def argsort(self):
+        idxperm = argsort(self.index)
+        inverse = zeros_like(idxperm)
+        inverse[idxperm] = arange(idxperm.size)
+        newvals = inverse[self.values]
+        return argsort(newvals)
+
+    def sort(self):
+        idxperm = argsort(self.index)
+        inverse = zeros_like(idxperm)
+        inverse[idxperm] = arange(idxperm.size)
+        newvals = inverse[self.values]
+        return Categorical(newvals, self.index[idxperm])
+            
+    def merge(self, others):
+        if isinstance(others, Categorical):
+            others = [others]
+        elif len(others) < 1:
+            return self
+        sameindex = True
+        for c in others:
+            if not isinstance(c, Categorical):
+                raise TypeError("Categorical: can only merge/concatenate with other Categoricals")
+            if (self.index.size != other.index.size) or not (self.index == other.index).all():
+                sameindex = False
+        if sameindex:
+            newvals = concatenate([self.values] + [o.values for o in others])
             return Categorical(newvals, self.index)
         else:
-            g = ak.GroupBy(concatenate((self.index, other.index)))
+            g = ak.GroupBy(concatenate([self.index] + [o.index for o in others]))
             newidx = g.unique_keys
             wherediditgo = zeros(newidx.size, dtype=int64)
             wherediditgo[g.permutation] = arange(newidx.size)
-            oldvals = concatenate((self.values, other.values + self.index.size))
+            idxsizes = np.array([self.index.size] + [o.index.size for o in others])
+            idxoffsets = np.cumsum(idxsizes) - idxsizes
+            oldvals = concatenate([c.values + off for c, off in zip([self.values] + [o.values for o in others], idxoffsets)])
             newvals = wherediditgo[oldvals]
             return Categorical(newvals, newidx)
     #     msg = "segmentedMerge {} {} {} {} {} {}".format(self.index.objtype,

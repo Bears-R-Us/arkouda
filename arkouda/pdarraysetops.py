@@ -144,8 +144,12 @@ def concatenate(arrays):
     objtype = None
     dtype = None
     names = []
-    if len(a) < 1:
+    if len(arrays) < 1:
         raise ValueError("concatenate called on empty iterable")
+    if len(arrays) == 1:
+        return arrays[0]
+    if hasattr(arrays[0], 'concatenate'):
+        return arrays[0].concatenate(arrays[1:])
     for a in arrays:
         if not isinstance(a, pdarray) and not isinstance(a, Strings):
             raise ValueError("Argument must be an iterable of pdarrays or Strings")
@@ -158,15 +162,15 @@ def concatenate(arrays):
                 raise ValueError("All pdarrays must have same dtype")
             names.append(a.name)
         elif objtype == "str":
-            names.append('{}+{}'.format(a.offsets.name, a.values.name))
+            names.append('{}+{}'.format(a.offsets.name, a.bytes.name))
         else:
             raise NotImplementedError("concatenate not implemented for object type {}".format(objtype))
         size += a.size
     if size == 0:
         if objtype == "pdarray":
-            return zeros_like(a[0])
+            return zeros_like(arrays[0])
         else:
-            return a[0]
+            return arrays[0]
     repMsg = generic_msg("concatenate {} {} {}".format(len(arrays), objtype, ' '.join(names)))
     return create_pdarray(repMsg)
 

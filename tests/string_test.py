@@ -29,35 +29,44 @@ if __name__ == '__main__':
     test_strings = np.random.choice(base_words, N, replace=True)
 
     strings = ak.array(test_strings)
+    cat = ak.Categorical(strings)
     print("strings =", strings)
+    print("categorical =", cat)
     
     # int index
     assert(strings[N//3] == test_strings[N//3])
+    assert(cat[N//3] == test_strings[N//3])
     print("int index passed")
     
     # slice
     assert(compare_strings(strings[N//4:N//3].to_ndarray(), test_strings[N//4:N//3]))
+    assert(compare_strings(cat[N//4:N//3].to_ndarray(), test_strings[N//4:N//3]))
     print("slice passed")
     
     # pdarray int index
     inds = ak.arange(0, strings.size, 10)
     assert(compare_strings(strings[inds].to_ndarray(), test_strings[inds.to_ndarray()]))
+    assert(compare_strings(cat[inds].to_ndarray(), test_strings[inds.to_ndarray()]))
     print("pdarray int index passed")
 
     # comparison
     akinds = (strings == test_strings[N//4])
+    catinds = (cat == test_strings[N//4])
     npinds = (test_strings == test_strings[N//4])
     assert(np.allclose(akinds.to_ndarray(), npinds))
     print("comparison passed")
 
     # pdarray bool index
     assert(compare_strings(strings[akinds].to_ndarray(), test_strings[npinds]))
+    assert(compare_strings(cat[akinds].to_ndarray(), test_strings[npinds]))
     print("pdarray bool index passed")
 
     # in1d and iter
     more_words = np.random.choice(base_words, 100)
     akwords = ak.array(more_words)
     matches = ak.in1d(strings, akwords)
+    catmatches = ak.in1d(cat, akwords)
+    assert((matches == catmatches).all())
     # Every word in matches should be in the target set
     for word in strings[matches]:
         assert(word in more_words)
@@ -73,11 +82,17 @@ if __name__ == '__main__':
     aksorted = strings[akperm].to_ndarray()
     npsorted = np.sort(test_strings)
     assert((aksorted == npsorted).all())
+    catperm = ak.argsort(cat)
+    catsorted = cat[catperm].to_ndarray()
+    assert((catsorted == npsorted).all())
     print("argsort passed")
     
     # unique
     akuniq = ak.unique(strings)
+    catuniq = ak.unique(cat)
     akset = set(akuniq.to_ndarray())
+    catset = set(catuniq.to_ndarray())
+    assert(akset == catset)
     # There should be no duplicates
     assert(akuniq.size == len(akset))
     npset = set(np.unique(test_strings))
@@ -87,8 +102,11 @@ if __name__ == '__main__':
 
     # groupby
     g = ak.GroupBy(strings)
+    gc = ak.GroupBy(cat)
     # Unique keys should be same result as ak.unique
     assert(akset == set(g.unique_keys.to_ndarray()))
+    assert(akset == set(gc.unique_keys.to_ndarray()))
+    assert((gc.permutation == g.permutation).all())
     permStrings = strings[g.permutation]
     # Check each group individually
     lengths = np.diff(np.hstack((g.segments.to_ndarray(), np.array([g.size]))))

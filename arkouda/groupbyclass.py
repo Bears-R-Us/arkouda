@@ -58,13 +58,14 @@ class GroupBy:
                 self.permutation = local_argsort(keys)
             else:
                 self.permutation = argsort(keys)
-        elif isinstance(keys, Strings):
+        # for Strings or Categorical
+        elif hasattr(keys, "group"):
             self.nkeys = 1
             self.size = keys.size
             if assume_sorted:
                 self.permutation = arange(self.size)
             elif self.per_locale:
-                raise ValueError("per-locale groupby not supported on strings")
+                raise ValueError("per-locale groupby not supported on Strings or Categorical")
             else:
                 self.permutation = keys.group()
         else:
@@ -87,7 +88,13 @@ class GroupBy:
         else:
             cmd = "findSegments"
         if self.nkeys == 1:
-            mykeys = [self.keys]            
+            # for Categorical
+            if hasattr(self.keys, 'segments') and self.keys.segments is not None:
+                self.unique_keys = self.keys.index
+                self.segments = self.keys.segments
+                return
+            else:
+                mykeys = [self.keys]            
         else:
             mykeys = self.keys
         keynames = []
@@ -103,6 +110,10 @@ class GroupBy:
                 else:
                     keynames.append('{}+{}'.format(k.offsets.name, k.bytes.name))
                     keytypes.append(k.objtype)
+            # for Categorical
+            elif hasattr(k, 'values'):
+                keynames.append(k.values.name)
+                keytypes.append(k.values.objtype)
             elif isinstance(k, pdarray):
                 keynames.append(k.name)
                 keytypes.append(k.objtype)
@@ -115,11 +126,11 @@ class GroupBy:
         segAttr, uniqAttr = repMsg.split("+")
         if verbose: print(segAttr, uniqAttr)
         self.segments = create_pdarray(segAttr)
-        self.unique_key_indices = create_pdarray(uniqAttr)
+        unique_key_indices = create_pdarray(uniqAttr)
         if self.nkeys == 1:
-            self.unique_keys = self.keys[self.unique_key_indices]
+            self.unique_keys = self.keys[unique_key_indices]
         else:
-            self.unique_keys = [k[self.unique_key_indices] for k in self.keys]
+            self.unique_keys = [k[unique_key_indices] for k in self.keys]
 
 
     def count(self):
