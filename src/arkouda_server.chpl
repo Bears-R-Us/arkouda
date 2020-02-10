@@ -76,14 +76,13 @@ proc main() {
 
         const fieldsRaw = reqMsgRaw.split(1);
         const cmdRaw = fieldsRaw[1];
-        var repMsg: string;
         var s0 = t1.elapsed();
         // parse requests, execute requests, format responses
         try {
             // first handle the case where we received arbitrary data
             if cmdRaw == b"array" {
                 if logging { writeln("reqMsg: ", cmdRaw, " <binary-data>"); }
-                repMsg = arrayMsg(reqMsgRaw, st);
+                sendRepMsg(arrayMsg(reqMsgRaw, st));
             }
             else {
                 // received command does not have binary data, safe to decode
@@ -110,6 +109,7 @@ proc main() {
                 }
                 else {
                     // here we know that everything is strings
+                    var repMsg: string;
                     select cmd
                     {
                         when "segmentedHash"     {repMsg = segmentedHashMsg(reqMsg, st);}
@@ -179,17 +179,16 @@ proc main() {
                             if v {writeln("Error: unrecognized command: %s".format(reqMsg)); try! stdout.flush();}
                         }
                     }
+                    sendRepMsg(repMsg);
                 }
             }
         } catch (e: ErrorWithMsg) {
-            repMsg = e.msg;
+            sendRepMsg(e.msg);
         } catch {
-            repMsg = unknownError("");
+            sendRepMsg(unknownError(""));
         }
-
-        // if we generated a string message, send it
-        if !repMsg.isEmpty() then
-            sendRepMsg(repMsg);
+        
+        // We must have sent a message back by now
 
         if (logging && memTrack) {writeln("bytes of memoryUsed() = ",memoryUsed()); try! stdout.flush();}
 
