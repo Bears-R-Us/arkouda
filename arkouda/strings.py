@@ -101,6 +101,10 @@ class Strings:
 
     def __getitem__(self, key):
         if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
+            orig_key = key
+            if key < 0:
+                # Interpret negative key as offset from end of array
+                key += self.size
             if (key >= 0 and key < self.size):
                 msg = "segmentedIndex {} {} {} {} {}".format('intIndex',
                                                              self.objtype,
@@ -108,11 +112,10 @@ class Strings:
                                                              self.bytes.name,
                                                              key)
                 repMsg = generic_msg(msg)
-                fields = repMsg.split()
-                # value = fields[2]
-                return parse_single_value(' '.join(fields[1:]))
+                _, value = repMsg.split(maxsplit=1)
+                return parse_single_value(value)
             else:
-                raise IndexError("[int] {} is out of bounds with size {}".format(key,self.size))
+                raise IndexError("[int] {} is out of bounds with size {}".format(orig_key,self.size))
         elif isinstance(key, slice):
             (start,stop,stride) = key.indices(self.size)
             if verbose: print(start,stop,stride)
