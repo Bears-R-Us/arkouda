@@ -61,18 +61,28 @@ module ConcatenateMsg
         // and copy in arrays
         select objtype {
             when "str" {
+                use CommAggregation;
                 var segName = st.nextName();
                 var esegs = st.addEntry(segName, size, int);
+                ref esa = esegs.a;
                 var valName = st.nextName();
                 var evals = st.addEntry(valName, nbytes, uint(8));
+                ref eva = evals.a;
                 var segStart = 0;
                 var valStart = 0;
                 for (rawName, i) in zip(names, 1..) {
                     var nameFields = rawName.split('+');
                     var thisSegs = toSymEntry(st.lookup(nameFields[1]), int);
+                    var newSegs = thisSegs.a + valStart;
                     var thisVals = toSymEntry(st.lookup(nameFields[2]), uint(8));
-                    esegs.a[{segStart..#thisSegs.size}] = thisSegs.a + valStart;
-                    evals.a[{valStart..#thisVals.size}] = thisVals.a;
+                    forall (i, s) in zip(newSegs.domain, newSegs) with (var agg = newDstAggregator(int)) {
+                        agg.copy(esa[i+segStart], s);
+                    }
+                    forall (i, v) in zip(thisVals.aD, thisVals.a) with (var agg = newDstAggregator(uint(8))) {
+                        agg.copy(eva[i+valStart], v);
+                    }
+                    // esegs.a[{segStart..#thisSegs.size}] = thisSegs.a + valStart;
+                    // evals.a[{valStart..#thisVals.size}] = thisVals.a;
                     segStart += thisSegs.size;
                     valStart += thisVals.size;
                 }
