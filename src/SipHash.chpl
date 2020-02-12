@@ -49,18 +49,18 @@ module SipHash {
     return c;
   }
   
-  proc sipHash64(msg: [] uint(8), D): uint(64) throws {
+  proc sipHash64(msg: [] uint(8), D): uint(64) {
     var res = computeSipHash(msg, D, 8);
     return res[1];
   }
 
-  proc sipHash128(msg: [] uint(8), D): 2*uint(64) throws {
+  proc sipHash128(msg: [] uint(8), D): 2*uint(64) {
     return computeSipHash(msg, D, 16);
   }
   
-  private proc computeSipHash(msg: [] uint(8), D, param outlen: int) throws {
+  private proc computeSipHash(msg: [] uint(8), D, param outlen: int) {
     if !((outlen == 8) || (outlen == 16)) {
-      throw new owned ArgumentError();
+      compilerError("outlen must be 8 or 16");
     }
     var v0 = 0x736f6d6570736575: uint(64);
     var v1 = 0x646f72616e646f6d: uint(64);
@@ -101,12 +101,14 @@ module SipHash {
         v2 = ROTL(v2, 32);
     }
 
-    inline proc TRACE() throws {
+    inline proc TRACE() {
       if DEBUG {
-        writeln("%i v0 %016xu".format(msg.size, v0));
-        writeln("%i v1 %016xu".format(msg.size, v1));
-        writeln("%i v2 %016xu".format(msg.size, v2));
-        writeln("%i v3 %016xu".format(msg.size, v3));
+        try! {
+          writeln("%i v0 %016xu".format(D.size, v0));
+          writeln("%i v1 %016xu".format(D.size, v1));
+          writeln("%i v2 %016xu".format(D.size, v2));
+          writeln("%i v3 %016xu".format(D.size, v3));
+        }
       }
     }
 
