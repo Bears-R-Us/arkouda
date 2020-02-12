@@ -1,4 +1,6 @@
 module SipHash {
+  private use CommPrimitives;
+  private use AryUtil;
   
   param cROUNDS = 2;
   param dROUNDS = 4;
@@ -36,6 +38,18 @@ module SipHash {
             (p[D.low+7]: uint(64) << 56));
   }
 
+  private inline proc U8TO64_LE(p: c_ptr(uint(8)), D): uint(64) {
+    return ((p[0]: uint(64)) |
+            (p[1]: uint(64) << 8) |
+            (p[2]: uint(64) << 16) |
+            (p[3]: uint(64) << 24) |
+            (p[4]: uint(64) << 32) |
+            (p[5]: uint(64) << 40) |
+            (p[6]: uint(64) << 48) |
+            (p[7]: uint(64) << 56));
+  }
+
+
   private inline proc byte_reverse(b: uint(64)): uint(64) {
     var c: uint(64);
     c |= (b & 0xff) << 56;
@@ -55,10 +69,29 @@ module SipHash {
   }
 
   proc sipHash128(msg: [] uint(8), D): 2*uint(64) {
+    if contiguousIndices(msg) {
+      ref start = msg[D.low];
+      ref end = msg[D.high];
+      const startLocale = start.locale.id;
+      const endLocale = end.locale.id;
+      const hereLocale = here.id;
+      const l = D.size;
+      if startLocale == endLocale {
+        if startLocale == hereLocale {
+          return computeSipHash(c_ptrTo(start), 0..#l, 16);
+        } else {
+          var a = c_malloc(msg.eltType, l);
+          GET(a, startLocale, getAddr(start), l);
+          var h = computeSipHash(a, 0..#l, 16);
+          c_free(a);
+          return h;
+        }
+      }
+    }
     return computeSipHash(msg, D, 16);
   }
   
-  private proc computeSipHash(msg: [] uint(8), D, param outlen: int) {
+  private proc computeSipHash(msg, D, param outlen: int) {
     if !((outlen == 8) || (outlen == 16)) {
       compilerError("outlen must be 8 or 16");
     }
