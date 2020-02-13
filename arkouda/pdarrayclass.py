@@ -13,7 +13,7 @@ def parse_single_value(msg):
     Attempt to convert a scalar return value from the arkouda server to a numpy
     scalar in Python. The user should not call this function directly.
     """
-    dtname, value = msg.split()
+    dtname, value = msg.split(maxsplit=1)
     mydtype = dtype(dtname)
     if mydtype == bool:
         if value == "True":
