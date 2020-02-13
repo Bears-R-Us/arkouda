@@ -55,13 +55,16 @@ def read_hdf(dsetName, filenames):
     """
     if isinstance(filenames, str):
         filenames = [filenames]
-    rep_msg = generic_msg("readhdf {} {:n} {}".format(dsetName, len(filenames), json.dumps(filenames)))
-    # This is a hack to detect a string return type
-    # In the future, we should put the number and type into the return message
-    if '+' in rep_msg:
-        return Strings(*rep_msg.split('+'))
-    else:
-        return create_pdarray(rep_msg)
+    if not isinstance(dsetName, str):
+        raise TypeError("Datset name must be a str, not {}".format(type(dsetName)))
+    # rep_msg = generic_msg("readhdf {} {:n} {}".format(dsetName, len(filenames), json.dumps(filenames)))
+    # # This is a hack to detect a string return type
+    # # In the future, we should put the number and type into the return message
+    # if '+' in rep_msg:
+    #     return Strings(*rep_msg.split('+'))
+    # else:
+    #     return create_pdarray(rep_msg)
+    return read_all(filenames, datasets=dsetName)
 
 def read_all(filenames, datasets=None, iterative=False):
     """
