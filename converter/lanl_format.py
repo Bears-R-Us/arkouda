@@ -17,7 +17,7 @@ def deport(s):
 
 lanl_options = {'delimiter': ',',
                 'header':None,
-                'names':['start', 'duration', 'srcIP', 'dstIP', 'proto', 
+                'names':['start', 'duration', 'srcIP', 'dstIP', 'proto',
                          'srcPort', 'dstPort', 'srcPkts', 'dstPkts',
                          'srcBytes', 'dstBytes'],
                 'converters': {# 'srcIP': numerify, 'dstIP': numerify,
@@ -27,6 +27,7 @@ lanl_options = {'delimiter': ',',
                           'proto': np.int64, 'srcPkts': np.int64,
                           'dstPkts': np.int64, 'srcBytes': np.float64,
                           'dstBytes': np.float64}}
+
 
 OPTIONS = {}
 OPTIONS['lanl'] = lanl_options

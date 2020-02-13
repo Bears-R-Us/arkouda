@@ -13,7 +13,7 @@ def parse_single_value(msg):
     Attempt to convert a scalar return value from the arkouda server to a numpy
     scalar in Python. The user should not call this function directly.
     """
-    dtname, value = msg.split()
+    dtname, value = msg.split(maxsplit=1)
     mydtype = dtype(dtname)
     if mydtype == bool:
         if value == "True":
@@ -28,15 +28,15 @@ def parse_single_value(msg):
         return mydtype.type(value)
     except:
         raise ValueError("unsupported value from server {} {}".format(mydtype.name, value))
-    
+
 # class for the pdarray
 class pdarray:
     """
-    The basic arkouda array class. This class contains only the 
-    attributies of the array; the data resides on the arkouda 
-    server. When a server operation results in a new array, arkouda 
-    will create a pdarray instance that points to the array data on 
-    the server. As such, the user should not initialize pdarray 
+    The basic arkouda array class. This class contains only the
+    attributies of the array; the data resides on the arkouda
+    server. When a server operation results in a new array, arkouda
+    will create a pdarray instance that points to the array data on
+    the server. As such, the user should not initialize pdarray
     instances directly.
 
     Attributes
@@ -58,7 +58,7 @@ class pdarray:
     BinOps = frozenset(["+", "-", "*", "/", "//", "%", "<", ">", "<=", ">=", "!=", "==", "&", "|", "^", "<<", ">>","**"])
     OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", "<<=", ">>=","**="])
     objtype = "pdarray"
-    
+
     def __init__(self, name, mydtype, size, ndim, shape, itemsize):
         self.name = name
         self.dtype = dtype(mydtype)
@@ -88,10 +88,10 @@ class pdarray:
     def __repr__(self):
         global pdarrayIterTresh
         return generic_msg("repr {} {}".format(self.name,pdarrayIterThresh))
- 
+
     def format_other(self, other):
         """
-        Attempt to cast scalar other to the element dtype of this pdarray, 
+        Attempt to cast scalar other to the element dtype of this pdarray,
         and print the resulting value to a string (e.g. for sending to a
         server command). The user should not call this function directly.
         """
@@ -103,7 +103,7 @@ class pdarray:
             return str(other)
         fmt = NUMBER_FORMAT_STRINGS[self.dtype.name]
         return fmt.format(other)
-        
+
     # binary operators
     def binop(self, other, op):
         if op not in self.BinOps:
@@ -212,10 +212,10 @@ class pdarray:
     def __rxor__(self, other):
         return self.r_binop(other, "^")
 
-    def __pow__(self,other): 
+    def __pow__(self,other):
         return self.binop(other,"**")
-    
-    def __rpow__(self,other): 
+
+    def __rpow__(self,other):
         return self.r_binop(other,"**")
 
     # overloaded comparison operators
@@ -265,7 +265,7 @@ class pdarray:
             other = self.dtype.type(other)
         except: # Can't cast other as dtype of pdarray
             raise TypeError("Unhandled scalar type: {} ({})".format(other, type(other)))
-            
+
         msg = "opeqvs {} {} {} {}".format(op, self.name, self.dtype.name, self.format_other(other))
         generic_msg(msg)
         return self
@@ -372,7 +372,7 @@ class pdarray:
         a = self.to_ndarray()
         for x in a:
             yield x
-            
+
     def fill(self, value):
         """
         Fill the array (in place) with a constant value.
@@ -384,7 +384,7 @@ class pdarray:
         Return True iff any element of the array evaluates to True.
         """
         return any(self)
-    
+
     def all(self):
         """
         Return True iff all elements of the array evaluate to True.
@@ -396,56 +396,56 @@ class pdarray:
         Return True iff the array is monotonically non-decreasing.
         """
         return is_sorted(self)
-    
+
     def sum(self):
         """
         Return the sum of all elements in the array.
         """
         return sum(self)
-    
+
     def prod(self):
         """
         Return the product of all elements in the array. Return value is
         always a float.
         """
         return prod(self)
-    
+
     def min(self):
         """
         Return the minimum value of the array.
         """
         return min(self)
-    
+
     def max(self):
         """
         Return the maximum value of the array.
         """
         return max(self)
-    
+
     def argmin(self):
         """
         Return the index of the first minimum value of the array.
         """
         return argmin(self)
-    
+
     def argmax(self):
         """
         Return the index of the first maximum value of the array.
         """
         return argmax(self)
-    
+
     def mean(self):
         """
         Return the mean of the array.
         """
         return mean(self)
-    
+
     def var(self, ddof=0):
         """
         Compute the variance. See ``arkouda.var`` for details.
         """
         return var(self, ddof=ddof)
-    
+
     def std(self, ddof=0):
         """
         Compute the standard deviation. See ``arkouda.std`` for details.
@@ -455,7 +455,7 @@ class pdarray:
     def to_ndarray(self):
         """
         Convert the array to a np.ndarray, transferring array data from the
-        arkouda server to Python. If the array exceeds a builtin size limit, 
+        arkouda server to Python. If the array exceeds a builtin size limit,
         a RuntimeError is raised.
 
         Returns
@@ -504,7 +504,7 @@ class pdarray:
     def to_cuda(self):
         """
         Convert the array to a Numba DeviceND array, transferring array data from the
-        arkouda server to Python via ndarray. If the array exceeds a builtin size limit, 
+        arkouda server to Python via ndarray. If the array exceeds a builtin size limit,
         a RuntimeError is raised.
 
         Returns
@@ -543,7 +543,7 @@ class pdarray:
         except:
             raise ModuleNotFoundError('Numba is not enabled or installed and is required for GPU support.')
             return
-        
+
         # Total number of bytes in the array data
         arraybytes = self.size * self.dtype.itemsize
         # Guard against overflowing client memory
@@ -659,7 +659,7 @@ def all(pda):
         return parse_single_value(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
-    
+
 def is_sorted(pda):
     """
     Return True iff the array is monotonically non-decreasing.
@@ -710,7 +710,7 @@ def max(pda):
         return parse_single_value(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
-    
+
 def argmin(pda):
     """
     Return the index of the first minimum value of the array.

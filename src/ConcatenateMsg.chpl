@@ -21,15 +21,31 @@ module ConcatenateMsg
         var fields = reqMsg.split();
         var cmd = fields[1];
         var n = try! fields[2]:int; // number of arrays to sort
-        var names = fields[3..];
+        var objtype = fields[3];
+        var names = fields[4..];
         // Check that fields contains the stated number of arrays
         if (n != names.size) { return try! incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(n, names.size)); }
         /* var arrays: [0..#n] borrowed GenSymEntry; */
         var size: int = 0;
+        var nbytes: int = 0;          
         var dtype: DType;
         // Check that all arrays exist in the symbol table and have the same size
-        for (name, i) in zip(names, 1..) {
+        for (rawName, i) in zip(names, 1..) {
             // arrays[i] = st.lookup(name): borrowed GenSymEntry;
+            var name: string;
+            select objtype {
+                when "str" {
+                    var nameFields = rawName.split('+');
+                    name = nameFields[1];
+                    var valName = nameFields[2];
+                    var gval = st.lookup(valName);
+                    nbytes += gval.size;
+                }
+                when "pdarray" {
+                    name = rawName;
+                }
+                otherwise { return notImplementedError(pn, objtype); }
+            }
             var g: borrowed GenSymEntry = st.lookup(name);
             if (i == 1) {dtype = g.dtype;}
             else {
@@ -43,63 +59,86 @@ module ConcatenateMsg
 
         // allocate a new array in the symboltable
         // and copy in arrays
-        var rname = st.nextName();
-        select (dtype) {
-            when DType.Int64 {
-                // create array to copy into
-                var e = st.addEntry(rname, size, int);
-                var start: int;
-                var end: int;
-                start = 0;
-                for (name, i) in zip(names, 1..) {
-                    // lookup and cast operand to copy from
-                    var o = toSymEntry(st.lookup(name), int);
-                    // calculate end which is inclusive
-                    end = start + o.size - 1;
-                    // copy array into concatenation array
-                    e.a[{start..end}] = o.a;
-                    // update new start for next array copy
-                    start += o.size;
+        select objtype {
+            when "str" {
+                var segName = st.nextName();
+                var esegs = st.addEntry(segName, size, int);
+                var valName = st.nextName();
+                var evals = st.addEntry(valName, nbytes, uint(8));
+                var segStart = 0;
+                var valStart = 0;
+                for (rawName, i) in zip(names, 1..) {
+                    var nameFields = rawName.split('+');
+                    var thisSegs = toSymEntry(st.lookup(nameFields[1]), int);
+                    var thisVals = toSymEntry(st.lookup(nameFields[2]), uint(8));
+                    esegs.a[{segStart..#thisSegs.size}] = thisSegs.a + valStart;
+                    evals.a[{valStart..#thisVals.size}] = thisVals.a;
+                    segStart += thisSegs.size;
+                    valStart += thisVals.size;
                 }
+                return "created " + st.attrib(segName) + "+created " + st.attrib(valName);
             }
-            when DType.Float64 {
-                // create array to copy into
-                var e = st.addEntry(rname, size, real);
-                var start: int;
-                var end: int;
-                start = 0;
-                for (name, i) in zip(names, 1..) {
-                    // lookup and cast operand to copy from
-                    var o = toSymEntry(st.lookup(name), real);
-                    // calculate end which is inclusive
-                    end = start + o.size - 1;
-                    // copy array into concatenation array
-                    e.a[{start..end}] = o.a;
-                    // update new start for next array copy
-                    start += o.size;
+            when "pdarray" {
+                var rname = st.nextName();
+                select (dtype) {
+                    when DType.Int64 {
+                        // create array to copy into
+                        var e = st.addEntry(rname, size, int);
+                        var start: int;
+                        var end: int;
+                        start = 0;
+                        for (name, i) in zip(names, 1..) {
+                            // lookup and cast operand to copy from
+                            var o = toSymEntry(st.lookup(name), int);
+                            // calculate end which is inclusive
+                            end = start + o.size - 1;
+                            // copy array into concatenation array
+                            e.a[{start..end}] = o.a;
+                            // update new start for next array copy
+                            start += o.size;
+                        }
+                    }
+                    when DType.Float64 {
+                        // create array to copy into
+                        var e = st.addEntry(rname, size, real);
+                        var start: int;
+                        var end: int;
+                        start = 0;
+                        for (name, i) in zip(names, 1..) {
+                            // lookup and cast operand to copy from
+                            var o = toSymEntry(st.lookup(name), real);
+                            // calculate end which is inclusive
+                            end = start + o.size - 1;
+                            // copy array into concatenation array
+                            e.a[{start..end}] = o.a;
+                            // update new start for next array copy
+                            start += o.size;
+                        }
+                    }
+                    when DType.Bool {
+                        // create array to copy into
+                        var e = st.addEntry(rname, size, bool);
+                        var start: int;
+                        var end: int;
+                        start = 0;
+                        for (name, i) in zip(names, 1..) {
+                            // lookup and cast operand to copy from
+                            var o = toSymEntry(st.lookup(name), bool);
+                            // calculate end which is inclusive
+                            end = start + o.size - 1;
+                            // copy array into concatenation array
+                            e.a[{start..end}] = o.a;
+                            // update new start for next array copy
+                            start += o.size;
+                        }
+                    }
+                    otherwise {return notImplementedError("concatenate",dtype);}
                 }
-            }
-            when DType.Bool {
-                // create array to copy into
-                var e = st.addEntry(rname, size, bool);
-                var start: int;
-                var end: int;
-                start = 0;
-                for (name, i) in zip(names, 1..) {
-                    // lookup and cast operand to copy from
-                    var o = toSymEntry(st.lookup(name), bool);
-                    // calculate end which is inclusive
-                    end = start + o.size - 1;
-                    // copy array into concatenation array
-                    e.a[{start..end}] = o.a;
-                    // update new start for next array copy
-                    start += o.size;
-                }
-            }
-            otherwise {return notImplementedError("concatenate",dtype);}
-        }
 
-        return try! "created " + st.attrib(rname);
+                return try! "created " + st.attrib(rname);
+            }
+            otherwise { return notImplementedError(pn, objtype); }
+        }
     }
     
 }

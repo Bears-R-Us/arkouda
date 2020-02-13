@@ -1,6 +1,7 @@
 module CommAggregation {
   use SysCTypes;
   use UnorderedCopy;
+  private use CommPrimitives;
 
   // TODO these parameters need to be tuned and size should be user-settable at
   // creation time. iters before yield should be based on numLocales & buffSize
@@ -239,14 +240,5 @@ module CommAggregation {
       compilerWarning("Missing optimized unorderedCopy for " + dst.type:string);
       dst = src;
     }
-  }
-
-  // TODO can this use c_ptrTo?
-  private inline proc getAddr(const ref p): c_ptr(p.type) {
-    return __primitive("_wide_get_addr", p): c_ptr(p.type);
-  }
-
-  private inline proc PUT(addr, node, rAddr, size) {
-    __primitive("chpl_comm_put", addr, node, rAddr, size);
   }
 }

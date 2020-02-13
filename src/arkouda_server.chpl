@@ -26,7 +26,7 @@ proc main() {
         writeln("bytes of memoryUsed() = ",memoryUsed());
         try! stdout.flush();
     }
-    
+
     var st = new owned SymTab();
     var shutdownServer = false;
 
@@ -76,14 +76,13 @@ proc main() {
 
         const fieldsRaw = reqMsgRaw.split(1);
         const cmdRaw = fieldsRaw[1];
-        var repMsg: string;
         var s0 = t1.elapsed();
         // parse requests, execute requests, format responses
         try {
             // first handle the case where we received arbitrary data
             if cmdRaw == b"array" {
                 if logging { writeln("reqMsg: ", cmdRaw, " <binary-data>"); }
-                repMsg = arrayMsg(reqMsgRaw, st);
+                sendRepMsg(arrayMsg(reqMsgRaw, st));
             }
             else {
                 // received command does not have binary data, safe to decode
@@ -110,8 +109,10 @@ proc main() {
                 }
                 else {
                     // here we know that everything is strings
+                    var repMsg: string;
                     select cmd
                     {
+                        when "segmentLengths"    {repMsg = segmentLengthsMsg(reqMsg, st);}
                         when "segmentedHash"     {repMsg = segmentedHashMsg(reqMsg, st);}
                         when "segmentedEfunc"    {repMsg = segmentedEfuncMsg(reqMsg, st);}
                         when "segmentedIndex"    {repMsg = segmentedIndexMsg(reqMsg, st);}
@@ -121,6 +122,7 @@ proc main() {
                         when "segmentedIn1d"     {repMsg = segIn1dMsg(reqMsg, st);}
                         when "lshdf"             {repMsg = lshdfMsg(reqMsg, st);}
                         when "readhdf"           {repMsg = readhdfMsg(reqMsg, st);}
+                        when "readAllHdf"        {repMsg = readAllHdfMsg(reqMsg, st);}
                         when "tohdf"             {repMsg = tohdfMsg(reqMsg, st);}
                         when "create"            {repMsg = createMsg(reqMsg, st);}
                         when "delete"            {repMsg = deleteMsg(reqMsg, st);}
@@ -156,9 +158,9 @@ proc main() {
                         when "[slice]"           {repMsg = sliceIndexMsg(reqMsg, st);}
                         when "[pdarray]"         {repMsg = pdarrayIndexMsg(reqMsg, st);}
                         when "[int]=val"         {repMsg = setIntIndexToValueMsg(reqMsg, st);}
-                        when "[pdarray]=val"     {repMsg = setPdarrayIndexToValueMsg(reqMsg, st);}            
-                        when "[pdarray]=pdarray" {repMsg = setPdarrayIndexToPdarrayMsg(reqMsg, st);}            
-                        when "[slice]=val"       {repMsg = setSliceIndexToValueMsg(reqMsg, st);}            
+                        when "[pdarray]=val"     {repMsg = setPdarrayIndexToValueMsg(reqMsg, st);}
+                        when "[pdarray]=pdarray" {repMsg = setPdarrayIndexToPdarrayMsg(reqMsg, st);}
+                        when "[slice]=val"       {repMsg = setSliceIndexToValueMsg(reqMsg, st);}
                         when "[slice]=pdarray"   {repMsg = setSliceIndexToPdarrayMsg(reqMsg, st);}
                         when "argsort"           {repMsg = argsortMsg(reqMsg, st);}
                         when "coargsort"         {repMsg = coargsortMsg(reqMsg, st);}
@@ -181,17 +183,16 @@ proc main() {
                             if v {writeln("Error: unrecognized command: %s".format(reqMsg)); try! stdout.flush();}
                         }
                     }
+                    sendRepMsg(repMsg);
                 }
             }
         } catch (e: ErrorWithMsg) {
-            repMsg = e.msg;
+            sendRepMsg(e.msg);
         } catch {
-            repMsg = unknownError("");
+            sendRepMsg(unknownError(""));
         }
         
-        // if we generated a string message, send it
-        if !repMsg.isEmpty() then
-            sendRepMsg(repMsg);
+        // We must have sent a message back by now
 
         if (logging && memTrack) {writeln("bytes of memoryUsed() = ",memoryUsed()); try! stdout.flush();}
 
@@ -200,7 +201,7 @@ proc main() {
     }
     t1.stop();
     deleteServerConnectionInfo();
-    
+
     writeln("requests = ",reqCount," responseCount = ",repCount," elapsed sec = ",t1.elapsed());
 }
 
@@ -222,4 +223,3 @@ proc deleteServerConnectionInfo() {
         }
     }
 }
-

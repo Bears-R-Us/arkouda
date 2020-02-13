@@ -35,6 +35,8 @@ def argsort(pda):
     >>> a[perm]
     array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
     """
+    if hasattr(pda, "argsort"):
+        return pda.argsort()
     if isinstance(pda, pdarray) or isinstance(pda, Strings):
         if pda.size == 0:
             return zeros(0, dtype=int64)
@@ -128,7 +130,7 @@ def sort(pda):
     
     Parameters
     ----------
-    pda : pdarray
+    pda : pdarray or Categorical
         The array to sort (int64 or float64)
 
     Returns
@@ -152,6 +154,8 @@ def sort(pda):
     >>> a
     array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
     """
+    if hasattr(pda, "sort"):
+        return pda.sort()
     if isinstance(pda, pdarray):
         if pda.size == 0:
             return zeros(0, dtype=int64)

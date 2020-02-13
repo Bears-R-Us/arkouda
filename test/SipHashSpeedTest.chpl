@@ -6,7 +6,7 @@ use BlockDist;
 config const NINPUTS = 10_000;
 config const INPUTSIZE = 8;
 config const LENGTHS = "fixed";
-config param COMMDEBUG = false;
+config const COMMDEBUG = false;
 
 proc testFixedLength(n:int, size:int) {
   var t = new Timer();
@@ -36,14 +36,18 @@ proc testVariableLength(n:int, meanSize:int) {
   var (segs, vals) = newRandStringsLogNormalLength(n, logMean, logStd);
   const D = segs.domain;
   var lengths: [D] int;
-  lengths[{D.low..D.high-1}] = segs[{D.low+1..D.high}] - segs[{D.low..D.high-1}];
-  lengths[D.high] = vals.size - segs[D.high];
+  forall (l, s, i) in zip(lengths, segs, D) {
+    if i == D.high then l = vals.size - s;
+                   else l = segs[i+1] - s;
+  }
   var hashes: [segs.domain] 2*uint(64);
+  if COMMDEBUG { startCommDiagnostics(); }
   t.start();
   forall (h, i, l) in zip(hashes, segs, lengths) {
     h = sipHash128(vals, i..#l);
   }
   t.stop();
+  if COMMDEBUG { stopCommDiagnostics(); writeln(getCommDiagnostics());}
   return (t.elapsed(), vals.size);
 }
 

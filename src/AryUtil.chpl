@@ -72,4 +72,15 @@ module AryUtil
         var R = new owned RandomStream(real, seed); R.getNext();
         [a in A] a = (R.getNext() * (a_max - a_min) + a_min):int;
     }
+
+    /*
+      Determines if the passed array array maps contiguous indices to
+      contiguous memory.
+
+      :arg A: array to check
+    */
+    proc contiguousIndices(A: []) param {
+        use BlockDist;
+        return A.isDefaultRectangular() || isSubtype(A.domain.dist.type, Block);
+    }
 }

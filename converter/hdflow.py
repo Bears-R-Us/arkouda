@@ -65,15 +65,15 @@ def col2dset(name, col, f, dtype=None, compression='gzip'):
             dset.attrs['dtype'] = np.string_(normdtype.str)
     except TypeError:
         print(f"Column {col}")
-        
-        
+
+
 def df2hdf(filename, df, dtypes={}, compression='gzip'):
     '''Write a pandas DataFrame <df> to a HDF5 file <filename>. Optionally,
     specify dtypes for converting the columns and a compression to use.'''
     with h5py.File(filename, 'w') as f:
         for colname in df.columns:
             col2dset(colname, df[colname], f, dtype=dtypes.get(colname, None), compression=compression)
-                        
+
 def convert_file(args):
     filename, outdir, extension, options = args
     try:
@@ -84,13 +84,16 @@ def convert_file(args):
         return
     newname = os.path.splitext(os.path.basename(filename))[0] + extension
     df2hdf(os.path.join(outdir, newname), df, options.get('dtype', {}))
-        
+
 def _get_valid_columns(filename, options):
+    #print(filename)
+    #print(options)
     try:
+        #**options causing error
         df = pd.read_csv(filename, nrows=1000, **options)
     except Exception as e:
-        print(f"Error reading sample DataFrame:")
-        print(e)
+        print(f"Error reading sample DataFrame: ",e)
+        #print(e)
     validcols = []
     for i, col in enumerate(df.columns):
         userdtype = options.get('dtype', {}).get(col, None)
@@ -107,7 +110,7 @@ def _get_valid_columns(filename, options):
     used = options.get('usecols', list(range(df.shape[1])))
     new_usecols = [used[v] for v in validcols]
     return new_usecols
-        
+
 def convert_files(filenames, outdir, extension, options, nprocs):
     if not os.path.isdir(outdir) or not os.access(outdir, os.W_OK):
         raise OSError(f"Permission denied: {outdir}")
@@ -122,14 +125,14 @@ def convert_files(filenames, outdir, extension, options, nprocs):
     else:
         with mp.Pool(nprocs) as pool:
             _ = list(tqdm(pool.imap_unordered(convert_file, arglist), total=len(filenames)))
-                        
-        
+
+
 def read_hdf(filenames):
     df, offsets, lengths = _hdf_alloc(filenames)
     for fname, ind in tqdm(zip(filenames, offsets), total=len(filenames)):
         _hdf_insert(fname, df, ind)
     return df
-        
+
 def _hdf_alloc(filenames):
     if len(filenames) == 0:
         raise ValueError("Need at least one file to allocate a DataFrame")
@@ -151,7 +154,7 @@ def _hdf_alloc(filenames):
     # Allocate uninitialized memory for concatenated columns
     columns = {col:pd.Series(np.empty(shape=(total,), dtype=dtypes[col])) for col in dtypes}
     return pd.DataFrame(columns), offsets, lengths
-        
+
 def _get_column_metadata(filename, dtype_attr='dtype'):
     dtypes = {}
     length = -1
@@ -168,7 +171,7 @@ def _get_column_metadata(filename, dtype_attr='dtype'):
             else:
                 assert length == dset.shape[0], f"Columns of unequal length in {filename}"
     return dtypes, length
-        
+
 def _hdf_insert(filename, df, index):
     with h5py.File(filename, 'r') as f:
         # _hdf_alloc has already guaranteed that file has correct column names

@@ -11,7 +11,7 @@ def import_local(path):
         raise ImportError(f"{path} must be a .py file")
     sys.path.append(importdir)
     return f"from {importname} import OPTIONS as CUSTOM"
-        
+
 if __name__ == '__main__':
     import hdflow
     from multiprocessing import cpu_count
@@ -23,7 +23,7 @@ if __name__ == '__main__':
     parser.add_argument('--format', required=True, help=f'Name of netflow format defined in --formats-file argument')
     parser.add_argument('--formats-file', required=True, help=f'Python file specifying read_csv options, e.g. column names and dtypes')
     parser.add_argument('filenames', nargs='+', help='Input files to convert')
-        
+
     args = parser.parse_args()
     exec(import_local(args.formats_file))
     if args.format not in CUSTOM:
