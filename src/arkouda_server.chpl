@@ -64,9 +64,15 @@ proc main() {
 
         reqCount += 1;
 
+        var s0 = t1.elapsed();
+
         // shutdown server
         if reqMsgRaw == b"shutdown" {
-            if logging {writeln("reqMsg: ", reqMsgRaw); try! stdout.flush();}
+            if logging {
+                writeln("reqMsg: ", reqMsgRaw);
+                writeln(">>> %s started at %.17r sec".format("shutdown", s0));
+                try! stdout.flush();
+            }
             shutdownServer = true;
             repCount += 1;
             socket.send("shutdown server (%i req)".format(repCount));
@@ -76,12 +82,15 @@ proc main() {
 
         const fieldsRaw = reqMsgRaw.split(1);
         const cmdRaw = fieldsRaw[1];
-        var s0 = t1.elapsed();
         // parse requests, execute requests, format responses
         try {
             // first handle the case where we received arbitrary data
             if cmdRaw == b"array" {
-                if logging { writeln("reqMsg: ", cmdRaw, " <binary-data>"); }
+                if logging {
+                    writeln("reqMsg: ", cmdRaw, " <binary-data>");
+                    writeln(">>> %s started at %.17r sec".format("array", s0));
+                    try! stdout.flush();
+                }
                 sendRepMsg(arrayMsg(reqMsgRaw, st));
             }
             else {
@@ -98,10 +107,15 @@ proc main() {
                     }
                     sendRepMsg(unknownError(""));
                 }
-                if logging { writeln("reqMsg: ", reqMsg); }
 
                 const fields = reqMsg.split(1);
                 const cmd = fields[1];
+
+                if logging {
+                    writeln("reqMsg: ", reqMsg);
+                    writeln(">>> %s started at %.17r sec".format(cmd, s0));
+                    try! stdout.flush();
+                }
 
                 // now take care of the case where we send arbitrary data:
                 if cmd == "tondarray" {
