@@ -112,6 +112,7 @@ proc main() {
                     var repMsg: string;
                     select cmd
                     {
+                        when "segmentLengths"    {repMsg = segmentLengthsMsg(reqMsg, st);}
                         when "segmentedHash"     {repMsg = segmentedHashMsg(reqMsg, st);}
                         when "segmentedEfunc"    {repMsg = segmentedEfuncMsg(reqMsg, st);}
                         when "segmentedIndex"    {repMsg = segmentedIndexMsg(reqMsg, st);}

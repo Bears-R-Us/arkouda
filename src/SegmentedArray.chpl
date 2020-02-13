@@ -391,13 +391,13 @@ module SegmentedArray {
       return hits;
     }
 
-    proc isSorted(): bool {
+    proc isAscending():[offsets.aD] int {
+      var ascending: [offsets.aD] int;
       if (size < 2) {
-        return true;
+        return ascending;
       }
       ref oa = offsets.a;
       ref va = values.a;
-      var ascending: [offsets.aD] bool;
       const high = offsets.aD.high;
       forall (i, a) in zip(offsets.aD, ascending) {
         if (i < high) {
@@ -405,16 +405,23 @@ module SegmentedArray {
           const left = oa[i]..oa[i+1]-1;
           if (i < high - 1) {
             const right = oa[i+1]..oa[i+2]-1;
-            a = (memcmp(va, left, va, right) <= 0);
+            a = memcmp(va, left, va, right);
           } else { // i == high - 1
             const right = oa[i+1]..values.aD.high;
-            a = (memcmp(va, left, va, right) <= 0);
+            a = memcmp(va, left, va, right);
           }
         } else { // i == high
-          a = true;
+          a = 0;
         } 
       }
-      return (&& reduce ascending);
+      return ascending;
+    }
+
+    proc isSorted():bool {
+      if (size < 2) {
+        return true;
+      }
+      return (&& reduce (isAscending() <= 0));
     }
     
     /* proc isSorted(): bool { */
@@ -462,7 +469,7 @@ module SegmentedArray {
     /*   return res; */
     /* } */
 
-    proc argsort(checkSorted:bool=false): [offsets.aD] int throws {
+    proc argsort(checkSorted:bool=true): [offsets.aD] int throws {
       const ref D = offsets.aD;
       const ref va = values.a;
       if checkSorted && isSorted() {
@@ -478,9 +485,9 @@ module SegmentedArray {
 
   inline proc memcmp(const ref x: [] uint(8), const xinds, const ref y: [] uint(8), const yinds): int {
     const l = min(xinds.size, yinds.size);
-    var ret = 0;
+    var ret: int = 0;
     for (i, j) in zip(xinds.low..#l, yinds.low..#l) {
-      ret = x[i] - y[j];
+      ret = x[i]:int - y[j]:int;
       if (ret != 0) {
         break;
       }
