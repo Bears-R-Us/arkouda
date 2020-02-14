@@ -115,6 +115,10 @@ module IndexingMsg
         proc ivInt64Helper(type XType) throws {
             var e = toSymEntry(gX,XType);
             var iv = toSymEntry(gIV,int);
+            if (e.size == 0) && (iv.size == 0) {
+                var a = st.addEntry(rname, 0, XType);
+                return try! "created " + st.attrib(rname);
+            }
             var ivMin = min reduce iv.a;
             var ivMax = max reduce iv.a;
             if ivMin < 0 {return try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);}
@@ -135,6 +139,10 @@ module IndexingMsg
         proc ivBoolHelper(type XType) throws {
             var e = toSymEntry(gX,XType);
             var truth = toSymEntry(gIV,bool);
+            if (e.size == 0) && (truth.size == 0) {
+                var a = st.addEntry(rname, 0, XType);
+                return try! "created " + st.attrib(rname);
+            }
             var iv: [truth.aD] int = (+ scan truth.a);
             var pop = iv[iv.size-1];
             if v {writeln("pop = ",pop,"last-scan = ",iv[iv.size-1]);try! stdout.flush();}
