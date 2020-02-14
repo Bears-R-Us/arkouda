@@ -24,6 +24,7 @@ endif
 # need this to avoid a slew of warnings from HDF5 on some platforms
 # --ccflags="-Wno-incompatible-pointer-types"
 CHPL_FLAGS += --ccflags="-Wno-incompatible-pointer-types"
+CHPL_FLAGS += -smemTrack=true
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
 ifndef CHPL_VERSION_120
   CHPL_FLAGS += -lmpi
