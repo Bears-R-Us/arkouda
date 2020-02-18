@@ -468,37 +468,37 @@ module SegmentedArray {
       return (nSplits, results);
     }
 
-    proc isAscending():[offsets.aD] int {
-      var ascending: [offsets.aD] int;
+    proc ediff():[offsets.aD] int {
+      var diff: [offsets.aD] int;
       if (size < 2) {
-        return ascending;
+        return diff;
       }
       ref oa = offsets.a;
       ref va = values.a;
       const high = offsets.aD.high;
-      forall (i, a) in zip(offsets.aD, ascending) {
+      forall (i, a) in zip(offsets.aD, diff) {
         if (i < high) {
           var asc: bool;
           const left = oa[i]..oa[i+1]-1;
           if (i < high - 1) {
             const right = oa[i+1]..oa[i+2]-1;
-            a = memcmp(va, left, va, right);
+            a = -memcmp(va, left, va, right);
           } else { // i == high - 1
             const right = oa[i+1]..values.aD.high;
-            a = memcmp(va, left, va, right);
+            a = -memcmp(va, left, va, right);
           }
         } else { // i == high
           a = 0;
         } 
       }
-      return ascending;
+      return diff;
     }
 
     proc isSorted():bool {
       if (size < 2) {
         return true;
       }
-      return (&& reduce (isAscending() <= 0));
+      return (&& reduce (ediff() >= 0));
     }
     
     /* proc isSorted(): bool { */

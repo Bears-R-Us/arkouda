@@ -60,16 +60,16 @@ proc testMerge(n, m, minLen, maxLen) {
   writeln("%t seconds".format(t.elapsed())); stdout.flush(); t.clear();
   var cstrings = new owned SegString(csegs, cvals, st);
   cstrings.show(5);
-  var ascending = cstrings.isAscending();
-  var sorted = && reduce (ascending <= 0);
+  var diff = cstrings.ediff();
+  var sorted = && reduce (diff >= 0);
   writeln("Result is sorted? >>> ", sorted, " <<<");
   if !sorted {
     var pos = 0;
     for i in 0..#5 {
-      while (pos < cstrings.size) && (ascending[pos] <= 0) {
+      while (pos < cstrings.size) && (diff[pos] <= 0) {
         pos += 1;
       }
-      writeln("\n%i: %i\n%s\n%s".format(pos, ascending[pos], cstrings[pos], cstrings[pos+1])); stdout.flush();
+      writeln("\n%i: %i\n%s\n%s".format(pos, diff[pos], cstrings[pos], cstrings[pos+1])); stdout.flush();
       pos += 1;
     }
   }
