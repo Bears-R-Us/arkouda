@@ -17,3 +17,4 @@ Usage
    usage/setops
    usage/groupby
    usage/strings
+   usage/categorical

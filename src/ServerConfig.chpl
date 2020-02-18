@@ -2,7 +2,7 @@
 module ServerConfig
 {
     use Memory;
-    
+
     use ZMQ only;
     use HDF5.C_HDF5 only H5get_libversion;
     use SymArrayDmap only makeDistDom;
@@ -16,11 +16,11 @@ module ServerConfig
     Logging flag
     */
     config const logging = true;
-    
+
     /*
     Verbose debug flag
     */
-    config const v = true;
+    config const v = false;
 
     /*
     Port for zeromq
@@ -31,20 +31,20 @@ module ServerConfig
     Memory usage limit -- percentage of physical memory
     */
     config const perLocaleMemLimit = 90;
-    
-    /* 
+
+    /*
     Arkouda version
     */
     config param arkoudaVersion:string;
-    
+
     /*
     Write the server `hostname:port` to this file.
     */
     config const serverConnectionInfo: string = getEnv("ARKOUDA_SERVER_CONNECTION_INFO", "");
 
     /*
-    Hostname where I am running 
-    */ 
+    Hostname where I am running
+    */
     var serverHostname: string = try! get_hostname();
 
     proc get_hostname(): string {
@@ -61,7 +61,7 @@ module ServerConfig
 
     proc getConfig(): string {
         use SysCTypes;
-        
+
         class LocaleConfig {
             var id: int;
             var name: string;
@@ -97,7 +97,7 @@ module ServerConfig
         cfg.maxTaskPar = here.maxTaskPar;
         cfg.physicalMemory = here.physicalMemory();
         cfg.distributionType = (makeDistDom(10).type):string;
-        
+
         for loc in Locales {
             on loc {
                 cfg.LocaleConfigs[here.id].id = here.id;

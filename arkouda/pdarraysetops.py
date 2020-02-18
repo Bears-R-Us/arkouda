@@ -20,7 +20,7 @@ def unique(pda, return_counts=False):
 
     Parameters
     ----------
-    pda : pdarray or Strings
+    pda : pdarray or Strings or Categorical
         Input array.
     return_counts : bool, optional
         If True, also return the number of times each unique item appears
@@ -46,7 +46,9 @@ def unique(pda, return_counts=False):
     >>> ak.unique(A)
     array([1, 2, 3])
     """
-    if isinstance(pda, pdarray):
+    if hasattr(pda, 'unique'):
+        return pda.unique()
+    elif isinstance(pda, pdarray):
         repMsg = generic_msg("unique {} {} {}".format(pda.objtype, pda.name, return_counts))
         if return_counts:
             vc = repMsg.split("+")
@@ -75,7 +77,7 @@ def in1d(pda1, pda2, invert=False):
 
     Parameters
     ----------
-    pda1 : pdarray or Strings
+    pda1 : pdarray or Strings or Categorical
         Input array.
     pda2 : pdarray or Strings
         The values against which to test each value of `pda1`. Must be the 
@@ -102,7 +104,9 @@ def in1d(pda1, pda2, invert=False):
     equivalent to ``ak.array([item in b for item in a])``, but is much
     faster and scales to arbitrarily large ``a``.
     """
-    if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+    if hasattr(pda1, 'in1d'):
+        return pda1.in1d(pda2)
+    elif isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         repMsg = generic_msg("in1d {} {} {}".format(pda1.name, pda2.name, invert))
         return create_pdarray(repMsg)
     elif isinstance(pda1, Strings) and isinstance(pda2, Strings):
@@ -123,7 +127,7 @@ def concatenate(arrays):
 
     Parameters
     ----------
-    arrays : iterable of ``pdarray``
+    arrays : iterable of ``pdarray`` or Strings or Categorical
         The arrays to concatenate. Must all have same dtype.
 
     Returns
@@ -140,8 +144,12 @@ def concatenate(arrays):
     objtype = None
     dtype = None
     names = []
-    if len(a) < 1:
+    if len(arrays) < 1:
         raise ValueError("concatenate called on empty iterable")
+    if len(arrays) == 1:
+        return arrays[0]
+    if hasattr(arrays[0], 'concatenate'):
+        return arrays[0].concatenate(arrays[1:])
     for a in arrays:
         if not isinstance(a, pdarray) and not isinstance(a, Strings):
             raise ValueError("Argument must be an iterable of pdarrays or Strings")
@@ -154,15 +162,15 @@ def concatenate(arrays):
                 raise ValueError("All pdarrays must have same dtype")
             names.append(a.name)
         elif objtype == "str":
-            names.append('{}+{}'.format(a.offsets.name, a.values.name))
+            names.append('{}+{}'.format(a.offsets.name, a.bytes.name))
         else:
             raise NotImplementedError("concatenate not implemented for object type {}".format(objtype))
         size += a.size
     if size == 0:
         if objtype == "pdarray":
-            return zeros_like(a[0])
+            return zeros_like(arrays[0])
         else:
-            return a[0]
+            return arrays[0]
     repMsg = generic_msg("concatenate {} {} {}".format(len(arrays), objtype, ' '.join(names)))
     return create_pdarray(repMsg)
 

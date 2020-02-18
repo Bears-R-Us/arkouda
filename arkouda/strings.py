@@ -10,8 +10,8 @@ __all__ = ['Strings']
 
 class Strings:
     """
-    Represents an array of strings whose data resides on the 
-    arkouda server. The user should not call this class directly; 
+    Represents an array of strings whose data resides on the
+    arkouda server. The user should not call this class directly;
     rather its instances are created by other arkouda functions.
 
     Attributes
@@ -29,10 +29,10 @@ class Strings:
     shape : tuple
         The sizes of each dimension of the array
     """
-    
+
     BinOps = frozenset(["==", "!="])
     objtype = "str"
-    
+
     def __init__(self, offset_attrib, bytes_attrib):
         if isinstance(offset_attrib, pdarray):
             self.offsets = offset_attrib
@@ -52,7 +52,7 @@ class Strings:
         a = self.to_ndarray()
         for s in a:
             yield s
-        
+
     def __len__(self):
         return self.shape[0]
 
@@ -92,7 +92,7 @@ class Strings:
             raise ValueError("Strings: {} not supported between Strings and {}".format(op, type(other)))
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
-        
+
     def __eq__(self, other):
         return self.binop(other, "==")
 
@@ -101,6 +101,10 @@ class Strings:
 
     def __getitem__(self, key):
         if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
+            orig_key = key
+            if key < 0:
+                # Interpret negative key as offset from end of array
+                key += self.size
             if (key >= 0 and key < self.size):
                 msg = "segmentedIndex {} {} {} {} {}".format('intIndex',
                                                              self.objtype,
@@ -108,11 +112,10 @@ class Strings:
                                                              self.bytes.name,
                                                              key)
                 repMsg = generic_msg(msg)
-                fields = repMsg.split()
-                # value = fields[2]
-                return parse_single_value(' '.join(fields[1:]))
+                _, value = repMsg.split(maxsplit=1)
+                return parse_single_value(value)
             else:
-                raise IndexError("[int] {} is out of bounds with size {}".format(key,self.size))
+                raise IndexError("[int] {} is out of bounds with size {}".format(orig_key,self.size))
         elif isinstance(key, slice):
             (start,stop,stride) = key.indices(self.size)
             if verbose: print(start,stop,stride)
@@ -264,18 +267,18 @@ class Strings:
         The implementation uses SipHash128, a fast and balanced hash function (used
         by Python for dictionaries and sets). For realistic numbers of strings (up
         to about 10**15), the probability of a collision between two 128-bit hash
-        values is negligible. 
+        values is negligible.
         """
         msg = "segmentedHash {} {} {}".format(self.objtype, self.offsets.name, self.bytes.name)
         repMsg = generic_msg(msg)
         h1, h2 = repMsg.split('+')
         return create_pdarray(h1), create_pdarray(h2)
-        
+
     def group(self):
         """
-        Return the permutation that groups the array, placing equivalent 
-        strings together. All instances of the same string are guaranteed to lie 
-        in one contiguous block of the permuted array, but the blocks are not 
+        Return the permutation that groups the array, placing equivalent
+        strings together. All instances of the same string are guaranteed to lie
+        in one contiguous block of the permuted array, but the blocks are not
         necessarily ordered.
 
         Returns
@@ -289,11 +292,11 @@ class Strings:
 
         Notes
         -----
-        If the arkouda server is compiled with "-sSegmentedArray.useHash=true", 
+        If the arkouda server is compiled with "-sSegmentedArray.useHash=true",
         then arkouda uses 128-bit hash values to group strings, rather than sorting
         the strings directly. This method is fast, but the resulting permutation
         merely groups equivalent strings and does not sort them. If the "useHash"
-        parameter is false, then a full sort is performed.        
+        parameter is false, then a full sort is performed.
         """
         msg = "segmentedGroup {} {} {}".format(self.objtype, self.offsets.name, self.bytes.name)
         repMsg = generic_msg(msg)
@@ -302,7 +305,7 @@ class Strings:
     def to_ndarray(self):
         """
         Convert the array to a np.ndarray, transferring array data from the
-        arkouda server to Python. If the array exceeds a builtin size limit, 
+        arkouda server to Python. If the array exceeds a builtin size limit,
         a RuntimeError is raised.
 
         Returns
