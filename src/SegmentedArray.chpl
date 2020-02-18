@@ -400,6 +400,118 @@ module SegmentedArray {
       return hits;
     }
 
+    proc peel(const delimiter: string, const times: int, param includeDelimiter: bool, param keepPartial: bool, param left: bool) {
+      param stride = if left then 1 else -1;
+      const dBytes = delimiter.numBytes;
+      const lengths = getLengths() - 1;
+      var leftEnd: [offsets.aD] int;
+      var rightStart: [offsets.aD] int;
+      const truth = findSubstringInBytes(delimiter);
+      const D = truth.domain;
+      ref oa = offsets.a;
+      var numHits = (+ scan truth) - truth;
+      const high = offsets.aD.high;
+      forall i in offsets.aD {
+        // First, check whether string contains enough instances of delimiter to peel
+        var hasEnough: bool;
+        if i == high {
+          hasEnough = ((+ reduce truth) - numHits[oa[i]]) >= times;
+        } else {
+          hasEnough = (numHits[oa[i+1]] - numHits[oa[i]]) >= times;
+        }
+        if !hasEnough {
+          // If not, then the entire string stays together, and the param args
+          // determine whether it ends up on the left or right
+          if left {
+            if keepPartial {
+              // Goes on the left
+              leftEnd[i] = oa[i] + lengths[i] - 1;
+              rightStart[i] = oa[i] + lengths[i];
+            } else {
+              // Goes on the right
+              leftEnd[i] = oa[i] - 1;
+              rightStart[i] = oa[i];
+            }
+          } else {
+            if keepPartial {
+              // Goes on the right
+              leftEnd[i] = oa[i] - 1;
+              rightStart[i] = oa[i];
+            } else {
+              // Goes on the left
+              leftEnd[i] = oa[i] + lengths[i] - 1;
+              rightStart[i] = oa[i] + lengths[i];
+            }
+          }
+        } else {
+          // The string can be peeled; figure out where to split
+          var nDelim = 0;
+          var j: int;
+          if left {
+            j = oa[i];
+          } else {
+            if i == high {
+              j = values.aD.high - 1;
+            } else {
+              j = oa[i+1] - 2;
+            }
+          }
+          // TO DO rewrite findSubstringInBytes to return full truth array and
+          // eliminate loop conditions
+          while (j <= D.high) && (j >= oa[i]) && (j < oa[i] + lengths[i]) {
+            if truth[j] {
+              nDelim += 1;
+            }
+            if nDelim == times {
+              break;
+            }
+            j += stride;
+          }
+          // j is now the start of the correct delimiter
+          // tweak leftEnd and rightStart based on includeDelimiter
+          if left {
+            if includeDelimiter {
+              leftEnd[i] = j + dBytes - 1;
+              rightStart[i] = j + dBytes;
+            } else {
+              leftEnd[i] = j - 1;
+              rightStart[i] = j + dBytes;
+            }
+          } else {
+            if includeDelimiter {
+              leftEnd[i] = j - 1;
+              rightStart[i] = j;
+            } else {
+              leftEnd[i] = j - 1;
+              rightStart[i] = j + dBytes;
+            }
+          }
+        }
+      }
+      // Compute lengths and offsets for left and right return arrays
+      const leftLengths = leftEnd - oa + 2;
+      const rightLengths = lengths - (rightStart - oa) + 1;
+      const leftOffsets = (+ scan leftLengths) - leftLengths;
+      const rightOffsets = (+ scan rightLengths) - rightLengths;
+      // Allocate values and fill
+      var leftVals = makeDistArray((+ reduce leftLengths), uint(8));
+      var rightVals = makeDistArray((+ reduce rightLengths), uint(8));
+      ref va = values.a;
+      // Fill left values
+      forall (srcStart, dstStart, len) in zip(oa, leftOffsets, leftLengths) {
+        for i in 0..#len {
+          unorderedCopy(leftVals[dstStart+i], va[srcStart+i]);
+        }
+      }
+      // Fill right values
+      forall (srcStart, dstStart, len) in zip(rightStart, rightOffsets, rightLengths) {
+        for i in 0..#len {
+          unorderedCopy(rightVals[dstStart+i], va[srcStart+i]);
+        }
+      }
+      return (leftOffsets, leftVals, rightOffsets, rightVals);
+    }
+
     proc split(const substr: string, const maxSplit: int) {
       const sbytes = substr.numBytes;
       var nSplits: [offsets.aD] int;
@@ -500,51 +612,6 @@ module SegmentedArray {
       }
       return (&& reduce (ediff() >= 0));
     }
-    
-    /* proc isSorted(): bool { */
-    /*   var res = true; // strings are sorted? */
-    /*   // Is this position done comparing with its predecessor? */
-    /*   var done: [offsets.aD] bool; */
-    /*   // First string has no predecessor, so comparison is automatically done */
-    /*   done[offsets.aD.low] = true; */
-    /*   // Do not check null terminators */
-    /*   const lengths = getLengths() - 1; */
-    /*   const maxLen = max reduce lengths; */
-    /*   ref oa = offsets.a; */
-    /*   ref va = values.a; */
-    /*   // Compare each pair of strings byte-by-byte */
-    /*   for pos in 0..#maxLen { */
-    /*     forall (o, l, d, i) in zip(oa, lengths, done, offsets.aD)  */
-    /*       with (ref res) { */
-    /*       if (!d) { */
-    /*         // If either of the strings is exhausted, mark this entry done */
-    /*         if (pos >= l) || (pos >= lengths[i-1]) { */
-    /*           d = true; */
-    /*         } else { */
-    /*           const prevByte = va[oa[i-1] + pos]; */
-    /*           const currByte = va[o + pos]; */
-    /*           // If we can already tell the pair is sorted, mark done */
-    /*           if (prevByte < currByte) { */
-    /*             d = true; */
-    /*           // If we can tell the pair is not sorted, the return is false */
-    /*           } else if (prevByte > currByte) { */
-    /*             res = false; */
-    /*           } // If we can't tell yet, keep checking */
-    /*         } */
-    /*       } */
-    /*     } */
-    /*     // If some pair is not sorted, return false */
-    /*     if !res { */
-    /*       return false; */
-    /*     // If all comparisons are conclusive, return true */
-    /*     } */
-    /*     /\* else if (&& reduce done) { *\/ */
-    /*     /\*   return true; *\/ */
-    /*     /\* } // else keep going *\/ */
-    /*   } */
-    /*   // If we get to this point, it's because there is at least one pair of strings with length maxLen that are the same up to the last byte. That last byte determines res. */
-    /*   return res; */
-    /* } */
 
     proc argsort(checkSorted:bool=true): [offsets.aD] int throws {
       const ref D = offsets.aD;

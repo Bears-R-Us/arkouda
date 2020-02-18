@@ -9,7 +9,7 @@ config const MAXLEN: int = 30;
 config const SUBSTRING: string = "hi";
 config const DEBUG = false;
 
-proc make_strings(substr, n, minLen, maxLen, characters, mode, st) {
+proc make_strings(substr, n, minLen, maxLen, characters, st) {
   const nb = substr.numBytes;
   const sbytes: [0..#nb] uint(8) = for b in substr.chpl_bytes() do b;
   var (segs, vals) = newRandStringsUniformLength(n, minLen, maxLen, characters);
@@ -42,25 +42,40 @@ proc make_strings(substr, n, minLen, maxLen, characters, mode, st) {
   return (splits, strings2);
 }
 
-proc testSplit(substr:string, n:int, minLen:int, maxLen:int, characters:charSet = charSet.Uppercase, mode: SearchMode = SearchMode.contains) throws {
+proc testSplit(substr:string, n:int, minLen:int, maxLen:int, characters:charSet = charSet.Uppercase) throws {
   var st = new owned SymTab();
   var t = new Timer();
   writeln("Generating random strings..."); stdout.flush();
   t.start();
-  var (answer, strings) = make_strings(substr, n, minLen, maxLen, characters, mode, st);
+  var (answer, strings) = make_strings(substr, n, minLen, maxLen, characters, st);
   t.stop();
   writeln("%t seconds".format(t.elapsed())); stdout.flush(); t.clear();
-  writeln("Splitting..."); stdout.flush();
-  t.start();
-  var (numSplits, results) = strings.split(substr, 2);
-  t.stop();
-  writeln("%t seconds".format(t.elapsed())); stdout.flush();
-  for (i, r) in zip(1..results.size, results) {
-    writeln("Split %i".format(i));
-    var str = new owned SegString(r.splitOffsets, r.splitValues, st);
-    str.show();
+  for param times in 1..2 {
+    for param id in 0..1 {
+      param includeDelimiter:bool = id > 0;
+      for param kp in 0..1 {
+        param keepPartial:bool = kp > 0;
+        for param l in 0..1 {
+          param left:bool = l > 0;
+          writeln("strings.peel(%s, %i, includeDelimiter=%t, keepPartial=%t, left=%t)".format(substr, times, includeDelimiter, keepPartial, left));
+          t.start();
+          var (leftOffsets, leftVals, rightOffsets, rightVals) = strings.peel(substr, times, includeDelimiter, keepPartial, left);
+          t.stop();
+          writeln("%t seconds".format(t.elapsed())); stdout.flush();
+          var lstr = new owned SegString(leftOffsets, leftVals, st);
+          var rstr = new owned SegString(rightOffsets, rightVals, st);
+          for i in 0..#min(lstr.size, 5) {
+            writeln("%i: %s  |  %s".format(i, lstr[i], rstr[i]));
+          }
+          if lstr.size >= 10 {
+            for i in (lstr.size-5)..#5 {
+              writeln("%i: %s  |  %s".format(i, lstr[i], rstr[i]));
+            }
+          }
+        }
+      }
+    }
   }
-  writeln("Found correct number of splits? >>> ", && reduce (numSplits == answer), " <<<");
   /* var isMissing = (answer & !truth); */
   /* var missing = + reduce isMissing; */
   /* var isExtra = (truth & !answer); */
@@ -107,9 +122,6 @@ proc testSplit(substr:string, n:int, minLen:int, maxLen:int, characters:charSet 
 }
 
 proc main() {
-  for mode in (SearchMode.contains, SearchMode.startsWith, SearchMode.endsWith) {
-    writeln("\n", mode);
-    try! testSplit(SUBSTRING, N, MINLEN, MAXLEN, mode=mode);
-  }
+  try! testSplit(SUBSTRING, N, MINLEN, MAXLEN, mode=mode);
 }
   
