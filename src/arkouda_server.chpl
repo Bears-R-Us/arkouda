@@ -184,6 +184,9 @@ proc main() {
                         when "joinEqWithDT"      {repMsg = joinEqWithDTMsg(reqMsg, st);}
                         when "getconfig"         {repMsg = getconfigMsg(reqMsg, st);}
                         when "getmemused"        {repMsg = getmemusedMsg(reqMsg, st);}
+                        when "register"          {repMsg = registerMsg(reqMsg, st);}
+                        when "attach"            {repMsg = attachMsg(reqMsg, st);}
+                        when "unregister"        {repMsg = unregisterMsg(reqMsg, st);}
                         when "connect" {
                             repMsg = "connected to arkouda server tcp://*:%t".format(ServerPort);
                         }
