@@ -208,7 +208,7 @@ proc main() {
         
         // We must have sent a message back by now
 
-        if (logging && memTrack) {writeln("bytes of memoryUsed() = ",memoryUsed()); try! stdout.flush();}
+        if (logging && memTrack) {writeln("bytes of memory used after command = ",memoryUsed():uint * numLocales:uint); try! stdout.flush();}
 
         // end timer for command processing
         if (logging) {writeln("<<< %s took %.17r sec".format(cmdRaw.decode(decodePolicy.replace), t1.elapsed() - s0)); try! stdout.flush();}
