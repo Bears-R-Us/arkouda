@@ -7,6 +7,8 @@ module SegmentedMsg {
   use IO;
   use GenSymIO only decode_json;
 
+  private config const DEBUG = false;
+
   proc segmentLengthsMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     var fields = reqMsg.split();
@@ -339,15 +341,16 @@ module SegmentedMsg {
           var oname = st.nextName();
           var vname = st.nextName();
           if left {
-            var (newOffsets, newVals) = lstrings.stick(rstrings, delim, true);
+            var (newOffsets, newVals) = lstrings.stick(rstrings, delim, false);
             st.addEntry(oname, new shared SymEntry(newOffsets));
             st.addEntry(vname, new shared SymEntry(newVals));
           } else {
-            var (newOffsets, newVals) = lstrings.stick(rstrings, delim, false);
+            var (newOffsets, newVals) = lstrings.stick(rstrings, delim, true);
             st.addEntry(oname, new shared SymEntry(newOffsets));
             st.addEntry(vname, new shared SymEntry(newVals));
           }
           repMsg = "created %s+created %s".format(st.attrib(oname), st.attrib(vname));
+          if DEBUG {writeln(repMsg);}
         }
         otherwise {return notImplementedError(pn, ltype, op, rtype);}
         }

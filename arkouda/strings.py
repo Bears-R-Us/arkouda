@@ -1,6 +1,7 @@
 from arkouda.client import generic_msg, verbose, pdarrayIterThresh
 from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value
 from arkouda.dtypes import *
+from arkouda.dtypes import NUMBER_FORMAT_STRINGS
 import numpy as np
 import json
 
@@ -262,20 +263,20 @@ class Strings:
             raise TypeError("Times must be integer, not {}".format(type(times)))
         if times < 1:
             raise ValueError("Times must be > 0")
-        msg = "segmentedEfunc {} {} {} {} {} {} {} {} {} {} {}".format("peel",
-                                                                       self.objtype,
-                                                                       self.offsets.name,
-                                                                       self.bytes.name,
-                                                                       "str",
-                                                                       NUMBER_FORMAT_STRINGS['int64'].format(times),
-                                                                       NUMBER_FORMAT_STRINGS['bool'].format(includeDelimiter),
-                                                                       NUMBER_FORMAT_STRINGS['bool'].format(keepPartial),
-                                                                       NUMBER_FORMAT_STRINGS['bool'].format(fromRight),
-                                                                       json.dumps([delimiter]))
+        msg = "segmentedEfunc {} {} {} {} {} {} {} {} {} {}".format("peel",
+                                                                    self.objtype,
+                                                                    self.offsets.name,
+                                                                    self.bytes.name,
+                                                                    "str",
+                                                                    NUMBER_FORMAT_STRINGS['int64'].format(times),
+                                                                    NUMBER_FORMAT_STRINGS['bool'].format(includeDelimiter),
+                                                                    NUMBER_FORMAT_STRINGS['bool'].format(keepPartial),
+                                                                    NUMBER_FORMAT_STRINGS['bool'].format(not fromRight),
+                                                                    json.dumps([delimiter]))
         repMsg = generic_msg(msg)
-        arrays = repMsg.split(3)
-        leftStr = Strings('+'.join(arrays[:2]))
-        rightStr = Strings('+'.join(arrays[2:]))
+        arrays = repMsg.split('+', maxsplit=3)
+        leftStr = Strings(arrays[0], arrays[1])
+        rightStr = Strings(arrays[2], arrays[3])
         return leftStr, rightStr
 
     def rpeel(self, delimiter, times=1, includeDelimiter=False, keepPartial=False):
@@ -298,7 +299,7 @@ class Strings:
                                                              NUMBER_FORMAT_STRINGS['bool'].format(toLeft),
                                                              json.dumps([delimiter]))
         repMsg = generic_msg(msg)
-        return Strings(repMsg)
+        return Strings(*repMsg.split('+'))
 
     def __add__(self, other):
         return self.stick(other)

@@ -125,7 +125,7 @@ if __name__ == '__main__':
 
     # contains
     found = strings.contains(delim).to_ndarray()
-    npfound = np.array([s.contains(delim) for s in test_strings])
+    npfound = np.array([s.count(delim) > 0 for s in test_strings])
     assert((found == npfound).all())
     print("contains passed")
 
@@ -148,12 +148,12 @@ if __name__ == '__main__':
         ret = []
         for h, s, t in triple:
             if not part and s == '':
-                ret.append('', h)
+                ret.append(('', h))
             else:
                 if inc:
-                    ret.append(h + s, t)
+                    ret.append((h + s, t))
                 else:
-                    ret.append(h, t)
+                    ret.append((h, t))
         l, r = tuple(zip(*ret))
         return np.array(l), np.array(r)
 
@@ -161,20 +161,32 @@ if __name__ == '__main__':
         ret = []
         for h, s, t in triple:
             if not part and s == '':
-                ret.append(t, '')
+                ret.append((t, ''))
             else:
                 if inc:
-                    ret.append(h, s + t)
+                    ret.append((h, s + t))
                 else:
-                    ret.append(h, t)
+                    ret.append((h, t))
         l, r = tuple(zip(*ret))
         return np.array(l), np.array(r)
+
+    def slide(triple, delim):
+        h, s, t = triple
+        h2, s2, t2 = t.partition(delim)
+        newh = h + s + h2
+        return newh, s2, t2
+
+    def rslide(triple, delim):
+        h, s, t = triple
+        h2, s2, t2 = h.rpartition(delim)
+        newt = t2 + s + t
+        return h2, s2, newt
     
     for times, inc, part in it.product(range(1,4), tf, tf):
         ls, rs = strings.peel(delim, times=times, includeDelimiter=inc, keepPartial=part)
         triples = [s.partition(delim) for s in test_strings]
         for i in range(times-1):
-            triples = [t.partition(delim) for h, s, t in triples]
+            triples = [slide(t, delim) for t in triples]
         ltest, rtest = munge(triples, inc, part)
         assert((ltest == ls.to_ndarray()).all() and (rtest == rs.to_ndarray()).all())
 
@@ -182,7 +194,7 @@ if __name__ == '__main__':
         ls, rs = strings.rpeel(delim, times=times, includeDelimiter=inc, keepPartial=part)
         triples = [s.rpartition(delim) for s in test_strings]
         for i in range(times-1):
-            triples = [h.rpartition(delim) for h, s, t in triples]
+            triples = [rslide(t, delim) for t in triples]
         ltest, rtest = rmunge(triples, inc, part)
         assert((ltest == ls.to_ndarray()).all() and (rtest == rs.to_ndarray()).all())
 

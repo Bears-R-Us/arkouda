@@ -1,6 +1,7 @@
 use RandArray;
 use MultiTypeSymbolTable;
 use SegmentedArray;
+use SegmentedMsg;
 use Time;
 
 config const N: int = 10_000;
@@ -130,7 +131,43 @@ proc testPeel(substr:string, n:int, minLen:int, maxLen:int, characters:charSet =
   writeln("All round trip tests passed? >>> %t <<<".format(allSuccess));
 }
 
+proc testMessageLayer(substr, n, minLen, maxLen) throws {
+  var st = new owned SymTab();
+  var t = new Timer();
+  writeln("Generating random strings..."); stdout.flush();
+  t.start();
+  var (answer, strings) = make_strings(substr, n, minLen, maxLen, charSet.Uppercase, st);
+  t.stop();
+  writeln("%t seconds".format(t.elapsed())); stdout.flush(); t.clear();
+  var reqMsg = "segmentedEfunc peel str %s %s str 1 True True True %jt".format(strings.offsetName, strings.valueName, [substr]);
+  writeln(reqMsg);
+  var repMsg = segmentedEfuncMsg(reqMsg, st);
+  writeln(repMsg);
+  var attribs = repMsg.split('+');
+  var temp = attribs[1].split();
+  var loname = temp[2];
+  temp = attribs[2].split();
+  var lvname = temp[2];
+  temp = attribs[3].split();
+  var roname = temp[2];
+  temp = attribs[4].split();
+  var rvname = temp[2];
+  reqMsg = "segBinopvv stick str %s %s str %s %s False %jt".format(loname, lvname, roname, rvname, [""]);
+  writeln(reqMsg);
+  repMsg = segBinopvvMsg(reqMsg, st);
+  writeln(repMsg);
+  var attribs2 = repMsg.split('+');
+  temp = attribs2[1].split();
+  var rtoname = temp[2];
+  temp = attribs2[2].split();
+  var rtvname = temp[2];
+  var roundTrip = new owned SegString(rtoname, rtvname, st);
+  var success = && reduce (strings == roundTrip);
+  writeln("Round trip successful? >>> %t <<<".format(success));
+}
+
 proc main() {
   try! testPeel(SUBSTRING, N, MINLEN, MAXLEN);
+  try! testMessageLayer(SUBSTRING, N, MINLEN, MAXLEN);
 }
   
