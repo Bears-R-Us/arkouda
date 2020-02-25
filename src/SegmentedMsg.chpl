@@ -5,6 +5,7 @@ module SegmentedMsg {
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
   use IO;
+  use GenSymIO only decode_json;
 
   proc segmentLengthsMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
@@ -29,37 +30,115 @@ module SegmentedMsg {
   proc segmentedEfuncMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var fields = reqMsg.split();
+    var fields = reqMsg.split(10);
     var cmd = fields[1];
     var subcmd = fields[2];
     var objtype = fields[3];
     var segName = fields[4];
     var valName = fields[5];
     var valtype = fields[6];
-    var val = fields[7];
-    var rname = st.nextName();
+    // var val = fields[7];
     select (objtype, valtype) {
     when ("str", "str") {
       var strings = new owned SegString(segName, valName, st);
       select subcmd {
         when "contains" {
+          var json = decode_json(fields[7], 1);
+          var val = json[json.domain.low];
+          var rname = st.nextName();
           var truth = st.addEntry(rname, strings.size, bool);
           truth.a = strings.substringSearch(val, SearchMode.contains);
+          repMsg = "created "+st.attrib(rname);
         }
         when "startswith" {
+          var json = decode_json(fields[7], 1);
+          var val = json[json.domain.low];
+          var rname = st.nextName();
           var truth = st.addEntry(rname, strings.size, bool);
           truth.a = strings.substringSearch(val, SearchMode.startsWith);
+          repMsg = "created "+st.attrib(rname);
         }
         when "endswith" {
+          var json = decode_json(fields[7], 1);
+          var val = json[json.domain.low];
+          var rname = st.nextName();
           var truth = st.addEntry(rname, strings.size, bool);
           truth.a = strings.substringSearch(val, SearchMode.endsWith);
+          repMsg = "created "+st.attrib(rname);
+        }
+        when "peel" {
+          var times = fields[7]:int;
+          var includeDelimiter = (fields[8].toLower() == "true");
+          var keepPartial = (fields[9].toLower() == "true");
+          var left = (fields[10].toLower() == "true");
+          var json = decode_json(fields[11], 1);
+          var val = json[json.domain.low];
+          var loname = st.nextName();
+          var lvname = st.nextName();
+          var roname = st.nextName();
+          var rvname = st.nextName();
+          select (includeDelimiter, keepPartial, left) {
+          when (false, false, false) {
+            var (lo, lv, ro, rv) = strings.peel(val, times, false, false, false);
+            st.addEntry(loname, new shared SymEntry(lo));
+            st.addEntry(lvname, new shared SymEntry(lv));
+            st.addEntry(roname, new shared SymEntry(ro));
+            st.addEntry(rvname, new shared SymEntry(rv));
+          } when (false, false, true) {
+            var (lo, lv, ro, rv) = strings.peel(val, times, false, false, true);
+            st.addEntry(loname, new shared SymEntry(lo));
+            st.addEntry(lvname, new shared SymEntry(lv));
+            st.addEntry(roname, new shared SymEntry(ro));
+            st.addEntry(rvname, new shared SymEntry(rv));
+          } when (false, true, false) {
+            var (lo, lv, ro, rv) = strings.peel(val, times, false, true, false);
+            st.addEntry(loname, new shared SymEntry(lo));
+            st.addEntry(lvname, new shared SymEntry(lv));
+            st.addEntry(roname, new shared SymEntry(ro));
+            st.addEntry(rvname, new shared SymEntry(rv));
+          } when (false, true, true) {
+            var (lo, lv, ro, rv) = strings.peel(val, times, false, true, true);
+            st.addEntry(loname, new shared SymEntry(lo));
+            st.addEntry(lvname, new shared SymEntry(lv));
+            st.addEntry(roname, new shared SymEntry(ro));
+            st.addEntry(rvname, new shared SymEntry(rv));
+          } when (true, false, false) {
+            var (lo, lv, ro, rv) = strings.peel(val, times, true, false, false);
+            st.addEntry(loname, new shared SymEntry(lo));
+            st.addEntry(lvname, new shared SymEntry(lv));
+            st.addEntry(roname, new shared SymEntry(ro));
+            st.addEntry(rvname, new shared SymEntry(rv));
+          } when (true, false, true) {
+            var (lo, lv, ro, rv) = strings.peel(val, times, true, false, true);
+            st.addEntry(loname, new shared SymEntry(lo));
+            st.addEntry(lvname, new shared SymEntry(lv));
+            st.addEntry(roname, new shared SymEntry(ro));
+            st.addEntry(rvname, new shared SymEntry(rv));
+          } when (true, true, false) {
+            var (lo, lv, ro, rv) = strings.peel(val, times, true, true, false);
+            st.addEntry(loname, new shared SymEntry(lo));
+            st.addEntry(lvname, new shared SymEntry(lv));
+            st.addEntry(roname, new shared SymEntry(ro));
+            st.addEntry(rvname, new shared SymEntry(rv));
+          } when (true, true, true) {
+            var (lo, lv, ro, rv) = strings.peel(val, times, true, true, true);
+            st.addEntry(loname, new shared SymEntry(lo));
+            st.addEntry(lvname, new shared SymEntry(lv));
+            st.addEntry(roname, new shared SymEntry(ro));
+            st.addEntry(rvname, new shared SymEntry(rv));
+          } otherwise {return notImplementedError(pn, "subcmd: %s, (%s, %s)".format(subcmd, objtype, valtype));}
+          }
+          repMsg = "created %s+created %s+created %s+created %s".format(st.attrib(loname),
+                                                                        st.attrib(lvname),
+                                                                        st.attrib(roname),
+                                                                        st.attrib(rvname));
         }
         otherwise {return notImplementedError(pn, "subcmd: %s, (%s, %s)".format(subcmd, objtype, valtype));}
       }
     }
     otherwise {return notImplementedError(pn, "(%s, %s)".format(objtype, valtype));}
     }
-    return "created "+st.attrib(rname);
+    return repMsg;
   }
 
   proc segmentedHashMsg(reqMsg: string, st: borrowed SymTab): string throws {
@@ -225,7 +304,7 @@ module SegmentedMsg {
   proc segBinopvvMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var fields = reqMsg.split();
+    var fields = reqMsg.split(9);
     var cmd = fields[1];
     var op = fields[2];
     // Type and attrib names of left segmented array
@@ -236,39 +315,61 @@ module SegmentedMsg {
     var rtype = fields[6];
     var rsegName = fields[7];
     var rvalName = fields[8];
-    var rname = st.nextName();
     select (ltype, rtype) {
     when ("str", "str") {
       var lstrings = new owned SegString(lsegName, lvalName, st);
       var rstrings = new owned SegString(rsegName, rvalName, st);
       select op {
         when "==" {
+          var rname = st.nextName();
           var e = st.addEntry(rname, lstrings.size, bool);
           e.a = (lstrings == rstrings);
+          repMsg = "created " + st.attrib(rname);
         }
         when "!=" {
+          var rname = st.nextName();
           var e = st.addEntry(rname, lstrings.size, bool);
           e.a = (lstrings != rstrings);
+          repMsg = "created " + st.attrib(rname);
+        }
+        when "stick" {
+          var left = (fields[9].toLower() != "false");
+          var json = decode_json(fields[10], 1);
+          const delim = json[json.domain.low];
+          var oname = st.nextName();
+          var vname = st.nextName();
+          if left {
+            var (newOffsets, newVals) = lstrings.stick(rstrings, delim, true);
+            st.addEntry(oname, new shared SymEntry(newOffsets));
+            st.addEntry(vname, new shared SymEntry(newVals));
+          } else {
+            var (newOffsets, newVals) = lstrings.stick(rstrings, delim, false);
+            st.addEntry(oname, new shared SymEntry(newOffsets));
+            st.addEntry(vname, new shared SymEntry(newVals));
+          }
+          repMsg = "created %s+created %s".format(st.attrib(oname), st.attrib(vname));
         }
         otherwise {return notImplementedError(pn, ltype, op, rtype);}
         }
     }
     otherwise {return unrecognizedTypeError(pn, "("+ltype+", "+rtype+")");} 
     }
-    return "created " + st.attrib(rname);
+    return repMsg;
   }
 
   proc segBinopvsMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var fields = reqMsg.split();
+    var fields = reqMsg.split(6);
     var cmd = fields[1];
     var op = fields[2];
     var objtype = fields[3];
     var segName = fields[4];
     var valName = fields[5];
     var valtype = fields[6];
-    var value = fields[7];
+    var encodedVal = fields[7];
+    var json = decode_json(encodedVal, 1);
+    var value = json[json.domain.low];
     var rname = st.nextName();
     select (objtype, valtype) {
     when ("str", "str") {

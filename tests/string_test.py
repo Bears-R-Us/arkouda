@@ -117,3 +117,88 @@ if __name__ == '__main__':
         assert(not (permStrings[:s] == uk).any())
         assert(not (permStrings[s+l:] == uk).any())
     print("groupby passed")
+
+    # substring functions
+    from collections import Counter
+    x, w = tuple(zip(*Counter(''.join(base_words)).items()))
+    delim = np.random.choice(x, p=(np.array(w)/sum(w)))
+
+    # contains
+    found = strings.contains(delim).to_ndarray()
+    npfound = np.array([s.contains(delim) for s in test_strings])
+    assert((found == npfound).all())
+    print("contains passed")
+
+    # startswith
+    found = strings.startswith(delim).to_ndarray()
+    npfound = np.array([s.startswith(delim) for s in test_strings])
+    assert((found == npfound).all())
+    print("startswith passed")
+
+    # endswith
+    found = strings.endswith(delim).to_ndarray()
+    npfound = np.array([s.endswith(delim) for s in test_strings])
+    assert((found == npfound).all())
+    print("endswith passed")
+
+    # peel
+    import itertools as it
+    tf = (True, False)
+    def munge(triple, inc, part):
+        ret = []
+        for h, s, t in triple:
+            if not part and s == '':
+                ret.append('', h)
+            else:
+                if inc:
+                    ret.append(h + s, t)
+                else:
+                    ret.append(h, t)
+        l, r = tuple(zip(*ret))
+        return np.array(l), np.array(r)
+
+    def rmunge(triple, inc, part):
+        ret = []
+        for h, s, t in triple:
+            if not part and s == '':
+                ret.append(t, '')
+            else:
+                if inc:
+                    ret.append(h, s + t)
+                else:
+                    ret.append(h, t)
+        l, r = tuple(zip(*ret))
+        return np.array(l), np.array(r)
+    
+    for times, inc, part in it.product(range(1,4), tf, tf):
+        ls, rs = strings.peel(delim, times=times, includeDelimiter=inc, keepPartial=part)
+        triples = [s.partition(delim) for s in test_strings]
+        for i in range(times-1):
+            triples = [t.partition(delim) for h, s, t in triples]
+        ltest, rtest = munge(triples, inc, part)
+        assert((ltest == ls.to_ndarray()).all() and (rtest == rs.to_ndarray()).all())
+
+    for times, inc, part in it.product(range(1,4), tf, tf):
+        ls, rs = strings.rpeel(delim, times=times, includeDelimiter=inc, keepPartial=part)
+        triples = [s.rpartition(delim) for s in test_strings]
+        for i in range(times-1):
+            triples = [h.rpartition(delim) for h, s, t in triples]
+        ltest, rtest = rmunge(triples, inc, part)
+        assert((ltest == ls.to_ndarray()).all() and (rtest == rs.to_ndarray()).all())
+
+    print("peel passed")
+
+    # stick
+
+    test_strings2 = np.random.choice(base_words, N, replace=True)
+    strings2 = ak.array(test_strings2)
+    stuck = strings.stick(strings2, delimiter=delim).to_ndarray()
+    tstuck = np.array([delim.join((a, b)) for a, b in zip(test_strings, test_strings2)])
+    assert ((stuck == tstuck).all())
+    assert ((strings + strings2) == strings.stick(strings2, delimiter="")).all()
+
+    lstuck = strings.lstick(strings2, delimiter=delim).to_ndarray()
+    tlstuck = np.array([delim.join((b, a)) for a, b in zip(test_strings, test_strings2)])
+    assert ((lstuck == tlstuck).all())
+    assert ((strings2 + strings) == strings.lstick(strings2, delimiter="")).all()
+    print("stick passed")

@@ -2,6 +2,7 @@ from arkouda.client import generic_msg, verbose, pdarrayIterThresh
 from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value
 from arkouda.dtypes import *
 import numpy as np
+import json
 
 global verbose
 global pdarrayIterThresh
@@ -87,7 +88,7 @@ class Strings:
                                                               self.offsets.name,
                                                               self.bytes.name,
                                                               self.objtype,
-                                                              other)
+                                                              json.dumps([other]))
         else:
             raise ValueError("Strings: {} not supported between Strings and {}".format(op, type(other)))
         repMsg = generic_msg(msg)
@@ -186,7 +187,7 @@ class Strings:
                                                         self.offsets.name,
                                                         self.bytes.name,
                                                         "str",
-                                                        substr)
+                                                        json.dumps([substr]))
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
@@ -217,7 +218,7 @@ class Strings:
                                                         self.offsets.name,
                                                         self.bytes.name,
                                                         "str",
-                                                        substr)
+                                                        json.dumps([substr]))
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
@@ -248,10 +249,66 @@ class Strings:
                                                         self.offsets.name,
                                                         self.bytes.name,
                                                         "str",
-                                                        substr)
+                                                        json.dumps([substr]))
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
+    def peel(self, delimiter, times=1, includeDelimiter=False, keepPartial=False, fromRight=False):
+        if isinstance(delimiter, bytes):
+            delimiter = delimiter.decode()
+        if not isinstance(delimiter, str):
+            raise TypeError("Delimiter must be a string, not {}".format(type(delimiter)))
+        if not np.isscalar(times) or resolve_scalar_dtype(times) != 'int64':
+            raise TypeError("Times must be integer, not {}".format(type(times)))
+        if times < 1:
+            raise ValueError("Times must be > 0")
+        msg = "segmentedEfunc {} {} {} {} {} {} {} {} {} {} {}".format("peel",
+                                                                       self.objtype,
+                                                                       self.offsets.name,
+                                                                       self.bytes.name,
+                                                                       "str",
+                                                                       NUMBER_FORMAT_STRINGS['int64'].format(times),
+                                                                       NUMBER_FORMAT_STRINGS['bool'].format(includeDelimiter),
+                                                                       NUMBER_FORMAT_STRINGS['bool'].format(keepPartial),
+                                                                       NUMBER_FORMAT_STRINGS['bool'].format(fromRight),
+                                                                       json.dumps([delimiter]))
+        repMsg = generic_msg(msg)
+        arrays = repMsg.split(3)
+        leftStr = Strings('+'.join(arrays[:2]))
+        rightStr = Strings('+'.join(arrays[2:]))
+        return leftStr, rightStr
+
+    def rpeel(self, delimiter, times=1, includeDelimiter=False, keepPartial=False):
+        return self.peel(delimiter, times=times, includeDelimiter=includeDelimiter, keepPartial=keepPartial, fromRight=True)
+
+    def stick(self, other, delimiter="", toLeft=False):
+        if not isinstance(other, Strings):
+            raise TypeError("stick: not supported between Strings and {}".format(type(other)))
+        if isinstance(delimiter, bytes):
+            delimiter = delimiter.decode()
+        if not isinstance(delimiter, str):
+            raise TypeError("Delimiter must be a string, not {}".format(type(delimiter)))
+        msg = "segBinopvv {} {} {} {} {} {} {} {} {}".format("stick",
+                                                             self.objtype,
+                                                             self.offsets.name,
+                                                             self.bytes.name,
+                                                             other.objtype,
+                                                             other.offsets.name,
+                                                             other.bytes.name,
+                                                             NUMBER_FORMAT_STRINGS['bool'].format(toLeft),
+                                                             json.dumps([delimiter]))
+        repMsg = generic_msg(msg)
+        return Strings(repMsg)
+
+    def __add__(self, other):
+        return self.stick(other)
+    
+    def lstick(self, other, delimiter=""):
+        return self.stick(other, delimiter="", toLeft=True)
+
+    def __radd__(self, other):
+        return self.lstick(other)
+    
     def hash(self):
         """
         Compute a 128-bit hash of each string.
