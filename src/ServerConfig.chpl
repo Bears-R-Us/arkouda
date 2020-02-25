@@ -126,6 +126,8 @@ module ServerConfig
         return ((perLocaleMemLimit:real / 100.0) * here.physicalMemory()):uint; // checks on locale-0
     }
 
+    var memHighWater:uint = 0;
+    
     /*
     check used + amount is over the memory limit
     throw error if we would go over the limit
@@ -135,6 +137,14 @@ module ServerConfig
         // to use memoryUsed() procedure from Chapel's Memory module
         if (memTrack) {
             var total = memoryUsed() + (additionalAmount:uint / numLocales:uint); // this is a per locale total
+            if (logging) {
+                if (total > memHighWater) {
+                    memHighWater = total;
+                    writeln("memory high watermark = ", memHighWater:uint * numLocales:uint,
+                            " memory limit = ", getMemLimit():uint * numLocales:uint);
+                    try! stdout.flush();
+                }
+            }
             if total > getMemLimit() {
                 throw new owned ErrorWithMsg("Error: Operation would exceed memory limit ("
                                              +total:string+","+getMemLimit():string+")");
