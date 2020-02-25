@@ -38,7 +38,7 @@ module SipHash {
             (p[D.low+7]: uint(64) << 56));
   }
 
-  private inline proc U8TO64_LE(p: c_ptr(uint(8)), D): uint(64) {
+  private inline proc U8TO64_LE(p: c_ptr(uint(8))): uint(64) {
     return ((p[0]: uint(64)) |
             (p[1]: uint(64) << 8) |
             (p[2]: uint(64) << 16) |
@@ -64,13 +64,20 @@ module SipHash {
   }
   
   proc sipHash64(msg: [] uint(8), D): uint(64) {
-    var res = computeSipHash(msg, D, 8);
+    var res = computeSipHashLocalized(msg, D, 8);
     return res[1];
   }
 
   proc sipHash128(msg: [] uint(8), D): 2*uint(64) {
+    return computeSipHashLocalized(msg, D, 16);
+  }
+
+  private proc computeSipHashLocalized(msg: [] uint(8), D, param outlen: int) {
     if contiguousIndices(msg) {
       ref start = msg[D.low];
+      if D.high < D.low {
+        return computeSipHash(c_ptrTo(start), 0..#0, outlen);
+      }
       ref end = msg[D.high];
       const startLocale = start.locale.id;
       const endLocale = end.locale.id;
@@ -78,17 +85,17 @@ module SipHash {
       const l = D.size;
       if startLocale == endLocale {
         if startLocale == hereLocale {
-          return computeSipHash(c_ptrTo(start), 0..#l, 16);
+          return computeSipHash(c_ptrTo(start), 0..#l, outlen);
         } else {
           var a = c_malloc(msg.eltType, l);
           GET(a, startLocale, getAddr(start), l);
-          var h = computeSipHash(a, 0..#l, 16);
+          var h = computeSipHash(a, 0..#l, outlen);
           c_free(a);
           return h;
         }
       }
     }
-    return computeSipHash(msg, D, 16);
+    return computeSipHash(msg, D, outlen);
   }
   
   private proc computeSipHash(msg, D, param outlen: int) {
@@ -99,8 +106,8 @@ module SipHash {
     var v1 = 0x646f72616e646f6d: uint(64);
     var v2 = 0x6c7967656e657261: uint(64);
     var v3 = 0x7465646279746573: uint(64);
-    const k0 = 0xf0e1d2c3b4a59687: uint(64);
-    const k1 = 0x79695a4b3c2d1e0f: uint(64);
+    const k0 = 0x0706050403020100: uint(64);
+    const k1 = 0x0f0e0d0c0b0a0908: uint(64);
     var m: uint(64);
     var i: int;
     const lastPos = D.low + D.size - (D.size % 8);
@@ -146,7 +153,11 @@ module SipHash {
     }
 
     for pos in D.low..lastPos-1 by 8 {
-        m = U8TO64_LE(msg, pos..#8);
+        if isSubtype(msg.type, c_ptr) {
+          m = U8TO64_LE(msg + pos);
+        } else {
+          m = U8TO64_LE(msg, pos..#8);
+        }
         v3 ^= m;
         TRACE();
         for i in 0..#cROUNDS {
