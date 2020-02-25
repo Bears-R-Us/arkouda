@@ -486,21 +486,19 @@ proc U8TO2U64_LE(vec: [?D] uint(8)): 2*uint(64) {
 const version = ["sip64", "sip128"];
 
 proc main() {
-  var k: [0..#16] uint(8) = for i in 0..#16 do i: uint(8);
+  var msg: [0..#64] uint(8) = for i in 0..#64 do i: uint(8);
   var errors: int;
   for ver in version {
     for i in 0..#64 {
-      var msg: [0..#i] uint(8);
-      [j in 0..#i] msg[j] = j: uint(8);
       if ver == "sip64" {
-        const h = sipHash64(msg, k);
+        const h = sipHash64(msg, 0..#i);
         const vec = U8TOU64_LE(vectors_sip64[i]);
         if (h != vec) {
           errors += 1;
           writeln("%i:\n%016xu vs \n%016xu\n".format(i, h, vec));
         }
       } else if ver == "sip128" {
-        const h = sipHash128(msg, k);
+        const h = sipHash128(msg, 0..#i);
         const vec = U8TO2U64_LE(vectors_sip128[i]);
         if (h != vec) {
           errors += 1;
