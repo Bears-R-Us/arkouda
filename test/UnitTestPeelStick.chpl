@@ -42,7 +42,7 @@ proc make_strings(substr, n, minLen, maxLen, characters, st) {
   return (splits, strings2);
 }
 
-proc testSplit(substr:string, n:int, minLen:int, maxLen:int, characters:charSet = charSet.Uppercase) throws {
+proc testPeel(substr:string, n:int, minLen:int, maxLen:int, characters:charSet = charSet.Uppercase) throws {
   var st = new owned SymTab();
   var t = new Timer();
   writeln("Generating random strings..."); stdout.flush();
@@ -50,6 +50,8 @@ proc testSplit(substr:string, n:int, minLen:int, maxLen:int, characters:charSet 
   var (answer, strings) = make_strings(substr, n, minLen, maxLen, characters, st);
   t.stop();
   writeln("%t seconds".format(t.elapsed())); stdout.flush(); t.clear();
+  const lengths = strings.getLengths();
+  var allSuccess = true;
   for param times in 1..2 {
     for param id in 0..1 {
       param includeDelimiter:bool = id > 0;
@@ -64,64 +66,71 @@ proc testSplit(substr:string, n:int, minLen:int, maxLen:int, characters:charSet 
           writeln("%t seconds".format(t.elapsed())); stdout.flush();
           var lstr = new owned SegString(leftOffsets, leftVals, st);
           var rstr = new owned SegString(rightOffsets, rightVals, st);
+          if DEBUG {
+            var llen = lstr.getLengths();
+            var rlen = rstr.getLengths();
+            var badLen = + reduce ((llen <= 0) | (rlen <= 0));
+            writeln("Lengths <= 0: %t".format(badLen));
+            if badLen > 0 {
+              var n = 0;
+              for (i, ll, rl, ol) in zip(lstr.offsets.aD, llen, rlen, lengths) {
+                if (ll <= 0) {
+                  n += 1;
+                  writeln("%i: %s (%i) -> <bad> (%i) | %s (%i)".format(i, strings[i], ol, ll, rstr[i], rl));
+                } else if (rl <= 0) {
+                  n += 1;
+                  writeln("%i: %s (%i) -> %s (%i) | <bad> (%i)".format(i, strings[i], ol, lstr[i], ll, rl));
+                }
+                if n >= 5 {
+                  stdout.flush();
+                  break;
+                }
+              }
+            }
+          } 
           for i in 0..#min(lstr.size, 5) {
             writeln("%i: %s  |  %s".format(i, lstr[i], rstr[i]));
           }
           if lstr.size >= 10 {
-            for i in (lstr.size-5)..#5 {
+            for i in (lstr.size-5)..#4 {
               writeln("%i: %s  |  %s".format(i, lstr[i], rstr[i]));
+            }
+          }
+          const delim = if includeDelimiter then "" else substr;
+          var temp: owned SegString?;
+          if left {
+            var (roundOff, roundVals) = lstr.stick(rstr, delim, true);
+            temp = new owned SegString(roundOff, roundVals, st);
+          } else {
+            var (roundOff, roundVals) = rstr.stick(lstr, delim, false);
+            temp = new owned SegString(roundOff, roundVals, st);
+          }
+          var roundTrip: borrowed SegString = temp!;
+          var eq = (strings == roundTrip) | (answer < times);
+          var success = && reduce eq;
+          writeln("\nRound trip success? >>> %t <<<\n".format(success));
+          allSuccess &&= success;
+          if !success {
+            var n = 0;
+            const rtlen = roundTrip.getLengths();
+            for (i, e) in zip(strings.offsets.aD, eq) {
+              if !e {
+                n += 1;
+                writeln("%i: %s (%i) -> %s (%i)".format(i, strings[i], lengths[i], roundTrip[i], rtlen[i]));
+              }
+              if n >= 5 {
+                break;
+              }
             }
           }
         }
       }
     }
   }
-  /* var isMissing = (answer & !truth); */
-  /* var missing = + reduce isMissing; */
-  /* var isExtra = (truth & !answer); */
-  /* var extra = + reduce isExtra; */
-  /* if (missing == 0) && (extra == 0) { */
-  /*   writeln("Perfect match"); */
-  /* } else { */
-  /*   writeln("%t missing answers; %t extras".format(missing, extra)); */
-  /*   if DEBUG { */
-  /*     writeln("missing:"); */
-  /*     var minds = + scan isMissing; */
-  /*     for i in 1..5 { */
-  /*       var (blah, idx) = maxloc reduce zip((minds == i), minds.domain); */
-  /*       if !blah { */
-  /*         break; */
-  /*       } */
-  /*       writeln(); */
-  /*       if idx > minds.domain.low { */
-  /*         writeln(strings[idx-1]); */
-  /*       } */
-  /*       writeln(strings[idx]); */
-  /*       if idx < minds.domain.high { */
-  /*         writeln(strings[idx+1]); */
-  /*       } */
-  /*     } */
-  /*     writeln("extras:"); */
-  /*     var einds = + scan isExtra; */
-  /*     for i in 1..5 { */
-  /*       var (blah, idx) = maxloc reduce zip((einds == i), einds.domain); */
-  /*       if !blah { */
-  /*         break; */
-  /*       } */
-  /*       writeln(); */
-  /*       if idx > einds.domain.low { */
-  /*         writeln(strings[idx-1]); */
-  /*       } */
-  /*       writeln(strings[idx]); */
-  /*       if idx < einds.domain.high { */
-  /*         writeln(strings[idx+1]); */
-  /*       } */
-  /*     } */
-  /*   } */
-  /* } */
+  writeln("All round trip tests passed? >>> %t <<<".format(allSuccess));
 }
 
 proc main() {
-  try! testSplit(SUBSTRING, N, MINLEN, MAXLEN);
+  try! testPeel(SUBSTRING, N, MINLEN, MAXLEN);
 }
   

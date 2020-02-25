@@ -338,6 +338,7 @@ module SegmentedArray {
       }
     }
 
+    /* Return lengths of all strings, including null terminator. */
     proc getLengths() {
       var lengths: [offsets.aD] int;
       if (size == 0) {
@@ -346,8 +347,15 @@ module SegmentedArray {
       ref oa = offsets.a;
       const low = offsets.aD.low;
       const high = offsets.aD.high;
-      lengths[low..high-1] = (oa[low+1..high] - oa[low..high-1]);
-      lengths[high] = values.size - oa[high];
+      forall (i, o, l) in zip(offsets.aD, oa, lengths) {
+        if (i == high) {
+          l = values.size - o;
+        } else {
+          l = oa[i+1] - o;
+        }
+      }
+      /* lengths[low..high-1] = (oa[low+1..high] - oa[low..high-1]); */
+      /* lengths[high] = values.size - oa[high]; */
       return lengths;
     }
 
@@ -450,16 +458,16 @@ module SegmentedArray {
           if left {
             j = oa[i];
           } else {
+            // If coming from the right, need to handle edge case of last string
             if i == high {
               j = values.aD.high - 1;
             } else {
               j = oa[i+1] - 2;
             }
           }
-          // TO DO rewrite findSubstringInBytes to return full truth array and
-          // eliminate loop conditions
-          while (j <= D.high) {
-            if truth[j] {
+          // Step until the delimiter is encountered the exact number of times
+          while true {
+            if (j <= D.high) && truth[j] {
               nDelim += 1;
             }
             if nDelim == times {
@@ -512,46 +520,50 @@ module SegmentedArray {
       return (leftOffsets, leftVals, rightOffsets, rightVals);
     }
 
-    proc stick(other: segString, delim: string, param right: bool) {
+    proc stick(other: SegString, delim: string, param right: bool) throws {
       if (offsets.aD != other.offsets.aD) {
         throw new owned ArgumentError();
       }
       // Combine lengths and compute new offsets
-      var len1 = getLengths() - 1;
-      var len2 = other.getLengths() - 1;
-      const newLengths = len1 + len2 + delim.numBytes + 1;
+      var leftLen = getLengths() - 1;
+      var rightLen = other.getLengths() - 1;
+      const newLengths = leftLen + rightLen + delim.numBytes + 1;
       var newOffsets = (+ scan newLengths);
       const newBytes = newOffsets[offsets.aD.high];
       newOffsets -= newLengths;
       // Allocate new values array
       var newVals = makeDistArray(newBytes, uint(8));
-      // Default is to stick other array on the right-hand side. If left-hand
-      // side is specified, just swap the pointers to the left and right arrays
+      // Copy in the left and right-hand values, separated by the delimiter
       ref va1 = values.a;
       ref va2 = other.values.a;
-      ref oa1 = offsets.a;
-      ref oa2 = other.offsets.a;
-      if !right {
-        len1 <=> len2;
-        va1 <=> va2;
-        oa1 <=> oa2;
-      }
-      // Copy in the left and right-hand values, separated by the delimiter
-      forall (o1, o2, no, l1, l2) in zip(oa1, oa2, newOffsets, len1, len2) {
+      forall (o1, o2, no, l1, l2) in zip(offsets.a, other.offsets.a, newOffsets, leftLen, rightLen) {
         var pos = no;
         // Left side
-        for i in 0..#l1 {
-          unorderedCopy(newVals[pos+i], va1[o1+i]);
+        if right {
+          for i in 0..#l1 {
+            unorderedCopy(newVals[pos+i], va1[o1+i]);
+          }
+          pos += l1;
+        } else {
+          for i in 0..#l2 {
+            unorderedCopy(newVals[pos+i], va2[o2+i]);
+          }
+          pos += l2;
         }
-        pos += l1;
         // Delimiter
-        for (i, b) in zip(0..#delim.numBytes, delim.chpl_bytes) {
+        for (i, b) in zip(0..#delim.numBytes, delim.chpl_bytes()) {
           unorderedCopy(newVals[pos+i], b);
         }
         pos += delim.numBytes;
         // Right side
-        for i in 0..#l2 {
-          unorderedCopy(newVals[pos+i], va2[o2+i]);
+        if right {
+          for i in 0..#l2 {
+            unorderedCopy(newVals[pos+i], va2[o2+i]);
+          }
+        } else {
+          for i in 0..#l1 {
+            unorderedCopy(newVals[pos+i], va1[o1+i]);
+          }
         }
       }
       return (newOffsets, newVals);
@@ -890,12 +902,17 @@ module SegmentedArray {
   /* Convert an array of raw bytes into a Chapel string. */
   inline proc interpretAsString(bytearray: [?D] uint(8)): string {
     // Byte buffer must be local in order to make a C pointer
-    var localBytes: [0..#D.size] uint(8) = bytearray;
+    var localBytes: [{0..#D.size}] uint(8) = bytearray;
     var cBytes = c_ptrTo(localBytes);
     // Byte buffer is null-terminated, so length is buffer.size - 1
     // The contents of the buffer should be copied out because cBytes will go out of scope
     // var s = new string(cBytes, D.size-1, D.size, isowned=false, needToCopy=true);
-    var s = try! createStringWithNewBuffer(cBytes, D.size-1, D.size);
+    var s: string;
+    try {
+      s = createStringWithNewBuffer(cBytes, D.size-1, D.size);
+    } catch {
+      s = "<error interpreting bytes as string>";
+    }
     return s;
   }
 }
