@@ -122,6 +122,6 @@ proc testSplit(substr:string, n:int, minLen:int, maxLen:int, characters:charSet 
 }
 
 proc main() {
-  try! testSplit(SUBSTRING, N, MINLEN, MAXLEN, mode=mode);
+  try! testSplit(SUBSTRING, N, MINLEN, MAXLEN);
 }
   

@@ -458,7 +458,7 @@ module SegmentedArray {
           }
           // TO DO rewrite findSubstringInBytes to return full truth array and
           // eliminate loop conditions
-          while (j <= D.high) && (j >= oa[i]) && (j < oa[i] + lengths[i]) {
+          while (j <= D.high) {
             if truth[j] {
               nDelim += 1;
             }
@@ -512,72 +512,49 @@ module SegmentedArray {
       return (leftOffsets, leftVals, rightOffsets, rightVals);
     }
 
-    proc split(const substr: string, const maxSplit: int) {
-      const sbytes = substr.numBytes;
-      var nSplits: [offsets.aD] int;
-      var ret: [0..#maxSplit] shared SegString;
-      const truth = findSubstringInBytes(substr);
-      const D = truth.domain;
-      const tail = + reduce (offsets.a > D.high);
-      var oD: subdomain(offsets.aD) = offsets.aD[offsets.aD.low..#(offsets.size - tail)];
-      ref oa = offsets.a;
-      var numHits = (+ scan truth) - truth;
-      nSplits[{oD.low..oD.high-1}] = (numHits[oa[{oD.low+1..oD.high}]] - numHits[oa[{oD.low..oD.high-1}]]);
-      var splits: [0..maxSplit] StringSplitter = for s in 0..maxSplit do new StringSplitter();
-      for s in splits {
-        s.D = offsets.aD;
+    proc stick(other: segString, delim: string, param right: bool) {
+      if (offsets.aD != other.offsets.aD) {
+        throw new owned ArgumentError();
       }
-      const lengths = getLengths() - 1;
-      forall (i, o, l) in zip(offsets.aD, oa, lengths) {
-        splits[0].originalOffsets[i] = o;
-        var splitNum = 1;
-        const myHits = truth[{o..#(l-1)}];
-        var j = o + 1;
-        var lastOffset = o;
-        while j <= o + l - sbytes {
-          if myHits[j] {
-            splits[splitNum-1].lengths[i] = j - lastOffset;
-            splits[splitNum].originalOffsets[i] = j + sbytes;
-            lastOffset = j + sbytes;
-            splitNum += 1;
-            if splitNum > maxSplit {
-              splits[splitNum-1].lengths[i] = l - (j + sbytes - lastOffset);
-              break;
-            }
-            j += sbytes;
-          } else {
-            j += 1;
-          }
+      // Combine lengths and compute new offsets
+      var len1 = getLengths() - 1;
+      var len2 = other.getLengths() - 1;
+      const newLengths = len1 + len2 + delim.numBytes + 1;
+      var newOffsets = (+ scan newLengths);
+      const newBytes = newOffsets[offsets.aD.high];
+      newOffsets -= newLengths;
+      // Allocate new values array
+      var newVals = makeDistArray(newBytes, uint(8));
+      // Default is to stick other array on the right-hand side. If left-hand
+      // side is specified, just swap the pointers to the left and right arrays
+      ref va1 = values.a;
+      ref va2 = other.values.a;
+      ref oa1 = offsets.a;
+      ref oa2 = other.offsets.a;
+      if !right {
+        len1 <=> len2;
+        va1 <=> va2;
+        oa1 <=> oa2;
+      }
+      // Copy in the left and right-hand values, separated by the delimiter
+      forall (o1, o2, no, l1, l2) in zip(oa1, oa2, newOffsets, len1, len2) {
+        var pos = no;
+        // Left side
+        for i in 0..#l1 {
+          unorderedCopy(newVals[pos+i], va1[o1+i]);
         }
-        if splitNum <= maxSplit {
-          splits[splitNum-1].lengths[i] = o + l - lastOffset;
-          lastOffset = o + l;
+        pos += l1;
+        // Delimiter
+        for (i, b) in zip(0..#delim.numBytes, delim.chpl_bytes) {
+          unorderedCopy(newVals[pos+i], b);
         }
-        while splitNum <= maxSplit {          
-          splits[splitNum].originalOffsets[i] = lastOffset;
-          splits[splitNum].lengths[i] = 0;
-          splitNum += 1;
+        pos += delim.numBytes;
+        // Right side
+        for i in 0..#l2 {
+          unorderedCopy(newVals[pos+i], va2[o2+i]);
         }
       }
-      // var totalBytes = for s in 0..maxSplit do (+ reduce (splits[s].lengths + 1));
-      var results: [0..maxSplit] SplitResult = for s in 0..maxSplit do new SplitResult();
-      ref va = values.a;
-      for s in 0..maxSplit {
-        var tempLen = splits[s].lengths + 1;
-        var segs = (+ scan tempLen);
-        var b = segs[segs.domain.high];
-        segs -= tempLen;
-        results[s].resize(size, b);
-        // results[s].resize(b);
-        results[s].splitOffsets = segs;
-        ref myvals = results[s].splitValues;
-        forall (myo, o, l) in zip(segs, splits[s].originalOffsets, splits[s].lengths) {
-          for i in 0..#l {
-            unorderedCopy(myvals[myo+i], va[o+i]);
-          }
-        }
-      }
-      return (nSplits, results);
+      return (newOffsets, newVals);
     }
 
     proc ediff():[offsets.aD] int {
