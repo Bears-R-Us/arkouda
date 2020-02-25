@@ -184,6 +184,9 @@ proc main() {
                         when "joinEqWithDT"      {repMsg = joinEqWithDTMsg(reqMsg, st);}
                         when "getconfig"         {repMsg = getconfigMsg(reqMsg, st);}
                         when "getmemused"        {repMsg = getmemusedMsg(reqMsg, st);}
+                        when "register"          {repMsg = registerMsg(reqMsg, st);}
+                        when "attach"            {repMsg = attachMsg(reqMsg, st);}
+                        when "unregister"        {repMsg = unregisterMsg(reqMsg, st);}
                         when "connect" {
                             repMsg = "connected to arkouda server tcp://*:%t".format(ServerPort);
                         }
@@ -205,7 +208,7 @@ proc main() {
         
         // We must have sent a message back by now
 
-        if (logging && memTrack) {writeln("bytes of memoryUsed() = ",memoryUsed()); try! stdout.flush();}
+        if (logging && memTrack) {writeln("bytes of memory used after command = ",memoryUsed():uint * numLocales:uint); try! stdout.flush();}
 
         // end timer for command processing
         if (logging) {writeln("<<< %s took %.17r sec".format(cmdRaw.decode(decodePolicy.replace), t1.elapsed() - s0)); try! stdout.flush();}

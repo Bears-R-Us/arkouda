@@ -6,7 +6,8 @@ module MsgProcessing
     use Time only;
     use Math only;
     use Reflection only;
-
+    use Memory;
+    
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
@@ -27,6 +28,7 @@ module MsgProcessing
     public use ConcatenateMsg;
     public use SegmentedMsg;
     public use JoinEqWithDTMsg;
+    public use RegistrationMsg;
     
     /* 
     Parse, execute, and respond to a create message 
@@ -121,7 +123,7 @@ module MsgProcessing
     }
 
     /* 
-    query server total symbol table data memory
+    query server total memory allocated or symbol table data memory
     
     :arg reqMsg: request containing (cmd)
     :type reqMsg: string 
@@ -136,7 +138,12 @@ module MsgProcessing
         var fields = reqMsg.split(); // split request into fields
         var cmd = fields[1];
         if v {try! writeln("%s".format(cmd));try! stdout.flush();}
-        return st.memUsed():string;
+        if (memTrack) {
+            return (memoryUsed():uint * numLocales:uint):string;
+        }
+        else {
+            return st.memUsed():string;
+        }
     }
     
     /* 
