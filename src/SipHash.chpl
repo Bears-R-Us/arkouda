@@ -64,15 +64,15 @@ module SipHash {
   }
   
   proc sipHash64(msg: [] uint(8), D): uint(64) {
-    var h = computeSipHashLocalize(msg, D, 8);
-    return h[1];
+    var res = computeSipHashLocalized(msg, D, 8);
+    return res[1];
   }
 
   proc sipHash128(msg: [] uint(8), D): 2*uint(64) {
-    return computeSipHashLocalize(msg, D, 16);
+    return computeSipHashLocalized(msg, D, 16);
   }
-  
-  proc computeSipHashLocalize(msg: [] uint(8), D, param outlen: int): 2*uint(64) {
+
+  private proc computeSipHashLocalized(msg: [] uint(8), D, param outlen: int) {
     if contiguousIndices(msg) {
       ref start = msg[D.low];
       if D.high < D.low {
@@ -110,8 +110,7 @@ module SipHash {
     const k1 = 0x0f0e0d0c0b0a0908: uint(64);
     var m: uint(64);
     var i: int;
-    const lastPos = if isSubtype(msg.type, c_ptr) then D.size - (D.size % 8)
-      else D.low + D.size - (D.size % 8); // if C index, 0-up
+    const lastPos = D.low + D.size - (D.size % 8);
     // const uint8_t *end = in + inlen - (inlen % sizeof(uint64_t));
     const left: int = D.size & 7;
     // const int left = inlen & 7;
