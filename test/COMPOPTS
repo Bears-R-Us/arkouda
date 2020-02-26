@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+PARENT_DIR=$(dirname $(cd $(dirname $0) ; pwd))
+ARKOUDA_HOME=${ARKOUDA_HOME:-$PARENT_DIR}
+
+# Get test flags (dependencies, user options, optimization level)
+TEST_FLAGS=$(cd $ARKOUDA_HOME && make print-TEST_CHPL_FLAGS)
+
+# -M dir
+SRC_DIR=$(cd $ARKOUDA_HOME && make print-ARKOUDA_SOURCE_DIR)
+
+# Location of the configuration file, so we always include it and disable extra
+# debugging that might make noise in the tests
+CONFIG_FILE="${SRC_DIR}/ServerConfig.chpl"
+
+echo "${TEST_FLAGS} -M ${SRC_DIR} ${CONFIG_FILE} -sv=false -slogging=false"

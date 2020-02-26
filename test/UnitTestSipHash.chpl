@@ -509,8 +509,6 @@ proc main() {
   }
   if (errors > 0) {
     writeln("%i errors".format(errors));
-  } else {
-    writeln("tests passed");
   }
   return errors;
 }

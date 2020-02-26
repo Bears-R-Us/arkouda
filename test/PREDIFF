@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# Create an empty .good file if it doesn't exist (start_test requires this)
+touch $1.good

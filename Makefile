@@ -2,7 +2,7 @@
 ARKOUDA_PROJECT_DIR := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 
 PROJECT_NAME := arkouda
-ARKOUDA_SOURCE_DIR := src
+ARKOUDA_SOURCE_DIR := $(ARKOUDA_PROJECT_DIR)/src
 ARKOUDA_MAIN_MODULE := arkouda_server
 ARKOUDA_MAKEFILES := Makefile Makefile.paths
 
@@ -114,7 +114,7 @@ ALL_TARGETS := $(ARKOUDA_MAIN_MODULE)
 all: $(ALL_TARGETS)
 
 Makefile.paths:
-	touch $@
+	@touch $@
 
 # args: RuleTarget DefinedHelpText
 define create_help_target
@@ -305,6 +305,12 @@ $(TEST_BINARY_DIR):
 .PHONY: $(TEST_TARGETS) # Force tests to always rebuild.
 $(TEST_TARGETS): $(TEST_BINARY_DIR)/$(TEST_BINARY_SIGIL)%: $(TEST_SOURCE_DIR)/%.chpl | $(TEST_BINARY_DIR)
 	$(CHPL) $(TEST_CHPL_FLAGS) -M $(ARKOUDA_SOURCE_DIR) $< -o $@
+
+test/%: test/%.chpl
+	$(CHPL) $@.chpl $(TEST_CHPL_FLAGS) -M $(ARKOUDA_SOURCE_DIR)
+
+print-%:
+	@echo "$($*)"
 
 CLEAN_TARGETS += test-clean
 .PHONY: test-clean
