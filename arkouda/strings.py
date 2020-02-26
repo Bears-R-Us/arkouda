@@ -255,6 +255,53 @@ class Strings:
         return create_pdarray(repMsg)
 
     def peel(self, delimiter, times=1, includeDelimiter=False, keepPartial=False, fromRight=False):
+        """
+        Peel off one or more delimited fields from each string (similar 
+        to string.partition), returning two new arrays of strings.
+
+        Parameters
+        ----------
+        delimiter : str
+            The separator where the split will occur
+        times : int
+            The number of times the delimiter is sought, i.e. skip over 
+            the first (times-1) delimiters
+        includeDelimiter : bool
+            If true, append the delimiter to the end of the first return 
+            array. By default, it is prepended to the beginning of the 
+            second return array.
+        keepPartial : bool
+            If true, a string that does not contain <times> instances of 
+            the delimiter will be returned in the first array. By default, 
+            such strings are returned in the second array.
+        fromRight : bool
+            If true, peel from the right instead of the left (see also rpeel)
+
+        Returns
+        -------
+        left : Strings
+            The field(s) peeled from the end of each string (unless 
+            fromRight is true)
+        right : Strings
+            The remainder of each string after peeling (unless fromRight 
+            is true)
+        
+        See Also
+        --------
+        rpeel, stick, lstick
+
+        Examples
+        --------
+        >>> s = ak.array(['a.b', 'c.d', 'e.f.g'])
+        >>> s.peel('.')
+        (array(['a', 'c', 'e']), array(['b', 'd', 'f.g']))
+        >>> s.peel('.', includeDelimiter=True)
+        (array(['a.', 'c.', 'e.']), array(['b', 'd', 'f.g']))
+        >>> s.peel('.', times=2)
+        (array(['', '', 'e.f']), array(['a.b', 'c.d', 'g']))
+        >>> s.peel('.', times=2, keepPartial=True)
+        (array(['a.b', 'c.d', 'e.f']), array(['', '', 'g']))
+        """
         if isinstance(delimiter, bytes):
             delimiter = delimiter.decode()
         if not isinstance(delimiter, str):
@@ -280,9 +327,78 @@ class Strings:
         return leftStr, rightStr
 
     def rpeel(self, delimiter, times=1, includeDelimiter=False, keepPartial=False):
+        """
+        Peel off one or more delimited fields from the end of each string 
+        (similar to string.rpartition), returning two new arrays of strings.
+
+        Parameters
+        ----------
+        delimiter : str
+            The separator where the split will occur
+        times : int
+            The number of times the delimiter is sought, i.e. skip over 
+            the last (times-1) delimiters
+        includeDelimiter : bool
+            If true, prepend the delimiter to the start of the first return 
+            array. By default, it is appended to the end of the 
+            second return array.
+        keepPartial : bool
+            If true, a string that does not contain <times> instances of 
+            the delimiter will be returned in the second array. By default, 
+            such strings are returned in the first array.
+
+        Returns
+        -------
+        left : Strings
+            The remainder of the string after peeling
+        right : Strings
+            The field(s) that were peeled from the right of each string
+        
+        See Also
+        --------
+        peel, stick, lstick
+
+        Examples
+        --------
+        >>> s = ak.array(['a.b', 'c.d', 'e.f.g'])
+        >>> s.rpeel('.')
+        (array(['a', 'c', 'e.f']), array(['b', 'd', 'g']))
+        >>> s.peel('.')
+        (array(['a', 'c', 'e']), array(['b', 'd', 'f.g']))
+        """
         return self.peel(delimiter, times=times, includeDelimiter=includeDelimiter, keepPartial=keepPartial, fromRight=True)
 
     def stick(self, other, delimiter="", toLeft=False):
+        """
+        Join the strings from another array onto one end of the strings 
+        of this array, optionally inserting a delimiter.
+
+        Parameters
+        ----------
+        other : Strings
+            The strings to join onto self's strings
+        delimiter : str
+            String inserted between self and other
+        toLeft : bool
+            If true, join other strings to the left of self. By default,
+            other is joined to the right of self.
+
+        Returns
+        -------
+        Strings
+            The array of joined strings
+
+        See Also
+        --------
+        lstick, peel, rpeel
+
+        Examples
+        --------
+        >>> s = ak.array(['a', 'c', 'e'])
+        >>> t = ak.array(['b', 'd', 'f'])
+        >>> s.stick(t, delimiter='.')
+        array(['a.b', 'c.d', 'e.f'])
+        """
         if not isinstance(other, Strings):
             raise TypeError("stick: not supported between Strings and {}".format(type(other)))
         if isinstance(delimiter, bytes):
@@ -305,6 +421,33 @@ class Strings:
         return self.stick(other)
     
     def lstick(self, other, delimiter=""):
+        """
+        Join the strings from another array onto the left of the strings 
+        of this array, optionally inserting a delimiter.
+
+        Parameters
+        ----------
+        other : Strings
+            The strings to join onto self's strings
+        delimiter : str
+            String inserted between self and other
+
+        Returns
+        -------
+        Strings
+            The array of joined strings, as other + self
+
+        See Also
+        --------
+        stick, peel, rpeel
+
+        Examples
+        --------
+        >>> s = ak.array(['a', 'c', 'e'])
+        >>> t = ak.array(['b', 'd', 'f'])
+        >>> s.lstick(t, delimiter='.')
+        array(['b.a', 'd.c', 'f.e'])
+        """
         return self.stick(other, delimiter=delimiter, toLeft=True)
 
     def __radd__(self, other):
