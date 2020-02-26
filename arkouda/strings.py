@@ -363,6 +363,7 @@ class Strings:
         >>> s = ak.array(['a.b', 'c.d', 'e.f.g'])
         >>> s.rpeel('.')
         (array(['a', 'c', 'e.f']), array(['b', 'd', 'g']))
+        # Compared against peel
         >>> s.peel('.')
         (array(['a', 'c', 'e']), array(['b', 'd', 'f.g']))
         """
