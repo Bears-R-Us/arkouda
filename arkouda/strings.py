@@ -289,7 +289,7 @@ class Strings:
             delimiter = delimiter.decode()
         if not isinstance(delimiter, str):
             raise TypeError("Delimiter must be a string, not {}".format(type(delimiter)))
-        msg = "segBinopvv {} {} {} {} {} {} {} {} {}".format("stick",
+        msg = "segmentedBinopvv {} {} {} {} {} {} {} {} {}".format("stick",
                                                              self.objtype,
                                                              self.offsets.name,
                                                              self.bytes.name,
@@ -305,7 +305,7 @@ class Strings:
         return self.stick(other)
     
     def lstick(self, other, delimiter=""):
-        return self.stick(other, delimiter="", toLeft=True)
+        return self.stick(other, delimiter=delimiter, toLeft=True)
 
     def __radd__(self, other):
         return self.lstick(other)
