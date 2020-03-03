@@ -20,6 +20,8 @@ endif
 CHPL_DEBUG_FLAGS += --print-passes
 ifndef ARKOUDA_DEVELOPER
 CHPL_FLAGS += --fast
+else
+CHPL_FLAGS += --ccflags="-O1"
 endif
 # need this to avoid a slew of warnings from HDF5 on some platforms
 # --ccflags="-Wno-incompatible-pointer-types"
