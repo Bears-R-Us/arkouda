@@ -101,7 +101,7 @@ module SegmentedArray {
     /* Take a slice of strings from the array. The slice must be a 
        Chapel range, i.e. low..high by stride, not a Python slice.
        Returns arrays for the segment offsets and bytes of the slice.*/
-    proc this(slice: range(stridable=true)) throws {
+    proc this(const slice: range(stridable=true)) throws {
       if (slice.low < offsets.aD.low) || (slice.high > offsets.aD.high) {
         throw new owned OutOfBoundsError();
       }
@@ -112,20 +112,28 @@ module SegmentedArray {
       // Start of bytearray slice
       var start = offsets.a[slice.low];
       // End of bytearray slice
-      var end: int;
-      if (slice.high == offsets.aD.high) {
-        // if slice includes the last string, go to the end of values
-        end = values.aD.high;
-      } else {
-        end = offsets.a[slice.high+1] - 1;
-      }
+      /* var end: int; */
+      /* if (slice.high == offsets.aD.high) { */
+      /*   // if slice includes the last string, go to the end of values */
+      /*   end = values.aD.high; */
+      /* } else { */
+      /*   end = offsets.a[slice.high+1] - 1; */
+      /* } */
       // Segment offsets of the new slice
       var newSegs = makeDistArray(slice.size, int);
       // Offsets need to be re-zeroed
-      newSegs = offsets.a[slice] - start;
+      ref oa = offsets.a;
+      forall (i, ns) in zip(newSegs.domain, newSegs) with (var agg = newSrcAggregator(int)) {
+        agg.copy(ns, oa[slice.low + i]);
+      }
+      newSegs -= start;
+      // newSegs = offsets.a[slice] - start;
       // Bytearray of the new slice
       var newVals = makeDistArray(end - start + 1, uint(8));
-      newVals = values.a[start..end];
+      forall (i, nv) in zip(newVals.domain, newVals) with (var agg = newSrcAggregator(uint(8))) {
+        agg.copy(nv, va[start + i]);
+      }
+      //newVals = values.a[start..end];
       return (newSegs, newVals);
     }
 
