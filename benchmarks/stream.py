@@ -80,9 +80,9 @@ def create_parser():
     parser.add_argument('port', type=int, help='Port of arkouda server')
     parser.add_argument('-n', '--size', type=int, default=10**8, help='Problem size: length of arrays A and B')
     parser.add_argument('-t', '--trials', type=int, default=6, help='Number of times to run the benchmark')
-    parser.add_argument('-d', '--dtype', default='int64', help='Dtype of arrays (int64 or float64)')
+    parser.add_argument('-d', '--dtype', default='float64', help='Dtype of arrays (int64 or float64)')
     parser.add_argument('-r', '--randomize', default=False, action='store_true', help='Fill arrays with random values instead of ones')
-    parser.add_argument('-a', '--alpha', default=1.0, type=float, help='Scalar multiple')
+    parser.add_argument('-a', '--alpha', default=1.0, help='Scalar multiple')
     parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
     return parser
 
@@ -90,8 +90,13 @@ if __name__ == "__main__":
     import sys
     parser = create_parser()
     args = parser.parse_args()
-    if args.dtype not in ('int64', 'float64'):
+    if args.dtype == 'int64':
+        args.alpha = ak.int64(args.alpha)
+    elif args.dtype == 'float64':
+        args.alpha = ak.float64(args.alpha)
+    else:
         raise ValueError("Dtype must be either int64 or float64, not {}".format(args.dtype))
+
     ak.verbose = False
     ak.connect(args.hostname, args.port)
     
