@@ -112,28 +112,29 @@ module SegmentedArray {
       // Start of bytearray slice
       var start = offsets.a[slice.low];
       // End of bytearray slice
-      /* var end: int; */
-      /* if (slice.high == offsets.aD.high) { */
-      /*   // if slice includes the last string, go to the end of values */
-      /*   end = values.aD.high; */
-      /* } else { */
-      /*   end = offsets.a[slice.high+1] - 1; */
-      /* } */
+      var end: int;
+      if (slice.high == offsets.aD.high) {
+        // if slice includes the last string, go to the end of values
+        end = values.aD.high;
+      } else {
+        end = offsets.a[slice.high+1] - 1;
+      }
       // Segment offsets of the new slice
       var newSegs = makeDistArray(slice.size, int);
-      // Offsets need to be re-zeroed
       ref oa = offsets.a;
+      // newSegs = offsets.a[slice] - start;
       forall (i, ns) in zip(newSegs.domain, newSegs) with (var agg = newSrcAggregator(int)) {
         agg.copy(ns, oa[slice.low + i]);
       }
+      // Offsets need to be re-zeroed
       newSegs -= start;
-      // newSegs = offsets.a[slice] - start;
       // Bytearray of the new slice
       var newVals = makeDistArray(end - start + 1, uint(8));
+      ref va = values.a;
+      // newVals = values.a[start..end];
       forall (i, nv) in zip(newVals.domain, newVals) with (var agg = newSrcAggregator(uint(8))) {
         agg.copy(nv, va[start + i]);
       }
-      //newVals = values.a[start..end];
       return (newSegs, newVals);
     }
 
