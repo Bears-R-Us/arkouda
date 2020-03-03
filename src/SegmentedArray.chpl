@@ -195,7 +195,7 @@ module SegmentedArray {
         srcIdx = 1;
         var diffs: [D] int;
         diffs[D.low] = left[D.low]; // first offset is not affected by scan
-        diffs[D.interior(-(D.size-1))] = left[D.interior(D.size-1)] - (right[D.interior(-(D.size-1))] - 1);
+        diffs[D.interior(D.size-1)] = left[D.interior(D.size-1)] - (right[D.interior(-(D.size-1))] - 1);
         // Set srcIdx to diffs at segment boundaries
         forall (go, d) in zip(gatheredOffsets, diffs) with (var agg = newDstAggregator(int)) {
           agg.copy(srcIdx[go], d);
