@@ -36,15 +36,6 @@ module SegmentedArray {
     // Total number of bytes in all strings, including nulls
     var nBytes: int;
 
-    /* /\* This initializer is used when the SymEntries for offsets and values are */
-    /*    already in the namespace. *\/ */
-    /* proc init(segments: borrowed SymEntry(int), values: borrowed SymEntry(uint(8))) { */
-    /*   offsets = segments; */
-    /*   values = values; */
-    /*   size = segments.size; */
-    /*   nBytes = values.size; */
-    /* } */
-
     /* This initializer is the most common, and is used when only the server
        names of the SymEntries are known. It handles the lookup. */
     proc init(segName: string, valName: string, st: borrowed SymTab) {
@@ -615,33 +606,6 @@ module SegmentedArray {
     }
 
   } // class SegString
-
-  record StringSplitter {
-    var D: makeDistDom(10).type;
-    var originalOffsets: [D] int;
-    var lengths: [D] int;
-  }
-
-  record SplitResult {
-    var size: int;
-    var nBytes: int;
-    var oD: makeDistDom(10).type;
-    var splitOffsets: [oD] int;
-    var vD: makeDistDom(10).type;
-    var splitValues: [vD] uint(8);
-
-    proc resize(s: int, nb: int) {
-      size = s;
-      nBytes = nb;
-      oD = makeDistDom(size);
-      vD = makeDistDom(nBytes);
-    }
-    
-    /* proc resize(b: int) { */
-    /*   totalBytes = b; */
-    /*   vD = makeDistDom(b); */
-    /* } */
-  }
 
 
   inline proc memcmp(const ref x: [] uint(8), const xinds, const ref y: [] uint(8), const yinds): int {
