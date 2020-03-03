@@ -28,9 +28,6 @@ endif
 CHPL_FLAGS += --ccflags="-Wno-incompatible-pointer-types"
 CHPL_FLAGS += -smemTrack=true
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
-ifndef CHPL_VERSION_120
-  CHPL_FLAGS += -lmpi
-endif
 
 # add-path: Append custom paths for non-system software.
 # Note: Darwin `ld` only supports `-rpath <path>`, not `-rpath=<paths>`.
