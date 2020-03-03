@@ -7,6 +7,7 @@ import sys
 ak.verbose = False
 
 N = 1000
+UNIQUE = N//4
 
 # test_strings = np.array(['These are', 'some', 'interesting',
 #                          '~!@#$%^&*()_+', 'strings', '8675309.',
@@ -23,12 +24,15 @@ if __name__ == '__main__':
     else:
         ak.connect()
 
-    with open(__file__, 'r') as f:
-        base_words = np.array(f.read().split())
+    # with open(__file__, 'r') as f:
+    #     base_words = np.array(f.read().split())
+    # test_strings = np.random.choice(base_words, N, replace=True)
+    # strings = ak.array(test_strings)
 
-    test_strings = np.random.choice(base_words, N, replace=True)
-
-    strings = ak.array(test_strings)
+    base_words = ak.random_strings_lognormal(2, 1, UNIQUE, characters='printable')
+    choices = ak.randint(0, UNIQUE, N)
+    strings = base_words[choices]
+    test_strings = strings.to_ndarray()
     cat = ak.Categorical(strings)
     print("strings =", strings)
     print("categorical =", cat)
@@ -62,8 +66,11 @@ if __name__ == '__main__':
     print("pdarray bool index passed")
 
     # in1d and iter
-    more_words = np.random.choice(base_words, 100)
-    akwords = ak.array(more_words)
+    # more_words = np.random.choice(base_words, 100)
+    # akwords = ak.array(more_words)
+    more_choices = ak.randint(0, UNIQUE, 100)
+    akwords = base_words[more_choices]
+    more_words = akwords.to_ndarray()
     matches = ak.in1d(strings, akwords)
     catmatches = ak.in1d(cat, akwords)
     assert((matches == catmatches).all())

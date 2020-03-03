@@ -9,7 +9,8 @@ from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.strings import Strings
 
 __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", "arange",
-           "linspace", "randint"]
+           "linspace", "randint", "uniform", "standard_normal",
+           "random_strings_uniform", "random_strings_lognormal"]
 
 def array(a):
     """
