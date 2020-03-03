@@ -98,7 +98,7 @@ class Strings:
     def __eq__(self, other):
         return self.binop(other, "==")
 
-    def __neq__(self, other):
+    def __ne__(self, other):
         return self.binop(other, "!=")
 
     def __getitem__(self, key):
