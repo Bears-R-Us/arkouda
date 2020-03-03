@@ -372,17 +372,154 @@ def randint(low, high, size, dtype=int64):
     >>> ak.randint(0, 1, 5, dtype=ak.bool)
     array([True, False, True, True, True])
     """
-    # TO DO: separate out into int and float versions
-    # TO DO: float version should accept non-integer low and high
     if not all((np.isscalar(low), np.isscalar(high), np.isscalar(size))):
         raise TypeError("all arguments must be scalars")
+    if resolve_scalar_dtype(size) != 'int64':
+        raise TypeError("size must be integer")
+    if size < 0 or high < low:
+        raise ValueError("Incompatible arguments")
     dtype = akdtype(dtype) # normalize dtype
     # check dtype for error
     if dtype.name not in DTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
-    if isinstance(low, int) and isinstance(high, int) and isinstance(size, int):
-        kind, itemsize = translate_np_dtype(dtype)
-        repMsg = generic_msg("randint {} {} {} {}".format(low,high,size,dtype.name))
-        return create_pdarray(repMsg)
-    else:
-        raise TypeError("min,max,size must be int {} {} {}".format(low,high,size));
+    lowstr = NUMBER_FORMAT_STRINGS[dtype.name].format(low)
+    highstr = NUMBER_FORMAT_STRINGS[dtype.name].format(high)
+    sizestr = NUMBER_FORMAT_STRINGS['int64'].format(size)
+    repMsg = generic_msg("randint {} {} {} {}".format(sizestr, dtype.name, lowstr, highstr))
+    return create_pdarray(repMsg)
+
+
+def uniform(size, low=0.0, high=1.0):
+    """
+    Generate a pdarray with uniformly distributed random values in a specified range.
+
+    Parameters
+    ----------
+    low : int
+        The low value (inclusive) of the range
+    high : int
+        The high value (inclusive) of the range
+    size : int
+        The length of the returned array
+
+    Returns
+    -------
+    pdarray, float64
+        Values drawn uniformly from the specified range
+
+    Examples
+    --------
+    >>> ak.uniform(3)
+    array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])
+    """
+    return randint(size, low=low, high=high, dtype='float64')
+    
+
+def standard_normal(size):
+    """
+    Draw real numbers from the standard normal distribution.
+
+    Parameters
+    ----------
+    size : int
+        The number of samples to draw (size of the returned array)
+    
+    Returns
+    -------
+    pdarray, float64
+        The array of random numbers
+
+    See Also
+    --------
+    randint
+
+    Notes
+    -----
+    For random samples from :math:`N(\mu, \sigma^2)`, use:
+
+    ``(sigma * standard_normal(size)) + mu``
+    """
+    if size < 0:
+        raise ValueError("Invalid size: {}".format(size))
+    msg = "randomNormal {}".format(NUMBER_FORMAT_STRINGS['int64'].format(size))
+    repMsg = generic_msg(msg)
+    return create_pdarray(repMsg)
+
+
+def random_strings_uniform(minlen, maxlen, size, characters='uppercase'):
+    """
+    Generate random strings with lengths uniformly distributed between 
+    minlen and maxlen, and with characters drawn from a specified set.
+
+    Parameters
+    ----------
+    minlen : int
+        The minimum allowed length of string
+    maxlen : int
+        The maximum allowed length of string
+    size : int
+        The number of strings to generate
+    characters : (uppercase, lowercase, numeric, printable, binary)
+        The set of characters to draw from
+
+    Returns
+    -------
+    Strings
+        The array of random strings
+
+    See Also
+    --------
+    random_strings_lognormal, randint
+    """
+    if minlen < 0 or maxlen < minlen or size < 0:
+        raise ValueError("Incompatible arguments")
+    msg = "randomStrings {} {} {} {} {}".format(NUMBER_FORMAT_STRINGS['int64'].format(size),
+                                                "uniform",
+                                                characters,
+                                                NUMBER_FORMAT_STRINGS['int64'].format(minlen),
+                                                NUMBER_FORMAT_STRINGS['int64'].format(maxlen))
+    repMsg = generic_msg(msg)
+    return Strings(*(repMsg.split('+')))
+
+
+def random_strings_lognormal(logmean, logstd, size, characters='uppercase'):
+    """
+    Generate random strings with log-normally distributed lengths and 
+    with characters drawn from a specified set.
+
+    Parameters
+    ----------
+    logmean : float
+        The log-mean of the length distribution
+    logstd : float
+        The log-standard-deviation of the length distribution
+    size : int
+        The number of strings to generate
+    characters : (uppercase, lowercase, numeric, printable, binary)
+        The set of characters to draw from
+
+    Returns
+    -------
+    Strings
+        The array of random strings
+
+    See Also
+    --------
+    random_strings_lognormal, randint
+
+    Notes
+    -----
+    The lengths of the generated strings are distributed $Lognormal(\mu, \sigma^2)$,
+    with :math:`\mu = logmean` and :math:`\sigma = logstd`. Thus, the strings will have
+    an average length of :math:`exp(\mu + 0.5*\sigma^2)`, a minimum length of zero, and
+    a heavy tail towards longer strings.
+    """
+    if logstd <= 0 or size < 0:
+        raise ValueError("Incompatible arguments")
+    msg = "randomStrings {} {} {} {} {}".format(NUMBER_FORMAT_STRINGS['int64'].format(size),
+                                                "lognormal",
+                                                characters,
+                                                NUMBER_FORMAT_STRINGS['float64'].format(logmean),
+                                                NUMBER_FORMAT_STRINGS['float64'].format(logstd))
+    repMsg = generic_msg(msg)
+    return Strings(*(repMsg.split('+')))

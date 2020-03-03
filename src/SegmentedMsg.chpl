@@ -4,7 +4,48 @@ module SegmentedMsg {
   use ServerErrorStrings;
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
+  use RandArray;
   use IO;
+
+  proc randomStringsMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    var pn = Reflection.getRoutineName();
+    var fields = reqMsg.split();
+    var cmd = fields[1];
+    var len = fields[2]: int;
+    var dist = fields[3];
+    var charset = str2CharSet(fields[4]);
+    var segName = st.nextName();
+    var valName = st.nextName();
+    var repMsg: string;
+    select dist.toLower() {
+      when "uniform" {
+        var minLen = fields[5]:int;
+        var maxLen = fields[6]:int;
+        // Lengths + 2*segs + 2*vals (copied to SymTab)
+        overMemLimit(8*len + 16*len + (maxLen + minLen)*len);
+        var (segs, vals) = newRandStringsUniformLength(len, minLen, maxLen, charset);
+        var segEntry = new shared SymEntry(segs);
+        var valEntry = new shared SymEntry(vals);
+        st.addEntry(segName, segEntry);
+        st.addEntry(valName, valEntry);
+        repMsg = 'created ' + st.attrib(segName) + '+created ' + st.attrib(valName);
+      }
+      when "lognormal" {
+        var logMean = fields[5]:real;
+        var logStd = fields[6]:real;
+        // Lengths + 2*segs + 2*vals (copied to SymTab)
+        overMemLimit(8*len + 16*len + exp(logMean + (logStd**2)/2):int*len);
+        var (segs, vals) = newRandStringsLogNormalLength(len, logMean, logStd, charset);
+        var segEntry = new shared SymEntry(segs);
+        var valEntry = new shared SymEntry(vals);
+        st.addEntry(segName, segEntry);
+        st.addEntry(valName, valEntry);
+        repMsg = 'created ' + st.attrib(segName) + '+created ' + st.attrib(valName);
+      }
+      otherwise { repMsg = notImplementedError(pn, dist); }
+    }
+    return repMsg;
+  }
 
   proc segmentLengthsMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();

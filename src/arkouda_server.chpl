@@ -160,6 +160,8 @@ proc main() {
                         when "arange"            {repMsg = arangeMsg(reqMsg, st);}
                         when "linspace"          {repMsg = linspaceMsg(reqMsg, st);}
                         when "randint"           {repMsg = randintMsg(reqMsg, st);}
+                        when "randomNormal"      {repMsg = randomNormalMsg(reqMsg, st);}
+                        when "randomStrings"     {repMsg = randomStringsMsg(reqMsg, st);}
                         when "histogram"         {repMsg = histogramMsg(reqMsg, st);}
                         when "in1d"              {repMsg = in1dMsg(reqMsg, st);}
                         when "unique"            {repMsg = uniqueMsg(reqMsg, st);}
