@@ -28,6 +28,9 @@ Arkouda ``Strings`` objects support the following operations:
 
 * Indexing with integer, slice, integer ``pdarray``, and boolean ``pdarray`` (see :ref:`indexing-label`)
 * Comparison (``==`` and ``!=``) with string literal or other ``Strings`` object of same size
+* :ref:`setops-label`, e.g. ``unique`` and ``in1d``
+* :ref:`sorting-label`, via ``argsort`` and ``coargsort``
+* :ref:`groupby-label`, both alone and in conjunction with numeric arrays
 * Substring search
   
   .. automethod:: arkouda.Strings.contains
@@ -35,7 +38,14 @@ Arkouda ``Strings`` objects support the following operations:
   .. automethod:: arkouda.Strings.startswith
                     
   .. automethod:: arkouda.Strings.endswith
-                    
-* :ref:`setops-label`, e.g. ``unique`` and ``in1d``
-* :ref:`sorting-label`, via ``argsort`` and ``coargsort``
-* :ref:`groupby-label`, both alone and in conjunction with numeric arrays
+
+* Splitting and joining
+
+  .. automethod:: arkouda.Strings.peel
+                  
+  .. automethod:: arkouda.Strings.rpeel
+
+  .. automethod:: arkouda.Strings.stick
+
+  .. automethod:: arkouda.Strings.lstick
+

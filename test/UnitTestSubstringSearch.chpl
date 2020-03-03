@@ -12,7 +12,7 @@ config const DEBUG = false;
 proc make_strings(substr, n, minLen, maxLen, characters, mode, st) {
   const nb = substr.numBytes;
   const sbytes: [0..#nb] uint(8) = for b in substr.chpl_bytes() do b;
-  var (segs, vals) = newRandStrings(n, minLen, maxLen, characters);
+  var (segs, vals) = newRandStringsUniformLength(n, minLen, maxLen, characters);
   var strings = new owned SegString(segs, vals, st);
   var lengths = strings.getLengths() - 1;
   var r: [segs.domain] int;
