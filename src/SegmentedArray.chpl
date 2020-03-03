@@ -25,8 +25,10 @@ module SegmentedArray {
      operations.
    */
   class SegString {
+    var offsetName: string;
     // Start indices of individual strings
     var offsets: borrowed SymEntry(int);
+    var valueName: string;
     // Bytes of all strings, joined by nulls
     var values: borrowed SymEntry(uint(8));
     // Number of strings
@@ -34,23 +36,16 @@ module SegmentedArray {
     // Total number of bytes in all strings, including nulls
     var nBytes: int;
 
-    /* This initializer is used when the SymEntries for offsets and values are
-       already in the namespace. */
-    proc init(segments: borrowed SymEntry(int), values: borrowed SymEntry(uint(8))) {
-      offsets = segments;
-      values = values;
-      size = segments.size;
-      nBytes = values.size;
-    }
-
     /* This initializer is the most common, and is used when only the server
        names of the SymEntries are known. It handles the lookup. */
     proc init(segName: string, valName: string, st: borrowed SymTab) {
+      offsetName = segName;
       // The try! is needed here because init cannot throw
       var gs = try! st.lookup(segName);
       // I want this to be borrowed, but that give a lifetime error
       var segs = toSymEntry(gs, int): unmanaged SymEntry(int);
       offsets = segs;
+      valueName = valName;
       var vs = try! st.lookup(valName);
       var vals = toSymEntry(vs, uint(8)): unmanaged SymEntry(uint(8));
       values = vals;
@@ -59,13 +54,13 @@ module SegmentedArray {
     }
 
     proc init(segments: [] int, values: [] uint(8), st: borrowed SymTab) {
-      var segName = st.nextName();
-      var valName = st.nextName();
+      var oName = st.nextName();
       var segEntry = new shared SymEntry(segments);
+      try! st.addEntry(oName, segEntry);
+      var vName = st.nextName();
       var valEntry = new shared SymEntry(values);
-      try! st.addEntry(segName, segEntry);
-      try! st.addEntry(valName, valEntry);
-      this.init(segName, valName, st);
+      try! st.addEntry(vName, valEntry);
+      this.init(oName, vName, st);
     }
 
     proc show(n: int = 3) throws {
@@ -334,6 +329,7 @@ module SegmentedArray {
       }
     }
 
+    /* Return lengths of all strings, including null terminator. */
     proc getLengths() {
       var lengths: [offsets.aD] int;
       if (size == 0) {
@@ -342,41 +338,52 @@ module SegmentedArray {
       ref oa = offsets.a;
       const low = offsets.aD.low;
       const high = offsets.aD.high;
-      lengths[low..high-1] = (oa[low+1..high] - oa[low..high-1]);
-      lengths[high] = values.size - oa[high];
+      forall (i, o, l) in zip(offsets.aD, oa, lengths) {
+        if (i == high) {
+          l = values.size - o;
+        } else {
+          l = oa[i+1] - o;
+        }
+      }
+      /* lengths[low..high-1] = (oa[low+1..high] - oa[low..high-1]); */
+      /* lengths[high] = values.size - oa[high]; */
       return lengths;
     }
 
+    proc findSubstringInBytes(const substr: string) {
+      // Find the start position of every occurence of substr in the flat bytes array
+      // Start by making a right-truncated subdomain representing all valid starting positions for substr of given length
+      var D: subdomain(values.aD) = values.aD[values.aD.low..#(values.size - substr.numBytes)];
+      // Every start position is valid until proven otherwise
+      var truth: [D] bool = true;
+      // Shift the flat values one byte at a time and check against corresponding byte of substr
+      for (i, b) in zip(0.., substr.chpl_bytes()) {
+        truth &= (values.a[D.translate(i)] == b);
+      }
+      return truth;
+    }
+    
     proc substringSearch(const substr: string, mode: SearchMode) throws {
       var hits: [offsets.aD] bool;  // the answer
       if (size == 0) || (substr.size == 0) {
         return hits;
       }
       var t = new Timer();
-      // Find the start position of every occurence of substr in the flat bytes array
-      // Start by making a right-truncated subdomain representing all valid starting positions for substr of given length
-      var D: subdomain(values.aD) = values.aD[values.aD.low..#(values.size - substr.numBytes)];
-      // Every start position is valid until proven otherwise
-      var truth: [D] bool = true;
       if DEBUG {writeln("Checking bytes of substr"); stdout.flush(); t.start();}
-      // Shift the flat values one byte at a time and check against corresponding byte of substr
-      for (i, b) in zip(0.., substr.chpl_bytes()) {
-        truth &= (values.a[D.translate(i)] == b);
-      }
-      // Determine whether each segment contains a hit
-      // Do this by taking the difference in the cumulative number of hits at the end vs the beginning of the segment
-      if DEBUG {t.stop(); writeln("took %t seconds\nscanning...".format(t.elapsed())); stdout.flush(); t.clear(); t.start();}
-      // Cumulative number of hits up to (and excluding) this point
-      var numHits = (+ scan truth) - truth;
+      const truth = findSubstringInBytes(substr);
+      const D = truth.domain;
       if DEBUG {t.stop(); writeln("took %t seconds\nTranslating to segments...".format(t.elapsed())); stdout.flush(); t.clear(); t.start();}
       // Need to ignore segment(s) at the end of the array that are too short to contain substr
       const tail = + reduce (offsets.a > D.high);
       // oD is the right-truncated domain representing segments that are candidates for containing substr
       var oD: subdomain(offsets.aD) = offsets.aD[offsets.aD.low..#(offsets.size - tail)];
+      if DEBUG {t.stop(); writeln("took %t seconds\ndetermining answer...".format(t.elapsed())); stdout.flush(); t.clear(); t.start();}
       ref oa = offsets.a;
       if mode == SearchMode.contains {
-        // Find segments where at least one hit occurred between the start and end of the segment
-        // hits[oD] = (numHits[oa[oD.translate(1)]] - numHits[oa[oD]]) > 0;
+        // Determine whether each segment contains a hit
+        // Do this by taking the difference in the cumulative number of hits at the end vs the beginning of the segment  
+        // Cumulative number of hits up to (and excluding) this point
+        var numHits = (+ scan truth) - truth;
         hits[{oD.low..oD.high-1}] = (numHits[oa[{oD.low+1..oD.high}]] - numHits[oa[{oD.low..oD.high-1}]]) > 0;
         hits[oD.high] = (numHits[D.high] + truth[D.high] - numHits[oa[oD.high]]) > 0;
       } else if mode == SearchMode.startsWith {
@@ -388,86 +395,203 @@ module SegmentedArray {
         hits[{oD.low..oD.high-1}] = truth[oa[{oD.low+1..oD.high}] - substr.numBytes - 1];
         hits[oD.high] = truth[D.high];
       }
+      if DEBUG {t.stop(); writeln("took %t seconds".format(t.elapsed())); stdout.flush();}
       return hits;
     }
 
-    proc isAscending():[offsets.aD] int {
-      var ascending: [offsets.aD] int;
+    proc peel(const delimiter: string, const times: int, param includeDelimiter: bool, param keepPartial: bool, param left: bool) {
+      param stride = if left then 1 else -1;
+      const dBytes = delimiter.numBytes;
+      const lengths = getLengths() - 1;
+      var leftEnd: [offsets.aD] int;
+      var rightStart: [offsets.aD] int;
+      const truth = findSubstringInBytes(delimiter);
+      const D = truth.domain;
+      ref oa = offsets.a;
+      var numHits = (+ scan truth) - truth;
+      const high = offsets.aD.high;
+      forall i in offsets.aD {
+        // First, check whether string contains enough instances of delimiter to peel
+        var hasEnough: bool;
+        if i == high {
+          hasEnough = ((+ reduce truth) - numHits[oa[i]]) >= times;
+        } else {
+          hasEnough = (numHits[oa[i+1]] - numHits[oa[i]]) >= times;
+        }
+        if !hasEnough {
+          // If not, then the entire string stays together, and the param args
+          // determine whether it ends up on the left or right
+          if left {
+            if keepPartial {
+              // Goes on the left
+              leftEnd[i] = oa[i] + lengths[i] - 1;
+              rightStart[i] = oa[i] + lengths[i];
+            } else {
+              // Goes on the right
+              leftEnd[i] = oa[i] - 1;
+              rightStart[i] = oa[i];
+            }
+          } else {
+            if keepPartial {
+              // Goes on the right
+              leftEnd[i] = oa[i] - 1;
+              rightStart[i] = oa[i];
+            } else {
+              // Goes on the left
+              leftEnd[i] = oa[i] + lengths[i] - 1;
+              rightStart[i] = oa[i] + lengths[i];
+            }
+          }
+        } else {
+          // The string can be peeled; figure out where to split
+          var nDelim = 0;
+          var j: int;
+          if left {
+            j = oa[i];
+          } else {
+            // If coming from the right, need to handle edge case of last string
+            if i == high {
+              j = values.aD.high - 1;
+            } else {
+              j = oa[i+1] - 2;
+            }
+          }
+          // Step until the delimiter is encountered the exact number of times
+          while true {
+            if (j <= D.high) && truth[j] {
+              nDelim += 1;
+            }
+            if nDelim == times {
+              break;
+            }
+            j += stride;
+          }
+          // j is now the start of the correct delimiter
+          // tweak leftEnd and rightStart based on includeDelimiter
+          if left {
+            if includeDelimiter {
+              leftEnd[i] = j + dBytes - 1;
+              rightStart[i] = j + dBytes;
+            } else {
+              leftEnd[i] = j - 1;
+              rightStart[i] = j + dBytes;
+            }
+          } else {
+            if includeDelimiter {
+              leftEnd[i] = j - 1;
+              rightStart[i] = j;
+            } else {
+              leftEnd[i] = j - 1;
+              rightStart[i] = j + dBytes;
+            }
+          }
+        }
+      }
+      // Compute lengths and offsets for left and right return arrays
+      const leftLengths = leftEnd - oa + 2;
+      const rightLengths = lengths - (rightStart - oa) + 1;
+      const leftOffsets = (+ scan leftLengths) - leftLengths;
+      const rightOffsets = (+ scan rightLengths) - rightLengths;
+      // Allocate values and fill
+      var leftVals = makeDistArray((+ reduce leftLengths), uint(8));
+      var rightVals = makeDistArray((+ reduce rightLengths), uint(8));
+      ref va = values.a;
+      // Fill left values
+      forall (srcStart, dstStart, len) in zip(oa, leftOffsets, leftLengths) {
+        for i in 0..#len {
+          unorderedCopy(leftVals[dstStart+i], va[srcStart+i]);
+        }
+      }
+      // Fill right values
+      forall (srcStart, dstStart, len) in zip(rightStart, rightOffsets, rightLengths) {
+        for i in 0..#len {
+          unorderedCopy(rightVals[dstStart+i], va[srcStart+i]);
+        }
+      }
+      return (leftOffsets, leftVals, rightOffsets, rightVals);
+    }
+
+    proc stick(other: SegString, delim: string, param right: bool) throws {
+      if (offsets.aD != other.offsets.aD) {
+        throw new owned ArgumentError();
+      }
+      // Combine lengths and compute new offsets
+      var leftLen = getLengths() - 1;
+      var rightLen = other.getLengths() - 1;
+      const newLengths = leftLen + rightLen + delim.numBytes + 1;
+      var newOffsets = (+ scan newLengths);
+      const newBytes = newOffsets[offsets.aD.high];
+      newOffsets -= newLengths;
+      // Allocate new values array
+      var newVals = makeDistArray(newBytes, uint(8));
+      // Copy in the left and right-hand values, separated by the delimiter
+      ref va1 = values.a;
+      ref va2 = other.values.a;
+      forall (o1, o2, no, l1, l2) in zip(offsets.a, other.offsets.a, newOffsets, leftLen, rightLen) {
+        var pos = no;
+        // Left side
+        if right {
+          for i in 0..#l1 {
+            unorderedCopy(newVals[pos+i], va1[o1+i]);
+          }
+          pos += l1;
+        } else {
+          for i in 0..#l2 {
+            unorderedCopy(newVals[pos+i], va2[o2+i]);
+          }
+          pos += l2;
+        }
+        // Delimiter
+        for (i, b) in zip(0..#delim.numBytes, delim.chpl_bytes()) {
+          unorderedCopy(newVals[pos+i], b);
+        }
+        pos += delim.numBytes;
+        // Right side
+        if right {
+          for i in 0..#l2 {
+            unorderedCopy(newVals[pos+i], va2[o2+i]);
+          }
+        } else {
+          for i in 0..#l1 {
+            unorderedCopy(newVals[pos+i], va1[o1+i]);
+          }
+        }
+      }
+      return (newOffsets, newVals);
+    }
+
+    proc ediff():[offsets.aD] int {
+      var diff: [offsets.aD] int;
       if (size < 2) {
-        return ascending;
+        return diff;
       }
       ref oa = offsets.a;
       ref va = values.a;
       const high = offsets.aD.high;
-      forall (i, a) in zip(offsets.aD, ascending) {
+      forall (i, a) in zip(offsets.aD, diff) {
         if (i < high) {
           var asc: bool;
           const left = oa[i]..oa[i+1]-1;
           if (i < high - 1) {
             const right = oa[i+1]..oa[i+2]-1;
-            a = memcmp(va, left, va, right);
+            a = -memcmp(va, left, va, right);
           } else { // i == high - 1
             const right = oa[i+1]..values.aD.high;
-            a = memcmp(va, left, va, right);
+            a = -memcmp(va, left, va, right);
           }
         } else { // i == high
           a = 0;
         } 
       }
-      return ascending;
+      return diff;
     }
 
     proc isSorted():bool {
       if (size < 2) {
         return true;
       }
-      return (&& reduce (isAscending() <= 0));
+      return (&& reduce (ediff() >= 0));
     }
-    
-    /* proc isSorted(): bool { */
-    /*   var res = true; // strings are sorted? */
-    /*   // Is this position done comparing with its predecessor? */
-    /*   var done: [offsets.aD] bool; */
-    /*   // First string has no predecessor, so comparison is automatically done */
-    /*   done[offsets.aD.low] = true; */
-    /*   // Do not check null terminators */
-    /*   const lengths = getLengths() - 1; */
-    /*   const maxLen = max reduce lengths; */
-    /*   ref oa = offsets.a; */
-    /*   ref va = values.a; */
-    /*   // Compare each pair of strings byte-by-byte */
-    /*   for pos in 0..#maxLen { */
-    /*     forall (o, l, d, i) in zip(oa, lengths, done, offsets.aD)  */
-    /*       with (ref res) { */
-    /*       if (!d) { */
-    /*         // If either of the strings is exhausted, mark this entry done */
-    /*         if (pos >= l) || (pos >= lengths[i-1]) { */
-    /*           d = true; */
-    /*         } else { */
-    /*           const prevByte = va[oa[i-1] + pos]; */
-    /*           const currByte = va[o + pos]; */
-    /*           // If we can already tell the pair is sorted, mark done */
-    /*           if (prevByte < currByte) { */
-    /*             d = true; */
-    /*           // If we can tell the pair is not sorted, the return is false */
-    /*           } else if (prevByte > currByte) { */
-    /*             res = false; */
-    /*           } // If we can't tell yet, keep checking */
-    /*         } */
-    /*       } */
-    /*     } */
-    /*     // If some pair is not sorted, return false */
-    /*     if !res { */
-    /*       return false; */
-    /*     // If all comparisons are conclusive, return true */
-    /*     } */
-    /*     /\* else if (&& reduce done) { *\/ */
-    /*     /\*   return true; *\/ */
-    /*     /\* } // else keep going *\/ */
-    /*   } */
-    /*   // If we get to this point, it's because there is at least one pair of strings with length maxLen that are the same up to the last byte. That last byte determines res. */
-    /*   return res; */
-    /* } */
 
     proc argsort(checkSorted:bool=true): [offsets.aD] int throws {
       const ref D = offsets.aD;
@@ -482,6 +606,7 @@ module SegmentedArray {
     }
 
   } // class SegString
+
 
   inline proc memcmp(const ref x: [] uint(8), const xinds, const ref y: [] uint(8), const yinds): int {
     const l = min(xinds.size, yinds.size);
@@ -741,12 +866,17 @@ module SegmentedArray {
   /* Convert an array of raw bytes into a Chapel string. */
   inline proc interpretAsString(bytearray: [?D] uint(8)): string {
     // Byte buffer must be local in order to make a C pointer
-    var localBytes: [0..#D.size] uint(8) = bytearray;
+    var localBytes: [{0..#D.size}] uint(8) = bytearray;
     var cBytes = c_ptrTo(localBytes);
     // Byte buffer is null-terminated, so length is buffer.size - 1
     // The contents of the buffer should be copied out because cBytes will go out of scope
     // var s = new string(cBytes, D.size-1, D.size, isowned=false, needToCopy=true);
-    var s = try! createStringWithNewBuffer(cBytes, D.size-1, D.size);
+    var s: string;
+    try {
+      s = createStringWithNewBuffer(cBytes, D.size-1, D.size);
+    } catch {
+      s = "<error interpreting bytes as string>";
+    }
     return s;
   }
 }
