@@ -105,7 +105,7 @@ module FindSegmentsMsg
           var (permOffsets, permVals) = str[pa];
           const ref D = permOffsets.domain;
           var permLengths: [D] int;
-          permLengths[{D.low..#(D.size-1)}] = permOffsets[{D.low+1..#(D.size-1)}] - permOffsets[{D.low..#(D.size-1)}];
+          permLengths[D.interior(-(D.size-1))] = permOffsets[D.interior(D.size-1)] - permOffsets[D.interior(-(D.size-1))];
           permLengths[D.high] = permVals.domain.high - permOffsets[D.high] + 1;
           // Find steps and update ukeylocs
           // [(u, s, i) in zip(ukeylocs, permKey, paD)] if ((i > paD.low) && (permKey[i-1] != s))  { u = true; }

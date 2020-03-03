@@ -137,8 +137,10 @@ module In1d
         // Concatenate the two unique arrays
         const D = makeDistDom(u1.size + u2.size);
         var ar: [D] int;
-        ar[{0..#u1.size}] = u1;
-        ar[{u1.size..#u2.size}] = u2;
+        /* ar[{0..#u1.size}] = u1; */
+        ar[D.interior(-u1.size)] = u1;
+        /* ar[{u1.size..#u2.size}] = u2; */
+        ar[D.interior(u2.size)] = u2;
         // Sort unique arrays together to find duplicates
         var order = radixSortLSD_ranks(ar);
         var sar: [D] int;
@@ -147,7 +149,7 @@ module In1d
         }
         // Duplicates correspond to values in both arrays
         var flag: [D] bool;
-        flag[{D.low..D.high-1}] = (sar[{D.low+1..D.high}] == sar[{D.low..D.high-1}]);
+        flag[D.interior(-(D.size-1))] = (sar[D.interior(D.size-1)] == sar[D.interior(-(D.size-1))]);
         // Get the indices of values from u1 that are also in u2
         // Because sort is stable, original index of left duplicate will always be in u1
         var ret: [D] bool;
