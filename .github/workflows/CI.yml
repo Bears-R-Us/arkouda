@@ -11,18 +11,7 @@ jobs:
       run: |
         ! git --no-pager grep -n $'\t' -- '*.chpl'
 
-  mac_job:
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: mac comm=none
-      run: |
-        brew install hdf5 zeromq chapel
-        ARKOUDA_DEVELOPER=true make
-        pip3 install -e .
-        make check
-
-  std_job:
+  linux_job:
     runs-on: ubuntu-latest
     container:
       image: chapel/chapel:1.20.0
