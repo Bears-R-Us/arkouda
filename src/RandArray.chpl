@@ -34,7 +34,7 @@ module RandArray {
     }
   }
 
-  proc fillReal(a:[] real, const aMin=0, const aMax=1) {
+  proc fillReal(a:[] real, const aMin:numeric=0.0, const aMax:numeric=1.0) {
     coforall loc in Locales {
       on loc {
         ref myA = a.localSlice[a.localSubdomain()];
@@ -68,6 +68,31 @@ module RandArray {
     Numeric,
     Printable,
     Binary
+  }
+
+  proc str2CharSet(str: string): charSet {
+    var ret: charSet;
+    select str.toLower() {
+      when "uppercase" {
+        ret = charSet.Uppercase;
+      }
+      when "lowercase" {
+        ret = charSet.Lowercase;
+      }
+      when "numeric" {
+        ret = charSet.Numeric;
+      }
+      when "printable" {
+        ret = charSet.Printable;
+      }
+      when "binary" {
+        ret = charSet.Binary;
+      }
+      otherwise {
+        ret = charSet.Uppercase;
+      }
+    }
+    return ret;
   }
 
   var charBounds: map(keyType=charSet, valType=2*int, parSafe=false);
