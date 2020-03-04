@@ -6,7 +6,7 @@ import sys
 
 ak.verbose = False
 
-N = 1000
+N = 100
 UNIQUE = N//4
 
 # test_strings = np.array(['These are', 'some', 'interesting',
@@ -29,7 +29,7 @@ if __name__ == '__main__':
     # test_strings = np.random.choice(base_words, N, replace=True)
     # strings = ak.array(test_strings)
 
-    base_words = ak.random_strings_lognormal(2, 1, UNIQUE, characters='printable')
+    base_words = ak.random_strings_lognormal(2, 0.25, UNIQUE, characters='printable')
     choices = ak.randint(0, UNIQUE, N)
     strings = base_words[choices]
     test_strings = strings.to_ndarray()

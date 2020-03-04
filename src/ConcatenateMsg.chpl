@@ -9,7 +9,8 @@ module ConcatenateMsg
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
-    
+    use CommAggregation;
+
     use AryUtil;
 
     /* Concatenate a list of arrays together
@@ -61,7 +62,6 @@ module ConcatenateMsg
         // and copy in arrays
         select objtype {
             when "str" {
-                use CommAggregation;
                 var segName = st.nextName();
                 var esegs = st.addEntry(segName, size, int);
                 ref esa = esegs.a;
@@ -81,8 +81,6 @@ module ConcatenateMsg
                     forall (i, v) in zip(thisVals.aD, thisVals.a) with (var agg = newDstAggregator(uint(8))) {
                         agg.copy(eva[i+valStart], v);
                     }
-                    // esegs.a[{segStart..#thisSegs.size}] = thisSegs.a + valStart;
-                    // evals.a[{valStart..#thisVals.size}] = thisVals.a;
                     segStart += thisSegs.size;
                     valStart += thisVals.size;
                 }
@@ -95,15 +93,15 @@ module ConcatenateMsg
                         // create array to copy into
                         var e = st.addEntry(rname, size, int);
                         var start: int;
-                        var end: int;
                         start = 0;
                         for (name, i) in zip(names, 1..) {
                             // lookup and cast operand to copy from
                             var o = toSymEntry(st.lookup(name), int);
-                            // calculate end which is inclusive
-                            end = start + o.size - 1;
+                            ref ea = e.a;
                             // copy array into concatenation array
-                            e.a[{start..end}] = o.a;
+                            forall (i, v) in zip(o.aD, o.a) with (var agg = newDstAggregator(int)) {
+                              agg.copy(ea[start+i], v);
+                            }
                             // update new start for next array copy
                             start += o.size;
                         }
@@ -112,15 +110,15 @@ module ConcatenateMsg
                         // create array to copy into
                         var e = st.addEntry(rname, size, real);
                         var start: int;
-                        var end: int;
                         start = 0;
                         for (name, i) in zip(names, 1..) {
                             // lookup and cast operand to copy from
                             var o = toSymEntry(st.lookup(name), real);
-                            // calculate end which is inclusive
-                            end = start + o.size - 1;
+                            ref ea = e.a;
                             // copy array into concatenation array
-                            e.a[{start..end}] = o.a;
+                            forall (i, v) in zip(o.aD, o.a) with (var agg = newDstAggregator(real)) {
+                              agg.copy(ea[start+i], v);
+                            }
                             // update new start for next array copy
                             start += o.size;
                         }
@@ -129,15 +127,15 @@ module ConcatenateMsg
                         // create array to copy into
                         var e = st.addEntry(rname, size, bool);
                         var start: int;
-                        var end: int;
                         start = 0;
                         for (name, i) in zip(names, 1..) {
                             // lookup and cast operand to copy from
                             var o = toSymEntry(st.lookup(name), bool);
-                            // calculate end which is inclusive
-                            end = start + o.size - 1;
+                            ref ea = e.a;
                             // copy array into concatenation array
-                            e.a[{start..end}] = o.a;
+                            forall (i, v) in zip(o.aD, o.a) with (var agg = newDstAggregator(bool)) {
+                              agg.copy(ea[start+i], v);
+                            }
                             // update new start for next array copy
                             start += o.size;
                         }

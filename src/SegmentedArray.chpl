@@ -101,7 +101,7 @@ module SegmentedArray {
     /* Take a slice of strings from the array. The slice must be a 
        Chapel range, i.e. low..high by stride, not a Python slice.
        Returns arrays for the segment offsets and bytes of the slice.*/
-    proc this(slice: range(stridable=true)) throws {
+    proc this(const slice: range(stridable=true)) throws {
       if (slice.low < offsets.aD.low) || (slice.high > offsets.aD.high) {
         throw new owned OutOfBoundsError();
       }
@@ -121,11 +121,20 @@ module SegmentedArray {
       }
       // Segment offsets of the new slice
       var newSegs = makeDistArray(slice.size, int);
+      ref oa = offsets.a;
+      // newSegs = offsets.a[slice] - start;
+      forall (i, ns) in zip(newSegs.domain, newSegs) with (var agg = newSrcAggregator(int)) {
+        agg.copy(ns, oa[slice.low + i]);
+      }
       // Offsets need to be re-zeroed
-      newSegs = offsets.a[slice] - start;
+      newSegs -= start;
       // Bytearray of the new slice
       var newVals = makeDistArray(end - start + 1, uint(8));
-      newVals = values.a[start..end];
+      ref va = values.a;
+      // newVals = values.a[start..end];
+      forall (i, nv) in zip(newVals.domain, newVals) with (var agg = newSrcAggregator(uint(8))) {
+        agg.copy(nv, va[start + i]);
+      }
       return (newSegs, newVals);
     }
 
@@ -186,7 +195,7 @@ module SegmentedArray {
         srcIdx = 1;
         var diffs: [D] int;
         diffs[D.low] = left[D.low]; // first offset is not affected by scan
-        diffs[{D.low+1..D.high}] = left[{D.low+1..D.high}] - (right[{D.low..D.high-1}] - 1);
+        diffs[D.interior(D.size-1)] = left[D.interior(D.size-1)] - (right[D.interior(-(D.size-1))] - 1);
         // Set srcIdx to diffs at segment boundaries
         forall (go, d) in zip(gatheredOffsets, diffs) with (var agg = newDstAggregator(int)) {
           agg.copy(srcIdx[go], d);
@@ -384,7 +393,7 @@ module SegmentedArray {
         // Do this by taking the difference in the cumulative number of hits at the end vs the beginning of the segment  
         // Cumulative number of hits up to (and excluding) this point
         var numHits = (+ scan truth) - truth;
-        hits[{oD.low..oD.high-1}] = (numHits[oa[{oD.low+1..oD.high}]] - numHits[oa[{oD.low..oD.high-1}]]) > 0;
+        hits[oD.interior(-(oD.size-1))] = (numHits[oa[oD.interior(oD.size-1)]] - numHits[oa[oD.interior(-(oD.size-1))]]) > 0;
         hits[oD.high] = (numHits[D.high] + truth[D.high] - numHits[oa[oD.high]]) > 0;
       } else if mode == SearchMode.startsWith {
         // First position of segment must be a hit
@@ -392,7 +401,7 @@ module SegmentedArray {
       } else if mode == SearchMode.endsWith {
         // Position where substr aligns with end of segment must be a hit
         // -1 for null byte
-        hits[{oD.low..oD.high-1}] = truth[oa[{oD.low+1..oD.high}] - substr.numBytes - 1];
+        hits[oD.interior(-(oD.size-1))] = truth[oa[oD.interior(oD.size-1)] - substr.numBytes - 1];
         hits[oD.high] = truth[D.high];
       }
       if DEBUG {t.stop(); writeln("took %t seconds".format(t.elapsed())); stdout.flush();}
@@ -789,10 +798,12 @@ module SegmentedArray {
     // TO DO: extend to axis == 1
     var segs = makeDistArray(s1.size + s2.size, int);
     var vals = makeDistArray(v1.size + v2.size, uint(8));
-    segs[{0..#s1.size}] = s1;
-    segs[{s1.size..#s2.size}] = s2 + v1.size;
-    vals[{0..#v1.size}] = v1;
-    vals[{v1.size..#v2.size}] = v2;
+    ref sD = segs.domain;
+    segs[sD.interior(-s1.size)] = s1;
+    segs[sD.interior(s2.size)] = s2 + v1.size;
+    ref vD = vals.domain;
+    vals[vD.interior(-v1.size)] = v1;
+    vals[vD.interior(v2.size)] = v2;
     return (segs, vals);
   }
 
