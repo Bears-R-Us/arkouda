@@ -38,6 +38,10 @@ jobs:
     - name: Arkouda unit tests
       run: |
         ./util/test/runClient tests/operator_tests.py tests/string_test.py
+    - name: Arkouda benchmark --correctness-only
+      run: |
+         ./benchmarks/run_benchmarks.py --correctness-only --dtype=int64
+         ./benchmarks/run_benchmarks.py --correctness-only --dtype=float64
 
   unit_tests_linux:
     runs-on: ubuntu-latest
