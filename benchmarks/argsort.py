@@ -47,6 +47,16 @@ def time_np_argsort(N, trials, dtype):
     bytes_per_sec = (a.size * a.itemsize) / tavg
     print("Average rate = {:.4f} GiB/sec".format(bytes_per_sec/2**30))
 
+def check_correctness(dtype):
+    N = 10**4
+    if dtype == 'int64':
+        a = ak.randint(0, 2**32, N)
+    elif dtype == 'float64':
+        a = ak.randint(0, 1, N, dtype=ak.float64)
+
+    perm = ak.argsort(a)
+    assert ak.is_sorted(a[perm])
+
 def create_parser():
     parser = argparse.ArgumentParser(description="Measure performance of sorting an array of random values.")
     parser.add_argument('hostname', help='Hostname of arkouda server')
@@ -55,6 +65,7 @@ def create_parser():
     parser.add_argument('-t', '--trials', type=int, default=6, help='Number of times to run the benchmark')
     parser.add_argument('-d', '--dtype', default='int64', help='Dtype of array (int64 or float64)')
     parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
+    parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
     return parser
 
 if __name__ == "__main__":
@@ -65,6 +76,10 @@ if __name__ == "__main__":
         raise ValueError("Dtype must be either int64 or float64, not {}".format(args.dtype))
     ak.verbose = False
     ak.connect(args.hostname, args.port)
+
+    if args.correctness_only:
+        check_correctness(args.dtype)
+        sys.exit(0)
     
     print("array size = {:,}".format(args.size))
     print("number of trials = ", args.trials)
