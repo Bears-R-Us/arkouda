@@ -89,7 +89,7 @@ def create_parser():
     parser.add_argument('-i', '--index-size', type=int, help='Length of index array (number of scatters to perform)')
     parser.add_argument('-v', '--value-size', type=int, help='Length of array from which values are scattered')
     parser.add_argument('-t', '--trials', type=int, default=6, help='Number of times to run the benchmark')
-    parser.add_argument('-d', '--dtype', default='int64', help='Dtype of value array (int64 or float64)')
+    parser.add_argument('-d', '--dtype', default='int64', help='Dtype of value array (int64, float64, or bool)')
     parser.add_argument('-r', '--randomize', default=False, action='store_true', help='Use random values instead of ones')
     parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
     parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
@@ -101,8 +101,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     args.index_size = args.size if args.index_size is None else args.index_size
     args.value_size = args.size if args.value_size is None else args.value_size
-    if args.dtype not in ('int64', 'float64'):
-        raise ValueError("Dtype must be either int64 or float64, not {}".format(args.dtype))
+    if args.dtype not in ('int64', 'float64', 'bool'):
+        raise ValueError("Dtype must be either int64, float64, or bool, not {}".format(args.dtype))
     ak.verbose = False
     ak.connect(args.hostname, args.port)
 

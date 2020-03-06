@@ -73,6 +73,7 @@ def create_parser():
     #parser.add_argument('--large', default=False, action='store_true', help='Run a larger problem size')
 
     parser.add_argument('-nl', '--num-locales', default=get_arkouda_numlocales(), help='Number of locales to use for the server')
+    parser.add_argument('benchmarks', nargs='*', help='Basename of benchmarks to run with extension stripped')
     parser.add_argument('--gen-graphs', default=False, action='store_true', help='Generate graphs, requires $CHPL_HOME')
     parser.add_argument('--dat-dir', default=os.path.join(benchmark_dir, 'datdir'), help='Directory with .dat files stored')
     parser.add_argument('--graph-dir', default=os.path.join(benchmark_dir, 'graphdir'), help='Directory to place generated graphs')
@@ -89,7 +90,8 @@ def main():
 
     start_arkouda_server(args.num_locales)
 
-    for benchmark in BENCHMARKS:
+    args.benchmarks = args.benchmarks or BENCHMARKS
+    for benchmark in args.benchmarks:
         benchmark_py = os.path.join(benchmark_dir, '{}.py'.format(benchmark))
         out = run_client(benchmark_py, client_args)
         if args.gen_graphs:

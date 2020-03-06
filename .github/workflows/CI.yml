@@ -42,6 +42,7 @@ jobs:
       run: |
          ./benchmarks/run_benchmarks.py --correctness-only --dtype=int64
          ./benchmarks/run_benchmarks.py --correctness-only --dtype=float64
+         ./benchmarks/run_benchmarks.py --correctness-only --dtype=bool scatter gather
 
   unit_tests_linux:
     runs-on: ubuntu-latest
