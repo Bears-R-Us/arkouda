@@ -69,22 +69,11 @@ def generate_graphs(dat_dir, graph_dir, graph_infra, platform_name):
 def create_parser():
     parser = argparse.ArgumentParser(description=__doc__)
 
-    # TODO support passing through size/trials/type/whatever to benchmarks
-    #parser.add_argument('-n', '--size', type=int, default=10**8, help='Problem size: length of arrays A and B')
-    #parser.add_argument('-t', '--trials', type=int, default=6, help='Number of times to run the benchmark')
-    #parser.add_argument('-d', '--dtype', default='int64', help='Dtype of arrays (int64 or float64)')
-    #parser.add_argument('-r', '--randomize', default=False, action='store_true', help='Fill arrays with random values instead of ones')
-
-    # TODO support running numpy variations
-    #parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
-
-    # TODO support running correctness mode only
-    # parser.add_argument('correctnss', default=False, action='store_true', help='Run correctness checks only')
-
     # TODO support alias for a larger default N
     #parser.add_argument('--large', default=False, action='store_true', help='Run a larger problem size')
 
     parser.add_argument('-nl', '--num-locales', default=get_arkouda_numlocales(), help='Number of locales to use for the server')
+    parser.add_argument('benchmarks', nargs='*', help='Basename of benchmarks to run with extension stripped')
     parser.add_argument('--gen-graphs', default=False, action='store_true', help='Generate graphs, requires $CHPL_HOME')
     parser.add_argument('--dat-dir', default=os.path.join(benchmark_dir, 'datdir'), help='Directory with .dat files stored')
     parser.add_argument('--graph-dir', default=os.path.join(benchmark_dir, 'graphdir'), help='Directory to place generated graphs')
@@ -94,16 +83,17 @@ def create_parser():
 
 def main():
     parser = create_parser()
-    args = parser.parse_args()
+    args, client_args = parser.parse_known_args()
 
     if args.gen_graphs:
         os.makedirs(args.dat_dir, exist_ok=True)
 
     start_arkouda_server(args.num_locales)
 
-    for benchmark in BENCHMARKS:
+    args.benchmarks = args.benchmarks or BENCHMARKS
+    for benchmark in args.benchmarks:
         benchmark_py = os.path.join(benchmark_dir, '{}.py'.format(benchmark))
-        out = run_client(benchmark_py)
+        out = run_client(benchmark_py, client_args)
         if args.gen_graphs:
             add_to_dat(benchmark, out, args.dat_dir, args.graph_infra)
         print(out)

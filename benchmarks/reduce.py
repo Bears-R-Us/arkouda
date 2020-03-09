@@ -67,7 +67,29 @@ def time_np_reduce(N, trials, dtype, random):
         print("  {} Average time = {:.4f} sec".format(op, t))
         bytes_per_sec = (a.size * a.itemsize) / t
         print("  {} Average rate = {:.2f} GiB/sec".format(op, bytes_per_sec/2**30))
-    
+
+def check_correctness(dtype, random):
+    N = 10**4
+    if random:
+        if dtype == 'int64':
+            a = np.random.randint(0, 2**32, N)
+        elif dtype == 'float64':
+            a = np.random.random(N)
+    else:
+        if dtype == 'int64':
+            a = np.arange(0, N, 1, dtype=dtype)
+        elif dtype == 'float64':
+            a = np.arange(1, 1+1/N, (1/N)/N, dtype=dtype)
+
+    for op in OPS:
+        npa = a
+        aka = ak.array(a)
+        fxn = getattr(npa, op)
+        npr = fxn()
+        fxn = getattr(aka, op)
+        akr = fxn()
+        assert np.isclose(npr, akr)
+
 def create_parser():
     parser = argparse.ArgumentParser(description="Measure performance of reductions over arrays.")
     parser.add_argument('hostname', help='Hostname of arkouda server')
@@ -77,6 +99,7 @@ def create_parser():
     parser.add_argument('-d', '--dtype', default='int64', help='Dtype of array (int64 or float64)')
     parser.add_argument('-r', '--randomize', default=False, action='store_true', help='Fill array with random values instead of range')
     parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
+    parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
     return parser
         
 if __name__ == "__main__":
@@ -87,6 +110,10 @@ if __name__ == "__main__":
         raise ValueError("Dtype must be either int64 or float64, not {}".format(args.dtype))
     ak.verbose = False
     ak.connect(args.hostname, args.port)
+
+    if args.correctness_only:
+        check_correctness(args.dtype, args.randomize)
+        sys.exit(0)
     
     print("array size = {:,}".format(args.size))
     print("number of trials = ", args.trials)
