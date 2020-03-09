@@ -3,7 +3,8 @@ import warnings, pkg_resources
 
 __all__ = ["verbose", "pdarrayIterThresh", "maxTransferBytes",
            "AllSymbols", "set_defaults", "connect", "disconnect",
-           "shutdown", "get_config", "get_mem_used", "__version__"]
+           "shutdown", "get_config", "get_mem_used", "__version__",
+           "generic_msg"]
 
 # Try to read the version from the file located at ../VERSION
 VERSIONFILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "VERSION")
