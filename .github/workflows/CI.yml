@@ -35,6 +35,9 @@ jobs:
     - name: Arkouda make check
       run: |
         make check
+    - name: Arkouda unit tests
+      run: |
+        ./util/test/runClient tests/operator_tests.py tests/string_test.py
 
   unit_tests_linux:
     runs-on: ubuntu-latest

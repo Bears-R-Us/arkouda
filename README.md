@@ -164,18 +164,17 @@ Other command line options are available, view them by using `--help`
 
 ## Testing arkouda_server
 
-There is a small test program that connects to a running arkouda_server, runs a few computations, and disconnects from the server. To run it, open a new terminal window in the arkouda directory and run
+To sanity check the arkouda server, you can run
+
+```bash
+make check
+```
+
+This will start the server, run a few computations, and shut the server down. If you already have a server running, you can manually run the checks with something like:
 
 ```bash
 python3 tests/check.py localhost 5555
 ```
-
-Substitute the correct hostname and port if you used a different configuration.
-
-Note that `check.py` doesn't shut down the server, permitting multiple
-Arkouda programs to be run against the same server instance.  The
-server can be shut down cleanly by running the `shutdown.py` script in
-the same directory.
 
 ## Contributing to Arkouda
 
