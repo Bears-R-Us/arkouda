@@ -29,13 +29,18 @@ if __name__ == '__main__':
     # test_strings = np.random.choice(base_words, N, replace=True)
     # strings = ak.array(test_strings)
 
-    base_words = ak.random_strings_lognormal(2, 0.25, UNIQUE, characters='printable')
-    choices = ak.randint(0, UNIQUE, N)
+    base_words1 = ak.random_strings_uniform(0, 10, UNIQUE, characters='printable')
+    base_words2 = ak.random_strings_lognormal(2, 0.25, UNIQUE, characters='printable')
+    base_words = ak.concatenate((base_words1, base_words2))
+    np_base_words = np.hstack((base_words1.to_ndarray(), base_words2.to_ndarray()))
+    assert(compare_strings(base_words.to_ndarray(), np_base_words))
+    choices = ak.randint(0, base_words.size, N)
     strings = base_words[choices]
     test_strings = strings.to_ndarray()
     cat = ak.Categorical(strings)
     print("strings =", strings)
     print("categorical =", cat)
+    print("Generation and concatenate passed")
     
     # int index
     assert(strings[N//3] == test_strings[N//3])
