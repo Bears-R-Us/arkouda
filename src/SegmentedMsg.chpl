@@ -2,6 +2,7 @@ module SegmentedMsg {
   use Reflection;
   use SegmentedArray;
   use ServerErrorStrings;
+  use ServerConfig;
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
   use RandArray;
