@@ -35,13 +35,13 @@ if __name__ == "__main__":
     set_difference = ak.setdiff1d(a,b)
     print("setdiff1d = ", set_difference.size,set_difference)
     # elements in a and not in b
-    passes = ak.all(ak.in1d(set_difference,a) & ak.in1d(set_difference,b,invert=True))
+    passed = ak.all(ak.in1d(set_difference,a) & ak.in1d(set_difference,b,invert=True))
     print("setdiff1d passed test: ",passed)
     
     set_xor = ak.setxor1d(a,b)
     print("setxor1d = ", set_xor.size,set_xor)
     # elements NOT in the intersection of a and b
-    passes = ak.all(ak.in1d(set_xor, set_intersection, invert=True))
+    passed = ak.all(ak.in1d(set_xor, set_intersection, invert=True))
     print("setxor1d passed test: ",passed)
 
     ak.disconnect()
