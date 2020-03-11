@@ -2,6 +2,7 @@ module RandArray {
   use Random;
   use SegmentedArray;
   use ServerErrorStrings;
+  use MultiTypeSymEntry;
   use Map;
   use SipHash;
 

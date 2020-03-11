@@ -3,6 +3,7 @@ module SegmentedArray {
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
   use CommAggregation;
+  use UnorderedCopy;
   use SipHash;
   use SegStringSort;
   use RadixSortLSD only radixSortLSD_ranks;
@@ -213,7 +214,6 @@ module SegmentedArray {
         forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, iv) {
           for pos in 0..#gl {
             // Note: do not replace this unorderedCopy with aggregation
-            use UnorderedCopy;
             unorderedCopy(gatheredVals[go+pos], va[oa[idx]+pos]);
           }
         }
