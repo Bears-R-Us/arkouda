@@ -172,7 +172,10 @@ def concatenate(arrays):
         else:
             return arrays[0]
     repMsg = generic_msg("concatenate {} {} {}".format(len(arrays), objtype, ' '.join(names)))
-    return create_pdarray(repMsg)
+    if objtype == "pdarray":
+        return create_pdarray(repMsg)
+    elif objtype == "str":
+        return Strings(*(repMsg.split('+')))
 
 # (A1 | A2) Set Union: elements are in one or the other or both
 def union1d(pda1, pda2):
