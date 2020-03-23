@@ -59,6 +59,8 @@ class pdarray:
     OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", "<<=", ">>=","**="])
     objtype = "pdarray"
 
+    __array_priority__ = 1000
+
     def __init__(self, name, mydtype, size, ndim, shape, itemsize):
         self.name = name
         self.dtype = dtype(mydtype)
