@@ -2,7 +2,6 @@ import unittest
 import arkouda as ak
 import numpy as np
 import subprocess, os
-from unittest.case import skip
 
 class PdArrayTest(unittest.TestCase):
     
@@ -60,6 +59,46 @@ class PdArrayTest(unittest.TestCase):
         addArray =  np.int64(2) - aArray
         self.assertTrue(isinstance(addArray, ak.pdarray))
         self.assertEqual(np.float64(1), addArray[0])
+        
+    def testPdArrayMultInt(self):
+        aArray = ak.ones(100)
+        mArray =  aArray*5
+        self.assertTrue(isinstance(mArray, ak.pdarray))
+        self.assertEqual(np.float64(5), mArray[0])
+        
+        mArray =  5*aArray
+        self.assertTrue(isinstance(mArray, ak.pdarray))
+        self.assertEqual(np.float64(5), mArray[0])
+    
+    def testPdArrayMultNumpyInt(self):
+        aArray = ak.ones(100)
+        mArray =  aArray*np.int64(5)
+        self.assertTrue(isinstance(mArray, ak.pdarray))
+        self.assertEqual(np.float64(5), mArray[0])
+        
+        mArray =  np.int64(5)*aArray
+        self.assertTrue(isinstance(mArray, ak.pdarray))
+        self.assertEqual(np.float64(5), mArray[0])
+        
+    def testPdArrayDivideInt(self):
+        aArray = ak.ones(100)
+        mArray =  aArray*15/3
+        self.assertTrue(isinstance(mArray, ak.pdarray))
+        self.assertEqual(np.float64(5), mArray[0])
+        
+        mArray =  15*aArray/3
+        self.assertTrue(isinstance(mArray, ak.pdarray))
+        self.assertEqual(np.float64(5), mArray[0])
+    
+    def testPdArrayDivideNumpyInt(self):
+        aArray = ak.ones(100)
+        mArray =  aArray*np.int64(15)/3
+        self.assertTrue(isinstance(mArray, ak.pdarray))
+        self.assertEqual(np.float64(5), mArray[0])
+        
+        mArray =  np.int64(15)*aArray/3
+        self.assertTrue(isinstance(mArray, ak.pdarray))
+        self.assertEqual(np.float64(5), mArray[0])
         
     def tearDown(self):
         ak.client.disconnect()
