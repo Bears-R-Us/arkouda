@@ -57,12 +57,17 @@ interactive session.
 ## Requirements:
  * requires chapel 1.20.0
  * requires zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
+ * requires hdf5 
  * requires python 3.6 or greater
  * requires numpy
  * requires Sphinx and sphinx-argparse to build python documentation
  
 ### It should be simple to get things going on a mac
 ```bash
+brew install zeromq
+
+brew install hdf5
+
 brew install chapel
 # you can also install python3 with brew
 brew install python3
