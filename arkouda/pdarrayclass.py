@@ -369,12 +369,6 @@ class pdarray:
         else:
             raise TypeError("Unhandled key type: {} ({})".format(key, type(key)))
 
-    def __iter__(self):
-        # to_ndarray will error if array is too large to bring back
-        a = self.to_ndarray()
-        for x in a:
-            yield x
-
     def fill(self, value):
         """
         Fill the array (in place) with a constant value.
