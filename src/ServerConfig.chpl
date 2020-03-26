@@ -48,15 +48,7 @@ module ServerConfig
     var serverHostname: string = try! get_hostname();
 
     proc get_hostname(): string {
-      // Want:
-      //   return here.hostname;
-      // but this isn't implemented yet; could use:
-      //   return here.name;
-      // but this munges the hostname when using local spawning with GASNet
-      // so the following is used as a temporary workaround:
-      extern proc chpl_nodeName(): c_string;
-      var hostname = chpl_nodeName(): string;
-      return hostname;
+      return here.hostname;
     }
 
     proc getConfig(): string {
