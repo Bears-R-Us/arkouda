@@ -8,10 +8,10 @@ module RadixSortLSD
     const numTasks = RSLSD_numTasks; // tasks per locale
     const Tasks = {0..#numTasks}; // these need to be const for comms/performance reasons
     
-    config const RSLSD_bitsPerDigit = 16;
-    const bitsPerDigit = RSLSD_bitsPerDigit; // these need to be const for comms/performance reasons
-    const numBuckets = 1 << bitsPerDigit; // these need to be const for comms/performance reasons
-    const maskDigit = numBuckets-1; // these need to be const for comms/performance reasons
+    config param RSLSD_bitsPerDigit = 16;
+    private param bitsPerDigit = RSLSD_bitsPerDigit; // these need to be const for comms/performance reasons
+    private param numBuckets = 1 << bitsPerDigit; // these need to be const for comms/performance reasons
+    private param maskDigit = numBuckets-1; // these need to be const for comms/performance reasons
 
     use BlockDist;
     use BitOps;
@@ -50,6 +50,15 @@ module RadixSortLSD
       }
     }
 
+    inline proc getBitWidth(a: [?aD] ?t): (int, bool)
+        where isHomogeneousTuple(t) && t == t.size*uint(bitsPerDigit) {
+      for digit in 1..t.size {
+        const m = max reduce [ai in a] ai[digit];
+        if m > 0 then return ((t.size-digit+1) * bitsPerDigit, false);
+      }
+      return (t.size * bitsPerDigit, false);
+    }
+
     // Get the digit for the current rshift. In order to correctly sort
     // negatives, we have to invert the signbit if we're looking at the last
     // digit and the array contained negative values.
@@ -58,6 +67,10 @@ module RadixSortLSD
       const xor = (invertSignBit:uint << (RSLSD_bitsPerDigit-1));
       const keyu = key:uint;
       return (((keyu >> rshift) & (maskDigit:uint)) ^ xor):int;
+    }
+
+    inline proc getDigit(key: uint, rshift: int, last: bool, negs: bool): int {
+      return ((key >> rshift) & (maskDigit:uint)):int;
     }
 
     // Get the digit for the current rshift. In order to correctly sort
@@ -85,6 +98,12 @@ module RadixSortLSD
         return getDigit(key1, rshift, last, negs);
       }
     }
+
+    inline proc getDigit(key: _tuple, rshift: int, last: bool, negs: bool): int 
+        where isHomogeneousTuple(key) && key.type == key.size*uint(bitsPerDigit) {
+      return key[key.size - rshift/bitsPerDigit];
+    }
+
 
     // calculate sub-domain for task
     inline proc calcBlock(task: int, low: int, high: int) {
