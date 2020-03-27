@@ -7,7 +7,99 @@ from itertools import product
 SIZE = 10
 warnings.simplefilter("always", UserWarning)
 
+def testPdArrayAddInt():
+    aArray = ak.ones(100)
+
+    addArray = aArray + 1
+    assert isinstance(addArray, ak.pdarray)
+    assert np.float64(2) == addArray[0]
+
+    addArray = 1 + aArray
+    assert isinstance(addArray, ak.pdarray)
+    assert np.float64(2) == addArray[0]
+
+def testPdArrayAddNumpyInt():
+    aArray = ak.ones(100)
+
+    addArray = aArray + np.int64(1)
+    assert isinstance(addArray, ak.pdarray)
+    assert np.float64(2) == addArray[0]
+    
+    addArray = np.int64(1) + aArray
+    assert isinstance(addArray, ak.pdarray)
+    assert np.float64(2) == addArray[0]
+
+def testPdArraySubtractInt():
+    aArray = ak.ones(100)
+    addArray =  aArray - 2
+    assert isinstance(addArray, ak.pdarray)
+    assert np.float64(-1) == addArray[0]
+
+    addArray =  2 - aArray
+    assert isinstance(addArray, ak.pdarray)
+    assert np.float64(1) == addArray[0]
+
+def testPdArraySubtractNumpyInt():
+    aArray = ak.ones(100)
+    addArray =  aArray - np.int64(2)
+    assert isinstance(addArray, ak.pdarray)
+    assert np.float64(-1) == addArray[0]
+
+    addArray =  np.int64(2) - aArray
+    assert isinstance(addArray, ak.pdarray)
+    assert np.float64(1) == addArray[0]
+
+def testPdArrayMultInt():
+    aArray = ak.ones(100)
+    mArray =  aArray*5
+    assert isinstance(mArray, ak.pdarray)
+    assert np.float64(5) == mArray[0]
+    
+    mArray =  5*aArray
+    assert isinstance(mArray, ak.pdarray)
+    assert np.float64(5) == mArray[0]
+
+def testPdArrayMultNumpyInt():
+    aArray = ak.ones(100)
+    mArray =  aArray*np.int64(5)
+    assert isinstance(mArray, ak.pdarray)
+    assert np.float64(5) == mArray[0]
+    
+    mArray =  np.int64(5)*aArray
+    assert isinstance(mArray, ak.pdarray)
+    assert np.float64(5) == mArray[0]
+    
+def testPdArrayDivideInt():
+    aArray = ak.ones(100)
+    mArray =  aArray*15/3
+    assert isinstance(mArray, ak.pdarray)
+    assert np.float64(5) == mArray[0]
+    
+    mArray =  15*aArray/3
+    assert isinstance(mArray, ak.pdarray)
+    assert np.float64(5) == mArray[0]
+
+def testPdArrayDivideNumpyInt():
+    aArray = ak.ones(100)
+    mArray =  aArray*np.int64(15)/3
+    assert isinstance(mArray, ak.pdarray)
+    assert np.float64(5) == mArray[0]
+    
+    mArray =  np.int64(15)*aArray/3
+    assert isinstance(mArray, ak.pdarray)
+    assert np.float64(5) == mArray[0]
+
 def run_tests(verbose):
+    
+    testPdArrayAddInt()
+    testPdArrayAddNumpyInt()
+    testPdArraySubtractInt()
+    testPdArraySubtractNumpyInt()
+    testPdArrayMultInt()
+    testPdArrayMultNumpyInt()
+    testPdArrayDivideInt()
+    testPdArrayDivideNumpyInt()
+    
     global pdarrays
     pdarrays = {'int64': ak.arange(0, SIZE, 1),
                 'float64': ak.linspace(0, 2, SIZE),

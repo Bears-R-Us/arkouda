@@ -59,6 +59,8 @@ class pdarray:
     OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", "<<=", ">>=","**="])
     objtype = "pdarray"
 
+    __array_priority__ = 1000
+
     def __init__(self, name, mydtype, size, ndim, shape, itemsize):
         self.name = name
         self.dtype = dtype(mydtype)
@@ -366,12 +368,6 @@ class pdarray:
                 generic_msg("[slice]=val {} {} {} {} {} {}".format(self.name, start, stop, stride, self.dtype.name, self.format_other(value)))
         else:
             raise TypeError("Unhandled key type: {} ({})".format(key, type(key)))
-
-    def __iter__(self):
-        # to_ndarray will error if array is too large to bring back
-        a = self.to_ndarray()
-        for x in a:
-            yield x
 
     def fill(self, value):
         """
