@@ -13,10 +13,6 @@ default: $(DEFAULT_TARGET)
 VERBOSE ?= 0
 
 CHPL := chpl
-ifeq ("$(shell chpl --version | sed -n "s/chpl version 1\.\([0-9]*\).*/\1/p")", "20")
-  CHPL_VERSION_120 := 1
-endif
-
 CHPL_DEBUG_FLAGS += --print-passes
 ifdef ARKOUDA_DEVELOPER
 CHPL_FLAGS += --ccflags="-O1"
@@ -171,12 +167,6 @@ endif
 # Version needs to be escape-quoted for chpl to interpret as string
 CHPL_FLAGS_WITH_VERSION = $(CHPL_FLAGS)
 CHPL_FLAGS_WITH_VERSION += -sarkoudaVersion="\"$(VERSION)\""
-
-ifdef CHPL_VERSION_120
-	CHPL_COMPAT_FLAGS := -sversion120=true --no-overload-sets-checks
-else
-	CHPL_COMPAT_FLAGS := -sversion120=false
-endif
 
 ifdef ARKOUDA_PRINT_PASSES_FILE
 	PRINT_PASSES_FLAGS := --print-passes-file $(ARKOUDA_PRINT_PASSES_FILE)
