@@ -1,6 +1,6 @@
 import unittest
 import subprocess
-import arkouda as ak
+from context import arkouda as ak
 from util.test.util import get_arkouda_server
 
 class ArkoudaTest(unittest.TestCase):

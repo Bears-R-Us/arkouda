@@ -1,7 +1,7 @@
-from unit.base_test import ArkoudaTest
-import arkouda as ak
+import base_test
+from context import arkouda as ak
 
-class ClientTest(ArkoudaTest):
+class ClientTest(base_test.ArkoudaTest):
     
     def testClientConnected(self):
         self.assertTrue(ak.client.connected)
@@ -19,6 +19,3 @@ class ClientTest(ArkoudaTest):
         context = ak.client.context
         self.assertTrue(context)
         self.assertFalse(context.closed)
-    
-    def testHealthCheck(self):
-        

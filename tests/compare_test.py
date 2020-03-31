@@ -1,6 +1,6 @@
 import numpy as np
-import arkouda as ak
-from unit.base_test import ArkoudaTest
+from context import arkouda as ak
+from base_test import ArkoudaTest
 
 N = 1_000_000
 
