@@ -49,20 +49,28 @@ def add_to_dat(benchmark, output, dat_dir, graph_infra):
     subprocess.check_output([computePerfStats, benchmark, dat_dir, perfkeys, benchmark_out])
     os.remove(benchmark_out)
 
-def generate_graphs(dat_dir, graph_dir, graph_infra, platform_name):
+def generate_graphs(args):
+
     """
     Generate graphs using the existing .dat files and graph infrastructure.
     """
     genGraphs = os.path.join(get_chpl_util_dir(), 'genGraphs')
     cmd = [genGraphs,
-           '--perfdir', dat_dir,
-           '--outdir', graph_dir,
-           '--graphlist', os.path.join(graph_infra, 'GRAPHLIST'),
-           '--testdir', graph_infra,
+           '--perfdir', args.dat_dir,
+           '--outdir', args.graph_dir,
+           '--graphlist', os.path.join(args.graph_infra, 'GRAPHLIST'),
+           '--testdir', args.graph_infra,
            '--alttitle', 'Arkouda Performance Graphs']
 
-    if platform_name:
-        cmd += ['--name', platform_name]
+    if args.platform_name:
+        cmd += ['--name', args.platform_name]
+    if args.configs:
+        cmd += ['--configs', args.configs]
+    if args.start_date:
+        cmd += ['--startdate', args.start_date]
+    if args.annotations:
+        cmd += ['--annotate', args.annotations]
+
 
     subprocess.check_output(cmd)
 
@@ -73,35 +81,43 @@ def create_parser():
     #parser.add_argument('--large', default=False, action='store_true', help='Run a larger problem size')
 
     parser.add_argument('-nl', '--num-locales', default=get_arkouda_numlocales(), help='Number of locales to use for the server')
+    parser.add_argument('--numtrials', default=1, type=int, help='Number of trials to run')
     parser.add_argument('benchmarks', nargs='*', help='Basename of benchmarks to run with extension stripped')
     parser.add_argument('--gen-graphs', default=False, action='store_true', help='Generate graphs, requires $CHPL_HOME')
     parser.add_argument('--dat-dir', default=os.path.join(benchmark_dir, 'datdir'), help='Directory with .dat files stored')
-    parser.add_argument('--graph-dir', default=os.path.join(benchmark_dir, 'graphdir'), help='Directory to place generated graphs')
+    parser.add_argument('--graph-dir', help='Directory to place generated graphs')
     parser.add_argument('--graph-infra', default=os.path.join(benchmark_dir, 'graph_infra'), help='Directory containing graph infrastructure')
-    parser.add_argument('--platform-name', default=None, help='Test platform name')
+    parser.add_argument('--platform-name', default='', help='Test platform name')
+    parser.add_argument('--description', default='', help='Description of this configuration')
+    parser.add_argument('--annotations', default='', help='File containing annotations')
+    parser.add_argument('--configs', help='comma seperate list of configurations')
+    parser.add_argument('--start-date', help='graph start date')
     return parser
 
 def main():
     parser = create_parser()
     args, client_args = parser.parse_known_args()
+    args.graph_dir = args.graph_dir or os.path.join(args.dat_dir, 'html')
+    config_dat_dir = os.path.join(args.dat_dir, args.description)
 
     if args.gen_graphs:
-        os.makedirs(args.dat_dir, exist_ok=True)
+        os.makedirs(config_dat_dir, exist_ok=True)
 
     start_arkouda_server(args.num_locales)
 
     args.benchmarks = args.benchmarks or BENCHMARKS
     for benchmark in args.benchmarks:
-        benchmark_py = os.path.join(benchmark_dir, '{}.py'.format(benchmark))
-        out = run_client(benchmark_py, client_args)
-        if args.gen_graphs:
-            add_to_dat(benchmark, out, args.dat_dir, args.graph_infra)
-        print(out)
+        for trial in range(args.numtrials):
+            benchmark_py = os.path.join(benchmark_dir, '{}.py'.format(benchmark))
+            out = run_client(benchmark_py, client_args)
+            if args.gen_graphs:
+                add_to_dat(benchmark, out, config_dat_dir, args.graph_infra)
+            print(out)
 
     stop_arkouda_server()
 
     if args.gen_graphs:
-        generate_graphs(args.dat_dir, args.graph_dir, args.graph_infra, args.platform_name)
+        generate_graphs(args)
 
 if __name__ == '__main__':
     main()
