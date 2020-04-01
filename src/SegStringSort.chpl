@@ -17,9 +17,9 @@ module SegStringSort {
 
   record StringIntComparator {
     proc keyPart(a: (string, int), i: int) {
-      var len = a[1].numBytes;
+      var len = a[0].numBytes;
       var section = if i <= len then 0:int(8) else -1:int(8);
-      var part = if i <= len then a[1].byte(i) else 0:uint(8);
+      var part = if i <= len then a[0].byte(i) else 0:uint(8);
       return (section, part);
     }
   }
@@ -58,7 +58,7 @@ module SegStringSort {
       sort(stringsWithInds, comparator=myComparator);
       if v { writeln("Sorted long strings in %t seconds".format(getCurrentTime() - tl)); stdout.flush(); tl = getCurrentTime(); }
       forall (h, s) in zip(highDom, stringsWithInds.domain) with (var agg = newDstAggregator(int)) {
-        agg.copy(gatherInds[h], stringsWithInds[s][2]);
+        agg.copy(gatherInds[h], stringsWithInds[s][1]);
       }
       if v { writeln("Permuted long inds in %t seconds".format(getCurrentTime() - tl)); stdout.flush(); }
     }
@@ -125,8 +125,8 @@ module SegStringSort {
       const l = lengths[i];
       var buf: [0..#(l+1)] uint(8);
       buf[{0..#l}] = va[{oa[i]..#l}];
-      si[1] = try! createStringWithBorrowedBuffer(c_ptrTo(buf), l, l+1);
-      si[2] = i;
+      si[0] = try! createStringWithBorrowedBuffer(c_ptrTo(buf), l, l+1);
+      si[1] = i;
     }
     return stringsWithInds;
   }
@@ -163,34 +163,34 @@ module SegStringSort {
       use UnorderedCopy;
       if (right > 0) {
         if (len >= right) {
-          unorderedCopy(k[1], values[off+right-2]);
-          unorderedCopy(k[2], values[off+right-1]);
+          unorderedCopy(k[0], values[off+right-2]);
+          unorderedCopy(k[1], values[off+right-1]);
         } else if (len == right - 1) {
-          unorderedCopy(k[1], values[off+right-2]);
-          unorderedCopy(k[2], 0: uint(8));
-        } else {
+          unorderedCopy(k[0], values[off+right-2]);
           unorderedCopy(k[1], 0: uint(8));
-          unorderedCopy(k[2], 0: uint(8));
+        } else {
+          unorderedCopy(k[0], 0: uint(8));
+          unorderedCopy(k[1], 0: uint(8));
         }
       }
-      unorderedCopy(k[3], off);
-      unorderedCopy(k[4], len);
-      unorderedCopy(k[5], rank);
+      unorderedCopy(k[2], off);
+      unorderedCopy(k[3], len);
+      unorderedCopy(k[4], rank);
     }
 
     inline proc copyDigit(ref k1: state, ref k0: state, const right: int, ref aggregator) {
-      const off = k0[3];
-      const len = k0[4];
+      const off = k0[2];
+      const len = k0[3];
       if (right > 0) {
         if (len >= right) {
-          k0[1] = values[off+right-2];
-          k0[2] = values[off+right-1];
+          k0[0] = values[off+right-2];
+          k0[1] = values[off+right-1];
         } else if (len == right - 1) {
-          k0[1] = values[off+right-2];
-          k0[2] = 0;
+          k0[0] = values[off+right-2];
+          k0[1] = 0;
         } else {
+          k0[0] = 0: uint(8);
           k0[1] = 0: uint(8);
-          k0[2] = 0: uint(8);
         }
       }
       aggregator.copy(k1, k0);
@@ -224,7 +224,7 @@ module SegStringSort {
             var tD = calcBlock(task, lD.low, lD.high);
             // count digits in this task's part of the array
             for i in tD {
-              var bucket = (kr0[i][1]:int << 8) | (kr0[i][2]:int); // calc bucket from key
+              var bucket = (kr0[i][0]:int << 8) | (kr0[i][1]:int); // calc bucket from key
               taskBucketCounts[bucket] += 1;
             }
             // write counts in to global counts in transposed order
@@ -265,7 +265,7 @@ module SegStringSort {
             {
               var aggregator = newDstAggregator(state);
               for i in tD {
-                var bucket = (kr0[i][1]:int << 8) | (kr0[i][2]:int); // calc bucket from key
+                var bucket = (kr0[i][0]:int << 8) | (kr0[i][1]:int); // calc bucket from key
                 var pos = taskBucketPos[bucket];
                 taskBucketPos[bucket] += 1;
                 copyDigit(kr1[pos], kr0[i], pivot - rshift, aggregator);

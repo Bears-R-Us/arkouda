@@ -65,7 +65,7 @@ module SipHash {
   
   proc sipHash64(msg: [] uint(8), D): uint(64) {
     var res = computeSipHashLocalized(msg, D, 8);
-    return res[1];
+    return res[0];
   }
 
   proc sipHash128(msg: [] uint(8), D): 2*uint(64) {
@@ -211,7 +211,7 @@ module SipHash {
 
     b = v0 ^ v1 ^ v2 ^ v3;
     var res: 2*uint(64);
-    res[1] = byte_reverse(b);
+    res[0] = byte_reverse(b);
 
     if (outlen == 8) {
         return res;
@@ -225,7 +225,7 @@ module SipHash {
     }
     
     b = v0 ^ v1 ^ v2 ^ v3;
-    res[2] = byte_reverse(b);
+    res[1] = byte_reverse(b);
 
     return res;
   }

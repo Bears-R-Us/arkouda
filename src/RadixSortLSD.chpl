@@ -37,10 +37,10 @@ module RadixSortLSD
 
     inline proc getBitWidth(a: [?aD] (uint, uint)): (int, bool) {
       const negs = false;
-      var highMax = max reduce [ai in a] ai[1];
+      var highMax = max reduce [ai in a] ai[0];
       var whigh = numBits(uint) - clz(highMax);
       if (whigh == 0) {
-        var lowMax = max reduce [ai in a] ai[2];
+        var lowMax = max reduce [ai in a] ai[1];
         var wlow = numBits(uint) - clz(lowMax);
         const bitWidth = wlow: int;
         return (bitWidth, negs);
@@ -79,9 +79,9 @@ module RadixSortLSD
 
     inline proc getDigit(key: 2*uint, rshift: int, last: bool, negs: bool): int {
       if (rshift >= numBits(uint)) {
-        return getDigit(key[1], rshift - numBits(uint), last, negs);
+        return getDigit(key[0], rshift - numBits(uint), last, negs);
       } else {
-        return getDigit(key[2], rshift, last, negs);
+        return getDigit(key[1], rshift, last, negs);
       }
     }
 
@@ -126,8 +126,8 @@ module RadixSortLSD
         if vv {writeln("type = ", t:string, ", nBits = ", nBits);}
         
         // form (key,rank) vector
-        param KEY = 1; // index of key in pair
-        param RANK = 2; // index of rank in pair
+        param KEY = 0; // index of key in pair
+        param RANK = 1; // index of rank in pair
         var kr0: [aD] (t,int) = [(key,rank) in zip(a,aD)] (key,rank);
         var kr1: [aD] (t,int);
         

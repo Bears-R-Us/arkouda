@@ -202,8 +202,8 @@ module SegmentedMsg {
       var name2 = st.nextName();
       var hash2 = st.addEntry(name2, hashes.size, int);
       forall (h, h1, h2) in zip(hashes, hash1.a, hash2.a) {
-        h1 = h[1]:int;
-        h2 = h[2]:int;
+        h1 = h[0]:int;
+        h2 = h[1]:int;
       }
       return "created " + st.attrib(name1) + "+created " + st.attrib(name2);
     }

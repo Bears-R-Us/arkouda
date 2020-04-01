@@ -667,7 +667,7 @@ module ReductionMsg
           vi = values.domain.high;
         }
         if (vi >= low) {
-          r = cummin[vi][2];
+          r = cummin[vi][1];
         }
       }
       return res;
@@ -704,7 +704,7 @@ module ReductionMsg
           vi = values.domain.high;
         }
         if (vi >= low) {
-          r = cummax[vi][2];
+          r = cummax[vi][1];
         }
       }
       return res;
@@ -742,8 +742,8 @@ module ReductionMsg
           vi = values.domain.high;
         }
         if (vi >= low) {
-          v = cummin[vi][1][2];
-          l = cummin[vi][2];
+          v = cummin[vi][0][1];
+          l = cummin[vi][1];
         }
       }
       return (vals, locs);
@@ -784,8 +784,8 @@ module ReductionMsg
           vi = values.domain.high;
         }
         if (vi >= low) {
-          v = cummax[vi][1][2];
-          l = cummax[vi][2];
+          v = cummax[vi][0][1];
+          l = cummax[vi][1];
         }
       }
       return (vals, locs);
@@ -973,14 +973,14 @@ module ReductionMsg
       }
       var sortedKV: [kD] (int, int);
       forall (kvi, idx) in zip(sortedKV, IV) with (var agg = newSrcAggregator(int)) {
-        agg.copy(kvi[1], keys[idx]); 
-        agg.copy(kvi[2], values[idx]);
+        agg.copy(kvi[0], keys[idx]);
+        agg.copy(kvi[1], values[idx]);
       }
       if v {writeln("sort time = ", Time.getCurrentTime() - t1); try! stdout.flush();}
       if v {writeln("Finding unique (key, value) pairs..."); try! stdout.flush();}
       var truth: [kD] bool;
       // true where new (k, v) pair appears
-      [(t, kv, i) in zip(truth, sortedKV, kD)] if i > kD.low { t = (sortedKV[i-1][2] != kv[2]); }
+      [(t, kv, i) in zip(truth, sortedKV, kD)] if i > kD.low { t = (sortedKV[i-1][1] != kv[1]); }
       // first value of every segment is automatically new
       [s in segments] truth[s] = true;
       // count cumulative new values and take diffs at segment boundaries
