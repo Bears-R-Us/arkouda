@@ -19,7 +19,7 @@ from util import *
 
 logging.basicConfig(level=logging.INFO)
 
-BENCHMARKS = ['stream', 'argsort', 'gather', 'scatter', 'reduce', 'scan']
+BENCHMARKS = ['stream', 'argsort', 'coargsort', 'gather', 'scatter', 'reduce', 'scan']
 
 def get_chpl_util_dir():
     """ Get the Chapel directory that contains graph generation utilities. """
