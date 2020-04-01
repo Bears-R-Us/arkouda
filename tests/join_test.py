@@ -1,5 +1,3 @@
-#!/usr/bin/env python3                                                         
-
 import importlib
 import numpy as np
 import math
@@ -18,62 +16,46 @@ dt = 10
 ak.verbose = False
 
 class JoinTest(ArkoudaTest):
-
-    def test_true_dt_with_result_limit(self):
-        # should get N*N answers
+        
+    def test_join_on_eq_with_true_dt(self):
+        I,J = ak.join_on_eq_with_dt(a2,a1,t1,t2,dt,"true_dt")
+        self.assertEqual(N, I.size)
+        self.assertEqual(J.size == N)
+               
+    def test_join_on_eq_with_true_dt_with_result_limit(self):
         I,J = ak.join_on_eq_with_dt(a1,a1,a1,a1,dt,"true_dt",result_limit=N*N)
         self.assetEqual(N*N, I.size)
         self.assertEqual(N*N, J.sizeZ)
 
-    def test_true_dt(self):
-        # should get N answers
-        I,J = ak.join_on_eq_with_dt(a2,a1,t1,t2,dt,"true_dt")
+    def test_join_on_eq_with_abs_dt(self)
+        I,J = ak.join_on_eq_with_dt(a2,a1,t1,t2,dt,"abs_dt")
         self.assertEqual(N, I.size)
-        self.assertEqual(J.size == N)
+        self.assertEqual(N, J.size)
 
-# should get N answers
-I,J = ak.join_on_eq_with_dt(a2,a1,t1,t2,dt,"abs_dt")
-print(I,J)
-if (I.size == N) and (J.size == N):
-    print("passed!")
-else:
-    print("failed!")
+    def test_join_on_eq_with_pos_dt(self)
+        I,J = ak.join_on_eq_with_dt(a2,a1,t1,t2,dt,"pos_dt")
+        self.assertEqual(N, I.size)
+        self.assertEqual(N, J.size)
 
-# should get N answers
-I,J = ak.join_on_eq_with_dt(a2,a1,t1,t2,dt,"pos_dt")
-print(I,J)
-if (I.size == N) and (J.size == N):
-    print("passed!")
-else:
-    print("failed!")
+    def test_join_on_eq_with_abs_dt_outside_window(self):
+        # should get 0 answers
+        # N^2 matches but 0 within dt window
+        dt = 8
+        I,J = ak.join_on_eq_with_dt(a1,a1,t1,t1*10,dt,"abs_dt")
+        self.assertEqual(0, I.size)
+        self.assertEqual(0, J.size)
 
-# should get 0 answers
-# N^2 matches but 0 within dt window
-dt = 8
-I,J = ak.join_on_eq_with_dt(a1,a1,t1,t1*10,dt,"abs_dt")
-print(I,J)
-if (I.size == 0) and (J.size == 0):
-    print("passed!")
-else:
-    print("failed!")
+        # should get 0 answers
+        # N matches but 0 within dt window
+        dt = 8
+        I,J = ak.join_on_eq_with_dt(a2,a1,t1,t2,dt,"abs_dt")
+        self.assertEqual(0, I.size)
+        self.assertEqual(0, J.size)
 
-# should get 0 answers
-# N matches but 0 within dt window
-dt = 8
-I,J = ak.join_on_eq_with_dt(a2,a1,t1,t2,dt,"abs_dt")
-print(I,J)
-if (I.size == 0) and (J.size == 0):
-    print("passed!")
-else:
-    print("failed!")
-
-# should get 0 answers
-# N matches but 0 within dt window
-dt = 8
-I,J = ak.join_on_eq_with_dt(a2,a1,t1,t2,dt,"pos_dt")
-print(I,J)
-if (I.size == 0) and (J.size == 0):
-    print("passed!")
-else:
-    print("failed!")
-
+    def test_join_on_eq_with_pos_dt_outside_window(self):
+        # should get 0 answers
+        # N matches but 0 within dt window
+        dt = 8
+        I,J = ak.join_on_eq_with_dt(a2,a1,t1,t2,dt,"pos_dt")
+        self.assertEqual(0, I.size)
+        self.assertEqual(0, J.size)

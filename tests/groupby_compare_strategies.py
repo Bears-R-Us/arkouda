@@ -1,43 +1,80 @@
-#!/usr/bin/env python3
-
-import arkouda as ak
+from context import arkouda as ak
 import numpy as np
 import pandas as pd
 from time import time
+from base_test import ArkoudaTest
 
-def compare_strategies(length, ncat, op, dtype):
-    keys = ak.randint(0, ncat, length)
-    if dtype == 'int64':
-        vals = ak.randint(0, length//ncat, length)
-    elif dtype == 'bool':
-        vals = ak.zeros(length, dtype='bool')
-        for i in np.random.randint(0, length, ncat//2):
-            vals[i] = True
-    else:
-        vals = ak.linspace(-1, 1, length)        
-    print("Global groupby", end=' ')                                        
-    start = time()                                                
-    gg = ak.GroupBy(keys, False)
-    ggtime = time() - start
-    print(ggtime)
-    print("Global reduce", end=' ')
-    start = time()
-    gk, gv = gg.aggregate(vals, op)
-    grtime = time() - start
-    print(grtime)
-    print("Local groupby", end=' ')
-    start = time()
-    lg = ak.GroupBy(keys, True)
-    lgtime = time() - start
-    print(lgtime)
-    print("Local reduce", end=' ')
-    start = time()
-    lk, lv = lg.aggregate(vals, op)
-    lrtime = time() - start
-    print(lrtime)
-    print(f"Keys match? {(gk == lk).all()}")
-    print(f"Absolute diff of vals = {ak.abs(gv - lv).sum()}")
-    return ggtime, grtime, lgtime, lrtime
+  def compare_strategies(length, ncat, op, dtype):
+      keys = ak.randint(0, ncat, length)
+      if dtype == 'int64':
+          vals = ak.randint(0, length//ncat, length)
+      elif dtype == 'bool':
+          vals = ak.zeros(length, dtype='bool')
+          for i in np.random.randint(0, length, ncat//2):
+              vals[i] = True
+      else:
+          vals = ak.linspace(-1, 1, length)        
+      print("Global groupby", end=' ')                                        
+      start = time()                                                
+      gg = ak.GroupBy(keys, False)
+      ggtime = time() - start
+      print(ggtime)
+      print("Global reduce", end=' ')
+      start = time()
+      gk, gv = gg.aggregate(vals, op)
+      grtime = time() - start
+      print(grtime)
+      print("Local groupby", end=' ')
+      start = time()
+      lg = ak.GroupBy(keys, True)
+      lgtime = time() - start
+      print(lgtime)
+      print("Local reduce", end=' ')
+      start = time()
+      lk, lv = lg.aggregate(vals, op)
+      lrtime = time() - start
+      print(lrtime)
+      print(f"Keys match? {(gk == lk).all()}")
+      print(f"Absolute diff of vals = {ak.abs(gv - lv).sum()}")
+      return ggtime, grtime, lgtime, lrtime
+
+class GroupByCompareStrategiesTest(ArkoudaTest):
+  
+  def testInt64GroupByCompareStrategiesTest(self):
+    
+    def compare_strategies(length, ncat, op, dtype):
+        keys = ak.randint(0, ncat, length)
+        if dtype == 'int64':
+            vals = ak.randint(0, length//ncat, length)
+        elif dtype == 'bool':
+            vals = ak.zeros(length, dtype='bool')
+            for i in np.random.randint(0, length, ncat//2):
+                vals[i] = True
+        else:
+            vals = ak.linspace(-1, 1, length)        
+        print("Global groupby", end=' ')                                        
+        start = time()                                                
+        gg = ak.GroupBy(keys, False)
+        ggtime = time() - start
+        print(ggtime)
+        print("Global reduce", end=' ')
+        start = time()
+        gk, gv = gg.aggregate(vals, op)
+        grtime = time() - start
+        print(grtime)
+        print("Local groupby", end=' ')
+        start = time()
+        lg = ak.GroupBy(keys, True)
+        lgtime = time() - start
+        print(lgtime)
+        print("Local reduce", end=' ')
+        start = time()
+        lk, lv = lg.aggregate(vals, op)
+        lrtime = time() - start
+        print(lrtime)
+        print(f"Keys match? {(gk == lk).all()}")
+        print(f"Absolute diff of vals = {ak.abs(gv - lv).sum()}")
+        return ggtime, grtime, lgtime, lrtime
 
 if __name__ == '__main__':
     import sys

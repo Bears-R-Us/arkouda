@@ -2,10 +2,26 @@
 # test data located at  https://csr.lanl.gov/data/netflow.html
 # field names located at https://csr.lanl.gov/data/2017.html
 
-import arkouda as ak
+from context import arkouda as ak
 import sys, os, h5py, time
 from glob import glob
+from base_test import ArkoudaTest
 
+class ReadAllTest(ArkoudaTest):
+
+    def setUp(self):
+      
+        '''
+        Invokes the parent setUp method to start the arkouda_server and also
+        sets the test_data_url used to lookup test files.sets
+        
+        :return: None
+        :raise: AssertionError if the TEST_DATA_URL has not been set
+        '''
+        ArkoudaTest.setUp()
+        self.test_data_url = os.getenv('TEST_DATA_URL')
+        assert self.test_data_url, 'The TEST_DATA_URL env variable must be set'
+  
 if len(sys.argv) < 3:
     print("Usage: {} <hostname> <port> <HDF5_filenames>".format(sys.argv[0]))
     sys.exit()

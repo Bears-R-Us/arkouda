@@ -1,9 +1,7 @@
-#!/usr/bin/env python3
-
-import arkouda as ak
+from context import arkouda as ak
 import numpy as np
 from time import time
-
+from base_test import ArkoudaTest
 OPERATORS = ['sum', 'min', 'nunique']
 
 def generate_arrays(length, nkeys, nvals, dtype='int64'):
