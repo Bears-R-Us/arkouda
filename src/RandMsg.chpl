@@ -36,42 +36,42 @@ module RandMsg
                 var aMax = fields[5]:int;
                 var t1 = Time.getCurrentTime();
                 var e = st.addEntry(rname, len, int);
-                writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+                if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
                 
                 t1 = Time.getCurrentTime();
                 fillInt(e.a, aMin, aMax);
-                writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+                if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
             }
             when (DType.UInt8) {
                 var aMin = fields[4]:int;
                 var aMax = fields[5]:int;
                 var t1 = Time.getCurrentTime();
                 var e = st.addEntry(rname, len, uint(8));
-                writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+                if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
                 
                 t1 = Time.getCurrentTime();
                 fillUInt(e.a, aMin, aMax);
-                writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+                if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
             }
             when (DType.Float64) {
                 var aMin = fields[4]:real;
                 var aMax = fields[5]:real;
                 var t1 = Time.getCurrentTime();
                 var e = st.addEntry(rname, len, real);
-                writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+                if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
                 
                 t1 = Time.getCurrentTime();
                 fillReal(e.a, aMin, aMax);
-                writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+                if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
             }
             when (DType.Bool) {
                 var t1 = Time.getCurrentTime();
                 var e = st.addEntry(rname, len, bool);
-                writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+                if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
                 
                 t1 = Time.getCurrentTime();
                 fillBool(e.a);
-                writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+                if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
             }            
             otherwise {return notImplementedError(pn,dtype);}
         }
