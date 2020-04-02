@@ -1,10 +1,11 @@
-#!/usr/bin/env python3
-
-import arkouda as ak
 import numpy as np
 import pandas as pd
+from context import arkouda as ak
+from base_test import ArkoudaTest
+
 SIZE = 10000
 GROUPS = 64
+verbose = True
 
 def groupby_to_arrays(df, kname, vname, op, levels):
     g = df.groupby(kname)[vname]
@@ -23,7 +24,7 @@ def make_arrays():
     b = (i % 2) == 0
     d = {'keys':keys, 'keys2':keys2, 'int64':i, 'float64':f, 'bool':b}
     return d
-
+  
 def compare_keys(pdkeys, akkeys, levels, pdvals, akvals):
     if levels == 1:
         akkeys = akkeys.to_ndarray()
@@ -40,7 +41,7 @@ def compare_keys(pdkeys, akkeys, levels, pdvals, akvals):
         return 1
     return 0
 
-def run_test(levels, verbose=False):
+def run_test(self, levels, verbose=False):
     d = make_arrays()
     df = pd.DataFrame(d)
     akdf = {k:ak.array(v) for k, v in d.items()}
@@ -91,21 +92,12 @@ def run_test(levels, verbose=False):
                 failures += compare_keys(pdkeys, akkeys, levels, pdvals, akvals)
     print(f"{tests - failures - not_impl} / {tests - not_impl} passed, {failures} errors, {not_impl} not implemented")
     return failures
-    
-if __name__ == '__main__':
-    import sys
-    if len(sys.argv) not in (3, 4):
-        print(f"Usage: {sys.argv[0]} <server> <port> [<verbose=0|1>]")
-        sys.exit()
-    if len(sys.argv) == 4:
-        verbose = (sys.argv[3] != "0")
-    else:
-        verbose = False
-    ak.connect(sys.argv[1], int(sys.argv[2]))
-    failures = 0
-    print("GroupBy on one level")
-    failures += run_test(1, verbose)
-    print("\nGroupBy on two levels")
-    failures += run_test(2, verbose)
-    ak.disconnect()
-    sys.exit(failures)
+
+class GroupByTests(ArkoudaTest): 
+  
+    def test_groupby_on_one_level(self):
+        self.assertEqual(0, run_test(1, verbose))
+  
+    def test_groupby_one_two_levels(self):
+         self.assertEqual(0, run_test(2, verbose))
+  
