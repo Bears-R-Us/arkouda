@@ -80,6 +80,8 @@ pip3 install -e ./arkouda
 # these packages are nice but not a requirement
 pip3 install pandas
 pip3 install jupyter
+# these packages are required to execute the Python test harness
+pip3 install pytest pytest-env
 ```
 
 ### If you need to build Chapel from scratch here is what I use

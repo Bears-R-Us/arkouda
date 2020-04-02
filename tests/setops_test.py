@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
-import arkouda as ak
+from context import arkouda as ak
 import numpy as np
 import pandas as pd
+from context import arkouda as ak
+from base_test import ArkoudaTest
 
 if __name__ == "__main__":
     import argparse, sys

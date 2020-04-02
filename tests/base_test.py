@@ -24,11 +24,11 @@ class ArkoudaTest(unittest.TestCase):
         :return: None
         :raise: RuntimeError if there is an error in configuring or starting arkouda_server
         '''    
-        ArkoudaTest.port = os.getenv('ARKOUDA_SERVER_PORT', 5566)
+        ArkoudaTest.port = int(os.getenv('ARKOUDA_SERVER_PORT', 5566))
         ArkoudaTest.server = os.getenv('ARKOUDA_SERVER_HOST', 'localhost')
-        ArkoudaTest.is_full_stack = os.getenv('FULL_STACK_TEST', False)
+        ArkoudaTest.full_stack_mode = True if os.getenv('FULL_STACK_TEST') == 'True' else False
 
-        if ArkoudaTest.is_full_stack:
+        if ArkoudaTest.full_stack_mode:
             try: 
                 arkouda_path = get_arkouda_server() 
                 ArkoudaTest.ak_server = subprocess.Popen([arkouda_path, 
@@ -56,11 +56,15 @@ class ArkoudaTest(unittest.TestCase):
     def test_arkouda_server(self):
       
         '''
-        Simply confirsm the arkouda_server process started up correctly and is running
+        Simply confirms the arkouda_server process started up correctly and is running if in full
+        stack mode or confirms the ak.client is established if in client stack mode
         
         :raise: AssertionError if the ArkoudaTest.ak_server object is None
         '''
-        self.assertTrue(ArkoudaTest.ak_server)
+        if ArkoudaTest.full_stack_mode:
+            self.assertTrue(ArkoudaTest.ak_server)
+        else:
+            self.assertTrue(ak.client)
     
     def tearDown(self):
       
@@ -78,11 +82,13 @@ class ArkoudaTest(unittest.TestCase):
     def tearDownClass(cls):
       
         '''
-        Shuts down the arkouda_server started in the setUpClass method
+        Shuts down the arkouda_server started in the setUpClass method if test is run
+        in full stack mode, noop if in client stack mode.
+
         :return: None
         :raise: RuntimeError if there is an error in shutting down arkouda_server
         '''
-        if ArkoudaTest.is_full_stack:
+        if ArkoudaTest.full_stack_mode:
             try:
                 ArkoudaTest.ak_server.terminate()
             except Exception as e:
