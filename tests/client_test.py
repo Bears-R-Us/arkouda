@@ -1,6 +1,9 @@
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
+'''
+Tests basic Arkouda client functionality
+'''
 class ClientTest(ArkoudaTest):
     
     def test_client_connected(self):
@@ -19,3 +22,6 @@ class ClientTest(ArkoudaTest):
         context = ak.client.context
         self.assertTrue(context)
         self.assertFalse(context.closed)
+        
+    def test_get_mem_used(self):
+        self.assertTrue(ak.client.get_mem_used() > 0)

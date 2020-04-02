@@ -1,8 +1,8 @@
-from context import arkouda as ak
 import numpy as np
 import warnings, os
 from itertools import product
 from base_test import ArkoudaTest
+from context import arkouda as ak
 
 SIZE = 10
 warnings.simplefilter("always", UserWarning)
@@ -10,7 +10,7 @@ warnings.simplefilter("always", UserWarning)
 class OperatorsTest(ArkoudaTest):
 
     def setUp(self):
-        ArkoudaTest.setUp()
+        ArkoudaTest.setUp(self)
         self.verbose = os.getenv('VERBOSE', False)
   
     def test_operators(self):
@@ -143,4 +143,4 @@ class OperatorsTest(ArkoudaTest):
         if self.verbose: print('\n'.join(map(': '.join, dtypeerrors)))
         print("  Value mismatches:         {} / {}".format(len(valueerrors), nboth))
         if self.verbose: print('\n'.join(map(': '.join, valueerrors)))
-        return matches == nboth
+        self.assertEqual(matches, nboth)

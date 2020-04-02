@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from context import arkouda as ak
 import numpy as np
 import pandas as pd
@@ -21,7 +19,10 @@ if __name__ == "__main__":
     a = ak.randint(0, 2*SIZE, SIZE)
     b = ak.randint(0, 2*SIZE, SIZE)
 
-    
+class SetOpsTest(ArkoudaTest):
+
+    def testOneDimensionalUnion(self):
+      
     set_union = ak.union1d(a,b)
     print("union1d = ", set_union.size,set_union)
     # elements in a or elements in b (or in both a and b)
