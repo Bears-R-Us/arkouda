@@ -67,7 +67,6 @@ class ArkoudaTest(unittest.TestCase):
         :raise: AssertionError if the ArkoudaTest.ak_server object is None
         '''
         self.assertTrue(ArkoudaTest.ak_server)
-        print ('hello')
     
     def tearDown(self):
       
