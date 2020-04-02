@@ -328,7 +328,7 @@ module SegmentedArray {
           var sortedHashes = [i in iv] hashes[i];
           var diffs = sortedHashes[(iv.domain.low+1)..#(iv.size-1)] - sortedHashes[(iv.domain.low)..#(iv.size-1)];
           printAry("diffs = ", diffs);
-          var nonDecreasing = [d in diffs] ((d[0] > 0) || ((d[0] == 0) && (d[1] >= 0)));
+          var nonDecreasing = [(d0,d1) in diffs] ((d0 > 0) || ((d0 == 0) && (d1 >= 0)));
           writeln("Are hashes sorted? ", && reduce nonDecreasing);
         }
         return iv;
