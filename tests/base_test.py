@@ -4,11 +4,6 @@ from logging import Logger, Formatter, StreamHandler
 from context import arkouda as ak
 from util.test.util import get_arkouda_server
 
-test_logger = Logger(name='arkouda_logger')
-handler = StreamHandler()
-handler.setFormatter(Formatter('[%(name)s] Line %(lineno)d %(levelname)s: %(message)s'))    
-test_logger.addHandler(handler)
-
 '''
 ArkoudaTest defines the base Arkouda test logic for starting up the arkouda_server at the 
 launch of a unittest TestCase and shutting down the arkouda_server at the completion of
@@ -56,8 +51,7 @@ class ArkoudaTest(unittest.TestCase):
         try:
             ak.client.connect(server=ArkoudaTest.server, port=ArkoudaTest.port)
         except Exception as e:
-            print(str(e))
-            raise ConnectionError(' in connecting to arkouda_server', e)
+            raise ConnectionError(e)
     
     def test_arkouda_server(self):
       
@@ -75,7 +69,10 @@ class ArkoudaTest(unittest.TestCase):
         :return: None
         :raise: ConnectionError if exception is raised in connecting to arkouda_server
         '''
-        ak.client.disconnect()
+        try:
+            ak.client.disconnect()
+        except Exception as e:
+            raise ConnectionError(e)
         
     @classmethod
     def tearDownClass(cls):
@@ -89,4 +86,4 @@ class ArkoudaTest(unittest.TestCase):
             try:
                 ArkoudaTest.ak_server.terminate()
             except Exception as e:
-                raise RuntimeError('in terminating arkouda_server process', e)
+                raise RuntimeError(e)

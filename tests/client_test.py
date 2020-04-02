@@ -1,4 +1,4 @@
-from base_test import ArkoudaTest, test_logger
+from base_test import ArkoudaTest
 from context import arkouda as ak
 
 class ClientTest(ArkoudaTest):
@@ -7,13 +7,12 @@ class ClientTest(ArkoudaTest):
         self.assertTrue(ak.client.connected)
         ak.client.disconnect()
         self.assertFalse(ak.client.connected)
-        arkouda_test
-        ak.client.connect(port=5566)
+        ak.client.connect(server=ArkoudaTest.server, port=ArkoudaTest.port)
         self.assertTrue(ak.client.connected)
         
     def test_client_get_config(self):
         config = ak.client.get_config()
-        self.assertEqual(5566, config['ServerPort'])
+        self.assertEqual(ArkoudaTest.port, config['ServerPort'])
         self.assertTrue('arkoudaVersion' in config.keys())
         
     def test_client_context(self):
