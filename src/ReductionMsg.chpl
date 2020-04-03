@@ -995,7 +995,7 @@ module ReductionMsg
       var keyhits: [hD] int;
       forall i in truth.domain with (var agg = newDstAggregator(int)) {
         if (truth[i]) {
-          var key = sortedKV[i][1];
+          var (key,_) = sortedKV[i];
           agg.copy(keyhits[count[i]-1], key);
         }
       }
