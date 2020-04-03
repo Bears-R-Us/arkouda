@@ -982,7 +982,7 @@ module ReductionMsg
       // true where new (k, v) pair appears
       [(t, (_,val), i) in zip(truth, sortedKV, kD)] if i > kD.low {
         const (_,sortedVal) = sortedKV[i-1];
-        t = (sortedKV[i-1][1] != val);
+        t = (sortedVal != val);
       }
       // first value of every segment is automatically new
       [s in segments] truth[s] = true;
