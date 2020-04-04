@@ -667,7 +667,7 @@ module ReductionMsg
           vi = values.domain.high;
         }
         if (vi >= low) {
-          r = cummin[vi][2];
+          (_,r) = cummin[vi];
         }
       }
       return res;
@@ -704,7 +704,7 @@ module ReductionMsg
           vi = values.domain.high;
         }
         if (vi >= low) {
-          r = cummax[vi][2];
+          (_,r) = cummax[vi];
         }
       }
       return res;
@@ -742,8 +742,8 @@ module ReductionMsg
           vi = values.domain.high;
         }
         if (vi >= low) {
-          v = cummin[vi][1][2];
-          l = cummin[vi][2];
+          ((_,v),_) = cummin[vi];
+          (_    ,l) = cummin[vi];
         }
       }
       return (vals, locs);
@@ -784,8 +784,8 @@ module ReductionMsg
           vi = values.domain.high;
         }
         if (vi >= low) {
-          v = cummax[vi][1][2];
-          l = cummax[vi][2];
+          ((_,v),_) = cummax[vi];
+          (_,    l) = cummax[vi];
         }
       }
       return (vals, locs);
@@ -972,15 +972,18 @@ module ReductionMsg
        agg.copy(IVi, firstIV[idx]);
       }
       var sortedKV: [kD] (int, int);
-      forall (kvi, idx) in zip(sortedKV, IV) with (var agg = newSrcAggregator(int)) {
-        agg.copy(kvi[1], keys[idx]); 
-        agg.copy(kvi[2], values[idx]);
+      forall ((kvi0,kvi1), idx) in zip(sortedKV, IV) with (var agg = newSrcAggregator(int)) {
+        agg.copy(kvi0, keys[idx]);
+        agg.copy(kvi1, values[idx]);
       }
       if v {writeln("sort time = ", Time.getCurrentTime() - t1); try! stdout.flush();}
       if v {writeln("Finding unique (key, value) pairs..."); try! stdout.flush();}
       var truth: [kD] bool;
       // true where new (k, v) pair appears
-      [(t, kv, i) in zip(truth, sortedKV, kD)] if i > kD.low { t = (sortedKV[i-1][2] != kv[2]); }
+      [(t, (_,val), i) in zip(truth, sortedKV, kD)] if i > kD.low {
+        const (_,sortedVal) = sortedKV[i-1];
+        t = (sortedVal != val);
+      }
       // first value of every segment is automatically new
       [s in segments] truth[s] = true;
       // count cumulative new values and take diffs at segment boundaries
@@ -992,7 +995,7 @@ module ReductionMsg
       var keyhits: [hD] int;
       forall i in truth.domain with (var agg = newDstAggregator(int)) {
         if (truth[i]) {
-          var key = sortedKV[i][1];
+          var (key,_) = sortedKV[i];
           agg.copy(keyhits[count[i]-1], key);
         }
       }
