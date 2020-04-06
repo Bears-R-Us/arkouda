@@ -1,0 +1,5 @@
+perfkeys: total time :
+graphkeys: Compile Time
+files: comp-time.dat
+graphtitle: Build Time
+ylabel: Time (sec)
