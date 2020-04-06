@@ -1,7 +1,6 @@
+import numpy as np
 from context import arkouda as ak
 from base_test import ArkoudaTest
-import numpy as np
-import sys
 
 ak.verbose = False
 
@@ -15,8 +14,34 @@ UNIQUE = N//4
 
 def compare_strings(a, b):
     return all(x == y for x, y in zip(a, b))
-
+  
 errors = False
+
+def run_test_argsort(strings, test_strings, cat):
+    akperm = ak.argsort(strings)
+    aksorted = strings[akperm].to_ndarray()
+    npsorted = np.sort(strings)
+    assert((aksorted == npsorted).all())
+    catperm = ak.argsort(cat)
+    catsorted = cat[catperm].to_ndarray()
+    assert((catsorted == npsorted).all())
+    print("argsort passed")
+
+def run_test_unique(strings, test_strings, cat):
+    # unique
+    akuniq = ak.unique(strings)
+    catuniq = ak.unique(cat)
+    akset = set(akuniq.to_ndarray())
+    catset = set(catuniq.to_ndarray())
+    assert(akset == catset)
+    # There should be no duplicates
+    assert(akuniq.size == len(akset))
+    npset = set(np.unique(test_strings))
+    # When converted to a set, should agree with numpy
+    assert(akset == npset)
+    print("unique passed")
+    
+
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         ak.connect(server=sys.argv[1], port=sys.argv[2])
@@ -89,27 +114,10 @@ if __name__ == '__main__':
     print("in1d and iter passed")
 
     # argsort
-    akperm = ak.argsort(strings)
-    aksorted = strings[akperm].to_ndarray()
-    npsorted = np.sort(test_strings)
-    assert((aksorted == npsorted).all())
-    catperm = ak.argsort(cat)
-    catsorted = cat[catperm].to_ndarray()
-    assert((catsorted == npsorted).all())
-    print("argsort passed")
+    test_argsort(strings, test_strings, cat)
     
     # unique
-    akuniq = ak.unique(strings)
-    catuniq = ak.unique(cat)
-    akset = set(akuniq.to_ndarray())
-    catset = set(catuniq.to_ndarray())
-    assert(akset == catset)
-    # There should be no duplicates
-    assert(akuniq.size == len(akset))
-    npset = set(np.unique(test_strings))
-    # When converted to a set, should agree with numpy
-    assert(akset == npset)
-    print("unique passed")
+    test_unique(strings, test_strings, cat)
 
     # groupby
     g = ak.GroupBy(strings)
@@ -227,9 +235,30 @@ if __name__ == '__main__':
     print("stick passed")
 
 class StringTest(ArkoudaTest):
+  
+    def setUp(self):
+        ArkoudaTest.setUp(self)
+        base_words1 = ak.random_strings_uniform(0, 10, UNIQUE, characters='printable')
+        base_words2 = ak.random_strings_lognormal(2, 0.25, UNIQUE, characters='printable')
+        self.base_words = ak.concatenate((base_words1, base_words2))
+        self.np_base_words = np.hstack((base_words1.to_ndarray(), base_words2.to_ndarray()))
+        choices = ak.randint(0, self.base_words.size, N)
+        self.strings = self.base_words[choices]
+        self.test_strings = self.strings.to_ndarray()
+        self.cat = ak.Categorical(self.strings)
+
+    def testCompareStrings(self):
+        self.assertTrue(compare_strings(self.base_words.to_ndarray(), self.np_base_words))
     
+    def testArgSort(self):
+        run_test_argsort(self.strings, self.test_strings, self.cat)
+        
+    def testUnique(self):
+        run_test_unique(self.strings, self.test_strings, self.cat)
+    '''
     def test_random_strings_uniform(self):
         r_strings = ak.random_strings_uniform(minlen=5, maxlen=6, size=5, characters='uppercase')
         self.assertEqual(5, len(r_strings))
         for r_string in r_strings:
-            self.assertFalse(r_string)
+            self.assertFalse(r_string)  
+    '''

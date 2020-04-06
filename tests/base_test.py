@@ -16,7 +16,6 @@ class ArkoudaTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-      
         '''
         Configures and starts the arkouda_server process via the util.get_arkouda_server (host) 
         and ARKOUDA_SERVER_PORT env variable, defaulting to 5566
@@ -54,11 +53,11 @@ class ArkoudaTest(unittest.TestCase):
             raise ConnectionError(e)
     
     def test_arkouda_server(self):
-      
         '''
         Simply confirms the arkouda_server process started up correctly and is running if in full
         stack mode or confirms the ak.client is established if in client stack mode
         
+        :return: None
         :raise: AssertionError if the ArkoudaTest.ak_server object is None
         '''
         if ArkoudaTest.full_stack_mode:
@@ -67,7 +66,6 @@ class ArkoudaTest(unittest.TestCase):
             self.assertTrue(ak.client)
     
     def tearDown(self):
-      
         '''
         Disconnects the client connection for each test case
         :return: None
@@ -80,7 +78,6 @@ class ArkoudaTest(unittest.TestCase):
         
     @classmethod
     def tearDownClass(cls):
-      
         '''
         Shuts down the arkouda_server started in the setUpClass method if test is run
         in full stack mode, noop if in client stack mode.

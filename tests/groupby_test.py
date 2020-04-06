@@ -7,7 +7,7 @@ SIZE = 10000
 GROUPS = 64
 verbose = True
 
-def groupby_to_arrays(df, kname, vname, op, levels):
+def groupby_to_arrays(df : pd.DataFrame, kname, vname, op, levels):
     g = df.groupby(kname)[vname]
     agg = g.aggregate(op.replace('arg', 'idx'))
     if levels==1:
@@ -17,15 +17,30 @@ def groupby_to_arrays(df, kname, vname, op, levels):
     return keys, agg.values
 
 def make_arrays():
+    '''
+    Returns a dictionary of the following:
+    
+    1. Two randomized numpy int64 arrays to be used in the groupby operation
+    2. Randomized numpy int64 and numpy float64 
+    '''
     keys = np.random.randint(0, GROUPS, SIZE)
     keys2 = np.random.randint(0, GROUPS, SIZE)
     i = np.random.randint(0, SIZE//GROUPS, SIZE)
     f = np.random.randn(SIZE)
     b = (i % 2) == 0
     d = {'keys':keys, 'keys2':keys2, 'int64':i, 'float64':f, 'bool':b}
+
     return d
   
-def compare_keys(pdkeys, akkeys, levels, pdvals, akvals):
+def compare_keys(pdkeys, akkeys, levels, pdvals, akvals) -> int:
+    '''
+    Compares the numpy and arkouda arrays via the numpy.allclose method with the
+    default relative and absolute tolerances, returning 0 if the arrays are similar
+    element-wise within the tolerances, 1 if they are dissimilar.element
+    
+    :return: 0 (identical) or 1 (dissimilar)
+    :rtype: int
+    '''
     if levels == 1:
         akkeys = akkeys.to_ndarray()
         if not np.allclose(pdkeys, akkeys):
@@ -41,10 +56,18 @@ def compare_keys(pdkeys, akkeys, levels, pdvals, akvals):
         return 1
     return 0
 
-def run_test(self, levels, verbose=False):
+def run_test(levels, verbose=False):
+    '''
+    The run_test method enables execution of ak.GroupBy and ak.GroupBy.Reductions
+    on a randomized set of arrays on the specified number of levels. 
+    
+    Note: the current set of valid levels is {1,2}
+    :return: 
+    '''
     d = make_arrays()
     df = pd.DataFrame(d)
     akdf = {k:ak.array(v) for k, v in d.items()}
+    print(akdf)
     if levels == 1:
         akg = ak.GroupBy(akdf['keys'])
         keyname = 'keys'
@@ -93,11 +116,27 @@ def run_test(self, levels, verbose=False):
     print(f"{tests - failures - not_impl} / {tests - not_impl} passed, {failures} errors, {not_impl} not implemented")
     return failures
 
-class GroupByTests(ArkoudaTest): 
+'''
+The GroupByTest class encapsulates specific calls to the run_test method within a Python unittest.TestCase object,
+which enables integration into a pytest test harness.
+'''
+class GroupByTest(ArkoudaTest): 
   
     def test_groupby_on_one_level(self):
+        '''
+        Executes run_test with levels=1 and asserts whether there are any errors
+        
+        :return: None
+        :raise: AssertionError if there are any errors encountered in run_test with levels = 1
+        '''
         self.assertEqual(0, run_test(1, verbose))
   
     def test_groupby_one_two_levels(self):
-         self.assertEqual(0, run_test(2, verbose))
+        '''
+        Executes run_test with levels=1 and asserts whether there are any errors
+        
+        :return: None
+        :raise: AssertionError if there are any errors encountered in run_test with levels = 2
+        '''
+        self.assertEqual(0, run_test(2, verbose))
   
