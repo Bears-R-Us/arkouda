@@ -17,12 +17,6 @@ def groupby_to_arrays(df : pd.DataFrame, kname, vname, op, levels):
     return keys, agg.values
 
 def make_arrays():
-    '''
-    Returns a dictionary of the following:
-    
-    1. Two randomized numpy int64 arrays to be used in the groupby operation
-    2. Randomized numpy int64 and numpy float64 
-    '''
     keys = np.random.randint(0, GROUPS, SIZE)
     keys2 = np.random.randint(0, GROUPS, SIZE)
     i = np.random.randint(0, SIZE//GROUPS, SIZE)

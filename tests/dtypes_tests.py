@@ -3,6 +3,9 @@ from context import arkouda as ak
 from arkouda import dtypes
 from base_test import ArkoudaTest
 
+'''
+DtypesTest encapsulates arkouda dtypes module methods
+'''
 class DtypesTest(ArkoudaTest):
 
     def test_check_np_dtype(self):
@@ -34,10 +37,10 @@ class DtypesTest(ArkoudaTest):
             dtypes.check_np_dtype(np.dtype(np.int16))
             
     def test_resolve_scalar_dtype(self):
-       self.assertEqual('bool', dtypes.resolve_scalar_dtype(True))
-       self.assertEqual('int64', dtypes.resolve_scalar_dtype(1))
-       self.assertEqual('float64', dtypes.resolve_scalar_dtype(float(0.0)))
-       self.assertEqual('str', dtypes.resolve_scalar_dtype('test'))
-       self.assertEqual('int64', dtypes.resolve_scalar_dtype(np.int64(1))) 
-       self.assertEqual("<class 'list'>", dtypes.resolve_scalar_dtype([1]))
+        self.assertEqual('bool', dtypes.resolve_scalar_dtype(True))
+        self.assertEqual('int64', dtypes.resolve_scalar_dtype(1))
+        self.assertEqual('float64', dtypes.resolve_scalar_dtype(float(0.0)))
+        self.assertEqual('str', dtypes.resolve_scalar_dtype('test'))
+        self.assertEqual('int64', dtypes.resolve_scalar_dtype(np.int64(1))) 
+        self.assertEqual("<class 'list'>", dtypes.resolve_scalar_dtype([1]))
       
