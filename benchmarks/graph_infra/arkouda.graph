@@ -2,34 +2,40 @@ perfkeys: Average rate =
 graphkeys: Stream GiB/s
 files: stream.dat
 graphtitle: Stream Performance
-ylabel: Performance (GiB/S)
+ylabel: Performance (GiB/s)
 
 perfkeys: Average rate =
 graphkeys: Argsort GiB/s
 files: argsort.dat
 graphtitle: Argsort Performance
-ylabel: Performance (GiB/S)
+ylabel: Performance (GiB/s)
 
 perfkeys: Average rate =
 graphkeys: Gather GiB/s
 files: gather.dat
 graphtitle: Gather Performance
-ylabel: Performance (GiB/S)
+ylabel: Performance (GiB/s)
 
 perfkeys: Average rate =
 graphkeys: Scatter GiB/s
 files: scatter.dat
 graphtitle: Scatter Performance
-ylabel: Performance (GiB/S)
+ylabel: Performance (GiB/s)
 
 perfkeys: cumsum Average rate =, cumprod Average rate =
 graphkeys: Cumsum GiB/s, Cumprod GiB/s
 files: scan.dat, scan.dat
 graphtitle: Scan Performance
-ylabel: Performance (GiB/S)
+ylabel: Performance (GiB/s)
 
 perfkeys: sum Average rate =, prod Average rate =, min Average rate =, max Average rate =
 graphkeys: Sum GiB/s, Prod GiB/s, Min GiB/s, Max GiB/s
 files: reduce.dat, reduce.dat, reduce.dat, reduce.dat
 graphtitle: Reduce Performance
-ylabel: Performance (GiB/S)
+ylabel: Performance (GiB/s)
+
+perfkeys: Average rate =
+graphkeys: Noop ops/s
+files: noop.dat
+graphtitle: Noop Performance
+ylabel: Performance (ops/s)

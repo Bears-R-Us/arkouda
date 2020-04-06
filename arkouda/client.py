@@ -188,3 +188,9 @@ def get_mem_used():
         Amount of memory allocated to symbol table objects.
     """
     return int(generic_msg("getmemused"))
+
+def _no_op():
+    """
+    Send a no-op message just to gather round trip time
+    """
+    return generic_msg("noop")
