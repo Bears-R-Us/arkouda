@@ -97,7 +97,10 @@ CHPL_FLAGS += $(patsubst %,-L%,$(strip $(subst :, ,$(LD_LIBRARY_PATH))))
 endif
 
 .PHONY: check-deps
-check-deps: check-zmq check-hdf5
+ifndef ARKOUDA_SKIP_CHECK_DEPS
+CHECK_DEPS = check-zmq check-hdf5
+endif
+check-deps: $(CHECK_DEPS)
 
 ZMQ_CHECK = $(DEP_INSTALL_DIR)/checkZMQ.chpl
 check-zmq: $(ZMQ_CHECK)
