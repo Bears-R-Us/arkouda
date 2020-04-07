@@ -12,7 +12,7 @@ analogous Numpy were results.
 '''
 class WhereTest(ArkoudaTest):
 
-    def testWhereEquivalence(self):
+    def test_where_equivalence(self):
         npA = {'int64': np.random.randint(0, 10, SIZE),
                'float64': np.random.randn(SIZE),
                'bool': np.random.randint(0, 2, SIZE, dtype='bool')}

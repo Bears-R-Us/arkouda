@@ -31,14 +31,14 @@ class CompareTest(ArkoudaTest):
         nArray = np.ones(N)
         # create ak version
         aArray = ak.ones(N)
-        self.assertEquals(nArray.all(), aArray.to_ndarray().all())
+        self.assertEqual(nArray.all(), aArray.to_ndarray().all())
 
     def test_compare_zeros(self):
         # create np version
         nArray = np.zeros(N)
         # create ak version
         aArray = ak.zeros(N)
-        self.assertEquals(nArray.all(), aArray.to_ndarray().all())
+        self.assertEqual(nArray.all(), aArray.to_ndarray().all())
 
     def test_compare_argsort(self):
         # create np version
