@@ -18,10 +18,12 @@ ifeq ("$(shell chpl --version | sed -n "s/chpl version 1\.\([0-9]*\).*/\1/p")", 
 endif
 
 CHPL_DEBUG_FLAGS += --print-passes
-ifndef ARKOUDA_DEVELOPER
-CHPL_FLAGS += --fast
-else
+ifdef ARKOUDA_DEVELOPER
 CHPL_FLAGS += --ccflags="-O1"
+else ifdef ARKOUDA_QUICK_COMPILE
+CHPL_FLAGS += --no-checks --no-loop-invariant-code-motion --ccflags="-O0"
+else
+CHPL_FLAGS += --fast
 endif
 # need this to avoid a slew of warnings from HDF5 on some platforms
 # --ccflags="-Wno-incompatible-pointer-types"
