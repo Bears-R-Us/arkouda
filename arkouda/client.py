@@ -69,6 +69,10 @@ def connect(server = "localhost", port = 5555):
 
     # "protocol://server:port"
     pspStr = "tcp://{}:{}".format(server,port)
+    tunnel_server = os.getenv('ARKOUDA_TUNNEL_SERVER')
+    if tunnel_server:
+        from zmq import ssh
+        (pspStr, _) = ssh.tunnel.open_tunnel(pspStr, tunnel_server)
     if verbose: print("psp = ",pspStr);
 
     # setup connection to arkouda server
