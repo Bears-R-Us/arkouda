@@ -54,14 +54,19 @@ the role of a shell, a data scientist could explore, prepare, and call
 optimized HPC libraries on massive datasets, all within the same
 interactive session.
 
-## Requirements:
+## Installation
+
+### Requirements:
  * requires chapel 1.20.0
  * requires zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * requires python 3.6 or greater
  * requires numpy
  * requires Sphinx and sphinx-argparse to build python documentation
  
-### It should be simple to get things going on a mac
+### MacOS Installation 
+
+It is usually very simple to get things going on a mac:
+
 ```bash
 brew install chapel
 # you can also install python3 with brew
@@ -80,8 +85,6 @@ pip3 install -e ./arkouda
 # these packages are nice but not a requirement
 pip3 install pandas
 pip3 install jupyter
-# these packages are required to execute the Python test harness
-pip3 install pytest pytest-env
 ```
 
 ### If you need to build Chapel from scratch here is what I use
@@ -96,6 +99,51 @@ export GASNET_QUIET=Y
 export CHPL_RT_OVERSUBSCRIBED=yes
 cd $CHPL_HOME
 make
+```
+Note: if you've not previously installed zeromq and hdf5, execute make install-deps _first_ and _then_
+run make:
+
+```
+make install-deps
+make
+```
+
+### Linux Installation
+There is no Linux Chapel install, so the first two steps in the Linux Arkouda install are to install 
+the Chapel dependencies followed by downloading and building Chapel:
+
+```
+sudo apt-get update
+sudo apt-get install gcc g++ m4 perl python python-dev python-setuptools bash make mawk git pkg-config
+wget https://github.com/chapel-lang/chapel/releases/download/1.20.0/chapel-1.20.0.tar.gz
+tar xvf chapel-1.20.0.tar.gz
+cd chapel-1.20.0/
+```
+As detailed above, set the requisite Chapel env variables and then build by first executing make install-deps
+followed by make
+
+```
+source $CHPL_HOME/util/setchplenv.bash
+export CHPL_COMM=gasnet
+export CHPL_COMM_SUBSTRATE=smp
+export CHPL_TARGET_CPU=native
+export GASNET_QUIET=Y
+export CHPL_RT_OVERSUBSCRIBED=yes
+cd $CHPL_HOME
+make-deps
+make
+```
+
+Add the Chapel executable (chpl) to the user running Chapel's PATH:
+```
+export PATH=$CHPL_HOME/bin/linux64-x86_64/:$PATH
+```
+It is highly recommended to install Anaconda to provide a Python environment and manage Python dependencies:
+
+```
+ wget https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh
+ sh Anaconda3-2020.02-Linux-x86_64.sh
+ source ~/.bashrc
 ```
 
 ## Building Arkouda
@@ -121,6 +169,7 @@ Now, simply run `make` to build the `arkouda_server` executable.
 [Anaconda]: https://www.anaconda.com/distribution/
 
 ## Building the Arkouda documentation
+
 Make sure you installed the Sphinx and sphinx-argparse packages (e.g. `pip3 install -U Sphinx sphinx-argparse`)
 
 Run `make doc` to build both the Arkouda python documentation and the Chapel server documentation
