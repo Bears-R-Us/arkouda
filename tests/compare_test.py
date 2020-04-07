@@ -8,7 +8,6 @@ N = 1_000_000
 The CompareTest class encapsulates unit tests that compare the results of analogous  
 method invocations against Numpy ndarrays and Arkouda pdarrays to ensure equivalent 
 results are generated.
-
 '''
 class CompareTest(ArkoudaTest):
 

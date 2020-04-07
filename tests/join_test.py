@@ -7,6 +7,9 @@ import sys
 from base_test import ArkoudaTest
 from context import arkouda as ak
 
+'''
+Encapsulates a variety of arkouda join_on_eq_with_dt test cases.
+'''
 class JoinTest(ArkoudaTest):
 
     def setUp(self):
@@ -40,23 +43,22 @@ class JoinTest(ArkoudaTest):
         self.assertEqual(self.N, J.size)
 
     def test_join_on_eq_with_abs_dt_outside_window(self):
-        # should get 0 answers
-        # N^2 matches but 0 within dt window
+        '''
+        Should get 0 answers because N^2 matches but 0 within dt window 
+        '''
         dt = 8
         I,J = ak.join_on_eq_with_dt(self.a1,self.a1,self.t1,self.t1*10,dt,"abs_dt")
         self.assertEqual(0, I.size)
         self.assertEqual(0, J.size)
 
-        # should get 0 answers
-        # N matches but 0 within dt window
-        dt = 8
         I,J = ak.join_on_eq_with_dt(self.a2,self.a1,self.t1,self.t2,dt,"abs_dt")
         self.assertEqual(0, I.size)
         self.assertEqual(0, J.size)
 
     def test_join_on_eq_with_pos_dt_outside_window(self):
-        # should get 0 answers
-        # N matches but 0 within dt window
+        '''
+        Should get 0 answers because N matches but 0 within dt window
+        '''
         dt = 8
         I,J = ak.join_on_eq_with_dt(self.a2,self.a1,self.t1,self.t2,dt,"pos_dt")
         self.assertEqual(0, I.size)

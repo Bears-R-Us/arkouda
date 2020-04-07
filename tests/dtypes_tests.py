@@ -9,6 +9,13 @@ DtypesTest encapsulates arkouda dtypes module methods
 class DtypesTest(ArkoudaTest):
 
     def test_check_np_dtype(self):
+      
+        '''
+        Tests dtypes.check_np_dtype method 
+        
+        :return: None
+        :raise: AssertionError if 1.. test cases fail
+        '''
         dtypes.check_np_dtype(np.dtype(np.bool))
         dtypes.check_np_dtype(np.dtype(np.int64))
         dtypes.check_np_dtype(np.dtype(np.float64))
@@ -18,6 +25,12 @@ class DtypesTest(ArkoudaTest):
             dtypes.check_np_dtype(np.dtype(np.int16))
 
     def test_translate_np_dtype(self):
+        '''
+        Tests dtypes.translate_np_dtype method
+        
+        :return: None
+        :raise: AssertionError if 1.. test cases fail
+        '''
         d_tuple = dtypes.translate_np_dtype(np.dtype(np.bool))
         self.assertEqual(1, d_tuple[1])
         self.assertEqual('bool', d_tuple[0])
@@ -37,6 +50,12 @@ class DtypesTest(ArkoudaTest):
             dtypes.check_np_dtype(np.dtype(np.int16))
             
     def test_resolve_scalar_dtype(self):
+        '''
+        Tests dtypes.resolve_scalar_dtype method
+        
+        :return: None
+        :raise: AssertionError if 1.. test cases fail
+        '''
         self.assertEqual('bool', dtypes.resolve_scalar_dtype(True))
         self.assertEqual('int64', dtypes.resolve_scalar_dtype(1))
         self.assertEqual('float64', dtypes.resolve_scalar_dtype(float(0.0)))

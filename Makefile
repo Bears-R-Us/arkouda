@@ -309,8 +309,8 @@ test/%: test/%.chpl
 print-%:
 	@echo "$($*)"
 
-test-python:
-	pytest -c pytest.ini -s
+test-python: 
+	pytest -c pytest.ini
 
 CLEAN_TARGETS += test-clean
 .PHONY: test-clean
