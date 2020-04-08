@@ -35,11 +35,10 @@ testpaths =
 norecursedirs = .git dist build *egg* tests/deprecated/*
 python_functions = test*
 env =
-    TEST_DATA_URL=localhost
     ARKOUDA_SERVER_HOST=localhost
     ARKOUDA_SERVER_PORT=5555
-    FULL_STACK_TEST=False
-    VERBOSE=False
+    ARKOUDA_FULL_STACK_TEST=False
+    ARKOUDA_VERBOSE=False
 ```
 * testpaths: shows the paths to all test files. For the time-being, the arkouda unit tests to be executed are 
 specified on a per-file basis, but pytest can also support directory-level configuration. 
