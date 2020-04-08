@@ -48,10 +48,9 @@ specified on a per-file basis, but pytest can also support directory-level confi
 * env: the pytest env variables needed to execute the arkouda Python test harness 
 
 ## arkouda pytest environmental variables
-* TEST\_DATA\_URL: the url from which data files used in arkouda Python tests are access (local or remote)
 * ARKOUDA\_SERVER\_HOST: the hostname or ip address where the arkouda\_server is located
 * ARKOUDA\_SERVER\_PORT: the port the arkouda\_server is listening on
-* FULL_STACK_TEST: if True, the TestCase.setUpClass method starts up an arkouda\_server on the local machine, where
+* ARKOUDA\_FULL\_STACK_TEST: if True, the TestCase.setUpClass method starts up an arkouda\_server on the local machine, where
   server=ARKOUDA\_SERVER\_HOST and port= ARKOUDA\_SERVER\_PORT. If False, the test harness runs in client mode and 
   consequently an arkouda\_server is not started up.
 
