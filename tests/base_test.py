@@ -14,6 +14,11 @@ names of which match the pattern 'test*' (e.g., ArkoudaTest.test_arkouda_server)
 '''
 class ArkoudaTest(unittest.TestCase):
 
+    verbose = True if os.getenv('ARKOUDA_VERBOSE') == 'True' else False
+    port = int(os.getenv('ARKOUDA_SERVER_PORT', 5566))
+    server = os.getenv('ARKOUDA_SERVER_HOST', 'localhost')
+    full_stack_mode = True if os.getenv('ARKOUDA_FULL_STACK_TEST') == 'True' else False
+    
     @classmethod
     def setUpClass(cls):
         '''
@@ -22,11 +27,7 @@ class ArkoudaTest(unittest.TestCase):
         
         :return: None
         :raise: RuntimeError if there is an error in configuring or starting arkouda_server
-        '''    
-        ArkoudaTest.port = int(os.getenv('ARKOUDA_SERVER_PORT', 5566))
-        ArkoudaTest.server = os.getenv('ARKOUDA_SERVER_HOST', 'localhost')
-        ArkoudaTest.full_stack_mode = True if os.getenv('FULL_STACK_TEST') == 'True' else False
-
+        '''            
         if ArkoudaTest.full_stack_mode:
             try: 
                 arkouda_path = get_arkouda_server() 

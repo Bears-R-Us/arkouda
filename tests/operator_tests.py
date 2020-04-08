@@ -7,7 +7,7 @@ from context import arkouda as ak
 from context import arkouda
 SIZE = 10
 warnings.simplefilter("always", UserWarning)
-verbose = os.getenv('VERBOSE', False)
+verbose = ArkoudaTest.verbose
 
 def run_tests(verbose):
     global pdarrays
@@ -226,8 +226,8 @@ class OperatorsTest(ArkoudaTest):
         self.assertIsInstance(dArray, ak.pdarrayclass.pdarray)
         self.assertEqual(np.float64(5), dArray[0])
         
-    #def testAllOperators(self):
-    #    run_tests(verbose)
+    def testAllOperators(self):
+        run_tests(verbose)
         
 if __name__ == '__main__':
     '''

@@ -272,7 +272,7 @@ class StringTest(ArkoudaTest):
         self.delim =  np.random.choice(x, p=(np.array(w)/sum(w)))
 
     def test_compare_strings(self):
-        self.assertTrue(compare_strings(self.base_words.to_ndarray(), self.np_base_words))
+        assert compare_strings(self.base_words.to_ndarray(), self.np_base_words)
     
     def test_argsort(self):
         run_test_argsort(self.strings, self.test_strings, self.cat)
