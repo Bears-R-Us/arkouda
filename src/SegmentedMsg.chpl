@@ -13,18 +13,17 @@ module SegmentedMsg {
 
   proc randomStringsMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
-    var fields = reqMsg.split();
-    var cmd = fields[1];
-    var len = fields[2]: int;
-    var dist = fields[3];
-    var charset = str2CharSet(fields[4]);
+    var (cmd, lenStr, dist, charsetStr, arg1str, arg2str)
+          = reqMsg.splitMsgToTuple(6);
+    var len = lenStr: int;
+    var charset = str2CharSet(charsetStr);
     var segName = st.nextName();
     var valName = st.nextName();
     var repMsg: string;
     select dist.toLower() {
       when "uniform" {
-        var minLen = fields[5]:int;
-        var maxLen = fields[6]:int;
+        var minLen = arg1str:int;
+        var maxLen = arg2str:int;
         // Lengths + 2*segs + 2*vals (copied to SymTab)
         overMemLimit(8*len + 16*len + (maxLen + minLen)*len);
         var (segs, vals) = newRandStringsUniformLength(len, minLen, maxLen, charset);
@@ -35,8 +34,8 @@ module SegmentedMsg {
         repMsg = 'created ' + st.attrib(segName) + '+created ' + st.attrib(valName);
       }
       when "lognormal" {
-        var logMean = fields[5]:real;
-        var logStd = fields[6]:real;
+        var logMean = arg1str:real;
+        var logStd = arg2str:real;
         // Lengths + 2*segs + 2*vals (copied to SymTab)
         overMemLimit(8*len + 16*len + exp(logMean + (logStd**2)/2):int*len);
         var (segs, vals) = newRandStringsLogNormalLength(len, logMean, logStd, charset);
@@ -53,11 +52,7 @@ module SegmentedMsg {
 
   proc segmentLengthsMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
-    var fields = reqMsg.split();
-    var cmd = fields[1];
-    var objtype = fields[2];
-    var segName = fields[3];
-    var valName = fields[4];
+    var (cmd, objtype, segName, valName) = reqMsg.splitMsgToTuple(4);
     var rname = st.nextName();
     select objtype {
       when "str" {
@@ -74,20 +69,14 @@ module SegmentedMsg {
   proc segmentedEfuncMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var fields = reqMsg.split(10);
-    var cmd = fields[1];
-    var subcmd = fields[2];
-    var objtype = fields[3];
-    var segName = fields[4];
-    var valName = fields[5];
-    var valtype = fields[6];
-    // var val = fields[7];
+    var (cmd, subcmd, objtype, segName, valName, valtype, valStr,
+         idStr, kpStr, lStr, jsonStr) = reqMsg.splitMsgToTuple(11);
     select (objtype, valtype) {
     when ("str", "str") {
       var strings = new owned SegString(segName, valName, st);
       select subcmd {
         when "contains" {
-          var json = decode_json(fields[7], 1);
+          var json = decode_json(valStr, 1);
           var val = json[json.domain.low];
           var rname = st.nextName();
           var truth = st.addEntry(rname, strings.size, bool);
@@ -95,7 +84,7 @@ module SegmentedMsg {
           repMsg = "created "+st.attrib(rname);
         }
         when "startswith" {
-          var json = decode_json(fields[7], 1);
+          var json = decode_json(valStr, 1);
           var val = json[json.domain.low];
           var rname = st.nextName();
           var truth = st.addEntry(rname, strings.size, bool);
@@ -103,7 +92,7 @@ module SegmentedMsg {
           repMsg = "created "+st.attrib(rname);
         }
         when "endswith" {
-          var json = decode_json(fields[7], 1);
+          var json = decode_json(valStr, 1);
           var val = json[json.domain.low];
           var rname = st.nextName();
           var truth = st.addEntry(rname, strings.size, bool);
@@ -111,11 +100,11 @@ module SegmentedMsg {
           repMsg = "created "+st.attrib(rname);
         }
         when "peel" {
-          var times = fields[7]:int;
-          var includeDelimiter = (fields[8].toLower() == "true");
-          var keepPartial = (fields[9].toLower() == "true");
-          var left = (fields[10].toLower() == "true");
-          var json = decode_json(fields[11], 1);
+          var times = valStr:int;
+          var includeDelimiter = (idStr.toLower() == "true");
+          var keepPartial = (kpStr.toLower() == "true");
+          var left = (lStr.toLower() == "true");
+          var json = decode_json(jsonStr, 1);
           var val = json[json.domain.low];
           var loname = st.nextName();
           var lvname = st.nextName();
@@ -188,11 +177,7 @@ module SegmentedMsg {
   proc segmentedHashMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var fields = reqMsg.split();
-    var cmd = fields[1];
-    var objtype = fields[2];
-    var segName = fields[3];
-    var valName = fields[4];
+    var (cmd, objtype, segName, valName) = reqMsg.splitMsgToTuple(4);
     select objtype {
     when "str" {
       var strings = new owned SegString(segName, valName, st);
@@ -213,11 +198,11 @@ module SegmentedMsg {
   proc segmentedIndexMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var fields = reqMsg.split();
-    var cmd = fields[1];
-    var subcmd = fields[2]; // type of indexing to perform
-    var objtype = fields[3]; // what kind of segmented array
-    var args: [1..#(fields.size-3)] string = fields[4..]; // parsed by subroutines
+    // 'subcmd' is the type of indexing to perform
+    // 'objtype' is the type of segmented array
+    var (cmd, subcmd, objtype, argStr) = reqMsg.splitMsgToTuple(4);
+    var fields = argStr.split();
+    var args: [1..#fields.size] string = fields; // parsed by subroutines
     try {
       select subcmd {
         when "intIndex" {
@@ -347,17 +332,12 @@ module SegmentedMsg {
   proc segBinopvvMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var fields = reqMsg.split(9);
-    var cmd = fields[1];
-    var op = fields[2];
-    // Type and attrib names of left segmented array
-    var ltype = fields[3];   
-    var lsegName = fields[4];
-    var lvalName = fields[5];
-    // Type and attrib names of right segmented array 
-    var rtype = fields[6];
-    var rsegName = fields[7];
-    var rvalName = fields[8];
+    var (cmd, op,
+         // Type and attrib names of left segmented array
+         ltype, lsegName, lvalName,
+         // Type and attrib names of right segmented array
+         rtype, rsegName, rvalName, leftStr, jsonStr)
+           = reqMsg.splitMsgToTuple(10);
     select (ltype, rtype) {
     when ("str", "str") {
       var lstrings = new owned SegString(lsegName, lvalName, st);
@@ -376,8 +356,8 @@ module SegmentedMsg {
           repMsg = "created " + st.attrib(rname);
         }
         when "stick" {
-          var left = (fields[9].toLower() != "false");
-          var json = decode_json(fields[10], 1);
+          var left = (leftStr.toLower() != "false");
+          var json = decode_json(jsonStr, 1);
           const delim = json[json.domain.low];
           var oname = st.nextName();
           var vname = st.nextName();
@@ -404,14 +384,8 @@ module SegmentedMsg {
   proc segBinopvsMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var fields = reqMsg.split(6);
-    var cmd = fields[1];
-    var op = fields[2];
-    var objtype = fields[3];
-    var segName = fields[4];
-    var valName = fields[5];
-    var valtype = fields[6];
-    var encodedVal = fields[7];
+    var (cmd, op, objtype, segName, valName, valtype, encodedVal)
+          = reqMsg.splitMsgToTuple(7);
     var json = decode_json(encodedVal, 1);
     var value = json[json.domain.low];
     var rname = st.nextName();
@@ -438,18 +412,12 @@ module SegmentedMsg {
   proc segIn1dMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var fields = reqMsg.split();
-    var cmd = fields[1];
-    var mainObjtype = fields[2];
-    var mainSegName = fields[3];
-    var mainValName = fields[4];
-    var testObjtype = fields[5];
-    var testSegName = fields[6];
-    var testValName = fields[7];
+    var (cmd, mainObjtype, mainSegName, mainValName, testObjtype, testSegName,
+         testValName, invertStr) = reqMsg.splitMsgToTuple(8);
     var invert: bool;
-    if fields[8] == "True" {invert = true;}
-    else if fields[8] == "False" {invert = false;}
-    else {return "Error: Invalid argument in %s: %s (expected True or False)".format(pn, fields[8]);}
+    if invertStr == "True" {invert = true;}
+    else if invertStr == "False" {invert = false;}
+    else {return "Error: Invalid argument in %s: %s (expected True or False)".format(pn, invertStr);}
     
     var rname = st.nextName();
     select (mainObjtype, testObjtype) {
@@ -470,11 +438,7 @@ module SegmentedMsg {
 
   proc segGroupMsg(reqMsg: string, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
-    var fields = reqMsg.split();
-    var cmd = fields[1];
-    var objtype = fields[2];
-    var segName = fields[3];
-    var valName = fields[4];
+    var (cmd, objtype, segName, valName) = reqMsg.splitMsgToTuple(4);
     var rname = st.nextName();
     select (objtype) {
     when "str" {

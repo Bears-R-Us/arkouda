@@ -80,8 +80,7 @@ proc main() {
             break;
         }
 
-        const fieldsRaw = reqMsgRaw.split(1);
-        const cmdRaw = fieldsRaw[1];
+        const (cmdRaw, _) = reqMsgRaw.splitMsgToTuple(2);
         // parse requests, execute requests, format responses
         try {
             // first handle the case where we received arbitrary data
@@ -108,8 +107,7 @@ proc main() {
                     sendRepMsg(unknownError(""));
                 }
 
-                const fields = reqMsg.split(1);
-                const cmd = fields[1];
+                const (cmd,_) = reqMsg.splitMsgToTuple(2);
 
                 if logging {
                     writeln("reqMsg: ", reqMsg);

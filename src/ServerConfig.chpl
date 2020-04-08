@@ -152,4 +152,29 @@ module ServerConfig
         }
     }
 
+    
+    proc string.splitMsgToTuple(param numChunks: int) {
+        var tup: numChunks*string;
+        for (t,s) in zip(tup, this.split(numChunks)) {
+            t = s;
+        }
+        return tup;
+    }
+
+    proc string.splitMsgToTuple(sep: string, param numChunks: int) {
+        var tup: numChunks*string;
+        for (t,s) in zip(tup, this.split(sep, numChunks)) {
+            t = s;
+        }
+        return tup;
+    }
+
+    proc bytes.splitMsgToTuple(param numChunks: int) {
+        var tup: numChunks*bytes;
+        for (t,s) in zip(tup, this.split(numChunks)) {
+            t = s;
+        }
+        return tup;
+    }
+
 }

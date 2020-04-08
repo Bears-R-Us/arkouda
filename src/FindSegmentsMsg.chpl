@@ -30,13 +30,14 @@ module FindSegmentsMsg
     proc findSegmentsMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var pname = fields[2]; // permutation array
-        var nkeys = fields[3]:int; // number of key arrays
-        if (fields.size != (2*nkeys + 3)) { return incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(nkeys, (fields.size - 3)/2));}
-        var knames = fields[4..#nkeys]; // key arrays
-        var ktypes = fields[4+nkeys..#nkeys]; // objtypes
+        // split request into fields
+        var (cmd, pname, nkeysStr, rest) = reqMsg.splitMsgToTuple(4);
+        var nkeys = nkeysStr:int; // number of key arrays
+        var fields = rest.split();
+        if (fields.size != (2*nkeys)) { return incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(nkeys, (fields.size)/2));}
+        var low = fields.domain.low;
+        var knames = fields[low..#nkeys]; // key arrays
+        var ktypes = fields[low+nkeys..#nkeys]; // objtypes
         var size: int;
         // Check all the argument arrays before doing anything
         var gPerm = st.lookup(pname);
@@ -53,8 +54,8 @@ module FindSegmentsMsg
           thisType = g.dtype;
         }
         when "str" {
-          var myNames = name.split('+');
-          var g = st.lookup(myNames[1]);
+          var (myNames,_) = name.splitMsgToTuple('+', 2);
+          var g = st.lookup(myNames);
           thisSize = g.size;
           thisType = g.dtype;
         }
@@ -100,8 +101,9 @@ module FindSegmentsMsg
           [(u, s, i) in zip(ukeylocs, permKey, paD)] if ((i > paD.low) && (permKey[i-1] != s))  { u = true; }
         }
         when "str" {
+          var (myNames1,myNames2) = name.splitMsgToTuple('+', 2);
           var myNames = name.split('+');
-          var str = new owned SegString(myNames[1], myNames[2], st);
+          var str = new owned SegString(myNames1, myNames2, st);
           var (permOffsets, permVals) = str[pa];
           const ref D = permOffsets.domain;
           var permLengths: [D] int;
@@ -165,9 +167,8 @@ module FindSegmentsMsg
     proc findLocalSegmentsMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var kname = fields[2]; // key array
+        // split request into fields
+        var (cmd, kname) = reqMsg.splitMsgToTuple(2);
 
         // get next symbol name
         var sname = st.nextName(); // segments

@@ -25,10 +25,8 @@ module ReductionMsg
     proc reductionMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var reductionop = fields[2];
-        var name = fields[3];
+        // split request into fields
+        var (cmd, reductionop, name) = reqMsg.splitMsgToTuple(3);
         if v {try! writeln("%s %s %s".format(cmd,reductionop,name));try! stdout.flush();}
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
@@ -196,10 +194,9 @@ module ReductionMsg
     proc countReductionMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
       // reqMsg: segmentedReduction values segments operator
-      var fields = reqMsg.split();
-      var cmd = fields[1];
-      var segments_name = fields[2]; // segment offsets
-      var size = try! fields[3]:int;
+      // 'segments_name' describes the segment offsets
+      var (cmd, segments_name, sizeStr) = reqMsg.splitMsgToTuple(3);
+      var size = try! sizeStr:int;
       var rname = st.nextName();
       if v {try! writeln("%s %s %s".format(cmd,segments_name, size));try! stdout.flush();}
 
@@ -230,10 +227,10 @@ module ReductionMsg
         param pn = Reflection.getRoutineName();
       // reqMsg: countLocalRdx segments
       // segments.size = numLocales * numKeys
-      var fields = reqMsg.split();
-      var cmd = fields[1];
-      var segments_name = fields[2]; // segment offsets
-      var size = try! fields[3]:int; // size of original keys array
+      // 'segments_name' describes the segment offsets
+      // 'size[Str]' is the size of the original keys array
+      var (cmd, segments_name, sizeStr) = reqMsg.splitMsgToTuple(3);
+      var size = try! sizeStr:int; // size of original keys array
       var rname = st.nextName();
       if v {try! writeln("%s %s %s".format(cmd,segments_name, size));try! stdout.flush();}
 
@@ -264,11 +261,10 @@ module ReductionMsg
     proc segmentedReductionMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
       // reqMsg: segmentedReduction values segments operator
-      var fields = reqMsg.split();
-      var cmd = fields[1];
-      var values_name = fields[2];   // segmented array of values to be reduced
-      var segments_name = fields[3]; // segment offsets
-      var operator = fields[4];      // reduction operator
+      // 'values_name' is the segmented array of values to be reduced
+      // 'segments_name' is the sement offsets
+      // 'operator' is the reduction operator
+      var (cmd, values_name, segments_name, operator) = reqMsg.splitMsgToTuple(4);
       var rname = st.nextName();
       if v {try! writeln("%s %s %s %s".format(cmd,values_name,segments_name,operator));try! stdout.flush();}
       var gVal: borrowed GenSymEntry = st.lookup(values_name);
@@ -378,12 +374,10 @@ module ReductionMsg
     proc segmentedLocalRdxMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
       // reqMsg: segmentedReduction keys values segments operator
-      var fields = reqMsg.split();
-      var cmd = fields[1];
-      var keys_name = fields[2];
-      var values_name = fields[3];   // segmented array of values to be reduced
-      var segments_name = fields[4]; // segment offsets
-      var operator = fields[5];      // reduction operator
+      // 'values_name' is the segmented array of values to be reduced
+      // 'segments_name' is the segmented offsets
+      // 'operator' is the reduction operator
+      var (cmd, keys_name, values_name, segments_name, operator) = reqMsg.splitMsgToTuple(5);
       var rname = st.nextName();
       if v {try! writeln("%s %s %s %s %s".format(cmd,keys_name,values_name,segments_name,operator));try! stdout.flush();}
 

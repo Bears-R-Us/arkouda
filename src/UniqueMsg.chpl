@@ -27,16 +27,14 @@ module UniqueMsg
     proc uniqueMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var objtype = fields[2];
-        var name = fields[3];
+        // split request into fields
+        var (cmd, objtype, name, returnCountsStr) = reqMsg.splitMsgToTuple(4);
         // flag to return counts of each unique value
         // same size as unique array
         var returnCounts: bool;
-        if fields[4] == "True" {returnCounts = true;}
-        else if fields[4] == "False" {returnCounts = false;}
-        else {return try! "Error: %s: %s".format(pn,fields[4]);}
+        if returnCountsStr == "True" {returnCounts = true;}
+        else if returnCountsStr == "False" {returnCounts = false;}
+        else {return try! "Error: %s: %s".format(pn,returnCountsStr);}
         select objtype {
           when "pdarray" {
             // get next symbol name for unique
@@ -91,8 +89,8 @@ module UniqueMsg
           when "str" {
             var offsetName = st.nextName();
             var valueName = st.nextName();
-            var names = name.split('+');
-            var str = new owned SegString(names[1], names[2], st);
+            var (names1,names2) = name.splitMsgToTuple('+', 2);
+            var str = new owned SegString(names1, names2, st);
             // the upper limit here is the similar to argsort/radixSortLSD_keys, but with a few more scratch arrays
             // check and throw if over memory limit
             overMemLimit((8 * str.size * 8)
@@ -116,9 +114,8 @@ module UniqueMsg
     proc value_countsMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
+        // split request into fields
+        var (cmd, name) = reqMsg.splitMsgToTuple(2);
 
         // get next symbol name
         var vname = st.nextName();

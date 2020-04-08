@@ -434,13 +434,14 @@ module ArgSortMsg
     proc coargsortMsg(reqMsg: string, st: borrowed SymTab) throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string;
-      var fields = reqMsg.split();
-      var cmd = fields[1];
-      var n = fields[2]:int; // number of arrays to sort
+      var (cmd, nstr, rest) = reqMsg.splitMsgToTuple(3);
+      var n = nstr:int; // number of arrays to sort
+      var fields = rest.split();
       // Check that fields contains the stated number of arrays
       if (fields.size != (2*n + 2)) { return try! incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(n, fields.size/2 - 1)); }
-      var names = fields[3..#n];
-      var types = fields[3+n..#n];
+      const low = fields.domain.low;
+      var names = fields[low..#n];
+      var types = fields[low+n..#n];
       /* var arrays: [0..#n] borrowed GenSymEntry; */
       var size: int;
       // Check that all arrays exist in the symbol table and have the same size
@@ -453,8 +454,8 @@ module ArgSortMsg
             thisSize = g.size;
           }
           when "str" {
-            var myNames = name.split('+');
-            var g = st.lookup(myNames[1]);
+            var (myNames, _) = name.splitMsgToTuple('+', 2);
+            var g = st.lookup(myNames);
             thisSize = g.size;
           }
           otherwise {return unrecognizedTypeError(pn, objtype);}
@@ -481,8 +482,8 @@ module ArgSortMsg
       for (i, j) in zip(names.domain.low..names.domain.high by -1,
                         types.domain.low..types.domain.high by -1) {
         if (types[j] == "str") {
-          var myNames = names[i].split('+');
-          var strings = new owned SegString(myNames[1], myNames[2], st);
+          var (myNames1,myNames2) = names[i].splitMsgToTuple('+', 2);
+          var strings = new owned SegString(myNames1, myNames2, st);
           iv.a = incrementalArgSort(strings, iv.a);
         } else {
           var g: borrowed GenSymEntry = st.lookup(names[i]);
@@ -507,10 +508,8 @@ module ArgSortMsg
     proc argsortMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var objtype = fields[2];
-        var name = fields[3];
+        // split request into fields
+        var (cmd, objtype, name) = reqMsg.splitMsgToTuple(3);
 
         // get next symbol name
         var ivname = st.nextName();
@@ -538,8 +537,8 @@ module ArgSortMsg
             }
           }
           when "str" {
-            var names = name.split('+');
-            var strings = new owned SegString(names[1], names[2], st);
+            var (names1, names2) = name.splitMsgToTuple('+', 2);
+            var strings = new owned SegString(names1, names2, st);
             // check and throw if over memory limit
             overMemLimit((8 * strings.size * 8)
                          + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
@@ -556,9 +555,8 @@ module ArgSortMsg
     proc localArgsortMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
+        // split request into fields
+        var (cmd, name) = reqMsg.splitMsgToTuple(2);
 
         // get next symbol name
         var ivname = st.nextName();
