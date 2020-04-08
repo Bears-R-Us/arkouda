@@ -1,14 +1,16 @@
 import numpy as np
+import numpy
 import warnings, os
 from itertools import product
 from base_test import ArkoudaTest
 from context import arkouda as ak
-
+from context import arkouda
 SIZE = 10
 warnings.simplefilter("always", UserWarning)
 verbose = os.getenv('VERBOSE', False)
-  
-def run_tests():
+
+def run_tests(verbose):
+
     global pdarrays
     pdarrays = {'int64': ak.arange(0, SIZE, 1),
                 'float64': ak.linspace(0, 2, SIZE),
@@ -145,11 +147,88 @@ Encapsulates test cases that invoke the run_tests method.
 '''
 class OperatorsTest(ArkoudaTest):
 
+    def testPdArrayAddInt(self):
+        aArray = ak.ones(100)
+        addArray = aArray + 1
+        self.assertIsInstance(addArray, ak.pdarrayclass.pdarray)
+        self.assertEqual(np.float64(2),addArray[0])
+
+        addArray = 1 + aArray
+        self.assertIsInstance(addArray, ak.pdarrayclass.pdarray)
+        self.assertEqual(np.float64(2), addArray[0])
+
+    def testPdArrayAddNumpyInt(self):
+        aArray = ak.ones(100)
+        addArray = aArray + np.int64(1)
+        self.assertIsInstance(addArray, ak.pdarrayclass.pdarray)
+        self.assertEqual(np.float64(2), addArray[0])
+
+        addArray = np.int64(1) + aArray
+        self.assertIsInstance(addArray, np.ndarray)
+        self.assertEqual(np.float64(2), addArray[0])
+
+    def testPdArraySubtractInt(self):
+        aArray = ak.ones(100)
+        subArray =  aArray - 2
+        self.assertIsInstance(subArray, ak.pdarrayclass.pdarray)
+        self.assertEqual(np.float64(-1), subArray[0])
+
+        subArray =  2 - aArray
+        self.assertIsInstance(subArray, ak.pdarrayclass.pdarray)
+        self.assertEqual(np.float64(1), subArray[0])
+
+    def testPdArraySubtractNumpyInt(self):
+        aArray = ak.ones(100)
+        subArray =  aArray - np.int64(2)
+        self.assertIsInstance(subArray, ak.pdarrayclass.pdarray)
+        self.assertEqual(np.float64(-1), subArray[0])
+
+        subArray =  np.int64(2) - aArray
+        self.assertIsInstance(subArray, np.ndarray)
+        self.assertEqual(np.float64(1), subArray[0])
+
+    def testPdArrayMultInt(self):
+        aArray = ak.ones(100)
+        mArray =  aArray*5
+        self.assertIsInstance(mArray, ak.pdarrayclass.pdarray)
+        self.assertEqual(np.float64(5), mArray[0])
+
+        mArray =  5*aArray
+        self.assertIsInstance(mArray, ak.pdarrayclass.pdarray)
+        self.assertEqual(np.float64(5), mArray[0])
+
+    def testPdArrayMultNumpyInt(self):
+        aArray = ak.ones(100)
+        mArray =  aArray*np.int64(5)
+        self.assertIsInstance(mArray, ak.pdarrayclass.pdarray)
+        self.assertEqual(np.float64(5), mArray[0])
+
+        mArray =  np.int64(5)*aArray
+        self.assertIsInstance(mArray, np.ndarray)
+        self.assertEqual(np.float64(5), mArray[0])
+
+    def testPdArrayDivideInt(self):
+        aArray = ak.ones(100)
+        dArray =  aArray*15/3
+        self.assertIsInstance(dArray, ak.pdarrayclass.pdarray)
+        self.assertEqual(np.float64(5), dArray[0])
+
+        dArray =  15*aArray/3
+        self.assertIsInstance(dArray, arkouda.pdarrayclass.pdarray)
+        self.assertEqual(np.float64(5), dArray[0])
+
+    def testPdArrayDivideNumpyInt(self):
+        aArray = ak.ones(100)
+        dArray =  aArray*np.int64(15)/3
+        self.assertIsInstance(dArray, ak.pdarrayclass.pdarray)
+        self.assertEqual(np.float64(5), dArray[0])
+
+        dArray =  np.int64(15)*aArray/3
+        self.assertIsInstance(dArray, np.ndarray)
+        self.assertEqual(np.float64(5), dArray[0])
+        
     def testAllOperators(self):
-        '''
-        Simply executes the run_tests() method to test all operators
-        '''
-        self.assertTrue(run_tests())
+        run_tests(verbose)
         
 if __name__ == '__main__':
     '''
