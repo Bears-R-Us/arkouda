@@ -301,7 +301,7 @@ endef
 $(eval $(call create_help_target,test-help,TEST_HELP_TEXT))
 
 .PHONY: test
-test: $(TEST_TARGETS)
+test: test-python $(TEST_TARGETS)
 
 $(TEST_BINARY_DIR):
 	mkdir -p $(TEST_BINARY_DIR)
