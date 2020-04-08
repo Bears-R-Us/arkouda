@@ -16,10 +16,10 @@ module SegStringSort {
   private const MEMFACTOR = SSS_MEMFACTOR;
 
   record StringIntComparator {
-    proc keyPart(a: (string, int), i: int) {
-      var len = a[1].numBytes;
+    proc keyPart((a0,_): (string, int), i: int) {
+      var len = a0.numBytes;
       var section = if i <= len then 0:int(8) else -1:int(8);
-      var part = if i <= len then a[1].byte(i) else 0:uint(8);
+      var part = if i <= len then a0.byte(i) else 0:uint(8);
       return (section, part);
     }
   }
@@ -58,7 +58,8 @@ module SegStringSort {
       sort(stringsWithInds, comparator=myComparator);
       if v { writeln("Sorted long strings in %t seconds".format(getCurrentTime() - tl)); stdout.flush(); tl = getCurrentTime(); }
       forall (h, s) in zip(highDom, stringsWithInds.domain) with (var agg = newDstAggregator(int)) {
-        agg.copy(gatherInds[h], stringsWithInds[s][2]);
+        const (_,val) = stringsWithInds[s];
+        agg.copy(gatherInds[h], val);
       }
       if v { writeln("Permuted long inds in %t seconds".format(getCurrentTime() - tl)); stdout.flush(); }
     }
@@ -125,8 +126,7 @@ module SegStringSort {
       const l = lengths[i];
       var buf: [0..#(l+1)] uint(8);
       buf[{0..#l}] = va[{oa[i]..#l}];
-      si[1] = try! createStringWithBorrowedBuffer(c_ptrTo(buf), l, l+1);
-      si[2] = i;
+      si = (try! createStringWithBorrowedBuffer(c_ptrTo(buf), l, l+1), i);
     }
     return stringsWithInds;
   }
@@ -161,36 +161,37 @@ module SegStringSort {
     inline proc copyDigit(ref k: state, const off: int, const len: int, const rank: int, const right: int) {
       // TODO can we only use the aggregated version?
       use UnorderedCopy;
+      ref (k0,k1,k2,k3,k4) = k;
       if (right > 0) {
         if (len >= right) {
-          unorderedCopy(k[1], values[off+right-2]);
-          unorderedCopy(k[2], values[off+right-1]);
+          unorderedCopy(k0, values[off+right-2]);
+          unorderedCopy(k1, values[off+right-1]);
         } else if (len == right - 1) {
-          unorderedCopy(k[1], values[off+right-2]);
-          unorderedCopy(k[2], 0: uint(8));
+          unorderedCopy(k0, values[off+right-2]);
+          unorderedCopy(k1, 0: uint(8));
         } else {
-          unorderedCopy(k[1], 0: uint(8));
-          unorderedCopy(k[2], 0: uint(8));
+          unorderedCopy(k0, 0: uint(8));
+          unorderedCopy(k1, 0: uint(8));
         }
       }
-      unorderedCopy(k[3], off);
-      unorderedCopy(k[4], len);
-      unorderedCopy(k[5], rank);
+      unorderedCopy(k2, off);
+      unorderedCopy(k3, len);
+      unorderedCopy(k4, rank);
     }
 
     inline proc copyDigit(ref k1: state, ref k0: state, const right: int, ref aggregator) {
-      const off = k0[3];
-      const len = k0[4];
+      const (_,_,off,len,_) = k0;
+      ref (ka,kb,_,_,_) = k0;
       if (right > 0) {
         if (len >= right) {
-          k0[1] = values[off+right-2];
-          k0[2] = values[off+right-1];
+          ka = values[off+right-2];
+          kb = values[off+right-1];
         } else if (len == right - 1) {
-          k0[1] = values[off+right-2];
-          k0[2] = 0;
+          ka = values[off+right-2];
+          kb = 0;
         } else {
-          k0[1] = 0: uint(8);
-          k0[2] = 0: uint(8);
+          ka = 0: uint(8);
+          kb = 0: uint(8);
         }
       }
       aggregator.copy(k1, k0);
@@ -224,7 +225,9 @@ module SegStringSort {
             var tD = calcBlock(task, lD.low, lD.high);
             // count digits in this task's part of the array
             for i in tD {
-              var bucket = (kr0[i][1]:int << 8) | (kr0[i][2]:int); // calc bucket from key
+              var kr0i0, kr0i1: int;
+              (kr0i0, kr0i1 , _, _, _) = kr0[i];
+              var bucket = (kr0i0 << 8) | (kr0i1); // calc bucket from key
               taskBucketCounts[bucket] += 1;
             }
             // write counts in to global counts in transposed order
@@ -265,7 +268,9 @@ module SegStringSort {
             {
               var aggregator = newDstAggregator(state);
               for i in tD {
-                var bucket = (kr0[i][1]:int << 8) | (kr0[i][2]:int); // calc bucket from key
+                var kr0i0, kr0i1: int;
+                (kr0i0, kr0i1, _, _, _) = kr0[i];
+                var bucket = (kr0i0:int << 8) | (kr0i1:int); // calc bucket from key
                 var pos = taskBucketPos[bucket];
                 taskBucketPos[bucket] += 1;
                 copyDigit(kr1[pos], kr0[i], pivot - rshift, aggregator);

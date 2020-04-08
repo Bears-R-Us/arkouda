@@ -38,6 +38,13 @@ endef
 #                               ^ no space after comma
 -include Makefile.paths # Add entries to this file.
 
+ifdef ARKOUDA_ZMQ_PATH
+$(eval $(call add-path,$(ARKOUDA_ZMQ_PATH)))
+endif
+ifdef ARKOUDA_HDF5_PATH
+$(eval $(call add-path,$(ARKOUDA_HDF5_PATH)))
+endif
+
 .PHONY: install-deps
 install-deps: install-zmq install-hdf5
 

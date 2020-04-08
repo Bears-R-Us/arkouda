@@ -215,7 +215,7 @@ module MsgProcessing
         
         var t1 = Time.getCurrentTime();
         var e = st.addEntry(rname, len, int);
-        writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+        if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
 
         t1 = Time.getCurrentTime();
         ref ea = e.a;
@@ -223,7 +223,7 @@ module MsgProcessing
         forall (ei, i) in zip(ea,ead) {
             ei = start + (i * stride);
         }
-        writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+        if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
 
         return try! "created " + st.attrib(rname);
     }            
@@ -254,7 +254,7 @@ module MsgProcessing
 
         var t1 = Time.getCurrentTime();
         var e = st.addEntry(rname, len, real);
-        writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+        if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
 
         t1 = Time.getCurrentTime();
         ref ea = e.a;
@@ -264,7 +264,7 @@ module MsgProcessing
         }
         ea[0] = start;
         ea[len-1] = stop;
-        writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+        if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
 
         return try! "created " + st.attrib(rname);
     }
