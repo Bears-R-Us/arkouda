@@ -84,7 +84,7 @@ def create_parser():
     parser.add_argument('-r', '--randomize', default=False, action='store_true', help='Fill arrays with random values instead of ones')
     parser.add_argument('-a', '--alpha', default=1.0, help='Scalar multiple')
     parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
-    parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
+    parser.add_argument('--correctness-only', default=False, action='store_true', help='Only compare_test correctness, not performance.')
     return parser
 
 if __name__ == "__main__":
