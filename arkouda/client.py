@@ -134,7 +134,7 @@ def shutdown():
     print(message)
     connected = False
 
-# send message to arkouda server and check for server side error
+# send message to arkouda server and compare_test for server side error
 def generic_msg(message, send_bytes=False, recv_bytes=False):
     global socket, pspStr, connected, verbose
 
