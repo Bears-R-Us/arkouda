@@ -200,10 +200,9 @@ module SegmentedMsg {
     var repMsg: string;
     // 'subcmd' is the type of indexing to perform
     // 'objtype' is the type of segmented array
-    var (cmd, subcmd, objtype, _) = reqMsg.splitMsgToTuple(4);
-    var fields = reqMsg.split();
-    const low = fields.domain.low;
-    var args: [1..#fields.size] string = fields[low+3..]; // parsed by subroutines
+    var (cmd, subcmd, objtype, rest) = reqMsg.splitMsgToTuple(4);
+    var fields = rest.split();
+    var args: [1..#fields.size] string = fields; // parsed by subroutines
     try {
       select subcmd {
         when "intIndex" {
