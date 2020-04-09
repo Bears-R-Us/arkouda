@@ -208,17 +208,11 @@ module JoinEqWithDTMsg
     proc joinEqWithDTMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var a1_name = fields[2];
-        var g2Seg_name = fields[3];
-        var g2Ukeys_name = fields[4];
-        var g2Perm_name = fields[5];
-        var t1_name = fields[6];
-        var t2_name = fields[7];
-        var dt = try! fields[8]:int;
-        var pred = fields[9]:int;
-        var resLimit = try! fields[10]:int;
+        var (cmd, a1_name, g2Seg_name, g2Ukeys_name, g2Perm_name, t1_name,
+             t2_name, dtStr, predStr, resLimitStr) = reqMsg.splitMsgToTuple(10);
+        var dt = try! dtStr:int;
+        var pred = predStr:int;
+        var resLimit = try! resLimitStr:int;
         
         // get next symbol names for results
         var resI_name = st.nextName();

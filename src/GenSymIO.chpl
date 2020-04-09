@@ -16,10 +16,11 @@ module GenSymIO {
 
   proc arrayMsg(reqMsg: bytes, st: borrowed SymTab): string {
     var repMsg: string;
-    var (cmdstr, dtypestr, sizestr, data) = reqMsg.splitMsgToTuple(4);
-    var cmd = try! cmdstr.decode();
-    var dtype = str2dtype(try! dtypestr.decode());
-    var size = try! sizestr:int;
+    var (cmdBytes, dtypeBytes, sizeBytes, data) = reqMsg.splitMsgToTuple(4);
+    writeln("data length = ", data.size);
+    var cmd = try! cmdBytes.decode();
+    var dtype = str2dtype(try! dtypeBytes.decode());
+    var size = try! sizeBytes:int;
     var tmpf:file;
     try {
       tmpf = openmem();
@@ -55,7 +56,7 @@ module GenSymIO {
       } else {
         tmpr.close();
         tmpf.close();
-        return try! "Error: Unhandled data type %s".format(dtypestr);
+        return try! "Error: Unhandled data type %s".format(dtypeBytes);
       }
       tmpr.close();
       tmpf.close();

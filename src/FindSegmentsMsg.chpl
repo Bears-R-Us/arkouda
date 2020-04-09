@@ -31,11 +31,13 @@ module FindSegmentsMsg
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (cmd, pname, nkeysStr, rest) = reqMsg.splitMsgToTuple(4);
+        var (cmd, pname, nkeysStr, _) = reqMsg.splitMsgToTuple(4);
+        writeln("nkeysStr = ", nkeysStr);
         var nkeys = nkeysStr:int; // number of key arrays
-        var fields = rest.split();
-        if (fields.size != (2*nkeys)) { return incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(nkeys, (fields.size)/2));}
-        var low = fields.domain.low;
+        var fields = reqMsg.split(); // split request into fields
+        if (fields.size != (2*nkeys + 3)) { return incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(nkeys, (fields.size - 3)/2));}
+        var low = fields.domain.low + 3;
+        writeln("low = ", low);
         var knames = fields[low..#nkeys]; // key arrays
         var ktypes = fields[low+nkeys..#nkeys]; // objtypes
         var size: int;
@@ -102,7 +104,6 @@ module FindSegmentsMsg
         }
         when "str" {
           var (myNames1,myNames2) = name.splitMsgToTuple('+', 2);
-          var myNames = name.split('+');
           var str = new owned SegString(myNames1, myNames2, st);
           var (permOffsets, permVals) = str[pa];
           const ref D = permOffsets.domain;
