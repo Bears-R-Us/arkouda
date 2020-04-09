@@ -17,7 +17,6 @@ module GenSymIO {
   proc arrayMsg(reqMsg: bytes, st: borrowed SymTab): string {
     var repMsg: string;
     var (cmdBytes, dtypeBytes, sizeBytes, data) = reqMsg.splitMsgToTuple(4);
-    writeln("data length = ", data.size);
     var cmd = try! cmdBytes.decode();
     var dtype = str2dtype(try! dtypeBytes.decode());
     var size = try! sizeBytes:int;

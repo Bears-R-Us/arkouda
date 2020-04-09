@@ -434,12 +434,12 @@ module ArgSortMsg
     proc coargsortMsg(reqMsg: string, st: borrowed SymTab) throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string;
-      var (cmd, nstr, _) = reqMsg.splitMsgToTuple(3);
+      var (cmd, nstr, rest) = reqMsg.splitMsgToTuple(3);
       var n = nstr:int; // number of arrays to sort
-      var fields = reqMsg.split();
+      var fields = rest.split();
       // Check that fields contains the stated number of arrays
-      if (fields.size != (2*n + 2)) { return try! incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(n, fields.size/2 - 1)); }
-      const low = fields.domain.low + 2;
+      if (fields.size != 2*n) { return try! incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(n, fields.size/2 - 1)); }
+      const low = fields.domain.low;
       var names = fields[low..#n];
       var types = fields[low+n..#n];
       /* var arrays: [0..#n] borrowed GenSymEntry; */
@@ -495,14 +495,12 @@ module ArgSortMsg
     }
     
     proc argsortDefault(A:[?D] ?t):[D] int {
-      writeln("argsort input: ", A);
       var t1 = Time.getCurrentTime();
       //var AI = [(a, i) in zip(A, D)] (a, i);
       //Sort.TwoArrayRadixSort.twoArrayRadixSort(AI);
       //var iv = [(a, i) in AI] i;
       var iv = radixSortLSD_ranks(A);
       if v {writeln("argsort time = ", Time.getCurrentTime() - t1); try! stdout.flush();}
-      writeln("argsort output: ", iv);
       return iv;
     }
     

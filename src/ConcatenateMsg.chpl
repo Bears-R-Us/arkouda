@@ -19,13 +19,13 @@ module ConcatenateMsg
     proc concatenateMsg(reqMsg: string, st: borrowed SymTab) throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
-        var (cmd, nstr, objtype, _) = reqMsg.splitMsgToTuple(4);
+        var (cmd, nstr, objtype, rest) = reqMsg.splitMsgToTuple(4);
         var n = try! nstr:int; // number of arrays to sort
-        var fields = reqMsg.split();
-        const low = fields.domain.low + 3;
+        var fields = rest.split();
+        const low = fields.domain.low;
         var names = fields[low..];
         // Check that fields contains the stated number of arrays
-        if (n != names.size) { return try! incompatibleArgumentsError(pn, "B: Expected %i arrays but got %i".format(n, names.size)); }
+        if (n != names.size) { return try! incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(n, names.size)); }
         /* var arrays: [0..#n] borrowed GenSymEntry; */
         var size: int = 0;
         var nbytes: int = 0;          

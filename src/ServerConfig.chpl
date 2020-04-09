@@ -159,7 +159,7 @@ module ServerConfig
     //
     private const DefaultArr = [1,2];
     private const defaultLow = DefaultArr.domain.low;
-    
+
     proc string.splitMsgToTuple(param numChunks: int) {
       var tup: numChunks*string;
       var count = 0;
