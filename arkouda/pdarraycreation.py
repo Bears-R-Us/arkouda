@@ -77,7 +77,7 @@ def array(a):
                 values[o+i] = b
         # Recurse to create pdarrays for offsets and values, then return Strings object
         return Strings(array(offsets), array(values))
-    # If not strings, then compare_test that dtype is supported in arkouda
+    # If not strings, then check that dtype is supported in arkouda
     if a.dtype.name not in DTypes:
         raise RuntimeError("Unhandled dtype {}".format(a.dtype))
     # Do not allow arrays that are too large
@@ -123,7 +123,7 @@ def zeros(size, dtype=np.float64):
     if not np.isscalar(size):
         raise TypeError("size must be a scalar, not {}".format(type(size)))
     dtype = akdtype(dtype) # normalize dtype
-    # compare_test dtype for error
+    # check dtype for error
     if dtype.name not in DTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
     kind, itemsize = translate_np_dtype(dtype)
@@ -162,7 +162,7 @@ def ones(size, dtype=float64):
     if not np.isscalar(size):
         raise TypeError("size must be a scalar, not {}".format(type(size)))
     dtype = akdtype(dtype) # normalize dtype
-    # compare_test dtype for error
+    # check dtype for error
     if dtype.name not in DTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
     kind, itemsize = translate_np_dtype(dtype)
@@ -380,7 +380,7 @@ def randint(low, high, size, dtype=int64):
     if size < 0 or high < low:
         raise ValueError("Incompatible arguments")
     dtype = akdtype(dtype) # normalize dtype
-    # compare_test dtype for error
+    # check dtype for error
     if dtype.name not in DTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
     lowstr = NUMBER_FORMAT_STRINGS[dtype.name].format(low)
