@@ -14,7 +14,7 @@ class ClientTest(ArkoudaTest):
         ak.client.connect()
         
         :return: None
-        :raise: AssertionError if assert* method returns incorrect value or
+        :raise: AssertionError if an assert* method returns incorrect value or
                 if there is a error in connecting or disconnecting from  the
                 Arkouda server
         '''
@@ -44,7 +44,7 @@ class ClientTest(ArkoudaTest):
         except Exception as e:
             raise AssertionError(e)
         self.assertEqual(ArkoudaTest.port, config['ServerPort'])
-        self.assertTrue('arkoudaVersion' in config.keys())
+        self.assertTrue('arkoudaVersion' in config)
         
     def test_client_context(self):   
         '''

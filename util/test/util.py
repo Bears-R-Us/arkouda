@@ -24,7 +24,7 @@ import time
 
 from collections import namedtuple
 
-import arkouda
+from context import arkouda
 
 ##################
 # Misc utilities #
