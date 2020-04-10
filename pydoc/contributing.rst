@@ -136,9 +136,8 @@ Then, define your argument parsing and function logic in ``src/FooMsg.chpl`` in 
        */
        proc FooMsg(reqMsg: string, st: borrowed SymTab): string {
            var repMsg: string; // response message
-           var fields = reqMsg.split(); // split request into fields
-           var cmd = fields[1];
-           var name = fields[2];
+           // split request into fields
+           var (cmd, name) = reqMsg.splitMsgToTuple(2);
            // get next symbol name
            var rname = st.nextName();
         
