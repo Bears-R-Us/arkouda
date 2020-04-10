@@ -74,8 +74,16 @@ brew install zeromq
 brew install hdf5
 
 brew install chapel
-# you can also install python3 with brew
+
+# Although not required, is is highly recommended to install Anaconda to provide a 
+# Python 3 environment and manage Python dependencies:
+wget https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh
+sh Anaconda3-2020.02-Linux-x86_64.sh
+source ~/.bashrc
+
+# Otherwise, Python 3 can be installed with brew
 brew install python3
+```
 # !!! the standard way of installing through pip3 installs an old version of arkouda
 # !!! the arkouda python client is available via pip
 # !!! pip will automatically install python dependencies (zmq and numpy)
@@ -105,55 +113,21 @@ export CHPL_RT_OVERSUBSCRIBED=yes
 cd $CHPL_HOME
 make
 ```
-Note: if you've not previously installed zeromq and hdf5, execute make install-deps _first_ and _then_
+# If you've built Chapel instead using brew, add the Chapel executable (chpl) to PATH:
+export PATH=$CHPL_HOME/bin/linux64-x86_64/:$PATH
+```
+
+## Building Arkouda
+
+Download, clone, or fork the [arkouda repo](https://github.com/mhmerrill/arkouda). Further instructions assume that the current directory is the top-level directory of the repo.
+
+If zeromq and hdf5 have not been installed previously, execute make install-deps _first_ and _then_
 run make:
 
 ```
 make install-deps
 make
 ```
-
-### Linux Installation
-There is no Linux Chapel install, so the first two steps in the Linux Arkouda install are to install 
-the Chapel dependencies followed by downloading and building Chapel:
-
-```
-sudo apt-get update
-sudo apt-get install gcc g++ m4 perl python python-dev python-setuptools bash make mawk git pkg-config
-wget https://github.com/chapel-lang/chapel/releases/download/1.20.0/chapel-1.20.0.tar.gz
-tar xvf chapel-1.20.0.tar.gz
-cd chapel-1.20.0/
-```
-As detailed above, set the requisite Chapel env variables and then build by first executing make install-deps
-followed by make
-
-```
-source $CHPL_HOME/util/setchplenv.bash
-export CHPL_COMM=gasnet
-export CHPL_COMM_SUBSTRATE=smp
-export CHPL_TARGET_CPU=native
-export GASNET_QUIET=Y
-export CHPL_RT_OVERSUBSCRIBED=yes
-cd $CHPL_HOME
-make-deps
-make
-```
-
-Add the Chapel executable (chpl) to the user running Chapel's PATH:
-```
-export PATH=$CHPL_HOME/bin/linux64-x86_64/:$PATH
-```
-It is highly recommended to install Anaconda to provide a Python environment and manage Python dependencies:
-
-```
- wget https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh
- sh Anaconda3-2020.02-Linux-x86_64.sh
- source ~/.bashrc
-```
-
-## Building Arkouda
-
-Download, clone, or fork the [arkouda repo](https://github.com/mhmerrill/arkouda). Further instructions assume that the current directory is the top-level directory of the repo.
 
 If your environment requires non-system paths to find dependencies (e.g.,
 if using the ZMQ and HDF5 bundled with [Anaconda]), append each path to a new file `Makefile.paths` like so:
