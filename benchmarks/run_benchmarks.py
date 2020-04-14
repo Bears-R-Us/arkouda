@@ -117,6 +117,11 @@ def main():
     stop_arkouda_server()
 
     if args.gen_graphs:
+        comp_file = os.getenv('ARKOUDA_PRINT_PASSES_FILE', '')
+        if os.path.isfile(comp_file):
+            with open (comp_file, 'r') as f:
+                out = f.read()
+            add_to_dat('comp-time', out, config_dat_dir, args.graph_infra)
         generate_graphs(args)
 
 if __name__ == '__main__':
