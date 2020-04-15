@@ -195,6 +195,10 @@ proc main() {
                         when "disconnect" {
                             repMsg = "disconnected from arkouda server tcp://*:%t".format(ServerPort);
                         }
+                        when "noop" {
+                            repMsg = "noop";
+                            if v { writeln("no-op"); try! stdout.flush(); }
+                        }
                         otherwise {
                             repMsg = "Error: unrecognized command: %s".format(reqMsg);
                         }
