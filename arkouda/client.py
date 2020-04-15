@@ -69,6 +69,10 @@ def connect(server = "localhost", port = 5555):
 
     # "protocol://server:port"
     pspStr = "tcp://{}:{}".format(server,port)
+    tunnel_server = os.getenv('ARKOUDA_TUNNEL_SERVER')
+    if tunnel_server:
+        from zmq import ssh
+        (pspStr, _) = ssh.tunnel.open_tunnel(pspStr, tunnel_server)
     if verbose: print("psp = ",pspStr);
 
     # setup connection to arkouda server
@@ -188,3 +192,9 @@ def get_mem_used():
         Amount of memory allocated to symbol table objects.
     """
     return int(generic_msg("getmemused"))
+
+def _no_op():
+    """
+    Send a no-op message just to gather round trip time
+    """
+    return generic_msg("noop")

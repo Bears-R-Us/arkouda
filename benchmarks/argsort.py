@@ -62,7 +62,7 @@ def create_parser():
     parser.add_argument('hostname', help='Hostname of arkouda server')
     parser.add_argument('port', type=int, help='Port of arkouda server')
     parser.add_argument('-n', '--size', type=int, default=10**8, help='Problem size: length of array to argsort')
-    parser.add_argument('-t', '--trials', type=int, default=6, help='Number of times to run the benchmark')
+    parser.add_argument('-t', '--trials', type=int, default=3, help='Number of times to run the benchmark')
     parser.add_argument('-d', '--dtype', default='int64', help='Dtype of array (int64 or float64)')
     parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
     parser.add_argument('--correctness-only', default=False, action='store_true', help='Only compare_test correctness, not performance.')
