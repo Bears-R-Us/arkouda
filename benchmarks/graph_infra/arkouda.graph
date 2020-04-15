@@ -10,6 +10,12 @@ files: argsort.dat
 graphtitle: Argsort Performance
 ylabel: Performance (GiB/s)
 
+perfkeys: 1-array Average rate =, 2-array Average rate =, 8-array Average rate =, 16-array Average rate =
+graphkeys: 1 array Coargsort GiB/s, 2 array Coargsort GiB/s, 8 array Coargsort GiB/s, 16 array Coargsort GiB/s
+files: coargsort.dat, coargsort.dat, coargsort.dat, coargsort.dat
+graphtitle: Coargsort Performance
+ylabel: Performance (GiB/S)
+
 perfkeys: Average rate =
 graphkeys: Gather GiB/s
 files: gather.dat
