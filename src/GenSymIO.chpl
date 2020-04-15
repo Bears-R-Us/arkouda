@@ -555,9 +555,9 @@ module GenSymIO {
     return (subdoms, (+ reduce lengths));
   }
 
-  /* This function gets called when A is a BlockDist array. */
+  /* This function gets called when A is a BlockDist or DefaultRectangular array. */
   proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), filenames: [FD] string, dsetName: string)
-    where (MyDmap == Dmap.blockDist) {
+    where (MyDmap == Dmap.blockDist || MyDmap == Dmap.defaultRectangular) {
     if GenSymIO_DEBUG {
       writeln("entry.a.targetLocales() = ", A.targetLocales()); try! stdout.flush();
       writeln("Filedomains: ", filedomains); try! stdout.flush();
