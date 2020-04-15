@@ -565,7 +565,8 @@ module GenSymIO {
   }
 
   /* This function gets called when A is a BlockDist array. */
-  proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), filenames: [FD] string, dsetName: string) where (MyDmap == 1) {
+  proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), filenames: [FD] string, dsetName: string)
+    where (MyDmap == Dmap.blockDist) {
     if GenSymIO_DEBUG {
       writeln("entry.a.targetLocales() = ", A.targetLocales()); try! stdout.flush();
       writeln("Filedomains: ", filedomains); try! stdout.flush();
@@ -622,7 +623,8 @@ module GenSymIO {
   }
 
   /* This function is called when A is a CyclicDist array. */
-  proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), filenames: [FD] string, dsetName: string) where (MyDmap == 0) {
+  proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), filenames: [FD] string, dsetName: string)
+    where (MyDmap == Dmap.cyclicDist) {
     use CyclicDist;
     // Distribute filenames across locales, and ensure single-threaded reads on each locale
     var fileSpace: domain(1) dmapped Cyclic(startIdx=FD.low, dataParTasksPerLocale=1) = FD;
