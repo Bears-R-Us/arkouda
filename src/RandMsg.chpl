@@ -20,20 +20,20 @@ module RandMsg
     proc randintMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];     
-        var len = fields[2]:int;
-        var dtype = str2dtype(fields[3]);
+        // split request into fields
+        var (cmd,lenStr,dtypeStr,aMinStr,aMaxStr) = reqMsg.splitMsgToTuple(5);
+        var len = lenStr:int;
+        var dtype = str2dtype(dtypeStr);
 
         // get next symbol name
         var rname = st.nextName();
         
         // if verbose print action
-        if v {try! writeln("%s %i %s %s %s: %s".format(cmd,len,dtype2str(dtype),rname,fields[4],fields[5])); try! stdout.flush();}
+        if v {try! writeln("%s %i %s %s %s: %s".format(cmd,len,dtype2str(dtype),rname,aMinStr,aMaxStr)); try! stdout.flush();}
         select (dtype) {
             when (DType.Int64) {
-                var aMin = fields[4]:int;
-                var aMax = fields[5]:int;
+                var aMin = aMinStr:int;
+                var aMax = aMaxStr:int;
                 var t1 = Time.getCurrentTime();
                 var e = st.addEntry(rname, len, int);
                 if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
@@ -43,8 +43,8 @@ module RandMsg
                 if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
             }
             when (DType.UInt8) {
-                var aMin = fields[4]:int;
-                var aMax = fields[5]:int;
+                var aMin = aMinStr:int;
+                var aMax = aMaxStr:int;
                 var t1 = Time.getCurrentTime();
                 var e = st.addEntry(rname, len, uint(8));
                 if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
@@ -54,8 +54,8 @@ module RandMsg
                 if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
             }
             when (DType.Float64) {
-                var aMin = fields[4]:real;
-                var aMax = fields[5]:real;
+                var aMin = aMinStr:real;
+                var aMax = aMaxStr:real;
                 var t1 = Time.getCurrentTime();
                 var e = st.addEntry(rname, len, real);
                 if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
@@ -81,9 +81,8 @@ module RandMsg
 
     proc randomNormalMsg(reqMsg: string, st: borrowed SymTab): string throws {
       var pn = Reflection.getRoutineName();
-      var fields = reqMsg.split();
-      var cmd = fields[1];
-      var len = fields[2]:int;
+      var (cmd, lenStr) = reqMsg.splitMsgToTuple(2);
+      var len = lenStr:int;
       // Result + 2 scratch arrays
       overMemLimit(3*8*len);
       var rname = st.nextName();
