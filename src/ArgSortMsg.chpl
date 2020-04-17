@@ -506,7 +506,7 @@ module ArgSortMsg
 
           var ivname = st.nextName();
           var merged = makeDistArray(size, numDigits*uint(bitsPerDigit));
-          var curDigit = 1 + numDigits - totalDigits;
+          var curDigit = RSLSD_tupleLow + numDigits - totalDigits;
           for (name, nBits, neg) in zip(names, bitWidths, negs) {
               var g: borrowed GenSymEntry = st.lookup(name);
               proc mergeArray(type t) {
