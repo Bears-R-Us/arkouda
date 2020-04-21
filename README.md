@@ -80,7 +80,7 @@ brew install python3
 # install the version of the arkouda python package which came with the arkouda_server
 # if you plan on editing the arkouda python package use the -e flag
 # from the local arkouda repo/directory run...
-pip3 install -e ./arkouda
+pip3 install -e .
 #
 # these packages are nice but not a requirement
 pip3 install pandas
