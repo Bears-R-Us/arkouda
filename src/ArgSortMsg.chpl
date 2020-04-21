@@ -445,6 +445,7 @@ module ArgSortMsg
       /* var arrays: [0..#n] borrowed GenSymEntry; */
       var size: int;
       // Check that all arrays exist in the symbol table and have the same size
+      var hasStr = false;
       for (name, objtype, i) in zip(names, types, 1..) {
         // arrays[i] = st.lookup(name): borrowed GenSymEntry;
         var thisSize: int;
@@ -457,6 +458,7 @@ module ArgSortMsg
             var (myNames, _) = name.splitMsgToTuple('+', 2);
             var g = st.lookup(myNames);
             thisSize = g.size;
+            hasStr = true;
           }
           otherwise {return unrecognizedTypeError(pn, objtype);}
         }
@@ -467,6 +469,77 @@ module ArgSortMsg
           if (thisSize != size) { return incompatibleArgumentsError(pn, "Arrays must all be same size"); }
         }
         
+      }
+
+      // If there were no string arrays, merge the arrays into a single array and sort
+      // that. This eliminates having to merge index vectors, but has a memory overhead
+      // and increases the size of the comm we have to do since the KEY is larger). We
+      // merge the elements into a `uint(RSLSD_bitsPerDigit)` tuple. This wastes space
+      // (e.g. when merging 2 arrays that use 7 and 9 bits), but it allows us to use
+      // `getDigit`, which changes the bit patterns to correctly sort negatives. We
+      // consider tuple[1] to be the most significant digit.
+      //
+      // TODO support string? This further increases size (128-bits for each hash), so we
+      // need to be OK with memory overhead and comm from the KEY)
+      if !hasStr {
+        param bitsPerDigit = RSLSD_bitsPerDigit;
+        var bitWidths: [names.domain] int;
+        var negs: [names.domain] bool;
+        var totalDigits: int;
+
+        for (bitWidth, name, neg) in zip(bitWidths, names, negs) {
+          // TODO checkSorted and exclude array if already sorted?
+          var g: borrowed GenSymEntry = st.lookup(name);
+          select g.dtype {
+            when DType.Int64   { (bitWidth, neg) = getBitWidth(toSymEntry(g, int ).a); }
+            when DType.Float64 { (bitWidth, neg) = getBitWidth(toSymEntry(g, real).a); }
+            otherwise          { throw new owned ErrorWithMsg(dtype2str(g.dtype)); }
+          }
+          totalDigits += (bitWidth + (bitsPerDigit-1)) / bitsPerDigit;
+        }
+
+        // TODO support arbitrary size with array-of-arrays or segmented array
+        proc mergedArgsort(param numDigits) throws {
+
+          overMemLimit(((4 + 3) * size * (numDigits * bitsPerDigit / 8))
+                       + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+
+          var ivname = st.nextName();
+          var merged = makeDistArray(size, numDigits*uint(bitsPerDigit));
+          var curDigit = RSLSD_tupleLow + numDigits - totalDigits;
+          for (name, nBits, neg) in zip(names, bitWidths, negs) {
+              var g: borrowed GenSymEntry = st.lookup(name);
+              proc mergeArray(type t) {
+                var e = toSymEntry(g, t);
+                ref A = e.a;
+
+                const r = 0..#nBits by bitsPerDigit;
+                for rshift in r {
+                  const myDigit = (r.high - rshift) / bitsPerDigit;
+                  const last = myDigit == 0;
+                  forall (m, a) in zip(merged, A) {
+                    m[curDigit+myDigit] =  getDigit(a, rshift, last, neg):uint(bitsPerDigit);
+                  }
+                }
+                curDigit += r.size;
+              }
+              select g.dtype {
+                when DType.Int64   { mergeArray(int); }
+                when DType.Float64 { mergeArray(real); }
+                otherwise          { throw new owned ErrorWithMsg(dtype2str(g.dtype)); }
+              }
+          }
+
+          var iv = argsortDefault(merged);
+          st.addEntry(ivname, new shared SymEntry(iv));
+          return try! "created " + st.attrib(ivname);
+        }
+
+        // Since we're using tuples, we have to stamp out for each size we want to
+        // support. For now support 8, 16, and 32 byte sorting.
+        if totalDigits <=  4 { return mergedArgsort( 4); }
+        if totalDigits <=  8 { return mergedArgsort( 8); }
+        if totalDigits <= 16 { return mergedArgsort(16); }
       }
 
       // check and throw if over memory limit
