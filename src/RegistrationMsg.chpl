@@ -23,10 +23,8 @@ module RegistrationMsg
     */
     proc registerMsg(reqMsg: string, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
-        var userDefinedName = fields[3];
+        // split request into fields
+        var (cmd, name, userDefinedName) = reqMsg.splitMsgToTuple(3);
 
         // if verbose print action
         if v {try! writeln("%s %s %s".format(cmd,name,userDefinedName)); try! stdout.flush();}
@@ -51,9 +49,8 @@ module RegistrationMsg
     */
     proc attachMsg(reqMsg: string, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
+        // split request into fields
+        var (cmd, name) = reqMsg.splitMsgToTuple(2);
 
         // if verbose print action
         if v {try! writeln("%s %s".format(cmd,name)); try! stdout.flush();}
@@ -78,9 +75,8 @@ module RegistrationMsg
     */
     proc unregisterMsg(reqMsg: string, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
+        // split request into fields
+        var (cmd, name) = reqMsg.splitMsgToTuple(2);
 
         // if verbose print action
         if v {try! writeln("%s %s".format(cmd,name)); try! stdout.flush();}

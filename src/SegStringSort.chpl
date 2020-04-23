@@ -15,9 +15,18 @@ module SegStringSort {
   private config const SSS_MEMFACTOR = 5;
   private const MEMFACTOR = SSS_MEMFACTOR;
 
+  // This is a trick to determine what the default low bound of
+  // arrays and tuples is to keep this code backwards-compatible
+  // through 1.20.  It could be removed and simplified once Arkouda
+  // is no longer interested in supporting Chapel 1.20.
+  //
+  private const DefaultArr = [1,2];
+  private const defaultLow = DefaultArr.domain.low;
+
   record StringIntComparator {
-    proc keyPart((a0,_): (string, int), i: int) {
+    proc keyPart((a0,_): (string, int), in i: int) {
       var len = a0.numBytes;
+      if defaultLow == 0 then { len -= 1; i -= 1; }
       var section = if i <= len then 0:int(8) else -1:int(8);
       var part = if i <= len then a0.byte(i) else 0:uint(8);
       return (section, part);

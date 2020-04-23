@@ -434,16 +434,18 @@ module ArgSortMsg
     proc coargsortMsg(reqMsg: string, st: borrowed SymTab) throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string;
-      var fields = reqMsg.split();
-      var cmd = fields[1];
-      var n = fields[2]:int; // number of arrays to sort
+      var (cmd, nstr, rest) = reqMsg.splitMsgToTuple(3);
+      var n = nstr:int; // number of arrays to sort
+      var fields = rest.split();
       // Check that fields contains the stated number of arrays
-      if (fields.size != (2*n + 2)) { return try! incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(n, fields.size/2 - 1)); }
-      var names = fields[3..#n];
-      var types = fields[3+n..#n];
+      if (fields.size != 2*n) { return try! incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(n, fields.size/2 - 1)); }
+      const low = fields.domain.low;
+      var names = fields[low..#n];
+      var types = fields[low+n..#n];
       /* var arrays: [0..#n] borrowed GenSymEntry; */
       var size: int;
       // Check that all arrays exist in the symbol table and have the same size
+      var hasStr = false;
       for (name, objtype, i) in zip(names, types, 1..) {
         // arrays[i] = st.lookup(name): borrowed GenSymEntry;
         var thisSize: int;
@@ -453,9 +455,10 @@ module ArgSortMsg
             thisSize = g.size;
           }
           when "str" {
-            var myNames = name.split('+');
-            var g = st.lookup(myNames[1]);
+            var (myNames, _) = name.splitMsgToTuple('+', 2);
+            var g = st.lookup(myNames);
             thisSize = g.size;
+            hasStr = true;
           }
           otherwise {return unrecognizedTypeError(pn, objtype);}
         }
@@ -466,6 +469,77 @@ module ArgSortMsg
           if (thisSize != size) { return incompatibleArgumentsError(pn, "Arrays must all be same size"); }
         }
         
+      }
+
+      // If there were no string arrays, merge the arrays into a single array and sort
+      // that. This eliminates having to merge index vectors, but has a memory overhead
+      // and increases the size of the comm we have to do since the KEY is larger). We
+      // merge the elements into a `uint(RSLSD_bitsPerDigit)` tuple. This wastes space
+      // (e.g. when merging 2 arrays that use 7 and 9 bits), but it allows us to use
+      // `getDigit`, which changes the bit patterns to correctly sort negatives. We
+      // consider tuple[1] to be the most significant digit.
+      //
+      // TODO support string? This further increases size (128-bits for each hash), so we
+      // need to be OK with memory overhead and comm from the KEY)
+      if !hasStr {
+        param bitsPerDigit = RSLSD_bitsPerDigit;
+        var bitWidths: [names.domain] int;
+        var negs: [names.domain] bool;
+        var totalDigits: int;
+
+        for (bitWidth, name, neg) in zip(bitWidths, names, negs) {
+          // TODO checkSorted and exclude array if already sorted?
+          var g: borrowed GenSymEntry = st.lookup(name);
+          select g.dtype {
+            when DType.Int64   { (bitWidth, neg) = getBitWidth(toSymEntry(g, int ).a); }
+            when DType.Float64 { (bitWidth, neg) = getBitWidth(toSymEntry(g, real).a); }
+            otherwise          { throw new owned ErrorWithMsg(dtype2str(g.dtype)); }
+          }
+          totalDigits += (bitWidth + (bitsPerDigit-1)) / bitsPerDigit;
+        }
+
+        // TODO support arbitrary size with array-of-arrays or segmented array
+        proc mergedArgsort(param numDigits) throws {
+
+          overMemLimit(((4 + 3) * size * (numDigits * bitsPerDigit / 8))
+                       + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+
+          var ivname = st.nextName();
+          var merged = makeDistArray(size, numDigits*uint(bitsPerDigit));
+          var curDigit = RSLSD_tupleLow + numDigits - totalDigits;
+          for (name, nBits, neg) in zip(names, bitWidths, negs) {
+              var g: borrowed GenSymEntry = st.lookup(name);
+              proc mergeArray(type t) {
+                var e = toSymEntry(g, t);
+                ref A = e.a;
+
+                const r = 0..#nBits by bitsPerDigit;
+                for rshift in r {
+                  const myDigit = (r.high - rshift) / bitsPerDigit;
+                  const last = myDigit == 0;
+                  forall (m, a) in zip(merged, A) {
+                    m[curDigit+myDigit] =  getDigit(a, rshift, last, neg):uint(bitsPerDigit);
+                  }
+                }
+                curDigit += r.size;
+              }
+              select g.dtype {
+                when DType.Int64   { mergeArray(int); }
+                when DType.Float64 { mergeArray(real); }
+                otherwise          { throw new owned ErrorWithMsg(dtype2str(g.dtype)); }
+              }
+          }
+
+          var iv = argsortDefault(merged);
+          st.addEntry(ivname, new shared SymEntry(iv));
+          return try! "created " + st.attrib(ivname);
+        }
+
+        // Since we're using tuples, we have to stamp out for each size we want to
+        // support. For now support 8, 16, and 32 byte sorting.
+        if totalDigits <=  4 { return mergedArgsort( 4); }
+        if totalDigits <=  8 { return mergedArgsort( 8); }
+        if totalDigits <= 16 { return mergedArgsort(16); }
       }
 
       // check and throw if over memory limit
@@ -481,8 +555,8 @@ module ArgSortMsg
       for (i, j) in zip(names.domain.low..names.domain.high by -1,
                         types.domain.low..types.domain.high by -1) {
         if (types[j] == "str") {
-          var myNames = names[i].split('+');
-          var strings = new owned SegString(myNames[1], myNames[2], st);
+          var (myNames1,myNames2) = names[i].splitMsgToTuple('+', 2);
+          var strings = new owned SegString(myNames1, myNames2, st);
           iv.a = incrementalArgSort(strings, iv.a);
         } else {
           var g: borrowed GenSymEntry = st.lookup(names[i]);
@@ -507,10 +581,8 @@ module ArgSortMsg
     proc argsortMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var objtype = fields[2];
-        var name = fields[3];
+        // split request into fields
+        var (cmd, objtype, name) = reqMsg.splitMsgToTuple(3);
 
         // get next symbol name
         var ivname = st.nextName();
@@ -538,8 +610,8 @@ module ArgSortMsg
             }
           }
           when "str" {
-            var names = name.split('+');
-            var strings = new owned SegString(names[1], names[2], st);
+            var (names1, names2) = name.splitMsgToTuple('+', 2);
+            var strings = new owned SegString(names1, names2, st);
             // check and throw if over memory limit
             overMemLimit((8 * strings.size * 8)
                          + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
@@ -556,9 +628,8 @@ module ArgSortMsg
     proc localArgsortMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
+        // split request into fields
+        var (cmd, name) = reqMsg.splitMsgToTuple(2);
 
         // get next symbol name
         var ivname = st.nextName();

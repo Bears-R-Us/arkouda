@@ -24,9 +24,7 @@ module SortMsg
     proc sortMsg(reqMsg: string, st: borrowed SymTab): string throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string; // response message
-      var fields = reqMsg.split(); // split request into fields
-      var cmd = fields[1];
-      var name = fields[2];
+      var (cmd, name) = reqMsg.splitMsgToTuple(2);
 
       // get next symbol name
       var sortedName = st.nextName();
