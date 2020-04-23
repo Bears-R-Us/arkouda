@@ -11,7 +11,8 @@
 
 [Bill Reus' CLSAC 2019 talk](http://www.clsac.org/uploads/5/0/6/3/50633811/2019-reus-arkuda.pdf)
 
-(PAW-ATM) [talk](https://github.com/sourceryinstitute/PAW/raw/gh-pages/PAW-ATM19/presentations/PAW-ATM2019_talk11.pdf) and [abstract](https://github.com/sourceryinstitute/PAW/raw/gh-pages/PAW-ATM19/extendedAbstracts/PAW-ATM2019_abstract5.pdf)
+(PAW-ATM) [talk](https://github.com/sourceryinstitute/PAW/raw/gh-pages/PAW-ATM19/presentations/PAW-ATM2019_talk11.pdf) 
+and [abstract](https://github.com/sourceryinstitute/PAW/raw/gh-pages/PAW-ATM19/extendedAbstracts/PAW-ATM2019_abstract5.pdf)
 
 ## Abstract:
 Exploratory data analysis (EDA) is a prerequisite for all data
@@ -54,7 +55,9 @@ the role of a shell, a data scientist could explore, prepare, and call
 optimized HPC libraries on massive datasets, all within the same
 interactive session.
 
-## Requirements:
+##Installation
+
+###Requirements:
  * requires chapel 1.20.0
  * requires zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * requires hdf5 
@@ -62,14 +65,24 @@ interactive session.
  * requires numpy
  * requires Sphinx and sphinx-argparse to build python documentation
  
-### It should be simple to get things going on a mac
+###MacOS Installation 
+
+It is usually very simple to get things going on a mac:
+
 ```bash
 brew install zeromq
 
 brew install hdf5
 
 brew install chapel
-# you can also install python3 with brew
+
+# Although not required, is is highly recommended to install Anaconda to provide a 
+# Python 3 environment and manage Python dependencies:
+wget https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh
+sh Anaconda3-2020.02-Linux-x86_64.sh
+source ~/.bashrc
+
+# Otherwise, Python 3 can be installed with brew
 brew install python3
 # !!! the standard way of installing through pip3 installs an old version of arkouda
 # !!! the arkouda python client is available via pip
@@ -87,7 +100,9 @@ pip3 install pandas
 pip3 install jupyter
 ```
 
-### If you need to build Chapel from scratch here is what I use
+If it is preferred to build Chapel instead of using the brew install, the
+process is as follows:
+
 ```bash
 # on my mac build chapel in my home directory with these settings...
 export CHPL_HOME=~/chapel/chapel-1.20.0
@@ -99,11 +114,58 @@ export GASNET_QUIET=Y
 export CHPL_RT_OVERSUBSCRIBED=yes
 cd $CHPL_HOME
 make
+
+# Add the Chapel executable (chpl) to PATH either in ~/.bashrc (single user) 
+# or /etc/environment (all users):
+
+export PATH=$CHPL_HOME/bin/linux64-x86_64/:$PATH
+```
+
+###Linux Installation
+
+There is no Linux Chapel install, so the first two steps in the Linux Arkouda install are 
+to install the Chapel dependencies followed by downloading and building Chapel:
+
+```
+# Update Linux kernel and install Chapel dependencies
+sudo apt-get update
+sudo apt-get install gcc g++ m4 perl python python-dev python-setuptools bash make mawk git pkg-config
+
+# Download latest Chapel release, explode archive, and navigate to source root directory
+wget https://github.com/chapel-lang/chapel/releases/download/1.20.0/chapel-1.20.0.tar.gz
+tar xvf chapel-1.20.0.tar.gz
+cd chapel-1.20.0/
+export CHPL_HOME=$PWD
+
+# Set env variables and execute make
+source $CHPL_HOME/util/setchplenv.bash
+export CHPL_COMM=gasnet
+export CHPL_COMM_SUBSTRATE=smp
+export CHPL_TARGET_CPU=native
+export GASNET_QUIET=Y
+export CHPL_RT_OVERSUBSCRIBED=yes
+cd $CHPL_HOME
+make
+
+# Add the Chapel executable (chpl) to PATH either in ~/.bashrc (single user) 
+# or /etc/environment (all users):
+
+export PATH=$CHPL_HOME/bin/linux64-x86_64/:$PATH
+```
+
+As is the case with the MacOS install, it is highly recommended to install Anaconda to provide a Python environment 
+and manage Python dependencies:
+
+```
+ wget https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh
+ sh Anaconda3-2020.02-Linux-x86_64.sh
+ source ~/.bashrc
 ```
 
 ## Building Arkouda
 
-Download, clone, or fork the [arkouda repo](https://github.com/mhmerrill/arkouda). Further instructions assume that the current directory is the top-level directory of the repo.
+Download, clone, or fork the [arkouda repo](https://github.com/mhmerrill/arkouda). Further instructions assume that 
+the current directory is the top-level directory of the repo.
 
 If your environment requires non-system paths to find dependencies (e.g.,
 if using the ZMQ and HDF5 bundled with [Anaconda]), append each path to a new file `Makefile.paths` like so:
@@ -116,12 +178,23 @@ $(eval $(call add-path,/home/user/anaconda3/envs/arkouda))
 #                      ^ Note: No space after comma.
 ```
 
-The `chpl` compiler will be executed with `-I`, `-L` and an `-rpath` to each
-path.
+The `chpl` compiler will be executed with `-I`, `-L` and an `-rpath` to each path.
 
-Now, simply run `make` to build the `arkouda_server` executable.
+```
+# If zmq and hdf5 have not been installed previously, execute make install-deps
+make install-deps
 
-[Anaconda]: https://www.anaconda.com/distribution/
+# Run make to build the arkouda_server executable
+make
+```
+
+Now that the arkouda_server is built, install the Python library
+
+## Installing the Arkouda Python Library
+
+```
+ pip3 install -e arkouda
+```
 
 ## Building the Arkouda documentation
 Make sure you installed the Sphinx and sphinx-argparse packages (e.g. `pip3 install -U Sphinx sphinx-argparse`)
@@ -134,11 +207,13 @@ arkouda/doc/python # python frontend documentation
 arkouda/doc/server # chapel backend server documentation 
 ```
 
-To view the documentation for the Arkouda python client, point your browser to `file:///path/to/arkouda/doc/python/index.html`, substituting the appropriate path for your configuration.
+To view the documentation for the Arkouda python client, point your browser to `file:///path/to/arkouda/doc/python/index.html`, 
+substituting the appropriate path for your configuration.
 
 ## Running arkouda_server
 
-The command-line invocation depends on whether you built a single-locale version (with `CHPL_COMM=none`) or multi-locale version (with `CHPL_COMM` set).
+The command-line invocation depends on whether you built a single-locale version (with `CHPL_COMM=none`) or 
+multi-locale version (with `CHPL_COMM` set).
 
 Single-locale startup:
 
@@ -157,7 +232,8 @@ Also can run server with memory checking turned on using
 ./arkouda_server --memTrack=true
 ```
 
-By default, the server listens on port `5555` and prints verbose output. These options can be changed with command-line flags `--ServerPort=1234` and `--v=false`
+By default, the server listens on port `5555` and prints verbose output. These options can be changed with command-line 
+flags `--ServerPort=1234` and `--v=false`
 
 Memory checking is turned off by default and turned on by using `--memTrack=true`
 
@@ -175,7 +251,8 @@ To sanity check the arkouda server, you can run
 make check
 ```
 
-This will start the server, run a few computations, and shut the server down. If you already have a server running, you can manually run the checks with something like:
+This will start the server, run a few computations, and shut the server down. The check script can be executed against
+a running server by running the following Python command:
 
 ```bash
 python3 tests/check.py localhost 5555
