@@ -1,6 +1,5 @@
 import unittest
-import subprocess, os
-from logging import Logger, Formatter, StreamHandler
+import subprocess, os, signal
 from context import arkouda as ak
 from util.test.util import get_arkouda_server
 
@@ -27,8 +26,9 @@ class ArkoudaTest(unittest.TestCase):
         
         :return: None
         :raise: RuntimeError if there is an error in configuring or starting arkouda_server
-        '''            
+        '''
         if ArkoudaTest.full_stack_mode:
+            print('starting in full stack mode')
             try: 
                 arkouda_path = get_arkouda_server() 
                 ArkoudaTest.ak_server = subprocess.Popen([arkouda_path, 
@@ -39,9 +39,9 @@ class ArkoudaTest(unittest.TestCase):
                          'environment and/or arkouda_server installation', e)
         else:
             print('in client stack test mode')
+        
 
     def setUp(self):
-        
         '''
         Connects an Arkouda client for each test case
         
@@ -53,19 +53,6 @@ class ArkoudaTest(unittest.TestCase):
         except Exception as e:
             raise ConnectionError(e)
     
-    def test_arkouda_server(self):
-        '''
-        Simply confirms the arkouda_server process started up correctly and is running if in full
-        stack mode or confirms the ak.client is established if in client stack mode
-        
-        :return: None
-        :raise: AssertionError if the ArkoudaTest.ak_server object is None
-        '''
-        if ArkoudaTest.full_stack_mode:
-            self.assertTrue(ArkoudaTest.ak_server)
-        else:
-            self.assertTrue(ak.client)
-    
     def tearDown(self):
         '''
         Disconnects the client connection for each test case
@@ -76,7 +63,7 @@ class ArkoudaTest(unittest.TestCase):
             ak.client.disconnect()
         except Exception as e:
             raise ConnectionError(e)
-        
+
     @classmethod
     def tearDownClass(cls):
         '''
@@ -88,6 +75,6 @@ class ArkoudaTest(unittest.TestCase):
         '''
         if ArkoudaTest.full_stack_mode:
             try:
-                ArkoudaTest.ak_server.terminate()
+                os.kill(ArkoudaTest.ak_server.pid, signal.SIGTERM)
             except Exception as e:
                 raise RuntimeError(e)
