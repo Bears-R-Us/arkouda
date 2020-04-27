@@ -137,8 +137,10 @@ tar xvf chapel-1.20.0.tar.gz
 cd chapel-1.20.0/
 export CHPL_HOME=$PWD
 
-# Set env variables and execute make
+# Add chpl to PATH
 source $CHPL_HOME/util/setchplenv.bash
+
+# Set remaining env variables and execute make
 export CHPL_COMM=gasnet
 export CHPL_COMM_SUBSTRATE=smp
 export CHPL_TARGET_CPU=native
@@ -147,9 +149,7 @@ export CHPL_RT_OVERSUBSCRIBED=yes
 cd $CHPL_HOME
 make
 
-# Add the Chapel executable (chpl) to PATH either in ~/.bashrc (single user) 
-# or /etc/environment (all users):
-
+# Optionally add the Chapel executable (chpl) to the PATH for all users: /etc/environment
 export PATH=$CHPL_HOME/bin/linux64-x86_64/:$PATH
 ```
 
