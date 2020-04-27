@@ -55,9 +55,9 @@ the role of a shell, a data scientist could explore, prepare, and call
 optimized HPC libraries on massive datasets, all within the same
 interactive session.
 
-##Installation
+## Installation
 
-###Requirements:
+### Requirements:
  * requires chapel 1.20.0
  * requires zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * requires hdf5 
@@ -65,7 +65,7 @@ interactive session.
  * requires numpy
  * requires Sphinx and sphinx-argparse to build python documentation
  
-###MacOS Installation 
+### MacOS Installation 
 
 It is usually very simple to get things going on a mac:
 
@@ -121,7 +121,7 @@ make
 export PATH=$CHPL_HOME/bin/linux64-x86_64/:$PATH
 ```
 
-###Linux Installation
+### Linux Installation
 
 There is no Linux Chapel install, so the first two steps in the Linux Arkouda install are 
 to install the Chapel dependencies followed by downloading and building Chapel:
