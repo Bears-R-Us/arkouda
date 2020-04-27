@@ -4,9 +4,15 @@ module SymArrayDmap
     /*
      Available domain maps. Cyclic isn't regularly tested and may not work.
      */
-    enum Dmap {blockDist, cyclicDist};
+    enum Dmap {defaultRectangular, blockDist, cyclicDist};
 
-    config param MyDmap:Dmap = Dmap.blockDist;
+    private param defaultDmap = if CHPL_COMM == "none" then Dmap.defaultRectangular
+                                                       else Dmap.blockDist;
+    /*
+    How domains/arrays are distributed. Defaults to :enum:`Dmap.defaultRectangular` if
+    :param:`CHPL_COMM=none`, otherwise defaults to :enum:`Dmap.blockDist`.
+    */
+    config param MyDmap:Dmap = defaultDmap;
 
     public use CyclicDist;
     public use BlockDist;
@@ -20,6 +26,9 @@ module SymArrayDmap
     proc makeDistDom(size:int) {
         select MyDmap
         {
+            when Dmap.defaultRectangular {
+                return {0..#size};
+            }
             when Dmap.blockDist {
                 if size > 0 {
                     return {0..#size} dmapped Block(boundingBox={0..#size});
