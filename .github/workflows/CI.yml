@@ -4,7 +4,6 @@ on: [push, pull_request]
 
 env:
   ARKOUDA_QUICK_COMPILE: true
-  CHPL_RT_OVERSUBSCRIBED: yes # limit contention on limited CI hardware
 
 jobs:
   lint:
@@ -21,7 +20,7 @@ jobs:
       matrix:
         image: [chapel, chapel-gasnet]
     container:
-      image: chapel/${{matrix.image}}:1.20.0
+      image: chapel/${{matrix.image}}:1.22.0
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
@@ -50,7 +49,7 @@ jobs:
       matrix:
         image: [chapel, chapel-gasnet]
     container:
-      image: chapel/${{matrix.image}}:1.20.0
+      image: chapel/${{matrix.image}}:1.22.0
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies

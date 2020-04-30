@@ -102,7 +102,13 @@ endif
 ifndef ARKOUDA_SKIP_CHECK_DEPS
 CHECK_DEPS = check-zmq check-hdf5
 endif
+
+CHPL_MINOR := $(shell chpl --version | sed -n "s/chpl version 1\.\([0-9]*\).*/\1/p")
+CHPL_TOO_OLD := $(shell test $(CHPL_MINOR) -lt 21 && echo yes)
 check-deps: $(CHECK_DEPS)
+ifeq ($(CHPL_TOO_OLD),yes)
+	$(error Chapel 1.22.0 or newer is required)
+endif
 
 ZMQ_CHECK = $(DEP_INSTALL_DIR)/checkZMQ.chpl
 check-zmq: $(ZMQ_CHECK)
