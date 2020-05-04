@@ -1,4 +1,4 @@
-module UnitTestIn1d
+prototype module UnitTestIn1d
 {
     use In1d;
     

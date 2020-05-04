@@ -1,4 +1,4 @@
-module UnitTestArgSort
+prototype module UnitTestArgSort
 {
     config const NVALS = 2**13;
     config const LEN = 2**20;

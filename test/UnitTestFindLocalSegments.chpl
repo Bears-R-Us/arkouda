@@ -1,4 +1,4 @@
-module UnitTestFindSegments
+prototype module UnitTestFindSegments
 {
     config const NVALS = 2**13;
     config const LEN = 2**20;

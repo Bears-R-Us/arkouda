@@ -1,4 +1,4 @@
-module efuncTest
+prototype module efuncTest
 {
     config const NVALS = 2**13;
     config const LEN = 2**20;

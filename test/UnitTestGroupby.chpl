@@ -1,4 +1,4 @@
-module UnitTestGroupby
+prototype module UnitTestGroupby
 {
   use ArgSortMsg;
   use FindSegmentsMsg;

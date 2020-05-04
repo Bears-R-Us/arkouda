@@ -1,4 +1,4 @@
-module UnitTestUnique
+prototype module UnitTestUnique
 {
     use Unique;
     use MultiTypeSymbolTable;

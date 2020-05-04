@@ -1,4 +1,4 @@
-module UnitTestSort
+prototype module UnitTestSort
 {
   use CommDiagnostics;
   use IO;
