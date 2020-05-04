@@ -1,7 +1,7 @@
 import unittest
 import subprocess, os, signal
 from context import arkouda as ak
-from util.test.util import get_arkouda_server
+from util.test.util import start_arkouda_server, stop_arkouda_server, get_arkouda_numlocales
 
 '''
 ArkoudaTest defines the base Arkouda test logic for starting up the arkouda_server at the 
@@ -21,8 +21,7 @@ class ArkoudaTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         '''
-        Configures and starts the arkouda_server process via the util.get_arkouda_server (host) 
-        and ARKOUDA_SERVER_PORT env variable, defaulting to 5566
+        If in full stack mode, Configures and starts the arkouda_server process
         
         :return: None
         :raise: RuntimeError if there is an error in configuring or starting arkouda_server
@@ -30,9 +29,8 @@ class ArkoudaTest(unittest.TestCase):
         if ArkoudaTest.full_stack_mode:
             print('starting in full stack mode')
             try: 
-                arkouda_path = get_arkouda_server() 
-                ArkoudaTest.ak_server = subprocess.Popen([arkouda_path, 
-                                              '--ServerPort={}'.format(ArkoudaTest.port), '--quiet'])
+                nl = get_arkouda_numlocales()
+                (ArkoudaTest.server, ArkoudaTest.port, ArkoudaTest.ak_server) = start_arkouda_server(nl)
                 print('Started arkouda_server in full stack test mode')
             except Exception as e:
                 raise RuntimeError('in configuring or starting the arkouda_server: {}, check ' +
@@ -71,10 +69,6 @@ class ArkoudaTest(unittest.TestCase):
         in full stack mode, noop if in client stack mode.
 
         :return: None
-        :raise: RuntimeError if there is an error in shutting down arkouda_server
         '''
         if ArkoudaTest.full_stack_mode:
-            try:
-                os.kill(ArkoudaTest.ak_server.pid, signal.SIGTERM)
-            except Exception as e:
-                raise RuntimeError(e)
+            stop_arkouda_server()
