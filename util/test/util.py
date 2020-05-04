@@ -26,6 +26,8 @@ from collections import namedtuple
 
 from context import arkouda
 
+util_dir = os.path.dirname(os.path.realpath(__file__))
+
 ##################
 # Misc utilities #
 ##################
@@ -38,7 +40,7 @@ def get_arkouda_home():
     arkouda_home = os.getenv('ARKOUDA_HOME')
     if not arkouda_home:
         dirname = os.path.dirname
-        arkouda_home = dirname(dirname(dirname(os.path.realpath(__file__))))
+        arkouda_home = dirname(dirname(util_dir))
     return arkouda_home
 
 def get_arkouda_server():
@@ -130,8 +132,9 @@ def kill_server(server_process):
 
 def start_arkouda_server(numlocales, verbose=False, log=False):
     """
-    Start the Arkouda sever and wait for it to start running. Connection info
+    Start the Arkouda server and wait for it to start running. Connection info
     is written to `get_arkouda_server_info_file()`.
+    Returns ServerInfo(host, port, process)
     """
     connection_file = get_arkouda_server_info_file()
     with contextlib.suppress(FileNotFoundError):
@@ -148,28 +151,20 @@ def start_arkouda_server(numlocales, verbose=False, log=False):
     atexit.register(kill_server, process)
 
     (host, port) = read_server_and_port_from_file(connection_file)
-    set_server_info(ServerInfo(host, port, process))
-
-def _stop_arkouda_server(host, port):
-    arkouda.connect(host, port)
-    arkouda.shutdown()
+    server_info = ServerInfo(host, port, process)
+    set_server_info(server_info)
+    return server_info
 
 def stop_arkouda_server():
     """
     Shutdown the Arkouda server.
     """
-    logging.info('Stopping the arkouda server')
-    import multiprocessing
-    (host, port, server_process) = get_server_info()
-    p = multiprocessing.Process(target=_stop_arkouda_server, args=(host, port))
-    p.start()
-    p.join(20)
-    server_process.wait(10);
-    if p.is_alive():
-        logging.info('Could not stop the server cleanly, trying to kill')
-        p.terminate()
+    _, _, server_process = get_server_info()
+    try:
+        run_client(os.path.join(util_dir, 'shutdown.py'), timeout=60)
+        server_process.wait(5)
+    except subprocess.TimeoutExpired as e:
         server_process.kill()
-        p.join()
 
 ####################
 # Client utilities #
