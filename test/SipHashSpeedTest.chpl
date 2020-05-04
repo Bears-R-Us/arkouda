@@ -1,7 +1,7 @@
 use SipHash;
 use RandArray;
 use Time;
-use BlockDist;
+use SymArrayDmap;
 
 config const NINPUTS = 10_000;
 config const INPUTSIZE = 8;
@@ -10,18 +10,14 @@ config const COMMDEBUG = false;
 
 proc testFixedLength(n:int, size:int) {
   var t = new Timer();
-  const D1 = {0..#(n*size)}; 
-  const DD1: domain(1) dmapped Block(boundingBox=D1) = D1;
-  var buf: [DD1] uint(8);
+  var buf = makeDistArray(n*size, uint(8));
   forall (b, i) in zip(buf, 0..) {
     b = i: uint(8);
   }
-  const D2 = {0..#n};
-  const DD2: domain(1) dmapped Block(boundingBox=D2) = D2;
-  var hashes: [DD2] 2*uint(64);
+  var hashes = makeDistArray(n, 2*uint(64));
   if COMMDEBUG { startCommDiagnostics(); }
   t.start();
-  forall (h, i) in zip(hashes, DD2) {
+  forall (h, i) in zip(hashes, hashes.domain) {
     h = sipHash128(buf, i*size..#size);
   }
   t.stop();

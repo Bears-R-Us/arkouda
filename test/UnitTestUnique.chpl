@@ -8,7 +8,7 @@ prototype module UnitTestUnique
     use Random;
     use Time only;
 
-    use BlockDist;
+    use SymArrayDmap;
     use AryUtil;
 
 
@@ -106,11 +106,11 @@ prototype module UnitTestUnique
         writeln("nVals = ",nVals);
         try! stdout.flush();
 
-        const aDom = newBlockDom({0..#n});
+        const aDom = makeDistDom(n);
 
         var a: [aDom] int;
 
-        const valsDom = newBlockDom({0..#nVals});
+        const valsDom = makeDistDom(nVals);
         var vals: [valsDom] int;
         
         // fill a with random ints from a range
