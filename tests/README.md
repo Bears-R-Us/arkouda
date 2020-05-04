@@ -22,7 +22,6 @@ The pytest.ini file configures the arkouda Python test harness, specifically the
 ```
 [pytest]
 testpaths = 
-    tests/base_test.py
     tests/client_test.py
     tests/compare_test.py
     tests/dtypes_tests.py
@@ -41,7 +40,7 @@ env =
     ARKOUDA_VERBOSE=False
 ```
 * testpaths: shows the paths to all test files. For the time-being, the arkouda unit tests to be executed are 
-specified on a per-file basis, but pytest can also support directory-level configuration. 
+specified on a per-file basis, but pytest can also support directory-level configuration.
 * norecursedirs: indicates which directories contain files that should be ignored, including tests/deprecated
 * python\_functions: the naming pattern for all test functions. Ih the case of arkouda, all python method (functions)
   with names starting with "test" are executed by pytest
@@ -57,10 +56,11 @@ specified on a per-file basis, but pytest can also support directory-level confi
 
 # Running the arkouda Python test harness
 
-To execute all tests in the arkouda test harness via the command line, execute the following command:
+To execute all tests in the arkouda test harness via the command line, execute the following command. Note the specification of
+the python3 binary, since Arkouda requires Python3.6+.
 
 ```
-pytest -c pytest.ini 
+python3 -m pytest -c pytest.ini 
 ```
 
 To execute all tests in the arkouda test harness via make, execute the following command:
@@ -77,3 +77,11 @@ pytest tests/client_test.py
 
 The arkouda test classes can also be executed within an IDE such as [PyCharm](https://www.jetbrains.com/pycharm/) or 
 [Eclipse](https://www.eclipse.org/ide/), either in run or debug mode.
+
+# Running all arkouda Python and Chapel Tests
+
+To run all Python and Chapel tests, run make test:
+
+```
+make test
+```

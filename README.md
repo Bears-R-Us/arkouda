@@ -64,7 +64,7 @@ interactive session.
  * requires numpy
  * requires Sphinx and sphinx-argparse to build python documentation
  
-### MacOS Installation 
+### MacOS Environment Installation
 
 It is usually very simple to get things going on a mac:
 
@@ -83,7 +83,6 @@ source ~/.bashrc
 
 # Otherwise, Python 3 can be installed with brew
 brew install python3
-```
 # !!! the standard way of installing through pip3 installs an old version of arkouda
 # !!! the arkouda python client is available via pip
 # !!! pip will automatically install python dependencies (zmq and numpy)
@@ -93,14 +92,16 @@ brew install python3
 # install the version of the arkouda python package which came with the arkouda_server
 # if you plan on editing the arkouda python package use the -e flag
 # from the local arkouda repo/directory run...
-pip3 install -e ./arkouda
+pip3 install -e .
 #
 # these packages are nice but not a requirement
 pip3 install pandas
 pip3 install jupyter
 ```
 
-### If you need to build Chapel from scratch here is what I use
+If it is preferred to build Chapel instead of using the brew install, the
+process is as follows:
+
 ```bash
 # on my mac build chapel in my home directory with these settings...
 export CHPL_HOME=~/chapel/chapel-1.20.0
@@ -112,22 +113,58 @@ export GASNET_QUIET=Y
 export CHPL_RT_OVERSUBSCRIBED=yes
 cd $CHPL_HOME
 make
-```
-# If you've built Chapel instead using brew, add the Chapel executable (chpl) to PATH:
+
+# Add the Chapel executable (chpl) to PATH either in ~/.bashrc (single user) 
+# or /etc/environment (all users):
+
 export PATH=$CHPL_HOME/bin/linux64-x86_64/:$PATH
+```
+
+### Linux Environment Installation
+
+There is no Linux Chapel install, so the first two steps in the Linux Arkouda install are 
+to install the Chapel dependencies followed by downloading and building Chapel:
+
+```
+# Update Linux kernel and install Chapel dependencies
+sudo apt-get update
+sudo apt-get install gcc g++ m4 perl python python-dev python-setuptools bash make mawk git pkg-config
+
+# Download latest Chapel release, explode archive, and navigate to source root directory
+wget https://github.com/chapel-lang/chapel/releases/download/1.20.0/chapel-1.20.0.tar.gz
+tar xvf chapel-1.20.0.tar.gz
+cd chapel-1.20.0/
+export CHPL_HOME=$PWD
+
+# Add chpl to PATH
+source $CHPL_HOME/util/setchplenv.bash
+
+# Set remaining env variables and execute make
+export CHPL_COMM=gasnet
+export CHPL_COMM_SUBSTRATE=smp
+export CHPL_TARGET_CPU=native
+export GASNET_QUIET=Y
+export CHPL_RT_OVERSUBSCRIBED=yes
+cd $CHPL_HOME
+make
+
+# Optionally add the Chapel executable (chpl) to the PATH for all users: /etc/environment
+export PATH=$CHPL_HOME/bin/linux64-x86_64/:$PATH
+```
+
+As is the case with the MacOS install, it is highly recommended to install Anaconda to provide a Python environment 
+and manage Python dependencies:
+
+```
+ wget https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh
+ sh Anaconda3-2020.02-Linux-x86_64.sh
+ source ~/.bashrc
 ```
 
 ## Building Arkouda
 
-Download, clone, or fork the [arkouda repo](https://github.com/mhmerrill/arkouda). Further instructions assume that the current directory is the top-level directory of the repo.
-
-If zeromq and hdf5 have not been installed previously, execute make install-deps _first_ and _then_
-run make:
-
-```
-make install-deps
-make
-```
+Download, clone, or fork the [arkouda repo](https://github.com/mhmerrill/arkouda). Further instructions assume that 
+the current directory is the top-level directory of the repo.
 
 If your environment requires non-system paths to find dependencies (e.g.,
 if using the ZMQ and HDF5 bundled with [Anaconda]), append each path to a new file `Makefile.paths` like so:
@@ -140,12 +177,23 @@ $(eval $(call add-path,/home/user/anaconda3/envs/arkouda))
 #                      ^ Note: No space after comma.
 ```
 
-The `chpl` compiler will be executed with `-I`, `-L` and an `-rpath` to each
-path.
+The `chpl` compiler will be executed with `-I`, `-L` and an `-rpath` to each path.
 
-Now, simply run `make` to build the `arkouda_server` executable.
+```
+# If zmq and hdf5 have not been installed previously, execute make install-deps
+make install-deps
 
-[Anaconda]: https://www.anaconda.com/distribution/
+# Run make to build the arkouda_server executable
+make
+```
+
+Now that the arkouda_server is built, install the Python library
+
+## Installing the Arkouda Python Library
+
+```
+ pip3 install -e .
+```
 
 ## Building the Arkouda documentation
 
@@ -174,7 +222,7 @@ Single-locale startup:
 Multi-locale startup (user selects the number of locales):
 
 ```bash
-./arkouda_server -nl 1
+./arkouda_server -nl 2
 ```
 Also can run server with memory checking turned on using
 

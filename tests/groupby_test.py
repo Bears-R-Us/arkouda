@@ -61,7 +61,7 @@ def run_test(levels, verbose=False):
     d = make_arrays()
     df = pd.DataFrame(d)
     akdf = {k:ak.array(v) for k, v in d.items()}
-    print(akdf)
+
     if levels == 1:
         akg = ak.GroupBy(akdf['keys'])
         keyname = 'keys'

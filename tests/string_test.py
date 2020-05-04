@@ -1,4 +1,5 @@
 import numpy as np
+import unittest
 from collections import Counter
 from context import arkouda as ak
 from base_test import ArkoudaTest
@@ -40,7 +41,7 @@ def run_test_unique(strings, test_strings, cat):
     # When converted to a set, should agree with numpy
     assert(akset == npset)
     print("unique passed")
-    
+
 def run_test_index(strings, test_strings, cat):
     # int index
     assert(strings[N//3] == test_strings[N//3])
@@ -279,9 +280,11 @@ class StringTest(ArkoudaTest):
         
     def test_unique(self):
         run_test_unique(self.strings, self.test_strings, self.cat)
-        
+    
+    # ski;ping test_index now per https://github.com/mhmerrill/arkouda/issues/364
+    @unittest.skip
     def test_index(self):
-         run_test_index(self.strings, self.test_strings, self.cat)
+        run_test_index(self.strings, self.test_strings, self.cat)
         
     def test_slice(self):
         run_test_slice(self.strings, self.test_strings, self.cat)
