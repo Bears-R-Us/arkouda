@@ -150,21 +150,40 @@ def start_arkouda_server(numlocales, verbose=False, log=False):
     (host, port) = read_server_and_port_from_file(connection_file)
     set_server_info(ServerInfo(host, port, process))
 
+def _stop_arkouda_server(host, port):
+    arkouda.connect(host, port)
+    arkouda.shutdown()
+
 def stop_arkouda_server():
     """
     Shutdown the Arkouda server.
     """
-    server_info = get_server_info()
     logging.info('Stopping the arkouda server')
-    arkouda.connect(server_info.host, server_info.port)
-    arkouda.shutdown()
-    server_info.process.wait(20)
+    import multiprocessing
+    (host, port, server_process) = get_server_info()
+    p = multiprocessing.Process(target=_stop_arkouda_server, args=(host, port))
+    p.start()
+    p.join(20)
+    server_process.wait(10);
+    if p.is_alive():
+        logging.info('Could not stop the server cleanly, trying to kill')
+        p.terminate()
+        server_process.kill()
+        p.join()
 
 ####################
 # Client utilities #
 ####################
 
-def run_client(client, client_args=None):
+def get_client_timeout():
+    """
+    Get the timeout for clients. $ARKOUDA_CLIENT_TIMEOUT if set, otherwise None
+    """
+    if os.getenv('ARKOUDA_CLIENT_TIMEOUT'):
+        return int(os.getenv('ARKOUDA_CLIENT_TIMEOUT'))
+    return None
+
+def run_client(client, client_args=None, timeout=get_client_timeout()):
     """
     Run a client program using an already started server and return the output.
     This is a thin wrapper over subprocess.check_output.
@@ -174,10 +193,10 @@ def run_client(client, client_args=None):
     if client_args:
         cmd += client_args
     logging.info('Running client "{}"'.format(cmd))
-    out = subprocess.check_output(cmd, encoding='utf-8')
+    out = subprocess.check_output(cmd, encoding='utf-8', timeout=timeout)
     return out
 
-def run_client_live(client, client_args=None):
+def run_client_live(client, client_args=None, timeout=get_client_timeout()):
     """
     Run a client program using an already started server. Output is sent to the
     terminal, and the returncode is returned. This is a subprocess.check_call
@@ -189,7 +208,9 @@ def run_client_live(client, client_args=None):
         cmd += client_args
     logging.info('Running client "{}"'.format(cmd))
     try:
-        subprocess.check_call(cmd, encoding='utf-8')
+        subprocess.check_call(cmd, encoding='utf-8', timeout=timeout)
         return 0
+    except subprocess.TimeoutExpired as e:
+        return 1
     except subprocess.CalledProcessError as e:
         return e.returncode

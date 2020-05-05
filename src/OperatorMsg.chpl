@@ -27,11 +27,8 @@ module OperatorMsg
     proc binopvvMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var op = fields[2];
-        var aname = fields[3];
-        var bname = fields[4];
+        // split request into fields
+        var (cmd, op, aname, bname) = reqMsg.splitMsgToTuple(4);
         var rname = st.nextName();
         if v {try! writeln("%s %s %s %s : %s".format(cmd,op,aname,bname,rname));try! stdout.flush();}
 
@@ -440,12 +437,9 @@ module OperatorMsg
     proc binopvsMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string = ""; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var op = fields[2];
-        var aname = fields[3];
-        var dtype = str2dtype(fields[4]);
-        var value = fields[5];
+        // split request into fields
+        var (cmd, op, aname, dtypeStr, value) = reqMsg.splitMsgToTuple(5);
+        var dtype = str2dtype(dtypeStr);
         var rname = st.nextName();
         if v {try! writeln("%s %s %s %s %s : %s".format(cmd,op,aname,dtype2str(dtype),value,rname));try! stdout.flush();}
 
@@ -830,12 +824,9 @@ module OperatorMsg
     proc binopsvMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string = ""; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var op = fields[2];
-        var dtype = str2dtype(fields[3]);
-        var value = fields[4];
-        var aname = fields[5];
+        // split request into fields
+        var (cmd, op, dtypeStr, value, aname) = reqMsg.splitMsgToTuple(5);
+        var dtype = str2dtype(dtypeStr);
         var rname = st.nextName();
         if v {try! writeln("%s %s %s %s %s : %s".format(cmd,op,dtype2str(dtype),value,aname,rname));try! stdout.flush();}
 
@@ -1220,11 +1211,8 @@ module OperatorMsg
     proc opeqvvMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var op = fields[2];
-        var aname = fields[3];
-        var bname = fields[4];
+        // split request into fields
+        var (cmd, op, aname, bname) = reqMsg.splitMsgToTuple(4);
         if v {try! writeln("%s %s %s %s".format(cmd,op,aname,bname));try! stdout.flush();}
         
         var left: borrowed GenSymEntry = st.lookup(aname);
@@ -1356,12 +1344,9 @@ module OperatorMsg
     proc opeqvsMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var op = fields[2];
-        var aname = fields[3];
-        var dtype = str2dtype(fields[4]);
-        var value = fields[5];
+        // split request into fields
+        var (cmd, op, aname, dtypeStr, value) = reqMsg.splitMsgToTuple(5);
+        var dtype = str2dtype(dtypeStr);
         if v {try! writeln("%s %s %s %s %s".format(cmd,op,aname,dtype2str(dtype),value));try! stdout.flush();}
 
         var left: borrowed GenSymEntry = st.lookup(aname);

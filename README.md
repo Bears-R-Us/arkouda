@@ -11,7 +11,8 @@
 
 [Bill Reus' CLSAC 2019 talk](http://www.clsac.org/uploads/5/0/6/3/50633811/2019-reus-arkuda.pdf)
 
-(PAW-ATM) [talk](https://github.com/sourceryinstitute/PAW/raw/gh-pages/PAW-ATM19/presentations/PAW-ATM2019_talk11.pdf) and [abstract](https://github.com/sourceryinstitute/PAW/raw/gh-pages/PAW-ATM19/extendedAbstracts/PAW-ATM2019_abstract5.pdf)
+(PAW-ATM) [talk](https://github.com/sourceryinstitute/PAW/raw/gh-pages/PAW-ATM19/presentations/PAW-ATM2019_talk11.pdf) 
+and [abstract](https://github.com/sourceryinstitute/PAW/raw/gh-pages/PAW-ATM19/extendedAbstracts/PAW-ATM2019_abstract5.pdf)
 
 ## Abstract:
 Exploratory data analysis (EDA) is a prerequisite for all data
@@ -63,7 +64,7 @@ interactive session.
  * requires python 3.6 or greater
  * requires numpy
  * requires Sphinx and sphinx-argparse to build python documentation
- 
+
 ### MacOS Environment Installation
 
 It is usually very simple to get things going on a mac:
@@ -99,8 +100,7 @@ pip3 install pandas
 pip3 install jupyter
 ```
 
-If it is preferred to build Chapel instead of using the brew install, the
-process is as follows:
+If it is preferred to build Chapel instead of using the brew install, the process is as follows:
 
 ```bash
 # on my mac build chapel in my home directory with these settings...
@@ -207,11 +207,13 @@ arkouda/doc/python # python frontend documentation
 arkouda/doc/server # chapel backend server documentation 
 ```
 
-To view the documentation for the Arkouda python client, point your browser to `file:///path/to/arkouda/doc/python/index.html`, substituting the appropriate path for your configuration.
+To view the documentation for the Arkouda python client, point your browser to `file:///path/to/arkouda/doc/python/index.html`, 
+substituting the appropriate path for your configuration.
 
 ## Running arkouda_server
 
-The command-line invocation depends on whether you built a single-locale version (with `CHPL_COMM=none`) or multi-locale version (with `CHPL_COMM` set).
+The command-line invocation depends on whether you built a single-locale version (with `CHPL_COMM=none`) or 
+multi-locale version (with `CHPL_COMM` set).
 
 Single-locale startup:
 
@@ -230,7 +232,8 @@ Also can run server with memory checking turned on using
 ./arkouda_server --memTrack=true
 ```
 
-By default, the server listens on port `5555` and prints verbose output. These options can be changed with command-line flags `--ServerPort=1234` and `--v=false`
+By default, the server listens on port `5555` and prints verbose output. These options can be changed with command-line 
+flags `--ServerPort=1234` and `--v=false`
 
 Memory checking is turned off by default and turned on by using `--memTrack=true`
 
@@ -248,7 +251,8 @@ To sanity check the arkouda server, you can run
 make check
 ```
 
-This will start the server, run a few computations, and shut the server down. If you already have a server running, you can manually run the checks with something like:
+This will start the server, run a few computations, and shut the server down. In addition, the check script can be executed 
+against a running server by running the following Python command:
 
 ```bash
 python3 tests/check.py localhost 5555

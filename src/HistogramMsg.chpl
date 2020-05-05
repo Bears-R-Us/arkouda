@@ -17,10 +17,9 @@ module HistogramMsg
     proc histogramMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
-        var bins = try! fields[3]:int;
+        // split request into fields
+        var (cmd, name, binsStr) = reqMsg.splitMsgToTuple(3);
+        var bins = try! binsStr:int;
         
         // get next symbol name
         var rname = st.nextName();

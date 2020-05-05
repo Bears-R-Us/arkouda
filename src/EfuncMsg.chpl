@@ -32,10 +32,8 @@ module EfuncMsg
     proc efuncMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var efunc = fields[2];
-        var name = fields[3];
+        // split request into fields
+        var (cmd, efunc, name) = reqMsg.splitMsgToTuple(3);
         var rname = st.nextName();
         if v {try! writeln("%s %s %s : %s".format(cmd,efunc,name,rname));try! stdout.flush();}
 
@@ -151,12 +149,8 @@ module EfuncMsg
     proc efunc3vvMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var efunc = fields[2];
-        var name1 = fields[3];
-        var name2 = fields[4];
-        var name3 = fields[5];
+        // split request into fields
+        var (cmd, efunc, name1, name2, name3) = reqMsg.splitMsgToTuple(5);
         var rname = st.nextName();
         if v {try! writeln("%s %s %s %s %s %s : %s".format(cmd,efunc,name1,name2,name3,rname));try! stdout.flush();}
 
@@ -223,13 +217,9 @@ module EfuncMsg
     proc efunc3vsMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var efunc = fields[2];
-        var name1 = fields[3];
-        var name2 = fields[4];
-        var dtype = str2dtype(fields[5]);
-        var value = fields[6];
+        var (cmd, efunc, name1, name2, dtypestr, value)
+              = reqMsg.splitMsgToTuple(6); // split request into fields
+        var dtype = str2dtype(dtypestr);
         var rname = st.nextName();
         if v {try! writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,name2,dtype,value,rname));try! stdout.flush();}
 
@@ -295,13 +285,9 @@ module EfuncMsg
     proc efunc3svMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var efunc = fields[2];
-        var name1 = fields[3];
-        var dtype = str2dtype(fields[4]);
-        var value = fields[5];
-        var name2 = fields[6];
+        var (cmd, efunc, name1, dtypestr, value, name2)
+              = reqMsg.splitMsgToTuple(6); // split request into fields
+        var dtype = str2dtype(dtypestr);
         var rname = st.nextName();
         if v {try! writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,dtype,value,name2,rname));try! stdout.flush();}
 
@@ -367,14 +353,10 @@ module EfuncMsg
     proc efunc3ssMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var efunc = fields[2];
-        var name1 = fields[3];
-        var dtype1 = str2dtype(fields[4]);
-        var value1 = fields[5];
-        var dtype2 = str2dtype(fields[6]);
-        var value2 = fields[7];
+        var (cmd, efunc, name1, dtype1str, value1, dtype2str, value2)
+              = reqMsg.splitMsgToTuple(7); // split request into fields
+        var dtype1 = str2dtype(dtype1str);
+        var dtype2 = str2dtype(dtype2str);
         var rname = st.nextName();
         if v {try! writeln("%s %s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,dtype1,value1,dtype2,value2,rname));try! stdout.flush();}
 

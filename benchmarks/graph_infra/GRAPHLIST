@@ -1,2 +1,4 @@
-# suite: All
+# suite: Execution Performance
 arkouda.graph
+# suite: Build Time
+arkouda-comp.graph

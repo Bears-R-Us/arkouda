@@ -18,10 +18,12 @@ ifeq ("$(shell chpl --version | sed -n "s/chpl version 1\.\([0-9]*\).*/\1/p")", 
 endif
 
 CHPL_DEBUG_FLAGS += --print-passes
-ifndef ARKOUDA_DEVELOPER
-CHPL_FLAGS += --fast
-else
+ifdef ARKOUDA_DEVELOPER
 CHPL_FLAGS += --ccflags="-O1"
+else ifdef ARKOUDA_QUICK_COMPILE
+CHPL_FLAGS += --no-checks --no-loop-invariant-code-motion --ccflags="-O0"
+else
+CHPL_FLAGS += --fast
 endif
 # need this to avoid a slew of warnings from HDF5 on some platforms
 # --ccflags="-Wno-incompatible-pointer-types"
@@ -97,7 +99,10 @@ CHPL_FLAGS += $(patsubst %,-L%,$(strip $(subst :, ,$(LD_LIBRARY_PATH))))
 endif
 
 .PHONY: check-deps
-check-deps: check-zmq check-hdf5
+ifndef ARKOUDA_SKIP_CHECK_DEPS
+CHECK_DEPS = check-zmq check-hdf5
+endif
+check-deps: $(CHECK_DEPS)
 
 ZMQ_CHECK = $(DEP_INSTALL_DIR)/checkZMQ.chpl
 check-zmq: $(ZMQ_CHECK)
@@ -167,11 +172,15 @@ else
 	CHPL_COMPAT_FLAGS := -sversion120=false
 endif
 
+ifdef ARKOUDA_PRINT_PASSES_FILE
+	PRINT_PASSES_FLAGS := --print-passes-file $(ARKOUDA_PRINT_PASSES_FILE)
+endif
+
 ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
 $(ARKOUDA_MAIN_MODULE): check-deps $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
-	$(CHPL) $(CHPL_DEBUG_FLAGS) $(CHPL_COMPAT_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) -o $@
+	$(CHPL) $(CHPL_DEBUG_FLAGS) $(CHPL_COMPAT_FLAGS) $(PRINT_PASSES_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) -o $@
 
 CLEAN_TARGETS += arkouda-clean
 .PHONY: arkouda-clean
