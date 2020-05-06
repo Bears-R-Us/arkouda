@@ -2,7 +2,8 @@
 
 import time, argparse
 import numpy as np
-import arkouda as ak
+from context import arkouda as ak 
+from base_test import ArkoudaTest
 
 def check_int(N):
     z = ak.zeros(N, dtype=ak.int64)
@@ -115,6 +116,20 @@ def check_coargsort(N_per_locale):
     check_float(N)
     check_int_float(N)
     check_large(N)
+
+class CoargsortTest(ArkoudaTest):
+
+    def test_int(self):
+        check_int(10**3)
+
+    def test_float(self):
+        check_float(10**3)
+
+    def test_int_float(self):
+        check_int_float(10**3)
+
+    def test_large(self):
+        check_large(10**3)
 
 def create_parser():
     parser = argparse.ArgumentParser(description="Check coargsort correctness.")

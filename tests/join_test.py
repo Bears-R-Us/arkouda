@@ -1,88 +1,65 @@
-#!/usr/bin/env python3                                                         
-
 import importlib
 import numpy as np
 import math
 import gc
 import sys
 
-import arkouda as ak
+from base_test import ArkoudaTest
+from context import arkouda as ak
 
-print(">>> Sanity checks on the arkouda_server")
+'''
+Encapsulates a variety of arkouda join_on_eq_with_dt test cases.
+'''
+class JoinTest(ArkoudaTest):
 
-ak.verbose = False
-if len(sys.argv) > 1:
-    ak.connect(server=sys.argv[1], port=sys.argv[2])
-else:
-    ak.connect()
+    def setUp(self):
+        ArkoudaTest.setUp(self)
+        self.N = 1000
+        self.a1 = ak.ones(self.N,dtype=np.int64)
+        self.a2 = ak.arange(0,self.N,1)
+        self.t1 = self.a1
+        self.t2 = self.a1 * 10
+        self.dt = 10
+        ak.verbose = False
 
-N = 1000
+    def test_join_on_eq_with_true_dt(self):
+        I,J = ak.join_on_eq_with_dt(self.a2,self.a1,self.t1,self.t2,self.dt,"true_dt")
+        self.assertEqual(self.N, I.size)
+        self.assertEqual(self.N, J.size)
+               
+    def test_join_on_eq_with_true_dt_with_result_limit(self):
+        I,J = ak.join_on_eq_with_dt(self.a1,self.a1,self.a1,self.a1,self.dt,"true_dt",result_limit=self.N*self.N)
+        self.assertEqual(self.N*self.N, I.size)
+        self.assertEqual(self.N*self.N, J.size)
 
-a1 = ak.ones(N,dtype=np.int64)
-a2 = ak.arange(0,N,1)
-t1 = a1
-t2 = a1 * 10
-dt = 10
+    def test_join_on_eq_with_abs_dt(self):
+        I,J = ak.join_on_eq_with_dt(self.a2,self.a1,self.t1,self.t2,self.dt,"abs_dt")
+        self.assertEqual(self.N, I.size)
+        self.assertEqual(self.N, J.size)
 
-# should get N*N answers
-I,J = ak.join_on_eq_with_dt(a1,a1,a1,a1,dt,"true_dt",result_limit=N*N)
-print(I,J)
-if (I.size == N*N) and (J.size == N*N):
-    print("passed!")
-else:
-    print("failed!")
+    def test_join_on_eq_with_pos_dt(self):
+        I,J = ak.join_on_eq_with_dt(self.a2,self.a1,self.t1,self.t2,self.dt,"pos_dt")
+        self.assertEqual(self.N, I.size)
+        self.assertEqual(self.N, J.size)
 
-# should get N answers
-I,J = ak.join_on_eq_with_dt(a2,a1,t1,t2,dt,"true_dt")
-print(I,J)
-if (I.size == N) and (J.size == N):
-    print("passed!")
-else:
-    print("failed!")
+    def test_join_on_eq_with_abs_dt_outside_window(self):
+        '''
+        Should get 0 answers because N^2 matches but 0 within dt window 
+        '''
+        dt = 8
+        I,J = ak.join_on_eq_with_dt(self.a1,self.a1,self.t1,self.t1*10,dt,"abs_dt")
+        self.assertEqual(0, I.size)
+        self.assertEqual(0, J.size)
 
-# should get N answers
-I,J = ak.join_on_eq_with_dt(a2,a1,t1,t2,dt,"abs_dt")
-print(I,J)
-if (I.size == N) and (J.size == N):
-    print("passed!")
-else:
-    print("failed!")
+        I,J = ak.join_on_eq_with_dt(self.a2,self.a1,self.t1,self.t2,dt,"abs_dt")
+        self.assertEqual(0, I.size)
+        self.assertEqual(0, J.size)
 
-# should get N answers
-I,J = ak.join_on_eq_with_dt(a2,a1,t1,t2,dt,"pos_dt")
-print(I,J)
-if (I.size == N) and (J.size == N):
-    print("passed!")
-else:
-    print("failed!")
-
-# should get 0 answers
-# N^2 matches but 0 within dt window
-dt = 8
-I,J = ak.join_on_eq_with_dt(a1,a1,t1,t1*10,dt,"abs_dt")
-print(I,J)
-if (I.size == 0) and (J.size == 0):
-    print("passed!")
-else:
-    print("failed!")
-
-# should get 0 answers
-# N matches but 0 within dt window
-dt = 8
-I,J = ak.join_on_eq_with_dt(a2,a1,t1,t2,dt,"abs_dt")
-print(I,J)
-if (I.size == 0) and (J.size == 0):
-    print("passed!")
-else:
-    print("failed!")
-
-# should get 0 answers
-# N matches but 0 within dt window
-dt = 8
-I,J = ak.join_on_eq_with_dt(a2,a1,t1,t2,dt,"pos_dt")
-print(I,J)
-if (I.size == 0) and (J.size == 0):
-    print("passed!")
-else:
-    print("failed!")
-
+    def test_join_on_eq_with_pos_dt_outside_window(self):
+        '''
+        Should get 0 answers because N matches but 0 within dt window
+        '''
+        dt = 8
+        I,J = ak.join_on_eq_with_dt(self.a2,self.a1,self.t1,self.t2,dt,"pos_dt")
+        self.assertEqual(0, I.size)
+        self.assertEqual(0, J.size)

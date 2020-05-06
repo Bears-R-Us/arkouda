@@ -64,8 +64,8 @@ interactive session.
  * requires python 3.6 or greater
  * requires numpy
  * requires Sphinx and sphinx-argparse to build python documentation
- 
-### MacOS Installation 
+
+### MacOS Environment Installation
 
 It is usually very simple to get things going on a mac:
 
@@ -100,8 +100,7 @@ pip3 install pandas
 pip3 install jupyter
 ```
 
-If it is preferred to build Chapel instead of using the brew install, the
-process is as follows:
+If it is preferred to build Chapel instead of using the brew install, the process is as follows:
 
 ```bash
 # on my mac build chapel in my home directory with these settings...
@@ -121,7 +120,7 @@ make
 export PATH=$CHPL_HOME/bin/linux64-x86_64/:$PATH
 ```
 
-### Linux Installation
+### Linux Environment Installation
 
 There is no Linux Chapel install, so the first two steps in the Linux Arkouda install are 
 to install the Chapel dependencies followed by downloading and building Chapel:
@@ -193,10 +192,11 @@ Now that the arkouda_server is built, install the Python library
 ## Installing the Arkouda Python Library
 
 ```
- pip3 install -e arkouda
+ pip3 install -e .
 ```
 
 ## Building the Arkouda documentation
+
 Make sure you installed the Sphinx and sphinx-argparse packages (e.g. `pip3 install -U Sphinx sphinx-argparse`)
 
 Run `make doc` to build both the Arkouda python documentation and the Chapel server documentation
@@ -224,7 +224,7 @@ Single-locale startup:
 Multi-locale startup (user selects the number of locales):
 
 ```bash
-./arkouda_server -nl 1
+./arkouda_server -nl 2
 ```
 Also can run server with memory checking turned on using
 
@@ -251,8 +251,8 @@ To sanity check the arkouda server, you can run
 make check
 ```
 
-This will start the server, run a few computations, and shut the server down. The check script can be executed against
-a running server by running the following Python command:
+This will start the server, run a few computations, and shut the server down. In addition, the check script can be executed 
+against a running server by running the following Python command:
 
 ```bash
 python3 tests/check.py localhost 5555

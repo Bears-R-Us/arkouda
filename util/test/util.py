@@ -24,7 +24,7 @@ import time
 
 from collections import namedtuple
 
-import arkouda
+from context import arkouda
 
 ##################
 # Misc utilities #
@@ -189,7 +189,7 @@ def run_client(client, client_args=None, timeout=get_client_timeout()):
     This is a thin wrapper over subprocess.check_output.
     """
     server_info = get_server_info()
-    cmd = [client] + [server_info.host, str(server_info.port)]
+    cmd = ['python3'] + [client] + [server_info.host, str(server_info.port)]
     if client_args:
         cmd += client_args
     logging.info('Running client "{}"'.format(cmd))
@@ -203,7 +203,7 @@ def run_client_live(client, client_args=None, timeout=get_client_timeout()):
     shim that returns the returncode instead of raising an exception.
     """
     server_info = get_server_info()
-    cmd = [client] + [server_info.host, str(server_info.port)]
+    cmd = ['python3'] + [client] + [server_info.host, str(server_info.port)]
     if client_args:
         cmd += client_args
     logging.info('Running client "{}"'.format(cmd))

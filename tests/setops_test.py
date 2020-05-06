@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
-
-import arkouda as ak
+from context import arkouda as ak
 import numpy as np
 import pandas as pd
+from context import arkouda as ak
+from base_test import ArkoudaTest
 
 if __name__ == "__main__":
     import argparse, sys
@@ -45,5 +45,35 @@ if __name__ == "__main__":
     print("setxor1d passed test: ",passed)
 
     ak.disconnect()
-    
-    
+
+class SetOpsTest(ArkoudaTest):
+
+    def setUp(self):
+        ArkoudaTest.setUp(self)
+        SIZE = 5
+        self.a = ak.randint(0, 2*SIZE, SIZE)
+        self.b = ak.randint(0, 2*SIZE, SIZE)     
+  
+    def testOneDimensionalSetUnion(self): 
+        set_union = ak.union1d(self.a,self.b)
+        # elements in a or elements in b (or in both a and b)
+        self.assertTrue(ak.all(ak.in1d(set_union,self.a) \
+                               | ak.in1d(set_union,self.b)))
+
+    def testOneDimensionalSetIntersection(self):
+        set_intersection = ak.intersect1d(self.a,self.b)
+        # elements in a and elements in b (elements in both a and b)
+        self.assertTrue(ak.all(ak.in1d(set_intersection,self.a) & \
+                               ak.in1d(set_intersection,self.b)))
+
+    def testOneDimensionalSetDifference(self):
+        set_difference = ak.setdiff1d(self.a,self.b)
+        # elements in a and not in b
+        self.assertTrue((ak.in1d(set_difference,self.a).all() & \
+                         ak.in1d(set_difference,self.b,invert=True).all()))
+
+    def testOneDimensionalSetXor(self):
+        set_xor = ak.setxor1d(self.a,self.b)
+        set_intersection = ak.intersect1d(self.a,self.b)
+        # elements NOT in the intersection of a and b
+        self.assertTrue(ak.all(ak.in1d(set_xor, set_intersection, invert=True)))

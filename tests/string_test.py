@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
-
 import numpy as np
-import arkouda as ak
-import sys
-
+import unittest
+from collections import Counter
+from context import arkouda as ak
+from base_test import ArkoudaTest
 ak.verbose = False
 
 N = 100
@@ -16,8 +15,71 @@ UNIQUE = N//4
 
 def compare_strings(a, b):
     return all(x == y for x, y in zip(a, b))
-
+  
 errors = False
+
+def run_test_argsort(strings, test_strings, cat):
+    akperm = ak.argsort(strings)
+    aksorted = strings[akperm].to_ndarray()
+    npsorted = np.sort(strings)
+    assert((aksorted == npsorted).all())
+    catperm = ak.argsort(cat)
+    catsorted = cat[catperm].to_ndarray()
+    assert((catsorted == npsorted).all())
+    print("argsort passed")
+
+def run_test_unique(strings, test_strings, cat):
+    # unique
+    akuniq = ak.unique(strings)
+    catuniq = ak.unique(cat)
+    akset = set(akuniq.to_ndarray())
+    catset = set(catuniq.to_ndarray())
+    assert(akset == catset)
+    # There should be no duplicates
+    assert(akuniq.size == len(akset))
+    npset = set(np.unique(test_strings))
+    # When converted to a set, should agree with numpy
+    assert(akset == npset)
+    print("unique passed")
+
+def run_test_index(strings, test_strings, cat):
+    # int index
+    assert(strings[N//3] == test_strings[N//3])
+    assert(cat[N//3] == test_strings[N//3])
+    print("int index passed")
+    
+def run_test_slice(strings, test_strings, cat):
+    assert(compare_strings(strings[N//4:N//3].to_ndarray(), 
+                           test_strings[N//4:N//3]))
+    assert(compare_strings(cat[N//4:N//3].to_ndarray(), 
+                           test_strings[N//4:N//3]))
+    
+def run_test_pdarray_index(strings, test_strings, cat):
+    inds = ak.arange(0, strings.size, 10)
+    assert(compare_strings(strings[inds].to_ndarray(), test_strings[inds.to_ndarray()]))
+    assert(compare_strings(cat[inds].to_ndarray(), test_strings[inds.to_ndarray()]))
+
+def run_comparison_test(strings, test_strings, cat):
+    akinds = (strings == test_strings[N//4])
+    catinds = (cat == test_strings[N//4])
+    npinds = (test_strings == test_strings[N//4])
+    assert(np.allclose(akinds.to_ndarray(), npinds))
+
+def run_test_contains(strings, test_strings, delim):
+    found = strings.contains(delim).to_ndarray()
+    npfound = np.array([s.count(delim) > 0 for s in test_strings])
+    assert((found == npfound).all())
+
+def run_test_starts_with(strings, test_strings, delim):
+    found = strings.startswith(delim).to_ndarray()
+    npfound = np.array([s.startswith(delim) for s in test_strings])
+    assert((found == npfound).all())
+    
+def run_test_ends_with(strings, test_strings, delim):
+    found = strings.endswith(delim).to_ndarray()
+    npfound = np.array([s.endswith(delim) for s in test_strings])
+    assert((found == npfound).all())
+    
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         ak.connect(server=sys.argv[1], port=sys.argv[2])
@@ -41,33 +103,25 @@ if __name__ == '__main__':
     print("strings =", strings)
     print("categorical =", cat)
     print("Generation and concatenate passed")
-    
+  
     # int index
-    assert(strings[N//3] == test_strings[N//3])
-    assert(cat[N//3] == test_strings[N//3])
+    run_test_index(strings, test_strings, cat)
     print("int index passed")
-    
+  
     # slice
-    assert(compare_strings(strings[N//4:N//3].to_ndarray(), test_strings[N//4:N//3]))
-    assert(compare_strings(cat[N//4:N//3].to_ndarray(), test_strings[N//4:N//3]))
+    run_test_slice(strings, test_strings, cat)
     print("slice passed")
     
     # pdarray int index
-    inds = ak.arange(0, strings.size, 10)
-    assert(compare_strings(strings[inds].to_ndarray(), test_strings[inds.to_ndarray()]))
-    assert(compare_strings(cat[inds].to_ndarray(), test_strings[inds.to_ndarray()]))
+    run_test_pdarray_index(strings, test_strings, cat)
     print("pdarray int index passed")
 
     # comparison
-    akinds = (strings == test_strings[N//4])
-    catinds = (cat == test_strings[N//4])
-    npinds = (test_strings == test_strings[N//4])
-    assert(np.allclose(akinds.to_ndarray(), npinds))
+    run_comparison_test(strings, test_strings, cat)
     print("comparison passed")
 
     # pdarray bool index
-    assert(compare_strings(strings[akinds].to_ndarray(), test_strings[npinds]))
-    assert(compare_strings(cat[akinds].to_ndarray(), test_strings[npinds]))
+    test_pdarray_index(strings, test_strings, cat)
     print("pdarray bool index passed")
 
     # in1d and iter
@@ -90,27 +144,10 @@ if __name__ == '__main__':
     print("in1d and iter passed")
 
     # argsort
-    akperm = ak.argsort(strings)
-    aksorted = strings[akperm].to_ndarray()
-    npsorted = np.sort(test_strings)
-    assert((aksorted == npsorted).all())
-    catperm = ak.argsort(cat)
-    catsorted = cat[catperm].to_ndarray()
-    assert((catsorted == npsorted).all())
-    print("argsort passed")
+    test_argsort(strings, test_strings, cat)
     
     # unique
-    akuniq = ak.unique(strings)
-    catuniq = ak.unique(cat)
-    akset = set(akuniq.to_ndarray())
-    catset = set(catuniq.to_ndarray())
-    assert(akset == catset)
-    # There should be no duplicates
-    assert(akuniq.size == len(akset))
-    npset = set(np.unique(test_strings))
-    # When converted to a set, should agree with numpy
-    assert(akset == npset)
-    print("unique passed")
+    test_unique(strings, test_strings, cat)
 
     # groupby
     g = ak.GroupBy(strings)
@@ -131,26 +168,19 @@ if __name__ == '__main__':
     print("groupby passed")
 
     # substring functions
-    from collections import Counter
     x, w = tuple(zip(*Counter(''.join(base_words)).items()))
     delim = np.random.choice(x, p=(np.array(w)/sum(w)))
 
     # contains
-    found = strings.contains(delim).to_ndarray()
-    npfound = np.array([s.count(delim) > 0 for s in test_strings])
-    assert((found == npfound).all())
+    run_test_contains(strings, test_strings, delim)
     print("contains passed")
 
     # startswith
-    found = strings.startswith(delim).to_ndarray()
-    npfound = np.array([s.startswith(delim) for s in test_strings])
-    assert((found == npfound).all())
+    run_test_starts_with(strings, test_strings, delim)
     print("startswith passed")
 
     # endswith
-    found = strings.endswith(delim).to_ndarray()
-    npfound = np.array([s.endswith(delim) for s in test_strings])
-    assert((found == npfound).all())
+    run_test_ends_with(strings, test_strings, delim)
     print("endswith passed")
 
     # peel
@@ -226,3 +256,47 @@ if __name__ == '__main__':
     assert ((lstuck == tlstuck).all())
     assert ((strings2 + strings) == strings.lstick(strings2, delimiter="")).all()
     print("stick passed")
+
+class StringTest(ArkoudaTest):
+  
+    def setUp(self):
+        ArkoudaTest.setUp(self)
+        base_words1 = ak.random_strings_uniform(0, 10, UNIQUE, characters='printable')
+        base_words2 = ak.random_strings_lognormal(2, 0.25, UNIQUE, characters='printable')
+        self.base_words = ak.concatenate((base_words1, base_words2))
+        self.np_base_words = np.hstack((base_words1.to_ndarray(), base_words2.to_ndarray()))
+        choices = ak.randint(0, self.base_words.size, N)
+        self.strings = self.base_words[choices]
+        self.test_strings = self.strings.to_ndarray()
+        self.cat = ak.Categorical(self.strings)
+        x, w = tuple(zip(*Counter(''.join(self.base_words)).items()))
+        self.delim =  np.random.choice(x, p=(np.array(w)/sum(w)))
+
+    def test_compare_strings(self):
+        assert compare_strings(self.base_words.to_ndarray(), self.np_base_words)
+    
+    def test_argsort(self):
+        run_test_argsort(self.strings, self.test_strings, self.cat)
+        
+    def test_unique(self):
+        run_test_unique(self.strings, self.test_strings, self.cat)
+    
+    # ski;ping test_index now per https://github.com/mhmerrill/arkouda/issues/364
+    @unittest.skip
+    def test_index(self):
+        run_test_index(self.strings, self.test_strings, self.cat)
+        
+    def test_slice(self):
+        run_test_slice(self.strings, self.test_strings, self.cat)
+        
+    def test_pdarray_index(self):
+        run_test_pdarray_index(self.strings, self.test_strings, self.cat)
+
+    def test_contains(self):
+        run_test_contains(self.strings, self.test_strings, self.delim)
+        
+    def test_starts_with(self):
+        run_test_starts_with(self.strings, self.test_strings, self.delim)
+        
+    def test_ends_with(self):
+        run_test_ends_with(self.strings, self.test_strings, self.delim)
