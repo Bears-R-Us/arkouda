@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from context import arkouda as ak
 from base_test import ArkoudaTest
+import unittest
 
 SIZE = 10000
 GROUPS = 64
@@ -115,7 +116,9 @@ The GroupByTest class encapsulates specific calls to the run_test method within 
 which enables integration into a pytest test harness.
 '''
 class GroupByTest(ArkoudaTest): 
-  
+
+    # https://github.com/mhmerrill/arkouda/issues/365
+    @unittest.skip
     def test_groupby_on_one_level(self):
         '''
         Executes run_test with levels=1 and asserts whether there are any errors
@@ -133,4 +136,4 @@ class GroupByTest(ArkoudaTest):
         :raise: AssertionError if there are any errors encountered in run_test with levels = 2
         '''
         self.assertEqual(0, run_test(2, verbose))
-  
+
