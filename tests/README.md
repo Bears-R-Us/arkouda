@@ -63,12 +63,6 @@ the python3 binary, since Arkouda requires Python3.6+.
 python3 -m pytest -c pytest.ini 
 ```
 
-Add the --disable-warnings to suppress test warning messages:
-
-```
-python3 -m pytest -c pytest.ini --disable-warnings
-```
-
 To execute all tests in the arkouda test harness via make, execute the following command:
 
 ```
