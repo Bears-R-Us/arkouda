@@ -326,7 +326,7 @@ print-%:
 	@echo "$($*)"
 
 test-python: 
-	pytest -c pytest.ini
+	python3 -m pytest -c pytest.ini
 
 CLEAN_TARGETS += test-clean
 .PHONY: test-clean

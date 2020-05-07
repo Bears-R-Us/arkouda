@@ -77,7 +77,7 @@ make test-python
 pytest also enables a subset of 1..n unit tests to be executed. An example is shown below:
 
 ```
-pytest tests/client_test.py
+python3 -m pytest tests/client_test.py
 ```
 # Executing arkouda Python tests outside the test harness
 
