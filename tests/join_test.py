@@ -24,23 +24,28 @@ class JoinTest(ArkoudaTest):
 
     def test_join_on_eq_with_true_dt(self):
         I,J = ak.join_on_eq_with_dt(self.a2,self.a1,self.t1,self.t2,self.dt,"true_dt")
-        self.assertEqual(self.N, I.size)
-        self.assertEqual(self.N, J.size)
+        nl = ak.get_config()['numLocales']
+        self.assertEqual(self.N//nl, I.size)
+        self.assertEqual(self.N//nl, J.size)
                
     def test_join_on_eq_with_true_dt_with_result_limit(self):
-        I,J = ak.join_on_eq_with_dt(self.a1,self.a1,self.a1,self.a1,self.dt,"true_dt",result_limit=self.N*self.N)
-        self.assertEqual(self.N*self.N, I.size)
-        self.assertEqual(self.N*self.N, J.size)
+        nl = ak.get_config()['numLocales']
+        lim = self.N//nl * self.N//nl
+        I,J = ak.join_on_eq_with_dt(self.a1,self.a1,self.a1,self.a1,self.dt,"true_dt",result_limit=lim)
+        self.assertEqual(lim, I.size)
+        self.assertEqual(lim, J.size)
 
     def test_join_on_eq_with_abs_dt(self):
         I,J = ak.join_on_eq_with_dt(self.a2,self.a1,self.t1,self.t2,self.dt,"abs_dt")
-        self.assertEqual(self.N, I.size)
-        self.assertEqual(self.N, J.size)
+        nl = ak.get_config()['numLocales']
+        self.assertEqual(self.N//nl, I.size)
+        self.assertEqual(self.N//nl, J.size)
 
     def test_join_on_eq_with_pos_dt(self):
         I,J = ak.join_on_eq_with_dt(self.a2,self.a1,self.t1,self.t2,self.dt,"pos_dt")
-        self.assertEqual(self.N, I.size)
-        self.assertEqual(self.N, J.size)
+        nl = ak.get_config()['numLocales']
+        self.assertEqual(self.N//nl, I.size)
+        self.assertEqual(self.N//nl, J.size)
 
     def test_join_on_eq_with_abs_dt_outside_window(self):
         '''
