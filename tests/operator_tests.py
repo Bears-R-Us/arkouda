@@ -6,10 +6,11 @@ from base_test import ArkoudaTest
 from context import arkouda as ak
 from context import arkouda
 SIZE = 10
-warnings.simplefilter("always", UserWarning)
 verbose = ArkoudaTest.verbose
 
 def run_tests(verbose):
+    # ignore numpy warnings like divide by 0
+    np.seterr(all='ignore')
     global pdarrays
     pdarrays = {'int64': ak.arange(0, SIZE, 1),
                 'float64': ak.linspace(0, 2, SIZE),

@@ -31,13 +31,13 @@ jobs:
     - name: Build/Install Arkouda
       run: |
         make
-        pip3 install -e .
+        python3 -m pip install -e .[test]
     - name: Arkouda make check
       run: |
         make check
     - name: Arkouda unit tests
       run: |
-        ./util/test/runClient tests/operator_tests.py
+        make test-python
     - name: Arkouda benchmark --correctness-only
       run: |
          ./benchmarks/run_benchmarks.py --correctness-only --dtype=int64

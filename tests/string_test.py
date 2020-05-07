@@ -1,5 +1,4 @@
 import numpy as np
-import unittest
 from collections import Counter
 from context import arkouda as ak
 from base_test import ArkoudaTest
@@ -281,8 +280,6 @@ class StringTest(ArkoudaTest):
     def test_unique(self):
         run_test_unique(self.strings, self.test_strings, self.cat)
     
-    # ski;ping test_index now per https://github.com/mhmerrill/arkouda/issues/364
-    @unittest.skip
     def test_index(self):
         run_test_index(self.strings, self.test_strings, self.cat)
         
@@ -297,6 +294,6 @@ class StringTest(ArkoudaTest):
         
     def test_starts_with(self):
         run_test_starts_with(self.strings, self.test_strings, self.delim)
-        
+
     def test_ends_with(self):
         run_test_ends_with(self.strings, self.test_strings, self.delim)
