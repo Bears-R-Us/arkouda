@@ -1,15 +1,12 @@
 prototype module UnitTestSort
 {
-  use CommDiagnostics;
-  use IO;
+
+  use TestBase;
+
   use Memory;
   use Random;
-  use Time;
-
-  use SymArrayDmap;
 
   use RadixSortLSD;
-  use AryUtil;
 
   enum testMode { correctness, correctnessFast, performance, commDiags };
   config const mode = testMode.correctness;
@@ -63,7 +60,7 @@ prototype module UnitTestSort
       var sortedA = radixSortLSD_keys(A, checkSorted=false);
       endDiag("radixSortLSD_keys", elemType, nElems, sortDesc);
       if printArrays { writeln(A); writeln(sortedA); }
-      assert(isSorted(sortedA));
+      assert(AryUtil.isSorted(sortedA));
     }
 
     {
@@ -75,7 +72,7 @@ prototype module UnitTestSort
       if mode == testMode.correctness {
         var sortedA: [D] elemType = forall i in rankSortedA do A[i];
         if printArrays { writeln(A); writeln(rankSortedA); writeln(sortedA); }
-        assert(isSorted(sortedA));
+        assert(AryUtil.isSorted(sortedA));
       }
     }
   }

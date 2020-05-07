@@ -2,29 +2,13 @@ prototype module UnitTestArgSort
 {
     config const NVALS = 2**13;
     config const LEN = 2**20;
-    use ServerConfig;
+    use TestBase;
     
-    use Time only;
-    use Math only;
-
-    use MultiTypeSymbolTable;
-    use MultiTypeSymEntry;
-    use ServerErrorStrings;
-
-    use AryUtil;
-
     use RandMsg;
     use IndexingMsg;
     use ReductionMsg;
-    
-    // module to be unit tested
     use ArgSortMsg;
 
-    proc parseName(s: string): string {
-        var fields = s.split(); 
-        return fields[2];
-    }
-    
     // unit test for ArgSortMsg
     proc main() {
         writeln("Unit Test for ArgSortMsg");

@@ -1,7 +1,6 @@
+use TestBase;
+
 use SipHash;
-use RandArray;
-use Time;
-use SymArrayDmap;
 
 config const NINPUTS = 10_000;
 config const INPUTSIZE = 8;

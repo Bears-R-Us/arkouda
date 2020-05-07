@@ -1,7 +1,8 @@
+use Testbase;
+
 use Merge;
 use RadixSortLSD;
 use Random;
-use RandArray;
 
 proc testBinarySearch(size, trials) {
   var a = makeDistArray(size, int);

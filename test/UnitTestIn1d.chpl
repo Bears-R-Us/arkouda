@@ -1,12 +1,10 @@
 prototype module UnitTestIn1d
 {
-    use In1d;
+    use TestBase;
     
     use Random;
-    use Time only;
 
-    use SymArrayDmap;
-
+    use In1d;
 
     // fill a with integers from interval aMin..(aMax-1)
     proc fillRandInt(a: [?aD] ?t, aMin: t, aMax: t) {

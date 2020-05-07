@@ -1,14 +1,12 @@
 prototype module UnitTestGroupby
 {
+  use TestBase;
+
   use ArgSortMsg;
   use FindSegmentsMsg;
   use ReductionMsg;
-  use MultiTypeSymbolTable;
-  use MultiTypeSymEntry;
   use RandMsg;
   use IndexingMsg;
-
-  use Time only;
     
   config const LEN:int;
   config const NKEYS:int;
@@ -16,19 +14,6 @@ prototype module UnitTestGroupby
   config const OPERATOR:string = "sum";
   config const STRATEGY:string = "default";
   config const nShow:int = 5;
-
-  proc parseName(s: string, st: borrowed SymTab): string {
-    var fields = s.split();
-    var name = fields[2];
-    return name;
-  }
-
-  proc parseTwoNames(s: string, st: borrowed SymTab) {
-    var entries = s.split("+");
-    var n1 = parseName(entries[1], st);
-    var n2 = parseName(entries[2], st);
-    return (n1, n2);
-  }
 
   proc show(k:[?D] int, v:[D] int, n=5) {
     if (D.size <= 2*n) {
@@ -80,7 +65,7 @@ prototype module UnitTestGroupby
     repMsg = randintMsg(reqMsg, st);
     writeln(cmd, " time = ",Time.getCurrentTime() - t1,"sec\n"); try! stdout.flush();
     writeln(repMsg);
-    var kname = parseName(repMsg, st);
+    var kname = parseName(repMsg);
     var kg = st.lookup(kname);
     var keys = toSymEntry(kg, int);
 
@@ -91,7 +76,7 @@ prototype module UnitTestGroupby
     repMsg = randintMsg(reqMsg, st);
     writeln(cmd, " time = ",Time.getCurrentTime() - t1,"sec\n"); try! stdout.flush();
     writeln(repMsg);
-    var vname = parseName(repMsg, st);
+    var vname = parseName(repMsg);
     var vg = st.lookup(vname);
     var vals = toSymEntry(vg, int);
 
@@ -122,7 +107,7 @@ prototype module UnitTestGroupby
       repMsg = findSegmentsMsg(reqMsg, st);
     }
     writeln(cmd, " time = ",Time.getCurrentTime() - t1,"sec\n"); try! stdout.flush();
-    var (segname, ukiname) = parseTwoNames(repMsg, st);
+    var (segname, ukiname) = parseTwoNames(repMsg);
     var segg = st.lookup(segname);
     var segs = toSymEntry(segg, int);
     var ukig = st.lookup(ukiname);
@@ -135,7 +120,7 @@ prototype module UnitTestGroupby
     repMsg = pdarrayIndexMsg(reqMsg, st);
     writeln(cmd, " time = ",Time.getCurrentTime() - t1,"sec\n"); try! stdout.flush();
     writeln(repMsg);
-    var ukname = parseName(repMsg, st);
+    var ukname = parseName(repMsg);
     var ukg = st.lookup(ukname);
     var ukeys = toSymEntry(ukg, int);
 
@@ -150,7 +135,7 @@ prototype module UnitTestGroupby
     repMsg = pdarrayIndexMsg(reqMsg, st);
     writeln(cmd, " time = ",Time.getCurrentTime() - t1,"sec\n"); try! stdout.flush();
     writeln(repMsg);
-    var svname = parseName(repMsg, st);
+    var svname = parseName(repMsg);
     var svg = st.lookup(svname);
     var svals = toSymEntry(svg, int);
 
@@ -168,7 +153,7 @@ prototype module UnitTestGroupby
     } 
     writeln(cmd, " time = ",Time.getCurrentTime() - t1,"sec\n"); try! stdout.flush();
     writeln(repMsg);
-    var redname = parseName(repMsg, st);
+    var redname = parseName(repMsg);
     var redg = st.lookup(redname);
     var red = toSymEntry(redg, int);
 

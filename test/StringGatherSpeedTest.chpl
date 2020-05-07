@@ -1,6 +1,5 @@
-use SegmentedArray;
-use RandArray;
-use MultiTypeSymbolTable;
+use Testbase;
+
 use RadixSortLSD;
 
 config const N = 10_000;

@@ -1,15 +1,10 @@
 prototype module UnitTestUnique
 {
+    use TestBase;
+
     use Unique;
-    use MultiTypeSymbolTable;
-    use MultiTypeSymEntry;
-    use SegmentedArray;
     
     use Random;
-    use Time only;
-
-    use SymArrayDmap;
-    use AryUtil;
 
 
     // fill a with integers from interval aMin..(aMax-1)

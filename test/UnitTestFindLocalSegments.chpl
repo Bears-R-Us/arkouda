@@ -3,35 +3,14 @@ prototype module UnitTestFindSegments
     config const NVALS = 2**13;
     config const LEN = 2**20;
     config const filename = "UnitTestFindLocalSegments.array";
-    use ServerConfig;
+
+    use TestBase;
     
-    use Time only;
-    use Math only;
-
-    use MultiTypeSymbolTable;
-    use MultiTypeSymEntry;
-    use ServerErrorStrings;
-
-    use AryUtil;
-
     use RandMsg;
     use IndexingMsg;
     use ReductionMsg;
-    
-    // module to be unit tested
     use ArgSortMsg;
     use FindSegmentsMsg;
-
-    proc parseName(s: string): string {
-        var fields = s.split(); 
-        return fields[2];
-    }
-    proc parseTwoNames(s: string): (string, string) {
-      var entries = s.split('+');
-      var firstFields = entries[1].split();
-      var secondFields = entries[2].split();
-      return (firstFields[2], secondFields[2]);
-    }
 
     proc writeIntArray(a:[?D] int, filename:string) {
       var f = try! open(filename, iomode.cw);
