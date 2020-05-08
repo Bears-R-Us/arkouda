@@ -36,7 +36,7 @@ def translate_np_dtype(dt):
     """
     # Assert that dt is one of the arkouda supported dtypes
     check_np_dtype(dt)
-    trans = {'i': 'int', 'f': 'float', 'b': 'bool', 'u': 'uint'}
+    trans = {'i': 'int', 'f': 'float', 'b': 'bool', 'u': 'uint', 'U' : 'str'}
     kind = trans[dt.kind]
     return kind, dt.itemsize
 

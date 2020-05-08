@@ -18,10 +18,12 @@ ifeq ("$(shell chpl --version | sed -n "s/chpl version 1\.\([0-9]*\).*/\1/p")", 
 endif
 
 CHPL_DEBUG_FLAGS += --print-passes
-ifndef ARKOUDA_DEVELOPER
-CHPL_FLAGS += --fast
-else
+ifdef ARKOUDA_DEVELOPER
 CHPL_FLAGS += --ccflags="-O1"
+else ifdef ARKOUDA_QUICK_COMPILE
+CHPL_FLAGS += --no-checks --no-loop-invariant-code-motion --ccflags="-O0"
+else
+CHPL_FLAGS += --fast
 endif
 # need this to avoid a slew of warnings from HDF5 on some platforms
 # --ccflags="-Wno-incompatible-pointer-types"
@@ -97,7 +99,10 @@ CHPL_FLAGS += $(patsubst %,-L%,$(strip $(subst :, ,$(LD_LIBRARY_PATH))))
 endif
 
 .PHONY: check-deps
-check-deps: check-zmq check-hdf5
+ifndef ARKOUDA_SKIP_CHECK_DEPS
+CHECK_DEPS = check-zmq check-hdf5
+endif
+check-deps: $(CHECK_DEPS)
 
 ZMQ_CHECK = $(DEP_INSTALL_DIR)/checkZMQ.chpl
 check-zmq: $(ZMQ_CHECK)
@@ -305,7 +310,7 @@ endef
 $(eval $(call create_help_target,test-help,TEST_HELP_TEXT))
 
 .PHONY: test
-test: $(TEST_TARGETS)
+test: test-python $(TEST_TARGETS)
 
 $(TEST_BINARY_DIR):
 	mkdir -p $(TEST_BINARY_DIR)
@@ -319,6 +324,9 @@ test/%: test/%.chpl
 
 print-%:
 	@echo "$($*)"
+
+test-python: 
+	python3 -m pytest -c pytest.ini
 
 CLEAN_TARGETS += test-clean
 .PHONY: test-clean

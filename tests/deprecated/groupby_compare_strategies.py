@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
-
-import arkouda as ak
+from context import arkouda as ak
 import numpy as np
 import pandas as pd
 from time import time
+from base_test import ArkoudaTest
 
 def compare_strategies(length, ncat, op, dtype):
     keys = ak.randint(0, ncat, length)
@@ -38,6 +37,8 @@ def compare_strategies(length, ncat, op, dtype):
     print(f"Keys match? {(gk == lk).all()}")
     print(f"Absolute diff of vals = {ak.abs(gv - lv).sum()}")
     return ggtime, grtime, lgtime, lrtime
+
+class GroupByCompareStrategiesTest(ArkoudaTest):
 
 if __name__ == '__main__':
     import sys

@@ -23,3 +23,5 @@ arkouda.egg-info/
 build/
 dep/*-install/
 dep/build/
+*.pyc
+ak-server-info
