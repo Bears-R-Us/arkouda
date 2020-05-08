@@ -1,19 +1,18 @@
-# Python Tests against the arkouda\_server
+# Arkouda Python Unit Tests
+
+The arkouda project has a [pytest](https://docs.pytest.org/en/latest/)-based Python test harness that can be executed 
+via the command-line interface (CLI) or within the make file. 
 
 All Python tests can be run against a local or remote arkouda\_server. The arkouda project is configured so that
 no special Python paths need to be defined.
-  
-# The arkouda Python test harness
-
-The arkouda project has a [pytest](https://docs.pytest.org/en/latest/)-based Python test harness that can be executed 
-via the command-line interface (cli) or within the make file. 
 
 ## pytest environment preparation
 
 There are two python libraries that must be installed to execute the arkouda test harness, pytest and pytest-env,
-both of which can be installed via pip:
+both of which can be installed via pip3:
+
 ```
-pip install pytest, pytest-env
+pip3 install pytest, pytest-env
 ```
 ## Configuration of pytest: the pytest.ini file
 
@@ -47,12 +46,15 @@ specified on a per-file basis, but pytest can also support directory-level confi
 * env: the pytest env variables needed to execute the arkouda Python test harness 
 
 ## arkouda pytest environmental variables
+
 * ARKOUDA\_SERVER\_HOST: the hostname or ip address where the arkouda\_server is located
 * ARKOUDA\_SERVER\_PORT: the port the arkouda\_server is listening on
-* ARKOUDA\_FULL\_STACK_TEST: if True, the TestCase.setUpClass method starts up an arkouda\_server on the local machine, where
+* ARKOUDA\_FULL\_STACK\_TEST: if True, the TestCase.setUpClass method starts up an arkouda\_server on the local machine, where
   server=ARKOUDA\_SERVER\_HOST and port= ARKOUDA\_SERVER\_PORT. If False, the test harness runs in client mode and 
   consequently an arkouda\_server is not started up.
+* ARKOUDA_VERBOSE: if True, logging is set to DEBUG
 
+NOTE: the Arkouda pytest env variables can be set within the pytest.ini file as above or in .bashrc or .bash_profile
 
 # Running the arkouda Python test harness
 

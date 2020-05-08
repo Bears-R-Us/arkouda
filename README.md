@@ -64,6 +64,7 @@ interactive session.
  * requires python 3.6 or greater
  * requires numpy
  * requires Sphinx and sphinx-argparse to build python documentation
+ * requires pytest and pytest-env to execute the Python test harness
 
 ### MacOS Environment Installation
 
@@ -103,6 +104,7 @@ pip3 install jupyter
 If it is preferred to build Chapel instead of using the brew install, the process is as follows:
 
 ```bash
+
 # on my mac build chapel in my home directory with these settings...
 export CHPL_HOME=~/chapel/chapel-1.20.0
 source $CHPL_HOME/util/setchplenv.bash
@@ -134,6 +136,8 @@ sudo apt-get install gcc g++ m4 perl python python-dev python-setuptools bash ma
 wget https://github.com/chapel-lang/chapel/releases/download/1.20.0/chapel-1.20.0.tar.gz
 tar xvf chapel-1.20.0.tar.gz
 cd chapel-1.20.0/
+
+# Set CHPL_HOME
 export CHPL_HOME=$PWD
 
 # Add chpl to PATH
@@ -187,13 +191,22 @@ make install-deps
 make
 ```
 
-Now that the arkouda_server is built, install the Python library
+Now that the arkouda_server is built and tested, install the Python library
 
 ## Installing the Arkouda Python Library
 
 ```
  pip3 install -e .
 ```
+
+## Testing Arkouda
+
+There are two unit test suites for Arkouda, one for Python and one for Chapel. As mentioned above, the Arkouda Python 
+test harness leverages the [pytest](https://docs.pytest.org/en/latest/) and [pytest-env](https://pypi.org/project/pytest-env/) 
+libraries, whereas the Chapel test harness does not require any external librares.
+
+For more details regarding Arkouda testing, please consult the Python test [README](tests/README.md) and Chapel test
+[README](test/README.md), respectively.
 
 ## Building the Arkouda documentation
 
