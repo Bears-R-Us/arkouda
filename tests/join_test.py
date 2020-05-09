@@ -30,10 +30,11 @@ class JoinTest(ArkoudaTest):
                
     def test_join_on_eq_with_true_dt_with_result_limit(self):
         nl = ak.get_config()['numLocales']
-        lim = self.N//nl * self.N//nl
+        lim = (self.N + nl) * self.N
+        res_size = self.N * self.N
         I,J = ak.join_on_eq_with_dt(self.a1,self.a1,self.a1,self.a1,self.dt,"true_dt",result_limit=lim)
-        self.assertEqual(lim, I.size)
-        self.assertEqual(lim, J.size)
+        self.assertEqual(res_size, I.size)
+        self.assertEqual(res_size, J.size)
 
     def test_join_on_eq_with_abs_dt(self):
         I,J = ak.join_on_eq_with_dt(self.a2,self.a1,self.t1,self.t2,self.dt,"abs_dt")
