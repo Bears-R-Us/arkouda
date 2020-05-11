@@ -1,0 +1,36 @@
+Generating random strings...
+strings.peel(hi, 1, includeDelimiter=false, keepPartial=false, left=false)
+Round trip success? >>> true <<<
+strings.peel(hi, 1, includeDelimiter=false, keepPartial=false, left=true)
+Round trip success? >>> true <<<
+strings.peel(hi, 1, includeDelimiter=false, keepPartial=true, left=false)
+Round trip success? >>> true <<<
+strings.peel(hi, 1, includeDelimiter=false, keepPartial=true, left=true)
+Round trip success? >>> true <<<
+strings.peel(hi, 1, includeDelimiter=true, keepPartial=false, left=false)
+Round trip success? >>> true <<<
+strings.peel(hi, 1, includeDelimiter=true, keepPartial=false, left=true)
+Round trip success? >>> true <<<
+strings.peel(hi, 1, includeDelimiter=true, keepPartial=true, left=false)
+Round trip success? >>> true <<<
+strings.peel(hi, 1, includeDelimiter=true, keepPartial=true, left=true)
+Round trip success? >>> true <<<
+strings.peel(hi, 2, includeDelimiter=false, keepPartial=false, left=false)
+Round trip success? >>> true <<<
+strings.peel(hi, 2, includeDelimiter=false, keepPartial=false, left=true)
+Round trip success? >>> true <<<
+strings.peel(hi, 2, includeDelimiter=false, keepPartial=true, left=false)
+Round trip success? >>> true <<<
+strings.peel(hi, 2, includeDelimiter=false, keepPartial=true, left=true)
+Round trip success? >>> true <<<
+strings.peel(hi, 2, includeDelimiter=true, keepPartial=false, left=false)
+Round trip success? >>> true <<<
+strings.peel(hi, 2, includeDelimiter=true, keepPartial=false, left=true)
+Round trip success? >>> true <<<
+strings.peel(hi, 2, includeDelimiter=true, keepPartial=true, left=false)
+Round trip success? >>> true <<<
+strings.peel(hi, 2, includeDelimiter=true, keepPartial=true, left=true)
+Round trip success? >>> true <<<
+All round trip tests passed? >>> true <<<
+Generating random strings...
+Round trip successful? >>> true <<<

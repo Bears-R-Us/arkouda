@@ -58,4 +58,4 @@ jobs:
         echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" > Makefile.paths
     - name: Run unit tests
       run: |
-        start_test test/UnitTestSipHash.chpl
+        start_test test
