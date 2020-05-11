@@ -30,24 +30,14 @@ prototype module UnitTestFindSegments
         var repMsg: string;
 
         // create an array filled with random int64 returned in symbol table
-        var cmd = "randint";
-        var aMin = 0;
-        var aMax = NVALS;
-        var len = LEN;
-        var dtype = DType.Int64;
-        reqMsg = try! "%s %i %i %i %s".format(cmd, aMin, aMax, len, dtype2str(dtype));
-        var t1 = Time.getCurrentTime();
-        repMsg = randintMsg(reqMsg, st);
-        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
-        writeln(repMsg);
+        var aname = nameForRandintMsg(LEN, DType.Int64, 0, NVALS, st);
 
         // sort it and return iv in symbol table
-        cmd = "localArgsort";
-        var aname = parseName(repMsg); // get name from randint reply msg
+        var cmd = "localArgsort";
         var orig = toSymEntry(st.lookup(aname), int);
         writeIntArray(orig.a, filename+".original");
         reqMsg = try! "%s %s".format(cmd, aname);
-        t1 = Time.getCurrentTime();
+        var t1 = Time.getCurrentTime();
         repMsg = localArgsortMsg(reqMsg, st);
         writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
         writeln(repMsg);
@@ -68,7 +58,7 @@ prototype module UnitTestFindSegments
 
         // use array and iv to find local segments
         cmd = "findLocalSegments";
-        reqMsg = try! "%s %s %s".format(cmd, aname, ivname);
+        reqMsg = try! "%s %s".format(cmd, aname);
         writeln(reqMsg);
         t1 = Time.getCurrentTime();
         repMsg = findLocalSegmentsMsg(reqMsg, st);

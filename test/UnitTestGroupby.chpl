@@ -55,28 +55,12 @@ prototype module UnitTestGroupby
     var repMsg: string;
     
     // create random keys array
-    var cmd = "randint";
-    var aMin = 0;
-    var aMax = NKEYS;
-    var len = LEN;
-    var dtype = DType.Int64;
-    reqMsg = try! "%s %i %i %i %s".format(cmd, aMin, aMax, len, dtype2str(dtype));
-    var t1 = Time.getCurrentTime();
-    repMsg = randintMsg(reqMsg, st);
-    writeln(cmd, " time = ",Time.getCurrentTime() - t1,"sec\n"); try! stdout.flush();
-    writeln(repMsg);
-    var kname = parseName(repMsg);
+    var kname = nameForRandintMsg(LEN, DType.Int64, 0, NKEYS, st);
     var kg = st.lookup(kname);
     var keys = toSymEntry(kg, int);
 
     // create random vals array
-    aMax = NVALS;
-    reqMsg = try! "%s %i %i %i %s".format(cmd, aMin, aMax, len, dtype2str(dtype));
-    t1 = Time.getCurrentTime();
-    repMsg = randintMsg(reqMsg, st);
-    writeln(cmd, " time = ",Time.getCurrentTime() - t1,"sec\n"); try! stdout.flush();
-    writeln(repMsg);
-    var vname = parseName(repMsg);
+    var vname = nameForRandintMsg(LEN, DType.Int64, 0, NVALS, st);
     var vg = st.lookup(vname);
     var vals = toSymEntry(vg, int);
 
@@ -89,7 +73,7 @@ prototype module UnitTestGroupby
     var iv: [keys.aD] int;
     var eMin = min reduce keys.a;
     var eMax = max reduce keys.a;
-    t1 = Time.getCurrentTime();
+    var t1 = Time.getCurrentTime();
     if (STRATEGY == "default") {
       writeln("argsortDefault");
       iv = argsortDefault(keys.a);
@@ -101,9 +85,10 @@ prototype module UnitTestGroupby
 
     // find segment boundaries and unique keys
     t1 = Time.getCurrentTime();
+    var cmd: string;
     if (STRATEGY == "default") {
       cmd = "findSegments";
-      reqMsg = try! "%s %s %i %i %s".format(cmd, ivname, 1, keys.size, kname);
+      reqMsg = try! "%s %s %i %s %s".format(cmd, ivname, 1, kname, "pdarray");
       repMsg = findSegmentsMsg(reqMsg, st);
     }
     writeln(cmd, " time = ",Time.getCurrentTime() - t1,"sec\n"); try! stdout.flush();
