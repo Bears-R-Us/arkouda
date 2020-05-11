@@ -22,7 +22,6 @@ prototype module UnitTestArgSort
       try! f.close();
     }
     
-    // unit test for localArgSortMsg
     proc main() {
         writeln("Unit Test for localArgSortMsg");
         var st = new owned SymTab();

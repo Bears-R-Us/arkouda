@@ -48,7 +48,7 @@ prototype module UnitTestGroupby
   }
   
   proc main() {
-    writeln("Unit Test for localArgSortMsg");
+    writeln("Unit Test for groupBy");
     var st = new owned SymTab();
     
     var reqMsg: string;

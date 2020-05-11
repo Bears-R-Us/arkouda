@@ -21,7 +21,6 @@ prototype module UnitTestFindSegments
       try! f.close();
     }
     
-    // unit test for localArgSortMsg
     proc main() {
         writeln("Unit Test for findLocalSegmentsMsg");
         var st = new owned SymTab();
