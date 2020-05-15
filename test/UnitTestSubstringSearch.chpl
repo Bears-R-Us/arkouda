@@ -1,7 +1,4 @@
-use RandArray;
-use MultiTypeSymbolTable;
-use SegmentedArray;
-use Time;
+use TestBase;
 
 config const N: int = 10_000;
 config const MINLEN: int = 1;
@@ -37,7 +34,7 @@ proc make_strings(substr, n, minLen, maxLen, characters, mode, st) {
       vals[{(o+i)..#nb}] = sbytes;
     }
   }
-  var strings2 = new owned SegString(segs, vals, st);
+  var strings2 = new shared SegString(segs, vals, st);
   return (present, strings2);
 }
 

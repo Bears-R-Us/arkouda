@@ -1,30 +1,14 @@
-module UnitTestArgSort
+prototype module UnitTestArgSort
 {
     config const NVALS = 2**13;
     config const LEN = 2**20;
-    use ServerConfig;
+    use TestBase;
     
-    use Time only;
-    use Math only;
-
-    use MultiTypeSymbolTable;
-    use MultiTypeSymEntry;
-    use ServerErrorStrings;
-
-    use AryUtil;
-
     use RandMsg;
     use IndexingMsg;
     use ReductionMsg;
-    
-    // module to be unit tested
     use ArgSortMsg;
 
-    proc parseName(s: string): string {
-        var fields = s.split(); 
-        return fields[2];
-    }
-    
     // unit test for ArgSortMsg
     proc main() {
         writeln("Unit Test for ArgSortMsg");
@@ -34,23 +18,13 @@ module UnitTestArgSort
         var repMsg: string;
 
         // create an array filled with random int64 returned in symbol table
-        var cmd = "randint";
-        var aMin = 0;
-        var aMax = NVALS;
-        var len = LEN;
-        var dtype = DType.Int64;
-        reqMsg = try! "%s %i %i %i %s".format(cmd, aMin, aMax, len, dtype2str(dtype));
-        var t1 = Time.getCurrentTime();
-        repMsg = randintMsg(reqMsg, st);
-        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
-        writeln(repMsg);
+        var aname = nameForRandintMsg(LEN, DType.Int64, 0, NVALS, st);
 
         // sort it and return iv in symbol table
-        cmd = "argsort";
-        var aname = parseName(repMsg); // get name from randint reply msg
-        reqMsg = try! "%s %s".format(cmd, aname);
+        var cmd = "argsort";
+        reqMsg = try! "%s pdarray %s".format(cmd, aname);
         writeln(reqMsg);
-        t1 = Time.getCurrentTime();
+        var t1 = Time.getCurrentTime();
         repMsg = argsortMsg(reqMsg, st);
         writeln(repMsg);
         writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
@@ -77,20 +51,11 @@ module UnitTestArgSort
         writeln("ANSWER >>> ",repMsg," <<<");
 
         // create a second array filled with random float64 returned in symbol table
-        cmd = "randint";
-        len = LEN;
-        dtype = DType.Float64;
-        reqMsg = try! "%s %i %i %i %s".format(cmd, 0, 1, len, dtype2str(dtype));
-        writeln(reqMsg);
-        t1 = Time.getCurrentTime();
-        repMsg = randintMsg(reqMsg, st);
-        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
-        writeln(repMsg);
+        var fname = nameForRandintMsg(LEN, DType.Float64, 0, 1, st);
 
         // cosort both int and real arrays and return iv in symbol table
         cmd = "coargsort";
-        var fname = parseName(repMsg); // get name from randint reply msg
-        reqMsg = try! "%s %i %s %s".format(cmd, 2, aname, fname);
+        reqMsg = try! "%s %i %s %s pdarray pdarray".format(cmd, 2, aname, fname);
         writeln(reqMsg);
         t1 = Time.getCurrentTime();
         repMsg = coargsortMsg(reqMsg, st);

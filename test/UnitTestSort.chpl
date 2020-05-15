@@ -1,15 +1,12 @@
-module UnitTestSort
+prototype module UnitTestSort
 {
-  use CommDiagnostics;
-  use IO;
+
+  use TestBase;
+
   use Memory;
   use Random;
-  use Time;
-
-  use BlockDist;
 
   use RadixSortLSD;
-  use AryUtil;
 
   enum testMode { correctness, correctnessFast, performance, commDiags };
   config const mode = testMode.correctness;
@@ -63,7 +60,7 @@ module UnitTestSort
       var sortedA = radixSortLSD_keys(A, checkSorted=false);
       endDiag("radixSortLSD_keys", elemType, nElems, sortDesc);
       if printArrays { writeln(A); writeln(sortedA); }
-      assert(isSorted(sortedA));
+      assert(AryUtil.isSorted(sortedA));
     }
 
     {
@@ -75,7 +72,7 @@ module UnitTestSort
       if mode == testMode.correctness {
         var sortedA: [D] elemType = forall i in rankSortedA do A[i];
         if printArrays { writeln(A); writeln(rankSortedA); writeln(sortedA); }
-        assert(isSorted(sortedA));
+        assert(AryUtil.isSorted(sortedA));
       }
     }
   }
@@ -90,7 +87,7 @@ module UnitTestSort
 
   // Sort permutations of the indices
   proc testSortIndexPerm(type elemType, nElems) {
-    const D = newBlockDom({0..#nElems});
+    const D = makeDistDom(nElems);
     var A: [D] elemType;
 
     forall i in D { A[i] = i:elemType; }
@@ -124,7 +121,7 @@ module UnitTestSort
   // Sort arrays that contain random values between various int/uint sizes
   // (e.g. sort random values that fit in int(32) and uint(32))
   proc testSortMultRandVals(type elemType, nElems) {
-    const D = newBlockDom({0..#nElems});
+    const D = makeDistDom(nElems);
     var A: [D] elemType;
 
     testSortRandVals(A, int(8),  nElems);
@@ -155,7 +152,7 @@ module UnitTestSort
   // treats values as "bags of bits", so here we mask different bit ranges and
   // bit clusters, which can trigger some interesting corner cases
   proc testSortActiveBitRanges(type elemType, nElems) {
-    const D = newBlockDom({0..#nElems});
+    const D = makeDistDom(nElems);
     var A: [D] elemType;
 
     const intBits = numBits(int);
@@ -196,7 +193,7 @@ module UnitTestSort
     const fraction = totMem / elemSize / perfMemFraction * numLocales;
     const nElems = if numElems > 0 then numElems else fraction;
 
-    const D = newBlockDom({0..#nElems});
+    const D = makeDistDom(nElems);
     var A: [D] perfElemType;
     var B: [D] perfValRange;
     fillRandom(B);

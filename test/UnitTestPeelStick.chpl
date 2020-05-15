@@ -1,8 +1,6 @@
-use RandArray;
-use MultiTypeSymbolTable;
-use SegmentedArray;
+use TestBase;
+
 use SegmentedMsg;
-use Time;
 
 config const N: int = 10_000;
 config const MINLEN: int = 6;
@@ -39,7 +37,7 @@ proc make_strings(substr, n, minLen, maxLen, characters, st) {
       }
     }
   }
-  var strings2 = new owned SegString(segs, vals, st);
+  var strings2 = new shared SegString(segs, vals, st);
   return (splits, strings2);
 }
 
@@ -143,24 +141,18 @@ proc testMessageLayer(substr, n, minLen, maxLen) throws {
   writeln(reqMsg);
   var repMsg = segmentedEfuncMsg(reqMsg, st);
   writeln(repMsg);
-  var attribs = repMsg.split('+');
-  var temp = attribs[1].split();
-  var loname = temp[2];
-  temp = attribs[2].split();
-  var lvname = temp[2];
-  temp = attribs[3].split();
-  var roname = temp[2];
-  temp = attribs[4].split();
-  var rvname = temp[2];
+  var (loAttribs,lvAttribs,roAttribs,rvAttribs) = repMsg.splitMsgToTuple('+', 4);
+  var loname = parseName(loAttribs);
+  var lvname = parseName(lvAttribs);
+  var roname = parseName(roAttribs);
+  var rvname = parseName(rvAttribs);
   reqMsg = "segBinopvv stick str %s %s str %s %s False %jt".format(loname, lvname, roname, rvname, [""]);
   writeln(reqMsg);
   repMsg = segBinopvvMsg(reqMsg, st);
   writeln(repMsg);
-  var attribs2 = repMsg.split('+');
-  temp = attribs2[1].split();
-  var rtoname = temp[2];
-  temp = attribs2[2].split();
-  var rtvname = temp[2];
+  var (rtoAttribs,rtvAttribs) = repMsg.splitMsgToTuple('+', 2);
+  var rtoname = parseName(rtoAttribs);
+  var rtvname = parseName(rtvAttribs);
   var roundTrip = new owned SegString(rtoname, rtvname, st);
   var success = && reduce (strings == roundTrip);
   writeln("Round trip successful? >>> %t <<<".format(success));

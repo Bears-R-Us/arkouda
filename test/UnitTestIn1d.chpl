@@ -1,12 +1,10 @@
-module UnitTestIn1d
+prototype module UnitTestIn1d
 {
-    use In1d;
+    use TestBase;
     
     use Random;
-    use Time only;
 
-    use BlockDist;
-
+    use In1d;
 
     // fill a with integers from interval aMin..(aMax-1)
     proc fillRandInt(a: [?aD] ?t, aMin: t, aMax: t) {
@@ -60,7 +58,7 @@ module UnitTestIn1d
 
         writeln((n, m, nVals)); try! stdout.flush();
 
-        const aDom = newBlockDom({0..#n});
+        const aDom = makeDistDom(n);
 
         var a: [aDom] int;
 
@@ -70,7 +68,7 @@ module UnitTestIn1d
         // fill a with random ints from a range
         fillRandInt(a, aMin, aMax+1);
 
-        const bDom = newBlockDom({0..#m});
+        const bDom = makeDistDom(m);
         var b: [bDom] int;
         var expected: real;
 
