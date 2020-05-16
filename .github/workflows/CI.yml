@@ -3,7 +3,7 @@ name: CI
 on: [push, pull_request]
 
 env:
-  ARKOUDA_DEVELOPER: true # faster compilation, and enable checks
+  ARKOUDA_QUICK_COMPILE: true
   CHPL_RT_OVERSUBSCRIBED: yes # limit contention on limited CI hardware
 
 jobs:
