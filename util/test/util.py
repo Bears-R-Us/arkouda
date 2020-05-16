@@ -19,7 +19,6 @@ import logging
 import os
 import socket
 import subprocess
-import sys
 import time
 
 from collections import namedtuple
@@ -121,36 +120,48 @@ def kill_server(server_process):
     """
     if server_process.poll() is None:
         try:
-            logging.info('Attemping clean server shutdown')
+            logging.info('Attempting clean server shutdown')
             stop_arkouda_server()
         except ValueError as e:
             pass
 
         if server_process.poll() is None:
-            logging.warn('Attemping dirty server shutdown')
+            logging.warn('Attempting dirty server shutdown')
             server_process.kill()
 
-def start_arkouda_server(numlocales, verbose=False, log=False):
+def start_arkouda_server(numlocales, verbose=False, log=False, port=5555, host=None):
     """
     Start the Arkouda server and wait for it to start running. Connection info
     is written to `get_arkouda_server_info_file()`.
-    Returns ServerInfo(host, port, process)
+    
+    :param int numlocals: the number of arkouda_server locales
+    :param bool verbose: indicates whether to start the arkouda_server in verbose mode
+    :param bool log: indicates whether to start arkouda_server with logging enabled
+    :param int port: the desired arkouda_server port, defaults to 5555
+    :param str host: the desired arkouda_server host, defaults to None
+    :return: server host, port, and process
+    :rtype: ServerInfo(host, port, process)
     """
     connection_file = get_arkouda_server_info_file()
     with contextlib.suppress(FileNotFoundError):
         os.remove(connection_file)
-
+    
     cmd = [get_arkouda_server(),
            '--logging={}'.format('true' if log else 'false'),
            '--v={}'.format('true' if verbose else 'false'),
            '--serverConnectionInfo={}'.format(connection_file),
-           '-nl {}'.format(numlocales)]
+           '-nl {}'.format(numlocales), '--ServerPort={}'.format(port)]
 
     logging.info('Starting "{}"'.format(cmd))
     process = subprocess.Popen(cmd, stdout=subprocess.DEVNULL)
     atexit.register(kill_server, process)
 
-    (host, port) = read_server_and_port_from_file(connection_file)
+    if not host:
+        '''
+        If host is None, this means the host and port are to be retrieved
+        via the read_server_and_port_from_file method
+        '''
+        host, port = read_server_and_port_from_file(connection_file)
     server_info = ServerInfo(host, port, process)
     set_server_info(server_info)
     return server_info
