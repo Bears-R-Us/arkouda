@@ -58,7 +58,7 @@ interactive session.
 ## Installation
 
 ### Requirements:
- * requires chapel 1.20.0
+ * requires chapel 1.22.0
  * requires zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * requires hdf5 
  * requires python 3.6 or greater
@@ -106,7 +106,7 @@ If it is preferred to build Chapel instead of using the brew install, the proces
 ```bash
 
 # on my mac build chapel in my home directory with these settings...
-export CHPL_HOME=~/chapel/chapel-1.20.0
+export CHPL_HOME=~/chapel/chapel-1.22.0
 source $CHPL_HOME/util/setchplenv.bash
 export CHPL_COMM=gasnet
 export CHPL_COMM_SUBSTRATE=smp
@@ -133,9 +133,9 @@ sudo apt-get update
 sudo apt-get install gcc g++ m4 perl python python-dev python-setuptools bash make mawk git pkg-config
 
 # Download latest Chapel release, explode archive, and navigate to source root directory
-wget https://github.com/chapel-lang/chapel/releases/download/1.20.0/chapel-1.20.0.tar.gz
-tar xvf chapel-1.20.0.tar.gz
-cd chapel-1.20.0/
+wget https://github.com/chapel-lang/chapel/releases/download/1.22.0/chapel-1.22.0.tar.gz
+tar xvf chapel-1.22.0.tar.gz
+cd chapel-1.22.0/
 
 # Set CHPL_HOME
 export CHPL_HOME=$PWD
