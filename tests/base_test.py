@@ -29,7 +29,7 @@ class ArkoudaTest(unittest.TestCase):
             print('starting in full stack mode')
             try: 
                 nl = get_arkouda_numlocales()
-                start_arkouda_server(numlocales=nl, port=ArkoudaTest.port)
+                ArkoudaTest.server, _, _ = start_arkouda_server(numlocales=nl, port=ArkoudaTest.port)
                 print('Started arkouda_server in full stack test mode with {} locales'.format(nl))
             except Exception as e:
                 raise RuntimeError('in configuring or starting the arkouda_server: {}, check ' +
