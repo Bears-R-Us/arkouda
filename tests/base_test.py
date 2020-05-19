@@ -1,8 +1,6 @@
-import unittest
-import subprocess, os, signal
+import unittest, os
 from context import arkouda as ak
-from util.test.util import get_arkouda_server, get_arkouda_numlocales,\
-    start_arkouda_server, stop_arkouda_server
+from util.test.util import get_arkouda_numlocales, start_arkouda_server, stop_arkouda_server
 
 '''
 ArkoudaTest defines the base Arkouda test logic for starting up the arkouda_server at the 
@@ -30,9 +28,9 @@ class ArkoudaTest(unittest.TestCase):
         if ArkoudaTest.full_stack_mode:
             print('starting in full stack mode')
             try: 
-                nl = int(get_arkouda_numlocales())
-                start_arkouda_server(numlocales=nl, host=ArkoudaTest.server, port=ArkoudaTest.port)
-                print('Started arkouda_server in full stack test mode')
+                nl = get_arkouda_numlocales()
+                ArkoudaTest.server, _, _ = start_arkouda_server(numlocales=nl, port=ArkoudaTest.port)
+                print('Started arkouda_server in full stack test mode with {} locales'.format(nl))
             except Exception as e:
                 raise RuntimeError('in configuring or starting the arkouda_server: {}, check ' +
                          'environment and/or arkouda_server installation', e)
