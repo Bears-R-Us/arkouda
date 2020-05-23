@@ -139,7 +139,8 @@ def get_server_info():
     :rtype: ServerInfo
     :raise: ValueError if Arkouda server is not running
     """
-    if _server_info.host is None or _server_info.process.poll() is not None:
+    _server_info = ServerInfo('localhost', 5555, None)
+    if _server_info.host is None and _server_info.process.poll() is not None:
         raise ValueError('Arkouda server is not running')
     return _server_info
 

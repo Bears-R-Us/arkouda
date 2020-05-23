@@ -2,7 +2,7 @@
 
 import sys
 
-import arkouda as ak
+from context import arkouda as ak
 
 ak.verbose = False
 if len(sys.argv) > 1:

@@ -1,6 +1,7 @@
 import unittest, os
 from context import arkouda as ak
-from util.test.util import get_arkouda_numlocales, start_arkouda_server, stop_arkouda_server
+from util.test.util import ServerInfo, get_arkouda_numlocales, start_arkouda_server, stop_arkouda_server, \
+     run_client_live, set_server_info
 
 '''
 ArkoudaTest defines the base Arkouda test logic for starting up the arkouda_server at the 
@@ -35,6 +36,7 @@ class ArkoudaTest(unittest.TestCase):
                 raise RuntimeError('in configuring or starting the arkouda_server: {}, check ' +
                          'environment and/or arkouda_server installation', e)
         else:
+            set_server_info(ServerInfo(host=ArkoudaTest.server, port=ArkoudaTest.port, process=None))
             print('in client stack test mode')
         
 
@@ -46,7 +48,8 @@ class ArkoudaTest(unittest.TestCase):
         :raise: ConnectionError if exception is raised in connecting to arkouda_server
         '''
         try:
-            ak.client.connect(server=ArkoudaTest.server, port=ArkoudaTest.port)
+            run_client_live('arkouda/client.py')
+            #ak.client.connect(server=ArkoudaTest.server, port=ArkoudaTest.port)
         except Exception as e:
             raise ConnectionError(e)
     
