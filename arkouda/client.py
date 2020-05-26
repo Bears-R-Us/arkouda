@@ -41,7 +41,7 @@ def set_defaults():
 
 
 # create context, request end of socket, and connect to it
-def connect(server = "localhost", port = 5555, timeout = 10):
+def connect(server = "localhost", port = 5555, timeout = 0):
     """
     Connect to a running arkouda server.
 
@@ -54,7 +54,7 @@ def connect(server = "localhost", port = 5555, timeout = 10):
         The port of the server. Defaults to 5555.
     timeout : int, optional
         The timeout in seconds for client send and receive operations.
-        Defaults to 10 seconds
+        Defaults to 0 seconds, whicn is interpreted as no timeout
 
     Returns
     -------
@@ -80,8 +80,9 @@ def connect(server = "localhost", port = 5555, timeout = 10):
 
     # create and configure socket for connections to arkouda server
     socket = context.socket(zmq.REQ) # request end of the zmq connection
-    socket.setsockopt(zmq.SNDTIMEO, timeout*1000)
-    socket.setsockopt(zmq.RCVTIMEO, timeout*1000)
+    if timeout > 0:
+        socket.setsockopt(zmq.SNDTIMEO, timeout*1000)
+        socket.setsockopt(zmq.RCVTIMEO, timeout*1000)
     
     # connect to arkouda server
     try:
