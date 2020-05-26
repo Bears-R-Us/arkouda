@@ -24,8 +24,7 @@ class ArkoudaTest(unittest.TestCase):
     def setUpClass(cls):
         '''
         If in full stack mode, configures and starts the arkouda_server process and sets the 
-        ArkoudaTest.server class attribute. In client mode, sets the ServerInfo object used
-        to connect to the externally-managed arkouda_server process
+        ArkoudaTest.server class attribute, noop in client mode.
         
         :return: None
         :raise: EnvironmentError if 1..n required test libraries are missing, RuntimeError 
@@ -39,13 +38,12 @@ class ArkoudaTest(unittest.TestCase):
                 nl = get_arkouda_numlocales()
                 ArkoudaTest.server, _, _ = start_arkouda_server(numlocales=nl, port=ArkoudaTest.port)
                 print('Started arkouda_server in full stack test mode with host: {} port: {} locales: {}'.\
-                      format(ArkoudaTest.server, nl))
+                      format(ArkoudaTest.server, ArkoudaTest.port, nl))
             except Exception as e:
                 raise RuntimeError('in configuring or starting the arkouda_server: {}, check ' +
                          'environment and/or arkouda_server installation', e)
         else:
-            set_server_info(ServerInfo(host=ArkoudaTest.server, port=ArkoudaTest.port, process=None))
-            print('in client stack test mode')
+            print('in client stack test mode with host: {} port: {}'.format(ArkoudaTest.server, ArkoudaTest.port))
         
 
     def setUp(self):
