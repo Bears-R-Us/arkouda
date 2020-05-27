@@ -6,7 +6,7 @@ import math
 import gc
 import sys
 
-import arkouda as ak
+from context import arkouda as ak
 
 print(">>> Sanity checks on the arkouda_server")
 
