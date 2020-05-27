@@ -41,7 +41,7 @@ def set_defaults():
 
 
 # create context, request end of socket, and connect to it
-def connect(server = "localhost", port = 5555):
+def connect(server = "localhost", port = 5555, timeout = 0):
     """
     Connect to a running arkouda server.
 
@@ -52,6 +52,9 @@ def connect(server = "localhost", port = 5555):
         machine). Defaults to `localhost`.
     port : int, optional
         The port of the server. Defaults to 5555.
+    timeout : int, optional
+        The timeout in seconds for client send and receive operations.
+        Defaults to 0 seconds, whicn is interpreted as no timeout
 
     Returns
     -------
@@ -75,11 +78,19 @@ def connect(server = "localhost", port = 5555):
         (pspStr, _) = ssh.tunnel.open_tunnel(pspStr, tunnel_server)
     if verbose: print("psp = ",pspStr);
 
-    # setup connection to arkouda server
+    # create and configure socket for connections to arkouda server
     socket = context.socket(zmq.REQ) # request end of the zmq connection
-    socket.connect(pspStr)
+    if timeout > 0:
+        socket.setsockopt(zmq.SNDTIMEO, timeout*1000)
+        socket.setsockopt(zmq.RCVTIMEO, timeout*1000)
+    
+    # connect to arkouda server
+    try:
+        socket.connect(pspStr)
+    except Exception as e:
+        raise ConnectionError(e)
 
-    #send the connect message
+    # send the connect message
     message = "connect"
     if verbose: print("[Python] Sending request: %s" % message)
     socket.send_string(message)

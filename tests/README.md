@@ -37,6 +37,7 @@ env =
     ARKOUDA_SERVER_PORT=5555
     ARKOUDA_FULL_STACK_TEST=False
     ARKOUDA_VERBOSE=False
+    ARKOUDA_CLIENT_TIMEOUT=10
 ```
 * testpaths: shows the paths to all test files. For the time-being, the arkouda unit tests to be executed are 
 specified on a per-file basis, but pytest can also support directory-level configuration.
@@ -47,12 +48,14 @@ specified on a per-file basis, but pytest can also support directory-level confi
 
 ## arkouda pytest environmental variables
 
-* ARKOUDA\_SERVER\_HOST: the hostname or ip address where the arkouda\_server is located
-* ARKOUDA\_SERVER\_PORT: the port the arkouda\_server is listening on
+* ARKOUDA\_SERVER\_HOST: the hostname or ip address where the arkouda\_server is located. Defaults to localhost
+* ARKOUDA\_SERVER\_PORT: the port the arkouda\_server is listening on. Defaults to 5555
 * ARKOUDA\_FULL\_STACK\_TEST: if True, the TestCase.setUpClass method starts up an arkouda\_server on the local machine, where
   server=ARKOUDA\_SERVER\_HOST and port= ARKOUDA\_SERVER\_PORT. If False, the test harness runs in client mode and 
-  consequently an arkouda\_server is not started up.
-* ARKOUDA_VERBOSE: if True, logging is set to DEBUG
+  consequently an arkouda\_server is not started up. Defaults to True
+* ARKOUDA\_NUMLOCALES: sets number of locales if arkouda\_server is built with multilocale support
+* ARKOUDA\_VERBOSE: if True, logging is set to DEBUG. Defaults to False
+* ARKOUDA\_CLIENT\_TIMEOUT: the connection timeout for arkouda client. Defaults to 10 seconds
 
 NOTE: the Arkouda pytest env variables can be set within the pytest.ini file as above or in .bashrc or .bash_profile
 
@@ -63,21 +66,30 @@ the python3 binary, since Arkouda requires Python3.6+.
 
 ```
 python3 -m pytest -c pytest.ini 
+
+# execute tests with logging enabled 
+python3 -m pytest -c pytest.ini -s
+
+# execute tests, exiting if one test case fails
+python3 -m pytest -c pytest.ini -x
 ```
 
-To execute all tests in the arkouda test harness via make, execute the following command:
+pytest also enables a subset of 1..n unit tests to be executed. An example is shown below:
+
+```
+# as above, -s outputs all print statements, -x exits if one test case fails
+python3 -m pytest tests/client_test.py
+```
+
+To execute all Python tests in the arkouda Python test harness via make, execute one the following commands:
 
 ```
 make test-python
 ```
-pytest also enables a subset of 1..n unit tests to be executed. An example is shown below:
 
-```
-python3 -m pytest tests/client_test.py
-```
 # Executing arkouda Python tests outside the test harness
 
-The arkouda test classes can also be executed within an IDE such as [PyCharm](https://www.jetbrains.com/pycharm/) or 
+The Arkouda test classes can also be executed within an IDE such as [PyCharm](https://www.jetbrains.com/pycharm/) or 
 [Eclipse](https://www.eclipse.org/ide/), either in run or debug mode.
 
 # Running all arkouda Python and Chapel Tests
