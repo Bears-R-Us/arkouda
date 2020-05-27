@@ -1,6 +1,7 @@
 from string import ascii_lowercase, ascii_uppercase, digits
 import random
 import numpy as np
+import h5py
 
 ALPHABET = ascii_lowercase
 UPPERCASE_ALPHABET = ascii_uppercase
@@ -50,7 +51,7 @@ def generate_alpha_string_array(string_length : int=10, array_length :
     :retype: np.ndarray
     """
     return np.array([generate_alpha_string(length=string_length, 
-                                  uppercase=uppercase) for _ in range(array_length)]) 
+                                  uppercase=uppercase) for _ in range(array_length)], dtype='str') 
   
 def generate_alphanumeric_string_array(string_length : int=10, array_length : int=100, 
                                        uppercase : bool=False) -> np.ndarray:
@@ -66,3 +67,18 @@ def generate_alphanumeric_string_array(string_length : int=10, array_length : in
     """  
     return np.array([generate_alphanumeric_string(length=string_length, 
                                   uppercase=uppercase) for _ in range(array_length)])
+
+
+def generate_hdf5_file_with_datasets(dataset : ak.pdarray, filepath : str) -> None:
+
+    """
+    Creates an hdf5 file and populates it with a dataset in the form of an Akrouda pdarray
+
+    :oaram ak.pdarray dataset: the Arkouda pdarray to be persisted
+    :param str filepath: filepath to hdf5 file
+    """
+    if not datasets or not filepath:
+        raise ValueError('both datasets and filepath must be not None')
+    
+    h_file = h5py.File(filepath)
+    h_file.create_dataset(dataset)
