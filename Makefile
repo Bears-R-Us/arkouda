@@ -25,9 +25,6 @@ CHPL_FLAGS += --no-checks --no-loop-invariant-code-motion --no-fast-followers --
 else
 CHPL_FLAGS += --fast
 endif
-# need this to avoid a slew of warnings from HDF5 on some platforms
-# --ccflags="-Wno-incompatible-pointer-types"
-CHPL_FLAGS += --ccflags="-Wno-incompatible-pointer-types"
 CHPL_FLAGS += -smemTrack=true
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
 
