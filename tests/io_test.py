@@ -1,9 +1,10 @@
-import re
+import re, os
 import numpy as np
 import h5py
 from typing import List, Mapping, Union
 from base_test import ArkoudaTest
-from util.test.generation import generate_alpha_string_array
+from util.test.generation import generate_alpha_string_array, \
+                  generate_hdf5_file_with_datasets
 from context import arkouda as ak
 
 '''
@@ -174,8 +175,7 @@ class IOTest(ArkoudaTest):
         self._create_file(columns=self.dict_columns, 
                           path_prefix='/tmp/iotest_dict_columns')
         
-        dataset = ak.read_all(filenames=['/tmp/iotest_dict_columns_LOCALE0',
-                                        '/tmp/iotest_dict_columns_LOCALE1'])
+        dataset = ak.read_all(filenames=['/tmp/iotest_dict_columns_LOCALE0'])
         self.assertEqual(3, len(list(dataset.keys())))     
         
     def testReadAllWithGlob(self):

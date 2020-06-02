@@ -70,7 +70,7 @@ def generate_alphanumeric_string_array(string_length : int=10, array_length : in
     return np.array([generate_alphanumeric_string(length=string_length, 
                                   uppercase=uppercase) for _ in range(array_length)])
 
-def generate_hdf5_file_with_datasets(datasets : Mapping[str,ak.pdarray], filepath : str) ->h5py.File:
+def generate_hdf5_file_with_datasets(datasets : Mapping[str,ak.pdarray], filepath : str) -> h5py.File:
 
     """
     Creates an hdf5 file, populates it with 1..n datasets in the form of Akrouda pdarrays, and 
