@@ -197,6 +197,7 @@ proc main() {
                             repMsg = "noop";
                             if v { writeln("no-op"); try! stdout.flush(); }
                         }
+                        when "ruok"             { repMsg = "imok"; }
                         otherwise {
                             repMsg = "Error: unrecognized command: %s".format(reqMsg);
                         }

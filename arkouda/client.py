@@ -1,4 +1,5 @@
 import zmq, json, os
+from typing import Mapping, Tuple, Union
 import warnings, pkg_resources
 
 __all__ = ["verbose", "pdarrayIterThresh", "maxTransferBytes",
@@ -54,7 +55,7 @@ def connect(server = "localhost", port = 5555, timeout = 0):
         The port of the server. Defaults to 5555.
     timeout : int, optional
         The timeout in seconds for client send and receive operations.
-        Defaults to 0 seconds, whicn is interpreted as no timeout
+        Defaults to 0 seconds, which is interpreted as no timeout
 
     Returns
     -------
@@ -72,14 +73,18 @@ def connect(server = "localhost", port = 5555, timeout = 0):
 
     # "protocol://server:port"
     pspStr = "tcp://{}:{}".format(server,port)
+    
+    # check to see if tunnelled connection is desired. If so, start tunnel
     tunnel_server = os.getenv('ARKOUDA_TUNNEL_SERVER')
     if tunnel_server:
-        from zmq import ssh
-        (pspStr, _) = ssh.tunnel.open_tunnel(pspStr, tunnel_server)
+        _start_tunnel(addr=pspStr, tunnel_server=tunnel_server)
+
     if verbose: print("psp = ",pspStr);
 
     # create and configure socket for connections to arkouda server
     socket = context.socket(zmq.REQ) # request end of the zmq connection
+
+    # if timeout is specified, set send and receive timeout params
     if timeout > 0:
         socket.setsockopt(zmq.SNDTIMEO, timeout*1000)
         socket.setsockopt(zmq.RCVTIMEO, timeout*1000)
@@ -107,9 +112,33 @@ def connect(server = "localhost", port = 5555, timeout = 0):
                  "to fail or behave incorrectly! Updating arkouda is strongly recommended.".\
                       format(__version__, conf['arkoudaVersion']), RuntimeWarning)
 
+def _start_tunnel(addr : str, tunnel_server : str) -> None:
+    """
+    Starts ssh tunnel
+    
+    :param str tunnel_server: the ssh url
+    :return: None
+    :raise: ConnectionError if the ssh tunnel could not be created given the tunnel_server 
+            url and credentials (either password or key file)
+    """
+    from zmq import ssh
+    kwargs = {'addr' : addr,
+              'server' : tunnel_server}
+    keyfile = os.getenv('ARKOUDA_KEY_FILE')
+    password = os.getenv('ARKOUDA_PASSWORD')
 
+    if keyfile:
+        kwargs['keyfile'] = keyfile
+    if password:
+        kwargs['password'] = password
+
+    try: 
+        ssh.tunnel.open_tunnel(**kwargs)
+    except Exception as e:
+        raise ConnectionError(e)
+    
 # message arkouda server to shutdown server
-def disconnect():
+def disconnect() -> None:
     """
     Disconnect from the arkouda server.
     """
@@ -130,7 +159,7 @@ def disconnect():
         print("not connected; cannot disconnect")
 
 # message arkouda server to shutdown server
-def shutdown():
+def shutdown() -> None:
     """
     Tell the arkouda server to delete all objects and shut itself down.
     """
@@ -148,11 +177,11 @@ def shutdown():
     connected = False
 
 # send message to arkouda server and check for server side error
-def generic_msg(message, send_bytes=False, recv_bytes=False):
+def generic_msg(message, send_bytes=False, recv_bytes=False) -> str:
     global socket, pspStr, connected, verbose
 
     if not connected:
-        raise RuntimeError("Not connected to a server")
+        raise RuntimeError("client is not connected to a server")
     if send_bytes:
         socket.send(message)
     else:
@@ -178,7 +207,7 @@ def generic_msg(message, send_bytes=False, recv_bytes=False):
     return message
 
 # query the server to get configuration
-def get_config():
+def get_config() -> Mapping[str, Union[str, int]]:
     """
     Get runtime information about the server.
 
@@ -195,7 +224,7 @@ def get_config():
     return json.loads(generic_msg("getconfig"))
 
 # query the server to get pda memory used
-def get_mem_used():
+def get_mem_used() -> int:
     """
     Compute the amount of memory used by objects in the server's symbol table.
 
@@ -206,8 +235,30 @@ def get_mem_used():
     """
     return int(generic_msg("getmemused"))
 
-def _no_op():
+def _no_op() -> str:
     """
     Send a no-op message just to gather round trip time
     """
     return generic_msg("noop")
+  
+def ruok() -> str:
+    """
+    Simply sends an "ruok" message to the server and, if the return message is "imok",
+    this means the arkouda_server is up and operating normally. If the message is
+    "imnotok" means an error occurred or the connection timed out.
+    
+    This method is basically a way to do a quick healthcheck in a way that does 
+    not require error handling.
+    
+    :return: string indicating if the server is ok (operating normally), if there's an
+             error server-side, or if ruok did not return a response
+    :rtype: str
+    """
+    try:
+        res = generic_msg('ruok')
+        if res == 'imok':
+            return 'imok'
+        else:
+            return 'imnotok because: {}'.format(res)
+    except Exception as e:
+        return 'ruok did not return response: {}'.format(str(e))
