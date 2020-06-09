@@ -116,6 +116,9 @@ export CHPL_RT_OVERSUBSCRIBED=yes
 cd $CHPL_HOME
 make
 
+# Build chpldoc to enable generation of Arkouda docs
+make chpldoc
+
 # Add the Chapel executable (chpl) to PATH either in ~/.bashrc (single user) 
 # or /etc/environment (all users):
 
@@ -151,6 +154,9 @@ export GASNET_QUIET=Y
 export CHPL_RT_OVERSUBSCRIBED=yes
 cd $CHPL_HOME
 make
+
+# Build chpldoc to enable generation of Arkouda docs
+make chpldoc
 
 # Optionally add the Chapel executable (chpl) to the PATH for all users: /etc/environment
 export PATH=$CHPL_HOME/bin/linux64-x86_64/:$PATH
@@ -210,7 +216,7 @@ For more details regarding Arkouda testing, please consult the Python test [READ
 
 ## Building the Arkouda documentation
 
-Make sure you installed the Sphinx and sphinx-argparse packages (e.g. `pip3 install -U Sphinx sphinx-argparse`)
+Make sure you've installed the Sphinx and sphinx-argparse packages (e.g. `pip3 install -U Sphinx sphinx-argparse`). _Important: if you've built Chapel, you must execute make chpldoc as detailed above._
 
 Run `make doc` to build both the Arkouda python documentation and the Chapel server documentation
 

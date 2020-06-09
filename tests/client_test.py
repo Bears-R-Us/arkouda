@@ -74,3 +74,14 @@ class ClientTest(ArkoudaTest):
         except Exception as e:
             raise AssertionError(e)
         self.assertTrue(mem_used > 0)
+        
+        
+    def test_no_op(self):
+        '''
+        Tests the ak.client._no_op method
+        
+        :return: None
+        :raise: AssertionError if return message is not 'noop'
+        '''   
+        noop = ak.client._no_op()
+        self.assertEqual('noop', noop)
