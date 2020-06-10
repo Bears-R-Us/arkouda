@@ -22,14 +22,22 @@ module NewUnion1dMsg
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
         var gEnt2: borrowed GenSymEntry = st.lookup(name2);
-        
-        var e = toSymEntry(gEnt,int);
-        var f = toSymEntry(gEnt2, int);
-        
-        var aV = newUnion1d(e.a, f.a);
-        st.addEntry(vname, new shared SymEntry(aV));
-                
-        var s = try! "created " + st.attrib(vname);
-        return s;
+
+        select(gEnt.dtype) {
+          when (DType.Int64) {
+             if(gEnt.dtype != gEnt2.dtype) then return notImplementedError("newUnion1d",gEnt2.dtype);
+             var e = toSymEntry(gEnt,int);
+             var f = toSymEntry(gEnt2, int);
+
+             var aV = newUnion1d(e.a, f.a);
+             st.addEntry(vname, new shared SymEntry(aV));
+
+             var s = try! "created " + st.attrib(vname);
+             return s;
+           }
+           otherwise {
+             return notImplementedError("newUnion1d",gEnt.dtype);
+           }
+        }
     }
 }
