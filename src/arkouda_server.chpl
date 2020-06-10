@@ -122,6 +122,7 @@ proc main() {
                     var repMsg: string;
                     select cmd
                     {
+                        when "newUnion1d"        {repMsg = newUnion1dMsg(reqMsg, st);}
                         when "segmentLengths"    {repMsg = segmentLengthsMsg(reqMsg, st);}
                         when "segmentedHash"     {repMsg = segmentedHashMsg(reqMsg, st);}
                         when "segmentedEfunc"    {repMsg = segmentedEfuncMsg(reqMsg, st);}

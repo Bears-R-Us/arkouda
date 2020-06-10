@@ -6,7 +6,7 @@ from arkouda.strings import Strings
 
 global verbose
 
-__all__ = ["unique", "in1d", "concatenate", "union1d", "intersect1d",
+__all__ = ["newUnion1d", "unique", "in1d", "concatenate", "union1d", "intersect1d",
            "setdiff1d", "setxor1d"]
 global verbose
 
@@ -177,6 +177,20 @@ def concatenate(arrays):
     elif objtype == "str":
         return Strings(*(repMsg.split('+')))
 
+def doUnion(pda1, pda2):
+    repMsg = generic_msg("newUnion1d {} {}".format(pda1.name, pda2.name))
+    return create_pdarray(repMsg)
+    
+def newUnion1d(pda1, pda2):
+    if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+        if pda1.size == 0:
+            return pda2 # union is pda2
+        if pda2.size == 0:
+            return pda1 # union is pda1
+        return doUnion(pda1, pda2)
+    else:
+        raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
+    
 # (A1 | A2) Set Union: elements are in one or the other or both
 def union1d(pda1, pda2):
     """
