@@ -137,7 +137,7 @@ Then, define your argument parsing and function logic in ``src/FooMsg.chpl`` in 
        :type st: borrowed SymTab 
        :returns: (string) response message
        */
-       proc FooMsg(reqMsg: string, st: borrowed SymTab): string throws {
+       proc fooMsg(reqMsg: string, st: borrowed SymTab): string throws {
            var repMsg: string; // response message
            // split request into fields
            var (cmd, name) = reqMsg.splitMsgToTuple(2);
