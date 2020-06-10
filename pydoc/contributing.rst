@@ -9,7 +9,7 @@ Adding Python Functionality
 
 Python functions should follow the API of NumPy or Pandas, were possible. In general, functions should conform to the following:
 
-1. Be defined somewhere in the ``arkouda`` subdirectory
+1. Be defined somewhere in the ``arkouda`` subdirectory, such as in ``arkouda/pdarraysetops.py``
 2. Have a complete docstring in `NumPy format <https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard>`_
 3. Check argument types and properties, raising exceptions if necessary
 4. Send a request message using ``generic_msg(request)``
