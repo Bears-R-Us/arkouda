@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: [chapel, chapel-gasnet]
+        image: [chapel, chapel-gasnet-smp]
     container:
       image: chapel/${{matrix.image}}:1.22.0
     steps:
@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: [chapel, chapel-gasnet]
+        image: [chapel, chapel-gasnet-smp]
     container:
       image: chapel/${{matrix.image}}:1.22.0
     steps:
