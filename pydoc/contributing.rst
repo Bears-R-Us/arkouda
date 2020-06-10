@@ -22,25 +22,25 @@ Example
 
 .. code-block:: python
 
-    def foo(pda):
-    """
-    Return the foo() of the array.
+     def foo(pda):
+         """
+         Return the foo() of the array.
 
-    Parameters
-    ----------
-    pda : pdarray
-        The array to foo
+         Parameters
+         ----------
+         pda : pdarray
+             The array to foo
 
-    Returns
-    -------
-    pdarray
-        The foo'd array
-    """
-    if isinstance(pda, pdarray):
-        repMsg = generic_msg("foo {}".format(pda.name))
-        return create_pdarray(repMsg)
-    else:
-        raise TypeError("must be pdarray {}".format(pda))
+         Returns
+         -------
+         pdarray
+             The foo'd array
+         """
+         if isinstance(pda, pdarray):
+             repMsg = generic_msg("foo {}".format(pda.name))
+             return create_pdarray(repMsg)
+         else:
+             raise TypeError("must be pdarray {}".format(pda))
 
 Adding Functionality to the Arkouda Server
 ==========================================
