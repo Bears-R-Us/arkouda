@@ -29,7 +29,7 @@ endif
 # --ccflags="-Wno-incompatible-pointer-types"
 CHPL_FLAGS += --ccflags="-Wno-incompatible-pointer-types"
 CHPL_FLAGS += -smemTrack=true
-CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
+CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq -lczmq
 
 # add-path: Append custom paths for non-system software.
 # Note: Darwin `ld` only supports `-rpath <path>`, not `-rpath=<paths>`.
