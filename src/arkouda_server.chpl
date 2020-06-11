@@ -32,7 +32,8 @@ proc main() {
 
     // create and connect ZMQ socket
     var context: ZMQ.Context;
-    var socket = context.socket(ZMQ.REP);
+    var socket : ZMQ.Socket = context.socket(ZMQ.REP);
+    socket.setPlainServer(true);
     socket.bind("tcp://*:%t".format(ServerPort));
     writeln("server listening on %s:%t".format(serverHostname, ServerPort)); try! stdout.flush();
     createServerConnectionInfo();
@@ -197,7 +198,7 @@ proc main() {
                             repMsg = "noop";
                             if v { writeln("no-op"); try! stdout.flush(); }
                         }
-                        when "ruok"             { repMsg = "imok"; }
+                        when "ruok"		{repMsg = "imok";}
                         otherwise {
                             repMsg = "Error: unrecognized command: %s".format(reqMsg);
                         }
