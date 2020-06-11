@@ -30,6 +30,7 @@ module MsgProcessing
     public use JoinEqWithDTMsg;
     public use RegistrationMsg;
     public use NewUnion1dMsg;
+    public use NewSetxor1dMsg;
     
     /* 
     Parse, execute, and respond to a create message 

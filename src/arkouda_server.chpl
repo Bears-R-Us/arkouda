@@ -122,6 +122,8 @@ proc main() {
                     var repMsg: string;
                     select cmd
                     {
+                        when "newSetdiff1d"      {repMsg = newSetdiff1dMsg(reqMsg, st);}
+                        when "newSetxor1d"       {repMsg = newSetxor1dMsg(reqMsg, st);}
                         when "newUnion1d"        {repMsg = newUnion1dMsg(reqMsg, st);}
                         when "segmentLengths"    {repMsg = segmentLengthsMsg(reqMsg, st);}
                         when "segmentedHash"     {repMsg = segmentedHashMsg(reqMsg, st);}

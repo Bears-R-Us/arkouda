@@ -6,7 +6,7 @@ from arkouda.strings import Strings
 
 global verbose
 
-__all__ = ["newUnion1d", "unique", "in1d", "concatenate", "union1d", "intersect1d",
+__all__ = ["newsetdiff1d", "newSetxor1d","newUnion1d", "unique", "in1d", "concatenate", "union1d", "intersect1d",
            "setdiff1d", "setxor1d"]
 global verbose
 
@@ -320,6 +320,17 @@ def setdiff1d(pda1, pda2, assume_unique=False):
     else:
         raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
 
+def newsetdiff1d(pda1, pda2, assume_unique=False):
+    if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+        if pda1.size == 0:
+            return pda1 # return a zero length pdarray
+        if pda2.size == 0:
+            return pda1 # subtracting nothing return orig pdarray
+        repMsg = generic_msg("newSetdiff1d {} {} {}".format(pda1.name, pda2.name, assume_unique))
+        return create_pdarray(repMsg)
+    else:
+        raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
+
 # (A1 ^ A2) Set Symmetric Difference: elements are not in the intersection
 def setxor1d(pda1, pda2, assume_unique=False):
     """
@@ -364,5 +375,17 @@ def setxor1d(pda1, pda2, assume_unique=False):
         aux = aux[aux_sort_indices]
         flag = concatenate((array([True]), aux[1:] != aux[:-1], array([True])))
         return aux[flag[1:] & flag[:-1]]
+    else:
+        raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
+
+def newSetxor1d(pda1, pda2, assume_unique=False):
+    if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+        if pda1.size == 0:
+            return pda2 # return other pdarray if pda1 is empty
+        if pda2.size == 0:
+            return pda1 # return other pdarray if pda2 is empty
+        
+        repMsg = generic_msg("newSetxor1d {} {} {}".format(pda1.name, pda2.name, assume_unique))
+        return create_pdarray(repMsg)
     else:
         raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
