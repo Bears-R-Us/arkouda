@@ -17,16 +17,8 @@ module SegStringSort {
 
   record StringIntComparator {
     proc keyPart((a0,_): (string, int), in i: int) {
-      var len = a0.numBytes;
-      // This uses .indices to make this code work with Chapel 1.21 or 1.22;
-      // If/when we want to hard-code to 1.22+, we can remove the following
-      // statement and change the a0.byte(i) expression below to a0.byte(i-1).
-      // Though Chapel issue #15419 suggests making keyPart() routines 0-based
-      // as well, at which point, it could remain a0.byte(i)...
-      if a0.indices.low == 0 then { len -= 1; i -= 1; }
-      var section = if i <= len then 0:int(8) else -1:int(8);
-      var part = if i <= len then a0.byte(i) else 0:uint(8);
-      return (section, part);
+      // Just run the default comparator on the string
+      return Sort.defaultComparator.keyPart(a0, i);
     }
   }
   
