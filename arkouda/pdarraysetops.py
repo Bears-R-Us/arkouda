@@ -6,7 +6,8 @@ from arkouda.strings import Strings
 
 global verbose
 
-__all__ = ["newintersect1d", "newsetdiff1d", "newSetxor1d","newUnion1d", "unique", "in1d", "concatenate", "union1d", "intersect1d",
+__all__ = ["newintersect1d", "newsetdiff1d", "newSetxor1d","newUnion1d", "unique",
+           "in1d", "concatenate", "union1d", "intersect1d",
            "setdiff1d", "setxor1d"]
 global verbose
 

@@ -13,19 +13,34 @@ module NewSetxor1d
 
     use CommAggregation;
 
-    proc newIntersect1d(a1: [?aD] int, b1: [aD] int, assume_string: string) {
-       var (a, _)  = uniqueSort(a1);
-       var (b, _)  = uniqueSort(b1);
-      var aux2 = concatset(a,b);
-      var aux_sort_indices = radixSortLSD_ranks(aux2);
-      var aux = aux2[aux_sort_indices];
+    proc newIntersect1d(a1: [?aD] int, b1: [aD] int, assume_unique: string) {
+      if assume_unique == "False" {
+        var (a, _)  = uniqueSort(a1);
+        var (b, _)  = uniqueSort(b1);
+        var aux2 = concatset(a,b);
+        var aux_sort_indices = radixSortLSD_ranks(aux2);
+        var aux = aux2[aux_sort_indices];
 
-      var mask = sliceEnd(aux) == sliceStart(aux);
+        var mask = sliceEnd(aux) == sliceStart(aux);
 
-      var temp = sliceEnd(aux);
-      var int1d = boolIndexer(temp, mask);
+        var temp = sliceEnd(aux);
+        var int1d = boolIndexer(temp, mask);
 
-      return int1d;
+        return int1d;
+      } else {
+        ref a = a1;
+        ref b = b1;
+        var aux2 = concatset(a,b);
+        var aux_sort_indices = radixSortLSD_ranks(aux2);
+        var aux = aux2[aux_sort_indices];
+
+        var mask = sliceEnd(aux) == sliceStart(aux);
+
+        var temp = sliceEnd(aux);
+        var int1d = boolIndexer(temp, mask);
+
+        return int1d;
+      }
     }
 
     proc sliceStart(a: [?aD] ?t) {
@@ -37,24 +52,41 @@ module NewSetxor1d
     }
       
     proc newSetxor1d(a1: [?aD] int, b1: [aD] int, assume_unique: string) {
-      //if assume_unique == "False" {
+      if assume_unique == "False" {
         var (a, _)  = uniqueSort(a1);
         var (b, _)  = uniqueSort(b1);
-        // }
 
-      var aux2 = concatset(a,b);
-      var aux_sort_indices = radixSortLSD_ranks(aux2);
-      var aux = aux2[aux_sort_indices];
-      
-      var sliceComp = sliceStart(aux) != sliceEnd(aux);//(sliceIndex(aux,1,aux.size,1) != sliceIndex(aux,0,aux.size-1,1));
-      var flag = concatset([true],sliceComp);
-      var flag2 = concatset(flag, [true]);
+        var aux2 = concatset(a,b);
+        var aux_sort_indices = radixSortLSD_ranks(aux2);
+        var aux = aux2[aux_sort_indices];
 
-      var mask = sliceStart(flag2) & sliceEnd(flag2);//sliceIndex(flag2,1,flag2.size,1) & sliceIndex(flag2,0,flag2.size-1,1);
+        var sliceComp = sliceStart(aux) != sliceEnd(aux);//(sliceIndex(aux,1,aux.size,1) != sliceIndex(aux,0,aux.size-1,1));
+        var flag = concatset([true],sliceComp);
+        var flag2 = concatset(flag, [true]);
 
-      var ret = boolIndexer(aux, mask);
-      
-      return ret;
+        var mask = sliceStart(flag2) & sliceEnd(flag2);//sliceIndex(flag2,1,flag2.size,1) & sliceIndex(flag2,0,flag2.size-1,1);
+
+        var ret = boolIndexer(aux, mask);
+
+        return ret;
+      } else {
+        ref a  = a1;
+        ref b  = b1;
+
+        var aux2 = concatset(a,b);
+        var aux_sort_indices = radixSortLSD_ranks(aux2);
+        var aux = aux2[aux_sort_indices];
+
+        var sliceComp = sliceStart(aux) != sliceEnd(aux);//(sliceIndex(aux,1,aux.size,1) != sliceIndex(aux,0,aux.size-1,1));
+        var flag = concatset([true],sliceComp);
+        var flag2 = concatset(flag, [true]);
+
+        var mask = sliceStart(flag2) & sliceEnd(flag2);//sliceIndex(flag2,1,flag2.size,1) & sliceIndex(flag2,0,flag2.size-1,1);
+
+        var ret = boolIndexer(aux, mask);
+
+        return ret;
+      }
       
     }
 
@@ -97,7 +129,7 @@ module NewSetxor1d
         var (a1, _)  = uniqueSort(a);
         var (b1, _)  = uniqueSort(b);
         var truth = makeDistArray(a1.size, bool);
-        truth = in1dGlobalAr2Bcast(a1,b1);
+        truth = in1dSort(a1,b1);
         truth = !truth;
 
         var iv: [truth.domain] int = (+ scan truth);
@@ -114,7 +146,7 @@ module NewSetxor1d
       }
       else {
         var truth = makeDistArray(a.size, bool);
-        truth = in1dGlobalAr2Bcast(a,b);
+        truth = in1dSort(a,b);
         truth = !truth;
 
         var iv: [truth.domain] int = (+ scan truth);
