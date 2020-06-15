@@ -185,6 +185,7 @@ proc main() {
                         when "register"          {repMsg = registerMsg(reqMsg, st);}
                         when "attach"            {repMsg = attachMsg(reqMsg, st);}
                         when "unregister"        {repMsg = unregisterMsg(reqMsg, st);}
+                        when "dframe"            {repMsg = dFrameMsg(reqMsg, st);}
                         when "connect" {
                             repMsg = "connected to arkouda server tcp://*:%t".format(ServerPort);
                         }
