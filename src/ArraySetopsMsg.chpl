@@ -14,7 +14,7 @@ module ArraySetopsMsg
     use ArraySetops;
     use Indexing;
 
-    proc newIntersect1dMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc intersect1dMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
         var (cmd, name, name2, assume_unique) = reqMsg.splitMsgToTuple(4);
@@ -30,7 +30,7 @@ module ArraySetopsMsg
              var e = toSymEntry(gEnt,int);
              var f = toSymEntry(gEnt2, int);
              
-             var aV = newIntersect1d(e.a, f.a, assume_unique);
+             var aV = intersect1d(e.a, f.a, assume_unique);
              st.addEntry(vname, new shared SymEntry(aV));
 
              var s = try! "created " + st.attrib(vname);
@@ -42,7 +42,7 @@ module ArraySetopsMsg
         }
     }
 
-    proc newSetxor1dMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc setxor1dMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
         var (cmd, name, name2, assume_unique) = reqMsg.splitMsgToTuple(4);
@@ -58,7 +58,7 @@ module ArraySetopsMsg
              var e = toSymEntry(gEnt,int);
              var f = toSymEntry(gEnt2, int);
              
-             var aV = newSetxor1d(e.a, f.a, assume_unique);
+             var aV = setxor1d(e.a, f.a, assume_unique);
              st.addEntry(vname, new shared SymEntry(aV));
 
              var s = try! "created " + st.attrib(vname);
@@ -70,7 +70,7 @@ module ArraySetopsMsg
         }
     }
 
-    proc newSetdiff1dMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc setdiff1dMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
         var (cmd, name, name2, assume_unique) = reqMsg.splitMsgToTuple(4);
@@ -86,7 +86,7 @@ module ArraySetopsMsg
              var e = toSymEntry(gEnt,int);
              var f = toSymEntry(gEnt2, int);
              
-             var aV = newSetdiff1d(e.a, f.a, assume_unique);
+             var aV = setdiff1d(e.a, f.a, assume_unique);
              st.addEntry(vname, new shared SymEntry(aV));
 
              var s = try! "created " + st.attrib(vname);
@@ -98,7 +98,7 @@ module ArraySetopsMsg
         }
     }
 
-    proc newUnion1dMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc union1dMsg(reqMsg: string, st: borrowed SymTab): string throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string;
       var (cmd, name, name2) = reqMsg.splitMsgToTuple(3);
@@ -114,7 +114,7 @@ module ArraySetopsMsg
            var e = toSymEntry(gEnt,int);
            var f = toSymEntry(gEnt2, int);
 
-           var aV = newUnion1d(e.a, f.a);
+           var aV = union1d(e.a, f.a);
            st.addEntry(vname, new shared SymEntry(aV));
 
            var s = try! "created " + st.attrib(vname);

@@ -12,7 +12,7 @@ module ArraySetops
 
     use CommAggregation;
 
-    proc newIntersect1d(a1: [?aD] int, b1: [aD] int, assume_unique: string) {
+    proc intersect1d(a1: [?aD] int, b1: [aD] int, assume_unique: string) {
       if assume_unique == "False" {
         var (a, _)  = uniqueSort(a1);
         var (b, _)  = uniqueSort(b1);
@@ -50,7 +50,7 @@ module ArraySetops
       return sliceIndex(a, 0, a.size - 1, 1);
     }
       
-    proc newSetxor1d(a1: [?aD] int, b1: [aD] int, assume_unique: string) {
+    proc setxor1d(a1: [?aD] int, b1: [aD] int, assume_unique: string) {
       if assume_unique == "False" {
         var (a, _)  = uniqueSort(a1);
         var (b, _)  = uniqueSort(b1);
@@ -59,11 +59,11 @@ module ArraySetops
         var aux_sort_indices = radixSortLSD_ranks(aux2);
         var aux = aux2[aux_sort_indices];
 
-        var sliceComp = sliceStart(aux) != sliceEnd(aux);//(sliceIndex(aux,1,aux.size,1) != sliceIndex(aux,0,aux.size-1,1));
+        var sliceComp = sliceStart(aux) != sliceEnd(aux);
         var flag = concatset([true],sliceComp);
         var flag2 = concatset(flag, [true]);
 
-        var mask = sliceStart(flag2) & sliceEnd(flag2);//sliceIndex(flag2,1,flag2.size,1) & sliceIndex(flag2,0,flag2.size-1,1);
+        var mask = sliceStart(flag2) & sliceEnd(flag2);
 
         var ret = boolIndexer(aux, mask);
 
@@ -76,11 +76,11 @@ module ArraySetops
         var aux_sort_indices = radixSortLSD_ranks(aux2);
         var aux = aux2[aux_sort_indices];
 
-        var sliceComp = sliceStart(aux) != sliceEnd(aux);//(sliceIndex(aux,1,aux.size,1) != sliceIndex(aux,0,aux.size-1,1));
+        var sliceComp = sliceStart(aux) != sliceEnd(aux);
         var flag = concatset([true],sliceComp);
         var flag2 = concatset(flag, [true]);
 
-        var mask = sliceStart(flag2) & sliceEnd(flag2);//sliceIndex(flag2,1,flag2.size,1) & sliceIndex(flag2,0,flag2.size-1,1);
+        var mask = sliceStart(flag2) & sliceEnd(flag2);
 
         var ret = boolIndexer(aux, mask);
 
@@ -123,7 +123,7 @@ module ArraySetops
         return ret;
     }
 
-    proc newSetdiff1d(a: [?aD] int, b: [?bD] int, assume_unique: string) {
+    proc setdiff1d(a: [?aD] int, b: [?bD] int, assume_unique: string) {
       if assume_unique == "False" {
         var (a1, _)  = uniqueSort(a);
         var (b1, _)  = uniqueSort(b);
@@ -162,7 +162,7 @@ module ArraySetops
       }
     }
     
-    proc newUnion1d(a: [?aD] int, b: [aD] int) {
+    proc union1d(a: [?aD] int, b: [aD] int) {
       var (a1, _)  = uniqueSort(a);
       var (b1, _)  = uniqueSort(b);
       var sizeA = a1.size;

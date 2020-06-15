@@ -25,8 +25,4 @@ module Indexing {
 
       return b;
     }
-
-    proc testSlice() {
-      return sliceIndex([1,2,3], 0, 1, 1);
-    }
 }

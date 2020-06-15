@@ -176,7 +176,7 @@ def concatenate(arrays):
         return create_pdarray(repMsg)
     elif objtype == "str":
         return Strings(*(repMsg.split('+')))
-    
+
 # (A1 | A2) Set Union: elements are in one or the other or both
 def union1d(pda1, pda2):
     """
@@ -212,7 +212,7 @@ def union1d(pda1, pda2):
         if pda2.size == 0:
             return pda1 # union is pda1
         if pda1.dtype == int:
-            repMsg = generic_msg("newUnion1d {} {}".format(pda1.name, pda2.name))
+            repMsg = generic_msg("union1d {} {}".format(pda1.name, pda2.name))
             return create_pdarray(repMsg)
         else:
             return unique(concatenate((unique(pda1), unique(pda2))))
@@ -256,7 +256,7 @@ def intersect1d(pda1, pda2, assume_unique=False):
         if pda2.size == 0:
             return pda2 # nothing in the intersection
         if pda1.dtype == int:
-            repMsg = generic_msg("newIntersect1d {} {} {}".format(pda1.name, pda2.name, assume_unique))
+            repMsg = generic_msg("intersect1d {} {} {}".format(pda1.name, pda2.name, assume_unique))
             return create_pdarray(repMsg)
         if not assume_unique:
             pda1 = unique(pda1)
@@ -309,7 +309,7 @@ def setdiff1d(pda1, pda2, assume_unique=False):
         if pda2.size == 0:
             return pda1 # subtracting nothing return orig pdarray
         if pda1.dtype == int:
-            repMsg = generic_msg("newSetdiff1d {} {} {}".format(pda1.name, pda2.name, assume_unique))
+            repMsg = generic_msg("setdiff1d {} {} {}".format(pda1.name, pda2.name, assume_unique))
             return create_pdarray(repMsg)
         if not assume_unique:
             pda1 = unique(pda1)
@@ -355,7 +355,7 @@ def setxor1d(pda1, pda2, assume_unique=False):
         if pda2.size == 0:
             return pda1 # return other pdarray if pda2 is empty
         if pda1.dtype == int:
-            repMsg = generic_msg("newSetxor1d {} {} {}".format(pda1.name, pda2.name, assume_unique))
+            repMsg = generic_msg("setxor1d {} {} {}".format(pda1.name, pda2.name, assume_unique))
             return create_pdarray(repMsg)
         if not assume_unique:
             pda1 = unique(pda1)
