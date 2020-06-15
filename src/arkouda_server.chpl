@@ -122,6 +122,7 @@ proc main() {
                     var repMsg: string;
                     select cmd
                     {
+                        when "newIntersect1d"    {repMsg = newIntersect1dMsg(reqMsg, st);}
                         when "newSetdiff1d"      {repMsg = newSetdiff1dMsg(reqMsg, st);}
                         when "newSetxor1d"       {repMsg = newSetxor1dMsg(reqMsg, st);}
                         when "newUnion1d"        {repMsg = newUnion1dMsg(reqMsg, st);}

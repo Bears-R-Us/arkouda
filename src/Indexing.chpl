@@ -9,7 +9,7 @@ module Indexing {
 
     use CommAggregation;
 
-    proc sliceIndex(a: [?aD] int, start: int, stop: int, stride: int) {
+    proc sliceIndex(a: [?aD] ?t, start: int, stop: int, stride: int) {
       var slice: range(stridable=true);
 
       // convert python slice to chapel slice
@@ -20,9 +20,13 @@ module Indexing {
       // BAD FORM start < stop and stride is negative
       else {slice = 1..0;}
 
-      var b = makeDistArray(slice.size,int);
+      var b = makeDistArray(slice.size,t);
       b = a[slice];
 
       return b;
+    }
+
+    proc testSlice() {
+      return sliceIndex([1,2,3], 0, 1, 1);
     }
 }

@@ -6,7 +6,7 @@ from arkouda.strings import Strings
 
 global verbose
 
-__all__ = ["newsetdiff1d", "newSetxor1d","newUnion1d", "unique", "in1d", "concatenate", "union1d", "intersect1d",
+__all__ = ["newintersect1d", "newsetdiff1d", "newSetxor1d","newUnion1d", "unique", "in1d", "concatenate", "union1d", "intersect1d",
            "setdiff1d", "setxor1d"]
 global verbose
 
@@ -274,6 +274,16 @@ def intersect1d(pda1, pda2, assume_unique=False):
         return int1d
     else:
         raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
+
+def newintersect1d(pda1, pda2, assume_unique=False):
+    if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
+        if pda1.size == 0:
+            return pda1 # nothing in the intersection
+        if pda2.size == 0:
+            return pda2 # nothing in the intersection
+        
+        repMsg = generic_msg("newIntersect1d {} {} {}".format(pda1.name, pda2.name, assume_unique))
+        return create_pdarray(repMsg)
 
 # (A1 - A2) Set Difference: elements have to be in first array but not second
 def setdiff1d(pda1, pda2, assume_unique=False):
