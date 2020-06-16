@@ -109,7 +109,7 @@ module ArraySetops
     // values are unique
     proc union1d(a: [?aD] int, b: [aD] int) {
       var a1  = uniqueSort(a, false);
-      var b1  = uniqueSortNoCounts(b);
+      var b1  = uniqueSort(b, false);
       var sizeA = a1.size;
       var sizeB = b1.size;
 
@@ -118,7 +118,7 @@ module ArraySetops
       c[{0..#sizeA}] = a;
       c[{sizeA..#sizeB}] = b;
 
-      var ret = uniqueSortNoCounts(c);
+      var ret = uniqueSort(c, false);
       
       return ret;
     }

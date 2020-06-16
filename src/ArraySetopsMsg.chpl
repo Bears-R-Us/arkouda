@@ -37,6 +37,8 @@ module ArraySetopsMsg
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
         var gEnt2: borrowed GenSymEntry = st.lookup(name2);
+        overMemLimit(((4 + 1) * 2 * gEnt.size * gEnt.itemsize)
+             + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
 
         select(gEnt.dtype) {
           when (DType.Int64) {
@@ -73,6 +75,8 @@ module ArraySetopsMsg
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
         var gEnt2: borrowed GenSymEntry = st.lookup(name2);
+        overMemLimit(((4 + 1) * 2 * gEnt.size * gEnt.itemsize)
+             + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
 
         select(gEnt.dtype) {
           when (DType.Int64) {
@@ -109,6 +113,8 @@ module ArraySetopsMsg
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
         var gEnt2: borrowed GenSymEntry = st.lookup(name2);
+        overMemLimit(((4 + 1) * 2 * gEnt.size * gEnt.itemsize)
+             + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
 
         select(gEnt.dtype) {
           when (DType.Int64) {
@@ -145,6 +151,8 @@ module ArraySetopsMsg
 
       var gEnt: borrowed GenSymEntry = st.lookup(name);
       var gEnt2: borrowed GenSymEntry = st.lookup(name2);
+      overMemLimit(((4 + 1)* 2 * gEnt.size * gEnt.itemsize)
+             + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
 
       select(gEnt.dtype) {
         when (DType.Int64) {
