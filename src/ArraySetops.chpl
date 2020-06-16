@@ -21,9 +21,9 @@ module ArraySetops
     // returns intersection of 2 arrays
     proc intersect1d(a: [?aD] int, b: [aD] int, assume_unique: string) {
       //if not unique, unique sort arrays then perform operation
-      if assume_unique == "False" {
-        var a1  = uniqueSortNoCounts(a);
-        var b1  = uniqueSortNoCounts(b);
+      if (assume_unique == "False") {
+        var a1  = uniqueSort(a, false);
+        var b1  = uniqueSort(b, false);
         return intersect1dHelper(a1, b1);
       }
       return intersect1dHelper(a,b);
@@ -49,9 +49,9 @@ module ArraySetops
     // returns the exclusive-or of 2 arrays
     proc setxor1d(a: [?aD] int, b: [aD] int, assume_unique: string) {
       //if not unique, unique sort arrays then perform operation
-      if assume_unique == "False" {
-        var a1  = uniqueSortNoCounts(a);
-        var b1  = uniqueSortNoCounts(b);
+      if (assume_unique == "False") {
+        var a1  = uniqueSort(a, false);
+        var b1  = uniqueSort(b, false);
         return  setxor1dHelper(a1, b1);
       }
       return setxor1dHelper(a,b);
@@ -79,9 +79,9 @@ module ArraySetops
     // returns the set difference of 2 arrays
     proc setdiff1d(a: [?aD] int, b: [aD] int, assume_unique: string) {
       //if not unique, unique sort arrays then perform operation
-      if assume_unique == "False" {
-        var a1  = uniqueSortNoCounts(a);
-        var b1  = uniqueSortNoCounts(b);
+      if (assume_unique == "False") {
+        var a1  = uniqueSort(a, false);
+        var b1  = uniqueSort(b, false);
         return setdiff1dHelper(a1, b1);
       }
       return setdiff1dHelper(a,b);
