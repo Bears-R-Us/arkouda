@@ -33,7 +33,7 @@ def parse_single_value(msg):
 class pdarray:
     """
     The basic arkouda array class. This class contains only the
-    attributies of the array; the data resides on the arkouda
+    attributes of the array; the data resides on the arkouda
     server. When a server operation results in a new array, arkouda
     will create a pdarray instance that points to the array data on
     the server. As such, the user should not initialize pdarray
