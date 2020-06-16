@@ -1,3 +1,9 @@
+/* Array set operations
+ includes intersection, union, xor, and diff
+
+ currently, only performs operations with integer arrays 
+ */
+
 module ArraySetopsMsg
 {
     use ServerConfig;
@@ -13,7 +19,15 @@ module ArraySetopsMsg
 
     use ArraySetops;
     use Indexing;
-
+    
+    /*
+    Parse, execute, and respond to a intersect1d message
+    :arg reqMsg: request containing (cmd,name,name2,assume_unique)
+    :type reqMsg: string
+    :arg st: SymTab to act on
+    :type st: borrowed SymTab
+    :returns: (string) response message
+    */
     proc intersect1dMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
@@ -42,6 +56,14 @@ module ArraySetopsMsg
         }
     }
 
+    /*
+    Parse, execute, and respond to a setxor1d message
+    :arg reqMsg: request containing (cmd,name,name2,assume_unique)
+    :type reqMsg: string
+    :arg st: SymTab to act on
+    :type st: borrowed SymTab
+    :returns: (string) response message
+    */
     proc setxor1dMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
@@ -70,6 +92,14 @@ module ArraySetopsMsg
         }
     }
 
+    /*
+    Parse, execute, and respond to a setdiff1d message
+    :arg reqMsg: request containing (cmd,name,name2,assume_unique)
+    :type reqMsg: string
+    :arg st: SymTab to act on
+    :type st: borrowed SymTab
+    :returns: (string) response message
+    */
     proc setdiff1dMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
@@ -98,6 +128,14 @@ module ArraySetopsMsg
         }
     }
 
+    /*
+    Parse, execute, and respond to a union1d message
+    :arg reqMsg: request containing (cmd,name,name2,assume_unique)
+    :type reqMsg: string
+    :arg st: SymTab to act on
+    :type st: borrowed SymTab
+    :returns: (string) response message
+    */
     proc union1dMsg(reqMsg: string, st: borrowed SymTab): string throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string;

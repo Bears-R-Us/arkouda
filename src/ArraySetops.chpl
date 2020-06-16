@@ -1,3 +1,9 @@
+/* Array set operations
+ includes intersection, union, xor, and diff
+
+ currently, only performs operations with integer arrays 
+ */
+
 module ArraySetops
 {
     use ServerConfig;
@@ -12,156 +18,95 @@ module ArraySetops
 
     use CommAggregation;
 
-    proc intersect1d(a1: [?aD] int, b1: [aD] int, assume_unique: string) {
-      if assume_unique == "False" {
-        var (a, _)  = uniqueSort(a1);
-        var (b, _)  = uniqueSort(b1);
-        var aux2 = concatset(a,b);
-        var aux_sort_indices = radixSortLSD_ranks(aux2);
-        var aux = aux2[aux_sort_indices];
-
-        var mask = sliceEnd(aux) == sliceStart(aux);
-
-        var temp = sliceEnd(aux);
-        var int1d = boolIndexer(temp, mask);
-
-        return int1d;
-      } else {
-        ref a = a1;
-        ref b = b1;
-        var aux2 = concatset(a,b);
-        var aux_sort_indices = radixSortLSD_ranks(aux2);
-        var aux = aux2[aux_sort_indices];
-
-        var mask = sliceEnd(aux) == sliceStart(aux);
-
-        var temp = sliceEnd(aux);
-        var int1d = boolIndexer(temp, mask);
-
-        return int1d;
-      }
-    }
-
-    proc sliceStart(a: [?aD] ?t) {
-      return sliceIndex(a, 1, a.size, 1);
-    }
-
-    proc sliceEnd(a: [?aD] ?t) {
-      return sliceIndex(a, 0, a.size - 1, 1);
-    }
-      
-    proc setxor1d(a1: [?aD] int, b1: [aD] int, assume_unique: string) {
-      if assume_unique == "False" {
-        var (a, _)  = uniqueSort(a1);
-        var (b, _)  = uniqueSort(b1);
-
-        var aux2 = concatset(a,b);
-        var aux_sort_indices = radixSortLSD_ranks(aux2);
-        var aux = aux2[aux_sort_indices];
-
-        var sliceComp = sliceStart(aux) != sliceEnd(aux);
-        var flag = concatset([true],sliceComp);
-        var flag2 = concatset(flag, [true]);
-
-        var mask = sliceStart(flag2) & sliceEnd(flag2);
-
-        var ret = boolIndexer(aux, mask);
-
-        return ret;
-      } else {
-        ref a  = a1;
-        ref b  = b1;
-
-        var aux2 = concatset(a,b);
-        var aux_sort_indices = radixSortLSD_ranks(aux2);
-        var aux = aux2[aux_sort_indices];
-
-        var sliceComp = sliceStart(aux) != sliceEnd(aux);
-        var flag = concatset([true],sliceComp);
-        var flag2 = concatset(flag, [true]);
-
-        var mask = sliceStart(flag2) & sliceEnd(flag2);
-
-        var ret = boolIndexer(aux, mask);
-
-        return ret;
-      }
-      
-    }
-
-    proc concatset(a: [?aD] ?t, b: [?bD] t) {
-      var sizeA = a.size;
-      var sizeB = b.size;
-      select t {
-          when int {
-            var ret = makeDistArray((sizeA + sizeB), int);
-            ret[{0..#sizeA}] = a;
-            ret[{sizeA..#sizeB}] = b;
-
-            return ret;
-          }
-          when bool {
-            var ret = makeDistArray((sizeA + sizeB), bool);
-            ret[{0..#sizeA}] = a;
-            ret[{sizeA..#sizeB}] = b;
-
-            return ret;
-          }
-       }
-    }
-
-    proc boolIndexer(a: [?aD] ?t, truth: [aD] bool) {
-        var iv: [truth.domain] int = (+ scan truth);
-        var pop = iv[iv.size-1];
-        var ret = makeDistArray(pop, int);
-
-        forall (i, eai) in zip(a.domain, a) with (var agg = newDstAggregator(int)) {
-          if (truth[i]) {
-            agg.copy(ret[iv[i]-1], eai);
-          }
-        }
-        return ret;
-    }
-
-    proc setdiff1d(a: [?aD] int, b: [?bD] int, assume_unique: string) {
+    // returns intersection of 2 arrays
+    proc intersect1d(a: [?aD] int, b: [aD] int, assume_unique: string) {
+      //if not unique, unique sort arrays then perform operation
       if assume_unique == "False" {
         var (a1, _)  = uniqueSort(a);
         var (b1, _)  = uniqueSort(b);
-        var truth = makeDistArray(a1.size, bool);
-        truth = in1dSort(a1,b1);
-        truth = !truth;
-
-        var iv: [truth.domain] int = (+ scan truth);
-        var pop = iv[iv.size-1];
-        var ret = makeDistArray(pop, int);
-
-        forall (i, eai) in zip(a1.domain, a1) with (var agg = newDstAggregator(int)) {
-          if (truth[i]) {
-            agg.copy(ret[iv[i]-1], eai);
-          }
-        }
-
-        return ret;
+        return intersect1dHelper(a1, b1);
       }
-      else {
+      return intersect1dHelper(a,b);
+    }
+
+    // Get intersect of 2 arrays
+    // first concatenates the 2 arrays, then
+    // sorts arrays and removes all values that
+    // only occur once
+    proc intersect1dHelper(a: [?aD] ?t, b: [aD] t) {
+      var aux2 = concatset(a,b);
+      var aux_sort_indices = radixSortLSD_ranks(aux2);
+      var aux = aux2[aux_sort_indices];
+
+      var mask = sliceEnd(aux) == sliceStart(aux);
+
+      var temp = sliceEnd(aux);
+      var int1d = boolIndexer(temp, mask);
+
+      return int1d;
+    }
+
+    // returns the exclusive-or of 2 arrays
+    proc setxor1d(a: [?aD] int, b: [aD] int, assume_unique: string) {
+      //if not unique, unique sort arrays then perform operation
+      if assume_unique == "False" {
+        var (a1, _)  = uniqueSort(a);
+        var (b1, _)  = uniqueSort(b);
+        return  setxor1dHelper(a1, b1);
+      }
+      return setxor1dHelper(a,b);
+    }
+
+    // Gets xor of 2 arrays
+    // first concatenates the 2 arrays, then
+    // sorts and removes all values that occur
+    // more than once
+    proc setxor1dHelper(a: [?aD] ?t, b: [aD] t) {
+      var aux2 = concatset(a,b);
+      var aux = radixSortLSD_keys(aux2);
+
+      var sliceComp = sliceStart(aux) != sliceEnd(aux);
+      var flag = concatset([true],sliceComp);
+      var flag2 = concatset(flag, [true]);
+
+      var mask = sliceStart(flag2) & sliceEnd(flag2);
+
+      var ret = boolIndexer(aux, mask);
+
+      return ret;
+    }
+
+    // returns the set difference of 2 arrays
+    proc setdiff1d(a: [?aD] int, b: [aD] int, assume_unique: string) {
+      //if not unique, unique sort arrays then perform operation
+      if assume_unique == "False" {
+        var (a1, _)  = uniqueSort(a);
+        var (b1, _)  = uniqueSort(b);
+        return setdiff1dHelper(a1, b1);
+      }
+      return setdiff1dHelper(a,b);
+    }
+    
+    // Gets diff of 2 arrays
+    // first checks membership of values in
+    // fist array in second array and stores
+    // as a boolean array and inverts these
+    // values and returns the array indexed
+    // with this inverted array
+    proc setdiff1dHelper(a: [?aD] ?t, b: [aD] t) {
         var truth = makeDistArray(a.size, bool);
         truth = in1dSort(a,b);
         truth = !truth;
 
-        var iv: [truth.domain] int = (+ scan truth);
-        var pop = iv[iv.size-1];
-        var ret = makeDistArray(pop, int);
-
-        forall (i, eai) in zip(aD, a) with (var agg = newDstAggregator(int)) {
-          if (truth[i]) {
-            agg.copy(ret[iv[i]-1], eai);
-          }
-        }
+        var ret = boolIndexer(a, truth);
 
         return ret;
-      }
     }
     
+    // Gets union of 2 arrays
+    // first concatenates the 2 arrays, then
+    // sorts resulting array and ensures that
+    // values are unique
     proc union1d(a: [?aD] int, b: [aD] int) {
       var (a1, _)  = uniqueSort(a);
       var (b1, _)  = uniqueSort(b);

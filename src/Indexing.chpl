@@ -1,3 +1,7 @@
+/* Helper functions for indexing a chapel array
+   includes slicing, indexing by boolean ararys, and concatenation
+ */
+
 module Indexing {
     use ServerConfig;
     use ServerErrorStrings;
@@ -8,7 +12,8 @@ module Indexing {
     use MultiTypeSymbolTable;
 
     use CommAggregation;
-
+    
+    // Return a slice of array `a` from `start` to `stop` by `stride`
     proc sliceIndex(a: [?aD] ?t, start: int, stop: int, stride: int) {
       var slice: range(stridable=true);
 
@@ -24,5 +29,51 @@ module Indexing {
       b = a[slice];
 
       return b;
+    }
+
+    // helper to get an array without the first element
+    proc sliceStart(a: [?aD] ?t) {
+      return sliceIndex(a, 1, a.size, 1);
+    }
+
+    // helper to get an array without the last element
+    proc sliceEnd(a: [?aD] ?t) {
+      return sliceIndex(a, 0, a.size - 1, 1);
+    }
+
+    // return an array of all values from array a whose index corresponds to a true value in array truth
+    proc boolIndexer(a: [?aD] ?t, truth: [aD] bool) {
+        var iv: [truth.domain] int = (+ scan truth);
+        var pop = iv[iv.size-1];
+        var ret = makeDistArray(pop, int);
+
+        forall (i, eai) in zip(a.domain, a) with (var agg = newDstAggregator(int)) {
+          if (truth[i]) {
+            agg.copy(ret[iv[i]-1], eai);
+          }
+        }
+        return ret;
+    }
+
+    // concatenate 2 distributed arrays and return a distributed array
+    proc concatset(a: [?aD] ?t, b: [?bD] t) {
+      var sizeA = a.size;
+      var sizeB = b.size;
+      select t {
+          when int {
+            var ret = makeDistArray((sizeA + sizeB), int);
+            ret[{0..#sizeA}] = a;
+            ret[{sizeA..#sizeB}] = b;
+
+            return ret;
+          }
+          when bool {
+            var ret = makeDistArray((sizeA + sizeB), bool);
+            ret[{0..#sizeA}] = a;
+            ret[{sizeA..#sizeB}] = b;
+
+            return ret;
+          }
+       }
     }
 }
