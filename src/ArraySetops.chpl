@@ -22,8 +22,8 @@ module ArraySetops
     proc intersect1d(a: [?aD] int, b: [aD] int, assume_unique: string) {
       //if not unique, unique sort arrays then perform operation
       if assume_unique == "False" {
-        var (a1, _)  = uniqueSort(a);
-        var (b1, _)  = uniqueSort(b);
+        var a1  = uniqueSortNoCounts(a);
+        var b1  = uniqueSortNoCounts(b);
         return intersect1dHelper(a1, b1);
       }
       return intersect1dHelper(a,b);
@@ -50,8 +50,8 @@ module ArraySetops
     proc setxor1d(a: [?aD] int, b: [aD] int, assume_unique: string) {
       //if not unique, unique sort arrays then perform operation
       if assume_unique == "False" {
-        var (a1, _)  = uniqueSort(a);
-        var (b1, _)  = uniqueSort(b);
+        var a1  = uniqueSortNoCounts(a);
+        var b1  = uniqueSortNoCounts(b);
         return  setxor1dHelper(a1, b1);
       }
       return setxor1dHelper(a,b);
@@ -80,8 +80,8 @@ module ArraySetops
     proc setdiff1d(a: [?aD] int, b: [aD] int, assume_unique: string) {
       //if not unique, unique sort arrays then perform operation
       if assume_unique == "False" {
-        var (a1, _)  = uniqueSort(a);
-        var (b1, _)  = uniqueSort(b);
+        var a1  = uniqueSortNoCounts(a);
+        var b1  = uniqueSortNoCounts(b);
         return setdiff1dHelper(a1, b1);
       }
       return setdiff1dHelper(a,b);
@@ -108,8 +108,8 @@ module ArraySetops
     // sorts resulting array and ensures that
     // values are unique
     proc union1d(a: [?aD] int, b: [aD] int) {
-      var (a1, _)  = uniqueSort(a);
-      var (b1, _)  = uniqueSort(b);
+      var a1  = uniqueSort(a, false);
+      var b1  = uniqueSortNoCounts(b);
       var sizeA = a1.size;
       var sizeB = b1.size;
 
@@ -118,7 +118,7 @@ module ArraySetops
       c[{0..#sizeA}] = a;
       c[{sizeA..#sizeB}] = b;
 
-      var (ret, _) = uniqueSort(c);
+      var ret = uniqueSortNoCounts(c);
       
       return ret;
     }

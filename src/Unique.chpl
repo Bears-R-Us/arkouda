@@ -418,13 +418,13 @@ module Unique
 
     :returns: ([] int, [] int)
     */
-    proc uniqueSort(a: [?aD] int) {
+    proc uniqueSort(a: [?aD] int, param needCounts = true) {
         if (aD.size == 0) {
             if v {writeln("zero size");try! stdout.flush();}
             var u = makeDistArray(0, int);
             var c = makeDistArray(0, int);
-            return (u, c);
-        }
+            //return (u, c);
+        } 
 
         var sorted: [aD] int;
         if (AryUtil.isSorted(a)) {
@@ -435,7 +435,8 @@ module Unique
         }
 
         var (u, c) = uniqueFromSorted(sorted);
-        return (u, c);
+        //return (u, c);
+        if (needCounts) then return (u, c); else return u;
     }
 
     proc uniqueSortWithInverse(a: [?aD] int) {
@@ -671,6 +672,58 @@ module Unique
         return (uo, uv, counts);
     }
     
+    proc uniqueSortNoCounts(a: [?aD] int) {
+        if (aD.size == 0) {
+            if v {writeln("zero size");try! stdout.flush();}
+            var u = makeDistArray(0, int);
+            return u;
+        }
 
+        var sorted: [aD] int;
+        if (AryUtil.isSorted(a)) {
+            sorted = a; 
+        }
+        else {
+            sorted = radixSortLSD_keys(a);
+        }
+
+        var u = uniqueFromSortedNoCounts(sorted);
+        return u;
+    }
+    
+    proc uniqueFromSortedNoCounts(sorted: [?aD] int) {
+        var truth: [aD] bool;
+        truth[0] = true;
+        [(t, s, i) in zip(truth, sorted, aD)] if i > aD.low { t = (sorted[i-1] != s); }
+        var allUnique: int = + reduce truth;
+        if (allUnique == aD.size) {
+            if v {writeln("early out already unique");try! stdout.flush();}
+            var u = makeDistArray(aD.size, int);
+            u = sorted; // array is already unique
+            return u;
+        }
+        // +scan to compute segment position... 1-based because of inclusive-scan
+        var iv: [truth.domain] int = (+ scan truth);
+        // compute how many segments
+        var pop = iv[iv.size-1];
+        if v {writeln("pop = ",pop);try! stdout.flush();}
+
+        var segs = makeDistArray(pop, int);
+        var ukeys = makeDistArray(pop, int);
+        
+        // segment position... 1-based needs to be converted to 0-based because of inclusive-scan
+        // where ever a segment break (true value) is... that index is a segment start index
+        forall i in truth.domain with (var agg = newDstAggregator(int)) {
+          if (truth[i] == true) {
+            var idx = i; 
+            agg.copy(segs[iv[i]-1], idx);
+          }
+        }
+        // pull out the first key in each segment as a unique key
+        // unique keys guaranteed to be sorted because keys are sorted
+        [i in segs.domain] ukeys[i] = sorted[segs[i]];
+
+        return ukeys;
+    }
 }
 

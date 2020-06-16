@@ -55,25 +55,14 @@ module Indexing {
         return ret;
     }
 
-    // concatenate 2 distributed arrays and return a distributed array
+    // concatenate 2 distributed arrays and return the result
     proc concatset(a: [?aD] ?t, b: [?bD] t) {
       var sizeA = a.size;
       var sizeB = b.size;
-      select t {
-          when int {
-            var ret = makeDistArray((sizeA + sizeB), int);
-            ret[{0..#sizeA}] = a;
-            ret[{sizeA..#sizeB}] = b;
+      var ret = makeDistArray((sizeA + sizeB), t);
+      ret[{0..#sizeA}] = a;
+      ret[{sizeA..#sizeB}] = b;
 
-            return ret;
-          }
-          when bool {
-            var ret = makeDistArray((sizeA + sizeB), bool);
-            ret[{0..#sizeA}] = a;
-            ret[{sizeA..#sizeB}] = b;
-
-            return ret;
-          }
-       }
+      return ret;
     }
 }
