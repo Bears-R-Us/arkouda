@@ -42,7 +42,7 @@ def time_np_setops(N, trials, dtype):
 
     timings = []
     for i in range(trials):
-        fxn = getattr(ak, op)
+        fxn = getattr(np, op)
         start = time.time()
         r = fxn(a,b)
         end = time.time()
@@ -62,15 +62,17 @@ def check_correctness(dtype):
 
     for op in OPS:
         npa = a
+        npb = b
         aka = ak.array(a)
-        fxn = getattr(npa, op)
-        npr = fxn()
-        fxn = getattr(aka, op)
-        akr = fxn()
+        akb = ak.array(b)
+        fxn = getattr(np, op)
+        npr = fxn(npa, npb)
+        fxn = getattr(ak, op)
+        akr = fxn(aka, akb)
         assert np.isclose(npr, akr)
 
 def create_parser():
-    parser = argparse.ArgumentParser(description="Run the stream benchmark: C = A + alpha*B")
+    parser = argparse.ArgumentParser(description="Run the setops benchmarks: intersect1d, union1d, setdiff1d, setxor1d")
     parser.add_argument('hostname', help='Hostname of arkouda server')
     parser.add_argument('port', type=int, help='Port of arkouda server')
     parser.add_argument('-n', '--size', type=int, default=10**8, help='Problem size: length of arrays A and B')
