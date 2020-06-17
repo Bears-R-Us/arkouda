@@ -1,6 +1,7 @@
-import zmq, json, os
+import zmq, json, os, secrets
 from typing import Mapping, Tuple, Union
 import warnings, pkg_resources
+from arkouda import security
 
 __all__ = ["verbose", "pdarrayIterThresh", "maxTransferBytes",
            "AllSymbols", "set_defaults", "connect", "disconnect",
@@ -42,7 +43,7 @@ def set_defaults():
 
 
 # create context, request end of socket, and connect to it
-def connect(server = "localhost", port = 5555, timeout = 0):
+def connect(server = "localhost", port = 5555, timeout = 0, session_token=None):
     """
     Connect to a running arkouda server.
 
@@ -56,6 +57,9 @@ def connect(server = "localhost", port = 5555, timeout = 0):
     timeout : int, optional
         The timeout in seconds for client send and receive operations.
         Defaults to 0 seconds, which is interpreted as no timeout
+    session_token : str, optional 
+        The token used to connect to an existing socket to enable access to
+        session-scoped resources. Defaults to None
 
     Returns
     -------
@@ -71,6 +75,8 @@ def connect(server = "localhost", port = 5555, timeout = 0):
 
     if verbose: print("ZMQ version: {}".format(zmq.zmq_version()))
 
+    print(security.get_username())
+    
     # "protocol://server:port"
     pspStr = "tcp://{}:{}".format(server,port)
     
@@ -88,7 +94,7 @@ def connect(server = "localhost", port = 5555, timeout = 0):
     if timeout > 0:
         socket.setsockopt(zmq.SNDTIMEO, timeout*1000)
         socket.setsockopt(zmq.RCVTIMEO, timeout*1000)
-    
+      
     # connect to arkouda server
     try:
         socket.connect(pspStr)
@@ -98,7 +104,7 @@ def connect(server = "localhost", port = 5555, timeout = 0):
     # send the connect message
     message = "connect"
     if verbose: print("[Python] Sending request: %s" % message)
-    socket.send_string(message)
+    socket.send_string('{} {}'.format(message,security.generate_username_token_json()))
 
     # get the response that the server has started
     message = socket.recv_string()

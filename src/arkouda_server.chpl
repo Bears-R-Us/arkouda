@@ -3,7 +3,6 @@ backend chapel program to mimic ndarray from numpy
 This is the main driver for the arkouda server */
 
 use ServerConfig;
-
 use Time only;
 use ZMQ only;
 use Memory;
@@ -33,9 +32,8 @@ proc main() {
     // create and connect ZMQ socket
     var context: ZMQ.Context;
     var socket : ZMQ.Socket = context.socket(ZMQ.REP);
-    socket.setPlainServer(true);
     socket.bind("tcp://*:%t".format(ServerPort));
-    writeln("server listening on %s:%t".format(serverHostname, ServerPort)); try! stdout.flush();
+    writeln("server listening on %s:%t".format(serverHostname, ServerPort)); try! stdout.flush(); 
     createServerConnectionInfo();
 
     var reqCount: int = 0;
@@ -82,6 +80,7 @@ proc main() {
         }
 
         const (cmdRaw, _) = reqMsgRaw.splitMsgToTuple(2);
+
         // parse requests, execute requests, format responses
         try {
             // first handle the case where we received arbitrary data
@@ -108,7 +107,7 @@ proc main() {
                     sendRepMsg(unknownError(""));
                 }
 
-                const (cmd,_) = reqMsg.splitMsgToTuple(2);
+                const (cmd,token) = reqMsg.splitMsgToTuple(2);
 
                 if logging {
                     writeln("reqMsg: ", reqMsg);
@@ -189,7 +188,7 @@ proc main() {
                         when "attach"            {repMsg = attachMsg(reqMsg, st);}
                         when "unregister"        {repMsg = unregisterMsg(reqMsg, st);}
                         when "connect" {
-                            repMsg = "connected to arkouda server tcp://*:%t".format(ServerPort);
+                            repMsg = "connected to arkouda server tcp://*:%t with token %s".format(ServerPort,token);
                         }
                         when "disconnect" {
                             repMsg = "disconnected from arkouda server tcp://*:%t".format(ServerPort);
