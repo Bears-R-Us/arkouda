@@ -18,6 +18,16 @@ module ArraySetops
 
     use CommAggregation;
 
+    /*
+    Small bound const. Brute force in1d implementation recommended.
+    */
+    private config const sBound = 2**4; 
+
+    /*
+    Medium bound const. Per locale associative domain in1d implementation recommended.
+    */
+    private config const mBound = 2**25; 
+
     // returns intersection of 2 arrays
     proc intersect1d(a: [?aD] int, b: [aD] int, assume_unique: string) {
       //if not unique, unique sort arrays then perform operation
@@ -34,14 +44,12 @@ module ArraySetops
     // sorts arrays and removes all values that
     // only occur once
     proc intersect1dHelper(a: [?aD] ?t, b: [aD] t) {
-      var aux2 = concatset(a,b);
-      var aux_sort_indices = radixSortLSD_ranks(aux2);
-      var aux = aux2[aux_sort_indices];
+      var aux = radixSortLSD_keys(concatset(a,b));
 
-      var mask = sliceEnd(aux) == sliceStart(aux);
-
-      var temp = sliceEnd(aux);
-      var int1d = boolIndexer(temp, mask);
+      var head = sliceEnd(aux);
+      var mask = head == tail(aux);
+      
+      var int1d = boolIndexer(head, mask);
 
       return int1d;
     }
@@ -62,14 +70,17 @@ module ArraySetops
     // sorts and removes all values that occur
     // more than once
     proc setxor1dHelper(a: [?aD] ?t, b: [aD] t) {
-      var aux2 = concatset(a,b);
-      var aux = radixSortLSD_keys(aux2);
+      var aux = radixSortLSD_keys(concatset(a,b));
 
-      var sliceComp = sliceStart(aux) != sliceEnd(aux);
-      var flag = concatset([true],sliceComp);
-      var flag2 = concatset(flag, [true]);
+      var sliceComp = tail(aux) != sliceEnd(aux);
+      
+      // Concatenate a `true` onto each end of the array
+      var flag = makeDistArray((sliceComp.size + 2), bool);
+      flag[0] = true;
+      flag[{1..#(sliceComp.size + 1)}] = sliceComp;
+      flag[sliceComp.size + 1] = true;
 
-      var mask = sliceStart(flag2) & sliceEnd(flag2);
+      var mask = tail(flag) & sliceEnd(flag);
 
       var ret = boolIndexer(aux, mask);
 
@@ -95,7 +106,12 @@ module ArraySetops
     // with this inverted array
     proc setdiff1dHelper(a: [?aD] ?t, b: [aD] t) {
         var truth = makeDistArray(a.size, bool);
-        truth = in1dSort(a,b);
+
+        // based on size of array, determine which method to use 
+        if (b.size <= sBound) then truth = in1dGlobalAr2Bcast(a, b);
+        else if (b.size <= mBound) then truth = in1dAr2PerLocAssoc(a, b);
+        else truth = in1dSort(a,b);
+        
         truth = !truth;
 
         var ret = boolIndexer(a, truth);
@@ -110,15 +126,10 @@ module ArraySetops
     proc union1d(a: [?aD] int, b: [aD] int) {
       var a1  = uniqueSort(a, false);
       var b1  = uniqueSort(b, false);
-      var sizeA = a1.size;
-      var sizeB = b1.size;
 
-      var c = makeDistArray((sizeA + sizeB), int);
+      var aux = concatset(a1, b1);
 
-      c[{0..#sizeA}] = a;
-      c[{sizeA..#sizeB}] = b;
-
-      var ret = uniqueSort(c, false);
+      var ret = uniqueSort(aux, false);
       
       return ret;
     }

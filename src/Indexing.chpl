@@ -16,14 +16,8 @@ module Indexing {
     // Return a slice of array `a` from `start` to `stop` by `stride`
     proc sliceIndex(a: [?aD] ?t, start: int, stop: int, stride: int) {
       var slice: range(stridable=true);
-
-      // convert python slice to chapel slice
-      // backwards iteration with negative stride
-      if  (start > stop) & (stride < 0) {slice = (stop+1)..start by stride;}
-      // forward iteration with positive stride
-      else if (start <= stop) & (stride > 0) {slice = start..(stop-1) by stride;}
-      // BAD FORM start < stop and stride is negative
-      else {slice = 1..0;}
+      
+      slice = start..(stop-1) by stride;
 
       var b = makeDistArray(slice.size,t);
       b = a[slice];
@@ -32,7 +26,7 @@ module Indexing {
     }
 
     // helper to get an array without the first element
-    proc sliceStart(a: [?aD] ?t) {
+    proc tail(a: [?aD] ?t) {
       return sliceIndex(a, 1, a.size, 1);
     }
 
@@ -57,11 +51,10 @@ module Indexing {
 
     // concatenate 2 distributed arrays and return the result
     proc concatset(a: [?aD] ?t, b: [?bD] t) {
-      var sizeA = a.size;
-      var sizeB = b.size;
-      var ret = makeDistArray((sizeA + sizeB), t);
-      ret[{0..#sizeA}] = a;
-      ret[{sizeA..#sizeB}] = b;
+      var ret = makeDistArray((a.size + b.size), t);
+      
+      ret[{0..#a.size}] = a;
+      ret[{a.size..#b.size}] = b;
 
       return ret;
     }

@@ -30,7 +30,8 @@ module ArraySetopsMsg
     */
     proc intersect1dMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
-        var repMsg: string;
+        var repMsg: string; // response message
+        // split request into fields
         var (cmd, name, name2, assume_unique) = reqMsg.splitMsgToTuple(4);
 
         var vname = st.nextName();
@@ -68,7 +69,8 @@ module ArraySetopsMsg
     */
     proc setxor1dMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
-        var repMsg: string;
+        var repMsg: string; // response message
+        // split request into fields
         var (cmd, name, name2, assume_unique) = reqMsg.splitMsgToTuple(4);
 
         var vname = st.nextName();
@@ -106,7 +108,8 @@ module ArraySetopsMsg
     */
     proc setdiff1dMsg(reqMsg: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
-        var repMsg: string;
+        var repMsg: string; // response message
+        // split request into fields
         var (cmd, name, name2, assume_unique) = reqMsg.splitMsgToTuple(4);
 
         var vname = st.nextName();
@@ -144,15 +147,16 @@ module ArraySetopsMsg
     */
     proc union1dMsg(reqMsg: string, st: borrowed SymTab): string throws {
       param pn = Reflection.getRoutineName();
-      var repMsg: string;
+      var repMsg: string; // response message
+        // split request into fields
       var (cmd, name, name2) = reqMsg.splitMsgToTuple(3);
 
       var vname = st.nextName();
 
       var gEnt: borrowed GenSymEntry = st.lookup(name);
       var gEnt2: borrowed GenSymEntry = st.lookup(name2);
-      overMemLimit(((4 + 1)* 2 * gEnt.size * gEnt.itemsize)
-             + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+      overMemLimit(((4 + 1) * gEnt.size * gEnt.itemsize * gEnt2.size * gEnt2.itemsize)
+             + (4 * here.maxTaskPar * numLocales * 2**16 * 8));
 
       select(gEnt.dtype) {
         when (DType.Int64) {
