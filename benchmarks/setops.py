@@ -30,7 +30,7 @@ def time_ak_setops(N_per_locale, trials, dtype):
     for op, t in tavg.items():
         print("{} = {}".format(op, results[op]))
         print("  {} Average time = {:.4f} sec".format(op, t))
-        bytes_per_sec = (a.size * a.itemsize) / t
+        bytes_per_sec = (a.size * a.itemsize * 2) / t
         print("  {} Average rate = {:.2f} GiB/sec".format(op, bytes_per_sec/2**30))
 
 def time_np_setops(N, trials, dtype):
@@ -51,7 +51,7 @@ def time_np_setops(N, trials, dtype):
     tavg = sum(timings) / trials
 
     print("Average time = {:.4f} sec".format(tavg))
-    bytes_per_sec = (c.size * c.itemsize * 3) / tavg
+    bytes_per_sec = (a.size * a.itemsize * 2) / tavg
     print("Average rate = {:.2f} GiB/sec".format(bytes_per_sec/2**30))
 
 def check_correctness(dtype):
@@ -74,7 +74,7 @@ def create_parser():
     parser.add_argument('hostname', help='Hostname of arkouda server')
     parser.add_argument('port', type=int, help='Port of arkouda server')
     parser.add_argument('-n', '--size', type=int, default=10**8, help='Problem size: length of arrays A and B')
-    parser.add_argument('-t', '--trials', type=int, default=6, help='Number of times to run the benchmark')
+    parser.add_argument('-t', '--trials', type=int, default=3, help='Number of times to run the benchmark')
     parser.add_argument('-d', '--dtype', default='int64', help='Dtype of arrays (int64)')
     parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
     parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')

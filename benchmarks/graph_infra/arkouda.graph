@@ -48,6 +48,6 @@ ylabel: Performance (ops/s)
 
 perfkeys: intersect Average rate =, union Average rate =, xor Average rate=, diff Average rate=
 graphkeys: Intersect GiB/s, Union GiB/s, Xor GiB/s, Diff GiB/s
-files: setops.dat
+files: setops.dat, setops.dat, setops.dat, setops.dat
 graphtitle: Set Operations Performance
 ylabel: Performance (GiB/s)
