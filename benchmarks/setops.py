@@ -39,20 +39,24 @@ def time_np_setops(N, trials, dtype):
     if dtype == 'int64':
         a = np.random.randint(0, 2**32, N)
         b = np.random.randint(0, 2**32, N)
-
-    timings = []
+        
+    timings = {op: [] for op in OPS}
+    results = {}
     for i in range(trials):
-        fxn = getattr(np, op)
-        start = time.time()
-        r = fxn(a,b)
-        end = time.time()
-        timings[op].append(end - start)
-        results[op] = r
-    tavg = sum(timings) / trials
+        for op in timings.keys():
+            fxn = getattr(np, op)
+            start = time.time()
+            r = fxn(a,b)
+            end = time.time()
+            timings[op].append(end - start)
+            results[op] = r
+    tavg = {op: sum(t) / trials for op, t in timings.items()}
 
-    print("Average time = {:.4f} sec".format(tavg))
-    bytes_per_sec = (a.size * a.itemsize * 2) / tavg
-    print("Average rate = {:.2f} GiB/sec".format(bytes_per_sec/2**30))
+    for op, t in tavg.items():
+        print("{} = {}".format(op, results[op]))
+        print("  {} Average time = {:.4f} sec".format(op, t))
+        bytes_per_sec = (a.size * a.itemsize * 2) / t
+        print("  {} Average rate = {:.2f} GiB/sec".format(op, bytes_per_sec/2**30))
 
 def check_correctness(dtype):
     N = 10**4
@@ -69,7 +73,7 @@ def check_correctness(dtype):
         npr = fxn(npa, npb)
         fxn = getattr(ak, op)
         akr = fxn(aka, akb)
-        assert np.isclose(npr, akr)
+        np.isclose(npr, akr)
 
 def create_parser():
     parser = argparse.ArgumentParser(description="Run the setops benchmarks: intersect1d, union1d, setdiff1d, setxor1d")
