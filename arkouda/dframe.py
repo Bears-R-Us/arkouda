@@ -131,20 +131,21 @@ class DFrame:
         isinstance can't just check int or slice
         Raise error for bad key
         """
+        if key not in self.columns and key not in self.index:
+            raise TypeError("key must exist in either the index or the columns")
 
-        if isinstance(key, int) or isinstance(key, slice) or isinstance(pdarray):
+        if isinstance(key, int) or isinstance(key, str):
+            elif key in self.index:
+                newData = {col: [array[key]] for col, array in self.data.items()}
+                return DFrame(newData)
+            if key in self.columns:
+                index = self.columns.index(key)
+                return self.arrays[index]
+
+        elif isinstance(key, slice) or isinstance(key, pdarray):
             newData = {col: [array[key]] for col, array in self.data.items()}
             return DFrame(newData)
-        elif isinstance(key, str) and key in self.columns:
-            index = self.columns.index(key)
-            return self.arrays[index]
-        # elif isinstance(key, slice):
-        #     newData = {col: array[key] for col, array in self.data.items()}
-        #     return DFrame(newData)
-        # elif isinstance(key, pdarray):
-        #     newData = {col: array[key] for col, array in self.data.items()}
-        #     return DFrame(newData)
-    
+
     def __setitem__(self, key, val):
 
         if key in self.columns:
@@ -181,26 +182,30 @@ class DFrame:
         -------
         Raise error for bad condition
         """
+        if not isinstance(key, list):
+            raise TypeError("Condition must be boolean list")
 
         return DFrame({col: val[condition] for col, val in self.data.items()})
     
-    def head(self, amount = 5):
+    def head(self, limit = 5):
 
         """
         Exact same as pandas DataFrame head
         """
+        if not isinstance(amount, int):
+            raise TypeError("Invalid limit")
+        return self[:limit]
 
-        return self[:amount]
-
-    def tail(self, amount = 5):
+    def tail(self, limit = 5):
 
         """
         Exact same as pandas DataFrame tail
         """
+        if not isinstance(amount, int):
+            raise TypeError("Invalid limit")
+        return self[-limit:]
 
-        return self[-amount:]
-
-    def value_counts(self):
+    def count(self):
 
         """
         Apply value_counts to every column of the DFrame.
@@ -215,7 +220,7 @@ class DFrame:
             countData[col] = value_counts(self.data[col])
         return DFrame(countData, index = "count")     
 
-    def groupby(self, columns):
+    def groupby(self, cols):
 
         """
         Directly creates GroupBy object from the columns of the DFrame. More similar
@@ -227,6 +232,11 @@ class DFrame:
         Raise error for columns not in self.columns
         """
 
+        check = array(col in self.columns for col in cols)
+
+        if not all(check):
+            raise TypeError("Nonexistant column(s) in parameter cols")
+
         if isinstance(columns, list):
             grouped = []
             for col in columns:
@@ -234,7 +244,7 @@ class DFrame:
             return GroupBy(grouped)
         return GroupBy(self[columns])
 
-    def sortby(self, columns):
+    def sortby(self, cols):
 
         """
         Currently takes one column and sorts rows by one column. Ideally, it could
@@ -245,13 +255,15 @@ class DFrame:
         Raise error for columns not in self.columns
         Implement more advanced implementation of sort (probably requires Chapel code)
         """
-        
-        sortOrder = []
-        for col in columns:
-            sortOrder.add(self.data[col])
+        check = array(col in self.columns for col in cols)
+
+        if not all(check):
+            raise TypeError("Nonexistant column(s) in parameter cols")
+
+        sortOrder = [self.data[col] for col in columns]
         sorting = coargsort(columns)
         sortDict = {col: val[sorting] for col, val in self.data.items()}
-        return sortDict
+        return DFrame(sortDict, index = self.index)
 
     def to_pddf(self):
 
@@ -277,7 +289,7 @@ class DFrame:
         Fix index
         """
 
-        return DFrame({col: abs(self.data[col]) for col in self.columns})
+        return DFrame({col: abs(self.data[col]) for col in self.columns}, index = self.index)
 
     def agg(self, func, axis = 0):
         
@@ -381,7 +393,7 @@ class DFrame:
 
         transposed = zip(*self.arrays)
         transposedList = list(transposed)
-        return DFrame({i: transposedList[i] for i in index}, index = self.columns)
+        return DFrame({i: transposedList[i] for i in self.index}, index = self.columns)
     
     def assign(self, dictionary):
 
@@ -394,7 +406,16 @@ class DFrame:
         Ensure that dictionary is dictionary of pdarrays and all arrays are the 
         same length as arrays in DFrame
         """
+        check = array(col in self.columns for col in dictionary.keys)
+        check2 = array(array.size == shape[0] for array in self.arrays)
 
+        if not all(check) and not all(check2):
+            raise TypeError("Nonexistant column(s) in input dictionary and array(s) of improper length exist")
+        elif not all(check2):
+            raise TypeError("Array(s) of improper length exist")
+        elif not all(check):
+            raise TypeError("Nonexistant column(s) in input dictionary")
+    
         for key, val in dictionary.items():
             self.data[key] = val
             self.columns.append(key)
@@ -415,6 +436,10 @@ class DFrame:
         Make sure that cols in self.columns
 
         """
+        check = array(col in self.columns for col in dictionary.keys)
+        if not all(check):
+            raise TypeError("Nonexistant column(s) in argument cols")
+
 
         for col in cols:
             self.columns.remove(col)
@@ -500,7 +525,9 @@ class DFrame:
         -------
         Make sure input is a pda
         """
-
+        if pda.size != self.shape[1]:
+            raise ValueError("pda is not the right size")
+       
         pdaLength = range(0, len(pda))
 
         for i in pdaLength:
