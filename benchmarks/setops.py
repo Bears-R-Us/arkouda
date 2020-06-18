@@ -7,7 +7,7 @@ import arkouda as ak
 OPS = ('intersect1d', 'union1d', 'setxor1d', 'setdiff1d')
 
 def time_ak_setops(N_per_locale, trials, dtype):
-    print(">>> arkouda stream")
+    print(">>> arkouda setops")
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
@@ -33,7 +33,7 @@ def time_ak_setops(N_per_locale, trials, dtype):
         print("  {} Average rate = {:.2f} GiB/sec".format(op, bytes_per_sec/2**30))
 
 def time_np_setops(N, trials, dtype):
-    print(">>> numpy stream")
+    print(">>> numpy setops")
     print("N = {:,}".format(N))
     if dtype == 'int64':
         a = np.random.randint(0, 2**32, N)
