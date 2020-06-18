@@ -19,6 +19,7 @@ module ArraySetopsMsg
 
     use ArraySetops;
     use Indexing;
+    use RadixSortLSD;
     
     /*
     Parse, execute, and respond to a intersect1d message
@@ -82,7 +83,7 @@ module ArraySetopsMsg
 
         select(gEnt.dtype) {
           when (DType.Int64) {
-             if(gEnt.dtype != gEnt2.dtype) then return notImplementedError("newUnion1d",gEnt2.dtype);
+             if(gEnt.dtype != gEnt2.dtype) then return notImplementedError("setxor1d",gEnt2.dtype);
              var e = toSymEntry(gEnt,int);
              var f = toSymEntry(gEnt2, int);
              
@@ -93,7 +94,7 @@ module ArraySetopsMsg
              return s;
            }
            otherwise {
-             return notImplementedError("newUnion1d",gEnt.dtype);
+             return notImplementedError("setxor1d",gEnt.dtype);
            }
         }
     }
@@ -121,7 +122,7 @@ module ArraySetopsMsg
 
         select(gEnt.dtype) {
           when (DType.Int64) {
-             if(gEnt.dtype != gEnt2.dtype) then return notImplementedError("newUnion1d",gEnt2.dtype);
+             if(gEnt.dtype != gEnt2.dtype) then return notImplementedError("setdiff1d",gEnt2.dtype);
              var e = toSymEntry(gEnt,int);
              var f = toSymEntry(gEnt2, int);
              
@@ -132,7 +133,7 @@ module ArraySetopsMsg
              return s;
            }
            otherwise {
-             return notImplementedError("newUnion1d",gEnt.dtype);
+             return notImplementedError("setdiff1d",gEnt.dtype);
            }
         }
     }
@@ -155,8 +156,10 @@ module ArraySetopsMsg
 
       var gEnt: borrowed GenSymEntry = st.lookup(name);
       var gEnt2: borrowed GenSymEntry = st.lookup(name2);
-      overMemLimit(((4 + 1) * gEnt.size * gEnt.itemsize * gEnt2.size * gEnt2.itemsize)
-             + (4 * here.maxTaskPar * numLocales * 2**16 * 8));
+      var gEnt_sortMem = radixSortLSD_memEst(gEnt.size, gEnt.itemsize);
+      var gEnt2_sortMem = radixSortLSD_memEst(gEnt2.size, gEnt2.itemsize);
+      var union_maxMem = max(gEnt_sortMem, gEnt2_sortMem);
+      overMemLimit(union_maxMem);
 
       select(gEnt.dtype) {
         when (DType.Int64) {
