@@ -76,8 +76,9 @@ module ArraySetops
       
       // Concatenate a `true` onto each end of the array
       var flag = makeDistArray((sliceComp.size + 2), bool);
+      
       flag[0] = true;
-      flag[{1..#(sliceComp.size + 1)}] = sliceComp;
+      flag[{1..#(sliceComp.size)}] = sliceComp;
       flag[sliceComp.size + 1] = true;
 
       var mask = tail(flag) & sliceEnd(flag);
