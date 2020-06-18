@@ -28,7 +28,6 @@ def time_ak_setops(N_per_locale, trials, dtype):
     tavg = {op: sum(t) / trials for op, t in timings.items()}
 
     for op, t in tavg.items():
-        print("{} = {}".format(op, results[op]))
         print("  {} Average time = {:.4f} sec".format(op, t))
         bytes_per_sec = (a.size * a.itemsize * 2) / t
         print("  {} Average rate = {:.2f} GiB/sec".format(op, bytes_per_sec/2**30))
@@ -53,7 +52,6 @@ def time_np_setops(N, trials, dtype):
     tavg = {op: sum(t) / trials for op, t in timings.items()}
 
     for op, t in tavg.items():
-        print("{} = {}".format(op, results[op]))
         print("  {} Average time = {:.4f} sec".format(op, t))
         bytes_per_sec = (a.size * a.itemsize * 2) / t
         print("  {} Average rate = {:.2f} GiB/sec".format(op, bytes_per_sec/2**30))
