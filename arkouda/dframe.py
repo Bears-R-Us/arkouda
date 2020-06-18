@@ -21,24 +21,38 @@ class DFrame:
     DFrame itself does not exist on the server. Operations on the DFrame serve as calls to
     pdarray methods.
 
-    
+    Attributes
+    ----------
+    data : dictionary of pdarrays
+        Collection of pointers to pdarrays, where each key is the name of the column
+        corresponding to the pdarray value
+    columns : list of strings
+        An ordered list of column names
+    arrays : list of pdarrays
+        An ordered list of pdarrays, each corresponding to the same index of columns
+    dtypes : list of dtypes
+        An ordered list of data types corresponding to arrays
+    shape : tuple
+        The sizes of each dimension of the DFrame
+    index : list
+        An ordered list of row names
+    ndim : int
+        The rank of the array (currently only rank 1 arrays supported)
+    size : int
+        The number of elements in the DFrame
+    axes : tuple
+        The names of each axis of the DFrame
+    ndim : int
+        The length of one array
+    itemsize : int
+        The size in bytes of each element
 
-    # To implement-
-    # Attributes - name, columns, arrays, dtypes, shape, itemsize, ndim, index
-    # Selection - filter
-    # Getter - iloc, loc
-    # Setter - __setitem__
-    # Visual representation - __str__, __repr__
-    # SortBy
-    # PDarray - dealing with null, dropna
-    # Integration with pandas - to_pddf
-    # Aggregation - agg
-    # Bool - any, all
-    # Operations - abs?, add?
-    # Concatenation - assign, append, drop, insertion
-    # Stats - corr, cov
-    #
-
+    TODO
+    -------
+    Sortby with tiebreaking (currently can only do sorting by one column)
+    Dealing with NaN values
+    Removal of rows
+    Fix index with methods
     """
 
     objtype = 'DFrame'
@@ -55,19 +69,19 @@ class DFrame:
         ak.DFrame
             Instance of arkouda DFrame that serves as a dictionary of pdarrays
 
+        TODO
+        -------
+        More or less attributes
+
         """
-        self.Reductions = frozenset(['sum', 'prod', 'mean',
-                            'min', 'max', 'argmin', 'argmax',
-                            'nunique', 'any', 'all'])
     
         if isinstance(data, dict):
             self.data = {col: array(val) for col, val in data.items()}
-            
         elif isinstance(data, pd.DataFrame):
             self.data = {col: data[col] for col in data.columns}
-
         else:
             raise TypeError("data must be dictionary or pandas DataFrame")
+
         self.columns = list(self.data.keys())
         self.arrays = list(self.data.values())
         self.dtypes = [array.dtype for array in self.arrays]
@@ -81,13 +95,16 @@ class DFrame:
         self.size = self.shape[0] * self.shape[1]
         self.axes = (index, self.columns)
         self.ndim = self.shape[0]
+        self.Reductions = frozenset(['sum', 'prod', 'mean',
+                            'min', 'max', 'argmin', 'argmax',
+                            'nunique', 'any', 'all'])
 
 
     def __repr__(self):
         """
-        Currently using pandas representation, requiring transfer of data to pandas. Using until
-        a more efficient, yet still visually good representation is found.
-
+        TODO
+        -------
+        Come up with better visualization that does not require transferring to pandas
         """
 
         return repr(pd.DataFrame({col: array.to_ndarray() for col, array in self.data.items()}, index = self.index))
@@ -95,14 +112,25 @@ class DFrame:
     def __str__(self):
 
         """
-        Currently using pandas string representation, requiring transfer of data to pandas. Using until
-        a more efficient, yet still visually good representation is found.
-
+        TODO
+        -------
+        Come up with better visualization that does not require transferring to pandas
         """
 
         return str(pd.DataFrame({col: array.to_ndarray() for col, array in self.data.items()}))
 
     def __getitem__(self, key):
+
+        """
+        TODO
+        -------
+        [index, col]
+        [col:col]
+        [index:index, col]
+        [index, col:col]
+        isinstance can't just check int or slice
+        Raise error for bad key
+        """
 
         if isinstance(key, int) or isinstance(key, slice) or isinstance(pdarray):
             newData = {col: [array[key]] for col, array in self.data.items()}
@@ -119,35 +147,85 @@ class DFrame:
     
     def __setitem__(self, key, val):
 
+        if key in self.columns:
+            self.data[key] = val
+        elif key in self.index:
+            for col in self.columns:
+                self.data[col][key] = val
+
+        """
+        TODO
+        -------
+        Consider where index and columns have same values
+        """
+
         return
 
     def filter(self, condition):
 
-        # Given a condition, return all rows that satisfy
+        """
+        Filters out all unwanted rows of the DFrame. Created before __getitem__, 
+        but serves the same purpose as __getitem__. 
+
+        Parameters
+        ----------
+        condition :  boolean array
+            filter condition
+
+        Returns
+        -------
+        ak.DFrame
+            Subsection of DFrame that satisfies condition.
+
+        TODO
+        -------
+        Raise error for bad condition
+        """
 
         return DFrame({col: val[condition] for col, val in self.data.items()})
     
-    def head(self, amount=5):
+    def head(self, amount = 5):
 
-        # Return the first "amount" entries
+        """
+        Exact same as pandas DataFrame head
+        """
 
         return self[:amount]
 
-    def tail(self, amount=5):
+    def tail(self, amount = 5):
 
-        # Return the last "amount" entries
+        """
+        Exact same as pandas DataFrame tail
+        """
 
         return self[-amount:]
 
-    def value_counts(self, column):
+    def value_counts(self):
 
-        # Return the number of entries for each unique type
+        """
+        Apply value_counts to every column of the DFrame.
 
-        return value_counts(self[column])        
+        TODO
+        -------
+        Make sure it works
+        """
+
+        countData = {}
+        for col in self.columns:
+            countData[col] = value_counts(self.data[col])
+        return DFrame(countData, index = "count")     
 
     def groupby(self, columns):
 
-        # Create GroupBy object straight from DFrame
+        """
+        Directly creates GroupBy object from the columns of the DFrame. More similar
+        to pandas GroupBy creation as it does not need the DFrame name for every 
+        column.
+
+        TODO
+        -------
+        Raise error for columns not in self.columns
+        """
 
         if isinstance(columns, list):
             grouped = []
@@ -156,21 +234,61 @@ class DFrame:
             return GroupBy(grouped)
         return GroupBy(self[columns])
 
-    def sortby(self, column):
+    def sortby(self, columns):
+
+        """
+        Currently takes one column and sorts rows by one column. Ideally, it could
+        sort with multiple columns, requiring tiebreaking.
+
+        TODO
+        -------
+        Raise error for columns not in self.columns
+        Implement more advanced implementation of sort (probably requires Chapel code)
+        """
         
-        sorting = argsort(self.data[column])
+        sortOrder = []
+        for col in columns:
+            sortOrder.add(self.data[col])
+        sorting = coargsort(columns)
         sortDict = {col: val[sorting] for col, val in self.data.items()}
         return sortDict
 
     def to_pddf(self):
 
+        """ 
+        Integration with pandas
+
+        Returns
+        -------
+        pd.DataFrame
+            pandas DataFrame with all of the arkouda DFrame data transferred to it
+        """
+
         return pd.DataFrame({col: array.to_ndarray() for col, array in self.data.items()}, index = self.index)
 
     def abs(self):
 
+        """
+        Apply abs function to every column to get DFrame with only nonnegative
+        values
+
+        TODO
+        -------
+        Fix index
+        """
+
         return DFrame({col: abs(self.data[col]) for col in self.columns})
 
     def agg(self, func, axis = 0):
+        
+        """
+        Aggregation
+
+        TODO
+        -------
+        Should add a columns parameter
+        Condense code
+        """
         if func not in self.Reductions:
             raise ValueError("Unsupported reduction: {}\nMust be one of {}".format(func, self.Reductions))
 
@@ -202,49 +320,80 @@ class DFrame:
         else:
             raise ValueError("axis must be 0 or 1") 
 
+    # Aggregate columns with all function
     def all(self, axis = 0):
         
         return agg(all, axis)
 
+    # Aggregate columns with "any" function
     def any(self, axis = 0):
         
         return agg(any, axis)
 
+    # Aggregate columns with max function
     def max(self, axis = 0):
 
         return agg(max, axis)
 
+    # Aggregate columns with min function
     def min(self, axis = 0):
         
         return agg(min, axis)
-
+    
+    # Aggregate columns with argmin function
     def argmin(self, axis = 0):
         
         return agg(argmin, axis)
 
+    # Aggregate columns with argmax function
     def argmax(self, axis = 0):
 
         return agg(argmax, axis)
 
+    # Aggregate columns with prod function
     def prod(self, axis = 0):
         
         return agg(prod, axis)
 
+    # Aggregate columns with sum function
     def sum(self, axis = 0):
         
         return agg(sum, axis)
 
+    # Aggregate columns with mean function
     def mean(self, axis = 0):
 
         return agg(mean, axis)
 
     def transpose(self):
 
+        """
+        Take transpose of DFrame
+
+        Returns
+        -------
+        New instance of DFrame with rows and columns flipped
+
+        TODO
+        -------
+        Make sure it works
+        """
+
         transposed = zip(*self.arrays)
         transposedList = list(transposed)
         return DFrame({i: transposedList[i] for i in index}, index = self.columns)
     
     def assign(self, dictionary):
+
+        """
+        Assign all "columns" in dictionary as columns in DFrame. Alter attributes
+        accordingly.
+
+        TODO
+        -------
+        Ensure that dictionary is dictionary of pdarrays and all arrays are the 
+        same length as arrays in DFrame
+        """
 
         for key, val in dictionary.items():
             self.data[key] = val
@@ -258,6 +407,15 @@ class DFrame:
     
     def drop_columns(self, cols):
 
+        """
+        Remove unwanted columns and change attributes accordingly
+
+        TODO
+        -------
+        Make sure that cols in self.columns
+
+        """
+
         for col in cols:
             self.columns.remove(col)
             self.arrays.remove(self.data[col])
@@ -268,6 +426,12 @@ class DFrame:
             self.axes = (index, self.columns)
             self.ndim = self.shape[0]
     
+    """
+    TODO
+    -------
+    Check that all operations work
+    Implement r versions
+    """
     BinOps = frozenset(["+", "-", "*", "/", "//", "%", "<", ">", "<=", ">=", "!=", "==", "&", "|", "^", "<<", ">>","**"])
     OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", "<<=", ">>=","**="])
 
@@ -327,7 +491,16 @@ class DFrame:
 
         return DFrame(newDict, index = self.index)
 
-    def appendRow(self, pda, indice):
+    def appendRow(self, pda, indice = self.shape[0] + 1):
+
+        """
+        Add row to end of DFrame with indicated indice.
+
+        TODO
+        -------
+        Make sure input is a pda
+        """
+
         pdaLength = range(0, len(pda))
 
         for i in pdaLength:
