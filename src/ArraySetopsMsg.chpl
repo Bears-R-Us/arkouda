@@ -39,8 +39,11 @@ module ArraySetopsMsg
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
         var gEnt2: borrowed GenSymEntry = st.lookup(name2);
-        overMemLimit(((4 + 1) * 2 * gEnt.size * gEnt.itemsize)
-             + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+        
+        var gEnt_sortMem = radixSortLSD_memEst(gEnt.size, gEnt.itemsize);
+        var gEnt2_sortMem = radixSortLSD_memEst(gEnt2.size, gEnt2.itemsize);
+        var intersect_maxMem = max(gEnt_sortMem, gEnt2_sortMem);
+        overMemLimit(intersect_maxMem);
 
         select(gEnt.dtype) {
           when (DType.Int64) {
@@ -78,8 +81,11 @@ module ArraySetopsMsg
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
         var gEnt2: borrowed GenSymEntry = st.lookup(name2);
-        overMemLimit(((4 + 1) * 2 * gEnt.size * gEnt.itemsize)
-             + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+
+        var gEnt_sortMem = radixSortLSD_memEst(gEnt.size, gEnt.itemsize);
+        var gEnt2_sortMem = radixSortLSD_memEst(gEnt2.size, gEnt2.itemsize);
+        var xor_maxMem = max(gEnt_sortMem, gEnt2_sortMem);
+        overMemLimit(xor_maxMem);
 
         select(gEnt.dtype) {
           when (DType.Int64) {
@@ -117,8 +123,11 @@ module ArraySetopsMsg
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
         var gEnt2: borrowed GenSymEntry = st.lookup(name2);
-        overMemLimit(((4 + 1) * 2 * gEnt.size * gEnt.itemsize)
-             + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+
+        var gEnt_sortMem = radixSortLSD_memEst(gEnt.size, gEnt.itemsize);
+        var gEnt2_sortMem = radixSortLSD_memEst(gEnt2.size, gEnt2.itemsize);
+        var diff_maxMem = max(gEnt_sortMem, gEnt2_sortMem);
+        overMemLimit(diff_maxMem);
 
         select(gEnt.dtype) {
           when (DType.Int64) {
@@ -156,6 +165,7 @@ module ArraySetopsMsg
 
       var gEnt: borrowed GenSymEntry = st.lookup(name);
       var gEnt2: borrowed GenSymEntry = st.lookup(name2);
+      
       var gEnt_sortMem = radixSortLSD_memEst(gEnt.size, gEnt.itemsize);
       var gEnt2_sortMem = radixSortLSD_memEst(gEnt2.size, gEnt2.itemsize);
       var union_maxMem = max(gEnt_sortMem, gEnt2_sortMem);
