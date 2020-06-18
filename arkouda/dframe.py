@@ -57,7 +57,7 @@ class DFrame:
 
     objtype = 'DFrame'
 
-    def __init__(self, data, index = None):
+    def __init__(self, data, index = False):
         """
         Parameters
         ----------
@@ -78,7 +78,7 @@ class DFrame:
         if isinstance(data, dict):
             self.data = {col: array(val) for col, val in data.items()}
         elif isinstance(data, pd.DataFrame):
-            self.data = {col: data[col] for col in data.columns}
+            self.data = {col: array(data[col]) for col in data.columns}
         else:
             raise TypeError("data must be dictionary or pandas DataFrame")
 
@@ -87,10 +87,10 @@ class DFrame:
         self.dtypes = [array.dtype for array in self.arrays]
         self.shape = [len(self.arrays[0]), len(self.columns)]
 
-        if index == None:
-            self.index = range(0, self.shape[0])
-        else:
+        if index != False:
             self.index = index
+        else:
+            self.index = range(0, self.shape[0])
         
         self.size = self.shape[0] * self.shape[1]
         self.axes = (index, self.columns)
@@ -131,20 +131,21 @@ class DFrame:
         isinstance can't just check int or slice
         Raise error for bad key
         """
-        if key not in self.columns and key not in self.index:
-            raise TypeError("key must exist in either the index or the columns")
+        
 
         if isinstance(key, int) or isinstance(key, str):
-            elif key in self.index:
-                newData = {col: [array[key]] for col, array in self.data.items()}
-                return DFrame(newData)
-            if key in self.columns:
+            if key not in self.columns and key not in self.index:
+                raise TypeError("key must exist in either the index or the columns")
+            if key in self.index:
+                newData = {col: array[key] for col, array in self.data.items()}
+                return DFrame(newData, index = self.index[key])
+            elif key in self.columns:
                 index = self.columns.index(key)
                 return self.arrays[index]
 
         elif isinstance(key, slice) or isinstance(key, pdarray):
-            newData = {col: [array[key]] for col, array in self.data.items()}
-            return DFrame(newData)
+            newData = {col: array[key] for col, array in self.data.items()}
+            return DFrame(newData, index = self.index[key])
 
     def __setitem__(self, key, val):
 
@@ -182,17 +183,17 @@ class DFrame:
         -------
         Raise error for bad condition
         """
-        if not isinstance(key, list):
+        if not isinstance(condition, pdarray) :
             raise TypeError("Condition must be boolean list")
-
-        return DFrame({col: val[condition] for col, val in self.data.items()})
+        filterIndex = array(self.index)[condition].to_ndarray().tolist()
+        return DFrame({col: val[condition] for col, val in self.data.items()}, index = filterIndex)
     
     def head(self, limit = 5):
 
         """
         Exact same as pandas DataFrame head
         """
-        if not isinstance(amount, int):
+        if not isinstance(limit, int):
             raise TypeError("Invalid limit")
         return self[:limit]
 
@@ -201,7 +202,7 @@ class DFrame:
         """
         Exact same as pandas DataFrame tail
         """
-        if not isinstance(amount, int):
+        if not isinstance(limit, int):
             raise TypeError("Invalid limit")
         return self[-limit:]
 
@@ -232,17 +233,17 @@ class DFrame:
         Raise error for columns not in self.columns
         """
 
-        check = array(col in self.columns for col in cols)
+        check = array([col in self.columns for col in cols])
 
         if not all(check):
             raise TypeError("Nonexistant column(s) in parameter cols")
 
-        if isinstance(columns, list):
+        if isinstance(cols, list):
             grouped = []
-            for col in columns:
+            for col in cols:
                 grouped.append(self[col])
             return GroupBy(grouped)
-        return GroupBy(self[columns])
+        return GroupBy(self[cols])
 
     def sortby(self, cols):
 
@@ -255,13 +256,13 @@ class DFrame:
         Raise error for columns not in self.columns
         Implement more advanced implementation of sort (probably requires Chapel code)
         """
-        check = array(col in self.columns for col in cols)
+        check = array([col in self.columns for col in cols])
 
         if not all(check):
             raise TypeError("Nonexistant column(s) in parameter cols")
 
-        sortOrder = [self.data[col] for col in columns]
-        sorting = coargsort(columns)
+        sortOrder = [self.data[col] for col in cols]
+        sorting = coargsort(sortOrder)
         sortDict = {col: val[sorting] for col, val in self.data.items()}
         return DFrame(sortDict, index = self.index)
 
@@ -406,8 +407,8 @@ class DFrame:
         Ensure that dictionary is dictionary of pdarrays and all arrays are the 
         same length as arrays in DFrame
         """
-        check = array(col in self.columns for col in dictionary.keys)
-        check2 = array(array.size == shape[0] for array in self.arrays)
+        check = array([col in self.columns for col in dictionary.keys])
+        check2 = array([array.size == shape[0] for array in self.arrays])
 
         if not all(check) and not all(check2):
             raise TypeError("Nonexistant column(s) in input dictionary and array(s) of improper length exist")
@@ -436,7 +437,7 @@ class DFrame:
         Make sure that cols in self.columns
 
         """
-        check = array(col in self.columns for col in dictionary.keys)
+        check = array([col in self.columns for col in dictionary.keys])
         if not all(check):
             raise TypeError("Nonexistant column(s) in argument cols")
 
@@ -516,30 +517,30 @@ class DFrame:
 
         return DFrame(newDict, index = self.index)
 
-    def appendRow(self, pda, indice = self.shape[0] + 1):
+    # def appendRow(self, pda, indice = self.shape[0] + 1):
 
-        """
-        Add row to end of DFrame with indicated indice.
+    #     """
+    #     Add row to end of DFrame with indicated indice.
 
-        TODO
-        -------
-        Make sure input is a pda
-        """
-        if pda.size != self.shape[1]:
-            raise ValueError("pda is not the right size")
+    #     TODO
+    #     -------
+    #     Make sure input is a pda
+    #     """
+    #     if pda.size != self.shape[1]:
+    #         raise ValueError("pda is not the right size")
        
-        pdaLength = range(0, len(pda))
+    #     pdaLength = range(0, len(pda))
 
-        for i in pdaLength:
-            ak.concatenate(self.data[self.columns[i]], pda[i])
+    #     for i in pdaLength:
+    #         ak.concatenate(self.data[self.columns[i]], pda[i])
         
-        self.arrays = list(self.data.values())
-        self.dtypes = [array.dtype for array in self.arrays]
-        self.shape[0] += 1
-        self.index.append(indice)
-        self.size = self.shape[0] * self.shape[1]
-        self.axes = (index, self.columns)
-        self.ndim = self.shape[0]
+    #     self.arrays = list(self.data.values())
+    #     self.dtypes = [array.dtype for array in self.arrays]
+    #     self.shape[0] += 1
+    #     self.index.append(indice)
+    #     self.size = self.shape[0] * self.shape[1]
+    #     self.axes = (index, self.columns)
+    #     self.ndim = self.shape[0]
         
     
             

@@ -8,6 +8,7 @@ use Time only;
 use ZMQ only;
 use Memory;
 
+use Dframe;
 use MultiTypeSymbolTable;
 use MultiTypeSymEntry;
 use MsgProcessing;
