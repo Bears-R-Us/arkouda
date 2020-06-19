@@ -88,6 +88,9 @@ if __name__ == "__main__":
     import sys
     parser = create_parser()
     args = parser.parse_args()
+    if args.dtype == 'float64':
+        args.dtype = 'int64'
+        print('float64 is not supported, using int64')
     if args.dtype != 'int64':
         raise ValueError("Dtype must be int64, not {}".format(args.dtype))
 
