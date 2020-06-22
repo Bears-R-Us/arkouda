@@ -2,7 +2,7 @@ import zmq, json, os, secrets
 from typing import Mapping, Tuple, Union
 import warnings, pkg_resources
 from arkouda import security
-
+from util import start_arkouda_server
 __all__ = ["verbose", "pdarrayIterThresh", "maxTransferBytes",
            "AllSymbols", "set_defaults", "connect", "disconnect",
            "shutdown", "get_config", "get_mem_used", "__version__"]
@@ -43,7 +43,7 @@ def set_defaults():
 
 
 # create context, request end of socket, and connect to it
-def connect(server = "localhost", port = 5555, timeout = 0, session_token=None):
+def connect(server = "localhost", port = 5555, timeout = 0, server_token=None):
     """
     Connect to a running arkouda server.
 
@@ -57,7 +57,7 @@ def connect(server = "localhost", port = 5555, timeout = 0, session_token=None):
     timeout : int, optional
         The timeout in seconds for client send and receive operations.
         Defaults to 0 seconds, which is interpreted as no timeout
-    session_token : str, optional 
+    server_token : str, optional 
         The token used to connect to an existing socket to enable access to
         session-scoped resources. Defaults to None
 
@@ -75,8 +75,6 @@ def connect(server = "localhost", port = 5555, timeout = 0, session_token=None):
 
     if verbose: print("ZMQ version: {}".format(zmq.zmq_version()))
 
-    print(security.get_username())
-    
     # "protocol://server:port"
     pspStr = "tcp://{}:{}".format(server,port)
     
@@ -94,7 +92,7 @@ def connect(server = "localhost", port = 5555, timeout = 0, session_token=None):
     if timeout > 0:
         socket.setsockopt(zmq.SNDTIMEO, timeout*1000)
         socket.setsockopt(zmq.RCVTIMEO, timeout*1000)
-      
+    
     # connect to arkouda server
     try:
         socket.connect(pspStr)
@@ -104,7 +102,7 @@ def connect(server = "localhost", port = 5555, timeout = 0, session_token=None):
     # send the connect message
     message = "connect"
     if verbose: print("[Python] Sending request: %s" % message)
-    socket.send_string('{} {}'.format(message,security.generate_username_token_json()))
+    socket.send_string('{} {} {}'.format(message,security.get_username(),server_token))
 
     # get the response that the server has started
     message = socket.recv_string()
@@ -181,6 +179,18 @@ def shutdown() -> None:
     socket.disconnect(pspStr)
     print(message)
     connected = False
+
+def start_local_arkouda_server() -> str:
+
+    arkouda_home = os.getenv('ARKOUDA_HOME')
+    numlocales = os.getenv('ARKOUDA_NUMLOCALES', 2)
+    host = os.getenv('ARKOUDA_SERVER_HOST', 'localhost')
+    port = os.getenv('ARKOUDA_SERVER_PORT', 5555)
+    log = os.getenv('ARKOUDA_LOGGING', False)
+    verbose = os.getenv('ARKOUDA_VERBOSE', False)
+
+    return start_arkouda_server(numlocales=numlocales, verbose=verbose, log=log, 
+                  host=host, port=port)
 
 # send message to arkouda server and check for server side error
 def generic_msg(message, send_bytes=False, recv_bytes=False) -> str:

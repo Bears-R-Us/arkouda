@@ -2,6 +2,7 @@
 backend chapel program to mimic ndarray from numpy
 This is the main driver for the arkouda server */
 
+use Security;
 use ServerConfig;
 use Time only;
 use ZMQ only;
@@ -32,8 +33,9 @@ proc main() {
     // create and connect ZMQ socket
     var context: ZMQ.Context;
     var socket : ZMQ.Socket = context.socket(ZMQ.REP);
+    var serverToken = generateToken(16);
     socket.bind("tcp://*:%t".format(ServerPort));
-    writeln("server listening on %s:%t".format(serverHostname, ServerPort)); try! stdout.flush(); 
+    writeln("server listening on %s:%t with token %s".format(serverHostname, ServerPort, serverToken)); try! stdout.flush(); 
     createServerConnectionInfo();
 
     var reqCount: int = 0;
@@ -55,6 +57,14 @@ proc main() {
         }
         socket.send(repMsg);
     }
+
+    proc isAuthEnabled() : bool {
+        if serverToken.isEmpty() {
+            return false;
+        } else {
+            return true;
+        }
+    }   
 
     while !shutdownServer {
         // receive requests
@@ -107,7 +117,7 @@ proc main() {
                     sendRepMsg(unknownError(""));
                 }
 
-                const (cmd,token) = reqMsg.splitMsgToTuple(2);
+                const (cmd,user,token) = reqMsg.splitMsgToTuple(3);
 
                 if logging {
                     writeln("reqMsg: ", reqMsg);
@@ -122,6 +132,15 @@ proc main() {
                 else {
                     // here we know that everything is strings
                     var repMsg: string;
+
+                    if isAuthEnabled() {
+                        if token.isEmpty() {
+                            sendRepMsg("Error: basic authentication enabled, token must be not null");
+                        }
+                        if serverToken != token {
+                            sendRepMsg("Error: basic authentication enabled, token must match server token");
+                        }
+                    }
                     select cmd
                     {
                         when "segmentLengths"    {repMsg = segmentLengthsMsg(reqMsg, st);}
@@ -188,7 +207,7 @@ proc main() {
                         when "attach"            {repMsg = attachMsg(reqMsg, st);}
                         when "unregister"        {repMsg = unregisterMsg(reqMsg, st);}
                         when "connect" {
-                            repMsg = "connected to arkouda server tcp://*:%t with token %s".format(ServerPort,token);
+                            repMsg = "connected to arkouda server tcp://*:%t as user %s with token %s".format(ServerPort,user,token);
                         }
                         when "disconnect" {
                             repMsg = "disconnected from arkouda server tcp://*:%t".format(ServerPort);
