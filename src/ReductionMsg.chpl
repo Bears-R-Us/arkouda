@@ -493,10 +493,10 @@ module ReductionMsg
        and then reduce over each chunk uisng the operator <Op>. The return array 
        of reduced values is the same size as <segments>.
      */
-    proc segSum(values:[] ?t, segments:[?D] int): [D] t {
+    proc segSum(values:[] ?t, segments:[?D] int, param skipNaN=true): [D] t {
       var res: [D] t;
       if (D.size == 0) { return res; }
-      var cumsum = + scan values;
+      var cumsum = + scan ([elem in values] if skipNaN && isnan(elem) then 0.0 else elem);
       // Iterate over segments
       forall (i, r) in zip(D, res) {
         // Find the segment boundaries
@@ -523,7 +523,7 @@ module ReductionMsg
        to seg<Op> on the local slice of values) and a global reduction of the 
        local results. The return is the same as seg<Op>: one reduced value per segment.
     */
-    proc perLocSum(values:[] ?t, segments:[?D] int): [] t {
+    proc perLocSum(values:[] ?t, segments:[?D] int, param skipNaN=true): [] t {
       // Infer the number of keys from size of <segments>
       var numKeys:int = segments.size / numLocales;
       // Make the distributed domain of the final result
@@ -545,7 +545,7 @@ module ReductionMsg
     proc segSum(values:[] bool, segments:[?D] int): [D] int {
       var res: [D] int;
       if (D.size == 0) { return res; }
-      var cumsum = + scan values;
+      var  cumsum = + scan values;
       // Iterate over segments
       forall (i, r) in zip(D, res) {
         // Find the values to the left of the segment boundaries
