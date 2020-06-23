@@ -2,7 +2,6 @@ import zmq, json, os, secrets
 from typing import Mapping, Tuple, Union
 import warnings, pkg_resources
 from arkouda import security
-from util import start_arkouda_server
 __all__ = ["verbose", "pdarrayIterThresh", "maxTransferBytes",
            "AllSymbols", "set_defaults", "connect", "disconnect",
            "shutdown", "get_config", "get_mem_used", "__version__"]
@@ -202,18 +201,6 @@ def shutdown() -> None:
     socket.disconnect(pspStr)
     print(message)
     connected = False
-
-def start_local_arkouda_server() -> str:
-
-    arkouda_home = os.getenv('ARKOUDA_HOME')
-    numlocales = os.getenv('ARKOUDA_NUMLOCALES', 2)
-    host = os.getenv('ARKOUDA_SERVER_HOST', 'localhost')
-    port = os.getenv('ARKOUDA_SERVER_PORT', 5555)
-    log = os.getenv('ARKOUDA_LOGGING', False)
-    verbose = os.getenv('ARKOUDA_VERBOSE', False)
-
-    return start_arkouda_server(numlocales=numlocales, verbose=verbose, log=log, 
-                  host=host, port=port)
 
 # send message to arkouda server and check for server side error
 def generic_msg(message, send_bytes=False, recv_bytes=False) -> str:

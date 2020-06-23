@@ -29,13 +29,26 @@ proc main() {
 
     var st = new owned SymTab();
     var shutdownServer = false;
+    var serverToken = '';
+    var serverMessage = '';
 
     // create and connect ZMQ socket
     var context: ZMQ.Context;
     var socket : ZMQ.Socket = context.socket(ZMQ.REP);
-    var serverToken = generateToken(16);
+
+    // configure token authentication
+    if authenticate {
+        serverToken = generateToken(32);
+        serverMessage = "server listening on %s:%t with token %s".format(serverHostname, 
+                                        ServerPort, serverToken);
+    } else {
+        serverMessage = "server listening on %s:%t".format(serverHostname, ServerPort);
+    }
+
     socket.bind("tcp://*:%t".format(ServerPort));
-    writeln("server listening on %s:%t with token %s".format(serverHostname, ServerPort, serverToken)); try! stdout.flush(); 
+
+    writeln(serverMessage); try! stdout.flush();
+    
     createServerConnectionInfo();
 
     var reqCount: int = 0;
@@ -133,7 +146,7 @@ proc main() {
                     // here we know that everything is strings
                     var repMsg: string;
 
-                    if isAuthEnabled() {
+                    if authenticate {
                         if token == 'None' {
                             throw new owned ErrorWithMsg("Error: access to arkouda requires token");
                         }
@@ -207,7 +220,11 @@ proc main() {
                         when "attach"            {repMsg = attachMsg(reqMsg, st);}
                         when "unregister"        {repMsg = unregisterMsg(reqMsg, st);}
                         when "connect" {
-                            repMsg = "connected to arkouda server tcp://*:%t as user %s with token %s".format(ServerPort,user,token);
+                            if authenticate {
+                                repMsg = "connected to arkouda server tcp://*:%t as user %s with token %s".format(ServerPort,user,token);
+                            } else {
+                                repMsg = "connected to arkouda server tcp://*:%t".format(ServerPort);
+                            }
                         }
                         when "disconnect" {
                             repMsg = "disconnected from arkouda server tcp://*:%t".format(ServerPort);
