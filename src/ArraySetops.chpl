@@ -8,7 +8,6 @@ module ArraySetops
 {
     use ServerConfig;
 
-    use BlockDist;
     use SymArrayDmap;
 
     use RadixSortLSD;
@@ -16,7 +15,6 @@ module ArraySetops
     use Indexing;
     use In1d;
 
-    use CommAggregation;
 
     /*
     Small bound const. Brute force in1d implementation recommended.

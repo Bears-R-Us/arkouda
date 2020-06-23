@@ -16,8 +16,6 @@ module RadixSortLSD
     // Hack to determine tuple lower bound across 1.20-1.22
     const RSLSD_tupleLow = [1..1].domain.low;
 
-    use ServerConfig; // for overMemLimit
-    
     use BlockDist;
     use BitOps;
     use AryUtil;
