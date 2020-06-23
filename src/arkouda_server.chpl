@@ -138,7 +138,7 @@ proc main() {
                             throw new owned ErrorWithMsg("Error: access to arkouda requires token");
                         }
                         if serverToken != token {
-                            throw new owned ErrorWithMsg("Error: token %s does not match server token %s".format(token,serverToken));
+                            throw new owned ErrorWithMsg("Error: token %s does not match server token, check with server owner".format(token));
                         }
                     }
                     select cmd

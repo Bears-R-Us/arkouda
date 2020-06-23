@@ -115,7 +115,7 @@ def connect(server = "localhost", port = 5555, timeout = 0,
     # if the connect request succeeded and, if not not, the error message
     message = _send_string_message(message)
     if verbose: print("[Python] Received response: %s" % message)
-
+    print(message)
     connected = True
     conf = get_config()
     if conf['arkoudaVersion'] != __version__:
