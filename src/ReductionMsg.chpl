@@ -496,7 +496,8 @@ module ReductionMsg
     proc segSum(values:[] ?t, segments:[?D] int, param skipNaN=true): [D] t {
       var res: [D] t;
       if (D.size == 0) { return res; }
-      var cumsum = + scan ([elem in values] if skipNaN && isnan(elem) then 0.0 else elem);
+      var arrCopy = [elem in values] if isnan(elem) then 0.0 else elem;
+      var cumsum = + scan arrCopy;
       // Iterate over segments
       forall (i, r) in zip(D, res) {
         // Find the segment boundaries
@@ -651,7 +652,8 @@ module ReductionMsg
       var res: [D] t = max(t);
       if (D.size == 0) { return res; }
       var keys = expandKeys(vD, segments);
-      var kv = [(k, v) in zip(keys, values)] (-k, v);
+      var arrCopy = [elem in values] if isnan(elem) then <identity> else elem;
+      var kv = [(k, v) in zip(keys, arrCopy)] (-k, v);
       var cummin = min scan kv;
       forall (i, r, low) in zip(D, res, segments) {
         var vi: int;
@@ -688,7 +690,8 @@ module ReductionMsg
       var res: [D] t = min(t);
       if (D.size == 0) { return res; }
       var keys = expandKeys(vD, segments);
-      var kv = [(k, v) in zip(keys, values)] (k, v);
+      var arrCopy = [elem in values] if isnan(elem) then min(real) else elem;
+      var kv = [(k, v) in zip(keys, arrCopy)] (k, v);
       var cummax = max scan kv;
       forall (i, r, low) in zip(D, res, segments) {
         var vi: int;
