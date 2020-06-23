@@ -26,8 +26,7 @@ proc testConcat(n:int, minLen:int, maxLen:int) {
   var v1e = st.addEntry(v1Name, v1.size, uint(8));
   v1e.a = v1;
   var str1 = new owned SegString(s1Name, v1Name, st);
-  writeln("Str 1, %i elem, %i bytes".format(str1.size, str1.nBytes));
-  str1.show(5);
+  writeSegString("Str 1, %i elem, %i bytes".format(str1.size, str1.nBytes), str1);
   var s2Name = st.nextName();
   var s2e = st.addEntry(s2Name, s2.size, int);
   s2e.a = s2;
@@ -35,21 +34,20 @@ proc testConcat(n:int, minLen:int, maxLen:int) {
   var v2e = st.addEntry(v2Name, v2.size, uint(8));
   v2e.a = v2;
   var str2 = new owned SegString(s2Name, v2Name, st);
-  writeln("\nStr 2, %i elem, %i bytes".format(str2.size, str2.nBytes));
-  str2.show(5);
+
+  writeSegString("\nStr 2, %i elem, %i bytes".format(str2.size, str2.nBytes), str2);
 
   var reqMsg = "concatenate 2 str %s+%s %s+%s".format(s1Name, v1Name, s2Name, v2Name);
-  writeln(reqMsg);
+  writeReq(reqMsg);
   var repMsg = concatenateMsg(reqMsg, st);
-  writeln(repMsg);
+  writeRep(repMsg);
   var (resSegAttribStr, resValAttribStr) = repMsg.splitMsgToTuple('+', 2);
   var resSegAttrib = parseName(resSegAttribStr);
   var resValName = parseName(resValAttribStr);
   var resStr = new owned SegString(resSegAttrib, resValName, st);
-  writeln("Result, %i elem, %i bytes".format(resStr.size, resStr.nBytes));
-  resStr.show(5);
+  writeSegString("\nResult, %i elem, %i bytes".format(resStr.size, resStr.nBytes), resStr);
 
-  var correct = true;
+  var correct = true; // TODO
   /* forall (i, j) in zip(str1.offsets.a, resStr.offsets.a) { */
   /*   if i != j { */
   /*     correct = false; */

@@ -1,0 +1,5 @@
+Unit Test for ArgSortMsg
+Checking that arrays are sorted
+ANSWER >>> bool True <<<
+Checking that arrays are cosorted
+ANSWER >>> true <<<

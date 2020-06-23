@@ -73,25 +73,26 @@ prototype module UnitTestGroupby
     var iv: [keys.aD] int;
     var eMin = min reduce keys.a;
     var eMax = max reduce keys.a;
-    var t1 = Time.getCurrentTime();
+    var d: Diags;
     if (STRATEGY == "default") {
       writeln("argsortDefault");
+      d.start();
       iv = argsortDefault(keys.a);
+      d.stop("argsortDefault");
     } else {
       halt("Unrecognized STRATEGY: ", STRATEGY);
     }
     st.addEntry(ivname, new shared SymEntry(iv));
-    writeln("argsort time = ",Time.getCurrentTime() - t1,"sec\n"); try! stdout.flush();
 
     // find segment boundaries and unique keys
-    t1 = Time.getCurrentTime();
     var cmd: string;
     if (STRATEGY == "default") {
       cmd = "findSegments";
       reqMsg = try! "%s %s %i %s %s".format(cmd, ivname, 1, kname, "pdarray");
+      d.start();
       repMsg = findSegmentsMsg(reqMsg, st);
+      d.stop("findSegmentsMsg");
     }
-    writeln(cmd, " time = ",Time.getCurrentTime() - t1,"sec\n"); try! stdout.flush();
     var (segname, ukiname) = parseTwoNames(repMsg);
     var segg = st.lookup(segname);
     var segs = toSymEntry(segg, int);
@@ -101,10 +102,10 @@ prototype module UnitTestGroupby
     // get unique keys
     cmd = "[pdarray]";
     reqMsg = try! "%s %s %s".format(cmd, kname, ukiname);
-    t1 = Time.getCurrentTime();
+    d.start();
     repMsg = pdarrayIndexMsg(reqMsg, st);
-    writeln(cmd, " time = ",Time.getCurrentTime() - t1,"sec\n"); try! stdout.flush();
-    writeln(repMsg);
+    d.stop("pdarrayIndexMsg");
+    writeRep(repMsg);
     var ukname = parseName(repMsg);
     var ukg = st.lookup(ukname);
     var ukeys = toSymEntry(ukg, int);
@@ -116,10 +117,10 @@ prototype module UnitTestGroupby
     // permute the values array
     cmd = "[pdarray]";
     reqMsg = try! "%s %s %s".format(cmd, vname, ivname);
-    t1 = Time.getCurrentTime();
+    d.start();
     repMsg = pdarrayIndexMsg(reqMsg, st);
-    writeln(cmd, " time = ",Time.getCurrentTime() - t1,"sec\n"); try! stdout.flush();
-    writeln(repMsg);
+    d.stop("pdarrayIndexMsg");
+    writeRep(repMsg);
     var svname = parseName(repMsg);
     var svg = st.lookup(svname);
     var svals = toSymEntry(svg, int);
@@ -129,15 +130,15 @@ prototype module UnitTestGroupby
     writeln();
     
     // do segmented reduction
-    t1 = Time.getCurrentTime();
     if (STRATEGY == "default") {
       cmd = "segmentedReduction";
       reqMsg = try! "%s %s %s %s".format(cmd, svname, segname, OPERATOR);
-      //writeln(reqMsg);
+      //writeReq(reqMsg);
+      d.start();
       repMsg = segmentedReductionMsg(reqMsg, st);
+      d.stop("segmentedReductionMsg");
     } 
-    writeln(cmd, " time = ",Time.getCurrentTime() - t1,"sec\n"); try! stdout.flush();
-    writeln(repMsg);
+    writeRep(repMsg);
     var redname = parseName(repMsg);
     var redg = st.lookup(redname);
     var red = toSymEntry(redg, int);

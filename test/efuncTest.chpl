@@ -19,19 +19,20 @@ prototype module efuncTest
         var cmd = "efunc";
         var op = "sin";
         reqMsg = try! "%s %s %s".format(cmd, op, aname);
-        var t1 = Time.getCurrentTime();
+        var d: Diags;
+        d.start();
         repMsg = efuncMsg(reqMsg, st);
-        writeln(repMsg);
-        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+        d.stop("efuncMsg");
+        writeRep(repMsg);
 
         // check for result
         cmd = "reduction";
         var subCmd = "sum";
         var bname = parseName(repMsg); // get name from [pdarray] reply msg
         reqMsg = try! "%s %s %s".format(cmd, subCmd, bname);
-        t1 = Time.getCurrentTime();
+        d.start();
         repMsg = reductionMsg(reqMsg, st);
-        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
-        writeln("ANSWER >>> ",repMsg," <<<");
+        d.stop("reductionMsg");
+        //writeln("ANSWER >>> ",repMsg," <<<"); TODO 
     }
 }

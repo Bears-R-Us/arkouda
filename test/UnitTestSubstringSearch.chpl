@@ -40,25 +40,23 @@ proc make_strings(substr, n, minLen, maxLen, characters, mode, st) {
 
 proc test_search(substr:string, n:int, minLen:int, maxLen:int, characters:charSet = charSet.Uppercase, mode: SearchMode = SearchMode.contains) throws {
   var st = new owned SymTab();
-  var t = new Timer();
+  var d: Diags;
   writeln("Generating random strings..."); stdout.flush();
-  t.start();
+  d.start();
   var (answer, strings) = make_strings(substr, n, minLen, maxLen, characters, mode, st);
-  t.stop();
-  writeln("%t seconds".format(t.elapsed())); stdout.flush(); t.clear();
+  d.stop("make_strings");
   writeln("Searching for substring..."); stdout.flush();
-  t.start();
+  d.start();
   var truth = strings.substringSearch(substr, mode);
-  t.stop();
-  writeln("%t seconds".format(t.elapsed())); stdout.flush();
+  d.stop("substringSearch");
   var nFound = + reduce truth;
-  writeln("Found %t strings containing %s".format(nFound, substr)); stdout.flush();
   if DEBUG && (nFound > 0) {
+    writeln("Found %t strings containing %s".format(nFound, substr)); stdout.flush();
     var (mSegs, mVals) = strings[truth];
     var matches = new owned SegString(mSegs, mVals, st);
     matches.show(5);
+    writeln("Seeded with ",  + reduce answer, " values");
   }
-  writeln("Seeded with ",  + reduce answer, " values");
   var isMissing = (answer & !truth);
   var missing = + reduce isMissing;
   var isExtra = (truth & !answer);
@@ -110,4 +108,3 @@ proc main() {
     try! test_search(SUBSTRING, N, MINLEN, MAXLEN, mode=mode);
   }
 }
-  

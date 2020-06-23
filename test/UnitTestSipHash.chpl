@@ -1,3 +1,4 @@
+use TestBase;
 use SipHash;
 
 const vectors_sip64_raw: [0..#64][0..#8] int = [

@@ -12,26 +12,26 @@ prototype module efuncTest
 
         var reqMsg: string;
         var repMsg: string;
-        var repMsg2: string;
 
         var cmd = "create";
         var len = 5;
         var dtype = DType.Int64;
         reqMsg = try! "%s %s %i".format(cmd, dtype2str(dtype), len);
-        var t1 = Time.getCurrentTime();
+        var d: Diags;
+        d.start();
         repMsg = createMsg(reqMsg, st);
-        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
-        writeln(repMsg);
+        d.stop("createMsg");
+        writeRep(repMsg);
 
         cmd = "set";
         var name = parseName(repMsg);
         dtype = DType.Int64;
         var v2= 2;
         reqMsg = try! "%s %s %s %i".format(cmd, name, dtype2str(dtype), v2);
-        t1 = Time.getCurrentTime();
+        d.start();
         repMsg = setMsg(reqMsg, st);
-        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
-        writeln(repMsg);
+        d.stop("setMsg");
+        writeRep(repMsg);
 
         var aname = parseName(repMsg);
 
@@ -39,20 +39,20 @@ prototype module efuncTest
         len = 5;
         dtype = DType.Int64;
         reqMsg = try! "%s %s %i".format(cmd, dtype2str(dtype), len);
-        t1 = Time.getCurrentTime();
+        d.start();
         repMsg = createMsg(reqMsg, st);
-        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
-        writeln(repMsg);
+        d.stop("createMsg");
+        writeRep(repMsg);
 
         cmd = "set";
         name = parseName(repMsg);
         dtype = DType.Int64;
         v2= -2;
         reqMsg = try! "%s %s %s %i".format(cmd, name, dtype2str(dtype), v2);
-        t1 = Time.getCurrentTime();
+        d.start();
         repMsg = setMsg(reqMsg, st);
-        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
-        writeln(repMsg);
+        d.stop("setMsg");
+        writeRep(repMsg);
         
         var bname = parseName(repMsg);
 
@@ -62,10 +62,10 @@ prototype module efuncTest
         dtype = DType.Int64;
         var value=-1;
         reqMsg = try! "%s %s %s %s".format(cmd, op, aname,bname);
-        t1 = Time.getCurrentTime();
+        d.start();
         repMsg = opeqvvMsg(reqMsg, st);
-        writeln(repMsg);
-        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+        d.stop("opeqvvMsg");
+        writeRep(repMsg);
         st.pretty();
     }
 }
