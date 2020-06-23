@@ -134,11 +134,11 @@ proc main() {
                     var repMsg: string;
 
                     if isAuthEnabled() {
-                        if token.isEmpty() {
-                            sendRepMsg("Error: basic authentication enabled, token must be not null");
+                        if token == 'None' {
+                            throw new owned ErrorWithMsg("Error: access to arkouda requires token");
                         }
                         if serverToken != token {
-                            sendRepMsg("Error: basic authentication enabled, token must match server token");
+                            throw new owned ErrorWithMsg("Error: token %s does not match server token %s".format(token,serverToken));
                         }
                     }
                     select cmd

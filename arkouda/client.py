@@ -23,7 +23,9 @@ pspStr = None
 context = zmq.Context()
 socket = None
 connected = False
-
+# username and token for when basic authentication is enabled
+username = None
+token = None
 # verbose flag for arkouda module
 verboseDefVal = False
 verbose = verboseDefVal
@@ -41,9 +43,9 @@ def set_defaults():
     pdarrayIterThresh  = pdarrayIterThreshDefVal
     maxTransferBytes = maxTransferBytesDefVal
 
-
 # create context, request end of socket, and connect to it
-def connect(server = "localhost", port = 5555, timeout = 0, server_token=None):
+def connect(server = "localhost", port = 5555, timeout = 0, 
+                                                  access_token=None) -> None:
     """
     Connect to a running arkouda server.
 
@@ -57,7 +59,7 @@ def connect(server = "localhost", port = 5555, timeout = 0, server_token=None):
     timeout : int, optional
         The timeout in seconds for client send and receive operations.
         Defaults to 0 seconds, which is interpreted as no timeout
-    server_token : str, optional 
+    access_token : str, optional 
         The token used to connect to an existing socket to enable access to
         session-scoped resources. Defaults to None
 
@@ -71,7 +73,7 @@ def connect(server = "localhost", port = 5555, timeout = 0, server_token=None):
     with an existing connection, the socket will be re-initialized.
     """
 
-    global context, socket, pspStr, connected, verbose
+    global context, socket, pspStr, connected, verbose, username, token
 
     if verbose: print("ZMQ version: {}".format(zmq.zmq_version()))
 
@@ -93,6 +95,12 @@ def connect(server = "localhost", port = 5555, timeout = 0, server_token=None):
         socket.setsockopt(zmq.SNDTIMEO, timeout*1000)
         socket.setsockopt(zmq.RCVTIMEO, timeout*1000)
     
+    # access_token supplied, set token and username global variables because
+    # the connection will be authenticated.
+    if access_token:
+        token = access_token
+        username = security.get_username()
+
     # connect to arkouda server
     try:
         socket.connect(pspStr)
@@ -102,18 +110,18 @@ def connect(server = "localhost", port = 5555, timeout = 0, server_token=None):
     # send the connect message
     message = "connect"
     if verbose: print("[Python] Sending request: %s" % message)
-    socket.send_string('{} {} {}'.format(message,security.get_username(),server_token))
 
-    # get the response that the server has started
-    message = socket.recv_string()
+    # send connect request to server and get the response confirming i
+    # if the connect request succeeded and, if not not, the error message
+    message = _send_string_message(message)
     if verbose: print("[Python] Received response: %s" % message)
 
-    print(message)
     connected = True
     conf = get_config()
     if conf['arkoudaVersion'] != __version__:
-        warnings.warn("Version mismatch between client ({}) and server ({}); this may cause some commands" +
-                 "to fail or behave incorrectly! Updating arkouda is strongly recommended.".\
+        warnings.warn('Version mismatch between client ({}) and server ({}); ' +
+                      'this may cause some commands to fail or behave incorrectly!' +
+                      'Updating arkouda is strongly recommended.'.\
                       format(__version__, conf['arkoudaVersion']), RuntimeWarning)
 
 def _start_tunnel(addr : str, tunnel_server : str) -> None:
@@ -140,21 +148,36 @@ def _start_tunnel(addr : str, tunnel_server : str) -> None:
         ssh.tunnel.open_tunnel(**kwargs)
     except Exception as e:
         raise ConnectionError(e)
-    
+
+def _send_string_message(message : str) -> str:
+    """
+    Sends a string that includes the message, and, if the connection is authenticated, 
+    the username and server token
+
+    :param str message: the message including arkouda command to be sent
+    :return: the response string sent back from arkouda
+    :rtype: str
+    """
+    socket.send_string('{} {} {}'.format(message,username,token))
+    return socket.recv_string()
+
 # message arkouda server to shutdown server
 def disconnect() -> None:
     """
     Disconnect from the arkouda server.
     """
 
-    global socket, pspStr, connected, verbose
+    global socket, pspStr, connected, verbose, token
 
     if socket is not None:
+        if token:
+            print('the token is {}'.format(token))
         # send disconnect message to server
         message = "disconnect"
         if verbose: print("[Python] Sending request: %s" % message)
-        socket.send_string(message)
-        message = socket.recv_string()
+        #socket.send_string('{} {} {}'.format(message,username,token))
+        #message = socket.recv_string()
+        message = _send_string_message(message)
         if verbose: print("[Python] Received response: %s" % message)
         socket.disconnect(pspStr)
         print(message)
@@ -202,7 +225,7 @@ def generic_msg(message, send_bytes=False, recv_bytes=False) -> str:
         socket.send(message)
     else:
         if verbose: print("[Python] Sending request: %s" % message)
-        socket.send_string(message)
+        socket.send_string('{} {} {}'.format(message,username,token))
     try:
         if recv_bytes:
             message = socket.recv()
