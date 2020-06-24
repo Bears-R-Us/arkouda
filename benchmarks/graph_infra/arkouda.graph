@@ -40,7 +40,7 @@ files: reduce.dat, reduce.dat, reduce.dat, reduce.dat
 graphtitle: Reduce Performance
 ylabel: Performance (GiB/s)
 
-perfkeys: intersect1d Average rate =, union1d Average rate =, setxor1d Average rate=, setdiff1d Average rate=
+perfkeys: intersect1d Average rate =, union1d Average rate =, setxor1d Average rate =, setdiff1d Average rate =
 graphkeys: Intersect GiB/s, Union GiB/s, Xor GiB/s, Diff GiB/s
 files: setops.dat, setops.dat, setops.dat, setops.dat
 graphtitle: Set Operations Performance
