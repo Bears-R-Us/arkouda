@@ -193,10 +193,11 @@ class GroupBy:
             cmd = "segmentedLocalRdx"
         else:
             cmd = "segmentedReduction"
-        reqMsg = "{} {} {} {}".format(cmd,
+        reqMsg = "{} {} {} {} {}".format(cmd,
                                          permuted_values.name,
                                          self.segments.name,
-                                         operator)
+                                         operator,
+                                         True)
         repMsg = generic_msg(reqMsg)
         if verbose: print(repMsg)
         if operator.startswith('arg'):

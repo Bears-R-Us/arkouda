@@ -264,7 +264,11 @@ module ReductionMsg
       // 'values_name' is the segmented array of values to be reduced
       // 'segments_name' is the sement offsets
       // 'operator' is the reduction operator
-      var (cmd, values_name, segments_name, operator) = reqMsg.splitMsgToTuple(4);
+      var (cmd, values_name, segments_name, operator, skip_nan) = reqMsg.splitMsgToTuple(5);
+
+      var skipNan;
+      if skip_nan == "True" then skipNan = true; else skipNan = false;
+      
       var rname = st.nextName();
       if v {try! writeln("%s %s %s %s".format(cmd,values_name,segments_name,operator));try! stdout.flush();}
       var gVal: borrowed GenSymEntry = st.lookup(values_name);
@@ -314,7 +318,7 @@ module ReductionMsg
         var values = toSymEntry(gVal, real);
         select operator {
           when "sum" {
-            var res = segSum(values.a, segments.a);
+            var res = segSum(values.a, segments.a, skipNan);
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "prod" {
@@ -326,11 +330,11 @@ module ReductionMsg
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "min" {
-            var res = segMin(values.a, segments.a);
+            var res = segMin(values.a, segments.a, skipNan);
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "max" {
-            var res = segMax(values.a, segments.a);
+            var res = segMax(values.a, segments.a, skipNan);
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "argmin" {
@@ -648,12 +652,17 @@ module ReductionMsg
       return res:real / keyCounts:real;
     }
 
-    proc segMin(values:[?vD] ?t, segments:[?D] int): [D] t {
+    proc segMin(values:[?vD] ?t, segments:[?D] int, param skipNan=false): [D] t {
       var res: [D] t = max(t);
       if (D.size == 0) { return res; }
       var keys = expandKeys(vD, segments);
-      var arrCopy = [elem in values] if isnan(elem) then <identity> else elem;
-      var kv = [(k, v) in zip(keys, arrCopy)] (-k, v);
+      var kv;
+      if skipNan {
+        var arrCopy = [elem in values] if isnan(elem) then max(real) else elem;
+        kv = [(k, v) in zip(keys, arrCopy)] (-k, v);
+      } else {
+        kv = [(k, v) in zip(keys, values)] (-k, v);
+      }
       var cummin = min scan kv;
       forall (i, r, low) in zip(D, res, segments) {
         var vi: int;
@@ -686,13 +695,19 @@ module ReductionMsg
       return res;
     }    
 
-    proc segMax(values:[?vD] ?t, segments:[?D] int): [D] t {
+    proc segMax(values:[?vD] ?t, segments:[?D] int, param skipNan=false): [D] t {
       var res: [D] t = min(t);
       if (D.size == 0) { return res; }
       var keys = expandKeys(vD, segments);
-      var arrCopy = [elem in values] if isnan(elem) then min(real) else elem;
-      var kv = [(k, v) in zip(keys, arrCopy)] (k, v);
+      var kv;
+      if skipNan {
+        var arrCopy = [elem in values] if isnan(elem) then max(real) else elem;
+        kv = [(k, v) in zip(keys, arrCopy)] (k, v);
+      } else {
+        kv = [(k, v) in zip(keys, values)] (k, v);
+      }
       var cummax = max scan kv;
+      
       forall (i, r, low) in zip(D, res, segments) {
         var vi: int;
         if (i < D.high) {
