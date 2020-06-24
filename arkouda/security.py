@@ -12,6 +12,9 @@ def generate_token(length : int=32) -> str:
 def get_home_directory() -> str:
     return expanduser("~")
 
+def get_arkouda_directory() -> str:
+    return '{}/.arkouda'.format(get_home_directory())
+
 def get_username() -> str:
     try:
         u_tokens = \

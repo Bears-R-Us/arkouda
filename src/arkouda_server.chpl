@@ -36,7 +36,7 @@ proc main() {
     var context: ZMQ.Context;
     var socket : ZMQ.Socket = context.socket(ZMQ.REP);
 
-    // configure token authentication
+    // configure token authentication and print token to logging
     if authenticate {
         serverToken = generateToken(32);
         serverMessage = "server listening on %s:%t with token %s".format(serverHostname, 
@@ -79,6 +79,12 @@ proc main() {
         }
     }   
 
+    proc shutdown(timeElapsed) {
+        shutdownServer = true;
+        repCount += 1;
+        socket.send("shutdown server (%i req)".format(repCount));
+    }
+    
     while !shutdownServer {
         // receive requests
 
@@ -87,20 +93,6 @@ proc main() {
         reqCount += 1;
 
         var s0 = t1.elapsed();
-
-        // shutdown server
-        if reqMsgRaw == b"shutdown" {
-            if logging {
-                writeln("reqMsg: ", reqMsgRaw);
-                writeln(">>> %s started at %.17r sec".format("shutdown", s0));
-                try! stdout.flush();
-            }
-            shutdownServer = true;
-            repCount += 1;
-            socket.send("shutdown server (%i req)".format(repCount));
-            //socket.close(1000); /// error for some reason on close
-            break;
-        }
 
         const (cmdRaw, _) = reqMsgRaw.splitMsgToTuple(2);
 
@@ -130,7 +122,24 @@ proc main() {
                     sendRepMsg(unknownError(""));
                 }
 
-                const (cmd,user,token) = reqMsg.splitMsgToTuple(3);
+                var messageTokens = reqMsg.split(' ');
+                var infraTokens = messageTokens[0].split(':');
+
+                var user : string = infraTokens[0];
+                var token : string  = infraTokens[1];
+                var cmd : string = infraTokens[2];
+
+                if authenticate {
+                    if token == 'None' || token.isEmpty() {
+                        throw new owned ErrorWithMsg("Error: access to arkouda requires token");
+                    }
+                    else if serverToken != token {
+                        throw new owned ErrorWithMsg("Error: token %s does not match server token, check with server owner".format(token));
+                    }
+                }
+
+                reqMsg = ' '.join(messageTokens[1..messageTokens.size-1]);
+                reqMsg = ' '.join(cmd, reqMsg);
 
                 if logging {
                     writeln("reqMsg: ", reqMsg);
@@ -146,14 +155,11 @@ proc main() {
                     // here we know that everything is strings
                     var repMsg: string;
 
-                    if authenticate {
-                        if token == 'None' {
-                            throw new owned ErrorWithMsg("Error: access to arkouda requires token");
-                        }
-                        if serverToken != token {
-                            throw new owned ErrorWithMsg("Error: token %s does not match server token, check with server owner".format(token));
-                        }
+                    if cmd == "shutdown" {
+                        shutdown(s0);
+                        break;
                     }
+
                     select cmd
                     {
                         when "segmentLengths"    {repMsg = segmentLengthsMsg(reqMsg, st);}
@@ -237,6 +243,7 @@ proc main() {
                         otherwise {
                             repMsg = "Error: unrecognized command: %s".format(reqMsg);
                         }
+
                     }
                     sendRepMsg(repMsg);
                 }
