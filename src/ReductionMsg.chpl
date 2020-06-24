@@ -212,7 +212,7 @@ module ReductionMsg
       var counts:[D] int;
       if (D.size == 0) { return counts; }
       forall (c, low, i) in zip(counts, segments, D) {
-        var high: int;
+        var high, nan: int;
         if (i < D.high) {
           high = segments[i+1] - 1;
         } else {
@@ -644,17 +644,20 @@ module ReductionMsg
       var counts;
       if skipNan {
         var arrCopy = makeDistArray(values.size, real);
-        var nancounts = 0;
-        forall i in 0..#values.size with (+ reduce nancounts) {
+        var nancounts = makeDistArray(segments.size, int);
+        var j: int;
+        forall i in 0..#values.size with (+ reduce nancounts, + reduce j) {
+          if(j != segments.size - 1 && i >= segments[j+1]) then j+=1;
           if isnan(values[i]) {
             nancounts += 1;
             arrCopy[i] = 0.0;
+            nancounts[j] += 1;
           }
           else
             arrCopy[i] = values[i];
         }
-        sums = segSum(arrCopy, segments);
         counts = segCount(segments, values.size) - nancounts;
+        sums = segSum(arrCopy, segments);
       } else {
         sums = segSum(values, segments);
         counts = segCount(segments, values.size);
