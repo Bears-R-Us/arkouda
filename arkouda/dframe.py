@@ -49,7 +49,6 @@ class DFrame:
 
     TODO
     -------
-    Sortby with tiebreaking (currently can only do sorting by one column)
     Dealing with NaN values
     Removal of rows
     Fix index with methods
