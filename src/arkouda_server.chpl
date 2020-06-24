@@ -101,7 +101,7 @@ proc main() {
             // first handle the case where we received arbitrary data
             if cmdRaw == b"array" {
                 if logging {
-                    writeln("reqMsg: ", cmdRaw, " <binary-data>");
+                    writeln("reqMsg: ", b"array", " <binary-data>");
                     writeln(">>> %s started at %.17r sec".format("array", s0));
                     try! stdout.flush();
                 }

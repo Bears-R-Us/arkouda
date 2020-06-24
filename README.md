@@ -60,7 +60,6 @@ interactive session.
 ### Requirements:
  * requires chapel 1.22.0
  * requires zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
- * requires czmq version >= 4.2.0
  * requires hdf5 
  * requires python 3.6 or greater
  * requires numpy
@@ -73,8 +72,6 @@ It is usually very simple to get things going on a mac:
 
 ```bash
 brew install zeromq
-
-brew install czmq
 
 brew install hdf5
 
@@ -158,12 +155,6 @@ make
 # Optionally add the Chapel executable (chpl) to the PATH for all users: /etc/environment
 export PATH=$CHPL_HOME/bin/linux64-x86_64/:$PATH
 
-# Install libzmq4 (needed for czmq) and libczmq-dev
-apt-get install libzmq4-dev
-apt-get install libczmq-dev
-
-# Copy czmq.h to $ARKOUDA_HOME/dep/zeromq-install/include
-cp /usr/include/czmq.h $ARKOUDA_HOME/dep/zeromq-install/include
 ```
 
 As is the case with the MacOS install, it is highly recommended to install Anaconda to provide a Python environment 
