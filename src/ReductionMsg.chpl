@@ -318,7 +318,11 @@ module ReductionMsg
         var values = toSymEntry(gVal, real);
         select operator {
           when "sum" {
-            var res = segSum(values.a, segments.a, skipNan);
+            var res;
+            if(skipNan) then
+              res = segSum(values.a, segments.a, true);
+            else
+              res = segSum(values.a, segments.a);
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "prod" {
@@ -326,15 +330,27 @@ module ReductionMsg
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "mean" {
-            var res = segMean(values.a, segments.a);
+            var res;
+            if(skipNan) then
+              res = segMean(values.a, segments.a, true);
+            else
+              res = segMean(values.a, segments.a);
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "min" {
-            var res = segMin(values.a, segments.a, skipNan);
+            var res;
+            if(skipNan) then
+              res = segMin(values.a, segments.a, true);
+            else
+              res = segMin(values.a, segments.a);
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "max" {
-            var res = segMax(values.a, segments.a, skipNan);
+            var res;
+            if(skipNan) then
+              res = segMax(values.a, segments.a, true);
+            else
+              res = segMax(values.a, segments.a);
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "argmin" {
@@ -497,11 +513,17 @@ module ReductionMsg
        and then reduce over each chunk uisng the operator <Op>. The return array 
        of reduced values is the same size as <segments>.
      */
-    proc segSum(values:[] ?t, segments:[?D] int, param skipNaN=true): [D] t {
+    proc segSum(values:[] ?t, segments:[?D] int, param skipNan=false): [D] t {
       var res: [D] t;
       if (D.size == 0) { return res; }
-      var arrCopy = [elem in values] if isnan(elem) then 0.0 else elem;
-      var cumsum = + scan arrCopy;
+      var cumsum;
+      if skipNan {
+        var arrCopy = [elem in values] if isnan(elem) then 0.0 else elem;
+        cumsum = + scan arrCopy;
+      }
+      else {
+        cumsum = + scan values;
+      }
       // Iterate over segments
       forall (i, r) in zip(D, res) {
         // Find the segment boundaries
@@ -519,7 +541,6 @@ module ReductionMsg
       return res;
     }
 
-
     /* Per-Locale Segmented Reductions have the same form as segmented reductions:
        perLoc<Op>(values:[] t, segments: [] int)
        However, in this case <segments> has length <numSegments>*<numLocales> and
@@ -528,7 +549,7 @@ module ReductionMsg
        to seg<Op> on the local slice of values) and a global reduction of the 
        local results. The return is the same as seg<Op>: one reduced value per segment.
     */
-    proc perLocSum(values:[] ?t, segments:[?D] int, param skipNaN=true): [] t {
+    proc perLocSum(values:[] ?t, segments:[?D] int, skipNaN=true): [] t {
       // Infer the number of keys from size of <segments>
       var numKeys:int = segments.size / numLocales;
       // Make the distributed domain of the final result
@@ -616,11 +637,28 @@ module ReductionMsg
       return res;
     }
     
-    proc segMean(values:[] ?t, segments:[?D] int): [D] real {
+    proc segMean(values:[] ?t, segments:[?D] int, param skipNan=false): [D] real {
       var res: [D] real;
       if (D.size == 0) { return res; }
-      var sums = segSum(values, segments);
-      var counts = segCount(segments, values.size);
+      var sums;
+      var counts;
+      if skipNan {
+        var arrCopy = makeDistArray(values.size, real);
+        var nancounts = 0;
+        forall i in 0..#values.size with (+ reduce nancounts) {
+          if isnan(values[i]) {
+            nancounts += 1;
+            arrCopy[i] = 0.0;
+          }
+          else
+            arrCopy[i] = values[i];
+        }
+        sums = segSum(arrCopy, segments);
+        counts = segCount(segments, values.size) - nancounts;
+      } else {
+        sums = segSum(values, segments);
+        counts = segCount(segments, values.size);
+      }
       forall (r, s, c) in zip(res, sums, counts) {
         if (c > 0) {
           r = s:real / c:real;
@@ -701,7 +739,7 @@ module ReductionMsg
       var keys = expandKeys(vD, segments);
       var kv;
       if skipNan {
-        var arrCopy = [elem in values] if isnan(elem) then max(real) else elem;
+        var arrCopy = [elem in values] if isnan(elem) then min(real) else elem;
         kv = [(k, v) in zip(keys, arrCopy)] (k, v);
       } else {
         kv = [(k, v) in zip(keys, values)] (k, v);
