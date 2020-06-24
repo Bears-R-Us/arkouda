@@ -1,7 +1,7 @@
 import zmq, json, os, secrets
 from typing import Mapping, Tuple, Union
 import warnings, pkg_resources
-from arkouda import security
+from arkouda import security, io_util
 __all__ = ["verbose", "pdarrayIterThresh", "maxTransferBytes",
            "AllSymbols", "set_defaults", "connect", "disconnect",
            "shutdown", "get_config", "get_mem_used", "__version__"]
@@ -94,11 +94,9 @@ def connect(server = "localhost", port = 5555, timeout = 0,
         socket.setsockopt(zmq.SNDTIMEO, timeout*1000)
         socket.setsockopt(zmq.RCVTIMEO, timeout*1000)
     
-    # access_token supplied, set token and username global variables because
-    # the connection will be authenticated.
-    if access_token:
-        token = access_token
-        username = security.get_username()
+    # set token and username global variables
+    token = access_token
+    username = security.get_username()
 
     # connect to arkouda server
     try:
@@ -148,24 +146,58 @@ def _start_tunnel(addr : str, tunnel_server : str) -> None:
     except Exception as e:
         raise ConnectionError(e)
 
-def _send_string_message(message : str) -> str:
+def _get_arkouda_directory() -> str:
+
+    io_util.get_directory('{}/.arkouda'.format(security.get_home_directory()))
+
+def _send_string_message(message : str, recv_bytes=False) -> str:
     """
-    Sends a string that includes the message, and, if the connection is authenticated, 
-    the username and server token
+    Prepends the message string with Arkouda infrastructure elements 
+    including username and authentication data and then sends the 
+    resulting, composite string to the Arkouda server.
 
     :param str message: the message including arkouda command to be sent
-    :return: the response string sent back from arkouda
+    :param bool recv_bytes: indicates whether bytes vs str are expected
+    :return: the response string sent back from the Arkouda server
     :rtype: str
     """
-    socket.send_string('{} {} {}'.format(message,username,token))
-    return socket.recv_string()
+    message = '{}:{}:{}'.format(username,token,message)
 
-# message arkouda server to shutdown server
+    socket.send_string(message)
+
+    if recv_bytes:
+        return_message = socket.recv()
+        # raise errors sent back from the server
+        if return_message.startswith(b"Error:"): raise RuntimeError(message.decode())
+        elif return_message.startswith(b"Warning:"): warnings.warn(message)
+    else:
+        return_message = socket.recv_string()
+        # raise errors sent back from the server
+        if return_message.startswith("Error:"): raise RuntimeError(message)
+        elif return_message.startswith("Warning:"): warnings.warn(message)
+    return return_message
+
+def _send_binary_message(message : str, recv_bytes=False) -> str:
+    """
+    Prepends the binary message with Arkouda infrastructure elements
+    including username and authentication data and then sends the
+    resulting, composite string to the Arkouda server.
+
+    :param str message: the message including arkouda command to be sent
+    :return: the response string sent back from the Arkouda server
+    :rtype: str
+    """
+    socket.send(message)
+    if recv_bytes:
+        return socket.recv()
+    else:
+        return socket.recv_string()
+
+# message arkouda server the client is disconnecting from the server
 def disconnect() -> None:
     """
     Disconnect from the arkouda server.
     """
-
     global socket, pspStr, connected, verbose, token
 
     if socket is not None:
@@ -174,8 +206,6 @@ def disconnect() -> None:
         # send disconnect message to server
         message = "disconnect"
         if verbose: print("[Python] Sending request: %s" % message)
-        #socket.send_string('{} {} {}'.format(message,username,token))
-        #message = socket.recv_string()
         message = _send_string_message(message)
         if verbose: print("[Python] Received response: %s" % message)
         socket.disconnect(pspStr)
@@ -195,11 +225,10 @@ def shutdown() -> None:
     # send shutdown message to server
     message = "shutdown"
     if verbose: print("[Python] Sending request: %s" % message)
-    socket.send_string(message)
-    message = socket.recv_string()
-    if verbose: print("[Python] Received response: %s" % message)
+    return_message = _send_string_message(message)
+    if verbose: print("[Python] Received response: {}".format(return_message))
     socket.disconnect(pspStr)
-    print(message)
+    print(return_message)
     connected = False
 
 # send message to arkouda server and check for server side error
@@ -208,29 +237,21 @@ def generic_msg(message, send_bytes=False, recv_bytes=False) -> str:
 
     if not connected:
         raise RuntimeError("client is not connected to a server")
-    if send_bytes:
-        socket.send(message)
-    else:
-        if verbose: print("[Python] Sending request: %s" % message)
-        socket.send_string('{} {} {}'.format(message,username,token))
+
     try:
-        if recv_bytes:
-            message = socket.recv()
-            if message.startswith(b"Error:"): raise RuntimeError(message.decode())
-            elif message.startswith(b"Warning:"): warnings.warn(message)
+        if send_bytes:
+            return _send_binary_message(message=message, 
+                                            recv_bytes=recv_bytes)
         else:
-            message = socket.recv_string()
-            if verbose: print("[Python] Received response: %s" % message)
-            # raise errors sent back from the server
-            if message.startswith("Error:"): raise RuntimeError(message)
-            elif message.startswith("Warning:"): warnings.warn(message)
+            if verbose: print("[Python] Sending request: %s" % message)
+            return _send_string_message(message=message, 
+                                            recv_bytes=recv_bytes)
     except KeyboardInterrupt as e:
-        # if the user interrupts during command execution, the socket gets out of sync
-        # reset the socket before raising the interrupt exception
+        # if the user interrupts during command execution, the socket gets out 
+        # of sync reset the socket before raising the interrupt exception
         socket = context.socket(zmq.REQ)
         socket.connect(pspStr)
         raise e
-    return message
 
 # query the server to get configuration
 def get_config() -> Mapping[str, Union[str, int]]:
