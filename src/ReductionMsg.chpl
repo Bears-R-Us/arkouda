@@ -513,7 +513,7 @@ module ReductionMsg
        and then reduce over each chunk uisng the operator <Op>. The return array 
        of reduced values is the same size as <segments>.
      */
-    proc segSum(values:[] ?t, segments:[?D] int, param skipNan=false): [D] t {
+    proc segSum(values:[] ?t, segments:[?D] int, skipNan=false): [D] t {
       var res: [D] t;
       if (D.size == 0) { return res; }
       var cumsum;
@@ -637,7 +637,7 @@ module ReductionMsg
       return res;
     }
     
-    proc segMean(values:[] ?t, segments:[?D] int, param skipNan=false): [D] real {
+    proc segMean(values:[] ?t, segments:[?D] int, skipNan=false): [D] real {
       var res: [D] real;
       if (D.size == 0) { return res; }
       var sums;
@@ -648,7 +648,6 @@ module ReductionMsg
         var j: int;
         forall i in 0..#values.size with (+ reduce nancounts, + reduce j) {
           if(j != segments.size - 1 && i >= segments[j+1]) then j+=1;
-
           if isnan(values[i]) {
             arrCopy[i] = 0.0;
             nancounts[j] += 1;
@@ -656,8 +655,8 @@ module ReductionMsg
           else
             arrCopy[i] = values[i];
         }
-        counts = segCount(segments, values.size) - nancounts;
         sums = segSum(arrCopy, segments);
+        counts = segCount(segments, values.size) - nancounts;
       } else {
         sums = segSum(values, segments);
         counts = segCount(segments, values.size);
@@ -693,11 +692,11 @@ module ReductionMsg
       return res:real / keyCounts:real;
     }
 
-    proc segMin(values:[?vD] ?t, segments:[?D] int, param skipNan=false): [D] t {
+    proc segMin(values:[?vD] ?t, segments:[?D] int, skipNan=false): [D] t {
       var res: [D] t = max(t);
       if (D.size == 0) { return res; }
       var keys = expandKeys(vD, segments);
-      var kv;
+      var kv: [keys.domain] (int, t);
       if (isFloatType(t) && skipNan) {
         var arrCopy = [elem in values] if isnan(elem) then max(real) else elem;
         kv = [(k, v) in zip(keys, arrCopy)] (-k, v);
@@ -736,11 +735,11 @@ module ReductionMsg
       return res;
     }    
 
-    proc segMax(values:[?vD] ?t, segments:[?D] int, param skipNan=false): [D] t {
+    proc segMax(values:[?vD] ?t, segments:[?D] int, skipNan=false): [D] t {
       var res: [D] t = min(t);
       if (D.size == 0) { return res; }
       var keys = expandKeys(vD, segments);
-      var kv;
+      var kv: [keys.domain] (int, t);
       if (isFloatType(t) && skipNan) {
         var arrCopy = [elem in values] if isnan(elem) then min(real) else elem;
         kv = [(k, v) in zip(keys, arrCopy)] (k, v);
