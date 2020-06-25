@@ -113,14 +113,21 @@ def connect(server = "localhost", port = 5555, timeout = 0,
     # if the connect request succeeded and, if not not, the error message
     message = _send_string_message(message)
     if verbose: print("[Python] Received response: %s" % message)
-    print(message)
     connected = True
+
     conf = get_config()
     if conf['arkoudaVersion'] != __version__:
-        warnings.warn('Version mismatch between client ({}) and server ({}); ' +
-                      'this may cause some commands to fail or behave incorrectly!' +
-                      'Updating arkouda is strongly recommended.'.\
+        warnings.warn(('Version mismatch between client ({}) and server ({}); ' +
+                      'this may cause some commands to fail or behave ' +
+                      'incorrectly! Updating arkouda is strongly recommended.').\
                       format(__version__, conf['arkoudaVersion']), RuntimeWarning)
+
+def _set_access_token(username : str, access_token : str, connect_string : str) -> None:
+
+    tokens = io_util.csv_file_to_dict('{}/.arkouda/tokens.txt'.\
+                                                format(security.get_home()))
+
+
 
 def _start_tunnel(addr : str, tunnel_server : str) -> None:
     """

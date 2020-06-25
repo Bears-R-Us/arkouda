@@ -1,5 +1,5 @@
 from pathlib import Path
-
+from typing import Mapping
 
 def get_directory(path : str) -> Path:
     '''
@@ -10,7 +10,11 @@ def get_directory(path : str) -> Path:
     :return: Path object corresponding to the directory
     :rtype: Path
     '''
-    return Path(path).mkdir(parents=True, exist_ok=True)
+    try:
+        Path(path).mkdir(parents=True, exist_ok=True)
+        return Path(path) 
+    except Exception as e:
+        raise ValueError(e)
 
 def write_line_to_file(path : str, line : str) -> None:
     """
@@ -23,4 +27,28 @@ def write_line_to_file(path : str, line : str) -> None:
     :return: None
     """
     with open(path, 'a') as f:
-        f.write(''.join([line,'\n'])) 
+        f.write(''.join([line,'\n']))
+
+def delimited_file_to_dict(path : str, 
+                      delimiter : str=',') -> Mapping[str,str]: 
+    """
+    Returns a dict populated by lines from a file where 
+    the first delmited element of each line is the key and
+    the second delimited element is the value.
+    
+    :param str path: path to file
+    :param str delimiter: delimiter separating key and value
+    :return: dict containing key -> value
+    :rtype: Mapping[str,str]
+    """
+    try:
+        values : Mapping[str,str] = {}
+
+        with open(path) as f:
+            for line in f:
+                line = line.rstrip()
+                key,value = line.split(delimiter)
+                values[key] = value
+        return values
+    except Exception as e:
+        raise ValueError(e)
