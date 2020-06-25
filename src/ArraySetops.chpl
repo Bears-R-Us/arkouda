@@ -27,7 +27,7 @@ module ArraySetops
     private config const mBound = 2**25; 
 
     // returns intersection of 2 arrays
-    proc intersect1d(a: [?aD] int, b: [aD] int, assume_unique: string) {
+    proc intersect1d(a: [] int, b: [] int, assume_unique: string) {
       //if not unique, unique sort arrays then perform operation
       if (assume_unique == "False") {
         var a1  = uniqueSort(a, false);
@@ -41,7 +41,7 @@ module ArraySetops
     // first concatenates the 2 arrays, then
     // sorts arrays and removes all values that
     // only occur once
-    proc intersect1dHelper(a: [?aD] ?t, b: [aD] t) {
+    proc intersect1dHelper(a: [] ?t, b: [] t) {
       var aux = radixSortLSD_keys(concatset(a,b));
 
       var head = sliceEnd(aux);
@@ -53,7 +53,7 @@ module ArraySetops
     }
 
     // returns the exclusive-or of 2 arrays
-    proc setxor1d(a: [?aD] int, b: [aD] int, assume_unique: string) {
+    proc setxor1d(a: [] int, b: [] int, assume_unique: string) {
       //if not unique, unique sort arrays then perform operation
       if (assume_unique == "False") {
         var a1  = uniqueSort(a, false);
@@ -67,7 +67,7 @@ module ArraySetops
     // first concatenates the 2 arrays, then
     // sorts and removes all values that occur
     // more than once
-    proc setxor1dHelper(a: [?aD] ?t, b: [aD] t) {
+    proc setxor1dHelper(a: [] ?t, b: [] t) {
       var aux = radixSortLSD_keys(concatset(a,b));
 
       var sliceComp = tail(aux) != sliceEnd(aux);
@@ -87,7 +87,7 @@ module ArraySetops
     }
 
     // returns the set difference of 2 arrays
-    proc setdiff1d(a: [?aD] int, b: [aD] int, assume_unique: string) {
+    proc setdiff1d(a: [] int, b: [] int, assume_unique: string) {
       //if not unique, unique sort arrays then perform operation
       if (assume_unique == "False") {
         var a1  = uniqueSort(a, false);
@@ -103,7 +103,7 @@ module ArraySetops
     // as a boolean array and inverts these
     // values and returns the array indexed
     // with this inverted array
-    proc setdiff1dHelper(a: [?aD] ?t, b: [aD] t) {
+    proc setdiff1dHelper(a: [] ?t, b: [] t) {
         var truth = makeDistArray(a.size, bool);
 
         // based on size of array, determine which method to use 
@@ -122,7 +122,7 @@ module ArraySetops
     // first concatenates the 2 arrays, then
     // sorts resulting array and ensures that
     // values are unique
-    proc union1d(a: [?aD] int, b: [aD] int) {
+    proc union1d(a: [] int, b: [] int) {
       var a1  = uniqueSort(a, false);
       var b1  = uniqueSort(b, false);
 
