@@ -648,8 +648,8 @@ module ReductionMsg
         var j: int;
         forall i in 0..#values.size with (+ reduce nancounts, + reduce j) {
           if(j != segments.size - 1 && i >= segments[j+1]) then j+=1;
+
           if isnan(values[i]) {
-            nancounts += 1;
             arrCopy[i] = 0.0;
             nancounts[j] += 1;
           }
