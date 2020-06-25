@@ -517,7 +517,7 @@ module ReductionMsg
       var res: [D] t;
       if (D.size == 0) { return res; }
       var cumsum;
-      if skipNan {
+      if (isFloatType(t) && skipNan) {
         var arrCopy = [elem in values] if isnan(elem) then 0.0 else elem;
         cumsum = + scan arrCopy;
       }
@@ -549,7 +549,7 @@ module ReductionMsg
        to seg<Op> on the local slice of values) and a global reduction of the 
        local results. The return is the same as seg<Op>: one reduced value per segment.
     */
-    proc perLocSum(values:[] ?t, segments:[?D] int, skipNaN=true): [] t {
+    proc perLocSum(values:[] ?t, segments:[?D] int): [] t {
       // Infer the number of keys from size of <segments>
       var numKeys:int = segments.size / numLocales;
       // Make the distributed domain of the final result
@@ -642,7 +642,7 @@ module ReductionMsg
       if (D.size == 0) { return res; }
       var sums;
       var counts;
-      if skipNan {
+      if (isFloatType(t) && skipNan) {
         var arrCopy = makeDistArray(values.size, real);
         var nancounts = makeDistArray(segments.size, int);
         var j: int;
@@ -698,7 +698,7 @@ module ReductionMsg
       if (D.size == 0) { return res; }
       var keys = expandKeys(vD, segments);
       var kv;
-      if skipNan {
+      if (isFloatType(t) && skipNan) {
         var arrCopy = [elem in values] if isnan(elem) then max(real) else elem;
         kv = [(k, v) in zip(keys, arrCopy)] (-k, v);
       } else {
@@ -741,7 +741,7 @@ module ReductionMsg
       if (D.size == 0) { return res; }
       var keys = expandKeys(vD, segments);
       var kv;
-      if skipNan {
+      if (isFloatType(t) && skipNan) {
         var arrCopy = [elem in values] if isnan(elem) then min(real) else elem;
         kv = [(k, v) in zip(keys, arrCopy)] (k, v);
       } else {
