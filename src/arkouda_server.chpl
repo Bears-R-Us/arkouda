@@ -36,7 +36,7 @@ proc main() {
     var context: ZMQ.Context;
     var socket : ZMQ.Socket = context.socket(ZMQ.REP);
 
-    // configure token authentication and print token to logging
+    // configure token authentication and server startup message accordingly
     if authenticate {
         serverToken = generateToken(32);
         serverMessage = "server listening on %s:%t with token %s".format(serverHostname, 
@@ -71,13 +71,23 @@ proc main() {
         socket.send(repMsg);
     }
 
-    proc isAuthEnabled() : bool {
-        if serverToken.isEmpty() {
-            return false;
-        } else {
-            return true;
+    proc authenticateUser(token : string) throws {
+        if token == 'None' || token.isEmpty() {
+            throw new owned ErrorWithMsg("Error: access to arkouda requires token");
         }
-    }   
+        else if serverToken != token {
+            throw new owned ErrorWithMsg("Error: token %s does not match server token, check with server owner".format(token));
+        }
+    } 
+
+    proc containsBinaryData(cmdRaw : bytes) : bool {
+        return cmdRaw.endsWith(b":array");
+    }
+    
+    proc getCommandStrings(rawCmdString : string) : (string,string,string) {
+        var strings = rawCmdString.split(':');
+        return (strings[0],strings[1],strings[2]);
+    }
 
     proc shutdown(timeElapsed) {
         shutdownServer = true;
@@ -94,12 +104,36 @@ proc main() {
 
         var s0 = t1.elapsed();
 
-        const (cmdRaw, _) = reqMsgRaw.splitMsgToTuple(2);
+        const (cmdRaw, payload) = reqMsgRaw.splitMsgToTuple(2);
 
         // parse requests, execute requests, format responses
         try {
             // first handle the case where we received arbitrary data
-            if cmdRaw == b"array" {
+            if containsBinaryData(cmdRaw) {
+                /*
+                Decode the first tuple element which is a string array of bytes
+                composed of the username, token, and Arkouda command. Note: if 
+                the authenticate flag is false, the token is a None string.
+                */
+                var cmdStr : string;
+                try! {
+                   cmdStr = cmdRaw.decode();
+                } catch e: DecodeError {
+                    if v {
+                        writeln("Error: illegal byte sequence in command: ",
+                                cmdRaw.decode(decodePolicy.replace));
+                        try! stdout.flush();
+                    }
+                    sendRepMsg(unknownError(""));
+                }
+                
+                const (user,token,cmd) = getCommandStrings(cmdStr);
+
+                if authenticate {
+                    authenticateUser(token);
+                }
+
+                reqMsgRaw = b' '.join(cmd.encode(),payload); 
                 if logging {
                     writeln("reqMsg: ", b"array", " <binary-data>");
                     writeln(">>> %s started at %.17r sec".format("array", s0));
@@ -108,7 +142,10 @@ proc main() {
                 sendRepMsg(arrayMsg(reqMsgRaw, st));
             }
             else {
-                // received command does not have binary data, safe to decode
+                /*
+                The received message does not have binary data, so decode entire 
+                the entire message and split the decoded string
+                */
                 var reqMsg: string;
                 try! {
                     reqMsg = reqMsgRaw.decode();
@@ -121,21 +158,16 @@ proc main() {
                     }
                     sendRepMsg(unknownError(""));
                 }
-
+                /*
+                Decode the first array element which is a string array of bytes
+                composed of the username, token, and Arkouda command. Note: if
+                the authenticate flag is false, the token is a None string.
+                */
                 var messageTokens = reqMsg.split(' ');
-                var infraTokens = messageTokens[0].split(':');
-
-                var user : string = infraTokens[0];
-                var token : string  = infraTokens[1];
-                var cmd : string = infraTokens[2];
+                const (user,token,cmd) = getCommandStrings(messageTokens[0]);
 
                 if authenticate {
-                    if token == 'None' || token.isEmpty() {
-                        throw new owned ErrorWithMsg("Error: access to arkouda requires token");
-                    }
-                    else if serverToken != token {
-                        throw new owned ErrorWithMsg("Error: token %s does not match server token, check with server owner".format(token));
-                    }
+                    authenticateUser(token);
                 }
 
                 reqMsg = ' '.join(messageTokens[1..messageTokens.size-1]);

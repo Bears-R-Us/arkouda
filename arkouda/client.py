@@ -4,7 +4,8 @@ import warnings, pkg_resources
 from arkouda import security, io_util
 __all__ = ["verbose", "pdarrayIterThresh", "maxTransferBytes",
            "AllSymbols", "set_defaults", "connect", "disconnect",
-           "shutdown", "get_config", "get_mem_used", "__version__"]
+           "shutdown", "get_config", "get_mem_used", "__version__",
+           "ruok"]
 
 # Try to read the version from the file located at ../VERSION
 VERSIONFILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "VERSION")
@@ -168,13 +169,13 @@ def _send_string_message(message : str, recv_bytes=False) -> str:
     if recv_bytes:
         return_message = socket.recv()
         # raise errors sent back from the server
-        if return_message.startswith(b"Error:"): raise RuntimeError(message.decode())
-        elif return_message.startswith(b"Warning:"): warnings.warn(message)
+        if return_message.startswith(b"Error:"): raise RuntimeError(return_message.decode())
+        elif return_message.startswith(b"Warning:"): warnings.warn(return_message)
     else:
         return_message = socket.recv_string()
         # raise errors sent back from the server
-        if return_message.startswith("Error:"): raise RuntimeError(message)
-        elif return_message.startswith("Warning:"): warnings.warn(message)
+        if return_message.startswith("Error:"): raise RuntimeError(return_message)
+        elif return_message.startswith("Warning:"): warnings.warn(return_message)
     return return_message
 
 def _send_binary_message(message : str, recv_bytes=False) -> str:
@@ -187,7 +188,9 @@ def _send_binary_message(message : str, recv_bytes=False) -> str:
     :return: the response string sent back from the Arkouda server
     :rtype: str
     """
-    socket.send(message)
+    #print('SENDING BINARY MESSAGE {}'.format(b'{}:{}:BINARY_PAYLOAD{}'.format(username,token,message))
+    socket.send('{}:{}:'.format(username,token,).encode() + message)
+    #socket.send(message)
     if recv_bytes:
         return socket.recv()
     else:
