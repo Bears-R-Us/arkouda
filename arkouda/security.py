@@ -1,4 +1,4 @@
-import platform, secrets, json
+import os, platform, secrets, json
 from os.path import expanduser
 from arkouda import io_util
 
@@ -32,12 +32,21 @@ def get_arkouda_directory() -> str:
     """
     A platform-independent means of finding path to
     the current user's .arkouda directory where artifacts
-    such as server access tokens are stored.
+    such as server access tokens are stored. 
 
-    :return: string corresponding to home directory path
+    The default implementation is to place the .arkouda 
+    directory in the current user's home directory. The
+    default can be overridden by seting the ARKOUDA_HOME
+    environment variable.
+
+    :return: string corresponding to .arkouda directory path
     :rtype: str
     """
-    return '{}/.arkouda'.format(get_home_directory())
+    arkouda_parent_dir = os.getenv('ARKOUDA_HOME')
+    if not arkouda_parent_dir:
+        arkouda_parent_dir = get_home_directory()
+    return io_util.get_directory('{}{}.arkouda'.\
+                format(arkouda_parent_dir,os.sep)).absolute()
 
 def get_username() -> str:
     """
@@ -50,16 +59,20 @@ def get_username() -> str:
     """
     try:
         u_tokens = \
-             username_tokenizer[platform.system()](get_home_directory())
+          username_tokenizer[platform.system()](get_home_directory())
     except KeyError as ke:
         return EnvironmentError('Unsupported OS')
     return u_tokens[-1]
 
-def generate_username_token_tuple(tuple_length : int=32) -> str:
-    return (get_username(),generate_token(tuple_length))
+def generate_username_token_json(token : str) -> str:
+    """
+    Generates a JSON object encapsulating the user's username
+    and token for connecting to an arkouda server with basic
+    authentication enabled
 
-def generate_username_token_json(token : str=None) -> str:
-    if not token:
-        token = generate_token()
+    :param str token: the token to be used to access arkouda server
+    :return: JSON-formatted string
+    :rtype: str
+    """
     return json.dumps({'username' : get_username(),
                        'token' : token})
