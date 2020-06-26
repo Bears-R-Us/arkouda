@@ -24,9 +24,12 @@ BENCHMARKS = ['stream', 'argsort', 'coargsort', 'gather', 'scatter', 'reduce', '
 def get_chpl_util_dir():
     """ Get the Chapel directory that contains graph generation utilities. """
     CHPL_HOME = os.getenv('CHPL_HOME')
+    if not CHPL_HOME:
+        logging.error('$CHPL_HOME not set')
+        sys.exit(1)
     chpl_util_dir = os.path.join(CHPL_HOME, 'util', 'test')
-    if not CHPL_HOME or not os.path.isdir(chpl_util_dir):
-        logging.error('$CHPL_HOME not set, or {} missing'.format(chpl_util_dir))
+    if not os.path.isdir(chpl_util_dir):
+        logging.error('{} does not exist'.format(chpl_util_dir))
         sys.exit(1)
     return chpl_util_dir
 
