@@ -265,9 +265,7 @@ module ReductionMsg
       // 'segments_name' is the sement offsets
       // 'operator' is the reduction operator
       var (cmd, values_name, segments_name, operator, skip_nan) = reqMsg.splitMsgToTuple(5);
-
-      var skipNan;
-      if skip_nan == "True" then skipNan = true; else skipNan = false;
+      var skipNan = stringtobool(skip_nan);
       
       var rname = st.nextName();
       if v {try! writeln("%s %s %s %s".format(cmd,values_name,segments_name,operator));try! stdout.flush();}
@@ -1222,6 +1220,12 @@ module ReductionMsg
         r = (+ reduce [i in PrivateSpace] localUvals[i][keyInd]).size;
       }
       return res;
+    }
+
+    proc stringtobool(str: string): bool throws {
+      if str == "True" then return true;
+      else if str == "False" then return false;
+      throw new owned ErrorWithMsg("message: skipNan must be of type bool");
     }
 }
 
