@@ -40,6 +40,7 @@ jobs:
     - name: Arkouda benchmark --correctness-only
       run: |
          ./benchmarks/run_benchmarks.py --correctness-only
+         ./benchmarks/run_benchmarks.py --size=100 --gen-graphs
 
   unit_tests_linux:
     runs-on: ubuntu-latest
