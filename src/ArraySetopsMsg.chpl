@@ -193,9 +193,8 @@ module ArraySetopsMsg
     }
 
     proc stringtobool(str: string): bool throws {
-      var ret: string;
-      if str == "True" then ret="true";
-      else if str == "False" then ret="false";
-      return ret:bool;
+      if str == "True" then return true;
+      else if str == "False" then return false;
+      throw new owned ErrorWithMsg("message: assume_unique must be of type bool");
     }
 }
