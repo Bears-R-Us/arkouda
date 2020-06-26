@@ -141,3 +141,14 @@ Once everything is working here, correctness testing and numpy testing should be
 
 numpy test: ``./benchmarks/run_benchmarks.py myMethod --numpy``
 correctness test: ``./benchmarks/run_benchmarks.py myMethod --correctness-only``
+
+
+Updating Graphs
+===============
+
+To get your benchmark to be tracked using graphs, you will need to:
+
+1. Add a ``.perfkeys`` file in ``benchmarks/graph_infra`` following the convention of existing files
+2. Update ``arkouda.graph`` to select your new perfkeys, just like the others
+
+More information about the benchmark graphs available at ``benchmarks/graph_infra/README.md``
