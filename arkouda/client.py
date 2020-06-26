@@ -256,6 +256,8 @@ def shutdown() -> None:
     """
     global socket, pspStr, connected, verbose
 
+    if not connected:
+        raise RuntimeError('not connected, cannot shutdown server')
     # send shutdown message to server
     message = "shutdown"
     if verbose: print("[Python] Sending request: %s" % message)
