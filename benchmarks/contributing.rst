@@ -19,6 +19,8 @@ Example
      import numpy as np
      import arkouda as ak
 
+     TYPES = ('int64', 'float64')
+
      def time_ak_argsort(N_per_locale, trials, dtype):
          print(">>> arkouda argsort") #Name of method to be tested
          cfg = ak.get_config()
@@ -47,15 +49,15 @@ Example
          parser.add_argument('port', type=int, help='Port of arkouda server')
          parser.add_argument('-n', '--size', type=int, default=10**8, help='Problem size: length of array to argsort')
          parser.add_argument('-t', '--trials', type=int, default=3, help='Number of times to run the benchmark')
-         parser.add_argument('-d', '--dtype', default='int64', help='Dtype of array (int64 or float64)')
+         parser.add_argument('-d', '--dtype', default='int64', help='Dtype of array ({})'.format(', '.join(TYPES)))
          return parser
 
      if __name__ == "__main__":
          import sys
          parser = create_parser()
          args = parser.parse_args()
-         if args.dtype not in ('int64', 'float64'):
-             raise ValueError("Dtype must be either int64 or float64, not {}".format(args.dtype))
+         if args.dtype not in TYPES:
+             raise ValueError("Dtype must be {}, not {}".format('/'.join(TYPES), args.dtype))
          ak.verbose = False
          ak.connect(args.hostname, args.port)
 
@@ -122,13 +124,14 @@ Once everything is working here, correctness testing and numpy testing should be
     import sys
     parser = create_parser()
     args = parser.parse_args()
-    if args.dtype not in ('int64', 'float64'):
-        raise ValueError("Dtype must be either int64 or float64, not {}".format(args.dtype))
+    if args.dtype not in TYPES:
+        raise ValueError("Dtype must be {}, not {}".format('/'.join(TYPES), args.dtype))
     ak.verbose = False
     ak.connect(args.hostname, args.port)
 
     if args.correctness_only:
-        check_correctness(args.dtype)
+        for dtype in TYPES:
+            check_correctness(dtype)
         sys.exit(0)
     
     print("array size = {:,}".format(args.size))
