@@ -212,7 +212,7 @@ module ReductionMsg
       var counts:[D] int;
       if (D.size == 0) { return counts; }
       forall (c, low, i) in zip(counts, segments, D) {
-        var high, nan: int;
+        var high: int;
         if (i < D.high) {
           high = segments[i+1] - 1;
         } else {
@@ -318,11 +318,7 @@ module ReductionMsg
         var values = toSymEntry(gVal, real);
         select operator {
           when "sum" {
-            var res;
-            if(skipNan) then
-              res = segSum(values.a, segments.a, true);
-            else
-              res = segSum(values.a, segments.a);
+            var res = segSum(values.a, segments.a, skipNan);
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "prod" {
@@ -330,27 +326,15 @@ module ReductionMsg
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "mean" {
-            var res;
-            if(skipNan) then
-              res = segMean(values.a, segments.a, true);
-            else
-              res = segMean(values.a, segments.a);
+            var res = segMean(values.a, segments.a, skipNan);
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "min" {
-            var res;
-            if(skipNan) then
-              res = segMin(values.a, segments.a, true);
-            else
-              res = segMin(values.a, segments.a);
+            var res = segMin(values.a, segments.a, skipNan);
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "max" {
-            var res;
-            if(skipNan) then
-              res = segMax(values.a, segments.a, true);
-            else
-              res = segMax(values.a, segments.a);
+            var res = segMax(values.a, segments.a, skipNan);
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "argmin" {
