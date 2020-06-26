@@ -27,9 +27,9 @@ module ArraySetops
     private config const mBound = 2**25; 
 
     // returns intersection of 2 arrays
-    proc intersect1d(a: [] int, b: [] int, assume_unique: string) {
+    proc intersect1d(a: [] int, b: [] int, assume_unique: bool) {
       //if not unique, unique sort arrays then perform operation
-      if (assume_unique == "False") {
+      if (!assume_unique) {
         var a1  = uniqueSort(a, false);
         var b1  = uniqueSort(b, false);
         return intersect1dHelper(a1, b1);
@@ -53,9 +53,9 @@ module ArraySetops
     }
 
     // returns the exclusive-or of 2 arrays
-    proc setxor1d(a: [] int, b: [] int, assume_unique: string) {
+    proc setxor1d(a: [] int, b: [] int, assume_unique: bool) {
       //if not unique, unique sort arrays then perform operation
-      if (assume_unique == "False") {
+      if (!assume_unique) {
         var a1  = uniqueSort(a, false);
         var b1  = uniqueSort(b, false);
         return  setxor1dHelper(a1, b1);
@@ -87,9 +87,9 @@ module ArraySetops
     }
 
     // returns the set difference of 2 arrays
-    proc setdiff1d(a: [] int, b: [] int, assume_unique: string) {
+    proc setdiff1d(a: [] int, b: [] int, assume_unique: bool) {
       //if not unique, unique sort arrays then perform operation
-      if (assume_unique == "False") {
+      if (!assume_unique) {
         var a1  = uniqueSort(a, false);
         var b1  = uniqueSort(b, false);
         return setdiff1dHelper(a1, b1);

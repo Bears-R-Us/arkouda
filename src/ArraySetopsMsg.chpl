@@ -34,7 +34,8 @@ module ArraySetopsMsg
         var repMsg: string; // response message
         // split request into fields
         var (cmd, name, name2, assume_unique) = reqMsg.splitMsgToTuple(4);
-
+        var isUnique = stringtobool(assume_unique);
+        
         var vname = st.nextName();
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
@@ -51,7 +52,7 @@ module ArraySetopsMsg
              var e = toSymEntry(gEnt,int);
              var f = toSymEntry(gEnt2, int);
              
-             var aV = intersect1d(e.a, f.a, assume_unique);
+             var aV = intersect1d(e.a, f.a, isUnique);
              st.addEntry(vname, new shared SymEntry(aV));
 
              var s = try! "created " + st.attrib(vname);
@@ -76,6 +77,7 @@ module ArraySetopsMsg
         var repMsg: string; // response message
         // split request into fields
         var (cmd, name, name2, assume_unique) = reqMsg.splitMsgToTuple(4);
+        var isUnique = stringtobool(assume_unique);
 
         var vname = st.nextName();
 
@@ -93,7 +95,7 @@ module ArraySetopsMsg
              var e = toSymEntry(gEnt,int);
              var f = toSymEntry(gEnt2, int);
              
-             var aV = setxor1d(e.a, f.a, assume_unique);
+             var aV = setxor1d(e.a, f.a, isUnique);
              st.addEntry(vname, new shared SymEntry(aV));
 
              var s = try! "created " + st.attrib(vname);
@@ -118,6 +120,7 @@ module ArraySetopsMsg
         var repMsg: string; // response message
         // split request into fields
         var (cmd, name, name2, assume_unique) = reqMsg.splitMsgToTuple(4);
+        var isUnique = stringtobool(assume_unique);
 
         var vname = st.nextName();
 
@@ -135,7 +138,7 @@ module ArraySetopsMsg
              var e = toSymEntry(gEnt,int);
              var f = toSymEntry(gEnt2, int);
              
-             var aV = setdiff1d(e.a, f.a, assume_unique);
+             var aV = setdiff1d(e.a, f.a, isUnique);
              st.addEntry(vname, new shared SymEntry(aV));
 
              var s = try! "created " + st.attrib(vname);
@@ -187,5 +190,12 @@ module ArraySetopsMsg
            return notImplementedError("newUnion1d",gEnt.dtype);
          }
       }
+    }
+
+    proc stringtobool(str: string): bool throws {
+      var ret: string;
+      if str == "True" then ret="true";
+      else if str == "False" then ret="false";
+      return ret:bool;
     }
 }
