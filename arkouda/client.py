@@ -1,5 +1,5 @@
 import zmq, json, os, secrets
-from typing import Mapping, Tuple, Union
+from typing import Mapping, Optional, Tuple, Union
 import warnings, pkg_resources
 from arkouda import security, io_util
 __all__ = ["verbose", "pdarrayIterThresh", "maxTransferBytes",
@@ -38,41 +38,37 @@ AllSymbols = "__AllSymbols__"
 
 # reset settings to default values
 def set_defaults():
+    """
+    Sets global variables to defaults
+
+    :return: None
+    """
     global verbose, verboseDefVal, pdarrayIterThresh, pdarrayIterThreshDefVal
     verbose = verboseDefVal
     pdarrayIterThresh  = pdarrayIterThreshDefVal
     maxTransferBytes = maxTransferBytesDefVal
 
 # create context, request end of socket, and connect to it
-def connect(server = "localhost", port = 5555, timeout = 0, 
-                                                  access_token=None) -> None:
+def connect(server : str="localhost", port : int=5555, timeout : int=0, 
+                                            access_token : str=None) -> None:
     """
-    Connect to a running arkouda server.
+    Connect to a running arkouda server. Upon success, prints the connected 
+    address, as seen by the server. 
+    Note: if connect is called with an existing connection, the socket 
+    will be re-initialized.
 
-    Parameters
-    ----------
-    server : str, optional
-        The hostname of the server (must be visible to the current
-        machine). Defaults to `localhost`.
-    port : int, optional
-        The port of the server. Defaults to 5555.
-    timeout : int, optional
-        The timeout in seconds for client send and receive operations.
-        Defaults to 0 seconds, which is interpreted as no timeout
-    access_token : str, optional 
-        The token used to connect to an existing socket to enable access to
-        session-scoped resources. Defaults to None
-
-    Returns
-    -------
-    None
-
-    Notes
-    -----
-    On success, prints the connected address, as seen by the server. If called
-    with an existing connection, the socket will be re-initialized.
+    :param str server: arkourda server hostname or ip address (must be visible 
+           to the current machine). Defaults to `localhost`.
+    :param int port: arkouda serer port. Defaults to 5555.
+    :param int timeout: timeout in seconds for client send and receive 
+           operations. Defaults to 0 seconds, which indicates no timeout
+    :param str access_token: the token used to connect to an existing socket 
+           to enable access to an arkouda server where authentication is
+           enabled. Defaults to None.
+    :return: None
+    :raise: ConnectionError if an error is raised connecting to the arkouda
+            server. Note: the ConnectionError wraps zmq-specific errors.
     """
-
     global context, socket, pspStr, connected, verbose, username, token
 
     if verbose: print("ZMQ version: {}".format(zmq.zmq_version()))
@@ -96,8 +92,8 @@ def connect(server = "localhost", port = 5555, timeout = 0,
         socket.setsockopt(zmq.RCVTIMEO, timeout*1000)
     
     # set token and username global variables
-    token = access_token
     username = security.get_username()
+    token = _set_access_token(username,access_token,pspStr)
 
     # connect to arkouda server
     try:
@@ -109,8 +105,8 @@ def connect(server = "localhost", port = 5555, timeout = 0,
     message = "connect"
     if verbose: print("[Python] Sending request: %s" % message)
 
-    # send connect request to server and get the response confirming i
-    # if the connect request succeeded and, if not not, the error message
+    # send connect request to server and get the response confirming if
+    # the connect request succeeded and, if not not, the error message
     message = _send_string_message(message)
     if verbose: print("[Python] Received response: %s" % message)
     connected = True
@@ -122,12 +118,35 @@ def connect(server = "localhost", port = 5555, timeout = 0,
                       'incorrectly! Updating arkouda is strongly recommended.').\
                       format(__version__, conf['arkoudaVersion']), RuntimeWarning)
 
-def _set_access_token(username : str, access_token : str, connect_string : str) -> None:
+def _set_access_token(username : str, access_token : str, 
+                                          connect_string : str) -> Optional[str]:
+    """
+    Sets the access_token for the connect request by doing the following:
 
-    tokens = io_util.csv_file_to_dict('{}/.arkouda/tokens.txt'.\
-                                                format(security.get_home()))
+    1. retrieves the token configured for the connect_string from the 
+       .arkouda/tokens.txt file, if any
+    2. if access_token is None, returns the retrieved token
+    3. if access_token is not None, replaces retrieved token with the access_token
+       to account for situations where the token can change for a url (for example,
+       the arkouda_server is restarted and a corresponding new token is generated).
 
+    :param str username: the username retrieved from the user's home directory
+    :param str access_token: the access_token supplied by the user, defaults to None
+    :param str connect_string: the arkouda_server host:port connect string
+    :return: the retrieved or supplied access_token, defaults to None
+    """
+    path = '{}/.arkouda/tokens.txt'.format(security.get_home_directory())
+    tokens = io_util.delimited_file_to_dict(path)
 
+    if access_token and access_token not in {'','None'}:
+        saved_token = tokens.get(connect_string)
+        if saved_token is None or saved_token != access_token:
+            tokens[connect_string] = access_token
+            io_util.dict_to_delimited_file(values=tokens,path=path,delimiter=',')
+        return access_token   
+    else:
+        tokens = io_util.delimited_file_to_dict(path)
+        return tokens.get(connect_string)
 
 def _start_tunnel(addr : str, tunnel_server : str) -> None:
     """
@@ -135,8 +154,8 @@ def _start_tunnel(addr : str, tunnel_server : str) -> None:
     
     :param str tunnel_server: the ssh url
     :return: None
-    :raise: ConnectionError if the ssh tunnel could not be created given the tunnel_server 
-            url and credentials (either password or key file)
+    :raise: ConnectionError if the ssh tunnel could not be created given the
+            tunnel_server url and credentials (either password or key file)
     """
     from zmq import ssh
     kwargs = {'addr' : addr,
@@ -155,7 +174,13 @@ def _start_tunnel(addr : str, tunnel_server : str) -> None:
         raise ConnectionError(e)
 
 def _get_arkouda_directory() -> str:
+    """
+    Retrieves the .arkouda directory from the user's home directory and 
+    creates it if None.
 
+    :return: string path to .arkouda directory
+    :rtype: str
+    """
     io_util.get_directory('{}/.arkouda'.format(security.get_home_directory()))
 
 def _send_string_message(message : str, recv_bytes=False) -> str:
@@ -176,7 +201,8 @@ def _send_string_message(message : str, recv_bytes=False) -> str:
     if recv_bytes:
         return_message = socket.recv()
         # raise errors sent back from the server
-        if return_message.startswith(b"Error:"): raise RuntimeError(return_message.decode())
+        if return_message.startswith(b"Error:"): \
+                                   raise RuntimeError(return_message.decode())
         elif return_message.startswith(b"Warning:"): warnings.warn(return_message)
     else:
         return_message = socket.recv_string()
@@ -195,9 +221,7 @@ def _send_binary_message(message : str, recv_bytes=False) -> str:
     :return: the response string sent back from the Arkouda server
     :rtype: str
     """
-    #print('SENDING BINARY MESSAGE {}'.format(b'{}:{}:BINARY_PAYLOAD{}'.format(username,token,message))
     socket.send('{}:{}:'.format(username,token,).encode() + message)
-    #socket.send(message)
     if recv_bytes:
         return socket.recv()
     else:
@@ -206,20 +230,19 @@ def _send_binary_message(message : str, recv_bytes=False) -> str:
 # message arkouda server the client is disconnecting from the server
 def disconnect() -> None:
     """
-    Disconnect from the arkouda server.
+    Disconnects the client from the arkouda server
+
+    :return: None
     """
     global socket, pspStr, connected, verbose, token
 
     if socket is not None:
-        if token:
-            print('the token is {}'.format(token))
         # send disconnect message to server
         message = "disconnect"
         if verbose: print("[Python] Sending request: %s" % message)
         message = _send_string_message(message)
         if verbose: print("[Python] Received response: %s" % message)
         socket.disconnect(pspStr)
-        print(message)
         connected = False
     else:
         print("not connected; cannot disconnect")
@@ -228,8 +251,9 @@ def disconnect() -> None:
 def shutdown() -> None:
     """
     Tell the arkouda server to delete all objects and shut itself down.
-    """
 
+    :return: None
+    """
     global socket, pspStr, connected, verbose
 
     # send shutdown message to server
@@ -238,11 +262,22 @@ def shutdown() -> None:
     return_message = _send_string_message(message)
     if verbose: print("[Python] Received response: {}".format(return_message))
     socket.disconnect(pspStr)
-    print(return_message)
     connected = False
 
 # send message to arkouda server and check for server side error
-def generic_msg(message, send_bytes=False, recv_bytes=False) -> str:
+def generic_msg(message, send_bytes=False, recv_bytes=False) -> Union[str,bytes]:
+    """
+    Sends the binary or string message to the arkouda_server and returns 
+    the response sent by the server which is either a success confirmation
+    or error message
+ 
+    :param Union[str,Array[byte] message : message to be sent
+    :param bool send_bytes: indicates if binary message to be sent
+    :param bool recv_bytes: indicates if binary message to be returned
+    :return: the string or binary return message
+    :rtype: Union[str,bytes]
+    :raise: KeyboardInterrupt if user interrupts during commmand execution 
+    """
     global socket, pspStr, connected, verbose
 
     if not connected:
@@ -264,19 +299,19 @@ def generic_msg(message, send_bytes=False, recv_bytes=False) -> str:
         raise e
 
 # query the server to get configuration
-def get_config() -> Mapping[str, Union[str, int]]:
+def get_config() -> Mapping[str, Union[str, int, float]]:
     """
-    Get runtime information about the server.
+    Returns a dict object encapsulating runtime information about the server
+    including the following:
+        - serverHostname
+        - serverPort
+        - numLocales
+        - numPUs (number of processor units per locale)
+        - maxTaskPar (maximum number of tasks per locale)
+        - physicalMemory
 
-    Returns
-    -------
-    dict
-        serverHostname
-        serverPort
-        numLocales
-        numPUs (number of processor units per locale)
-        maxTaskPar (maximum number of tasks per locale)
-        physicalMemory
+    :return: dict containing server runtime information
+    :rtype: Mapping[str, Union[str, int, float]]
     """
     return json.loads(generic_msg("getconfig"))
 
@@ -285,16 +320,17 @@ def get_mem_used() -> int:
     """
     Compute the amount of memory used by objects in the server's symbol table.
 
-    Returns
-    -------
-    int
-        Amount of memory allocated to symbol table objects.
+    :return: int indicating the amount of memory allocated to symbol table objects.
+    :rtype: int
     """
     return int(generic_msg("getmemused"))
 
 def _no_op() -> str:
     """
     Send a no-op message just to gather round trip time
+
+    :return: noop command result
+    :rtype: str
     """
     return generic_msg("noop")
   
@@ -307,8 +343,8 @@ def ruok() -> str:
     This method is basically a way to do a quick healthcheck in a way that does 
     not require error handling.
     
-    :return: string indicating if the server is ok (operating normally), if there's an
-             error server-side, or if ruok did not return a response
+    :return: string indicating if the server is ok (operating normally), if there's
+             an error server-side, or if ruok did not return a response
     :rtype: str
     """
     try:
