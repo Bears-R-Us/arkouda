@@ -2,7 +2,7 @@ use TestBase;
 
 use SegmentedMsg;
 
-config const N: int = 10_000;
+config const N: int = 1_000;
 config const MINLEN: int = 6;
 config const MAXLEN: int = 30;
 config const SUBSTRING: string = "hi";
@@ -43,12 +43,11 @@ proc make_strings(substr, n, minLen, maxLen, characters, st) {
 
 proc testPeel(substr:string, n:int, minLen:int, maxLen:int, characters:charSet = charSet.Uppercase) throws {
   var st = new owned SymTab();
-  var t = new Timer();
+  var d: Diags;
   writeln("Generating random strings..."); stdout.flush();
-  t.start();
+  d.start();
   var (answer, strings) = make_strings(substr, n, minLen, maxLen, characters, st);
-  t.stop();
-  writeln("%t seconds".format(t.elapsed())); stdout.flush(); t.clear();
+  d.stop("make_strings");
   const lengths = strings.getLengths();
   var allSuccess = true;
   for param times in 1..2 {
@@ -59,10 +58,9 @@ proc testPeel(substr:string, n:int, minLen:int, maxLen:int, characters:charSet =
         for param l in 0..1 {
           param left:bool = l > 0;
           writeln("strings.peel(%s, %i, includeDelimiter=%t, keepPartial=%t, left=%t)".format(substr, times, includeDelimiter, keepPartial, left));
-          t.start();
+          d.start();
           var (leftOffsets, leftVals, rightOffsets, rightVals) = strings.peel(substr, times, includeDelimiter, keepPartial, left);
-          t.stop();
-          writeln("%t seconds".format(t.elapsed())); stdout.flush();
+          d.stop("peel");
           var lstr = new owned SegString(leftOffsets, leftVals, st);
           var rstr = new owned SegString(rightOffsets, rightVals, st);
           if DEBUG {
@@ -87,14 +85,7 @@ proc testPeel(substr:string, n:int, minLen:int, maxLen:int, characters:charSet =
               }
             }
           } 
-          for i in 0..#min(lstr.size, 5) {
-            writeln("%i: %s  |  %s".format(i, lstr[i], rstr[i]));
-          }
-          if lstr.size >= 10 {
-            for i in (lstr.size-5)..#4 {
-              writeln("%i: %s  |  %s".format(i, lstr[i], rstr[i]));
-            }
-          }
+          writeSegString("lstr", lstr);
           const delim = if includeDelimiter then "" else substr;
           var temp: owned SegString?;
           if left {
@@ -107,7 +98,7 @@ proc testPeel(substr:string, n:int, minLen:int, maxLen:int, characters:charSet =
           var roundTrip: borrowed SegString = temp!;
           var eq = (strings == roundTrip) | (answer < times);
           var success = && reduce eq;
-          writeln("\nRound trip success? >>> %t <<<\n".format(success));
+          writeln("Round trip success? >>> %t <<<".format(success));
           allSuccess &&= success;
           if !success {
             var n = 0;
@@ -131,25 +122,24 @@ proc testPeel(substr:string, n:int, minLen:int, maxLen:int, characters:charSet =
 
 proc testMessageLayer(substr, n, minLen, maxLen) throws {
   var st = new owned SymTab();
-  var t = new Timer();
+  var d: Diags;
   writeln("Generating random strings..."); stdout.flush();
-  t.start();
+  d.start();
   var (answer, strings) = make_strings(substr, n, minLen, maxLen, charSet.Uppercase, st);
-  t.stop();
-  writeln("%t seconds".format(t.elapsed())); stdout.flush(); t.clear();
+  d.stop("make_strings");
   var reqMsg = "segmentedEfunc peel str %s %s str 1 True True True %jt".format(strings.offsetName, strings.valueName, [substr]);
-  writeln(reqMsg);
+  writeReq(reqMsg);
   var repMsg = segmentedEfuncMsg(reqMsg, st);
-  writeln(repMsg);
+  writeRep(repMsg);
   var (loAttribs,lvAttribs,roAttribs,rvAttribs) = repMsg.splitMsgToTuple('+', 4);
   var loname = parseName(loAttribs);
   var lvname = parseName(lvAttribs);
   var roname = parseName(roAttribs);
   var rvname = parseName(rvAttribs);
   reqMsg = "segBinopvv stick str %s %s str %s %s False %jt".format(loname, lvname, roname, rvname, [""]);
-  writeln(reqMsg);
+  writeReq(reqMsg);
   repMsg = segBinopvvMsg(reqMsg, st);
-  writeln(repMsg);
+  writeRep(repMsg);
   var (rtoAttribs,rtvAttribs) = repMsg.splitMsgToTuple('+', 2);
   var rtoname = parseName(rtoAttribs);
   var rtvname = parseName(rtvAttribs);

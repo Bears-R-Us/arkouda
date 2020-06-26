@@ -156,27 +156,19 @@ module ServerConfig
         }
     }
 
-    // This is a trick to determine what the default low bound of
-    // arrays and tuples is to keep this code backwards-compatible
-    // through 1.20.  It could be removed and simplified once Arkouda
-    // is no longer interested in supporting Chapel 1.20.
-    //
-    private const DefaultArr = [1,2];
-    private const defaultLow = DefaultArr.domain.low;
-
     proc string.splitMsgToTuple(param numChunks: int) {
       var tup: numChunks*string;
-      var count = 0;
+      var count = tup.indices.low;
 
       // fill in the initial tuple elements defined by split()
       for s in this.split(numChunks-1) {
-        tup(defaultLow+count) = s;
+        tup(count) = s;
         count += 1;
       }
       // if split() had fewer items than the tuple, fill in the rest
       if (count < numChunks) {
         for i in count..numChunks-1 {
-          tup(defaultLow+i) = "";
+          tup(i) = "";
         }
       }
       return tup;
@@ -184,17 +176,17 @@ module ServerConfig
 
     proc string.splitMsgToTuple(sep: string, param numChunks: int) {
       var tup: numChunks*string;
-      var count = 0;
+      var count = tup.indices.low;
 
       // fill in the initial tuple elements defined by split()
       for s in this.split(sep, numChunks-1) {
-        tup(defaultLow+count) = s;
+        tup(count) = s;
         count += 1;
       }
       // if split() had fewer items than the tuple, fill in the rest
       if (count < numChunks) {
         for i in count..numChunks-1 {
-          tup(defaultLow+i) = "";
+          tup(i) = "";
         }
       }
       return tup;
@@ -202,17 +194,17 @@ module ServerConfig
 
     proc bytes.splitMsgToTuple(param numChunks: int) {
       var tup: numChunks*bytes;
-      var count = 0;
+      var count = tup.indices.low;
 
       // fill in the initial tuple elements defined by split()
       for s in this.split(numChunks-1) {
-        tup(defaultLow+count) = s;
+        tup(count) = s;
         count += 1;
       }
       // if split() had fewer items than the tuple, fill in the rest
       if (count < numChunks) {
         for i in count..numChunks-1 {
-          tup(defaultLow+i) = b"";
+          tup(i) = b"";
         }
       }
       return tup;

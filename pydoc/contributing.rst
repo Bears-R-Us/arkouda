@@ -9,7 +9,7 @@ Adding Python Functionality
 
 Python functions should follow the API of NumPy or Pandas, were possible. In general, functions should conform to the following:
 
-1. Be defined in ``arkouda.py``
+1. Be defined somewhere in the ``arkouda`` subdirectory, such as in ``arkouda/pdarraysetops.py``
 2. Have a complete docstring in `NumPy format <https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard>`_
 3. Check argument types and properties, raising exceptions if necessary
 4. Send a request message using ``generic_msg(request)``
@@ -22,25 +22,25 @@ Example
 
 .. code-block:: python
 
-    def foo(pda):
-    """
-    Return the foo() of the array.
+     def foo(pda):
+         """
+         Return the foo() of the array.
 
-    Parameters
-    ----------
-    pda : pdarray
-        The array to foo
+         Parameters
+         ----------
+         pda : pdarray
+             The array to foo
 
-    Returns
-    -------
-    pdarray
-        The foo'd array
-    """
-    if isinstance(pda, pdarray):
-        repMsg = generic_msg("foo {}".format(pda.name))
-        return create_pdarray(repMsg)
-    else:
-        raise TypeError("must be pdarray {}".format(pda))
+         Returns
+         -------
+         pdarray
+             The foo'd array
+         """
+         if isinstance(pda, pdarray):
+             repMsg = generic_msg("foo {}".format(pda.name))
+             return create_pdarray(repMsg)
+         else:
+             raise TypeError("must be pdarray {}".format(pda))
 
 Adding Functionality to the Arkouda Server
 ==========================================
@@ -92,7 +92,7 @@ First, in ``src/arkouda_server.chpl``, add a ``when`` statement to register the 
        // ...
    }
 
-Next, in the ``MsgProcessing`` module, add ``use FooMsg;`` in the appropriate location:
+Next, in the ``MsgProcessing`` module, add ``public use FooMsg;`` in the appropriate location:
 
 .. code-block:: chapel
 
@@ -106,9 +106,9 @@ Next, in the ``MsgProcessing`` module, add ``use FooMsg;`` in the appropriate lo
        use ServerErrorStrings;
        use AryUtil;
     
-       use OperatorMsg;
+       public use OperatorMsg;
        // ...    
-       use FooMsg;
+       public use FooMsg;
        // ...
 
 Then, define your argument parsing and function logic in ``src/FooMsg.chpl`` in the following manner:
@@ -117,8 +117,11 @@ Then, define your argument parsing and function logic in ``src/FooMsg.chpl`` in 
 
    module FooMsg
    {
+       use ServerConfig;
+   
        use MultiTypeSymEntry;
        use ServerErrorStrings;
+       use MultiTypeSymbolTable;
        
        // do foo on array a
        proc foo(a: [?aD] int): [aD] int {
@@ -134,7 +137,7 @@ Then, define your argument parsing and function logic in ``src/FooMsg.chpl`` in 
        :type st: borrowed SymTab 
        :returns: (string) response message
        */
-       proc FooMsg(reqMsg: string, st: borrowed SymTab): string {
+       proc fooMsg(reqMsg: string, st: borrowed SymTab): string throws {
            var repMsg: string; // response message
            // split request into fields
            var (cmd, name) = reqMsg.splitMsgToTuple(2);
@@ -148,10 +151,10 @@ Then, define your argument parsing and function logic in ``src/FooMsg.chpl`` in 
            select (gEnt.dtype) {
                when (DType.Int64) {
                    var e = toSymEntry(gEnt,int);
-		   var ret = foo(e);
+		   var ret = foo(e.a);
 		   st.addEntry(rname, new shared SymEntry(ret));
                }
-               otherwise {return unrecognizedTypeError("foo",gEnt.dtype);}
+               otherwise {return notImplementedError("foo",gEnt.dtype);}
 	   }
            // response message
            return try! "created " + st.attrib(rname);

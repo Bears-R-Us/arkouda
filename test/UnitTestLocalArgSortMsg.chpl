@@ -37,10 +37,11 @@ prototype module UnitTestArgSort
         var orig = toSymEntry(st.lookup(aname), int);
         writeIntArray(orig.a, filename+".original");
         reqMsg = try! "%s %s".format(cmd, aname);
-        var t1 = Time.getCurrentTime();
+        var d: Diags;
+        d.start();
         repMsg = localArgsortMsg(reqMsg, st);
-        writeln(repMsg);
-        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+        d.stop("localArgsortMsg");
+        writeRep(repMsg);
 
         // apply iv to pdarray return sorted array
         cmd = "[pdarray]";
@@ -48,10 +49,10 @@ prototype module UnitTestArgSort
         var iv = toSymEntry(st.lookup(ivname), int);
         writeIntArray(iv.a, filename+".permutation");
         reqMsg = try! "%s %s %s".format(cmd, aname, ivname);
-        t1 = Time.getCurrentTime();
+        d.start();
         repMsg = pdarrayIndexMsg(reqMsg, st);
-        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
-        writeln(repMsg);
+        d.stop("pdarrayIndexMsg");
+        writeRep(repMsg);
 
         // check for result to be sorted
         cmd = "reduction";
@@ -60,9 +61,9 @@ prototype module UnitTestArgSort
         var locSorted = toSymEntry(st.lookup(bname), int);
         writeIntArray(locSorted.a, filename+".locally_sorted");
         reqMsg = try! "%s %s %s".format(cmd, subCmd, bname);
-        t1 = Time.getCurrentTime();
+        d.start();
         repMsg = reductionMsg(reqMsg, st);
-        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+        d.stop("reductionMsg");
         writeln("ANSWER >>> ",repMsg," <<<");
     }
 
