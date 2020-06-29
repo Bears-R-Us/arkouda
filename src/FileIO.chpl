@@ -38,7 +38,7 @@ module FileIO {
             }
         }
 
-        return returnLine ;
+        return returnLine.strip();
     }
 
     proc delimitedFileToMap(filePath : string, delimiter : string=',') : map {

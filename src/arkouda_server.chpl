@@ -38,8 +38,8 @@ proc main() {
 
     // configure token authentication and server startup message accordingly
     if authenticate {
-        serverToken = getArkoudaToken('%s%s%s'.format(here.cwd(), pathSep, 
-                                                             '.arkouda/tokens.txt'));
+        serverToken = getArkoudaToken('%s%s%s%s%s'.format(here.cwd(), pathSep, 
+                                                             '.arkouda', pathSep, 'tokens.txt'));
         serverMessage = "server listening on %s:%t with token %s".format(serverHostname, 
                                         ServerPort, serverToken);
     } else {
