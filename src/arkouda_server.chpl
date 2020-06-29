@@ -7,7 +7,9 @@ use ServerConfig;
 use Time only;
 use ZMQ only;
 use Memory;
-
+use FileSystem;
+use IO;
+use Path;
 use MultiTypeSymbolTable;
 use MultiTypeSymEntry;
 use MsgProcessing;
@@ -27,8 +29,8 @@ proc main() {
 
     var st = new owned SymTab();
     var shutdownServer = false;
-    var serverToken = '';
-    var serverMessage = '';
+    var serverToken : string;
+    var serverMessage : string;
 
     // create and connect ZMQ socket
     var context: ZMQ.Context;
@@ -36,7 +38,8 @@ proc main() {
 
     // configure token authentication and server startup message accordingly
     if authenticate {
-        serverToken = generateToken(32);
+        serverToken = getArkoudaToken('%s%s%s'.format(here.cwd(), pathSep, 
+                                                             '.arkouda/tokens.txt'));
         serverMessage = "server listening on %s:%t with token %s".format(serverHostname, 
                                         ServerPort, serverToken);
     } else {
