@@ -29,6 +29,7 @@ module MsgProcessing
     public use SegmentedMsg;
     public use JoinEqWithDTMsg;
     public use RegistrationMsg;
+    public use ArraySetopsMsg;
     
     /* 
     Parse, execute, and respond to a create message 

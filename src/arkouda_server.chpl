@@ -122,6 +122,10 @@ proc main() {
                     var repMsg: string;
                     select cmd
                     {
+                        when "intersect1d"       {repMsg = intersect1dMsg(reqMsg, st);}
+                        when "setdiff1d"         {repMsg = setdiff1dMsg(reqMsg, st);}
+                        when "setxor1d"          {repMsg = setxor1dMsg(reqMsg, st);}
+                        when "union1d"           {repMsg = union1dMsg(reqMsg, st);}
                         when "segmentLengths"    {repMsg = segmentLengthsMsg(reqMsg, st);}
                         when "segmentedHash"     {repMsg = segmentedHashMsg(reqMsg, st);}
                         when "segmentedEfunc"    {repMsg = segmentedEfuncMsg(reqMsg, st);}
