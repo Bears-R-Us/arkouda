@@ -16,7 +16,7 @@ def generate_token(length : int=32) -> str:
     :return: hexidecimal string
     :rtype: str
     """
-    return secrets.token_hex(length)
+    return secrets.token_hex(length//2)
 
 def get_home_directory() -> str:
     """
@@ -28,7 +28,7 @@ def get_home_directory() -> str:
     """
     return expanduser("~")
 
-def get_arkouda_directory() -> str:
+def get_arkouda_client_directory() -> str:
     """
     A platform-independent means of finding path to
     the current user's .arkouda directory where artifacts
@@ -42,7 +42,7 @@ def get_arkouda_directory() -> str:
     :return: string corresponding to .arkouda directory path
     :rtype: str
     """
-    arkouda_parent_dir = os.getenv('ARKOUDA_HOME')
+    arkouda_parent_dir = os.getenv('ARKOUDA_CLIENT_DIRECTORY')
     if not arkouda_parent_dir:
         arkouda_parent_dir = get_home_directory()
     return io_util.get_directory('{}{}.arkouda'.\

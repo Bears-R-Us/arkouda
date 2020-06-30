@@ -135,7 +135,7 @@ def _set_access_token(username : str, access_token : str,
     :param str connect_string: the arkouda_server host:port connect string
     :return: the retrieved or supplied access_token, defaults to None
     """
-    path = '{}/tokens.txt'.format(security.get_arkouda_directory())
+    path = '{}/tokens.txt'.format(security.get_arkouda_client_directory())
     tokens = io_util.delimited_file_to_dict(path)
 
     if access_token and access_token not in {'','None'}:
@@ -172,16 +172,6 @@ def _start_tunnel(addr : str, tunnel_server : str) -> None:
         ssh.tunnel.open_tunnel(**kwargs)
     except Exception as e:
         raise ConnectionError(e)
-
-def _get_arkouda_directory() -> str:
-    """
-    Retrieves the .arkouda directory from the user's home directory and 
-    creates it if None.
-
-    :return: string path to .arkouda directory
-    :rtype: str
-    """
-    io_util.get_directory('{}/.arkouda'.format(security.get_arkouda_directory()))
 
 def _send_string_message(message : str, recv_bytes=False) -> str:
     """

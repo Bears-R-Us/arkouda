@@ -1,4 +1,4 @@
-import unittest, os, sys
+import unittest, os, sys, shutil
 from pathlib import Path
 from context import arkouda as ak
 from arkouda import io_util
@@ -36,3 +36,9 @@ class IOUtilTest(ArkoudaTest):
         self.assertEqual('9ty4h6olr4', values['localhost:5555'])
         self.assertEqual('6ky3i91l17', values['127.0.0.1:5556'])
         Path.unlink(Path('/tmp/test/testfile.txt'))
+
+    @classmethod
+    def tearDownClass(cls):
+        super(IOUtilTest, cls).tearDownClass()
+        #os.rmdir('/tmp/test')
+        shutil.rmtree(Path('/tmp/test'))

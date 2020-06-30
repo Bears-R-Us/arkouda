@@ -6,7 +6,7 @@ module Security {
     use FileSystem;
     use Path;
 
-    proc generateToken(len) {
+    proc generateToken(len: int=32) : string {
         var alphanum = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
             "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
             "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
@@ -44,7 +44,7 @@ module Security {
    }
 
    proc setArkoudaToken(tokensPath : string, len : int=32) : string throws {
-       var token = generateToken(32);
+       var token = generateToken(len);
        appendFile(filePath=tokensPath, line=token);
        return token;
    }
