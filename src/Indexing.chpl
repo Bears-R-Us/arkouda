@@ -26,12 +26,12 @@ module Indexing {
     }
 
     // helper to get an array without the first element
-    proc tail(a: [?aD] ?t) {
+    proc sliceTail(a: [?aD] ?t) {
       return sliceIndex(a, 1, a.size, 1);
     }
 
     // helper to get an array without the last element
-    proc sliceEnd(a: [?aD] ?t) {
+    proc sliceHead(a: [?aD] ?t) {
       return sliceIndex(a, 0, a.size - 1, 1);
     }
 

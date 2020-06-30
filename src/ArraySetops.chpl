@@ -44,8 +44,8 @@ module ArraySetops
     proc intersect1dHelper(a: [] ?t, b: [] t) {
       var aux = radixSortLSD_keys(concatset(a,b));
 
-      var head = sliceEnd(aux);
-      var mask = head == tail(aux);
+      var head = sliceHead(aux);
+      var mask = head == sliceTail(aux);
       
       var int1d = boolIndexer(head, mask);
 
@@ -70,7 +70,7 @@ module ArraySetops
     proc setxor1dHelper(a: [] ?t, b: [] t) {
       var aux = radixSortLSD_keys(concatset(a,b));
 
-      var sliceComp = tail(aux) != sliceEnd(aux);
+      var sliceComp = sliceTail(aux) != sliceHead(aux);
       
       // Concatenate a `true` onto each end of the array
       var flag = makeDistArray((sliceComp.size + 2), bool);
@@ -79,7 +79,7 @@ module ArraySetops
       flag[{1..#(sliceComp.size)}] = sliceComp;
       flag[sliceComp.size + 1] = true;
 
-      var mask = tail(flag) & sliceEnd(flag);
+      var mask = sliceTail(flag) & sliceHead(flag);
 
       var ret = boolIndexer(aux, mask);
 
