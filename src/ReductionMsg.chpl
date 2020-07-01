@@ -627,9 +627,20 @@ module ReductionMsg
       if (isFloatType(t) && skipNan) {
         var arrCopy = makeDistArray(values.size, real);
         var nancounts = makeDistArray(segments.size, int);
-        var j: int;
-        forall i in 0..#values.size with (+ reduce nancounts, + reduce j) {
-          if(j != segments.size - 1 && i >= segments[j+1]) then j+=1;
+
+        forall i in 0..#values.size with (+ reduce nancounts, var j = -1) {
+          if j == -1 {
+            var jSet = false;
+            for a in 0..#(segments.size - 1) {
+              if !jSet && segments[a+1] >= i {
+                j = a;
+                jSet = true;
+              }
+            }
+          }
+          
+          if(j < segments.size - 1 && i >= segments[j+1]) then j+=1;
+          else if (i >= segments[segments.size-1]) then j=segments.size-1;
           if isnan(values[i]) {
             arrCopy[i] = 0.0;
             nancounts[j] += 1;
