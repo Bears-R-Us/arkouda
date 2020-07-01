@@ -628,13 +628,12 @@ module ReductionMsg
         var arrCopy = makeDistArray(values.size, real);
         var nancounts = makeDistArray(segments.size, int);
 
-        forall i in 0..#values.size with (+ reduce nancounts, var j = -1) {
+        forall i in values.domain with (+ reduce nancounts, var j = -1) {
           if j == -1 {
-            var jSet = false;
             for a in 0..#(segments.size - 1) {
-              if !jSet && segments[a+1] >= i {
+              if segments[a+1] >= i {
                 j = a;
-                jSet = true;
+                break;
               }
             }
           }
