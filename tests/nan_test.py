@@ -1,68 +1,117 @@
-from context import arkouda as ak
 import numpy as np
 import pandas as pd
+from context import arkouda as ak
 from base_test import ArkoudaTest
+import unittest
+
+SIZE = 10000
+GROUPS = 64
+verbose = True
+
+OPS = frozenset(['mean'])
+
+def groupby_to_arrays(df : pd.DataFrame, kname, vname, op):
+    g = df.groupby(kname)[vname]
+    agg = g.aggregate(op.replace('arg', 'idx'))
+    keys = agg.index.values
+    return keys, agg.values
+
+def make_arrays():
+    keys = np.random.randint(0, GROUPS, SIZE)
+    f = np.random.randn(SIZE)
+    #f.fill(5)
+
+    for i in range(SIZE):
+        if np.random.rand() < .2:
+            f[i] = np.nan
+    d = {'keys':keys, 'float64':f}
+
+    return d
+
+def compare_keys(pdkeys, akkeys, pdvals, akvals) -> int:
+    '''
+    Compares the numpy and arkouda arrays via the numpy.allclose method with the
+    default relative and absolute tolerances, returning 0 if the arrays are similar
+    element-wise within the tolerances, 1 if they are dissimilar.element
+    
+    :return: 0 (identical) or 1 (dissimilar)
+    :rtype: int
+    '''
+    akkeys = akkeys.to_ndarray()
+
+    if not np.allclose(pdkeys, akkeys):
+        print("Different keys")
+        return 1
+
+    if not np.allclose(pdvals, akvals):
+        print(f"Different values (abs diff = {np.abs(pdvals - akvals).sum()})")
+        return 1
+    return 0
+
+
+def run_test(verbose=True):
+    '''
+    The run_test method enables execution of ak.GroupBy and ak.GroupBy.Reductions 
+    for mean, min, max, and sum
+    on a randomized set of arrays including nan values. 
+
+    :return: 
+    '''
+
+    d = make_arrays()
+    df = pd.DataFrame(d)
+    akdf = {k:ak.array(v) for k, v in d.items()}
+
+    akg = ak.GroupBy(akdf['keys'])
+    keyname = 'keys'
+
+    tests = 0
+    failures = 0
+    not_impl = 0
+
+    tests += 1
+    pdkeys, pdvals = groupby_to_arrays(df, keyname, 'float64', 'count')
+    akkeys, akvals = akg.count()
+    akvals = akvals.to_ndarray()
+
+    print(akvals)
+    print(pdvals)
+    
+    for op in OPS:
+        tests += 1
+
+        do_check = True
+        try:
+            pdkeys, pdvals = groupby_to_arrays(df, keyname, 'float64', op)
+        except Exception as E:
+            if verbose: print("Pandas does not implement")
+            do_check = False
+        try:
+            akkeys, akvals = akg.aggregate(akdf['float64'], op, True)
+            akvals = akvals.to_ndarray()
+        except RuntimeError as E:
+            if verbose: print("Arkouda error: ", E)
+            not_impl += 1
+            do_check = False
+            continue
+        if not do_check:
+            continue
+
+        print(akvals)
+        for i in range(pdvals.size):
+            if np.isnan(pdvals[i]):
+                pdvals[i] = 0.0 # clear out any nans to match ak implementation
+        print(pdvals)
+        failures += compare_keys(pdkeys, akkeys, pdvals, akvals)
+
+    return failures
 
 class NanTest(ArkoudaTest):
-
-    def setUp(self):
-        ArkoudaTest.setUp(self)
-        SIZE = 5000
-        self.a = ak.randint(0, 2*SIZE, SIZE, ak.float64)
-        self.group = ak.GroupBy(ak.randint(0,1,SIZE))
-        self.a[0] = np.nan
+    def test_nan(self):
+        '''
+        Executes run_test and asserts whether there are any errors
         
-    def testGroupMean(self): 
-        group_mean = (self.group).mean(self.a,True)
-
-        # calculate real mean excluding nan
-        sum = 0
-        for i in range(1,self.a.size):
-            sum += self.a[i]
-        mean = sum/(self.a.size-1)
-
-        print(mean)
-        print(group_mean[1][0])
-        
-        self.assertTrue(abs(group_mean[1][0] -  mean) <= self.a.size * .0001)
-
-    def testGroupMin(self):
-        group_min = (self.group).min(self.a,True)
-
-        minVal = self.a.size*3 #bigger than possible value
-        # calculate the min
-        for i in range(1,self.a.size):
-            if self.a[i] < minVal:
-                minVal = self.a[i]
-
-        print(minVal)
-        print(group_min[1][0])
-
-        self.assertTrue(group_min[1][0] == minVal)
-
-    def testGroupSum(self):
-        group_sum = (self.group).sum(self.a,True)
-
-        # calculate the sum exlcuding nan
-        sum = 0
-        for i in range(1,self.a.size):
-            sum += self.a[i]
-
-        print(sum)
-        print(group_sum[1][0])
-
-        self.assertTrue(abs(group_sum[1][0] -  sum) <= self.a.size * .0001)
-        
-    def testGroupMax(self):
-        group_max = (self.group).max(self.a,True)
-
-        maxVal = -1 # smaller than possible value
-        # calculate the min
-        for i in range(1,self.a.size):
-            if self.a[i] > maxVal:
-                maxVal = self.a[i]
-
-        print(maxVal)
-        print(group_max[1][0])
-                
-        self.assertTrue(group_max[1][0] == maxVal)
+        :return: None
+        :raise: AssertionError if there are any errors encountered in run_test with nan values
+        '''
+        self.assertEqual(0, run_test())
