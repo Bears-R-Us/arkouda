@@ -2,6 +2,8 @@ import zmq, json, os, secrets
 from typing import Mapping, Optional, Tuple, Union
 import warnings, pkg_resources
 from arkouda import security, io_util
+from multipledispatch import dispatch
+from functools import singledispatch 
 __all__ = ["verbose", "pdarrayIterThresh", "maxTransferBytes",
            "AllSymbols", "set_defaults", "connect", "disconnect",
            "shutdown", "get_config", "get_mem_used", "__version__",
@@ -49,30 +51,45 @@ def set_defaults():
     maxTransferBytes = maxTransferBytesDefVal
 
 # create context, request end of socket, and connect to it
-def connect(server : str="localhost", port : int=5555, timeout : int=0, 
-                                            access_token : str=None) -> None:
+def connect(port : int=5555, server : str="localhost", timeout : int=0, 
+                           access_token : str=None, connect_url=None) -> None:
     """
-    Connect to a running arkouda server. Upon success, prints the connected 
-    address, as seen by the server. 
-    Note: if connect is called with an existing connection, the socket 
-    will be re-initialized.
-
-    :param str server: arkourda server hostname or ip address (must be visible 
-           to the current machine). Defaults to `localhost`.
-    :param int port: arkouda serer port. Defaults to 5555.
-    :param int timeout: timeout in seconds for client send and receive 
-           operations. Defaults to 0 seconds, which indicates no timeout
-    :param str access_token: the token used to connect to an existing socket 
-           to enable access to an arkouda server where authentication is
-           enabled. Defaults to None.
-    :return: None
-    :raise: ConnectionError if an error is raised connecting to the arkouda
-            server. Note: the ConnectionError wraps zmq-specific errors.
+    Connect to a running arkouda server.
+    Parameters
+    ----------
+    server : str, optional
+        The hostname of the server (must be visible to the current
+        machine). Defaults to `localhost`.
+    port : int, optional
+        The port of the server. Defaults to 5555.
+    timeout : int, optional
+        The timeout in seconds for client send and receive operations.
+        Defaults to 0 seconds, whicn is interpreted as no timeout.
+    access_token : str, optional
+        The token used to connect to an existing socket to enable access to 
+        an arkouda server where authentication is enabled. Defaults to None.
+    connect_url : str, optional
+        The complete url in the format of tcp://server:port?token=<token_value>
+        where the token is optional
+    Returns
+    -------
+    None
+    Notes
+    -----
+    On success, prints the connected address, as seen by the server. If called
+    with an existing connection, the socket will be re-initialized.
     """
     global context, socket, pspStr, connected, verbose, username, token
 
     if verbose: print("ZMQ version: {}".format(zmq.zmq_version()))
 
+    if connect_url:
+        url_values = _parse_url(connect_url)
+        host = url_values[0]
+        port = url_values[1]
+        if len(url_values) == 3:
+            access_token=url_values[2]
+    
     # "protocol://server:port"
     pspStr = "tcp://{}:{}".format(server,port)
     
@@ -117,6 +134,36 @@ def connect(server : str="localhost", port : int=5555, timeout : int=0,
                       'this may cause some commands to fail or behave ' +
                       'incorrectly! Updating arkouda is strongly recommended.').\
                       format(__version__, conf['arkoudaVersion']), RuntimeWarning)
+
+def _parse_url(url : str) -> Tuple[str]:
+    """
+    Parses the url in the following format if authentication enabled:
+
+    tcp://<hostname/url>:<port>?token=<token>
+
+    If authentication is not enabled, the url is expected to be in the format:
+
+    tcp://<hostname/url>:<port>
+
+    :return: tuple containing host, port, and token, the latter of which
+             can be None if authentication is not enabled
+    :rtype: Tuple[str,int,Optional[str]]
+    :raise: ValueError if the url does not match one of the above formats
+    """
+    no_protocol = url.split('tcp://')[1]
+    host_stub = no_protocol.split(':')
+
+    host = host_stub[0]
+    port_stub = host_stub[1]
+    
+    if '?token=' in port_stub:
+        port_token_stub = port_stub.split('?token=')
+        port = int(port_token_stub[0])
+        param_token = port_token_stub[1]
+    else:
+        port = int(port_stub)
+        param_token = None
+    return (host,port,param_token)
 
 def _set_access_token(username : str, access_token : str, 
                                           connect_string : str) -> Optional[str]:
@@ -204,7 +251,7 @@ def _send_string_message(message : str, recv_bytes=False) -> str:
 def _send_binary_message(message : str, recv_bytes=False) -> str:
     """
     Prepends the binary message with Arkouda infrastructure elements
-    including username and authentication data and then sends the
+    including username and authentication token and then sends the
     resulting, composite string to the Arkouda server.
 
     :param str message: the message including arkouda command to be sent
@@ -293,17 +340,16 @@ def generic_msg(message, send_bytes=False, recv_bytes=False) -> Union[str,bytes]
 # query the server to get configuration
 def get_config() -> Mapping[str, Union[str, int, float]]:
     """
-    Returns a dict object encapsulating runtime information about the server
-    including the following:
-        - serverHostname
-        - serverPort
-        - numLocales
-        - numPUs (number of processor units per locale)
-        - maxTaskPar (maximum number of tasks per locale)
-        - physicalMemory
-
-    :return: dict containing server runtime information
-    :rtype: Mapping[str, Union[str, int, float]]
+    Get runtime information about the server.
+    Returns
+    -------
+    dict
+        serverHostname
+        serverPort
+        numLocales
+        numPUs (number of processor units per locale)
+        maxTaskPar (maximum number of tasks per locale)
+        physicalMemory
     """
     return json.loads(generic_msg("getconfig"))
 
