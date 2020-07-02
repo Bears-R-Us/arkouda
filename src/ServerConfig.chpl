@@ -52,11 +52,6 @@ module ServerConfig
     }
 
     /*
-    Location for file containing Arkouda authentication tokens
-    */
-    config const arkoudaToken : string = getEnv("ARKOUDA_TOKEN_FILE", "/tmp/arkouda_tokens");
-
-    /*
     Indicates whether token authentication is being used for Akrouda server requests
     */
     config const authenticate : bool = false;

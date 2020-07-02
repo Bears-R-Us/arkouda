@@ -2,8 +2,7 @@ import zmq, json, os, secrets
 from typing import Mapping, Optional, Tuple, Union
 import warnings, pkg_resources
 from arkouda import security, io_util
-from multipledispatch import dispatch
-from functools import singledispatch 
+
 __all__ = ["verbose", "pdarrayIterThresh", "maxTransferBytes",
            "AllSymbols", "set_defaults", "connect", "disconnect",
            "shutdown", "get_config", "get_mem_used", "__version__",
@@ -74,6 +73,7 @@ def connect(port : int=5555, server : str="localhost", timeout : int=0,
     Returns
     -------
     None
+
     Notes
     -----
     On success, prints the connected address, as seen by the server. If called
@@ -148,22 +148,35 @@ def _parse_url(url : str) -> Tuple[str]:
     :return: tuple containing host, port, and token, the latter of which
              can be None if authentication is not enabled
     :rtype: Tuple[str,int,Optional[str]]
-    :raise: ValueError if the url does not match one of the above formats
+    :raise: ValueError if the url does not match one of the above formats,
+            if the port is not an integer, or if there's a general string 
+            parse error raised
     """
-    no_protocol = url.split('tcp://')[1]
-    host_stub = no_protocol.split(':')
+    try:
+        # split on tcp:// and if missing or malformmed, raise ValueError
+        no_protocol_stub = url.split('tcp://')
+        if len(no_protocol_stub) < 2:
+            raise ValueError(('url must be in form tcp://<hostname/url>:<port>' +
+                  ' or tcp://<hostname/url>:<port>?token=<token>'))
 
-    host = host_stub[0]
-    port_stub = host_stub[1]
-    
-    if '?token=' in port_stub:
-        port_token_stub = port_stub.split('?token=')
-        port = int(port_token_stub[0])
-        param_token = port_token_stub[1]
-    else:
-        port = int(port_stub)
-        param_token = None
-    return (host,port,param_token)
+        # split on : to separate host from port or port?token=<token>
+        host_stub = no_protocol_stub[1].split(':')
+        if len(host_stub) < 2:
+            raise ValueError(('url must be in form tcp://<hostname/url>:<port>' +
+                  ' or tcp://<hostname/url>:<port>?token=<token>'))
+        host = host_stub[0]
+        port_stub = host_stub[1]
+   
+        if '?token=' in port_stub:
+            port_token_stub = port_stub.split('?token=')
+            port = int(port_token_stub[0])
+            param_token = port_token_stub[1]
+        else:
+            port = int(port_stub)
+            param_token = None
+        return (host,port,param_token)
+    except Exception as e:
+        raise ValueError(e)
 
 def _set_access_token(username : str, access_token : str, 
                                           connect_string : str) -> Optional[str]:

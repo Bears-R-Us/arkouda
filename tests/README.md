@@ -25,19 +25,23 @@ testpaths =
     tests/compare_test.py
     tests/dtypes_tests.py
     tests/groupby_test.py
+    tests/io_test.py
+    tests/io_util_test.py
     tests/join_test.py
     tests/operator_tests.py
+    tests/security_test.py
     tests/setops_test.py
     tests/string_test.py
     tests/where_test.py
 norecursedirs = .git dist build *egg* tests/deprecated/*
 python_functions = test*
 env =
-    ARKOUDA_SERVER_HOST=localhost
-    ARKOUDA_SERVER_PORT=5555
-    ARKOUDA_FULL_STACK_TEST=False
-    ARKOUDA_VERBOSE=False
-    ARKOUDA_CLIENT_TIMEOUT=10
+    D:ARKOUDA_SERVER_HOST=localhost
+    D:ARKOUDA_SERVER_PORT=5555
+    D:ARKOUDA_FULL_STACK_TEST=True
+    D:ARKOUDA_NUMLOCALES=2
+    D:ARKOUDA_VERBOSE=True
+    D:ARKOUDA_CLIENT_TIMEOUT=0
 ```
 * testpaths: shows the paths to all test files. For the time-being, the arkouda unit tests to be executed are 
 specified on a per-file basis, but pytest can also support directory-level configuration.

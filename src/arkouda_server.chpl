@@ -90,7 +90,7 @@ proc main() {
         return (strings[0],strings[1],strings[2]);
     }
 
-    proc shutdown(timeElapsed) {
+    proc shutdown() {
         shutdownServer = true;
         repCount += 1;
         socket.send("shutdown server (%i req)".format(repCount));
@@ -183,7 +183,9 @@ proc main() {
                     var repMsg: string;
 
                     if cmd == "shutdown" {
-                        shutdown(s0);
+                        shutdown();
+                        if (logging) {writeln("<<< shutdown took %.17r sec".format(t1.elapsed() - s0)); 
+                                                                              try! stdout.flush();}
                         break;
                     }
 
@@ -276,24 +278,22 @@ proc main() {
                     }
                     sendRepMsg(repMsg);
                 }
-                //if (logging) {writeln("<<< %s took %.17r sec".format(cmd, t1.elapsed() - s0)); try! stdout.flush();}
-                //if (logging && memTrack) {writeln("bytes of memory used after command = ",memoryUsed():uint * numLocales:uint); try! stdout.flush();}
             }
+
+            // log the fact the request message has been handled and reply message has been sent
             if (logging) {writeln("<<< %s took %.17r sec".format(cmd, t1.elapsed() - s0)); try! stdout.flush();}
-            if (logging && memTrack) {writeln("bytes of memory used after command = ",memoryUsed():uint * numLocales:uint); try! stdout.flush();}
+            if (logging && memTrack) {writeln("bytes of memory used after command = ", 
+                                                               memoryUsed():uint * numLocales:uint); try! stdout.flush();}
         } catch (e: ErrorWithMsg) {
             sendRepMsg(e.msg);
+            if (logging) {writeln("<<< %s resulted in error %s in  %.17r sec".format(cmdRaw.decode(decodePolicy.replace), 
+                                                                              e.msg, t1.elapsed() - s0)); try! stdout.flush();}
         } catch {
             sendRepMsg(unknownError(""));
+            if (logging) {writeln("<<< %s resulted in unknownError in %.17r sec".format(cmdRaw.decode(decodePolicy.replace), 
+                                                                                     t1.elapsed() - s0)); try! stdout.flush();}
         }
         
-        // We must have sent a message back by now
-
-        if (logging && memTrack) {writeln("bytes of memory used after command = ",memoryUsed():uint * numLocales:uint); try! stdout.flush();}
-
-        // end timer for command processing
-        //if (logging) {writeln("<<< %s took %.17r sec".format(cmdRaw.decode(decodePolicy.replace), t1.elapsed() - s0)); try! stdout.flush();}
-        //  if (logging) {writeln("<<< %s took %.17r sec".format(cmd, t1.elapsed() - s0)); try! stdout.flush();}
     }
     t1.stop();
     deleteServerConnectionInfo();
