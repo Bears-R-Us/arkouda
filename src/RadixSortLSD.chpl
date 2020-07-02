@@ -355,6 +355,10 @@ module RadixSortLSD
         }//for rshift
         return k1;
     }//proc radixSortLSD_keys
-    
+
+    proc radixSortLSD_memEst(size: int, itemsize: int) {
+        return ((4 + 1) * size * itemsize)
+                     + (2 * here.maxTaskPar * numLocales * 2**16 * 8);
+    }
 }
 
