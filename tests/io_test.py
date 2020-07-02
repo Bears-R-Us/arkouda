@@ -1,5 +1,4 @@
 import re, os, shutil
-from path import Path
 import numpy as np
 import h5py
 from typing import List, Mapping, Union
@@ -248,5 +247,4 @@ class IOTest(ArkoudaTest):
     @classmethod
     def tearDownClass(cls):
         super(IOTest, cls).tearDownClass()
-        #os.rmdir('/tmp/test')
-        shutil.rmtree(Path('/tmp/test'))
+        shutil.rmtree('/tmp/test')
