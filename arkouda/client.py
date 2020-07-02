@@ -50,7 +50,7 @@ def set_defaults():
     maxTransferBytes = maxTransferBytesDefVal
 
 # create context, request end of socket, and connect to it
-def connect(port : int=5555, server : str="localhost", timeout : int=0, 
+def connect(server : str="localhost", port : int=5555, timeout : int=0, 
                            access_token : str=None, connect_url=None) -> None:
     """
     Connect to a running arkouda server.
