@@ -212,6 +212,24 @@ There are two unit test suites for Arkouda, one for Python and one for Chapel. A
 test harness leverages the [pytest](https://docs.pytest.org/en/latest/) and [pytest-env](https://pypi.org/project/pytest-env/) 
 libraries, whereas the Chapel test harness does not require any external librares.
 
+The default Arkouda test executes the Python test harness and is invoked as follows:
+
+```bash
+make test
+```
+
+The Chapel unit tests can be executed as follows:
+
+```bash
+make test-chapel
+```
+
+Both the Python and Chapel unit tests are execuuted as follows:
+
+```bash
+make test-all
+```
+
 For more details regarding Arkouda testing, please consult the Python test [README](tests/README.md) and Chapel test
 [README](test/README.md), respectively.
 
