@@ -21,10 +21,10 @@ module RegistrationMsg
 
     :returns: (string) response message
     */
-    proc registerMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc registerMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         // split request into fields
-        var (cmd, name, userDefinedName) = reqMsg.splitMsgToTuple(3);
+        var (name, userDefinedName) = payload.decode().splitMsgToTuple(2);
 
         // if verbose print action
         if v {try! writeln("%s %s %s".format(cmd,name,userDefinedName)); try! stdout.flush();}
@@ -47,10 +47,10 @@ module RegistrationMsg
 
     :returns: (string) response message
     */
-    proc attachMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc attachMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         // split request into fields
-        var (cmd, name) = reqMsg.splitMsgToTuple(2);
+        var (name) = payload.decode().splitMsgToTuple(1);
 
         // if verbose print action
         if v {try! writeln("%s %s".format(cmd,name)); try! stdout.flush();}
@@ -73,10 +73,10 @@ module RegistrationMsg
 
     :returns: (string) response message
     */
-    proc unregisterMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc unregisterMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         // split request into fields
-        var (cmd, name) = reqMsg.splitMsgToTuple(2);
+        var (name) = payload.decode().splitMsgToTuple(1);
 
         // if verbose print action
         if v {try! writeln("%s %s".format(cmd,name)); try! stdout.flush();}

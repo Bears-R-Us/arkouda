@@ -22,11 +22,11 @@ module ReductionMsg
     // these functions take an array and produce a scalar
     // parse and respond to reduction message
     // scalar = reductionop(vector)
-    proc reductionMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc reductionMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (cmd, reductionop, name) = reqMsg.splitMsgToTuple(3);
+        var (reductionop, name) = payload.decode().splitMsgToTuple(2);
         if v {try! writeln("%s %s %s".format(cmd,reductionop,name));try! stdout.flush();}
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
@@ -191,11 +191,11 @@ module ReductionMsg
         }
     }
 
-    proc countReductionMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc countReductionMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
       // reqMsg: segmentedReduction values segments operator
       // 'segments_name' describes the segment offsets
-      var (cmd, segments_name, sizeStr) = reqMsg.splitMsgToTuple(3);
+      var (segments_name, sizeStr) = payload.decode().splitMsgToTuple(2);
       var size = try! sizeStr:int;
       var rname = st.nextName();
       if v {try! writeln("%s %s %s".format(cmd,segments_name, size));try! stdout.flush();}
@@ -223,13 +223,13 @@ module ReductionMsg
       return counts;
     }
     
-    proc countLocalRdxMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc countLocalRdxMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
       // reqMsg: countLocalRdx segments
       // segments.size = numLocales * numKeys
       // 'segments_name' describes the segment offsets
       // 'size[Str]' is the size of the original keys array
-      var (cmd, segments_name, sizeStr) = reqMsg.splitMsgToTuple(3);
+      var (segments_name, sizeStr) = payload.decode().splitMsgToTuple(2);
       var size = try! sizeStr:int; // size of original keys array
       var rname = st.nextName();
       if v {try! writeln("%s %s %s".format(cmd,segments_name, size));try! stdout.flush();}
@@ -258,13 +258,13 @@ module ReductionMsg
     }
 
 
-    proc segmentedReductionMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc segmentedReductionMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
       // reqMsg: segmentedReduction values segments operator
       // 'values_name' is the segmented array of values to be reduced
       // 'segments_name' is the sement offsets
       // 'operator' is the reduction operator
-      var (cmd, values_name, segments_name, operator) = reqMsg.splitMsgToTuple(4);
+      var (values_name, segments_name, operator) = payload.decode().splitMsgToTuple(3);
       var rname = st.nextName();
       if v {try! writeln("%s %s %s %s".format(cmd,values_name,segments_name,operator));try! stdout.flush();}
       var gVal: borrowed GenSymEntry = st.lookup(values_name);
@@ -371,13 +371,13 @@ module ReductionMsg
       return try! "created " + st.attrib(rname);
     }
 
-    proc segmentedLocalRdxMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc segmentedLocalRdxMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
       // reqMsg: segmentedReduction keys values segments operator
       // 'values_name' is the segmented array of values to be reduced
       // 'segments_name' is the segmented offsets
       // 'operator' is the reduction operator
-      var (cmd, keys_name, values_name, segments_name, operator) = reqMsg.splitMsgToTuple(5);
+      var (keys_name, values_name, segments_name, operator) = payload.decode().splitMsgToTuple(4);
       var rname = st.nextName();
       if v {try! writeln("%s %s %s %s %s".format(cmd,keys_name,values_name,segments_name,operator));try! stdout.flush();}
 
