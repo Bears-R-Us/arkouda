@@ -47,6 +47,5 @@ module Security {
        var token = generateToken(len);
        appendFile(filePath=tokensPath, line=token);
        return token;
-   }
-       
+   }       
 }

@@ -97,7 +97,7 @@ if __name__ == "__main__":
         raise ValueError("Dtype must be {}, not {}".format('/'.join(TYPES), args.dtype))
     args.alpha = getattr(ak, args.dtype)()
     ak.verbose = False
-    ak.connect(server=args.hostname, port=args.port)
+    ak.connect(args.hostname, args.port)
 
     if args.correctness_only:
         for dtype in TYPES:

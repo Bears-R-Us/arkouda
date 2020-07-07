@@ -15,6 +15,7 @@ module GenSymIO {
   proc arrayMsg(cmd: string, payload: bytes, st: borrowed SymTab): string {
     var repMsg: string;
     var (dtypeBytes, sizeBytes, data) = payload.splitMsgToTuple(3);
+    writeln("in arrayMsg");
     var dtype = str2dtype(try! dtypeBytes.decode());
     var size = try! sizeBytes:int;
     var tmpf:file;
@@ -59,17 +60,21 @@ module GenSymIO {
     } catch {
       return "Error: Could not read from memory buffer into SymEntry";
     }
+    try! writeln("at end of arrayMsg function");
     return try! "created " + st.attrib(rname);
   }
 
   proc tondarrayMsg(cmd: string, payload: bytes, st: borrowed SymTab): bytes throws {
     var arrayBytes: bytes;
-    var (entryStr) = payload.decode().splitMsgToTuple(1);
+    var entryStr = payload.decode();
+    writeln("entryStr: %s".format(entryStr));
     var entry = st.lookup(entryStr);
     var tmpf: file;
     try {
+      writeln("writing to temp file");
       tmpf = openmem();
       var tmpw = tmpf.writer(kind=iobig);
+      writeln("wrote tmpw file");
       if entry.dtype == DType.Int64 {
         tmpw.write(toSymEntry(entry, int).a);
       } else if entry.dtype == DType.Float64 {
@@ -82,15 +87,18 @@ module GenSymIO {
         return try! b"Error: Unhandled dtype %s".format(entry.dtype);
       }
       tmpw.close();
+      try! writeln("wrote to tmpw file");
     } catch {
       try! tmpf.close();
       return b"Error: Unable to write SymEntry to memory buffer";
     }
     try {
+      try! writeln("reading from tmpr");
       var tmpr = tmpf.reader(kind=iobig, start=0);
       tmpr.readbytes(arrayBytes);
       tmpr.close();
       tmpf.close();
+      try! writeln("read from and closed tmpf");
     } catch {
       return b"Error: Unable to copy array from memory buffer to string";
     }
@@ -102,6 +110,7 @@ module GenSymIO {
 
       But I think the main problem is how to separate the length from the data
     */
+    try! writeln("at end of tondarray function");
     return arrayBytes;
   }
 

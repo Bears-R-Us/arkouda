@@ -117,9 +117,10 @@ proc writeSegString(msg: string, ss: SegString) {
 
 proc nameForRandintMsg(len: int, dtype:DType, aMin: int, aMax: int, st: borrowed SymTab) {
   use RandMsg;
-  const reqMsg = try! "randint %i %s %i %i".format(len, dtype2str(dtype), aMin, aMax);
-  writeReq(reqMsg);
-  const repMsg = randintMsg(reqMsg, st);
+  const payloadStr = try! "%i %s %i %i".format(len, dtype2str(dtype), aMin, aMax);
+  const payload = try! payloadStr.encode();
+  writeReq(payloadStr);
+  const repMsg = randintMsg(cmd='randint', payload=payload, st);
   writeRep(repMsg);
   return parseName(repMsg);
 }
