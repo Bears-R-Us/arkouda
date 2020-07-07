@@ -625,28 +625,26 @@ module ReductionMsg
       var sums;
       var counts;
       if (isFloatType(t) && skipNan) {
-        var arrCopy = makeDistArray(values.size, real);
-        var nancounts = makeDistArray(segments.size, int);
-
-        forall i in values.domain with (+ reduce nancounts, var j = -1) {
-          if j == -1 {
-            for a in 0..#(segments.size - 1) {
-              if segments[a+1] >= i {
-                j = a;
-                break;
-              }
-            }
+        // count cumulative nans over all values
+        var cumnans = + scan isnan(values); // assuming isnan is promotable
+        // find cumulative nans at segment boundaries
+        var segnans: [segments.domain] int;
+        forall si in segments.domain {
+          if si == segments.domain.high {
+              segnans[si] = cumnans[cumnans.domain.high];
+          } else {
+              segnans[si] = cumnans[segments[si+1]-1];
           }
-          
-          if(j < segments.size - 1 && i >= segments[j+1]) then j+=1;
-          else if (i >= segments[segments.size-1]) then j=segments.size-1;
-          if isnan(values[i]) {
-            arrCopy[i] = 0.0;
-            nancounts[j] += 1;
-          }
-          else
-            arrCopy[i] = values[i];
         }
+        // take diffs of adjacent segments to find nan count in each segment
+        var nancounts: [segments.domain] int;
+        nancounts[0] = segnans[0];
+        nancounts[1..(segnans.domain.size-1)] = segnans[segnans.domain.interior(segnans.domain.size-1)] - segnans[segnans.domain.interior(-(segnans.domain.size-1))];
+
+        writeln("segnans: ", segnans);
+        writeln("nancounts: ", nancounts);
+        
+        var arrCopy = [elem in values] if isnan(elem) then 0.0 else elem;
         sums = segSum(arrCopy, segments);
         counts = segCount(segments, values.size) - nancounts;
       } else {
