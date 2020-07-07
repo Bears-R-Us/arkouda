@@ -82,7 +82,7 @@ proc main() {
     } 
 
     proc containsBinaryData(cmdRaw : bytes) : bool {
-        return cmdRaw.endsWith(b":array");
+        return cmdRaw.endsWith(b":notarray");
     }
     
     proc getCommandStrings(rawCmdString : string) : (string,string,string) {
@@ -112,6 +112,7 @@ proc main() {
         string or bytes
         */
         const (cmdRaw, payload) = reqMsgRaw.splitMsgToTuple(2);
+
         var user, token, cmd: string;
 
         // parse requests, execute requests, format responses
@@ -130,12 +131,12 @@ proc main() {
                             cmdRaw.decode(decodePolicy.replace));
                     try! stdout.flush();
                }
-               sendRepMsg(unknownError(""));
+               sendRepMsg(unknownError("decoding cmdStr"));
             }
-
+            writeln("The command string %s".format(cmdStr));
             //parse the infrastruture string to retrieve user,token,cmd
             var (user,token,cmd) = getCommandStrings(cmdStr);
-
+            writeln("The command string %s %s %s".format(user,token,cmd));
             /*
             If authentication is enabled with --authenticate flag, authenticate
             the user which for now consists of matching the submitted token
@@ -157,7 +158,9 @@ proc main() {
                     writeln(">>> %s started at %.17r sec".format("array", s0));
                     try! stdout.flush();
                 }
-                sendRepMsg(arrayMsg(cmd, payload, st));
+                var repMsg = arrayMsg(cmd, payload, st);
+                writeln("ARRAY MSG %s".format(repMsg));
+                sendRepMsg(repMsg);
                 //sendRepMsg(arrayMsg(reqMsgRaw, st));
             } else {
                 /*
@@ -165,22 +168,23 @@ proc main() {
                 and split the payload, and then reconstitute the reqMsg to contain
                 the cmd and payload values
                 */
-                var messageTokens = payload.decode().split(' ');
-                var reqMsg = ' '.join(messageTokens);
-                reqMsg = ' '.join(cmd, reqMsg);
+                //var messageTokens = payload.decode().split(' ');
+                //var reqMsg = ' '.join(messageTokens);
+                //reqMsg = ' '.join(cmd, reqMsg);
 
-                if logging {
-                    writeln("reqMsg: ", reqMsg);
-                    writeln(">>> %s started at %.17r sec".format(cmd, s0));
-                    try! stdout.flush();
-                }
+                //if logging {
+               //     writeln("reqMsg: ", reqMsg);
+                //    writeln(">>> %s started at %.17r sec".format(cmd, s0));
+                //    try! stdout.flush();
+                //}
 
                 // now take care of the case where we send arbitrary data:
-                if cmd == "tondarray" {
+                if cmd == "nottondarray" {
                     sendRepMsg(tondarrayMsg(cmd, payload, st));
                 }
                 else {
                     // here we know that everything is strings
+                    var binaryRepMsg: bytes;
                     var repMsg: string;
 
                     if cmd == "shutdown" {
@@ -189,11 +193,13 @@ proc main() {
                                                                               try! stdout.flush();}
                         break;
                     }
-
                     select cmd
                     {
-                        //when "array"             {repMsg = arrayMsg(cmd, payload, st);}
-                        //when "tondarray"         {repMsg = tondarrayMsg(cmd, payload,st);}	 
+                        when "array"             {
+                                                     repMsg = arrayMsg(cmd, payload, st);
+                                                     writeln("THE ARRAY MSG %s".format(repMsg));
+                                                 }
+                        when "tondarray"         {binaryRepMsg = tondarrayMsg(cmd, payload,st);}	 
                         when "intersect1d"       {repMsg = intersect1dMsg(cmd, payload, st);}
                         when "setdiff1d"         {repMsg = setdiff1dMsg(cmd, payload, st);}
                         when "setxor1d"          {repMsg = setxor1dMsg(cmd, payload, st);}
@@ -279,11 +285,15 @@ proc main() {
                             repMsg = "imok";
                         }
                         otherwise {
-                            repMsg = "Error: unrecognized command: %s".format(reqMsg);
+                            repMsg = "Error: unrecognized command: %s".format(cmd);
                         }
 
                     }
-                    sendRepMsg(repMsg);
+                    if repMsg.isEmpty() {
+                        sendRepMsg(binaryRepMsg);
+                    } else {
+                        sendRepMsg(repMsg);
+                    }
                 }
             }
 
@@ -293,11 +303,11 @@ proc main() {
                                                                memoryUsed():uint * numLocales:uint); try! stdout.flush();}
         } catch (e: ErrorWithMsg) {
             sendRepMsg(e.msg);
-            if (logging) {writeln("<<< %s resulted in error %s in  %.17r sec".format(cmdRaw.decode(decodePolicy.replace), 
+            if (logging) {writeln("<<< %s resulted in error %s in  %.17r sec".format(cmd, 
                                                                               e.msg, t1.elapsed() - s0)); try! stdout.flush();}
         } catch {
             sendRepMsg(unknownError(""));
-            if (logging) {writeln("<<< %s resulted in unknownError in %.17r sec".format(cmdRaw.decode(decodePolicy.replace), 
+            if (logging) {writeln("<<< %s resulted in unknownError in %.17r sec".format(cmd, 
                                                                                      t1.elapsed() - s0)); try! stdout.flush();}
         }
         
