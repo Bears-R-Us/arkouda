@@ -85,10 +85,10 @@ proc main() {
     */
     proc authenticateUser(token : string) throws {
         if token == 'None' || token.isEmpty() {
-            throw new owned ErrorWithMsg("Error: access to arkouda requires token");
+            throw new owned ErrorWithMsg("Error: access to arkouda requires a token");
         }
         else if serverToken != token {
-            throw new owned ErrorWithMsg("Error: token %s does not match server token check with server owner".format(token));
+            throw new owned ErrorWithMsg("Error: token %s does not match server token, check with server owner".format(token));
         }
     } 
    
@@ -173,7 +173,10 @@ proc main() {
                 break;
             }
 
-            //Declare the repMsg and binaryRepMsg variables, one of which is sent to sendRepMsg
+            /*
+            Declare the repMsg and binaryRepMsg variables, one of which is sent to sendRepMsg
+            depending upon whether a string (repMsg) or bytes (binarRepMsg) is to be returned.
+            */
             var binaryRepMsg: bytes;
             var repMsg: string;
 
