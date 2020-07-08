@@ -183,7 +183,7 @@ proc main() {
             select cmd
             {
                 when "array"             {repMsg = arrayMsg(cmd, payload, st);}
-                when "tondarray"         {binaryRepMsg = tondarrayMsg(cmd, payload,st);}	 
+                when "tondarray"         {binaryRepMsg = tondarrayMsg(cmd, payload,st);}
                 when "intersect1d"       {repMsg = intersect1dMsg(cmd, payload, st);}
                 when "setdiff1d"         {repMsg = setdiff1dMsg(cmd, payload, st);}
                 when "setxor1d"          {repMsg = setxor1dMsg(cmd, payload, st);}
@@ -302,6 +302,9 @@ proc main() {
     writeln("requests = ",reqCount," responseCount = ",repCount," elapsed sec = ",t1.elapsed());
 }
 
+/*
+Creates the serverConnectionInfo file on arkouda_server startup
+*/
 proc createServerConnectionInfo() {
     use IO;
     if !serverConnectionInfo.isEmpty() {
@@ -312,6 +315,9 @@ proc createServerConnectionInfo() {
     }
 }
 
+/*
+Deletes the serverConnetionFile on arkouda_server shutdown
+*/
 proc deleteServerConnectionInfo() {
     use FileSystem;
     if !serverConnectionInfo.isEmpty() {
