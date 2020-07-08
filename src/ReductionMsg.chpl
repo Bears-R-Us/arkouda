@@ -626,7 +626,22 @@ module ReductionMsg
       var counts;
       if (isFloatType(t) && skipNan) {
         // count cumulative nans over all values
-        var cumnans = + scan isnan(values); // assuming isnan is promotable
+        //var cumnans: [values.domain] int; //= + scan isnan(values);
+
+        /*if isnan(values[0]) then cumnans[0] = 1;
+        forall i in (values.domain.interior(values.size-1)) with (+ reduce cumnans) {
+            if(isnan(values[i])) then
+              cumnans[i] = 1 + cumnans[i-1];
+            else
+              cumnans[i] = cumnans[i-1];
+              }*/
+
+        /*forall i in values.domain {
+          if isnan(values[i]) then cumnans[i] = 1;
+        }*/
+        var cumnans = isnan(values):int;
+        cumnans = + scan cumnans;
+        
         // find cumulative nans at segment boundaries
         var segnans: [segments.domain] int;
         forall si in segments.domain {
