@@ -1,4 +1,4 @@
-import re, os, shutil
+import re, os
 import numpy as np
 import h5py
 from typing import List, Mapping, Union
@@ -6,17 +6,11 @@ from base_test import ArkoudaTest
 from util.test.generation import generate_alpha_string_array, \
                   generate_hdf5_file_with_datasets
 from context import arkouda as ak
-from arkouda import io_util
 
 '''
 Tests writting Arkouda pdarrays to and from files
 '''
 class IOTest(ArkoudaTest):
-
-    @classmethod
-    def setUpClass(cls):
-        super(IOTest, cls).setUpClass()
-        io_util.get_directory('/tmp/test')
 
     def setUp(self):
         ArkoudaTest.setUp(self)
@@ -82,8 +76,8 @@ class IOTest(ArkoudaTest):
         :return: None
         :raise: AssertionError if the input and returned datasets and pdarrays don't match
         '''
-        self._create_file(columns=self.dict_columns, path_prefix='/tmp/test/iotest_dict')
-        retrieved_columns = ak.load_all('/tmp/test/iotest_dict')
+        self._create_file(columns=self.dict_columns, path_prefix='/tmp/iotest_dict')
+        retrieved_columns = ak.load_all('/tmp/iotest_dict')
 
         self.assertEqual(3, len(retrieved_columns))
         self.assertEqual(self.dict_columns['int_tens_pdarray'].all(), 
@@ -92,7 +86,7 @@ class IOTest(ArkoudaTest):
                          retrieved_columns['int_hundreds_pdarray'].all())
         self.assertEqual(self.dict_columns['float_pdarray'].all(), 
                          retrieved_columns['float_pdarray'].all())      
-        self.assertEqual(3, len(ak.get_datasets('/tmp/test/iotest_dict_LOCALE0')))
+        self.assertEqual(3, len(ak.get_datasets('/tmp/iotest_dict_LOCALE0')))
         
     def testSaveAllLoadAllWithList(self):
         '''
@@ -103,9 +97,9 @@ class IOTest(ArkoudaTest):
         :return: None
         :raise: AssertionError if the input and returned datasets and pdarrays don't match
         '''
-        self._create_file(columns=self.list_columns, path_prefix='/tmp/test/iotest_list', 
+        self._create_file(columns=self.list_columns, path_prefix='/tmp/iotest_list', 
                           names=self.names)
-        retrieved_columns = ak.load_all(path_prefix='/tmp/test/iotest_list')
+        retrieved_columns = ak.load_all(path_prefix='/tmp/iotest_list')
 
         self.assertEqual(3, len(retrieved_columns))
         self.assertEqual(self.list_columns[0].all(), 
@@ -114,7 +108,7 @@ class IOTest(ArkoudaTest):
                          retrieved_columns['int_hundreds_pdarray'].all())
         self.assertEqual(self.list_columns[2].all(), 
                          retrieved_columns['float_pdarray'].all())      
-        self.assertEqual(3, len(ak.get_datasets('/tmp/test/iotest_list_LOCALE0')))
+        self.assertEqual(3, len(ak.get_datasets('/tmp/iotest_list_LOCALE0')))
     
     def testLsHdf(self):
         '''
@@ -126,8 +120,8 @@ class IOTest(ArkoudaTest):
         :raise: AssertionError if the h5ls output does not match expected value
         '''
         self._create_file(columns=self.dict_single_column, 
-                          path_prefix='/tmp/test/iotest_single_column')
-        message = ak.ls_hdf('/tmp/test/iotest_single_column_LOCALE0')
+                          path_prefix='/tmp/iotest_single_column')
+        message = ak.ls_hdf('/tmp/iotest_single_column_LOCALE0')
         self.assertIn('int_tens_pdarray         Dataset', message)
 
     def testReadHdf(self):
@@ -141,13 +135,13 @@ class IOTest(ArkoudaTest):
         :raise: AssertionError if the input and returned datasets don't match
         '''
         self._create_file(columns=self.dict_single_column, 
-                          path_prefix='/tmp/test/iotest_single_column')
+                          path_prefix='/tmp/iotest_single_column')
         self._create_file(columns=self.dict_single_column, 
-                          path_prefix='/tmp/test/iotest_single_column_dupe')
+                          path_prefix='/tmp/iotest_single_column_dupe')
         
         dataset = ak.read_hdf(dsetName='int_tens_pdarray', 
-                    filenames=['/tmp/test/iotest_single_column_LOCALE0',
-                               '/tmp/test/iotest_single_column_dupe_LOCALE0'])
+                    filenames=['/tmp/iotest_single_column_LOCALE0',
+                               '/tmp/iotest_single_column_dupe_LOCALE0'])
         self.assertIsNotNone(dataset)
         
     def testReadHdfWithGlob(self):
@@ -161,12 +155,12 @@ class IOTest(ArkoudaTest):
         :raise: AssertionError if the input and returned datasets don't match
         '''
         self._create_file(columns=self.dict_single_column, 
-                          path_prefix='/tmp/test/iotest_single_column')
+                          path_prefix='/tmp/iotest_single_column')
         self._create_file(columns=self.dict_single_column, 
-                          path_prefix='/tmp/test/iotest_single_column_dupe')
+                          path_prefix='/tmp/iotest_single_column_dupe')
         
         dataset = ak.read_hdf(dsetName='int_tens_pdarray', 
-                    filenames='/tmp/test/iotest_single_column*')
+                    filenames='/tmp/iotest_single_column*')
         self.assertEqual(self.int_tens_pdarray.all(), dataset.all())
 
     def testReadAll(self):
@@ -179,9 +173,9 @@ class IOTest(ArkoudaTest):
         :raise: AssertionError if the input and returned datasets don't match
         '''
         self._create_file(columns=self.dict_columns, 
-                          path_prefix='/tmp/test/iotest_dict_columns')
+                          path_prefix='/tmp/iotest_dict_columns')
         
-        dataset = ak.read_all(filenames=['/tmp/test/iotest_dict_columns_LOCALE0'])
+        dataset = ak.read_all(filenames=['/tmp/iotest_dict_columns_LOCALE0'])
         self.assertEqual(3, len(list(dataset.keys())))     
         
     def testReadAllWithGlob(self):
@@ -195,11 +189,11 @@ class IOTest(ArkoudaTest):
         :raise: AssertionError if the input and returned datasets don't match
         '''
         self._create_file(columns=self.dict_columns, 
-                          path_prefix='/tmp/test/iotest_dict_columns')
+                          path_prefix='/tmp/iotest_dict_columns')
         self._create_file(columns=self.dict_columns, 
-                          path_prefix='/tmp/test/iotest_dict_columns_dupe')
+                          path_prefix='/tmp/iotest_dict_columns_dupe')
         
-        dataset = ak.read_all(filenames='/tmp/test/iotest_dict_columns*')
+        dataset = ak.read_all(filenames='/tmp/iotest_dict_columns*')
 
         self.assertEqual(3, len(list(dataset.keys())))  
         self.assertEqual(self.int_tens_pdarray.all(), dataset['int_tens_pdarray'].all())
@@ -216,12 +210,12 @@ class IOTest(ArkoudaTest):
         :raise: AssertionError if the input and returned datasets (pdarrays) don't match
         '''
         self._create_file(columns=self.dict_columns, 
-                          path_prefix='/tmp/test/iotest_dict_columns') 
-        result_array_tens = ak.load(path_prefix='/tmp/test/iotest_dict_columns', 
+                          path_prefix='/tmp/iotest_dict_columns') 
+        result_array_tens = ak.load(path_prefix='/tmp/iotest_dict_columns', 
                                     dataset='int_tens_pdarray')
-        result_array_hundreds = ak.load(path_prefix='/tmp/test/iotest_dict_columns', 
+        result_array_hundreds = ak.load(path_prefix='/tmp/iotest_dict_columns', 
                                         dataset='int_hundreds_pdarray')
-        result_array_float = ak.load(path_prefix='/tmp/test/iotest_dict_columns', 
+        result_array_float = ak.load(path_prefix='/tmp/iotest_dict_columns', 
                                      dataset='float_pdarray')
 
         self.assertEqual(self.int_tens_pdarray.all(), result_array_tens.all())
@@ -237,14 +231,9 @@ class IOTest(ArkoudaTest):
         :raise: AssertionError if the input and returned dataset names don't match
         '''
         self._create_file(columns=self.dict_columns, 
-                          path_prefix='/tmp/test/iotest_dict_columns')     
-        datasets = ak.get_datasets('/tmp/test/iotest_dict_columns_LOCALE0')
+                          path_prefix='/tmp/iotest_dict_columns')     
+        datasets = ak.get_datasets('/tmp/iotest_dict_columns_LOCALE0')
 
         self.assertEqual(3, len(datasets)) 
         for dataset in datasets:
             self.assertIn(dataset, self.names)
-
-    @classmethod
-    def tearDownClass(cls):
-        super(IOTest, cls).tearDownClass()
-        shutil.rmtree('/tmp/test')
