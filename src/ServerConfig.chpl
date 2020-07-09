@@ -51,11 +51,6 @@ module ServerConfig
       return here.hostname;
     }
 
-    /*
-    Indicates whether token authentication is being used for Akrouda server requests
-    */
-    config const authenticate : bool = false;
-   
     proc getConfig(): string {
         use SysCTypes;
 
@@ -79,7 +74,6 @@ module ServerConfig
             var distributionType: string;
             var LocaleConfigs: [LocaleSpace] owned LocaleConfig =
                 [loc in LocaleSpace] new owned LocaleConfig();
-            var authenticate: bool;
         }
         var (Zmajor, Zminor, Zmicro) = ZMQ.version;
         var H5major: c_uint, H5minor: c_uint, H5micro: c_uint;
@@ -95,7 +89,6 @@ module ServerConfig
         cfg.maxTaskPar = here.maxTaskPar;
         cfg.physicalMemory = here.physicalMemory();
         cfg.distributionType = (makeDistDom(10).type):string;
-        cfg.authenticate = authenticate; 
 
         for loc in Locales {
             on loc {
