@@ -10,8 +10,8 @@ proc testSkipNan(n:int, g:int) {
   var d: Diags;
   var orig = makeDistArray(n, int);
   fillInt(orig, 0, 500000);
-  var segments = makeDistArray(n, int);
-  fillInt(segments, 0, g);
+  var segments = makeDistArray(g, int);
+  fillInt(segments, 1, g+1);
   
   d.start();
   segMean(orig, segments, true);
@@ -24,8 +24,8 @@ proc testRegular(n:int, g:int) {
   var d: Diags;
   var orig = makeDistArray(n, int);
   fillInt(orig, 0, 500000);
-  var segments = makeDistArray(n, int);
-  fillInt(segments, 0, g);
+  var segments = makeDistArray(g, int);
+  fillInt(segments, 1, g+1);
   
   d.start();
   segMean(orig, segments, false);

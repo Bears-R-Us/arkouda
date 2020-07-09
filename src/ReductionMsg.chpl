@@ -553,7 +553,7 @@ module ReductionMsg
     proc segSum(values:[] bool, segments:[?D] int): [D] int {
       var res: [D] int;
       if (D.size == 0) { return res; }
-      var  cumsum = + scan values;
+      var cumsum = + scan values;
       // Iterate over segments
       forall (i, r) in zip(D, res) {
         // Find the values to the left of the segment boundaries

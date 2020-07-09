@@ -205,7 +205,7 @@ class GroupBy:
         else:
             return self.unique_keys, create_pdarray(repMsg)
 
-    def sum(self, values, skipna=False):
+    def sum(self, values, skipna=True):
         """
         Using the permutation stored in the GroupBy instance, group another array 
         of values and sum each group's values. 
@@ -251,7 +251,7 @@ class GroupBy:
         """
         return self.aggregate(values, "prod")
     
-    def mean(self, values, skipna=False):
+    def mean(self, values, skipna=True):
         """
         Using the permutation stored in the GroupBy instance, group another array 
         of values and compute the mean of each group's values. 
@@ -274,7 +274,7 @@ class GroupBy:
         """
         return self.aggregate(values, "mean", skipna)
     
-    def min(self, values, skipna=False):
+    def min(self, values, skipna=True):
         """
         Using the permutation stored in the GroupBy instance, group another array 
         of values and return the minimum of each group's values. 
@@ -294,7 +294,7 @@ class GroupBy:
         """
         return self.aggregate(values, "min", skipna)
     
-    def max(self, values, skipna=False):
+    def max(self, values, skipna=True):
         """
         Using the permutation stored in the GroupBy instance, group another array 
         of values and return the maximum of each group's values. 
