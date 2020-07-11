@@ -2,6 +2,7 @@
 backend chapel program to mimic ndarray from numpy
 This is the main driver for the arkouda server */
 
+use FileIO;
 use Security;
 use ServerConfig;
 use Time only;
@@ -17,10 +18,18 @@ use GenSymIO;
 use SymArrayDmap;
 use ServerErrorStrings;
 
+proc initArkoudaDirectory() {
+    var arkDirectory = '%s%s%s'.format(here.cwd(), pathSep,'.arkouda');
+    initDirectory(arkDirectory);
+    return arkDirectory;
+}
 
 proc main() {
     writeln("arkouda server version = ",arkoudaVersion); try! stdout.flush();
     writeln("memory tracking = ", memTrack); try! stdout.flush();
+    const arkDirectory = initArkoudaDirectory();
+    writeln("initialized the .arkouda directory %s".format(arkDirectory));
+
     if (memTrack) {
         writeln("getMemLimit() = ",getMemLimit());
         writeln("bytes of memoryUsed() = ",memoryUsed());
@@ -38,8 +47,7 @@ proc main() {
 
     // configure token authentication and server startup message accordingly
     if authenticate {
-        serverToken = getArkoudaToken('%s%s%s%s%s'.format(here.cwd(), pathSep, 
-                                                             '.arkouda', pathSep, 'tokens.txt'));
+        serverToken = getArkoudaToken('%s%s%s'.format(arkDirectory, pathSep, 'tokens.txt'));
         serverMessage = "server listening on %s:%t with token %s".format(serverHostname, 
                                         ServerPort, serverToken);
     } else {
@@ -86,7 +94,8 @@ proc main() {
     }
     
     proc getCommandStrings(rawCmdString : string) : (string,string,string) {
-        var strings = rawCmdString.split(':');
+        var strings = rawCmdString.splitMsgToTuple(sep=":", numChunks=3);
+        try! writeln(strings);
         return (strings[0],strings[1],strings[2]);
     }
 
@@ -135,7 +144,8 @@ proc main() {
 
             //parse the infrastruture string to retrieve user,token,cmd
             var (user,token,cmd) = getCommandStrings(cmdStr);
-
+            writeln(cmdStr);
+            writeln(user);
             /*
             If authentication is enabled with --authenticate flag, authenticate
             the user which for now consists of matching the submitted token

@@ -53,4 +53,10 @@ module FileIO {
         }
         return fileMap;
     }
+
+    proc initDirectory(filePath : string) throws {
+        if !isDir(filePath) {
+           try! mkdir(name=filePath, parents=true);
+        } 
+    }
 }
