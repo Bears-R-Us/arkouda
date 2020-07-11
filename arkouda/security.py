@@ -1,11 +1,12 @@
 import os, platform, secrets, json
 from os.path import expanduser
+from collections import defaultdict 
 from arkouda import io_util
 
-username_tokenizer = {
-  'Windows' : lambda x : x.split('\\'),
-  'Linux' : lambda x : x.split('/')
-}
+username_tokenizer = defaultdict(lambda x : x.split('/'))
+username_tokenizer['Windows'] = lambda x : x.split('\\')
+username_tokenizer['Linux'] = lambda x : x.split('/')
+username_tokenizer['Darwin'] = lambda x : x.split('/')
 
 def generate_token(length : int=32) -> str:
     """
