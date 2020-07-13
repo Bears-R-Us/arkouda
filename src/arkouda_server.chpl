@@ -109,7 +109,6 @@ proc main() {
     */ 
     proc getCommandStrings(rawCmdString : string) : (string,string,string) {
         var strings = rawCmdString.splitMsgToTuple(sep=":", numChunks=3);
-        try! writeln(strings);
         return (strings[0],strings[1],strings[2]);
     }
 
