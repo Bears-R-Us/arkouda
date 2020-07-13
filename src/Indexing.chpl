@@ -14,7 +14,7 @@ module Indexing {
     use CommAggregation;
     
     // Return a slice of array `a` from `start` to `stop` by `stride`
-    proc sliceIndex(a: [?aD] ?t, start: int, stop: int, stride: int) {
+    proc sliceIndex(a: [] ?t, start: int, stop: int, stride: int) {
       var slice: range(stridable=true);
       
       slice = start..(stop-1) by stride;
@@ -26,17 +26,17 @@ module Indexing {
     }
 
     // helper to get an array without the first element
-    proc sliceTail(a: [?aD] ?t) {
+    proc sliceTail(a: [] ?t) {
       return sliceIndex(a, 1, a.size, 1);
     }
 
     // helper to get an array without the last element
-    proc sliceHead(a: [?aD] ?t) {
+    proc sliceHead(a: [] ?t) {
       return sliceIndex(a, 0, a.size - 1, 1);
     }
 
     // return an array of all values from array a whose index corresponds to a true value in array truth
-    proc boolIndexer(a: [?aD] ?t, truth: [aD] bool) {
+    proc boolIndexer(a: [] ?t, truth: [] bool) {
         var iv: [truth.domain] int = (+ scan truth);
         var pop = iv[iv.size-1];
         var ret = makeDistArray(pop, int);
@@ -50,7 +50,7 @@ module Indexing {
     }
 
     // concatenate 2 distributed arrays and return the result
-    proc concatset(a: [?aD] ?t, b: [?bD] t) {
+    proc concatset(a: [] ?t, b: [] t) {
       var ret = makeDistArray((a.size + b.size), t);
       
       ret[{0..#a.size}] = a;
