@@ -143,7 +143,7 @@ if __name__ == "__main__":
     parser = create_parser()
     args = parser.parse_args()
     ak.verbose = False
-    ak.connect(args.hostname, args.port)
+    ak.connect(server=args.hostname, port=args.port)
 
     print("array size = {:,}".format(args.size))
     check_coargsort(args.size)
