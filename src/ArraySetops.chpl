@@ -44,11 +44,21 @@ module ArraySetops
     proc intersect1dHelper(a: [] ?t, b: [] t) {
       var aux = radixSortLSD_keys(concatset(a,b));
 
-      var head = sliceHead(aux);
-      var mask = head == sliceTail(aux);
-      
-      var int1d = boolIndexer(head, mask);
+      var mask: [aux.domain] bool;
 
+      coforall loc in Locales do
+        on loc {
+          const localDom = aux.localSubdomain();
+          const maskIndices = localDom#(localDom.size-1);
+          forall i in maskIndices {
+            mask[i] = aux.localAccess[i] == aux.localAccess[i+1];
+          }
+          if localDom.high != aux.domain.high then
+            mask[localDom.high] = aux.localAccess[localDom.high] == aux[localDom.high + 1];
+        }
+      
+      const int1d = boolIndexer(aux[aux.domain#(aux.size-1)], mask);
+      
       return int1d;
     }
 
