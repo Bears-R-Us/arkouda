@@ -630,9 +630,9 @@ module ReductionMsg
         cumnans = + scan cumnans;
         
         // find cumulative nans at segment boundaries
-        var segnans: [segments.domain] int;
-        forall si in segments.domain {
-          if si == segments.domain.high {
+        var segnans: [D] int;
+        forall si in D {
+          if si == D.high {
               segnans[si] = cumnans[cumnans.domain.high];
           } else {
               segnans[si] = cumnans[segments[si+1]-1];
@@ -640,10 +640,10 @@ module ReductionMsg
         }
         
         // take diffs of adjacent segments to find nan count in each segment
-        var nancounts: [segments.domain] int;
-        nancounts[0] = segnans[0];
-        nancounts[1..(segnans.domain.size-1)] = segnans[segnans.domain.interior(segnans.domain.size-1)] - segnans[segnans.domain.interior(-(segnans.domain.size-1))];
-
+        var nancounts: [D] int;
+        nancounts[D.low] = segnans[D.low];
+        nancounts[D.low+1..] = segnans[D.low+1..] - segnans[..D.high-1];
+        
         // calculate sum and counts with nan values replaced with 0.0
         var arrCopy = [elem in values] if isnan(elem) then 0.0 else elem;
         sums = segSum(arrCopy, segments);
