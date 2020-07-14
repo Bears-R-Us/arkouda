@@ -2,41 +2,41 @@ use TestBase;
 
 use ReductionMsg;
 
-config const ARRSIZE = 1_000_000;
+config const ARRSIZE = 100_000_000;
 config const GROUPS = 64;
 config const MAX_VAL = 500_000;
 
-proc testSkipNan(n:int, g:int) {
+proc testSkipNan(orig, segments) {
   var d: Diags;
-  var orig = makeDistArray(n, int);
-  fillInt(orig, 0, 500000);
-  var segments = makeDistArray(g, int);
-  fillInt(segments, 1, g+1);
   
   d.start();
-  segMean(orig, segments, true);
+  var res = segMin(orig, segments, true);
   d.stop(printTime=false);
 
-  return d.elapsed();
+  return (d.elapsed(), res);
 }
 
-proc testRegular(n:int, g:int) {
+proc testRegular(orig, segments) {
   var d: Diags;
-  var orig = makeDistArray(n, int);
-  fillInt(orig, 0, 500000);
-  var segments = makeDistArray(g, int);
-  fillInt(segments, 1, g+1);
   
   d.start();
-  segMean(orig, segments, false);
+  var res = segMin(orig, segments, false);
   d.stop(printTime=false);
 
-  return d.elapsed();
+  return (d.elapsed(), res);
 }
 
 proc main() {
-  const elapsed = testSkipNan(ARRSIZE, GROUPS);
-  const elapsedReg = testRegular(ARRSIZE,GROUPS);
+  var orig = makeDistArray(ARRSIZE, int);
+  fillInt(orig, 0, 500000);
+  var segments = makeDistArray(GROUPS, int);
+  fillInt(segments, 1, GROUPS+1);
+  
+  const (elapsed, skipRes) = testSkipNan(orig,segments);
+  const (elapsedReg, regRes) = testRegular(orig,segments);
+
+  assert(skipRes.equals(regRes));
+  
   const MB = byteToMB(8*ARRSIZE):real;
   if printTimes {
     writeln("mean with SkipNan ran on %i elements (%.1dr MB) in %.2dr seconds (%.2dr MB/s)\n".format(ARRSIZE, MB, elapsed, MB/elapsed));
