@@ -88,9 +88,9 @@ prototype module UnitTestGroupby
     var cmd: string;
     if (STRATEGY == "default") {
       cmd = "findSegments";
-      reqMsg = try! "%s %s %i %s %s".format(cmd, ivname, 1, kname, "pdarray");
+      reqMsg = try! "%s %i %s %s".format(ivname, 1, kname, "pdarray");
       d.start();
-      repMsg = findSegmentsMsg(reqMsg, st);
+      repMsg = findSegmentsMsg(cmd=cmd, payload=reqMsg.encode(), st);
       d.stop("findSegmentsMsg");
     }
     var (segname, ukiname) = parseTwoNames(repMsg);
@@ -101,9 +101,9 @@ prototype module UnitTestGroupby
 
     // get unique keys
     cmd = "[pdarray]";
-    reqMsg = try! "%s %s %s".format(cmd, kname, ukiname);
+    reqMsg = try! "%s %s".format(kname, ukiname);
     d.start();
-    repMsg = pdarrayIndexMsg(reqMsg, st);
+    repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg.encode(), st);
     d.stop("pdarrayIndexMsg");
     writeRep(repMsg);
     var ukname = parseName(repMsg);
@@ -116,9 +116,9 @@ prototype module UnitTestGroupby
     
     // permute the values array
     cmd = "[pdarray]";
-    reqMsg = try! "%s %s %s".format(cmd, vname, ivname);
+    reqMsg = try! "%s %s".format(vname, ivname);
     d.start();
-    repMsg = pdarrayIndexMsg(reqMsg, st);
+    repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg.encode(), st);
     d.stop("pdarrayIndexMsg");
     writeRep(repMsg);
     var svname = parseName(repMsg);
@@ -132,10 +132,10 @@ prototype module UnitTestGroupby
     // do segmented reduction
     if (STRATEGY == "default") {
       cmd = "segmentedReduction";
-      reqMsg = try! "%s %s %s %s".format(cmd, svname, segname, OPERATOR);
+      reqMsg = try! "%s %s %s".format(svname, segname, OPERATOR);
       //writeReq(reqMsg);
       d.start();
-      repMsg = segmentedReductionMsg(reqMsg, st);
+      repMsg = segmentedReductionMsg(cmd=cmd, payload=reqMsg.encode(), st);
       d.stop("segmentedReductionMsg");
     } 
     writeRep(repMsg);

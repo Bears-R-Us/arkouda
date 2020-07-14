@@ -35,10 +35,10 @@ prototype module UnitTestFindSegments
         var cmd = "localArgsort";
         var orig = toSymEntry(st.lookup(aname), int);
         writeIntArray(orig.a, filename+".original");
-        reqMsg = try! "%s %s".format(cmd, aname);
+        reqMsg = try! "%s".format(aname);
         var d: Diags;
         d.start();
-        repMsg = localArgsortMsg(reqMsg, st);
+        repMsg = localArgsortMsg(cmd=cmd, payload=reqMsg.encode(), st);
         d.stop("localArgsortMsg");
         writeRep(repMsg);
 
@@ -47,9 +47,9 @@ prototype module UnitTestFindSegments
         var iv = toSymEntry(st.lookup(ivname), int);
         writeIntArray(iv.a, filename+".permutation");
         cmd = "[pdarray]";
-        reqMsg = try! "%s %s %s".format(cmd, aname, ivname);
+        var payloadMsg = try! "%s %s".format(aname, ivname);
         d.start();
-        repMsg = pdarrayIndexMsg(reqMsg, st);
+        repMsg = pdarrayIndexMsg(cmd=cmd, payload=payloadMsg.encode(), st);
         d.stop("pdarrayIndexMsg");
         writeRep(repMsg);
         var sortedname = parseName(repMsg);
@@ -58,10 +58,10 @@ prototype module UnitTestFindSegments
 
         // use array and iv to find local segments
         cmd = "findLocalSegments";
-        reqMsg = try! "%s %s".format(cmd, aname);
+        reqMsg = try! "%s".format(aname);
         
         d.start();
-        repMsg = findLocalSegmentsMsg(reqMsg, st);
+        repMsg = findLocalSegmentsMsg(cmd=cmd, payload=aname.encode(), st);
         d.stop("findLocalSegmentsMsg");
         writeRep(repMsg);
 

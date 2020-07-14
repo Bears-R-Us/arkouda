@@ -18,10 +18,10 @@ prototype module efuncTest
 
         var cmd = "efunc";
         var op = "sin";
-        reqMsg = try! "%s %s %s".format(cmd, op, aname);
+        reqMsg = try! "%s %s".format(op, aname);
         var d: Diags;
         d.start();
-        repMsg = efuncMsg(reqMsg, st);
+        repMsg = efuncMsg(cmd=cmd, payload=reqMsg.encode(), st);
         d.stop("efuncMsg");
         writeRep(repMsg);
 
@@ -29,9 +29,9 @@ prototype module efuncTest
         cmd = "reduction";
         var subCmd = "sum";
         var bname = parseName(repMsg); // get name from [pdarray] reply msg
-        reqMsg = try! "%s %s %s".format(cmd, subCmd, bname);
+        reqMsg = try! "%s %s".format(subCmd, bname);
         d.start();
-        repMsg = reductionMsg(reqMsg, st);
+        repMsg = reductionMsg(cmd=cmd, payload=reqMsg.encode(), st);
         d.stop("reductionMsg");
         //writeln("ANSWER >>> ",repMsg," <<<"); TODO 
     }

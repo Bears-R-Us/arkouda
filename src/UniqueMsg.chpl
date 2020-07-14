@@ -24,11 +24,11 @@ module UniqueMsg
     use Unique;
     
     /* unique take a pdarray and returns a pdarray with the unique values */
-    proc uniqueMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc uniqueMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (cmd, objtype, name, returnCountsStr) = reqMsg.splitMsgToTuple(4);
+        var (objtype, name, returnCountsStr) = payload.decode().splitMsgToTuple(3);
         // flag to return counts of each unique value
         // same size as unique array
         var returnCounts: bool;
@@ -111,11 +111,11 @@ module UniqueMsg
     }
     
     /* value_counts takes a pdarray and returns two pdarrays unique values and counts for each value */
-    proc value_countsMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc value_countsMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (cmd, name) = reqMsg.splitMsgToTuple(2);
+        var (name) = payload.decode().splitMsgToTuple(1);
 
         // get next symbol name
         var vname = st.nextName();

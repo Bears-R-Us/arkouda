@@ -11,10 +11,10 @@ module SegmentedMsg {
 
   private config const DEBUG = false;
 
-  proc randomStringsMsg(reqMsg: string, st: borrowed SymTab): string throws {
+  proc randomStringsMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
-    var (cmd, lenStr, dist, charsetStr, arg1str, arg2str)
-          = reqMsg.splitMsgToTuple(6);
+    var (lenStr, dist, charsetStr, arg1str, arg2str)
+          = payload.decode().splitMsgToTuple(5);
     var len = lenStr: int;
     var charset = str2CharSet(charsetStr);
     var segName = st.nextName();
@@ -50,9 +50,9 @@ module SegmentedMsg {
     return repMsg;
   }
 
-  proc segmentLengthsMsg(reqMsg: string, st: borrowed SymTab): string throws {
+  proc segmentLengthsMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
-    var (cmd, objtype, segName, valName) = reqMsg.splitMsgToTuple(4);
+    var (objtype, segName, valName) = payload.decode().splitMsgToTuple(3);
     var rname = st.nextName();
     select objtype {
       when "str" {
@@ -66,11 +66,11 @@ module SegmentedMsg {
     return "created "+st.attrib(rname);
   }
 
-  proc segmentedEfuncMsg(reqMsg: string, st: borrowed SymTab): string throws {
+  proc segmentedEfuncMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (cmd, subcmd, objtype, segName, valName, valtype, valStr,
-         idStr, kpStr, lStr, jsonStr) = reqMsg.splitMsgToTuple(11);
+    var (subcmd, objtype, segName, valName, valtype, valStr,
+         idStr, kpStr, lStr, jsonStr) = payload.decode().splitMsgToTuple(10);
     select (objtype, valtype) {
     when ("str", "str") {
       var strings = new owned SegString(segName, valName, st);
@@ -174,10 +174,10 @@ module SegmentedMsg {
     return repMsg;
   }
 
-  proc segmentedHashMsg(reqMsg: string, st: borrowed SymTab): string throws {
+  proc segmentedHashMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (cmd, objtype, segName, valName) = reqMsg.splitMsgToTuple(4);
+    var (objtype, segName, valName) = payload.decode().splitMsgToTuple(3);
     select objtype {
     when "str" {
       var strings = new owned SegString(segName, valName, st);
@@ -195,12 +195,12 @@ module SegmentedMsg {
     }
   }
   
-  proc segmentedIndexMsg(reqMsg: string, st: borrowed SymTab): string throws {
+  proc segmentedIndexMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
     // 'subcmd' is the type of indexing to perform
     // 'objtype' is the type of segmented array
-    var (cmd, subcmd, objtype, rest) = reqMsg.splitMsgToTuple(4);
+    var (subcmd, objtype, rest) = payload.decode().splitMsgToTuple(3);
     var fields = rest.split();
     var args: [1..#fields.size] string = fields; // parsed by subroutines
     try {
@@ -329,15 +329,15 @@ module SegmentedMsg {
     return "created " + st.attrib(newSegName) + "+created " + st.attrib(newValName);
   }
 
-  proc segBinopvvMsg(reqMsg: string, st: borrowed SymTab): string throws {
+  proc segBinopvvMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (cmd, op,
+    var (op,
          // Type and attrib names of left segmented array
          ltype, lsegName, lvalName,
          // Type and attrib names of right segmented array
          rtype, rsegName, rvalName, leftStr, jsonStr)
-           = reqMsg.splitMsgToTuple(10);
+           = payload.decode().splitMsgToTuple(9);
     select (ltype, rtype) {
     when ("str", "str") {
       var lstrings = new owned SegString(lsegName, lvalName, st);
@@ -381,11 +381,11 @@ module SegmentedMsg {
     return repMsg;
   }
 
-  proc segBinopvsMsg(reqMsg: string, st: borrowed SymTab): string throws {
+  proc segBinopvsMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (cmd, op, objtype, segName, valName, valtype, encodedVal)
-          = reqMsg.splitMsgToTuple(7);
+    var (op, objtype, segName, valName, valtype, encodedVal)
+          = payload.decode().splitMsgToTuple(6);
     var json = decode_json(encodedVal, 1);
     var value = json[json.domain.low];
     var rname = st.nextName();
@@ -409,11 +409,11 @@ module SegmentedMsg {
     return "created " + st.attrib(rname);
   }
 
-  proc segIn1dMsg(reqMsg: string, st: borrowed SymTab): string throws {
+  proc segIn1dMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (cmd, mainObjtype, mainSegName, mainValName, testObjtype, testSegName,
-         testValName, invertStr) = reqMsg.splitMsgToTuple(8);
+    var (mainObjtype, mainSegName, mainValName, testObjtype, testSegName,
+         testValName, invertStr) = payload.decode().splitMsgToTuple(7);
     var invert: bool;
     if invertStr == "True" {invert = true;}
     else if invertStr == "False" {invert = false;}
@@ -436,9 +436,9 @@ module SegmentedMsg {
     return "created " + st.attrib(rname);
   }
 
-  proc segGroupMsg(reqMsg: string, st: borrowed SymTab): string throws {
+  proc segGroupMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
-    var (cmd, objtype, segName, valName) = reqMsg.splitMsgToTuple(4);
+    var (objtype, segName, valName) = payload.decode().splitMsgToTuple(3);
     var rname = st.nextName();
     select (objtype) {
     when "str" {

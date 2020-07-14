@@ -14,11 +14,11 @@ module HistogramMsg
     private config const mBound = 2**25;
 
     /* histogram takes a pdarray and returns a pdarray with the histogram in it */
-    proc histogramMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc histogramMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (cmd, name, binsStr) = reqMsg.splitMsgToTuple(3);
+        var (name, binsStr) = payload.decode().splitMsgToTuple(2);
         var bins = try! binsStr:int;
         
         // get next symbol name
