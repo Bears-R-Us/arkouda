@@ -45,13 +45,9 @@ module ArraySetops
 
       // All elements except the first
       const ref tail = aux[D.low+1..];
-      var mask = head == tail;
+      const mask = head == tail;
 
-      var int1d;
-      // Extra scope to clean up temporary array
-      {
-        int1d = boolIndexer(aux[..D.high-1], mask);
-      }
+      const int1d = boolIndexer(head, mask);
 
       return int1d;
     }
