@@ -123,13 +123,11 @@ module ArraySetops
     // sorts resulting array and ensures that
     // values are unique
     proc union1d(a: [] int, b: [] int) {
-      var a1  = uniqueSort(a, false);
-      var b1  = uniqueSort(b, false);
-
-      var aux = concatset(a1, b1);
-
-      var ret = uniqueSort(aux, false);
-      
-      return ret;
+      var aux: [] int;
+      // Artificial scope to clean up temporary arrays
+      {
+        aux = concatset(uniqueSort(a,false), uniqueSort(b,false));
+      }
+      return uniqueSort(aux, false);
     }
 }
