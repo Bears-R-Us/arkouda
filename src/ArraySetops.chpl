@@ -68,16 +68,18 @@ module ArraySetops
     // sorts and removes all values that occur
     // more than once
     proc setxor1dHelper(a: [] ?t, b: [] t) {
-      var aux = radixSortLSD_keys(concatset(a,b));
+      const aux = radixSortLSD_keys(concatset(a,b));
+      const D = aux.domain;
 
-      var sliceComp = sliceTail(aux) != sliceHead(aux);
+      const sliceComp = aux[..D.high-1] != aux[D.low+1..];
       
       // Concatenate a `true` onto each end of the array
       var flag = makeDistArray((sliceComp.size + 2), bool);
+      const fD = flag.domain;
       
-      flag[0] = true;
-      flag[{1..#(sliceComp.size)}] = sliceComp;
-      flag[sliceComp.size + 1] = true;
+      flag[fD.low] = true;
+      flag[fD.low+1..#fD.high-1] = sliceComp;
+      flag[fD.high] = true;
 
       var mask = sliceTail(flag) & sliceHead(flag);
 
