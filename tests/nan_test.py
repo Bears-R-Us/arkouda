@@ -8,7 +8,7 @@ SIZE = 10000
 GROUPS = 64
 verbose = True
 
-OPS = frozenset(['mean'])
+OPS = frozenset(['mean', 'min', 'max', 'sum'])
 
 def groupby_to_arrays(df : pd.DataFrame, kname, vname, op):
     g = df.groupby(kname)[vname]
