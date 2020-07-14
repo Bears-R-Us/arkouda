@@ -5,7 +5,7 @@
 All Chapel unit tests are executed via the following make goal:
 
 ```
-make test
+make test-chapel
 ```
 
 Note: the Python unit test is executed first in the make test goal, followed by

@@ -59,7 +59,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     ak.v = False
-    ak.connect(args.hostname, args.port)
+    ak.connect(server=args.hostname, port=args.port)
 
     print((args.lgNv, args.Ne_per_v, args.prob, args.perm))
     (ii,jj) = gen_rmat_edges(args.lgNv, args.Ne_per_v, args.prob, perm=args.perm)
