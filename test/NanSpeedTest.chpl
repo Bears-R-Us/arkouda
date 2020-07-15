@@ -2,7 +2,7 @@ use TestBase;
 
 use ReductionMsg;
 
-config const ARRSIZE = 100_000_000;
+config const ARRSIZE = 10000;
 config const GROUPS = 64;
 config const MAX_VAL = 500_000;
 
