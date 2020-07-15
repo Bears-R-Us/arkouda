@@ -37,21 +37,21 @@ module ArraySetops
       return intersect1dHelper(a,b);
     }
 
-    // Get intersect of 2 arrays
-    // first concatenates the 2 arrays, then
-    // sorts arrays and removes all values that
-    // only occur once
-    proc intersect1dHelper(a: [] ?t, b: [] t) {
+    proc intersect1dHelper(a: [?D] ?t, b: [] t) {
       var aux = radixSortLSD_keys(concatset(a,b));
 
-      var head = sliceHead(aux);
-      var mask = head == sliceTail(aux);
-      
-      var int1d = boolIndexer(head, mask);
+      // All elements except the last
+      const ref head = aux[..D.high-1];
+
+      // All elements except the first
+      const ref tail = aux[D.low+1..];
+      const mask = head == tail;
+
+      const int1d = boolIndexer(head, mask);
 
       return int1d;
     }
-
+    
     // returns the exclusive-or of 2 arrays
     proc setxor1d(a: [] int, b: [] int, assume_unique: bool) {
       //if not unique, unique sort arrays then perform operation
