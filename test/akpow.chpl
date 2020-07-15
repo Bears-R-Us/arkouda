@@ -16,10 +16,10 @@ prototype module efuncTest
         var cmd = "create";
         var len = 5;
         var dtype = DType.Int64;
-        reqMsg = try! "%s %s %i".format(cmd, dtype2str(dtype), len);
+        reqMsg = try! "%s %i".format(dtype2str(dtype), len);
         var d: Diags;
         d.start();
-        repMsg = createMsg(reqMsg, st);
+        repMsg = createMsg(cmd=cmd, payload=reqMsg.encode(), st);
         d.stop("createMsg");
         writeRep(repMsg);
 
@@ -27,9 +27,9 @@ prototype module efuncTest
         var name = parseName(repMsg);
         dtype = DType.Int64;
         var v2= 2;
-        reqMsg = try! "%s %s %s %i".format(cmd, name, dtype2str(dtype), v2);
+        reqMsg = try! "%s %s %i".format(name, dtype2str(dtype), v2);
         d.start();
-        repMsg = setMsg(reqMsg, st);
+        repMsg = setMsg(cmd=cmd, payload=reqMsg.encode(), st);
         d.stop("setMsg");
         writeRep(repMsg);
 
@@ -38,9 +38,9 @@ prototype module efuncTest
         cmd = "create";
         len = 5;
         dtype = DType.Int64;
-        reqMsg = try! "%s %s %i".format(cmd, dtype2str(dtype), len);
+        reqMsg = try! "%s %i".format(dtype2str(dtype), len);
         d.start();
-        repMsg = createMsg(reqMsg, st);
+        repMsg = createMsg(cmd=cmd, payload=reqMsg.encode(), st);
         d.stop("createMsg");
         writeRep(repMsg);
 
@@ -48,9 +48,9 @@ prototype module efuncTest
         name = parseName(repMsg);
         dtype = DType.Int64;
         v2= -2;
-        reqMsg = try! "%s %s %s %i".format(cmd, name, dtype2str(dtype), v2);
+        reqMsg = try! "%s %s %i".format(name, dtype2str(dtype), v2);
         d.start();
-        repMsg = setMsg(reqMsg, st);
+        repMsg = setMsg(cmd=cmd, payload=reqMsg.encode(), st);
         d.stop("setMsg");
         writeRep(repMsg);
         
@@ -61,9 +61,9 @@ prototype module efuncTest
         
         dtype = DType.Int64;
         var value=-1;
-        reqMsg = try! "%s %s %s %s".format(cmd, op, aname,bname);
+        reqMsg = try! "%s %s %s".format(op, aname,bname);
         d.start();
-        repMsg = opeqvvMsg(reqMsg, st);
+        repMsg = opeqvvMsg(cmd=cmd, payload=reqMsg.encode(), st);
         d.stop("opeqvvMsg");
         writeRep(repMsg);
         st.pretty();

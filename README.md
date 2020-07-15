@@ -160,6 +160,7 @@ make chpldoc
 
 # Optionally add the Chapel executable (chpl) to the PATH for all users: /etc/environment
 export PATH=$CHPL_HOME/bin/linux64-x86_64/:$PATH
+
 ```
 
 As is the case with the MacOS install, it is highly recommended to install Anaconda to provide a Python environment 
@@ -211,6 +212,24 @@ There are two unit test suites for Arkouda, one for Python and one for Chapel. A
 test harness leverages the [pytest](https://docs.pytest.org/en/latest/) and [pytest-env](https://pypi.org/project/pytest-env/) 
 libraries, whereas the Chapel test harness does not require any external librares.
 
+The default Arkouda test executes the Python test harness and is invoked as follows:
+
+```bash
+make test
+```
+
+The Chapel unit tests can be executed as follows:
+
+```bash
+make test-chapel
+```
+
+Both the Python and Chapel unit tests are execuuted as follows:
+
+```bash
+make test-all
+```
+
 For more details regarding Arkouda testing, please consult the Python test [README](tests/README.md) and Chapel test
 [README](test/README.md), respectively.
 
@@ -260,7 +279,44 @@ Logging messages are turned on by default and turned off by using `--logging=fal
 
 Verbose messages are turned on by default and turned off by using  `--v=false`
 
+Arkouda features a token-based authentication mechanism analogous to Jupyter, where a randomized alphanumeric string is
+generated or loaded at arkouda_server startup. The command to start arkouda_server with token authentication is as follows:
+
+```bash
+./arkouda_server --authenticate
+```
+
+The generated token is saved to the tokens.txt file which is contained in the .arkouda directory located in the same 
+working directory the arkouda_server is launched from. The arkouda_server will re-use the same token until the 
+.arkouda/tokens.txt file is removed, which forces arkouda_server to generate a new token and corresponding
+tokens.txt file.
+
 Other command line options are available, view them by using `--help`
+
+```bash
+./arkouda-server --help
+```
+
+## Connecting to Arkouda
+
+The client connects to the arkouda_server either by supplying a host and port or by providing a url connect string:
+
+```
+arkouda.connect(host='localhost', port=5555)
+arkouda.connect(url='tcp://localhost:5555')
+```
+
+When arkouda_server is launched in authentication-enabled mode, clients connect by either specifying the access_token
+parameter or by adding the token to the end of the url connect string:
+
+```
+arkouda.connect(access_token='dcxCQntDQllquOsBNjBp99Pu7r3wDJn')
+arkouda.connect(url='tcp://localhost:5555?token=dcxCQntDQllquOsBNjBp99Pu7r3wDJn')
+```
+
+Note: once a client has successfully connected to an authentication-enabled arkouda_server, the token is cached in the
+user's $ARKOUDA_HOME .arkouda/tokens.txt file. _As long as the arkouda_server token remains the same, the user can
+connect without specifying the token via the access_token parameter or token url argument._
 
 ## Testing arkouda_server
 
@@ -276,6 +332,8 @@ against a running server by running the following Python command:
 ```bash
 python3 tests/check.py localhost 5555
 ```
+
+
 
 ## Contributing to Arkouda
 

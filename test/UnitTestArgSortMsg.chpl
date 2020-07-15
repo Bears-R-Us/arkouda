@@ -22,21 +22,21 @@ prototype module UnitTestArgSort
 
         // sort it and return iv in symbol table
         var cmd = "argsort";
-        reqMsg = try! "%s pdarray %s".format(cmd, aname);
+        reqMsg = try! "pdarray %s".format(aname);
         writeReq(reqMsg);
         var d: Diags;
         d.start();
-        repMsg = argsortMsg(reqMsg, st);
+        repMsg = argsortMsg(cmd=cmd, payload=reqMsg.encode(), st);
         d.stop("argsortMsg");
         writeRep(repMsg);
 
         // apply iv to pdarray return sorted array
         cmd = "[pdarray]";
         var ivname = parseName(repMsg); // get name from argsort reply msg
-        reqMsg = try! "%s %s %s".format(cmd, aname, ivname);
+        reqMsg = try! "%s %s".format(aname, ivname);
         writeReq(reqMsg);
         d.start();
-        repMsg = pdarrayIndexMsg(reqMsg, st);
+        repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg.encode(), st);
         d.stop("pdarrayIndexMsg");
         writeRep(repMsg);
 
@@ -45,10 +45,10 @@ prototype module UnitTestArgSort
         cmd = "reduction";
         var subCmd = "is_sorted";
         var bname = parseName(repMsg); // get name from [pdarray] reply msg
-        reqMsg = try! "%s %s %s".format(cmd, subCmd, bname);
+        reqMsg = try! "%s %s".format(subCmd, bname);
         writeReq(reqMsg);
         d.start();
-        repMsg = reductionMsg(reqMsg, st);
+        repMsg = reductionMsg(cmd=cmd, payload=reqMsg.encode(), st);
         d.stop("reductionMsg");
         writeln("ANSWER >>> ",repMsg," <<<");
 
@@ -57,27 +57,27 @@ prototype module UnitTestArgSort
 
         // cosort both int and real arrays and return iv in symbol table
         cmd = "coargsort";
-        reqMsg = try! "%s %i %s %s pdarray pdarray".format(cmd, 2, aname, fname);
+        reqMsg = try! "%i %s %s pdarray pdarray".format(2, aname, fname);
         writeReq(reqMsg);
         d.start();
-        repMsg = coargsortMsg(reqMsg, st);
+        repMsg = coargsortMsg(cmd=cmd, payload=reqMsg.encode(), st);
         d.stop("coargsortMsg");
         writeRep(repMsg);
 
         // apply iv to pdarray return sorted array
         cmd = "[pdarray]";
         var coivname = parseName(repMsg); // get name from argsort reply msg
-        reqMsg = try! "%s %s %s".format(cmd, aname, coivname);
+        reqMsg = try! "%s %s".format(aname, coivname);
         writeReq(reqMsg);
         d.start();
-        repMsg = pdarrayIndexMsg(reqMsg, st);
+        repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg.encode(), st);
         d.stop("pdarrayIndexMsg");
         writeRep(repMsg);
         var coaname = parseName(repMsg);
-        reqMsg = try! "%s %s %s".format(cmd, fname, coivname);
+        reqMsg = try! "%s %s".format(fname, coivname);
         writeReq(reqMsg);
         d.start();
-        repMsg = pdarrayIndexMsg(reqMsg, st);
+        repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg.encode(), st);
         d.stop("pdarrayIndexMsg");
         writeRep(repMsg);
         var cofname = parseName(repMsg);

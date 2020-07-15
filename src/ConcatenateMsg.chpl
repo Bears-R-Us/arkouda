@@ -16,10 +16,10 @@ module ConcatenateMsg
     /* Concatenate a list of arrays together
        to form one array
      */
-    proc concatenateMsg(reqMsg: string, st: borrowed SymTab) throws {
+    proc concatenateMsg(cmd: string, payload: bytes, st: borrowed SymTab) throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
-        var (cmd, nstr, objtype, rest) = reqMsg.splitMsgToTuple(4);
+        var (nstr, objtype, rest) = payload.decode().splitMsgToTuple(3);
         var n = try! nstr:int; // number of arrays to sort
         var fields = rest.split();
         const low = fields.domain.low;

@@ -27,11 +27,11 @@ module FindSegmentsMsg
     :throws: `UndefinedSymbolError(name)`
 
     */
-    proc findSegmentsMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc findSegmentsMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (cmd, pname, nkeysStr, rest) = reqMsg.splitMsgToTuple(4);
+        var (pname, nkeysStr, rest) = payload.decode().splitMsgToTuple(3);
         var nkeys = nkeysStr:int; // number of key arrays
         var fields = rest.split(); // split request into fields
         if (fields.size != 2*nkeys) { return incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(nkeys, (fields.size - 3)/2));}
@@ -163,11 +163,11 @@ module FindSegmentsMsg
         return try! "created " + st.attrib(sname) + " +created " + st.attrib(uname);
     }
 
-    proc findLocalSegmentsMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc findLocalSegmentsMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (cmd, kname) = reqMsg.splitMsgToTuple(2);
+        var (kname) = payload.decode().splitMsgToTuple(1);
 
         // get next symbol name
         var sname = st.nextName(); // segments

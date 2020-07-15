@@ -36,10 +36,10 @@ prototype module UnitTestArgSort
         var cmd = "localArgsort";
         var orig = toSymEntry(st.lookup(aname), int);
         writeIntArray(orig.a, filename+".original");
-        reqMsg = try! "%s %s".format(cmd, aname);
+        reqMsg = try! "%s".format(aname);
         var d: Diags;
         d.start();
-        repMsg = localArgsortMsg(reqMsg, st);
+        repMsg = localArgsortMsg(cmd=cmd, payload=reqMsg.encode(), st);
         d.stop("localArgsortMsg");
         writeRep(repMsg);
 
@@ -48,9 +48,9 @@ prototype module UnitTestArgSort
         var ivname = parseName(repMsg); // get name from argsort reply msg
         var iv = toSymEntry(st.lookup(ivname), int);
         writeIntArray(iv.a, filename+".permutation");
-        reqMsg = try! "%s %s %s".format(cmd, aname, ivname);
+        reqMsg = try! "%s %s".format(aname, ivname);
         d.start();
-        repMsg = pdarrayIndexMsg(reqMsg, st);
+        repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg.encode(), st);
         d.stop("pdarrayIndexMsg");
         writeRep(repMsg);
 
@@ -60,9 +60,9 @@ prototype module UnitTestArgSort
         var bname = parseName(repMsg); // get name from [pdarray] reply msg
         var locSorted = toSymEntry(st.lookup(bname), int);
         writeIntArray(locSorted.a, filename+".locally_sorted");
-        reqMsg = try! "%s %s %s".format(cmd, subCmd, bname);
+        reqMsg = try! "%s %s".format(subCmd, bname);
         d.start();
-        repMsg = reductionMsg(reqMsg, st);
+        repMsg = reductionMsg(cmd=cmd, payload=reqMsg.encode(), st);
         d.stop("reductionMsg");
         writeln("ANSWER >>> ",repMsg," <<<");
     }

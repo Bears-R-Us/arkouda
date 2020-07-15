@@ -34,18 +34,18 @@ module MsgProcessing
     /* 
     Parse, execute, and respond to a create message 
 
-    :arg reqMsg: request containing (cmd,dtype,size)
-    :type reqMsg: string 
+    :arg : payload
+    :type bytes: containing (dtype,size)
 
     :arg st: SymTab to act on
     :type st: borrowed SymTab 
 
     :returns: (string) response message
     */
-    proc createMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc createMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         // split request into fields
-        var (cmd, dtypestr, sizestr) = reqMsg.splitMsgToTuple(3);
+        var (dtypestr, sizestr) = payload.decode().splitMsgToTuple(2);
         var dtype = str2dtype(dtypestr);
         var size = try! sizestr:int;
 
@@ -71,10 +71,10 @@ module MsgProcessing
 
     :returns: (string) response message
     */
-    proc deleteMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc deleteMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         // split request into fields
-        var (cmd,name) = reqMsg.splitMsgToTuple(2);
+        var (name) = payload.decode().splitMsgToTuple(1);
         if v {try! writeln("%s %s".format(cmd,name));try! stdout.flush();}
         // delete entry from symbol table
         st.deleteEntry(name);
@@ -93,10 +93,10 @@ module MsgProcessing
 
     :returns: (string)
      */
-    proc infoMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc infoMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         // split request into fields
-        var (cmd,name) = reqMsg.splitMsgToTuple(2);
+        var (name) = payload.decode().splitMsgToTuple(1);
         if v {try! writeln("%s %s".format(cmd,name));try! stdout.flush();}
         // if name == "__AllSymbols__" passes back info on all symbols
         return st.info(name);
@@ -113,9 +113,9 @@ module MsgProcessing
 
     :returns: (string)
      */
-    proc getconfigMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc getconfigMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
-        var (cmd, _) = reqMsg.splitMsgToTuple(2); // split request into fields
+        var (_) = payload.decode().splitMsgToTuple(1); // split request into fields
         if v {try! writeln("%s".format(cmd));try! stdout.flush();}
         return getConfig();
     }
@@ -131,9 +131,9 @@ module MsgProcessing
 
     :returns: (string)
      */
-    proc getmemusedMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc getmemusedMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
-        var (cmd, _) = reqMsg.splitMsgToTuple(2); // split request into fields
+        var (_) = payload.decode().splitMsgToTuple(1); // split request into fields
         if v {try! writeln("%s".format(cmd));try! stdout.flush();}
         if (memTrack) {
             return (memoryUsed():uint * numLocales:uint):string;
@@ -154,10 +154,10 @@ module MsgProcessing
 
     :returns: (string)
    */
-    proc strMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc strMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         // split request into fields
-        var (cmd,name,ptstr) = reqMsg.splitMsgToTuple(3);
+        var (name, ptstr) = payload.decode().splitMsgToTuple(2);
         var printThresh = try! ptstr:int;
         if v {try! writeln("%s %s %i".format(cmd,name,printThresh));try! stdout.flush();}
         return st.datastr(name,printThresh);
@@ -174,10 +174,10 @@ module MsgProcessing
 
        :returns: (string)
       */ 
-    proc reprMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc reprMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         // split request into fields
-        var (cmd,name,ptstr) = reqMsg.splitMsgToTuple(3);
+        var (name, ptstr) = payload.decode().splitMsgToTuple(2);
         var printThresh = try! ptstr:int;
         if v {try! writeln("%s %s %i".format(cmd,name,printThresh));try! stdout.flush();}
         return st.datarepr(name,printThresh);
@@ -195,10 +195,10 @@ module MsgProcessing
 
     :returns: (string)
     */
-    proc arangeMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc arangeMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
 //        var (cmd, start, stop, stride) = try! (reqMsg.splitMsgToTuple(4): (string, int, int, int));
-        var (cmd, startstr, stopstr, stridestr) = reqMsg.splitMsgToTuple(4);
+        var (startstr, stopstr, stridestr) = payload.decode().splitMsgToTuple(3);
         var start = try! startstr:int;
         var stop = try! stopstr:int;
         var stride = try! stridestr:int;
@@ -234,10 +234,10 @@ module MsgProcessing
 
     :returns: (string)
     */
-    proc linspaceMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc linspaceMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
-//        var (cmd, start, stop, len) = try! ( reqMsg.splitMsgToTuple(4): (string, real, real, int));
-        var (cmd, startstr, stopstr, lenstr) = reqMsg.splitMsgToTuple(4);
+//        var (start, stop, len) = try! (payload.decode().splitMsgToTuple(3): (real, real, int));
+        var (startstr, stopstr, lenstr) = payload.decode().splitMsgToTuple(3);
         var start = try! startstr:real;
         var stop = try! stopstr:real;
         var len = try! lenstr:int;
@@ -276,10 +276,10 @@ module MsgProcessing
     :returns: (string)
     :throws: `UndefinedSymbolError(name)`
     */
-    proc setMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc setMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var (cmd, name, dtypestr, value) = reqMsg.splitMsgToTuple(4);
+        var (name, dtypestr, value) = payload.decode().splitMsgToTuple(3);
         var dtype = str2dtype(dtypestr);
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);

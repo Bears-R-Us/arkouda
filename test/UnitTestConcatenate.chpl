@@ -37,9 +37,9 @@ proc testConcat(n:int, minLen:int, maxLen:int) {
 
   writeSegString("\nStr 2, %i elem, %i bytes".format(str2.size, str2.nBytes), str2);
 
-  var reqMsg = "concatenate 2 str %s+%s %s+%s".format(s1Name, v1Name, s2Name, v2Name);
+  var reqMsg = "2 str %s+%s %s+%s".format(s1Name, v1Name, s2Name, v2Name);
   writeReq(reqMsg);
-  var repMsg = concatenateMsg(reqMsg, st);
+  var repMsg = concatenateMsg(cmd="concatenate", payload=reqMsg.encode(), st);
   writeRep(repMsg);
   var (resSegAttribStr, resValAttribStr) = repMsg.splitMsgToTuple('+', 2);
   var resSegAttrib = parseName(resSegAttribStr);
