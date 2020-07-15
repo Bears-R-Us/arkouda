@@ -27,8 +27,8 @@ proc testRegular(orig, segments) {
 }
 
 proc main() {
-  var orig = makeDistArray(ARRSIZE, int);
-  fillInt(orig, 0, 500000);
+  var orig = makeDistArray(ARRSIZE, real);
+  fillReal(orig, 0.0, 500000.0);
   var segments = makeDistArray(GROUPS, int);
   fillInt(segments, 1, GROUPS+1);
   
