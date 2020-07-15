@@ -74,9 +74,6 @@ def run_test(verbose=True):
     akkeys, akvals = akg.count()
     akvals = akvals.to_ndarray()
 
-    print(akvals)
-    print(pdvals)
-    
     for op in OPS:
         tests += 1
 
@@ -97,11 +94,9 @@ def run_test(verbose=True):
         if not do_check:
             continue
 
-        print(akvals)
         for i in range(pdvals.size):
             if np.isnan(pdvals[i]):
                 pdvals[i] = 0.0 # clear out any nans to match ak implementation
-        print(pdvals)
         failures += compare_keys(pdkeys, akkeys, pdvals, akvals)
 
     return failures

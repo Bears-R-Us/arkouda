@@ -264,7 +264,7 @@ module ReductionMsg
       // 'values_name' is the segmented array of values to be reduced
       // 'segments_name' is the sement offsets
       // 'operator' is the reduction operator
-      var (cmd, values_name, segments_name, operator, skip_nan) = payload.decode().splitMsgToTuple(5);
+      var (values_name, segments_name, operator, skip_nan) = payload.decode().splitMsgToTuple(4);
       var skipNan = stringtobool(skip_nan);
       
       var rname = st.nextName();
