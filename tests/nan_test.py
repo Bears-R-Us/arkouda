@@ -4,8 +4,8 @@ from context import arkouda as ak
 from base_test import ArkoudaTest
 import unittest
 
-SIZE = 10000
-GROUPS = 64
+SIZE = 1000
+GROUPS = 32
 verbose = True
 
 OPS = frozenset(['mean', 'min', 'max', 'sum'])
