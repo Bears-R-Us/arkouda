@@ -37,19 +37,17 @@ module ArraySetops
       return intersect1dHelper(a,b);
     }
 
-    proc intersect1dHelper(a: [?D] ?t, b: [] t) {
+    proc intersect1dHelper(a: [] ?t, b: [] t) {
       var aux = radixSortLSD_keys(concatset(a,b));
 
       // All elements except the last
-      const ref head = aux[..D.high-1];
+      const ref head = aux[..aux.domain.high-1];
 
       // All elements except the first
-      const ref tail = aux[D.low+1..];
+      const ref tail = aux[aux.domain.low+1..];
       const mask = head == tail;
 
-      const int1d = boolIndexer(head, mask);
-
-      return int1d;
+      return boolIndexer(head, mask);
     }
     
     // returns the exclusive-or of 2 arrays
