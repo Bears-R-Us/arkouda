@@ -4,76 +4,69 @@ import pandas as pd
 from context import arkouda as ak
 from base_test import ArkoudaTest
 
-if __name__ == "__main__":
-    import argparse, sys
-    parser = argparse.ArgumentParser(description="Runs and times reductions over arrays in both arkouda and numpy.")
-    parser.add_argument('hostname', help='Hostname of arkouda server')
-    parser.add_argument('port', type=int, help='Port of arkouda server')
-    parser.add_argument('-n', '--size', type=int, default=10**6, help='Problem size: length of array to argsort')
+SIZE = 1000
+OPS = frozenset(['intersect1d', 'union1d', 'setxor1d', 'setdiff1d'])
 
-    args = parser.parse_args()
-    ak.verbose = False
-    ak.connect(args.hostname, args.port)
-    print("size = ",args.size)
-    SIZE = args.size
-    a = ak.randint(0, 2*SIZE, SIZE)
-    b = ak.randint(0, 2*SIZE, SIZE)
+def make_arrays():
+    a = ak.randint(0, SIZE, SIZE)
+    b = ak.randint(SIZE/2, 2*SIZE, SIZE)
+    return a, b
 
+def compare_results(akvals, npvals) -> int:
+    '''
+    Compares the numpy and arkouda arrays via the numpy.allclose method with the
+    default relative and absolute tolerances, returning 0 if the arrays are similar
+    element-wise within the tolerances, 1 if they are dissimilar.element
     
-    set_union = ak.union1d(a,b)
-    print("union1d = ", set_union.size,set_union)
-    # elements in a or elements in b (or in both a and b)
-    passed = ak.all(ak.in1d(set_union,a) | ak.in1d(set_union,b))
-    print("union1d passed test: ",passed)
+    :return: 0 (identical) or 1 (dissimilar)
+    :rtype: int
+    '''
+    akvals = akvals.to_ndarray()
     
-    set_intersection = ak.intersect1d(a,b)
-    print("intersect1d = ", set_intersection.size,set_intersection)
-    # elements in a and elements in b (elements in both a and b)
-    passed = ak.all(ak.in1d(set_intersection,a) & ak.in1d(set_intersection,b))
-    print("intersect1d passed test: ",passed)
-    
-    set_difference = ak.setdiff1d(a,b)
-    print("setdiff1d = ", set_difference.size,set_difference)
-    # elements in a and not in b
-    passed = ak.all(ak.in1d(set_difference,a) & ak.in1d(set_difference,b,invert=True))
-    print("setdiff1d passed test: ",passed)
-    
-    set_xor = ak.setxor1d(a,b)
-    print("setxor1d = ", set_xor.size,set_xor)
-    # elements NOT in the intersection of a and b
-    passed = ak.all(ak.in1d(set_xor, set_intersection, invert=True))
-    print("setxor1d passed test: ",passed)
+    if not np.array_equal(akvals,npvals):
+        print(f"Different values (abs diff = {np.abs(akvals - npvals).sum()}")
+        return 1
+    return 0
 
-    ak.disconnect()
+def run_test(verbose=True):
+    '''
+    The run_test method enables execution of the set operations
+    intersect1d, union1d, setxor1d, and setdiff1d
+    on a randomized set of arrays. 
+    :return: 
+    '''
+    aka, akb = make_arrays()
+    print(aka)
+
+    tests = 0
+    failures = 0
+    not_impl = 0
+    
+    for op in OPS:
+        tests += 1
+        do_check = True
+        try:
+            fxn = getattr(ak, op)
+            akres = fxn(aka,akb)
+            fxn = getattr(np, op)
+            npres = fxn(aka.to_ndarray(), akb.to_ndarray())
+        except RuntimeError as E:
+            if verbose: print("Arkouda error: ", E)
+            not_impl += 1
+            do_check = False
+            continue
+        if not do_check:
+            continue
+        failures += compare_results(akres, npres)
+    
+    return failures
 
 class SetOpsTest(ArkoudaTest):
-
-    def setUp(self):
-        ArkoudaTest.setUp(self)
-        SIZE = 5
-        self.a = ak.randint(0, 2*SIZE, SIZE)
-        self.b = ak.randint(0, 2*SIZE, SIZE)     
-  
-    def testOneDimensionalSetUnion(self): 
-        set_union = ak.union1d(self.a,self.b)
-        # elements in a or elements in b (or in both a and b)
-        self.assertTrue(ak.all(ak.in1d(set_union,self.a) \
-                               | ak.in1d(set_union,self.b)))
-
-    def testOneDimensionalSetIntersection(self):
-        set_intersection = ak.intersect1d(self.a,self.b)
-        # elements in a and elements in b (elements in both a and b)
-        self.assertTrue(ak.all(ak.in1d(set_intersection,self.a) & \
-                               ak.in1d(set_intersection,self.b)))
-
-    def testOneDimensionalSetDifference(self):
-        set_difference = ak.setdiff1d(self.a,self.b)
-        # elements in a and not in b
-        self.assertTrue((ak.in1d(set_difference,self.a).all() & \
-                         ak.in1d(set_difference,self.b,invert=True).all()))
-
-    def testOneDimensionalSetXor(self):
-        set_xor = ak.setxor1d(self.a,self.b)
-        set_intersection = ak.intersect1d(self.a,self.b)
-        # elements NOT in the intersection of a and b
-        self.assertTrue(ak.all(ak.in1d(set_xor, set_intersection, invert=True)))
+    def test_setops(self):
+        '''
+        Executes run_test and asserts whether there are any errors
+        
+        :return: None
+        :raise: AssertionError if there are any errors encountered in run_test for set operations
+        '''
+        self.assertEqual(0, run_test())
