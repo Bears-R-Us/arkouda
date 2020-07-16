@@ -63,8 +63,8 @@ interactive session.
  * requires hdf5 
  * requires python 3.6 or greater
  * requires numpy
- * requires Sphinx and sphinx-argparse to build python documentation
- * requires pytest and pytest-env to execute the Python test harness
+ * requires pytest, pytest-env, and h5py to execute the Python test harness
+ * requires sphinx, sphinx-argparse, and sphinx-autoapi to generate docs
 
 ### MacOS Environment Installation
 
@@ -85,17 +85,7 @@ source ~/.bashrc
 
 # Otherwise, Python 3 can be installed with brew
 brew install python3
-# !!! the standard way of installing through pip3 installs an old version of arkouda
-# !!! the arkouda python client is available via pip
-# !!! pip will automatically install python dependencies (zmq and numpy)
-# !!! however, pip will not build the arkouda server (see below)
-# !!!pip3 install arkouda
-#
-# install the version of the arkouda python package which came with the arkouda_server
-# if you plan on editing the arkouda python package use the -e flag
-# from the local arkouda repo/directory run...
-pip3 install -e .
-#
+
 # these packages are nice but not a requirement
 pip3 install pandas
 pip3 install jupyter
@@ -104,8 +94,7 @@ pip3 install jupyter
 If it is preferred to build Chapel instead of using the brew install, the process is as follows:
 
 ```bash
-
-# on my mac build chapel in my home directory with these settings...
+# build chapel in the user home directory with these settings...
 export CHPL_HOME=~/chapel/chapel-1.22.0
 source $CHPL_HOME/util/setchplenv.bash
 export CHPL_COMM=gasnet
@@ -119,8 +108,8 @@ make
 # Build chpldoc to enable generation of Arkouda docs
 make chpldoc
 
-# Add the Chapel executable (chpl) to PATH either in ~/.bashrc (single user) 
-# or /etc/environment (all users):
+# Add the Chapel and Chapel Doc executables (chpl and chpldoc, respectiveley) to 
+# PATH either in ~/.bashrc (single user) or /etc/environment (all users):
 
 export PATH=$CHPL_HOME/bin/linux64-x86_64/:$PATH
 ```
@@ -130,7 +119,7 @@ export PATH=$CHPL_HOME/bin/linux64-x86_64/:$PATH
 There is no Linux Chapel install, so the first two steps in the Linux Arkouda install are 
 to install the Chapel dependencies followed by downloading and building Chapel:
 
-```
+```bash
 # Update Linux kernel and install Chapel dependencies
 sudo apt-get update
 sudo apt-get install gcc g++ m4 perl python python-dev python-setuptools bash make mawk git pkg-config
@@ -174,11 +163,11 @@ and manage Python dependencies:
 
 ## Building Arkouda
 
-Download, clone, or fork the [arkouda repo](https://github.com/mhmerrill/arkouda). Further instructions assume that 
-the current directory is the top-level directory of the repo.
+Download, clone, or fork the [arkouda repo](https://github.com/mhmerrill/arkouda). Further instructions assume 
+that the current directory is the top-level directory of the repo.
 
-If your environment requires non-system paths to find dependencies (e.g.,
-if using the ZMQ and HDF5 bundled with [Anaconda]), append each path to a new file `Makefile.paths` like so:
+If your environment requires non-system paths to find dependencies (e.g., if using the ZMQ and HDF5 bundled 
+with [Anaconda]), append each path to a new file `Makefile.paths` like so:
 
 ```make
 # Makefile.paths
@@ -200,17 +189,29 @@ make
 
 Now that the arkouda_server is built and tested, install the Python library
 
-## Installing the Arkouda Python Library
+## Installing the Arkouda Python Library and Dependencies
 
-```
+The Arkouda Python library along with it's dependent libraries are installed with pip. There are four types of 
+Python dependencies for the Arkouda developer to install: requires, dev, test, and doc. The required libraries, 
+which are the runtime dependencies of the Arkouda python library, are installed as follows:
+
+```bash
  pip3 install -e .
+```
+
+Arkouda and the Python libaries required for development, test, and doc generation activities are installed
+as follows:
+
+```bash
+pip3 install -e .[dev]
 ```
 
 ## Testing Arkouda
 
-There are two unit test suites for Arkouda, one for Python and one for Chapel. As mentioned above, the Arkouda Python 
-test harness leverages the [pytest](https://docs.pytest.org/en/latest/) and [pytest-env](https://pypi.org/project/pytest-env/) 
-libraries, whereas the Chapel test harness does not require any external librares.
+There are two unit test suites for Arkouda, one for Python and one for Chapel. As mentioned above, the Arkouda  
+Python test harness leverages multiple libraries such as [pytest](https://docs.pytest.org/en/latest/) and 
+[pytest-env](https://pypi.org/project/pytest-env/) that must be installed via `pip3 install -e .[test]`, 
+whereas the Chapel test harness does not require any external librares.
 
 The default Arkouda test executes the Python test harness and is invoked as follows:
 
@@ -235,23 +236,49 @@ For more details regarding Arkouda testing, please consult the Python test [READ
 
 ## Building the Arkouda documentation
 
-Make sure you've installed the Sphinx and sphinx-argparse packages (e.g. `pip3 install -U Sphinx sphinx-argparse`). _Important: if you've built Chapel, you must execute make chpldoc as detailed above._
+First ensure that all Python doc dependencies including sphinx and sphinx extensions have been installed as detailed 
+above. _Important: if Chapel was built locally, ```make chpldoc``` must be executed as detailed above to enable 
+generation of the Chapel docs via the chpldoc executable._
 
-Run `make doc` to build both the Arkouda python documentation and the Chapel server documentation
+Now that all doc generation dependencies for both Python and Chapel have been installed, there are three make targets for 
+generating docs:
 
-The output is currently in subdirectories of the `arkouda/doc`
+```bash
+# make doc-python generates the Python docs only
+make doc-python
+
+# make doc-server generates the Chapel docs only
+make doc-server
+
+# make doc generates both Python and Chapel documentation
+make doc
 ```
-arkouda/doc/python # python frontend documentation
-arkouda/doc/server # chapel backend server documentation 
+
+The Python docs are written out to the arkouda/docs directory while the Chapel docs are exported to the 
+arkouda/docs/server directory.
+
+```
+arkouda/docs/ # Python frontend documentation
+arkouda/docs/server # Chapel backend server documentation 
 ```
 
-To view the documentation for the Arkouda python client, point your browser to `file:///path/to/arkouda/doc/python/index.html`, 
-substituting the appropriate path for your configuration.
+To view the Arkouda documentation locally, type the following url into the browser of choice:
+ `file:///path/to/arkouda/docs/index.html`, substituting the appropriate path for the Arkouda directory configuration.
+
+The Arkouda documentation is hosted on [Github Pages](https://pages.github.com/) and forks of Arkouda can also host
+documentation on Github Pages. The make doc target detailed above prepares the Arkouda Python and Chapel docs for
+hosting both locally and on Github Pages.
+
+There are three easy steps to hosting Arkouda docs on Github Pages. First, the Arkouda docs generated via `make doc` 
+are pushed to the Arkouda or Arkouda fork _master branch_. Next, navigate to the Github project home and click the 
+"Settings" tab. Finally, scroll down to the Github Pages section and select the "master branch docs/ folder" source
+option. The Github Pages docs url will be displayed once the source option is selected. Click on the link and the
+Arkouda documentation homepage will be displayed.
 
 ## Running arkouda_server
 
 The command-line invocation depends on whether you built a single-locale version (with `CHPL_COMM=none`) or 
-multi-locale version (with `CHPL_COMM` set).
+multi-locale version (with `CHPL_COMM` set to the desired number of locales).
 
 Single-locale startup:
 
@@ -279,6 +306,14 @@ Logging messages are turned on by default and turned off by using `--logging=fal
 
 Verbose messages are turned on by default and turned off by using  `--v=false`
 
+Other command line options are available, view them by using `--help`
+
+```bash
+./arkouda-server --help
+```
+
+## Token-Based Authentication in Arkouda
+
 Arkouda features a token-based authentication mechanism analogous to Jupyter, where a randomized alphanumeric string is
 generated or loaded at arkouda_server startup. The command to start arkouda_server with token authentication is as follows:
 
@@ -291,17 +326,11 @@ working directory the arkouda_server is launched from. The arkouda_server will r
 .arkouda/tokens.txt file is removed, which forces arkouda_server to generate a new token and corresponding
 tokens.txt file.
 
-Other command line options are available, view them by using `--help`
-
-```bash
-./arkouda-server --help
-```
-
 ## Connecting to Arkouda
 
-The client connects to the arkouda_server either by supplying a host and port or by providing a url connect string:
+The client connects to the arkouda\_server either by supplying a host and port or by providing a url connect string:
 
-```
+```bash
 arkouda.connect(host='localhost', port=5555)
 arkouda.connect(url='tcp://localhost:5555')
 ```
@@ -309,14 +338,14 @@ arkouda.connect(url='tcp://localhost:5555')
 When arkouda_server is launched in authentication-enabled mode, clients connect by either specifying the access_token
 parameter or by adding the token to the end of the url connect string:
 
-```
-arkouda.connect(access_token='dcxCQntDQllquOsBNjBp99Pu7r3wDJn')
+```bash
+arkouda.connect(host='localhost', port=5555, access_token='dcxCQntDQllquOsBNjBp99Pu7r3wDJn')
 arkouda.connect(url='tcp://localhost:5555?token=dcxCQntDQllquOsBNjBp99Pu7r3wDJn')
 ```
 
 Note: once a client has successfully connected to an authentication-enabled arkouda_server, the token is cached in the
 user's $ARKOUDA_HOME .arkouda/tokens.txt file. _As long as the arkouda_server token remains the same, the user can
-connect without specifying the token via the access_token parameter or token url argument._
+connect without specifying the token via the access_token parameter or token url argument.
 
 ## Testing arkouda_server
 
@@ -332,8 +361,6 @@ against a running server by running the following Python command:
 ```bash
 python3 tests/check.py localhost 5555
 ```
-
-
 
 ## Contributing to Arkouda
 

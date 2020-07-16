@@ -30,7 +30,7 @@ jobs:
     - name: Build/Install Arkouda
       run: |
         make
-        python3 -m pip install -e .[test]
+        python3 -m pip install -e .[dev]
     - name: Arkouda make check
       run: |
         make check
@@ -54,7 +54,7 @@ jobs:
     - name: Build/Install Arkouda
       run: |
         make
-        python3 -m pip install -e .[test]
+        python3 -m pip install -e .[dev]
     - name: Arkouda make check
       run: |
         make check

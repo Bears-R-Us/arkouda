@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'arkouda'
-copyright = '2019, Michael Merrill and William Reus'
+copyright = '2020, Michael Merrill and William Reus'
 author = 'Michael Merrill and William Reus'
 
 # The full version, including alpha/beta/rc tags
@@ -30,7 +30,13 @@ release = '0.0.9'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'sphinxarg.ext']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon', 
+              'sphinxarg.ext', 'sphinx.ext.githubpages',
+              'sphinx.ext.coverage', 'autoapi.extension'
+             ]
+
+# path to directory containing files to autogenerate docs from comments
+autoapi_dirs = ['../arkouda']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
