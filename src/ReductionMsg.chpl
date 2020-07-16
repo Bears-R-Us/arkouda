@@ -264,9 +264,11 @@ module ReductionMsg
       // 'values_name' is the segmented array of values to be reduced
       // 'segments_name' is the sement offsets
       // 'operator' is the reduction operator
-      var (values_name, segments_name, operator) = payload.decode().splitMsgToTuple(3);
+      var (values_name, segments_name, operator, skip_nan) = payload.decode().splitMsgToTuple(4);
+      var skipNan = stringtobool(skip_nan);
+      
       var rname = st.nextName();
-      if v {try! writeln("%s %s %s %s".format(cmd,values_name,segments_name,operator));try! stdout.flush();}
+      if v {try! writeln("%s %s %s %s %s".format(cmd,values_name,segments_name,operator,skipNan));try! stdout.flush();}
       var gVal: borrowed GenSymEntry = st.lookup(values_name);
       var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
       var segments = toSymEntry(gSeg, int);
@@ -314,7 +316,7 @@ module ReductionMsg
         var values = toSymEntry(gVal, real);
         select operator {
           when "sum" {
-            var res = segSum(values.a, segments.a);
+            var res = segSum(values.a, segments.a, skipNan);
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "prod" {
@@ -322,15 +324,15 @@ module ReductionMsg
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "mean" {
-            var res = segMean(values.a, segments.a);
+            var res = segMean(values.a, segments.a, skipNan);
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "min" {
-            var res = segMin(values.a, segments.a);
+            var res = segMin(values.a, segments.a, skipNan);
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "max" {
-            var res = segMax(values.a, segments.a);
+            var res = segMax(values.a, segments.a, skipNan);
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "argmin" {
@@ -493,10 +495,17 @@ module ReductionMsg
        and then reduce over each chunk uisng the operator <Op>. The return array 
        of reduced values is the same size as <segments>.
      */
-    proc segSum(values:[] ?t, segments:[?D] int): [D] t {
+    proc segSum(values:[] ?t, segments:[?D] int, skipNan=false): [D] t {
       var res: [D] t;
       if (D.size == 0) { return res; }
-      var cumsum = + scan values;
+      var cumsum;
+      if (isFloatType(t) && skipNan) {
+        var arrCopy = [elem in values] if isnan(elem) then 0.0 else elem;
+        cumsum = + scan arrCopy;
+      }
+      else {
+        cumsum = + scan values;
+      }
       // Iterate over segments
       forall (i, r) in zip(D, res) {
         // Find the segment boundaries
@@ -513,7 +522,6 @@ module ReductionMsg
       }
       return res;
     }
-
 
     /* Per-Locale Segmented Reductions have the same form as segmented reductions:
        perLoc<Op>(values:[] t, segments: [] int)
@@ -611,11 +619,39 @@ module ReductionMsg
       return res;
     }
     
-    proc segMean(values:[] ?t, segments:[?D] int): [D] real {
+    proc segMean(values:[] ?t, segments:[?D] int, skipNan=false): [D] real {
       var res: [D] real;
       if (D.size == 0) { return res; }
-      var sums = segSum(values, segments);
-      var counts = segCount(segments, values.size);
+      var sums;
+      var counts;
+      if (isFloatType(t) && skipNan) {
+        // count cumulative nans over all values
+        var cumnans = isnan(values):int;
+        cumnans = + scan cumnans;
+        
+        // find cumulative nans at segment boundaries
+        var segnans: [D] int;
+        forall si in D {
+          if si == D.high {
+              segnans[si] = cumnans[cumnans.domain.high];
+          } else {
+              segnans[si] = cumnans[segments[si+1]-1];
+          }
+        }
+        
+        // take diffs of adjacent segments to find nan count in each segment
+        var nancounts: [D] int;
+        nancounts[D.low] = segnans[D.low];
+        nancounts[D.low+1..] = segnans[D.low+1..] - segnans[..D.high-1];
+        
+        // calculate sum and counts with nan values replaced with 0.0
+        var arrCopy = [elem in values] if isnan(elem) then 0.0 else elem;
+        sums = segSum(arrCopy, segments);
+        counts = segCount(segments, values.size) - nancounts;
+      } else {
+        sums = segSum(values, segments);
+        counts = segCount(segments, values.size);
+      }
       forall (r, s, c) in zip(res, sums, counts) {
         if (c > 0) {
           r = s:real / c:real;
@@ -647,11 +683,17 @@ module ReductionMsg
       return res:real / keyCounts:real;
     }
 
-    proc segMin(values:[?vD] ?t, segments:[?D] int): [D] t {
+    proc segMin(values:[?vD] ?t, segments:[?D] int, skipNan=false): [D] t {
       var res: [D] t = max(t);
       if (D.size == 0) { return res; }
       var keys = expandKeys(vD, segments);
-      var kv = [(k, v) in zip(keys, values)] (-k, v);
+      var kv: [keys.domain] (int, t);
+      if (isFloatType(t) && skipNan) {
+        var arrCopy = [elem in values] if isnan(elem) then max(real) else elem;
+        kv = [(k, v) in zip(keys, arrCopy)] (-k, v);
+      } else {
+        kv = [(k, v) in zip(keys, values)] (-k, v);
+      }
       var cummin = min scan kv;
       forall (i, r, low) in zip(D, res, segments) {
         var vi: int;
@@ -684,12 +726,19 @@ module ReductionMsg
       return res;
     }    
 
-    proc segMax(values:[?vD] ?t, segments:[?D] int): [D] t {
+    proc segMax(values:[?vD] ?t, segments:[?D] int, skipNan=false): [D] t {
       var res: [D] t = min(t);
       if (D.size == 0) { return res; }
       var keys = expandKeys(vD, segments);
-      var kv = [(k, v) in zip(keys, values)] (k, v);
+      var kv: [keys.domain] (int, t);
+      if (isFloatType(t) && skipNan) {
+        var arrCopy = [elem in values] if isnan(elem) then min(real) else elem;
+        kv = [(k, v) in zip(keys, arrCopy)] (k, v);
+      } else {
+        kv = [(k, v) in zip(keys, values)] (k, v);
+      }
       var cummax = max scan kv;
+      
       forall (i, r, low) in zip(D, res, segments) {
         var vi: int;
         if (i < D.high) {
@@ -1180,6 +1229,12 @@ module ReductionMsg
         r = (+ reduce [i in PrivateSpace] localUvals[i][keyInd]).size;
       }
       return res;
+    }
+
+    proc stringtobool(str: string): bool throws {
+      if str == "True" then return true;
+      else if str == "False" then return false;
+      throw new owned ErrorWithMsg("message: skipNan must be of type bool");
     }
 }
 

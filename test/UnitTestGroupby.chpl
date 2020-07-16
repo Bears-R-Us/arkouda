@@ -132,7 +132,8 @@ prototype module UnitTestGroupby
     // do segmented reduction
     if (STRATEGY == "default") {
       cmd = "segmentedReduction";
-      reqMsg = try! "%s %s %s".format(svname, segname, OPERATOR);
+      var skip_nan="False";
+      reqMsg = try! "%s %s %s %s".format(svname, segname, OPERATOR, skip_nan);
       //writeReq(reqMsg);
       d.start();
       repMsg = segmentedReductionMsg(cmd=cmd, payload=reqMsg.encode(), st);
