@@ -18,7 +18,7 @@ Welcome to arkouda's documentation!
    usage
    examples
    contributing
-
+   server/index
 
 Indices and tables
 ==================
