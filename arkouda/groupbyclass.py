@@ -164,7 +164,7 @@ class GroupBy:
         if verbose: print(repMsg)
         return self.unique_keys, create_pdarray(repMsg)
         
-    def aggregate(self, values, operator, skipna=False):
+    def aggregate(self, values, operator, skipna=True):
         '''
         Using the permutation stored in the GroupBy instance, group another array 
         of values and apply a reduction to each group's values. 
