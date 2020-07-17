@@ -97,6 +97,7 @@ class GroupBy:
                 mykeys = [self.keys]            
         else:
             mykeys = self.keys
+        keyobjs = [] # needed to maintain obj refs esp for h1 and h2 in the strings case
         keynames = []
         keytypes = []
         effectiveKeys = self.nkeys
@@ -104,17 +105,21 @@ class GroupBy:
             if isinstance(k, Strings):
                 if self.hash_strings:
                     h1, h2 = k.hash()
+                    keyobjs.extend[[h1,h2])
                     keynames.extend([h1.name, h2.name])
                     keytypes.extend([h1.objtype, h2.objtype])
                     effectiveKeys += 1
                 else:
+                    keyobjs.append(k)
                     keynames.append('{}+{}'.format(k.offsets.name, k.bytes.name))
                     keytypes.append(k.objtype)
             # for Categorical
             elif hasattr(k, 'codes'):
+                keyobjs.append(k)
                 keynames.append(k.codes.name)
                 keytypes.append(k.codes.objtype)
             elif isinstance(k, pdarray):
+                keyobjs.append(k)
                 keynames.append(k.name)
                 keytypes.append(k.objtype)
         reqMsg = "{} {} {:n} {} {}".format(cmd,
