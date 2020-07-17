@@ -118,7 +118,7 @@ which enables integration into a pytest test harness.
 class GroupByTest(ArkoudaTest): 
 
     # https://github.com/mhmerrill/arkouda/issues/365
-    @unittest.skip
+    #@unittest.skip
     def test_groupby_on_one_level(self):
         '''
         Executes run_test with levels=1 and asserts whether there are any errors
