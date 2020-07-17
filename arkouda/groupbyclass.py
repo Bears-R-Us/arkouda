@@ -105,7 +105,7 @@ class GroupBy:
             if isinstance(k, Strings):
                 if self.hash_strings:
                     h1, h2 = k.hash()
-                    keyobjs.extend[[h1,h2])
+                    keyobjs.extend([h1,h2])
                     keynames.extend([h1.name, h2.name])
                     keytypes.extend([h1.objtype, h2.objtype])
                     effectiveKeys += 1
