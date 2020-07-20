@@ -89,6 +89,7 @@ def array(a):
     fmt = ">{:n}{}".format(size, structDtypeCodes[a.dtype.name])
     req_msg = "array {} {:n} ".format(a.dtype.name, size).encode() + struct.pack(fmt, *a)
     rep_msg = generic_msg(req_msg, send_bytes=True)
+    print("THE MESSAGE {}".format(rep_msg))
     return create_pdarray(rep_msg)
 
 def zeros(size, dtype=np.float64):

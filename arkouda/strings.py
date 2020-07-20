@@ -1,7 +1,9 @@
+from typing import List
 from arkouda.client import generic_msg, verbose, pdarrayIterThresh
 from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value
 from arkouda.dtypes import *
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS
+import arkouda
 import numpy as np
 import json
 
@@ -15,6 +17,10 @@ class Strings:
     Represents an array of strings whose data resides on the
     arkouda server. The user should not call this class directly;
     rather its instances are created by other arkouda functions.
+    
+    Strings is composed of two pdarrays: (1) offsets, which contains the
+    starting indices for each string and (2) bytes, which contains the 
+    raw bytes of all strings, delimited by nulls.
 
     Attributes
     ----------
@@ -30,12 +36,15 @@ class Strings:
         The rank of the array (currently only rank 1 arrays supported)
     shape : tuple
         The sizes of each dimension of the array
+    arrays : List[pdarray]
+        List of pdarray objects composing the Strings object: bytes 
+        and offsets
     """
 
     BinOps = frozenset(["==", "!="])
     objtype = "str"
 
-    def __init__(self, offset_attrib, bytes_attrib):
+    def __init__(self, offset_attrib, bytes_attrib, name=None):
         if isinstance(offset_attrib, pdarray):
             self.offsets = offset_attrib
         else:
@@ -48,6 +57,8 @@ class Strings:
         self.nbytes = self.bytes.size
         self.ndim = self.offsets.ndim
         self.shape = self.offsets.shape
+        self.arrays = [self.bytes, self.offsets]
+        self.name = self.bytes.name
 
     def __iter__(self):
         # to_ndarray will error if array is too large to bring back
@@ -551,3 +562,20 @@ class Strings:
         for i, (o, l) in enumerate(zip(npoffsets, lengths)):
             res[i] = np.str_(''.join(chr(b) for b in npvalues[o:o+l]))
         return res
+
+    def save(self, prefix_path : str, mode : str='truncate') -> str:
+        """
+        Save the Strings objec to HDF5. The result is a collection of HDF5 files,
+        one file per locale of the arkouda server, where each filename starts
+        with prefix_path. Each locale saves its chunk of the array to its
+        corresponding file.
+
+        Parameters
+        ----------
+        prefix_path : str
+            Directory and filename prefix that all output files share
+        mode : {'truncate' | 'append'}
+            By default, truncate (overwrite) output files, if they exist.
+            If 'append', attempt to create new dataset in existing files.
+        """
+        return arkouda.save_all(columns=self.arrays, prefix_path=prefix_path, mode=mode)
