@@ -11,6 +11,10 @@ verbose = True
 def groupby_to_arrays(df : pd.DataFrame, kname, vname, op, levels):
     g = df.groupby(kname)[vname]
     agg = g.aggregate(op.replace('arg', 'idx'))
+    if op == 'prod':
+        # There appears to be a bug in pandas where it sometimes
+        # reports the product of a segment as NaN when it should be 0
+        agg[agg.isna()] = 0
     if levels==1:
         keys = agg.index.values
     else:
@@ -20,7 +24,7 @@ def groupby_to_arrays(df : pd.DataFrame, kname, vname, op, levels):
 def make_arrays():
     keys = np.random.randint(0, GROUPS, SIZE)
     keys2 = np.random.randint(0, GROUPS, SIZE)
-    i = np.random.randint(0, SIZE//GROUPS, SIZE)+1
+    i = np.random.randint(0, SIZE//GROUPS, SIZE)
     f = np.random.randn(SIZE) # normally dist random numbers
     b = (i % 2) == 0
     d = {'keys':keys, 'keys2':keys2, 'int64':i, 'float64':f, 'bool':b}
