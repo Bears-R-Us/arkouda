@@ -20,8 +20,8 @@ def groupby_to_arrays(df : pd.DataFrame, kname, vname, op, levels):
 def make_arrays():
     keys = np.random.randint(0, GROUPS, SIZE)
     keys2 = np.random.randint(0, GROUPS, SIZE)
-    i = np.random.randint(0, SIZE//GROUPS, SIZE)
-    f = np.random.randn(SIZE)
+    i = np.random.randint(0, SIZE//GROUPS, SIZE)+1
+    f = np.random.randn(SIZE) # normally dist random numbers
     b = (i % 2) == 0
     d = {'keys':keys, 'keys2':keys2, 'int64':i, 'float64':f, 'bool':b}
 
