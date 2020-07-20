@@ -81,9 +81,9 @@ def read_all(filenames, datasets=None, iterative=False):
 
     Returns
     -------
-    For a single dataset returns an Arkouda pdarray or an Arkouda Sring and
-    for multiple datasets returns a dictionary of Ardkouda pdarrays and
-    Arkouda Strings.
+    For a single dataset returns an Arkouda pdarray or Arkouda Strings object
+    and for multiple datasets returns a dictionary of Ardkouda pdarrays 
+    and Arkouda Strings.
         Dictionary of {datasetName: pdarray or String}
 
     See Also
@@ -139,7 +139,7 @@ def read_all(filenames, datasets=None, iterative=False):
         else:
             return create_pdarray(rep_msg)
 
-def load(path_prefix, dataset='array'):
+def load(path_prefix : str, dataset : str='array') -> pdarray:
     """
 
     Load a pdarray previously saved with ``pdarray.save()``.
@@ -208,7 +208,7 @@ def load_all(path_prefix):
     firstname = "{}_LOCALE0{}".format(prefix, extension)
     return {dataset: load(path_prefix, dataset=dataset) for dataset in get_datasets(firstname)}
 
-def save_all(columns, path_prefix, names=None, mode='truncate'):
+def save_all(columns, prefix_path, names=None, mode='truncate'):
     """
     Save multiple named pdarrays to HDF5 files.
 
@@ -216,7 +216,7 @@ def save_all(columns, path_prefix, names=None, mode='truncate'):
     ----------
     columns : dict or list of pdarrays
         Collection of arrays to save
-    path_prefix : str
+    prefix_path : str
         Directory and filename prefix for output files
     names : list of str
         Dataset names for the pdarrays
@@ -254,7 +254,7 @@ def save_all(columns, path_prefix, names=None, mode='truncate'):
     for arr, name in zip(pdarrays, names):
         # Append all pdarrays to existing files as new datasets EXCEPT the first one, and only if user requests truncation
         if mode.lower() not in 'append' and first_iter:
-            arr.save(path_prefix, dataset=name, mode='truncate')
+            arr.save(prefix_path=prefix_path, dataset=name, mode='truncate')
             first_iter = False
         else:
-            arr.save(path_prefix, dataset=name, mode='append')
+            arr.save(prefix_path=prefix_path, dataset=name, mode='append')

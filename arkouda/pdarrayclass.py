@@ -606,6 +606,7 @@ class pdarray:
             m = 0
         else:
             raise ValueError("Allowed modes are 'truncate' and 'append'")
+        print(self.name)
         rep_msg = generic_msg("tohdf {} {} {} {}".format(self.name, dataset, m, json.dumps([prefix_path])))
 
 
