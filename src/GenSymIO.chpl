@@ -668,7 +668,10 @@ module GenSymIO {
         var e = toSymEntry(entry, bool);
         warnFlag = write1DDistArray(filename, mode, dsetName, e.a);
       }
-      otherwise {
+      when DType.UInt8 {
+        var e = toSymEntry(entry, uint(8));
+        warnFlag = write1DDistArray(filename, mode, dsetName, e.a);
+      } otherwise {
         return unrecognizedTypeError("tohdf", dtype2str(entry.dtype));
       }
     }
