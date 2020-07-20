@@ -1,6 +1,9 @@
 # Arkouda (αρκούδα): NumPy-like arrays at massive scale backed by Chapel.
 ## _NOTE_: Arkouda is under the MIT license.
 
+## Online Documentation
+[Arkouda Online Documentation](https://arkouda.readthedocs.io/en/latest/)
+
 ## Gitter channels
 [Arkouda Gitter channel](https://gitter.im/ArkoudaProject/community)
 
