@@ -233,7 +233,7 @@ class GroupBy:
         """
         return self.aggregate(values, "sum", skipna)
     
-    def prod(self, values):
+    def prod(self, values, skipna=True):
         """
         Using the permutation stored in the GroupBy instance, group another array 
         of values and compute the product of each group's values. 
@@ -254,7 +254,7 @@ class GroupBy:
         -----
         The return dtype is always float64.
         """
-        return self.aggregate(values, "prod")
+        return self.aggregate(values, "prod", skipna)
     
     def mean(self, values, skipna=True):
         """
