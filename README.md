@@ -4,6 +4,8 @@
 ## Online Documentation
 [Arkouda Online Documentation](https://arkouda.readthedocs.io/en/latest/)
 
+[Arkouda PDF Documentation](https://arkouda.readthedocs.io/_/downloads/en/latest/pdf/)
+
 ## Gitter channels
 [Arkouda Gitter channel](https://gitter.im/ArkoudaProject/community)
 

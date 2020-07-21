@@ -22,10 +22,11 @@ copyright = '2020, Michael Merrill and William Reus'
 author = 'Michael Merrill and William Reus'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.9'
+release = '2020.07.07'
 
 
 # -- General configuration ---------------------------------------------------
+master_doc = 'index'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
