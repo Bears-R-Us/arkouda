@@ -320,7 +320,7 @@ module ReductionMsg
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "prod" {
-            var res = segProduct(values.a, segments.a);
+            var res = segProduct(values.a, segments.a, skipNan);
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "mean" {
@@ -585,20 +585,47 @@ module ReductionMsg
       return res;
     }
     
-    proc segProduct(values:[], segments:[?D] int): [D] real {
-      // Segmented sum of log-magnitudes
+    proc segProduct(values:[] ?t, segments:[?D] int, skipNan=false): [D] real {
+      /* Compute the product of values in each segment. The logic here 
+         is to convert the product into a sum in the log-domain. To 
+         operate in the log-domain, signs and zeros must be removed and 
+         handled separately at the end. Thus, we take the absolute 
+         value of the array and replace all zeros with ones, keeping 
+         track of the original signs and locations of zeros for later. 
+         In computing the result, if there are any zeros in the segment, 
+         the product is zero. Otherwise, the sign of the segment product 
+         is the parity of the negative bits in the segment.
+       */
+      // Regardless of input type, the product is real
       var res: [D] real = 0.0;
       if (D.size == 0) { return res; }
-      const epsilon:real = 1 / max(real);
-      var magnitudes = Math.abs(values);
-      var logs = Math.log(magnitudes:real + epsilon);
+      const isZero = (values == 0);
+      // Take absolute value, replacing zeros with ones
+      // Ones will become zeros in log-domain and not affect + scan
+      var magnitudes: [values.domain] real;
+      if (isFloatType(t) && skipNan) {
+        forall (m, v, z) in zip(magnitudes, values, isZero) {
+          if isnan(v) {
+            m = 1.0;
+          } else {
+            m = Math.abs(v) + z:real;
+          }
+        }
+      } else {
+        magnitudes = Math.abs(values) + isZero:real;
+      }
+      var logs = Math.log(magnitudes);
       var negatives = (Math.sgn(values) == -1);
-      forall (r, m, v, n) in zip(res,
-                                 segMin(magnitudes, segments),
+      forall (r, v, n, z) in zip(res,
                                  segSum(logs, segments),
-                                 segSum(negatives, segments)) {
-        if m > epsilon {
+                                 segSum(negatives, segments),
+                                 segSum(isZero, segments)) {
+        // if any zeros in segment, leave result zero
+        if z == 0 {
+          // n = number of negative values in segment
+          // if n is even, product is positive; if odd, negative
           var sign = -2*(n%2) + 1;
+          // v = the sum of log-magnitudes; must be exponentiated and signed
           r = sign * Math.exp(v);
         }
       }
