@@ -96,8 +96,8 @@ def connect(server : str="localhost", port : int=5555, timeout : int=0,
     # check to see if tunnelled connection is desired. If so, start tunnel
     tunnel_server = os.getenv('ARKOUDA_TUNNEL_SERVER')
     if tunnel_server:
-        _start_tunnel(addr=pspStr, tunnel_server=tunnel_server)
-
+        (pspStr, _) = _start_tunnel(addr=pspStr, tunnel_server=tunnel_server)
+    
     if verbose: print("psp = ",pspStr);
 
     # create and configure socket for connections to arkouda server
@@ -208,12 +208,13 @@ def _set_access_token(username : str, access_token : str,
         tokens = io_util.delimited_file_to_dict(path)
         return tokens.get(connect_string)
 
-def _start_tunnel(addr : str, tunnel_server : str) -> None:
+def _start_tunnel(addr : str, tunnel_server : str) -> str:
     """
     Starts ssh tunnel
     
     :param str tunnel_server: the ssh url
-    :return: None
+    :return: new tunneled-version of connect string
+    :rtype: str
     :raise: ConnectionError if the ssh tunnel could not be created given the
             tunnel_server url and credentials (either password or key file)
     """
@@ -229,7 +230,7 @@ def _start_tunnel(addr : str, tunnel_server : str) -> None:
         kwargs['password'] = password
 
     try: 
-        ssh.tunnel.open_tunnel(**kwargs)
+        return ssh.tunnel.open_tunnel(**kwargs)
     except Exception as e:
         raise ConnectionError(e)
 
