@@ -18,9 +18,8 @@ Welcome to arkouda's documentation!
    usage
    examples
    contributing
-   server/index
    autoapi/index
-   
+
 Indices and tables
 ==================
 
