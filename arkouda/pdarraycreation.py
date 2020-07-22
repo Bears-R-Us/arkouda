@@ -1,6 +1,6 @@
 import numpy as np
 import struct
-
+from typing import Union
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
@@ -12,9 +12,12 @@ __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", "arange",
            "linspace", "randint", "uniform", "standard_normal",
            "random_strings_uniform", "random_strings_lognormal"]
 
-def array(a):
+def array(a : Union[pdarray,np.ndarray]) -> Union[pdarray,Strings]:
     """
-    Convert an iterable to a pdarray, sending data to the arkouda server.
+    Convert an iterable to a pdarray or Strings object, sending the corresponding
+    data to the arkouda server. If the pdrray or ndarray is of type U, this
+    method is called twice recursively to create the Strings object and the
+    two corresponding pdarrays for string bytes and offsets, respectively.
 
     Parameters
     ----------
@@ -23,8 +26,9 @@ def array(a):
 
     Returns
     -------
-    pdarray
-        Instance of pdarray stored on arkouda server
+    pdarray or Strings
+        A pdarray instance stored on arkouda server or Strings instance, which
+        is composed of two pdarrays stored on arkouda server
 
     See Also
     --------
@@ -60,7 +64,7 @@ def array(a):
             raise TypeError("Argument must be array-like")
     # Only rank 1 arrays currently supported
     if a.ndim != 1:
-        raise RuntimeError("Only rank-1 arrays supported")
+        raise RuntimeError("Only rank-1 pdarrays or ndarrays supported")
     # Check if array of strings
     if a.dtype.kind == 'U':
         # Length of each string, plus null byte terminator
@@ -70,7 +74,9 @@ def array(a):
         # Allocate and fill bytes array with string segments
         nbytes = offsets[-1] + lengths[-1]
         if nbytes > maxTransferBytes:
-            raise RuntimeError("Creating pdarray would require transferring {} bytes, which exceeds allowed transfer size. Increase ak.maxTransferBytes to force.".format(nbytes))
+            raise RuntimeError(("Creating pdarray would require transferring {} bytes, which exceeds " +
+                                "allowed transfer size. Increase ak.maxTransferBytes to force.").\
+                                format(nbytes))
         values = np.zeros(nbytes, dtype=np.uint8)
         for s, o in zip(a, offsets):
             for i, b in enumerate(s.encode()):
@@ -92,7 +98,7 @@ def array(a):
     print("THE MESSAGE {}".format(rep_msg))
     return create_pdarray(rep_msg)
 
-def zeros(size, dtype=np.float64):
+def zeros(size : int, dtype : type=np.float64) -> pdarray:
     """
     Create a pdarray filled with zeros.
 
@@ -131,7 +137,7 @@ def zeros(size, dtype=np.float64):
     repMsg = generic_msg("create {} {}".format(dtype.name, size))
     return create_pdarray(repMsg)
 
-def ones(size, dtype=float64):
+def ones(size : int, dtype : type=float64) -> pdarray:
     """
     Create a pdarray filled with ones.
 
@@ -172,7 +178,7 @@ def ones(size, dtype=float64):
     a.fill(1)
     return a
 
-def zeros_like(pda):
+def zeros_like(pda : pdarray) -> pdarray:
     """
     Create a zero-filled pdarray of the same size and dtype as an existing pdarray.
 
@@ -195,7 +201,7 @@ def zeros_like(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def ones_like(pda):
+def ones_like(pda : pdarray) -> pdarray:
     """
     Create a one-filled pdarray of the same size and dtype as an existing pdarray.
 

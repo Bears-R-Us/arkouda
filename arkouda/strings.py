@@ -39,12 +39,14 @@ class Strings:
     arrays : List[pdarray]
         List of pdarray objects composing the Strings object: bytes 
         and offsets
+    name : str
+        Strings array name, defaults to strings_array
     """
 
     BinOps = frozenset(["==", "!="])
     objtype = "str"
 
-    def __init__(self, offset_attrib, bytes_attrib, name=None):
+    def __init__(self, offset_attrib, bytes_attrib, name='strings_array'):
         if isinstance(offset_attrib, pdarray):
             self.offsets = offset_attrib
         else:
@@ -58,7 +60,7 @@ class Strings:
         self.ndim = self.offsets.ndim
         self.shape = self.offsets.shape
         self.arrays = [self.bytes, self.offsets]
-        self.name = self.bytes.name
+        self.name = name
 
     def __iter__(self):
         # to_ndarray will error if array is too large to bring back
@@ -578,4 +580,6 @@ class Strings:
             By default, truncate (overwrite) output files, if they exist.
             If 'append', attempt to create new dataset in existing files.
         """
-        return arkouda.save_all(columns=self.arrays, prefix_path=prefix_path, mode=mode)
+        return arkouda.save_all(columns=[self.offsets,self.bytes], prefix_path=prefix_path, 
+                                          names=['/{}/values'.format(self.name), 
+                                          '/{}/segments'.format(self.name)],mode=mode)

@@ -12,12 +12,18 @@ module GenSymIO {
   config const SEGARRAY_OFFSET_NAME = "segments";
   config const SEGARRAY_VALUE_NAME = "values";
 
+  /*
+  Creates a pdarray server-side within the arkouda server and returns the
+  SymTab name used to retrieve it. 
+  */
   proc arrayMsg(cmd: string, payload: bytes, st: borrowed SymTab): string {
     var repMsg: string;
     var (dtypeBytes, sizeBytes, data) = payload.splitMsgToTuple(3);
     var dtype = str2dtype(try! dtypeBytes.decode());
     var size = try! sizeBytes:int;
     var tmpf:file;
+    
+    // Write the data payload that will compose the pdarray to memory buffer
     try {
       tmpf = openmem();
       var tmpw = tmpf.writer(kind=iobig);
@@ -26,7 +32,12 @@ module GenSymIO {
     } catch {
       return "Error: Could not write to memory buffer";
     }
+    
+    // Get the next name from the SymTab cache
     var rname = st.nextName();
+
+    // Read the data payload from the memory buffer, encapsulate within 
+    // a SymEntry, and write to the SymTab cache 
     try {
       var tmpr = tmpf.reader(kind=iobig, start=0);
       if dtype == DType.Int64 {
@@ -59,9 +70,12 @@ module GenSymIO {
     } catch {
       return "Error: Could not read from memory buffer into SymEntry";
     }
+    // Return message indicating the SymTable name corresponding to the
+    // newly-created pdarray
     return try! "created " + st.attrib(rname);
   }
 
+  
   proc tondarrayMsg(cmd: string, payload: bytes, st: borrowed SymTab): bytes throws {
     var arrayBytes: bytes;
     var entryStr = payload.decode();
@@ -734,6 +748,7 @@ module GenSymIO {
           writeln("Creating or truncating file");
         }
         file_id = C_HDF5.H5Fcreate(filenames[loc].c_str(), C_HDF5.H5F_ACC_TRUNC, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+        var group_id = C_HDF5.H5Gcreate2(file_id, "/strings_array", C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
         if file_id < 0 { // Negative file_id means error
           throw new owned FileNotFoundError();
         }
