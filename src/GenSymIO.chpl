@@ -1,6 +1,7 @@
 module GenSymIO {
   use HDF5;
   use IO;
+  use Path;
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
   use ServerErrorStrings;
@@ -697,7 +698,7 @@ module GenSymIO {
     const fields = filename.split(".");
     var prefix:string;
     var extension:string;
-    if fields.size == 1 {
+    if fields.size == 1 || fields[fields.domain.high].count(pathSep) > 0 {
       prefix = filename;
       extension = "";
     } else {
