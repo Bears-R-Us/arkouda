@@ -4,7 +4,7 @@ import pandas as pd
 from context import arkouda as ak
 from base_test import ArkoudaTest
 
-SIZE = 1000
+SIZE = 10
 OPS = frozenset(['intersect1d', 'union1d', 'setxor1d', 'setdiff1d'])
 
 def make_arrays():
@@ -24,7 +24,11 @@ def compare_results(akvals, npvals) -> int:
     akvals = akvals.to_ndarray()
     
     if not np.array_equal(akvals,npvals):
-        print(f"Different values (abs diff = {np.abs(akvals - npvals).sum()}")
+        akvals = ak.array(akvals)
+        npvals = ak.array(npvals)
+        innp = npvals[ak.in1d(ak.array(npvals), ak.array(akvals), True)] # values in np array, but not ak array
+        inak = akvals[ak.in1d(ak.array(akvals), ak.array(npvals), True)] # values in ak array, not not np array
+        print(f"(values in np but not ak: {innp}) (values in ak but not np: {inak})")
         return 1
     return 0
 
@@ -36,7 +40,6 @@ def run_test(verbose=True):
     :return: 
     '''
     aka, akb = make_arrays()
-    print(aka)
 
     tests = 0
     failures = 0
