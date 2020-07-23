@@ -7,6 +7,7 @@ module GenSymIO {
   use FileSystem;
   use Sort;
   use CommAggregation;
+  use NumPyDType;
 
   config const GenSymIO_DEBUG = false;
   config const SEGARRAY_OFFSET_NAME = "segments";
@@ -498,6 +499,8 @@ module GenSymIO {
     } catch e:DatasetNotFoundError {
       var group = C_HDF5.H5Gopen2(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT);
       if (group < 0) {
+        // 
+        try! writeln("The dataset is neither at the root of the HDF5 file not within a group");
         throw new owned SegArrayError();
       }
       var offsetDset = dsetName + "/" + SEGARRAY_OFFSET_NAME;
@@ -672,19 +675,19 @@ module GenSymIO {
       when DType.Int64 {
         var e = toSymEntry(entry, int);
         //C_HDF5.HDF5_WAR.H5LTmake_dataset_WAR(file_id, dsetName.c_str(), 1, c_ptrTo(dims), getHDF5Type(e.a.eltType), c_ptrTo(e.a));
-        warnFlag = write1DDistArray(filename, mode, dsetName, e.a);
+        warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.Int64);
       }
       when DType.Float64 {
         var e = toSymEntry(entry, real);
-        warnFlag = write1DDistArray(filename, mode, dsetName, e.a);
+        warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.Float64);
       }
       when DType.Bool {
         var e = toSymEntry(entry, bool);
-        warnFlag = write1DDistArray(filename, mode, dsetName, e.a);
+        warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.Bool);
       }
       when DType.UInt8 {
         var e = toSymEntry(entry, uint(8));
-        warnFlag = write1DDistArray(filename, mode, dsetName, e.a);
+        warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.UInt8);
       } otherwise {
         return unrecognizedTypeError("tohdf", dtype2str(entry.dtype));
       }
@@ -703,7 +706,7 @@ module GenSymIO {
     }
   }
 
-  proc write1DDistArray(filename, mode, dsetName, A) throws {
+  proc write1DDistArray(filename: string, mode: int, dsetName: string, A, array_type: DType) throws {
     /* Output is 1 file per locale named <filename>_<loc>, and a dataset
        named <dsetName> is created in each one. If mode==1 (append) and the
        correct number of files already exists, then a new dataset named
@@ -748,10 +751,17 @@ module GenSymIO {
           writeln("Creating or truncating file");
         }
         file_id = C_HDF5.H5Fcreate(filenames[loc].c_str(), C_HDF5.H5F_ACC_TRUNC, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
-        var group_id = C_HDF5.H5Gcreate2(file_id, "/strings_array", C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
-        if file_id < 0 { // Negative file_id means error
+        
+	if file_id < 0 { // Negative file_id means error
           throw new owned FileNotFoundError();
         }
+        
+	// If DType is UInt8, need to create strings_array group to enable read/load with Arkouda infrastructure
+	if array_type == DType.UInt8 {
+	  var group_id = C_HDF5.H5Gcreate2(file_id, "/strings_array", C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+          C_HDF5.H5Gclose(group_id);
+	}
+
         C_HDF5.H5Fclose(file_id);
       }
     }

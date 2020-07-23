@@ -194,7 +194,11 @@ module SegmentedMsg {
     otherwise {return notImplementedError(pn, objtype);}
     }
   }
-  
+
+
+  /*
+  Assigns an index to an incoming object
+  */ 
   proc segmentedIndexMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
@@ -203,6 +207,7 @@ module SegmentedMsg {
     var (subcmd, objtype, rest) = payload.decode().splitMsgToTuple(3);
     var fields = rest.split();
     var args: [1..#fields.size] string = fields; // parsed by subroutines
+    writeln("subcmd: %s objtype: %s rest: %s".format(subcmd,objtype,rest));
     try {
       select subcmd {
         when "intIndex" {
@@ -224,7 +229,10 @@ module SegmentedMsg {
       return "Error: unknown cause";
     }
   }
-  
+ 
+  /*
+  Returns the object corresponding to the index
+  */ 
   proc segIntIndex(objtype: string, args: [] string, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     select objtype {

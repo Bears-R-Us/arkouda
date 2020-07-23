@@ -614,7 +614,7 @@ class pdarray:
 #   only after:
 #       all values have been checked by python module and...
 #       server has created pdarray already befroe this is called
-def create_pdarray(repMsg):
+def create_pdarray(repMsg : str) -> pdarray:
     """
     Return a pdarray instance pointing to an array created by the arkouda server.
     The user should not call this function directly.
@@ -629,7 +629,11 @@ def create_pdarray(repMsg):
     if verbose: print("{} {} {} {} {} {}".format(name,mydtype,size,ndim,shape,itemsize))
     return pdarray(name,mydtype,size,ndim,shape,itemsize)
 
-def info(pda):
+def info(pda : pdarray) -> str:
+    """
+    Returns information about the pdarray instance
+
+    """
     if isinstance(pda, pdarray):
         return generic_msg("info {}".format(pda.name))
     elif isinstance(pda, str):
@@ -637,7 +641,7 @@ def info(pda):
     else:
         raise TypeError("info: must be pdarray or string {}".format(pda))
 
-def any(pda):
+def any(pda : pdarray) -> bool:
     """
     Return True iff any element of the array evaluates to True.
     """
@@ -647,7 +651,7 @@ def any(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def all(pda):
+def all(pda : pdarray) -> bool:
     """
     Return True iff all elements of the array evaluate to True.
     """

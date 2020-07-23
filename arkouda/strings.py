@@ -161,7 +161,7 @@ class Strings:
         else:
             raise TypeError("unsupported pdarray index type {}".format(type(key)))
 
-    def get_lengths(self):
+    def get_lengths(self) -> pdarray:
         """
         Return the length of each string in the array.
 
@@ -567,10 +567,13 @@ class Strings:
 
     def save(self, prefix_path : str, mode : str='truncate') -> str:
         """
-        Save the Strings objec to HDF5. The result is a collection of HDF5 files,
+        Save the Strings object to HDF5. The result is a collection of HDF5 files,
         one file per locale of the arkouda server, where each filename starts
         with prefix_path. Each locale saves its chunk of the array to its
         corresponding file.
+
+        Important implementation notes: (1) Strings state is saved as two datasets within
+        a group: offsets and values(2) save logic is delegated to pdarrayIO.save_all
 
         Parameters
         ----------
@@ -580,6 +583,6 @@ class Strings:
             By default, truncate (overwrite) output files, if they exist.
             If 'append', attempt to create new dataset in existing files.
         """
-        return arkouda.save_all(columns=[self.offsets,self.bytes], prefix_path=prefix_path, 
+        return arkouda.save_all(columns=[self.bytes,self.offsets], prefix_path=prefix_path, 
                                           names=['/{}/values'.format(self.name), 
                                           '/{}/segments'.format(self.name)],mode=mode)

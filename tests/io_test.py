@@ -56,7 +56,7 @@ class IOTest(ArkoudaTest):
           'float_pdarray'
         ]
 
-    def _create_file(self, path_prefix : str, columns : Union[Mapping[str,ak.array]], 
+    def _create_file(self, prefix_path : str, columns : Union[Mapping[str,ak.array]], 
                                            names : List[str]=None) -> None:
         '''
         Creates an hdf5 file with dataset(s) from the specified columns and path prefix
@@ -67,11 +67,11 @@ class IOTest(ArkoudaTest):
         :raise: ValueError if the names list is None when columns is a list
         '''       
         if isinstance(columns, dict):
-            ak.save_all(columns=columns, path_prefix=path_prefix)   
+            ak.save_all(columns=columns, prefix_path=prefix_path)   
         else:
             if not names:
                 raise ValueError('the names list must be not None if columns is a list')
-            ak.save_all(columns=columns, path_prefix=path_prefix, names=names)
+            ak.save_all(columns=columns, prefix_path=prefix_path, names=names)
     
     def testSaveAllLoadAllWithDict(self): 
 
@@ -83,7 +83,7 @@ class IOTest(ArkoudaTest):
         :return: None
         :raise: AssertionError if the input and returned datasets and pdarrays don't match
         '''
-        self._create_file(columns=self.dict_columns, path_prefix='{}/iotest_dict'.format(IOTest.io_test_dir))
+        self._create_file(columns=self.dict_columns, prefix_path='{}/iotest_dict'.format(IOTest.io_test_dir))
         retrieved_columns = ak.load_all('{}/iotest_dict'.format(IOTest.io_test_dir))
 
         self.assertEqual(3, len(retrieved_columns))
@@ -104,7 +104,7 @@ class IOTest(ArkoudaTest):
         :return: None
         :raise: AssertionError if the input and returned datasets and pdarrays don't match
         '''
-        self._create_file(columns=self.list_columns, path_prefix='{}/iotest_list'.format(IOTest.io_test_dir), 
+        self._create_file(columns=self.list_columns, prefix_path='{}/iotest_list'.format(IOTest.io_test_dir), 
                           names=self.names)
         retrieved_columns = ak.load_all(path_prefix='{}/iotest_list'.format(IOTest.io_test_dir))
 
@@ -127,7 +127,7 @@ class IOTest(ArkoudaTest):
         :raise: AssertionError if the h5ls output does not match expected value
         '''
         self._create_file(columns=self.dict_single_column, 
-                          path_prefix='{}/iotest_single_column'.format(IOTest.io_test_dir))
+                          prefix_path='{}/iotest_single_column'.format(IOTest.io_test_dir))
         message = ak.ls_hdf('{}/iotest_single_column_LOCALE0'.format(IOTest.io_test_dir))
         self.assertIn('int_tens_pdarray         Dataset', message)
 
@@ -142,9 +142,9 @@ class IOTest(ArkoudaTest):
         :raise: AssertionError if the input and returned datasets don't match
         '''
         self._create_file(columns=self.dict_single_column, 
-                          path_prefix='{}/iotest_single_column'.format(IOTest.io_test_dir))
+                          prefix_path='{}/iotest_single_column'.format(IOTest.io_test_dir))
         self._create_file(columns=self.dict_single_column, 
-                          path_prefix='{}/iotest_single_column_dupe'.format(IOTest.io_test_dir))
+                          prefix_path='{}/iotest_single_column_dupe'.format(IOTest.io_test_dir))
         
         dataset = ak.read_hdf(dsetName='int_tens_pdarray', 
                     filenames=['{}/iotest_single_column_LOCALE0'.format(IOTest.io_test_dir),
@@ -162,9 +162,9 @@ class IOTest(ArkoudaTest):
         :raise: AssertionError if the input and returned datasets don't match
         '''
         self._create_file(columns=self.dict_single_column, 
-                          path_prefix='{}/iotest_single_column'.format(IOTest.io_test_dir))
+                          prefix_path='{}/iotest_single_column'.format(IOTest.io_test_dir))
         self._create_file(columns=self.dict_single_column, 
-                          path_prefix='{}/iotest_single_column_dupe'.format(IOTest.io_test_dir))
+                          prefix_path='{}/iotest_single_column_dupe'.format(IOTest.io_test_dir))
         
         dataset = ak.read_hdf(dsetName='int_tens_pdarray', 
                     filenames='{}/iotest_single_column*'.format(IOTest.io_test_dir))
@@ -180,7 +180,7 @@ class IOTest(ArkoudaTest):
         :raise: AssertionError if the input and returned datasets don't match
         '''
         self._create_file(columns=self.dict_columns, 
-                          path_prefix='{}/iotest_dict_columns'.format(IOTest.io_test_dir))
+                          prefix_path='{}/iotest_dict_columns'.format(IOTest.io_test_dir))
         
         dataset = ak.read_all(filenames=['{}/iotest_dict_columns_LOCALE0'.format(IOTest.io_test_dir)])
         self.assertEqual(3, len(list(dataset.keys())))     
@@ -196,9 +196,9 @@ class IOTest(ArkoudaTest):
         :raise: AssertionError if the input and returned datasets don't match
         '''
         self._create_file(columns=self.dict_columns, 
-                          path_prefix='{}/iotest_dict_columns'.format(IOTest.io_test_dir))
+                          prefix_path='{}/iotest_dict_columns'.format(IOTest.io_test_dir))
         self._create_file(columns=self.dict_columns, 
-                          path_prefix='{}/iotest_dict_columns_dupe'.format(IOTest.io_test_dir))
+                          prefix_path='{}/iotest_dict_columns_dupe'.format(IOTest.io_test_dir))
         
         dataset = ak.read_all(filenames='{}/iotest_dict_columns*'.format(IOTest.io_test_dir))
 
@@ -217,7 +217,7 @@ class IOTest(ArkoudaTest):
         :raise: AssertionError if the input and returned datasets (pdarrays) don't match
         '''
         self._create_file(columns=self.dict_columns, 
-                          path_prefix='{}/iotest_dict_columns'.format(IOTest.io_test_dir)) 
+                          prefix_path='{}/iotest_dict_columns'.format(IOTest.io_test_dir)) 
         result_array_tens = ak.load(path_prefix='{}/iotest_dict_columns'.format(IOTest.io_test_dir), 
                                     dataset='int_tens_pdarray')
         result_array_hundreds = ak.load(path_prefix='{}/iotest_dict_columns'.format(IOTest.io_test_dir), 
@@ -238,7 +238,7 @@ class IOTest(ArkoudaTest):
         :raise: AssertionError if the input and returned dataset names don't match
         '''
         self._create_file(columns=self.dict_columns, 
-                          path_prefix='{}/iotest_dict_columns'.format(IOTest.io_test_dir))     
+                          prefix_path='{}/iotest_dict_columns'.format(IOTest.io_test_dir))     
         datasets = ak.get_datasets('{}/iotest_dict_columns_LOCALE0'.format(IOTest.io_test_dir))
 
         self.assertEqual(3, len(datasets)) 

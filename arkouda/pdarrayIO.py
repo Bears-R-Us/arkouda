@@ -186,7 +186,7 @@ def get_datasets(filename):
     datasets = [line.split()[0] for line in rep_msg.splitlines()]
     return datasets
 
-def load_all(path_prefix):
+def load_all(path_prefix, group=None):
     """
     Load multiple pdarray previously saved with ``save_all()``.
 
@@ -206,6 +206,8 @@ def load_all(path_prefix):
     """
     prefix, extension = os.path.splitext(path_prefix)
     firstname = "{}_LOCALE0{}".format(prefix, extension)
+    if group:
+        firstname = ''.join([firstname, '/', group])
     return {dataset: load(path_prefix, dataset=dataset) for dataset in get_datasets(firstname)}
 
 def save_all(columns, prefix_path, names=None, mode='truncate'):

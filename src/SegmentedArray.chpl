@@ -52,6 +52,7 @@ module SegmentedArray {
       values = vals;
       size = segs.size;
       nBytes = vals.size;
+      writeln(values);
     }
 
     proc init(segments: [] int, values: [] uint(8), st: borrowed SymTab) {

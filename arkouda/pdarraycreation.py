@@ -95,7 +95,6 @@ def array(a : Union[pdarray,np.ndarray]) -> Union[pdarray,Strings]:
     fmt = ">{:n}{}".format(size, structDtypeCodes[a.dtype.name])
     req_msg = "array {} {:n} ".format(a.dtype.name, size).encode() + struct.pack(fmt, *a)
     rep_msg = generic_msg(req_msg, send_bytes=True)
-    print("THE MESSAGE {}".format(rep_msg))
     return create_pdarray(rep_msg)
 
 def zeros(size : int, dtype : type=np.float64) -> pdarray:
@@ -224,7 +223,7 @@ def ones_like(pda : pdarray) -> pdarray:
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def arange(*args):
+def arange(*args) -> pdarray:
     """
     arange([start,] stop[, stride])
 
@@ -303,7 +302,7 @@ def arange(*args):
     else:
         raise TypeError("start,stop,stride must be type int {} {} {}".format(start,stop,stride))
 
-def linspace(start, stop, length):
+def linspace(start : int, stop : int, length : int) -> pdarray:
     """
     Create a pdarray of linearly spaced points in a closed interval.
 
@@ -344,7 +343,7 @@ def linspace(start, stop, length):
     return create_pdarray(repMsg)
 
 
-def randint(low, high, size, dtype=int64):
+def randint(low : int, high : int, size : int, dtype=int64) -> pdarray:
     """
     Generate a pdarray with random values in a specified range.
 
@@ -397,15 +396,15 @@ def randint(low, high, size, dtype=int64):
     return create_pdarray(repMsg)
 
 
-def uniform(size, low=0.0, high=1.0):
+def uniform(size : int, low : float=0.0, high : float=1.0):
     """
     Generate a pdarray with uniformly distributed random values in a specified range.
 
     Parameters
     ----------
-    low : int
+    low : float
         The low value (inclusive) of the range
-    high : int
+    high : float
         The high value (inclusive) of the range
     size : int
         The length of the returned array
@@ -423,7 +422,7 @@ def uniform(size, low=0.0, high=1.0):
     return randint(size, low=low, high=high, dtype='float64')
     
 
-def standard_normal(size):
+def standard_normal(size : int) -> pdarray:
     """
     Draw real numbers from the standard normal distribution.
 
@@ -454,7 +453,7 @@ def standard_normal(size):
     return create_pdarray(repMsg)
 
 
-def random_strings_uniform(minlen, maxlen, size, characters='uppercase'):
+def random_strings_uniform(minlen : int, maxlen : int, size : int, characters : str='uppercase') -> Strings:
     """
     Generate random strings with lengths uniformly distributed between 
     minlen and maxlen, and with characters drawn from a specified set.
@@ -490,7 +489,7 @@ def random_strings_uniform(minlen, maxlen, size, characters='uppercase'):
     return Strings(*(repMsg.split('+')))
 
 
-def random_strings_lognormal(logmean, logstd, size, characters='uppercase'):
+def random_strings_lognormal(logmean : float, logstd : float, size : int, characters : str='uppercase') -> Strings:
     """
     Generate random strings with log-normally distributed lengths and 
     with characters drawn from a specified set.
