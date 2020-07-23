@@ -11,3 +11,4 @@ from arkouda.strings import *
 from arkouda.join import *
 from arkouda.registration import *
 from arkouda.categorical import *
+from arkouda.reductions import *
