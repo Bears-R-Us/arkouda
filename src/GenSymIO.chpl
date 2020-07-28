@@ -270,6 +270,10 @@ module GenSymIO {
     if GenSymIO_DEBUG {
       writeln("Got subdomains and total length");
     }
+    try! writeln("********************SUBDOMS*********************");
+    try! writeln(subdoms);
+    try! writeln("*****************TOTAL LENGTH*******************");
+    try! writeln(len);
     select (isSegArray, dataclass) {
     when (true, C_HDF5.H5T_INTEGER) {
       if (bytesize != 1) || isSigned {
@@ -687,6 +691,9 @@ module GenSymIO {
       }
       when DType.UInt8 {
         var e = toSymEntry(entry, uint(8));
+        writeln("THE ENTRY*****************************");
+        writeln(entry);
+        writeln(e.a);
         warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.UInt8);
       } otherwise {
         return unrecognizedTypeError("tohdf", dtype2str(entry.dtype));
@@ -755,7 +762,8 @@ module GenSymIO {
 	if file_id < 0 { // Negative file_id means error
           throw new owned FileNotFoundError();
         }
-        
+	try! writeln(filenames[loc]);
+	try! writeln(file_id); 
 	// If DType is UInt8, need to create strings_array group to enable read/load with Arkouda infrastructure
 	if array_type == DType.UInt8 {
 	  var group_id = C_HDF5.H5Gcreate2(file_id, "/strings_array", C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
@@ -772,7 +780,13 @@ module GenSymIO {
         }
         var myFileID = C_HDF5.H5Fopen(myFilename.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
         const locDom = A.localSubdomain();
+        writeln("FileID*********************************");
+        writeln(myFileID);
+        writeln("Locale*********************************");
+        writeln(locDom);
         var dims: [0..#1] C_HDF5.hsize_t;
+        writeln("*************************************THE DIMS*************************************************");
+        writeln(dims);
         dims[0] = locDom.size: C_HDF5.hsize_t;
         var myDsetName = "/" + dsetName;
 
