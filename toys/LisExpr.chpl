@@ -22,7 +22,7 @@ module LisExpr
         
         /* initialize the list value type so we can test it at runtime */
         proc init(type lvtype) {
-            if (lvtype == list(GenListValue)) {lvt = LVT.Lst;}
+            if (lvtype == GenList)            {lvt = LVT.Lst;}
             if (lvtype == Symbol)             {lvt = LVT.Sym;}
             if (lvtype == int)                {lvt = LVT.I;}
             if (lvtype == real)               {lvt = LVT.R;}
@@ -33,10 +33,10 @@ module LisExpr
             return try! this :borrowed ListValue(lvtype);
         }
 
+        /* returns a copy of this... an owned GenListValue */
         proc copy(): owned GenListValue throws {
           select (this.lvt) {
             when (LVT.Lst) {
-              //              var copyList = copyOwnedList(this.toListValue(list(owned GenListValue)).lv);
               var copyList = copyOwnedList(this.toListValue(GenList).lv);
               return new owned ListValue(copyList);
             }
@@ -52,7 +52,6 @@ module LisExpr
             otherwise {throw new owned ErrorWithMsg("not implemented");}
           }
         }
-        
     }
     
     /* concrete list value */
@@ -65,16 +64,23 @@ module LisExpr
         proc init(val: ?vtype) {
             super.init(vtype);
             this.lvtype = vtype;
+            // for non-lists, we can just initialize via assignment
+            if (!isListType(vtype)) {
+              this.lv = val;
+            }
             this.complete();
+            // for lists, we need a helper function; see copyOwnedList() for
+            // an explanation.
             if (isListType(vtype)) {
               try! copyOwnedList(this.lv, val);
-            } else {
-              this.lv = val;
             }
         }
         
     }
 
+    // Helpers to determine whether something is a list or not.
+    // Should we have to write these ourselves?  See
+    // https://github.com/chapel-lang/chapel/issues/16171
     proc isListType(type t: list(?)) param {
       return true;
     }
@@ -83,12 +89,15 @@ module LisExpr
       return false;
     }
 
-    proc copyOwnedList(ref dst: list(?t,?p), src: list(t, ?p2)) throws {
-      for item in src {
-        dst.append(item.copy());
-      }
-    }
-
+    // lists of non-nilable owned aren't copyable via assignment
+    // because it's not clear what would happen to the rhs 'owned'
+    // variables.  They'd transfer ownership which would make the
+    // original list useless; and even if that was OK, there's no good
+    // value to assign to the RHS list elements.  In the context of
+    // this work, we know we'd want to deep copy such lists, so the
+    // following two helpers do that in one-arg (+ return) and
+    // two-args forms.  For further discussion on this, see
+    // https://github.com/chapel-lang/chapel/issues/16167
     proc copyOwnedList(src: list(?t, ?p)): list(t, p) throws {
       var dst: list(t, p);
       for item in src {
@@ -97,16 +106,12 @@ module LisExpr
       return dst;
     }
 
-    
-    /*
-    proc (list(owned GenListValue, ?)).init=(lhs: list(owned GenListValue, ?p)) {
-      compilerWarning("In my initializer");
-      for l in lhs do
-        this.append(l.copy());
+    proc copyOwnedList(ref dst: list(?t,?p), src: list(t, ?p2)) throws {
+      for item in src {
+        dst.append(item.copy());
+      }
     }
-    */
-        
-    
+
     // allowed value types int and real
     enum VT {I, R};
 
@@ -299,7 +304,7 @@ module LisExpr
 
         /* delete entry -- not sure if we need this */
         proc deleteEntry(name: string) {
-            use IO;
+            import IO.stdout;
             if (tD.contains(name)) {
                 tab[name] = nil;
                 tD -= name;
@@ -320,18 +325,26 @@ module LisExpr
       tokenize the prog
     */
     proc tokenize(line: string) {
-      var l: list(string);
-      for token in line.replace("("," ( ").replace(")"," ) ").split() do
-        l.append(token);
-      return l;
+        // Want:
+        //   var l: list(string) = line.replace("("," ( ").replace(")"," ) ").split()
+        // Workaround (see https://github.com/chapel-lang/chapel/issues/16166):
+
+        var l: list(string);
+        for token in line.replace("("," ( ").replace(")"," ) ").split() do
+          l.append(token);
+        return l;
     }
     
     /*
       parse, check, and validate code and all symbols in the tokenized prog
     */ 
     proc parse(line: string): owned GenListValue throws {
-                                                         var l: list(string) = tokenize(line);
-                                                         
+        // Want:
+        //   return read_from_tokens(tokenize(line));
+        //
+        // Workaround (see https://github.com/chapel-lang/chapel/issues/16170):
+
+        var l: list(string) = tokenize(line);
         return read_from_tokens(l);
     }
     
@@ -340,28 +353,18 @@ module LisExpr
       as a list of atoms and lists
     */
     proc read_from_tokens(ref tokens: list(string)): owned GenListValue throws {
-                                                                                //writeln("In read_from_tokens(", tokens, ")");
         if (tokens.size == 0) then
             throw new owned ErrorWithMsg("SyntaxError: unexpected EOF");
-        //                                                                                                                                                                    writeln("pre-pop: ", tokens);
-                                                                                                                                                                    
+
+        // Open Q: If we were to parse from the back of the string to the
+        // front, could this be more efficient since popping from the
+        // front of a list is an expensive operation?
+
         var token = tokens.pop(0);
-        //                                                                                                                                                                    writeln("post-pop: ", tokens);
-                                                                                                                                                                    
         if (token == "(") {
-          //          writeln("inside conditional: ", tokens);
-          
             var L: GenList;
-            //            writeln("before while loop: ", tokens);
-            
             while (tokens.first() != ")") {
-              //              writeln("inside while loop: ", tokens);
-              
-              //              writeln("calling recursively with: ", tokens);
-              
                 L.append(read_from_tokens(tokens));
-                //                writeln("returned from read_from_tokens()");
-                
                 if (tokens.size == 0) then
                     throw new owned ErrorWithMsg("SyntaxError: unexpected EOF");
             }
@@ -428,8 +431,7 @@ module LisExpr
                 return new owned Value(ret);
             }
             when (LVT.Lst) {
-                //                ref lst = ast.toListValue(GenList).lv;
-                var lst = copyOwnedList(ast.toListValue(GenList).lv);            
+                ref lst = ast.toListValue(GenList).lv;
                 // no empty lists allowed
                 checkGEqLstSize(lst,1);
                 // currently first list element must be a symbol of operator
@@ -502,8 +504,7 @@ module LisExpr
             var D = {0..#N};
             var A: [D] int = D;
             var B: [D] int;
-
-            //            writeln("entering for loop");
+            
             // this could have the advantage of not creating array temps like the rest of arkouda does
             // forall (a,b) in zip(A,B) with (var ast = try! parse(prog3), var env = new owned Env()) {
             //forall (a,b) in zip(A,B) {
