@@ -12,6 +12,9 @@ module LisExpr
     
     type Symbol = string;
 
+    /* type: list of genric list values */
+    type GenList = list(owned GenListValue);
+
     /* generic list value */
     class GenListValue
     {
@@ -32,8 +35,9 @@ module LisExpr
 
         proc copy(): owned GenListValue throws {
           select (this.lvt) {
-            when (LVT.Sym) {
-              var copyList = copyOwnedList(this.toListValue(list(owned GenListValue)).lv);
+            when (LVT.Lst) {
+              //              var copyList = copyOwnedList(this.toListValue(list(owned GenListValue)).lv);
+              var copyList = copyOwnedList(this.toListValue(GenList).lv);
               return new owned ListValue(copyList);
             }
             when (LVT.Sym) {
@@ -103,9 +107,6 @@ module LisExpr
     */
         
     
-    /* type: list of genric list values */
-    type GenList = list(owned GenListValue);
-
     // allowed value types int and real
     enum VT {I, R};
 
@@ -329,21 +330,38 @@ module LisExpr
       parse, check, and validate code and all symbols in the tokenized prog
     */ 
     proc parse(line: string): owned GenListValue throws {
-        return read_from_tokens(tokenize(line));
+                                                         var l: list(string) = tokenize(line);
+                                                         
+        return read_from_tokens(l);
     }
     
     /*
       parse throught the list of tokens generating the parse tree / AST
       as a list of atoms and lists
     */
-    proc read_from_tokens(in tokens: list(string)): owned GenListValue throws {
+    proc read_from_tokens(ref tokens: list(string)): owned GenListValue throws {
+                                                                                //writeln("In read_from_tokens(", tokens, ")");
         if (tokens.size == 0) then
             throw new owned ErrorWithMsg("SyntaxError: unexpected EOF");
+        //                                                                                                                                                                    writeln("pre-pop: ", tokens);
+                                                                                                                                                                    
         var token = tokens.pop(0);
+        //                                                                                                                                                                    writeln("post-pop: ", tokens);
+                                                                                                                                                                    
         if (token == "(") {
+          //          writeln("inside conditional: ", tokens);
+          
             var L: GenList;
+            //            writeln("before while loop: ", tokens);
+            
             while (tokens.first() != ")") {
+              //              writeln("inside while loop: ", tokens);
+              
+              //              writeln("calling recursively with: ", tokens);
+              
                 L.append(read_from_tokens(tokens));
+                //                writeln("returned from read_from_tokens()");
+                
                 if (tokens.size == 0) then
                     throw new owned ErrorWithMsg("SyntaxError: unexpected EOF");
             }
@@ -415,32 +433,32 @@ module LisExpr
                 // no empty lists allowed
                 checkGEqLstSize(lst,1);
                 // currently first list element must be a symbol of operator
-                checkSymbol(lst[1]);
-                var op = lst[1].toListValue(Symbol).lv;
+                checkSymbol(lst[0]);
+                var op = lst[0].toListValue(Symbol).lv;
                 select (op) {
-                    when "+"  {checkEqLstSize(lst,3); return eval(lst[2], env) + eval(lst[3], env);}
-                    when "-"  {checkEqLstSize(lst,3); return eval(lst[2], env) - eval(lst[3], env);}
-                    when "*"  {checkEqLstSize(lst,3); return eval(lst[2], env) * eval(lst[3], env);}
-                    when "<"  {checkEqLstSize(lst,3); return eval(lst[2], env) < eval(lst[3], env);}
-                    when ">"  {checkEqLstSize(lst,3); return eval(lst[2], env) > eval(lst[3], env);}
-                    when "<="  {checkEqLstSize(lst,3); return eval(lst[2], env) <= eval(lst[3], env);}
-                    when ">="  {checkEqLstSize(lst,3); return eval(lst[2], env) >= eval(lst[3], env);}
-                    when "==" {checkEqLstSize(lst,3); return eval(lst[2], env) == eval(lst[3], env);}
-                    when "!=" {checkEqLstSize(lst,3); return eval(lst[2], env) != eval(lst[3], env);}
-                    when "or" {checkEqLstSize(lst,3); return or(eval(lst[2], env), eval(lst[3], env));}
-                    when "and" {checkEqLstSize(lst,3); return and(eval(lst[2], env), eval(lst[3], env));}
-                    when "not" {checkEqLstSize(lst,2); return not(eval(lst[2], env));}
+                    when "+"  {checkEqLstSize(lst,3); return eval(lst[1], env) + eval(lst[2], env);}
+                    when "-"  {checkEqLstSize(lst,3); return eval(lst[1], env) - eval(lst[2], env);}
+                    when "*"  {checkEqLstSize(lst,3); return eval(lst[1], env) * eval(lst[2], env);}
+                    when "<"  {checkEqLstSize(lst,3); return eval(lst[1], env) < eval(lst[2], env);}
+                    when ">"  {checkEqLstSize(lst,3); return eval(lst[1], env) > eval(lst[2], env);}
+                    when "<="  {checkEqLstSize(lst,3); return eval(lst[1], env) <= eval(lst[2], env);}
+                    when ">="  {checkEqLstSize(lst,3); return eval(lst[1], env) >= eval(lst[2], env);}
+                    when "==" {checkEqLstSize(lst,3); return eval(lst[1], env) == eval(lst[2], env);}
+                    when "!=" {checkEqLstSize(lst,3); return eval(lst[1], env) != eval(lst[2], env);}
+                    when "or" {checkEqLstSize(lst,3); return or(eval(lst[1], env), eval(lst[2], env));}
+                    when "and" {checkEqLstSize(lst,3); return and(eval(lst[1], env), eval(lst[2], env));}
+                    when "not" {checkEqLstSize(lst,2); return not(eval(lst[1], env));}
                     when "set!" {
                         checkEqLstSize(lst,3);
-                        checkSymbol(lst[2]);
-                        var name = lst[2].toListValue(Symbol).lv;
+                        checkSymbol(lst[1]);
+                        var name = lst[1].toListValue(Symbol).lv;
                         // addEnrtry redefines values for already existing entries
-                        var gv = env.addEntry(name, eval(lst[3],env));
+                        var gv = env.addEntry(name, eval(lst[2],env));
                         return gv.copy(); // return value assigned to symbol
                     }
                     when "if" {
                         checkEqLstSize(lst,4);
-                        if isTrue(eval(lst[2], env)) {return eval(lst[3], env);} else {return eval(lst[4], env);}
+                        if isTrue(eval(lst[1], env)) {return eval(lst[2], env);} else {return eval(lst[3], env);}
                     }
                     otherwise {
                         throw new owned ErrorWithMsg("op not implemented %t".format(op));
@@ -484,7 +502,8 @@ module LisExpr
             var D = {0..#N};
             var A: [D] int = D;
             var B: [D] int;
-            
+
+            //            writeln("entering for loop");
             // this could have the advantage of not creating array temps like the rest of arkouda does
             // forall (a,b) in zip(A,B) with (var ast = try! parse(prog3), var env = new owned Env()) {
             //forall (a,b) in zip(A,B) {
