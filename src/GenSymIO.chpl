@@ -138,19 +138,25 @@ module GenSymIO {
     return array;
   }
 
+  /*
+  Spawns a separate Chapel process that executes the HDF5 h5ls method and returns
+  
+  */
   proc lshdfMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
-    write("In lsdhdfMsg()");
+    writeln("In lsdhdfMsg()");
     // reqMsg: "lshdf [<json_filename>]"
     use Spawn;
     const tmpfile = "/tmp/arkouda.lshdf.output";
     var repMsg: string;
     var (jsonfile) = payload.decode().splitMsgToTuple(1);
+    writeln("ls jsonfile %s".format(jsonfile));
     var filename: string;
     try {
       filename = decode_json(jsonfile, 1)[0];
     } catch {
       return try! "Error: could not decode json filenames via tempfile (%i files: %s)".format(1, jsonfile);
     }
+    writeln("ls FILENAME %s".format(filename));
     // Attempt to interpret filename as a glob expression and ls the first result
     var tmp = glob(filename);
     if GenSymIO_DEBUG {
@@ -456,6 +462,9 @@ module GenSymIO {
     return try! rnames.strip(" , ", leading = false, trailing = true);
   }
 
+  /*
+  
+  */
   proc fixupSegBoundaries(a: [?D] int, segSubdoms: [?fD] domain(1), valSubdoms: [fD] domain(1)) {
     var boundaries: [fD] int; // First index of each region that needs to be raised
     var diffs: [fD] int; // Amount each region must be raised over previous region
@@ -665,6 +674,7 @@ module GenSymIO {
     // reqMsg = "tohdf <arrayName> <dsetName> <mode> [<json_filename>]"
     var (arrayName, dsetName, modeStr, jsonfile)
           = payload.decode().splitMsgToTuple(4);
+    try! writeln("arrayName: %s dsetName: %s modeStr: %s jsonfile: %s".format(arrayName, dsetName, modeStr, jsonfile));
     var mode = try! modeStr: int;
     var filename: string;
     try {
@@ -691,9 +701,8 @@ module GenSymIO {
       }
       when DType.UInt8 {
         var e = toSymEntry(entry, uint(8));
-        writeln("THE ENTRY*****************************");
+        writeln("Writing Strings array with entry: ************************************");
         writeln(entry);
-        writeln(e.a);
         warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.UInt8);
       } otherwise {
         return unrecognizedTypeError("tohdf", dtype2str(entry.dtype));
@@ -703,8 +712,8 @@ module GenSymIO {
       return try! "Error: unable to open file for writing: %s".format(filename);
     } catch e: MismatchedAppendError {
       return "Error: appending to existing files must be done with the same number of locales. Try saving with a different directory or filename prefix?";
-    } catch {
-      return "Error: problem writing to file";
+    } catch e: Error {
+      return "Error: problem writing to file %s".format(e) ;
     }
     if warnFlag {
       return "Warning: possibly overwriting existing files matching filename pattern";
@@ -735,6 +744,8 @@ module GenSymIO {
     for i in 0..#A.targetLocales().size {
       filenames[i] = try! "%s_LOCALE%s%s".format(prefix, i:string, extension);
     }
+    writeln("Writing 1D dist array to files*************************");
+    writeln(filenames);
     var matchingFilenames = glob(try! "%s_LOCALE*%s".format(prefix, extension));
     // if appending, make sure number of files hasn't changed and all are present
     if (mode == 1) {
@@ -757,13 +768,14 @@ module GenSymIO {
         if GenSymIO_DEBUG {
           writeln("Creating or truncating file");
         }
+        writeln("CREATING FILE %s".format(filenames[loc]));
         file_id = C_HDF5.H5Fcreate(filenames[loc].c_str(), C_HDF5.H5F_ACC_TRUNC, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
         
 	if file_id < 0 { // Negative file_id means error
           throw new owned FileNotFoundError();
         }
-	try! writeln(filenames[loc]);
-	try! writeln(file_id); 
+	try! writeln("write1DDistArray FILENAME %s FILE_ID: %s".format(filenames[loc], file_id));
+
 	// If DType is UInt8, need to create strings_array group to enable read/load with Arkouda infrastructure
 	if array_type == DType.UInt8 {
 	  var group_id = C_HDF5.H5Gcreate2(file_id, "/strings_array", C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
@@ -780,22 +792,42 @@ module GenSymIO {
         }
         var myFileID = C_HDF5.H5Fopen(myFilename.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
         const locDom = A.localSubdomain();
-        writeln("FileID*********************************");
-        writeln(myFileID);
-        writeln("Locale*********************************");
-        writeln(locDom);
         var dims: [0..#1] C_HDF5.hsize_t;
-        writeln("*************************************THE DIMS*************************************************");
-        writeln(dims);
         dims[0] = locDom.size: C_HDF5.hsize_t;
         var myDsetName = "/" + dsetName;
 
         use C_HDF5.HDF5_WAR;
-        H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
+
+        /* if this is a segments dataset, confirm if the first element is zero. If not,
+        this means the indices needs to be rebased to start at zero to ensure the 
+        corresponding values are returned correctly during reads.
+        */
+        if isSegmentsDataset(myDsetName) {
+            if A.localSlice(locDom)[0] != 0 {
+              var dec = A.localSlice(locDom)[0];
+              var indices = rebaseSegmentsDataset(A.localSlice(locDom));
+
+              H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
+                             getHDF5Type(A.eltType), c_ptrTo(indices));
+            } else {
+                H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
                              getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
+            }
+        } else {
+            H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
+                             getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
+        }
         C_HDF5.H5Fclose(myFileID);
       }
     return warnFlag;
   }
 
+  proc isSegmentsDataset(dSetName: string) : bool {
+      return dSetName.endsWith("segments");
+  }
+  
+  proc rebaseSegmentsDataset(indices) {
+    var dec = indices[0];
+    return [value in indices] value - dec;
+  }
 }

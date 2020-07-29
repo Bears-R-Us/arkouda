@@ -60,6 +60,7 @@ class Strings:
         self.ndim = self.offsets.ndim
         self.shape = self.offsets.shape
         self.arrays = [self.bytes, self.offsets]
+        print('the offsets {} nbytes: {} ndim: {} shape: {}'.format(offset_attrib, self.nbytes, self.ndim, self.shape))
         self.name = name
 
     def __iter__(self):
