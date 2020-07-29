@@ -29,6 +29,26 @@ module LisExpr
         inline proc toListValue(type lvtype) {
             return try! this :borrowed ListValue(lvtype);
         }
+
+        proc copy(): owned GenListValue throws {
+          select (this.lvt) {
+            when (LVT.Sym) {
+              var copyList = copyOwnedList(this.toListValue(list(owned GenListValue)).lv);
+              return new owned ListValue(copyList);
+            }
+            when (LVT.Sym) {
+              return new owned ListValue(this.toListValue(Symbol).lv);
+            }
+            when (LVT.I) {
+              return new owned ListValue(this.toListValue(int).lv);
+            }
+            when (LVT.R) {
+              return new owned ListValue(this.toListValue(real).lv);
+            }
+            otherwise {throw new owned ErrorWithMsg("not implemented");}
+          }
+        }
+        
     }
     
     /* concrete list value */
@@ -41,10 +61,47 @@ module LisExpr
         proc init(val: ?vtype) {
             super.init(vtype);
             this.lvtype = vtype;
-            this.lv = val;
+            this.complete();
+            if (isListType(vtype)) {
+              try! copyOwnedList(this.lv, val);
+            } else {
+              this.lv = val;
+            }
         }
         
     }
+
+    proc isListType(type t: list(?)) param {
+      return true;
+    }
+
+    proc isListType(type t) param {
+      return false;
+    }
+
+    proc copyOwnedList(ref dst: list(?t,?p), src: list(t, ?p2)) throws {
+      for item in src {
+        dst.append(item.copy());
+      }
+    }
+
+    proc copyOwnedList(src: list(?t, ?p)): list(t, p) throws {
+      var dst: list(t, p);
+      for item in src {
+        dst.append(item.copy());
+      }
+      return dst;
+    }
+
+    
+    /*
+    proc (list(owned GenListValue, ?)).init=(lhs: list(owned GenListValue, ?p)) {
+      compilerWarning("In my initializer");
+      for l in lhs do
+        this.append(l.copy());
+    }
+    */
+        
     
     /* type: list of genric list values */
     type GenList = list(owned GenListValue);
@@ -241,6 +298,7 @@ module LisExpr
 
         /* delete entry -- not sure if we need this */
         proc deleteEntry(name: string) {
+            use IO;
             if (tD.contains(name)) {
                 tab[name] = nil;
                 tD -= name;
@@ -261,7 +319,10 @@ module LisExpr
       tokenize the prog
     */
     proc tokenize(line: string) {
-        return line.replace("("," ( ").replace(")"," ) ").split();
+      var l: list(string);
+      for token in line.replace("("," ( ").replace(")"," ) ").split() do
+        l.append(token);
+      return l;
     }
     
     /*
@@ -275,18 +336,18 @@ module LisExpr
       parse throught the list of tokens generating the parse tree / AST
       as a list of atoms and lists
     */
-    proc read_from_tokens(tokens: [?D] string): owned GenListValue throws {
+    proc read_from_tokens(in tokens: list(string)): owned GenListValue throws {
         if (tokens.size == 0) then
             throw new owned ErrorWithMsg("SyntaxError: unexpected EOF");
-        var token = tokens.pop_front();
+        var token = tokens.pop(0);
         if (token == "(") {
             var L: GenList;
-            while (tokens[D.low] != ")") {
+            while (tokens.first() != ")") {
                 L.append(read_from_tokens(tokens));
                 if (tokens.size == 0) then
                     throw new owned ErrorWithMsg("SyntaxError: unexpected EOF");
             }
-            tokens.pop_front(); // pop off ")"
+            tokens.pop(0); // pop off ")"
             return new owned ListValue(L);
         }
         else if (token == ")") {
@@ -349,7 +410,8 @@ module LisExpr
                 return new owned Value(ret);
             }
             when (LVT.Lst) {
-                var lst = ast.toListValue(GenList).lv;
+                //                ref lst = ast.toListValue(GenList).lv;
+                var lst = copyOwnedList(ast.toListValue(GenList).lv);            
                 // no empty lists allowed
                 checkGEqLstSize(lst,1);
                 // currently first list element must be a symbol of operator
