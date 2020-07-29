@@ -15,7 +15,7 @@ module KExtremeMsg
     use SegmentedArray;
     use ServerErrorStrings;
 
-    use MinK;
+    use KReduce;
     use Indexing;
     use RadixSortLSD;
 
@@ -41,7 +41,7 @@ module KExtremeMsg
           when (DType.Int64) {
              var e = toSymEntry(gEnt,int);
 
-             var aV = computeMyMink(e.a, k:int);
+             var aV = computeExtrema(e.a, k:int);
              st.addEntry(vname, new shared SymEntry(aV._data));
 
              var s = try! "created " + st.attrib(vname);
@@ -67,7 +67,7 @@ module KExtremeMsg
           when (DType.Int64) {
              var e = toSymEntry(gEnt,int);
 
-             var aV = computeMyMink(e.a, k:int, false);
+             var aV = computeExtrema(e.a, k:int, false);
              st.addEntry(vname, new shared SymEntry(aV._data));
 
              var s = try! "created " + st.attrib(vname);

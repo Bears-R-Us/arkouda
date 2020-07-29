@@ -193,6 +193,7 @@ proc main() {
                 when "array"             {repMsg = arrayMsg(cmd, payload, st);}
                 when "tondarray"         {binaryRepMsg = tondarrayMsg(cmd, payload,st);}
                 when "mink"              {repMsg = minkMsg(cmd, payload, st);}
+                when "maxk"              {repMsg = maxkMsg(cmd, payload, st);}
                 when "intersect1d"       {repMsg = intersect1dMsg(cmd, payload, st);}
                 when "setdiff1d"         {repMsg = setdiff1dMsg(cmd, payload, st);}
                 when "setxor1d"          {repMsg = setxor1dMsg(cmd, payload, st);}

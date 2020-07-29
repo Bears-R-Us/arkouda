@@ -30,7 +30,7 @@ def compare_results(akres, sortedres) -> int:
         return 1
     return 0
 
-def run_test(verbose=True):
+def run_test(runMin=True, verbose=True):
     '''
     The run_test method runs execution of the mink reduction
     on a randomized array.
@@ -40,11 +40,15 @@ def run_test(verbose=True):
     
     failures = 0
     try:
-        akres = ak.mink(aka, K)
-        npres = np.sort(aka.to_ndarray())[:K] # first K elements from sorted array
+        if runMin:
+            akres = ak.mink(aka, K)
+            npres = np.sort(aka.to_ndarray())[:K] # first K elements from sorted array
+        else:
+            akres = ak.maxk(aka, K)
+            npres = np.sort(aka.to_ndarray())[-K:] # last K elements from sorted array
     except RuntimeError as E:
         if verbose: print("Arkouda error: ", E)
-    
+
     failures += compare_results(akres, npres)
     
     return failures
@@ -58,3 +62,13 @@ class MinKTest(ArkoudaTest):
         :raise: AssertionError if there are any errors encountered in run_test for set operations
         '''
         self.assertEqual(0, run_test())
+
+class MaxKTest(ArkoudaTest):
+    def test_maxk(self):
+        '''
+        Executes run_test and asserts whether there are any errors
+        
+        :return: None
+        :raise: AssertionError if there are any errors encountered in run_test for set operations
+        '''
+        self.assertEqual(0, run_test(runMin=False))

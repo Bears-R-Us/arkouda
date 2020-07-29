@@ -1,12 +1,16 @@
 /*
- * 'mink' reduction implementation. Returns 
- * vector of k elements of type eltType.
+ * 'kreduce' reduction implementation. Returns 
+ * array of the k extreme values of an array 
+ * of type eltType. Whether it will be the max
+ * or min values is specified through the "isMin"
+ * field (true gives min values, false gives max
+ * values).
  */
 
-module MinK {
+module KReduce {
   use KExtreme;
 
-  class mink : ReduceScanOp {
+  class kreduce : ReduceScanOp {
     type eltType;
     const k: int;
     const isMin=true;
@@ -40,7 +44,7 @@ module MinK {
 
     // when combining, merge instead of
     // accumulating each individual value
-    proc combine(state: borrowed mink(eltType)) {
+    proc combine(state: borrowed kreduce(eltType)) {
       v._data = merge(v, state.v);
     }
 
@@ -49,21 +53,21 @@ module MinK {
     }
 
     proc clone() {
-      return new unmanaged mink(eltType=eltType, k=k, isMin=isMin);
+      return new unmanaged kreduce(eltType=eltType, k=k, isMin=isMin);
     }
   }
 
   /*
-   * Instinatiate the mink reduction class
+   * Instinatiate the kreduce reduction class
    * so that a custom `k` value can be
    * passed into the class
    */
-  proc computeMyMink(arr, kval:int, isMin=true) {
-    var minkInstance = new unmanaged mink(eltType=int, k=kval, isMin=isMin);
-    var result = minkInstance.identity;
-    [ elm in arr with (minkInstance reduce result) ]
+  proc computeExtrema(arr, kval:int, isMin=true) {
+    var kred = new unmanaged kreduce(eltType=int, k=kval, isMin=isMin);
+    var result = kred.identity;
+    [ elm in arr with (kred reduce result) ]
       result reduce= elm;
-    delete minkInstance;
+    delete kred;
     return result;
   }
 }
