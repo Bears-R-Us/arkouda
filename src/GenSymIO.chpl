@@ -769,16 +769,23 @@ module GenSymIO {
           writeln("Creating or truncating file");
         }
         writeln("CREATING FILE %s".format(filenames[loc]));
-        file_id = C_HDF5.H5Fcreate(filenames[loc].c_str(), C_HDF5.H5F_ACC_TRUNC, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+        file_id = C_HDF5.H5Fcreate(filenames[loc].c_str(), C_HDF5.H5F_ACC_TRUNC, 
+        		C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
         
 	if file_id < 0 { // Negative file_id means error
           throw new owned FileNotFoundError();
         }
 	try! writeln("write1DDistArray FILENAME %s FILE_ID: %s".format(filenames[loc], file_id));
 
-	// If DType is UInt8, need to create strings_array group to enable read/load with Arkouda infrastructure
+	/*
+	 * If DType is UInt8, need to create strings_array group to enable read/load with the
+	 * Arkouda infrastructure. The strings_array group contains two datasets: (1) segments, 
+	 * which are the indices for the string values embedded in the string binary and (2)
+	 * the corresponding string values.
+	 */ 
 	if array_type == DType.UInt8 {
-	  var group_id = C_HDF5.H5Gcreate2(file_id, "/strings_array", C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+	  var group_id = C_HDF5.H5Gcreate2(file_id, "/strings_array", C_HDF5.H5P_DEFAULT, 
+			  C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
           C_HDF5.H5Gclose(group_id);
 	}
 
@@ -798,18 +805,28 @@ module GenSymIO {
 
         use C_HDF5.HDF5_WAR;
 
-        /* If this is a segments dataset, confirm if the first element is zero. If not,
-        this means the indices needs to be rebased to start at zero to ensure the 
-        corresponding values are returned correctly during reads.
-        */
+        /* 
+         * If this is a segments dataset, confirm if the first element is zero. If not,
+         * this means the indices needs to be rebased to start at zero to ensure the 
+         *  corresponding values are returned correctly during reads.
+         */
         if isSegmentsDataset(myDsetName) {
         	writeln("THE SEGMENTS: %t".format(A.localSlice(locDom)));
+        	writeln("THE SEGMENTS TYPE: %s".format(A.localSlice(locDom).type:string));
+
             if A.localSlice(locDom)[0] != 0 {
-              var dec = A.localSlice(locDom)[0];
-              var indices = rebaseSegmentsDataset(A.localSlice(locDom));
-              writeln("THE NEW INDICES %t".format(indices));
+              var dec : int;
+              var newSegments: [0..A.localSlice(locDom).size-1] int;
+              for (segment,i) in zip(A.localSlice(locDom),0..A.localSlice(locDom).size-1) do {
+                if i == 0 {
+                  dec = segment:int;
+                }
+                newSegments[i] = segment:int - dec;
+              }
+
+              writeln("THE NEW SEGMENTS %t".format(newSegments));
               H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
-                             getHDF5Type(A.eltType), c_ptrTo(indices));
+                             getHDF5Type(A.eltType), c_ptrTo(newSegments));
             } else {
                 H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
                              getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
@@ -823,13 +840,27 @@ module GenSymIO {
     return warnFlag;
   }
 
+  /*
+   * Returns a boolean indicating whether the data set is a segments dataset 
+   * corresponding to a Strings array save operation.
+   */
   proc isSegmentsDataset(dSetName: string) : bool {
       return dSetName.endsWith("segments");
   }
   
+  /*
+   * Resets the segments array values to start at zero, which is required if the
+   * Strings.save is executed with number of locales > 1.
+   */
   proc rebaseSegmentsDataset(segments) {
-    var dec = segments[0];
-    try! writeln("THE DEC %i".format(dec));
-    return [segment in segments] segment - dec;
+      var dec : int;
+      var newSegments: [0..segments.size-1] int;
+      for (segment,i) in zip(segments,0..segments.size-1) do {
+        if i == 0 {
+          dec = segment:int;
+        }
+        newSegments[i] = segment:int - dec;
+      }
+      return newSegments;
   }
 }
