@@ -798,15 +798,16 @@ module GenSymIO {
 
         use C_HDF5.HDF5_WAR;
 
-        /* if this is a segments dataset, confirm if the first element is zero. If not,
+        /* If this is a segments dataset, confirm if the first element is zero. If not,
         this means the indices needs to be rebased to start at zero to ensure the 
         corresponding values are returned correctly during reads.
         */
         if isSegmentsDataset(myDsetName) {
+        	writeln("THE SEGMENTS: %t".format(A.localSlice(locDom)));
             if A.localSlice(locDom)[0] != 0 {
               var dec = A.localSlice(locDom)[0];
               var indices = rebaseSegmentsDataset(A.localSlice(locDom));
-
+              writeln("THE NEW INDICES %t".format(indices));
               H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
                              getHDF5Type(A.eltType), c_ptrTo(indices));
             } else {
@@ -826,8 +827,9 @@ module GenSymIO {
       return dSetName.endsWith("segments");
   }
   
-  proc rebaseSegmentsDataset(indices) {
-    var dec = indices[0];
-    return [value in indices] value - dec;
+  proc rebaseSegmentsDataset(segments) {
+    var dec = segments[0];
+    try! writeln("THE DEC %i".format(dec));
+    return [segment in segments] segment - dec;
   }
 }
