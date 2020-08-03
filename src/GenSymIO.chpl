@@ -125,7 +125,6 @@ module GenSymIO {
   }
 
   proc lshdfMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
-    write("In lsdhdfMsg()");
     // reqMsg: "lshdf [<json_filename>]"
     use Spawn;
     const tmpfile = "/tmp/arkouda.lshdf.output";
@@ -151,7 +150,7 @@ module GenSymIO {
       if exists(tmpfile) {
         remove(tmpfile);
       }
-      var cmd = try! "h5ls \"%s\" > \"%s\"".format(filename, tmpfile);
+      var cmd = try! "h5ls \"%s\" > \"%s\" 2>&1".format(filename, tmpfile);
       var sub = spawnshell(cmd);
       // sub.stdout.readstring(repMsg);
       sub.wait();
