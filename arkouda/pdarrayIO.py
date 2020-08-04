@@ -210,7 +210,7 @@ def load_all(path_prefix, group=None):
         firstname = ''.join([firstname, '/', group])
     return {dataset: load(path_prefix, dataset=dataset) for dataset in get_datasets(firstname)}
 
-def save_all(columns, prefix_path, names=None, mode='truncate'):
+def save_all(columns, prefix_path, names=None, mode='truncate', offsets=None):
     """
     Save multiple named pdarrays to HDF5 files.
 
@@ -256,7 +256,7 @@ def save_all(columns, prefix_path, names=None, mode='truncate'):
     for arr, name in zip(pdarrays, names):
         # Append all pdarrays to existing files as new datasets EXCEPT the first one, and only if user requests truncation
         if mode.lower() not in 'append' and first_iter:
-            arr.save(prefix_path=prefix_path, dataset=name, mode='truncate')
+            arr.save(prefix_path=prefix_path, dataset=name, mode='truncate', offsets=offsets)
             first_iter = False
         else:
-            arr.save(prefix_path=prefix_path, dataset=name, mode='append')
+            arr.save(prefix_path=prefix_path, dataset=name, mode='append', offsets=offsets)

@@ -555,7 +555,7 @@ class pdarray:
         # Return a numba devicendarray
         return cuda.to_device(struct.unpack(fmt, rep_msg))
 
-    def save(self, prefix_path, dataset='array', mode='truncate'):
+    def save(self, prefix_path, dataset='array', mode='truncate', offsets=None) -> str:
         """
         Save the pdarray to HDF5. The result is a collection of HDF5 files,
         one file per locale of the arkouda server, where each filename starts
@@ -606,8 +606,12 @@ class pdarray:
             m = 0
         else:
             raise ValueError("Allowed modes are 'truncate' and 'append'")
-        print(self.name)
-        rep_msg = generic_msg("tohdf {} {} {} {}".format(self.name, dataset, m, json.dumps([prefix_path])))
+
+        if offsets:
+            json_array = json.dumps([prefix_path, offsets])
+        else: 
+            json_array = json.dumps([prefix_path, offsets])
+        return generic_msg("tohdf {} {} {} {}".format(self.name, dataset, m, json_array))
 
 
 # creates pdarray object

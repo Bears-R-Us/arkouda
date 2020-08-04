@@ -11,19 +11,21 @@ module GenSymIO {
 
   config const GenSymIO_DEBUG = false;
   config const SEGARRAY_OFFSET_NAME = "segments";
+  config const SEGARRAY_GLOBAL_OFFSET_NAME = "global_segments";
   config const SEGARRAY_VALUE_NAME = "values";
 
   /*
-  Creates a pdarray server-side within the arkouda server and returns the
-  SymTab name used to retrieve it. 
-  */
+   * Creates a pdarray server-side and returns the SymTab name used to
+   * retrieve it.
+   *  
+   */
   proc arrayMsg(cmd: string, payload: bytes, st: borrowed SymTab): string {
     var repMsg: string;
     var (dtypeBytes, sizeBytes, data) = payload.splitMsgToTuple(3);
     var dtype = str2dtype(try! dtypeBytes.decode());
     var size = try! sizeBytes:int;
     var tmpf:file;
-    
+    try! writeln("The arrayMsg DATA %t".format(data));
     // Write the data payload that will compose the pdarray to memory buffer
     try {
       tmpf = openmem();
@@ -276,10 +278,7 @@ module GenSymIO {
     if GenSymIO_DEBUG {
       writeln("Got subdomains and total length");
     }
-    try! writeln("********************SUBDOMS*********************");
-    try! writeln(subdoms);
-    try! writeln("*****************TOTAL LENGTH*******************");
-    try! writeln(len);
+
     select (isSegArray, dataclass) {
     when (true, C_HDF5.H5T_INTEGER) {
       if (bytesize != 1) || isSigned {
@@ -551,7 +550,10 @@ module GenSymIO {
     var dsetName: string;
   }
 
-  /* Get the subdomains of the distributed array represented by each file, as well as the total length of the array. */
+  /*
+   *  Get the subdomains of the distributed array represented by each file, 
+   *  as well as the total length of the array. 
+   */
   proc get_subdoms(filenames: [?FD] string, dsetName: string) throws {
     use SysCTypes;
 
@@ -579,6 +581,7 @@ module GenSymIO {
       subdoms[i] = {offset..#lengths[i]};
       offset += lengths[i];
     }
+    writeln("SUBDOMS %t".format(subdoms));
     return (subdoms, (+ reduce lengths));
   }
 
@@ -677,12 +680,22 @@ module GenSymIO {
     try! writeln("arrayName: %s dsetName: %s modeStr: %s jsonfile: %s".format(arrayName, dsetName, modeStr, jsonfile));
     var mode = try! modeStr: int;
     var filename: string;
+    var offsets: string;
+    var entry = st.lookup(arrayName);
+
     try {
-      filename = decode_json(jsonfile, 1)[0];
+      if isStringsDataset(arrayName) || isSegmentsDataset(arrayName) {
+        var values = decode_json(jsonfile, 2);
+		filename = values[0];
+		offsets = values[1];
+      }
+      else {
+        filename = decode_json(jsonfile, 1)[0];
+      }
     } catch {
       return try! "Error: could not decode json filenames via tempfile (%i files: %s)".format(1, jsonfile);
     }
-    var entry = st.lookup(arrayName);
+    //var entry = st.lookup(arrayName);
     var warnFlag: bool;
     try {
     select entry.dtype {
@@ -701,8 +714,6 @@ module GenSymIO {
       }
       when DType.UInt8 {
         var e = toSymEntry(entry, uint(8));
-        writeln("Writing Strings array with entry: ************************************");
-        writeln(entry);
         warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.UInt8);
       } otherwise {
         return unrecognizedTypeError("tohdf", dtype2str(entry.dtype));
@@ -744,8 +755,7 @@ module GenSymIO {
     for i in 0..#A.targetLocales().size {
       filenames[i] = try! "%s_LOCALE%s%s".format(prefix, i:string, extension);
     }
-    writeln("Writing 1D dist array to files*************************");
-    writeln(filenames);
+
     var matchingFilenames = glob(try! "%s_LOCALE*%s".format(prefix, extension));
     // if appending, make sure number of files hasn't changed and all are present
     if (mode == 1) {
@@ -768,30 +778,29 @@ module GenSymIO {
         if GenSymIO_DEBUG {
           writeln("Creating or truncating file");
         }
-        writeln("CREATING FILE %s".format(filenames[loc]));
+
         file_id = C_HDF5.H5Fcreate(filenames[loc].c_str(), C_HDF5.H5F_ACC_TRUNC, 
         		C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
         
-	if file_id < 0 { // Negative file_id means error
+	    if file_id < 0 { // Negative file_id means error
           throw new owned FileNotFoundError();
         }
-	try! writeln("write1DDistArray FILENAME %s FILE_ID: %s".format(filenames[loc], file_id));
 
-	/*
-	 * If DType is UInt8, need to create strings_array group to enable read/load with the
-	 * Arkouda infrastructure. The strings_array group contains two datasets: (1) segments, 
-	 * which are the indices for the string values embedded in the string binary and (2)
-	 * the corresponding string values.
-	 */ 
-	if array_type == DType.UInt8 {
-	  var group_id = C_HDF5.H5Gcreate2(file_id, "/strings_array", C_HDF5.H5P_DEFAULT, 
-			  C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
-          C_HDF5.H5Gclose(group_id);
-	}
-
+		/*
+		 * If DType is UInt8, need to create strings_array group to enable read/load with the
+		 * Arkouda infrastructure. The strings_array group contains two datasets: (1) segments, 
+		 * which are the indices for the string values embedded in the string binary and (2)
+		 * values, which are the corresponding string values within a null-delimited bytes object
+		 */ 
+		if array_type == DType.UInt8 {
+		  var group_id = C_HDF5.H5Gcreate2(file_id, "/strings_array", C_HDF5.H5P_DEFAULT, 
+				  C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+			  C_HDF5.H5Gclose(group_id);
+		}
         C_HDF5.H5Fclose(file_id);
       }
     }
+
     coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) do on loc {
         const myFilename = filenames[idx];
         if GenSymIO_DEBUG {
@@ -806,35 +815,49 @@ module GenSymIO {
         use C_HDF5.HDF5_WAR;
 
         /* 
-         * If this is a segments dataset, confirm if the first element is zero. If not,
-         * this means the indices needs to be rebased to start at zero to ensure the 
-         *  corresponding values are returned correctly during reads.
+         * If this is a segments dataset, need to generate a segments dataset, which enables 
+         * reads of distributed Strings arrays, and a global_segments dataset, which is
+         * needed to write the local slice of the Strings array to hdf5.
          */
         if isSegmentsDataset(myDsetName) {
-        	writeln("THE SEGMENTS: %t".format(A.localSlice(locDom)));
-        	writeln("THE SEGMENTS TYPE: %s".format(A.localSlice(locDom).type:string));
-
+            /* 
+             * Confirm if the first element in the segments dataset is zero. If not, this means 
+             * the indices need to be rebased to start at zero in order to ensure the 
+             * corresponding values are returned correctly during reads.
+             */
             if A.localSlice(locDom)[0] != 0 {
               var dec : int;
               var newSegments: [0..A.localSlice(locDom).size-1] int;
               for (segment,i) in zip(A.localSlice(locDom),0..A.localSlice(locDom).size-1) do {
+            	/*
+            	 * Get the first element in the dataset, the value of which is used to reset
+            	 * (decrement) all indices within the segments dataset
+            	 */
                 if i == 0 {
                   dec = segment:int;
                 }
                 newSegments[i] = segment:int - dec;
               }
-
-              writeln("THE NEW SEGMENTS %t".format(newSegments));
+              //Overwrite the original segments values with zero-based segments values
               H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
-                             getHDF5Type(A.eltType), c_ptrTo(newSegments));
+                             getHDF5Type(A.eltType), c_ptrTo(newSegments));          
             } else {
                 H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
                              getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
             }
+        } else if isStringsDataset(dsetName) {
+            writeln("THE LOCALE DATA %t %t".format(A.localSlice(locDom), locDom));
+            H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
+                             getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));        
         } else {
+        	/*
+        	 * This is a non-Strings pdarray, so simply write out to the top-level
+        	 * group of the hdf file
+        	 */
             H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
                              getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
         }
+        // Close the file now that the pdarray has been written
         C_HDF5.H5Fclose(myFileID);
       }
     return warnFlag;
@@ -845,12 +868,22 @@ module GenSymIO {
    * corresponding to a Strings array save operation.
    */
   proc isSegmentsDataset(dSetName: string) : bool {
-      return dSetName.endsWith("segments");
+      return dSetName.find("strings_array/segments") > -1;
+  }
+
+  /*
+   * Returns a boolean indicating whether the data set is a Strings values 
+   * dataset corresponding to a Strings array save operation.
+   */
+  proc isStringsDataset(dsetName: string) : bool {
+	  return dsetName.find(needle="strings_array/values") > -1;
   }
   
   /*
    * Resets the segments array values to start at zero, which is required if the
    * Strings.save is executed with number of locales > 1.
+   * 
+   * :TODO: need to integrate this into the Write1DArray code block
    */
   proc rebaseSegmentsDataset(segments) {
       var dec : int;

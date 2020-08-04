@@ -584,6 +584,7 @@ class Strings:
             By default, truncate (overwrite) output files, if they exist.
             If 'append', attempt to create new dataset in existing files.
         """
-        return arkouda.save_all(columns=[self.bytes,self.offsets], prefix_path=prefix_path, 
-                                          names=['/{}/values'.format(self.name), 
-                                          '/{}/segments'.format(self.name)],mode=mode)
+        return arkouda.save_all(columns=[self.bytes,self.offsets], 
+                prefix_path=prefix_path, names=['/{}/values'.format(self.name),
+                    '/{}/segments'.format(self.name)],mode=mode,
+                    offsets=','.join([str(offset) for offset in self.offsets]))
