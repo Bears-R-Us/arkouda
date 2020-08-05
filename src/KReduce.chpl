@@ -22,11 +22,11 @@ module KReduce {
       var v = new kextreme(eltType=eltType, size=k, isMinReduction=isMin); return v;
     }
 
-    proc accumulateOntoState(ref v, value: eltType) {
+    proc accumulateOntoState(ref v, value: (eltType, int)) {
       v.push(value);
     }
 
-    proc accumulate(value: eltType) {
+    proc accumulate(value: (eltType, int)) {
       accumulateOntoState(v, value);
     }
 
@@ -65,9 +65,34 @@ module KReduce {
   proc computeExtrema(arr, kval:int, isMin=true) {
     var kred = new unmanaged kreduce(eltType=int, k=kval, isMin=isMin);
     var result = kred.identity;
-    [ elm in arr with (kred reduce result) ]
-      result reduce= elm;
+
+    var tmpArr: [arr.domain] (int, int);
+    forall (elem, val, i) in zip(tmpArr, arr, arr.domain) {
+      elem = (val, i);
+    }
+    [ elm in tmpArr with (kred reduce result) ]
+    result reduce= elm;
     delete kred;
-    return result;
+
+    var res = [elem in result] elem(0);
+    
+    return res;
+  }
+  
+  proc computeInds(arr, kval:int, isMin=true) {
+    var kred = new unmanaged kreduce(eltType=int, k=kval, isMin=isMin);
+    var result = kred.identity;
+
+    var tmpArr: [arr.domain] (int, int);
+    forall (elem, val, i) in zip(tmpArr, arr, arr.domain) {
+      elem = (val, i);
+    }
+    [ elm in tmpArr with (kred reduce result) ]
+    result reduce= elm;
+    delete kred;
+
+    var res = [elem in result] elem(1);
+    
+    return res;
   }
 }

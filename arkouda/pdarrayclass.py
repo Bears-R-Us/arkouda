@@ -448,18 +448,18 @@ class pdarray:
         """
         return std(self, ddof=ddof)
 
-    def mink(self, k):
+    def mink(self, k, inds=True):
         """
         Compute the minimum "k" values.
         """
-        return mink(self,k)
+        return mink(self,k,inds)
 
 
-    def maxk(self, k):
+    def maxk(self, k, inds=True):
         """
         Compute the maximum "k" values.
         """
-        return maxk(self,k)
+        return maxk(self,k,inds)
 
     
     def to_ndarray(self):
@@ -825,7 +825,7 @@ def std(pda, ddof=0):
     """
     return np.sqrt(var(pda, ddof=ddof))
 
-def mink(pda, k):
+def mink(pda, k, inds=True):
     """
     Find the `k` minimum values of an array.
 
@@ -858,12 +858,12 @@ def mink(pda, k):
             return []
         if pda.dtype != int or pda.size == 0:
             raise TypeError("must be a non-empty pdarray {} of type int".format(pda))
-        repMsg = generic_msg("mink {} {}".format(pda.name, k))
+        repMsg = generic_msg("mink {} {} {}".format(pda.name, k, inds))
         return create_pdarray(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def maxk(pda, k):
+def maxk(pda, k, inds=True):
     """
     Find the `k` maximum values of an array.
 
@@ -896,7 +896,7 @@ def maxk(pda, k):
             return []
         if pda.dtype != int or pda.size == 0:
             raise TypeError("must be a non-empty pdarray {} of type int".format(pda))
-        repMsg = generic_msg("maxk {} {}".format(pda.name, k))
+        repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, inds))
         return create_pdarray(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))

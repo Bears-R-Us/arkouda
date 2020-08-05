@@ -18,6 +18,7 @@ module KExtremeMsg
     use KReduce;
     use Indexing;
     use RadixSortLSD;
+    use ArraySetopsMsg;
 
     /*
     Parse, execute, and respond to a intersect1d message
@@ -31,7 +32,7 @@ module KExtremeMsg
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (name, k) = payload.decode().splitMsgToTuple(2);
+        var (name, k, returnIndices) = payload.decode().splitMsgToTuple(3);
 
         var vname = st.nextName();
 
@@ -41,8 +42,15 @@ module KExtremeMsg
           when (DType.Int64) {
              var e = toSymEntry(gEnt,int);
 
-             var aV = computeExtrema(e.a, k:int);
-             st.addEntry(vname, new shared SymEntry(aV._data));
+             var aV;
+
+             if !stringtobool(returnIndices) {
+               aV = computeExtrema(e.a, k:int);
+             } else {
+               aV = computeInds(e.a, k:int);
+             }
+
+             st.addEntry(vname, new shared SymEntry(aV));
 
              var s = try! "created " + st.attrib(vname);
              return s;
@@ -57,7 +65,7 @@ module KExtremeMsg
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (name, k) = payload.decode().splitMsgToTuple(2);
+        var (name, k, returnIndices) = payload.decode().splitMsgToTuple(3);
 
         var vname = st.nextName();
 
@@ -67,8 +75,14 @@ module KExtremeMsg
           when (DType.Int64) {
              var e = toSymEntry(gEnt,int);
 
-             var aV = computeExtrema(e.a, k:int, false);
-             st.addEntry(vname, new shared SymEntry(aV._data));
+             var aV;
+             if !stringtobool(returnIndices) {
+               aV = computeExtrema(e.a, k:int, false);
+             } else {
+               aV = computeInds(e.a, k:int, false);
+             }
+
+             st.addEntry(vname, new shared SymEntry(aV));
 
              var s = try! "created " + st.attrib(vname);
              return s;

@@ -18,7 +18,7 @@ module KExtreme {
     var numEmpty: int = size-2;
     var isSorted: bool = false;
     var isMinReduction=true;
-    var _data: [dom] eltType = if isMinReduction then max(eltType) else min(eltType);
+    var _data: [dom] (eltType, int) = if isMinReduction then (max(eltType), -1) else (min(eltType), -1);
     
     proc pushArr(arr: [?D]) {
       for i in D {
@@ -29,10 +29,10 @@ module KExtreme {
     // Push a value into the kextreme
     // instance, only pushes a value if
     // it is an encountered extreme
-    proc push(val: eltType) {
-      const shouldAdd = if isMinReduction then val<_data[0] else val>_data[0];
+    proc push(val: (eltType, int)) {
+      const shouldAdd = if isMinReduction then val(0)<_data[0](0) else val(0)>_data[0](0);
       const shouldAddEmpty = (numEmpty>0) && if isMinReduction then
-        _data[0]==max(eltType) else _data[0]==min(eltType);
+        _data[0](0)==max(eltType) else _data[0](0)==min(eltType);
 
       if shouldAddEmpty {
         _data[numEmpty+1] = val;
@@ -52,11 +52,11 @@ module KExtreme {
         const l = 2*i+1; // left child
         const r = 2*i+2; // right child
         const cmpLeft = l<size && if isMinReduction then
-          _data[l] > _data[i] else _data[l] < _data[i];
+          _data[l](0) > _data[i](0) else _data[l](0) < _data[i](0);
         if (cmpLeft) then i = l;
         // if right child is more extreme than largest so far
         const cmpRight = r<size && if isMinReduction then
-          _data[r] > _data[i] else _data[r] < _data[i];
+          _data[r](0) > _data[i](0) else _data[r](0) < _data[i](0);
         if (cmpRight) then i = r;
         // if the extreme value isn't the initial 
         if (initial != i) {
@@ -83,14 +83,14 @@ module KExtreme {
   // returns an array that contains the
   // smallest values from each array sorted.
   // Returned array is size of the original heaps.
-  proc merge(ref v1: kextreme(int), ref v2: kextreme(int)): [v1._data.domain] int {
+  proc merge(ref v1: kextreme(int), ref v2: kextreme(int)): [v1._data.domain] (int,int) {
     const isMin = v1.isMinReduction;
     if !v1.isSorted then v1.doSort();
     if !v2.isSorted then v2.doSort();
 
     const first = v1._data;
     const second = v2._data;
-    var ret: [first.domain] v1.eltType;
+    var ret: [first.domain] (v1.eltType, int);
     var a,b,i: int = if v1.isMinReduction then
       0 else first.domain.high;
     const increment = if v1.isMinReduction then 1 else -1;
