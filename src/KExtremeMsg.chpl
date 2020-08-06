@@ -54,6 +54,27 @@ module KExtremeMsg
 
              var s = try! "created " + st.attrib(vname);
              return s;
+          }
+          when (DType.Float64) {
+            if !stringtobool(returnIndices) {
+             var e = toSymEntry(gEnt,real);
+
+             var aV = computeExtrema(e.a, k:int);
+
+             st.addEntry(vname, new shared SymEntry(aV));
+
+             var s = try! "created " + st.attrib(vname);
+             return s;
+            } else {
+             var e = toSymEntry(gEnt,real);
+
+             var aV = computeInds(e.a, k:int);
+
+             st.addEntry(vname, new shared SymEntry(aV));
+
+             var s = try! "created " + st.attrib(vname);
+             return s;
+            }
            }
            otherwise {
              return notImplementedError("mink",gEnt.dtype);
@@ -87,8 +108,31 @@ module KExtremeMsg
              var s = try! "created " + st.attrib(vname);
              return s;
            }
+           when (DType.Float64) {
+             if !stringtobool(returnIndices) {
+               var e = toSymEntry(gEnt,real);
+
+               var aV = computeExtrema(e.a, k:int, false);
+
+               st.addEntry(vname, new shared SymEntry(aV));
+
+               var s = try! "created " + st.attrib(vname);
+               return s;
+             } else {
+               var e = toSymEntry(gEnt,real);
+
+               var aV = computeInds(e.a, k:int, false);
+
+               st.addEntry(vname, new shared SymEntry(aV));
+
+               var s = try! "created " + st.attrib(vname);
+               return s;
+               
+             }
+           }
+
            otherwise {
-             return notImplementedError("mink",gEnt.dtype);
+             return notImplementedError("maxk",gEnt.dtype);
            }
         }
     }

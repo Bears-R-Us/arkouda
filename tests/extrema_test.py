@@ -30,7 +30,7 @@ def compare_results(akres, sortedres) -> int:
         return 1
     return 0
 
-def run_test(runMin=True, verbose=True):
+def run_test(runMin=True, isInd=True, verbose=True):
     '''
     The run_test method runs execution of the mink reduction
     on a randomized array.
@@ -40,12 +40,20 @@ def run_test(runMin=True, verbose=True):
     
     failures = 0
     try:
-        if runMin:
-            akres = ak.mink(aka, K)
-            npres = np.sort(aka.to_ndarray())[:K] # first K elements from sorted array
+        if not isInd:
+            if runMin:
+                akres = ak.mink(aka, K)
+                npres = np.sort(aka.to_ndarray())[:K] # first K elements from sorted array
+            else:
+                akres = ak.maxk(aka, K)
+                npres = np.sort(aka.to_ndarray())[-K:] # last K elements from sorted array
         else:
-            akres = ak.maxk(aka, K)
-            npres = np.sort(aka.to_ndarray())[-K:] # last K elements from sorted array
+            if runMin:
+                akres = aka[ak.argmink(aka, K)]
+                npres = np.sort(aka.to_ndarray())[:K] # first K elements from sorted array
+            else:
+                akres = aka[ak.argmaxk(aka, K)]
+                npres = np.sort(aka.to_ndarray())[-K:] # last K elements from sorted array
     except RuntimeError as E:
         if verbose: print("Arkouda error: ", E)
 
@@ -72,3 +80,23 @@ class MaxKTest(ArkoudaTest):
         :raise: AssertionError if there are any errors encountered in run_test for set operations
         '''
         self.assertEqual(0, run_test(runMin=False))
+
+class ArgMinKTest(ArkoudaTest):
+    def test_argmink(self):
+        '''
+        Executes run_test and asserts whether there are any errors
+        
+        :return: None
+        :raise: AssertionError if there are any errors encountered in run_test for set operations
+        '''
+        self.assertEqual(0, run_test(isInd=True))
+
+class ArgMaxKTest(ArkoudaTest):
+    def test_argmaxk(self):
+        '''
+        Executes run_test and asserts whether there are any errors
+        
+        :return: None
+        :raise: AssertionError if there are any errors encountered in run_test for set operations
+        '''
+        self.assertEqual(0, run_test(runMin=False, isInd=True))

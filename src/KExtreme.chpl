@@ -83,7 +83,7 @@ module KExtreme {
   // returns an array that contains the
   // smallest values from each array sorted.
   // Returned array is size of the original heaps.
-  proc merge(ref v1: kextreme(int), ref v2: kextreme(int)): [v1._data.domain] (int,int) {
+  proc merge(ref v1: kextreme(?t), ref v2: kextreme(t)): [v1._data.domain] (t ,int) {
     const isMin = v1.isMinReduction;
     if !v1.isSorted then v1.doSort();
     if !v2.isSorted then v2.doSort();

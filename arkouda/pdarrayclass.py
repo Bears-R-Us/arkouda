@@ -6,7 +6,7 @@ from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
 
 __all__ = ["pdarray", "info", "any", "all", "is_sorted", "sum", "prod", "min", "max",
-           "argmin", "argmax", "mean", "var", "std", "mink", "maxk"]
+           "argmin", "argmax", "mean", "var", "std", "mink", "maxk", "argmink", "argmaxk"]
 
 def parse_single_value(msg):
     """
@@ -448,18 +448,31 @@ class pdarray:
         """
         return std(self, ddof=ddof)
 
-    def mink(self, k, inds=True):
+    def mink(self, k):
         """
         Compute the minimum "k" values.
         """
-        return mink(self,k,inds)
+        return mink(self,k)
 
 
-    def maxk(self, k, inds=True):
+    def maxk(self, k):
         """
         Compute the maximum "k" values.
         """
-        return maxk(self,k,inds)
+        return maxk(self,k)
+
+    def argmink(self, k):
+        """
+        Compute the minimum "k" values.
+        """
+        return argmink(self,k)
+
+
+    def argmaxk(self, k):
+        """
+        Compute the maximum "k" values.
+        """
+        return argmaxk(self,k)
 
     
     def to_ndarray(self):
@@ -825,7 +838,7 @@ def std(pda, ddof=0):
     """
     return np.sqrt(var(pda, ddof=ddof))
 
-def mink(pda, k, inds=True):
+def mink(pda, k):
     """
     Find the `k` minimum values of an array.
 
@@ -856,14 +869,14 @@ def mink(pda, k, inds=True):
     if isinstance(pda, pdarray):
         if k == 0:
             return []
-        if pda.dtype != int or pda.size == 0:
+        if pda.size == 0:
             raise TypeError("must be a non-empty pdarray {} of type int".format(pda))
-        repMsg = generic_msg("mink {} {} {}".format(pda.name, k, inds))
+        repMsg = generic_msg("mink {} {} {}".format(pda.name, k, False))
         return create_pdarray(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def maxk(pda, k, inds=True):
+def maxk(pda, k):
     """
     Find the `k` maximum values of an array.
 
@@ -894,9 +907,85 @@ def maxk(pda, k, inds=True):
     if isinstance(pda, pdarray):
         if k == 0:
             return []
-        if pda.dtype != int or pda.size == 0:
+        if pda.size == 0:
             raise TypeError("must be a non-empty pdarray {} of type int".format(pda))
-        repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, inds))
+        repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, False))
+        return create_pdarray(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+
+def argmink(pda, k):
+    """
+    Find the `k` minimum values of an array.
+
+    Returns the smallest `k` values of an array, sorted
+
+    Parameters
+    ----------
+    pda : pdarray
+        Input array.
+    k : integer
+        The desired count of minimum values to be returned by the output.
+
+    Returns
+    -------
+    pdarray, int
+        The minimum `k` values from pda
+
+    Notes
+    -----
+    Currently only works on integers, could be exended to also work for floats.
+
+    Examples
+    --------
+    >>> A = ak.array([10,5,1,3,7,2,9,0])
+    >>> ak.mink(A, 3)
+    array([0, 1, 2])
+    """
+    if isinstance(pda, pdarray):
+        if k == 0:
+            return []
+        if pda.size == 0:
+            raise TypeError("must be a non-empty pdarray {} of type int".format(pda))
+        repMsg = generic_msg("mink {} {} {}".format(pda.name, k, True))
+        return create_pdarray(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+
+def argmaxk(pda, k):
+    """
+    Find the `k` maximum values of an array.
+
+    Returns the largest `k` values of an array, sorted
+
+    Parameters
+    ----------
+    pda : pdarray
+        Input array.
+    k : integer
+        The desired count of maximum values to be returned by the output.
+
+    Returns
+    -------
+    pdarray, int
+        The maximum `k` values from pda
+
+    Notes
+    -----
+    Currently only works on integers, could be exended to also work for floats.
+
+    Examples
+    --------
+    >>> A = ak.array([10,5,1,3,7,2,9,0])
+    >>> ak.maxk(A, 3)
+    array([7, 9, 10])
+    """
+    if isinstance(pda, pdarray):
+        if k == 0:
+            return []
+        if pda.size == 0:
+            raise TypeError("must be a non-empty pdarray {} of type int".format(pda))
+        repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, True))
         return create_pdarray(repMsg)
     else:
         raise TypeError("must be pdarray {}".format(pda))

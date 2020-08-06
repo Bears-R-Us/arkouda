@@ -60,38 +60,42 @@ module KReduce {
   /*
    * Instinatiate the kreduce reduction class
    * so that a custom `k` value can be
-   * passed into the class
+   * passed into the class, returning a tuple
+   * array that contains both the extreme values
+   * and the indices associated with those values.
    */
-  proc computeExtrema(arr, kval:int, isMin=true) {
-    var kred = new unmanaged kreduce(eltType=int, k=kval, isMin=isMin);
+  proc computeExtremaInds(arr: [?D] ?t, kval: int, isMin=true) {
+    var kred = new unmanaged kreduce(eltType=t, k=kval, isMin=isMin);
     var result = kred.identity;
 
-    var tmpArr: [arr.domain] (int, int);
+    var tmpArr: [D] (t, D.idxType);
     forall (elem, val, i) in zip(tmpArr, arr, arr.domain) {
       elem = (val, i);
     }
     [ elm in tmpArr with (kred reduce result) ]
-    result reduce= elm;
+      result reduce= elm;
     delete kred;
 
-    var res = [elem in result] elem(0);
+    return result;
+  }
+
+  /*
+   * Return the `kval` largest elements of an array `arr`
+   */
+  proc computeExtrema(arr, kval:int, isMin=true) {
+    const extrema = computeExtremaInds(arr, kval, isMin);
+    var res = [elem in extrema] elem(0);
     
     return res;
   }
-  
+
+  /*
+   * Return the indices of the `kval` largest 
+   * elements of an array `arr`
+   */
   proc computeInds(arr, kval:int, isMin=true) {
-    var kred = new unmanaged kreduce(eltType=int, k=kval, isMin=isMin);
-    var result = kred.identity;
-
-    var tmpArr: [arr.domain] (int, int);
-    forall (elem, val, i) in zip(tmpArr, arr, arr.domain) {
-      elem = (val, i);
-    }
-    [ elm in tmpArr with (kred reduce result) ]
-    result reduce= elm;
-    delete kred;
-
-    var res = [elem in result] elem(1);
+    const extrema = computeExtremaInds(arr, kval, isMin);
+    var res = [elem in extrema] elem(1);
     
     return res;
   }
