@@ -197,7 +197,14 @@ module SegmentedMsg {
 
 
   /*
-  Assigns an index to an incoming object
+   * Assigns a segIntIndex, sliceIndex, or pdarrayIndex to the incoming payload
+   * consisting of a sub-command, object type, offset SymTab key, array SymTab
+   * key, and index value for the incoming payload.
+   * 
+   * Note: the sub-command indicates the index type which can be one of the following:
+   * 1. intIndex : setIntIndex
+   * 2. sliceIndex : segSliceIndex
+   * 3. pdarrayIndex : segPdarrayIndex
   */ 
   proc segmentedIndexMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
