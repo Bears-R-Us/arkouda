@@ -1,6 +1,7 @@
 module GenSymIO {
   use HDF5;
   use IO;
+  use Path;
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
   use ServerErrorStrings;
@@ -12,10 +13,9 @@ module GenSymIO {
   config const SEGARRAY_OFFSET_NAME = "segments";
   config const SEGARRAY_VALUE_NAME = "values";
 
-  proc arrayMsg(reqMsg: bytes, st: borrowed SymTab): string {
+  proc arrayMsg(cmd: string, payload: bytes, st: borrowed SymTab): string {
     var repMsg: string;
-    var (cmdBytes, dtypeBytes, sizeBytes, data) = reqMsg.splitMsgToTuple(4);
-    var cmd = try! cmdBytes.decode();
+    var (dtypeBytes, sizeBytes, data) = payload.splitMsgToTuple(3);
     var dtype = str2dtype(try! dtypeBytes.decode());
     var size = try! sizeBytes:int;
     var tmpf:file;
@@ -63,9 +63,9 @@ module GenSymIO {
     return try! "created " + st.attrib(rname);
   }
 
-  proc tondarrayMsg(reqMsg: string, st: borrowed SymTab): bytes throws {
+  proc tondarrayMsg(cmd: string, payload: bytes, st: borrowed SymTab): bytes throws {
     var arrayBytes: bytes;
-    var (_, entryStr) = reqMsg.splitMsgToTuple(2);
+    var entryStr = payload.decode();
     var entry = st.lookup(entryStr);
     var tmpf: file;
     try {
@@ -124,13 +124,12 @@ module GenSymIO {
     return array;
   }
 
-  proc lshdfMsg(reqMsg: string, st: borrowed SymTab): string {
-    write("In lsdhdfMsg()");
+  proc lshdfMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     // reqMsg: "lshdf [<json_filename>]"
     use Spawn;
     const tmpfile = "/tmp/arkouda.lshdf.output";
     var repMsg: string;
-    var (cmd, jsonfile) = reqMsg.splitMsgToTuple(2);
+    var (jsonfile) = payload.decode().splitMsgToTuple(1);
     var filename: string;
     try {
       filename = decode_json(jsonfile, 1)[0];
@@ -151,7 +150,7 @@ module GenSymIO {
       if exists(tmpfile) {
         remove(tmpfile);
       }
-      var cmd = try! "h5ls \"%s\" > \"%s\"".format(filename, tmpfile);
+      var cmd = try! "h5ls \"%s\" > \"%s\" 2>&1".format(filename, tmpfile);
       var sub = spawnshell(cmd);
       // sub.stdout.readstring(repMsg);
       sub.wait();
@@ -174,10 +173,10 @@ module GenSymIO {
   }
 
   /* Read dataset from HDF5 files into arkouda symbol table. */
-  proc readhdfMsg(reqMsg: string, st: borrowed SymTab): string throws {
+  proc readhdfMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     var repMsg: string;
     // reqMsg = "readhdf <dsetName> <nfiles> [<json_filenames>]"
-    var (cmd, dsetName, nfilesStr, jsonfiles) = reqMsg.splitMsgToTuple(4);
+    var (dsetName, nfilesStr, jsonfiles) = payload.decode().splitMsgToTuple(3);
     var nfiles = try! nfilesStr:int;
     var filelist: [0..#nfiles] string;
     try {
@@ -299,11 +298,11 @@ module GenSymIO {
   }
 
   /* Read datasets from HDF5 files into arkouda symbol table. */
-  proc readAllHdfMsg(reqMsg: string, st: borrowed SymTab): string throws {
+  proc readAllHdfMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     // reqMsg = "readAllHdf <ndsets> <nfiles> [<json_dsetname>] | [<json_filenames>]"
     var repMsg: string;
     // May need a more robust delimiter then " | "
-    var (cmd, ndsetsStr, nfilesStr, arraysStr) = reqMsg.splitMsgToTuple(4);
+    var (ndsetsStr, nfilesStr, arraysStr) = payload.decode().splitMsgToTuple(3);
     var (jsondsets, jsonfiles) = arraysStr.splitMsgToTuple(" | ",2);
     var ndsets = try! ndsetsStr:int;
     var nfiles = try! nfilesStr:int;
@@ -641,10 +640,10 @@ module GenSymIO {
     return {low..high by stride};
   }
 
-  proc tohdfMsg(reqMsg, st: borrowed SymTab): string throws {
+  proc tohdfMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     // reqMsg = "tohdf <arrayName> <dsetName> <mode> [<json_filename>]"
-    var (cmd, arrayName, dsetName, modeStr, jsonfile)
-          = reqMsg.splitMsgToTuple(5);
+    var (arrayName, dsetName, modeStr, jsonfile)
+          = payload.decode().splitMsgToTuple(4);
     var mode = try! modeStr: int;
     var filename: string;
     try {
@@ -698,7 +697,7 @@ module GenSymIO {
     const fields = filename.split(".");
     var prefix:string;
     var extension:string;
-    if fields.size == 1 {
+    if fields.size == 1 || fields[fields.domain.high].count(pathSep) > 0 {
       prefix = filename;
       extension = "";
     } else {

@@ -12,6 +12,9 @@ module LisExpr
     
     type Symbol = string;
 
+    /* type: list of genric list values */
+    type GenList = list(owned GenListValue);
+
     /* generic list value */
     class GenListValue
     {
@@ -19,7 +22,7 @@ module LisExpr
         
         /* initialize the list value type so we can test it at runtime */
         proc init(type lvtype) {
-            if (lvtype == list(GenListValue)) {lvt = LVT.Lst;}
+            if (lvtype == GenList)            {lvt = LVT.Lst;}
             if (lvtype == Symbol)             {lvt = LVT.Sym;}
             if (lvtype == int)                {lvt = LVT.I;}
             if (lvtype == real)               {lvt = LVT.R;}
@@ -28,6 +31,26 @@ module LisExpr
         /* cast to the GenListValue to borrowed ListValue(vtype) halt on failure */
         inline proc toListValue(type lvtype) {
             return try! this :borrowed ListValue(lvtype);
+        }
+
+        /* returns a copy of this... an owned GenListValue */
+        proc copy(): owned GenListValue throws {
+          select (this.lvt) {
+            when (LVT.Lst) {
+              var copyList = copyOwnedList(this.toListValue(GenList).lv);
+              return new owned ListValue(copyList);
+            }
+            when (LVT.Sym) {
+              return new owned ListValue(this.toListValue(Symbol).lv);
+            }
+            when (LVT.I) {
+              return new owned ListValue(this.toListValue(int).lv);
+            }
+            when (LVT.R) {
+              return new owned ListValue(this.toListValue(real).lv);
+            }
+            otherwise {throw new owned ErrorWithMsg("not implemented");}
+          }
         }
     }
     
@@ -41,13 +64,53 @@ module LisExpr
         proc init(val: ?vtype) {
             super.init(vtype);
             this.lvtype = vtype;
-            this.lv = val;
+            // for non-lists, we can just initialize via assignment
+            if (!isListType(vtype)) {
+              this.lv = val;
+            }
+            this.complete();
+            // for lists, we need a helper function; see copyOwnedList() for
+            // an explanation.
+            if (isListType(vtype)) {
+              try! copyOwnedList(this.lv, val);
+            }
         }
         
     }
-    
-    /* type: list of genric list values */
-    type GenList = list(owned GenListValue);
+
+    // Helpers to determine whether something is a list or not.
+    // Should we have to write these ourselves?  See
+    // https://github.com/chapel-lang/chapel/issues/16171
+    proc isListType(type t: list(?)) param {
+      return true;
+    }
+
+    proc isListType(type t) param {
+      return false;
+    }
+
+    // lists of non-nilable owned aren't copyable via assignment
+    // because it's not clear what would happen to the rhs 'owned'
+    // variables.  They'd transfer ownership which would make the
+    // original list useless; and even if that was OK, there's no good
+    // value to assign to the RHS list elements.  In the context of
+    // this work, we know we'd want to deep copy such lists, so the
+    // following two helpers do that in one-arg (+ return) and
+    // two-args forms.  For further discussion on this, see
+    // https://github.com/chapel-lang/chapel/issues/16167
+    proc copyOwnedList(src: list(?t, ?p)): list(t, p) throws {
+      var dst: list(t, p);
+      for item in src {
+        dst.append(item.copy());
+      }
+      return dst;
+    }
+
+    proc copyOwnedList(ref dst: list(?t,?p), src: list(t, ?p2)) throws {
+      for item in src {
+        dst.append(item.copy());
+      }
+    }
 
     // allowed value types int and real
     enum VT {I, R};
@@ -241,6 +304,7 @@ module LisExpr
 
         /* delete entry -- not sure if we need this */
         proc deleteEntry(name: string) {
+            import IO.stdout;
             if (tD.contains(name)) {
                 tab[name] = nil;
                 tD -= name;
@@ -261,32 +325,50 @@ module LisExpr
       tokenize the prog
     */
     proc tokenize(line: string) {
-        return line.replace("("," ( ").replace(")"," ) ").split();
+        // Want:
+        //   var l: list(string) = line.replace("("," ( ").replace(")"," ) ").split()
+        // Workaround (see https://github.com/chapel-lang/chapel/issues/16166):
+
+        var l: list(string);
+        for token in line.replace("("," ( ").replace(")"," ) ").split() do
+          l.append(token);
+        return l;
     }
     
     /*
       parse, check, and validate code and all symbols in the tokenized prog
     */ 
     proc parse(line: string): owned GenListValue throws {
-        return read_from_tokens(tokenize(line));
+        // Want:
+        //   return read_from_tokens(tokenize(line));
+        //
+        // Workaround (see https://github.com/chapel-lang/chapel/issues/16170):
+
+        var l: list(string) = tokenize(line);
+        return read_from_tokens(l);
     }
     
     /*
       parse throught the list of tokens generating the parse tree / AST
       as a list of atoms and lists
     */
-    proc read_from_tokens(tokens: [?D] string): owned GenListValue throws {
+    proc read_from_tokens(ref tokens: list(string)): owned GenListValue throws {
         if (tokens.size == 0) then
             throw new owned ErrorWithMsg("SyntaxError: unexpected EOF");
-        var token = tokens.pop_front();
+
+        // Open Q: If we were to parse from the back of the string to the
+        // front, could this be more efficient since popping from the
+        // front of a list is an expensive operation?
+
+        var token = tokens.pop(0);
         if (token == "(") {
             var L: GenList;
-            while (tokens[D.low] != ")") {
+            while (tokens.first() != ")") {
                 L.append(read_from_tokens(tokens));
                 if (tokens.size == 0) then
                     throw new owned ErrorWithMsg("SyntaxError: unexpected EOF");
             }
-            tokens.pop_front(); // pop off ")"
+            tokens.pop(0); // pop off ")"
             return new owned ListValue(L);
         }
         else if (token == ")") {
@@ -349,36 +431,36 @@ module LisExpr
                 return new owned Value(ret);
             }
             when (LVT.Lst) {
-                var lst = ast.toListValue(GenList).lv;
+                ref lst = ast.toListValue(GenList).lv;
                 // no empty lists allowed
                 checkGEqLstSize(lst,1);
                 // currently first list element must be a symbol of operator
-                checkSymbol(lst[1]);
-                var op = lst[1].toListValue(Symbol).lv;
+                checkSymbol(lst[0]);
+                var op = lst[0].toListValue(Symbol).lv;
                 select (op) {
-                    when "+"  {checkEqLstSize(lst,3); return eval(lst[2], env) + eval(lst[3], env);}
-                    when "-"  {checkEqLstSize(lst,3); return eval(lst[2], env) - eval(lst[3], env);}
-                    when "*"  {checkEqLstSize(lst,3); return eval(lst[2], env) * eval(lst[3], env);}
-                    when "<"  {checkEqLstSize(lst,3); return eval(lst[2], env) < eval(lst[3], env);}
-                    when ">"  {checkEqLstSize(lst,3); return eval(lst[2], env) > eval(lst[3], env);}
-                    when "<="  {checkEqLstSize(lst,3); return eval(lst[2], env) <= eval(lst[3], env);}
-                    when ">="  {checkEqLstSize(lst,3); return eval(lst[2], env) >= eval(lst[3], env);}
-                    when "==" {checkEqLstSize(lst,3); return eval(lst[2], env) == eval(lst[3], env);}
-                    when "!=" {checkEqLstSize(lst,3); return eval(lst[2], env) != eval(lst[3], env);}
-                    when "or" {checkEqLstSize(lst,3); return or(eval(lst[2], env), eval(lst[3], env));}
-                    when "and" {checkEqLstSize(lst,3); return and(eval(lst[2], env), eval(lst[3], env));}
-                    when "not" {checkEqLstSize(lst,2); return not(eval(lst[2], env));}
+                    when "+"  {checkEqLstSize(lst,3); return eval(lst[1], env) + eval(lst[2], env);}
+                    when "-"  {checkEqLstSize(lst,3); return eval(lst[1], env) - eval(lst[2], env);}
+                    when "*"  {checkEqLstSize(lst,3); return eval(lst[1], env) * eval(lst[2], env);}
+                    when "<"  {checkEqLstSize(lst,3); return eval(lst[1], env) < eval(lst[2], env);}
+                    when ">"  {checkEqLstSize(lst,3); return eval(lst[1], env) > eval(lst[2], env);}
+                    when "<="  {checkEqLstSize(lst,3); return eval(lst[1], env) <= eval(lst[2], env);}
+                    when ">="  {checkEqLstSize(lst,3); return eval(lst[1], env) >= eval(lst[2], env);}
+                    when "==" {checkEqLstSize(lst,3); return eval(lst[1], env) == eval(lst[2], env);}
+                    when "!=" {checkEqLstSize(lst,3); return eval(lst[1], env) != eval(lst[2], env);}
+                    when "or" {checkEqLstSize(lst,3); return or(eval(lst[1], env), eval(lst[2], env));}
+                    when "and" {checkEqLstSize(lst,3); return and(eval(lst[1], env), eval(lst[2], env));}
+                    when "not" {checkEqLstSize(lst,2); return not(eval(lst[1], env));}
                     when "set!" {
                         checkEqLstSize(lst,3);
-                        checkSymbol(lst[2]);
-                        var name = lst[2].toListValue(Symbol).lv;
+                        checkSymbol(lst[1]);
+                        var name = lst[1].toListValue(Symbol).lv;
                         // addEnrtry redefines values for already existing entries
-                        var gv = env.addEntry(name, eval(lst[3],env));
+                        var gv = env.addEntry(name, eval(lst[2],env));
                         return gv.copy(); // return value assigned to symbol
                     }
                     when "if" {
                         checkEqLstSize(lst,4);
-                        if isTrue(eval(lst[2], env)) {return eval(lst[3], env);} else {return eval(lst[4], env);}
+                        if isTrue(eval(lst[1], env)) {return eval(lst[2], env);} else {return eval(lst[3], env);}
                     }
                     otherwise {
                         throw new owned ErrorWithMsg("op not implemented %t".format(op));

@@ -97,6 +97,7 @@ class GroupBy:
                 mykeys = [self.keys]            
         else:
             mykeys = self.keys
+        keyobjs = [] # needed to maintain obj refs esp for h1 and h2 in the strings case
         keynames = []
         keytypes = []
         effectiveKeys = self.nkeys
@@ -104,17 +105,21 @@ class GroupBy:
             if isinstance(k, Strings):
                 if self.hash_strings:
                     h1, h2 = k.hash()
+                    keyobjs.extend([h1,h2])
                     keynames.extend([h1.name, h2.name])
                     keytypes.extend([h1.objtype, h2.objtype])
                     effectiveKeys += 1
                 else:
+                    keyobjs.append(k)
                     keynames.append('{}+{}'.format(k.offsets.name, k.bytes.name))
                     keytypes.append(k.objtype)
             # for Categorical
             elif hasattr(k, 'codes'):
+                keyobjs.append(k)
                 keynames.append(k.codes.name)
                 keytypes.append(k.codes.objtype)
             elif isinstance(k, pdarray):
+                keyobjs.append(k)
                 keynames.append(k.name)
                 keytypes.append(k.objtype)
         reqMsg = "{} {} {:n} {} {}".format(cmd,
@@ -158,7 +163,7 @@ class GroupBy:
         if verbose: print(repMsg)
         return self.unique_keys, create_pdarray(repMsg)
         
-    def aggregate(self, values, operator):
+    def aggregate(self, values, operator, skipna=True):
         '''
         Using the permutation stored in the GroupBy instance, group another array 
         of values and apply a reduction to each group's values. 
@@ -192,10 +197,11 @@ class GroupBy:
             cmd = "segmentedLocalRdx"
         else:
             cmd = "segmentedReduction"
-        reqMsg = "{} {} {} {}".format(cmd,
+        reqMsg = "{} {} {} {} {}".format(cmd,
                                          permuted_values.name,
                                          self.segments.name,
-                                         operator)
+                                         operator,
+                                         skipna)
         repMsg = generic_msg(reqMsg)
         if verbose: print(repMsg)
         if operator.startswith('arg'):
@@ -203,7 +209,7 @@ class GroupBy:
         else:
             return self.unique_keys, create_pdarray(repMsg)
 
-    def sum(self, values):
+    def sum(self, values, skipna=True):
         """
         Using the permutation stored in the GroupBy instance, group another array 
         of values and sum each group's values. 
@@ -224,9 +230,9 @@ class GroupBy:
         -----
         The grouped sum of a boolean ``pdarray`` returns integers.
         """
-        return self.aggregate(values, "sum")
+        return self.aggregate(values, "sum", skipna)
     
-    def prod(self, values):
+    def prod(self, values, skipna=True):
         """
         Using the permutation stored in the GroupBy instance, group another array 
         of values and compute the product of each group's values. 
@@ -247,9 +253,9 @@ class GroupBy:
         -----
         The return dtype is always float64.
         """
-        return self.aggregate(values, "prod")
+        return self.aggregate(values, "prod", skipna)
     
-    def mean(self, values):
+    def mean(self, values, skipna=True):
         """
         Using the permutation stored in the GroupBy instance, group another array 
         of values and compute the mean of each group's values. 
@@ -270,9 +276,9 @@ class GroupBy:
         -----
         The return dtype is always float64.
         """
-        return self.aggregate(values, "mean")
+        return self.aggregate(values, "mean", skipna)
     
-    def min(self, values):
+    def min(self, values, skipna=True):
         """
         Using the permutation stored in the GroupBy instance, group another array 
         of values and return the minimum of each group's values. 
@@ -290,9 +296,9 @@ class GroupBy:
             One minimum per unique key in the GroupBy instance
 
         """
-        return self.aggregate(values, "min")
+        return self.aggregate(values, "min", skipna)
     
-    def max(self, values):
+    def max(self, values, skipna=True):
         """
         Using the permutation stored in the GroupBy instance, group another array 
         of values and return the maximum of each group's values. 
@@ -310,7 +316,7 @@ class GroupBy:
             One maximum per unique key in the GroupBy instance
 
         """
-        return self.aggregate(values, "max")
+        return self.aggregate(values, "max", skipna)
     
     def argmin(self, values):
         """

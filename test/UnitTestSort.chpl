@@ -7,9 +7,10 @@ prototype module UnitTestSort
   use Random;
 
   use RadixSortLSD;
+  use CommAggregation;
 
-  enum testMode { correctness, correctnessFast, performance, commDiags };
-  config const mode = testMode.correctness;
+  enum testMode { correctness, correctnessFast, performance };
+  config const mode = testMode.correctnessFast;
 
   config const elemsPerLocale = -1;
   const numElems = numLocales * elemsPerLocale;
@@ -17,35 +18,24 @@ prototype module UnitTestSort
 
   /* Timing and Comm diagnostic reporting helpers */
 
-  var t: Timer;
+  var d: Diags;
   inline proc startDiag() {
-    select mode {
-      when testMode.performance { t.start(); }
-      when testMode.commDiags   { startCommDiagnostics(); }
-    }
+    d.start();
   }
   inline proc endDiag(name, type elemType, nElems, sortDesc) {
-    select mode {
-      when testMode.performance { t.stop(); }
-      when testMode.commDiags { stopCommDiagnostics(); }
-    }
-
+    d.stop(printTime=false, printDiag=false, printDiagSum=false);
     var sortType = try! "%s(A:[] %s)".format(name, elemType:string);
     writef("%33s -- (%s)", sortType, sortDesc);
-    select mode {
-      when testMode.performance {
-        const sec = t.elapsed();
+
+    if mode == testMode.performance {
+      if printTimes {
+        const sec = d.elapsed();
         const mbPerNode = (nElems * numBytes(elemType)):real / (1024.0*1024.0) / numLocales:real;
         writef(" -- %.2dr MB/s per node (%.2drs)", mbPerNode/sec, sec);
-        t.clear();
       }
-      when testMode.commDiags {
-        const d = getCommDiagnostics();
-        const GETS = +reduce (d.get + d.get_nb);
-        const PUTS = +reduce (d.put + d.put_nb);
-        const ONS = +reduce (d.execute_on + d.execute_on_fast + d.execute_on_nb);
-        writef(" -- GETS: %i, PUTS: %i, ONS: %i", GETS, PUTS, ONS);
-        resetCommDiagnostics();
+      if printDiagsSum {
+        const dd = d.commSum();
+        writef(" -- GETS: %i, PUTS: %i, ONS: %i", dd.GETS, dd.PUTS, dd.ONS);
       }
     }
     writef("\n");
@@ -67,13 +57,12 @@ prototype module UnitTestSort
       startDiag();
       var rankSortedA = radixSortLSD_ranks(A, checkSorted=false);
       endDiag("radixSortLSD_ranks", elemType, nElems, sortDesc);
-      // TODO need faster rank sort verification. Could use aggregation,
-      // but seems like there should be a comm-free way to verify.
-      if mode == testMode.correctness {
-        var sortedA: [D] elemType = forall i in rankSortedA do A[i];
-        if printArrays { writeln(A); writeln(rankSortedA); writeln(sortedA); }
-        assert(AryUtil.isSorted(sortedA));
+      var sortedA: [D] elemType;
+      forall (sA, i) in zip(sortedA, rankSortedA) with (var agg = newDstAggregator(elemType)) {
+        agg.copy(sA, A[i]);
       }
+      if printArrays { writeln(A); writeln(rankSortedA); writeln(sortedA); }
+      assert(AryUtil.isSorted(sortedA));
     }
   }
  

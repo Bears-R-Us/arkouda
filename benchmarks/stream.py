@@ -4,6 +4,8 @@ import time, argparse
 import numpy as np
 import arkouda as ak
 
+TYPES = ('int64', 'float64')
+
 def time_ak_stream(N_per_locale, trials, alpha, dtype, random):
     print(">>> arkouda stream")
     cfg = ak.get_config()
@@ -80,7 +82,7 @@ def create_parser():
     parser.add_argument('port', type=int, help='Port of arkouda server')
     parser.add_argument('-n', '--size', type=int, default=10**8, help='Problem size: length of arrays A and B')
     parser.add_argument('-t', '--trials', type=int, default=6, help='Number of times to run the benchmark')
-    parser.add_argument('-d', '--dtype', default='float64', help='Dtype of arrays (int64 or float64)')
+    parser.add_argument('-d', '--dtype', default='float64', help='Dtype of arrays ({})'.format(', '.join(TYPES)))
     parser.add_argument('-r', '--randomize', default=False, action='store_true', help='Fill arrays with random values instead of ones')
     parser.add_argument('-a', '--alpha', default=1.0, help='Scalar multiple')
     parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
@@ -91,18 +93,16 @@ if __name__ == "__main__":
     import sys
     parser = create_parser()
     args = parser.parse_args()
-    if args.dtype == 'int64':
-        args.alpha = ak.int64(args.alpha)
-    elif args.dtype == 'float64':
-        args.alpha = ak.float64(args.alpha)
-    else:
-        raise ValueError("Dtype must be either int64 or float64, not {}".format(args.dtype))
-
+    if args.dtype not in TYPES:
+        raise ValueError("Dtype must be {}, not {}".format('/'.join(TYPES), args.dtype))
+    args.alpha = getattr(ak, args.dtype)()
     ak.verbose = False
-    ak.connect(args.hostname, args.port)
+    ak.connect(server=args.hostname, port=args.port)
 
     if args.correctness_only:
-        check_correctness(args.alpha, args.dtype, args.randomize)
+        for dtype in TYPES:
+            alpha = getattr(ak, dtype)()
+            check_correctness(alpha, dtype, args.randomize)
         sys.exit(0)
     
     print("array size = {:,}".format(args.size))

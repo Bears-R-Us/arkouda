@@ -36,22 +36,23 @@ prototype module UnitTestArgSort
         var cmd = "localArgsort";
         var orig = toSymEntry(st.lookup(aname), int);
         writeIntArray(orig.a, filename+".original");
-        reqMsg = try! "%s %s".format(cmd, aname);
-        var t1 = Time.getCurrentTime();
-        repMsg = localArgsortMsg(reqMsg, st);
-        writeln(repMsg);
-        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+        reqMsg = try! "%s".format(aname);
+        var d: Diags;
+        d.start();
+        repMsg = localArgsortMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        d.stop("localArgsortMsg");
+        writeRep(repMsg);
 
         // apply iv to pdarray return sorted array
         cmd = "[pdarray]";
         var ivname = parseName(repMsg); // get name from argsort reply msg
         var iv = toSymEntry(st.lookup(ivname), int);
         writeIntArray(iv.a, filename+".permutation");
-        reqMsg = try! "%s %s %s".format(cmd, aname, ivname);
-        t1 = Time.getCurrentTime();
-        repMsg = pdarrayIndexMsg(reqMsg, st);
-        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
-        writeln(repMsg);
+        reqMsg = try! "%s %s".format(aname, ivname);
+        d.start();
+        repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        d.stop("pdarrayIndexMsg");
+        writeRep(repMsg);
 
         // check for result to be sorted
         cmd = "reduction";
@@ -59,10 +60,10 @@ prototype module UnitTestArgSort
         var bname = parseName(repMsg); // get name from [pdarray] reply msg
         var locSorted = toSymEntry(st.lookup(bname), int);
         writeIntArray(locSorted.a, filename+".locally_sorted");
-        reqMsg = try! "%s %s %s".format(cmd, subCmd, bname);
-        t1 = Time.getCurrentTime();
-        repMsg = reductionMsg(reqMsg, st);
-        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+        reqMsg = try! "%s %s".format(subCmd, bname);
+        d.start();
+        repMsg = reductionMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        d.stop("reductionMsg");
         writeln("ANSWER >>> ",repMsg," <<<");
     }
 

@@ -418,13 +418,17 @@ module Unique
 
     :returns: ([] int, [] int)
     */
-    proc uniqueSort(a: [?aD] int) {
+    proc uniqueSort(a: [?aD] int, param needCounts = true) {
         if (aD.size == 0) {
             if v {writeln("zero size");try! stdout.flush();}
             var u = makeDistArray(0, int);
-            var c = makeDistArray(0, int);
-            return (u, c);
-        }
+            if (needCounts) {
+                var c = makeDistArray(0, int);
+                return (u,c);
+            } else {
+                return u;
+            }
+        } 
 
         var sorted: [aD] int;
         if (AryUtil.isSorted(a)) {
@@ -434,8 +438,13 @@ module Unique
             sorted = radixSortLSD_keys(a);
         }
 
-        var (u, c) = uniqueFromSorted(sorted);
-        return (u, c);
+        if (needCounts) {
+            var (u, c) = uniqueFromSorted(sorted);
+            return (u,c);
+        } else {
+            var u = uniqueFromSorted(sorted, false);
+            return u;
+        }
     }
 
     proc uniqueSortWithInverse(a: [?aD] int) {
@@ -473,7 +482,7 @@ module Unique
         return (u, c, inv);
     }
     
-    proc uniqueFromSorted(sorted: [?aD] int) {
+    proc uniqueFromSorted(sorted: [?aD] int, param needCounts = true) {
         var truth: [aD] bool;
         truth[0] = true;
         [(t, s, i) in zip(truth, sorted, aD)] if i > aD.low { t = (sorted[i-1] != s); }
@@ -481,10 +490,14 @@ module Unique
         if (allUnique == aD.size) {
             if v {writeln("early out already unique");try! stdout.flush();}
             var u = makeDistArray(aD.size, int);
-            var c = makeDistArray(aD.size, int);
             u = sorted; // array is already unique
-            c = 1; // c counts are all 1
-            return (u, c);
+            if (needCounts) {
+                var c = makeDistArray(aD.size, int);
+                c = 1;
+                return (u,c);
+            } else {
+                return u;
+            }
         }
         // +scan to compute segment position... 1-based because of inclusive-scan
         var iv: [truth.domain] int = (+ scan truth);
@@ -493,7 +506,6 @@ module Unique
         if v {writeln("pop = ",pop);try! stdout.flush();}
 
         var segs = makeDistArray(pop, int);
-        var counts = makeDistArray(pop, int);
         var ukeys = makeDistArray(pop, int);
         
         // segment position... 1-based needs to be converted to 0-based because of inclusive-scan
@@ -508,18 +520,22 @@ module Unique
         // unique keys guaranteed to be sorted because keys are sorted
         [i in segs.domain] ukeys[i] = sorted[segs[i]];
 
-        // calc counts of each unique key using segs
-        forall i in segs.domain {
-            if i < segs.domain.high {
-                counts[i] = segs[i+1] - segs[i];
+        if (needCounts) {
+            var counts = makeDistArray(pop, int);
+            // calc counts of each unique key using segs
+            forall i in segs.domain {
+                if i < segs.domain.high {
+                    counts[i] = segs[i+1] - segs[i];
+                }
+                else
+                {
+                    counts[i] = sorted.domain.high+1 - segs[i];
+                }
             }
-            else
-            {
-                counts[i] = sorted.domain.high+1 - segs[i];
-            }
+            return (ukeys,counts);
+        } else {
+            return ukeys;
         }
-
-        return (ukeys,counts);
     }
 
     proc uniqueGroup(str: SegString, returnInverse = false, assumeSorted=false) throws {
@@ -670,7 +686,5 @@ module Unique
 
         return (uo, uv, counts);
     }
-    
-
 }
 

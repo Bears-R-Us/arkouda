@@ -82,4 +82,4 @@ class ArkoudaTest(unittest.TestCase):
             try:
                 stop_arkouda_server()
             except Exception as e:
-                raise RuntimeError(e)
+                pass

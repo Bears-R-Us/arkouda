@@ -12,47 +12,47 @@ prototype module efuncTest
 
         var reqMsg: string;
         var repMsg: string;
-        var repMsg2: string;
 
         var cmd = "create";
         var len = 5;
         var dtype = DType.Int64;
-        reqMsg = try! "%s %s %i".format(cmd, dtype2str(dtype), len);
-        var t1 = Time.getCurrentTime();
-        repMsg = createMsg(reqMsg, st);
-        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
-        writeln(repMsg);
+        reqMsg = try! "%s %i".format(dtype2str(dtype), len);
+        var d: Diags;
+        d.start();
+        repMsg = createMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        d.stop("createMsg");
+        writeRep(repMsg);
 
         cmd = "set";
         var name = parseName(repMsg);
         dtype = DType.Int64;
         var v2= 2;
-        reqMsg = try! "%s %s %s %i".format(cmd, name, dtype2str(dtype), v2);
-        t1 = Time.getCurrentTime();
-        repMsg = setMsg(reqMsg, st);
-        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
-        writeln(repMsg);
+        reqMsg = try! "%s %s %i".format(name, dtype2str(dtype), v2);
+        d.start();
+        repMsg = setMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        d.stop("setMsg");
+        writeRep(repMsg);
 
         var aname = parseName(repMsg);
 
         cmd = "create";
         len = 5;
         dtype = DType.Int64;
-        reqMsg = try! "%s %s %i".format(cmd, dtype2str(dtype), len);
-        t1 = Time.getCurrentTime();
-        repMsg = createMsg(reqMsg, st);
-        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
-        writeln(repMsg);
+        reqMsg = try! "%s %i".format(dtype2str(dtype), len);
+        d.start();
+        repMsg = createMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        d.stop("createMsg");
+        writeRep(repMsg);
 
         cmd = "set";
         name = parseName(repMsg);
         dtype = DType.Int64;
         v2= -2;
-        reqMsg = try! "%s %s %s %i".format(cmd, name, dtype2str(dtype), v2);
-        t1 = Time.getCurrentTime();
-        repMsg = setMsg(reqMsg, st);
-        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
-        writeln(repMsg);
+        reqMsg = try! "%s %s %i".format(name, dtype2str(dtype), v2);
+        d.start();
+        repMsg = setMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        d.stop("setMsg");
+        writeRep(repMsg);
         
         var bname = parseName(repMsg);
 
@@ -61,11 +61,11 @@ prototype module efuncTest
         
         dtype = DType.Int64;
         var value=-1;
-        reqMsg = try! "%s %s %s %s".format(cmd, op, aname,bname);
-        t1 = Time.getCurrentTime();
-        repMsg = opeqvvMsg(reqMsg, st);
-        writeln(repMsg);
-        writeln("time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+        reqMsg = try! "%s %s %s".format(op, aname,bname);
+        d.start();
+        repMsg = opeqvvMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        d.stop("opeqvvMsg");
+        writeRep(repMsg);
         st.pretty();
     }
 }

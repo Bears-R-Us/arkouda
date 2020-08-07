@@ -431,10 +431,10 @@ module ArgSortMsg
     /* Find the permutation that sorts multiple arrays, treating each array as a
        new level of the sorting key.
      */
-    proc coargsortMsg(reqMsg: string, st: borrowed SymTab) throws {
+    proc coargsortMsg(cmd: string, payload: bytes, st: borrowed SymTab) throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string;
-      var (cmd, nstr, rest) = reqMsg.splitMsgToTuple(3);
+      var (nstr, rest) = payload.decode().splitMsgToTuple(2);
       var n = nstr:int; // number of arrays to sort
       var fields = rest.split();
       // Check that fields contains the stated number of arrays
@@ -578,11 +578,11 @@ module ArgSortMsg
     }
     
     /* argsort takes pdarray and returns an index vector iv which sorts the array */
-    proc argsortMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc argsortMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (cmd, objtype, name) = reqMsg.splitMsgToTuple(3);
+        var (objtype, name) = payload.decode().splitMsgToTuple(2);
 
         // get next symbol name
         var ivname = st.nextName();
@@ -625,11 +625,11 @@ module ArgSortMsg
     }
 
     /* localArgsort takes a pdarray and returns an index vector which sorts the array on a per-locale basis */
-    proc localArgsortMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc localArgsortMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (cmd, name) = reqMsg.splitMsgToTuple(2);
+        var (name) = payload.decode().splitMsgToTuple(1);
 
         // get next symbol name
         var ivname = st.nextName();

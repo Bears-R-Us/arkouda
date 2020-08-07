@@ -211,6 +211,9 @@ def union1d(pda1, pda2):
             return pda2 # union is pda2
         if pda2.size == 0:
             return pda1 # union is pda1
+        if pda1.dtype == int and pda2.dtype == int:
+            repMsg = generic_msg("union1d {} {}".format(pda1.name, pda2.name))
+            return create_pdarray(repMsg)
         return unique(concatenate((unique(pda1), unique(pda2))))
     else:
         raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
@@ -251,6 +254,9 @@ def intersect1d(pda1, pda2, assume_unique=False):
             return pda1 # nothing in the intersection
         if pda2.size == 0:
             return pda2 # nothing in the intersection
+        if pda1.dtype == int and pda2.dtype == int:
+            repMsg = generic_msg("intersect1d {} {} {}".format(pda1.name, pda2.name, assume_unique))
+            return create_pdarray(repMsg)
         if not assume_unique:
             pda1 = unique(pda1)
             pda2 = unique(pda2)
@@ -301,6 +307,9 @@ def setdiff1d(pda1, pda2, assume_unique=False):
             return pda1 # return a zero length pdarray
         if pda2.size == 0:
             return pda1 # subtracting nothing return orig pdarray
+        if pda1.dtype == int and pda2.dtype == int:
+            repMsg = generic_msg("setdiff1d {} {} {}".format(pda1.name, pda2.name, assume_unique))
+            return create_pdarray(repMsg)
         if not assume_unique:
             pda1 = unique(pda1)
             pda2 = unique(pda2)
@@ -344,6 +353,9 @@ def setxor1d(pda1, pda2, assume_unique=False):
             return pda2 # return other pdarray if pda1 is empty
         if pda2.size == 0:
             return pda1 # return other pdarray if pda2 is empty
+        if pda1.dtype == int and pda2.dtype == int:
+            repMsg = generic_msg("setxor1d {} {} {}".format(pda1.name, pda2.name, assume_unique))
+            return create_pdarray(repMsg)
         if not assume_unique:
             pda1 = unique(pda1)
             pda2 = unique(pda2)

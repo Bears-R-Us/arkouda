@@ -21,10 +21,10 @@ module SortMsg
 
     
     /* sort takes pdarray and returns a sorted copy of the array */
-    proc sortMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc sortMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string; // response message
-      var (cmd, name) = reqMsg.splitMsgToTuple(2);
+      var (name) = payload.decode().splitMsgToTuple(1);
 
       // get next symbol name
       var sortedName = st.nextName();
