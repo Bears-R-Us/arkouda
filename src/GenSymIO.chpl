@@ -386,7 +386,7 @@ module GenSymIO {
         } catch e: NotHDF5FileError {
           return try! "Error: cannot open as HDF5 file %s".format(fname);
         } catch e: SegArrayError {
-          return try! "Error: expecte segmented array but could not find sub-datasets '%s' and '%s'".format(SEGARRAY_OFFSET_NAME, SEGARRAY_VALUE_NAME);
+          return try! "Error: expected segmented array but could not find sub-datasets '%s' and '%s'".format(SEGARRAY_OFFSET_NAME, SEGARRAY_VALUE_NAME);
         } catch {
           // Need a catch-all for non-throwing function
           return try! "Error: unknown cause";
@@ -520,7 +520,7 @@ module GenSymIO {
       var group = C_HDF5.H5Gopen2(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT);
       if (group < 0) {
         // 
-        try! writeln("The dataset is neither at the root of the HDF5 file not within a group");
+        try! writeln("The dataset is neither at the root of the HDF5 file nor within a group");
         throw new owned SegArrayError();
       }
       var offsetDset = dsetName + "/" + SEGARRAY_OFFSET_NAME;
@@ -693,13 +693,20 @@ module GenSymIO {
     var entry = st.lookup(arrayName);
     try! writeln("TARGET entry: %t".format(entry));
     try {
+      /* If the payload corresponds to a strings dataset, which is an array of strings, or a segments 
+       * dataset, which is the set of offset indices for a corresponding strings dataset.
+       * There will be two entries in the payload: (1) the path to the hdf file to be read and (2) 
+       * the global offset indices that correspond to the 0:uint(8)-delimited bytes array that 
+       * corresponds to the string array.
+       */
       if isStringsDataset(arrayName) || isSegmentsDataset(arrayName) {
+    	try! writeln(jsonfile);
         var values = decode_json(jsonfile, 2);
 		filename = values[0];
 		offsets = values[1];
       }
       else {
-        filename = decode_json(jsonfile, 1)[0];
+        filename = decode_json(jsonfile, 2)[0];
       }
     } catch {
       return try! "Error: could not decode json filenames via tempfile (%i files: %s)".format(1, jsonfile);
@@ -825,7 +832,7 @@ module GenSymIO {
         use C_HDF5.HDF5_WAR;
 
         /* 
-         * If this is a segments dataset, need to generate a segments dataset, which enables 
+         * If this is a segmented dataset, need to generate a segments dataset, which enables 
          * reads of distributed Strings arrays, and a global_segments dataset, which is
          * needed to write the local slice of the Strings array to hdf5.
          */
