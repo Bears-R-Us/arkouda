@@ -16,7 +16,7 @@ class IOTest(ArkoudaTest):
     @classmethod
     def setUpClass(cls):
         super(IOTest, cls).setUpClass()
-        IOTest.io_test_dir = '{}/io_test/'.format(os.getcwd())
+        IOTest.io_test_dir = '{}/io_test'.format(os.getcwd())
         io_util.get_directory(IOTest.io_test_dir)
 
     def setUp(self):

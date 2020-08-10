@@ -607,10 +607,14 @@ class pdarray:
         else:
             raise ValueError("Allowed modes are 'truncate' and 'append'")
 
+        """
+        If offsets are provided, add to the json_array as the offsets will be used to 
+        retrieve the array elements from the hdf5 files.
+        """ 
         if offsets:
             json_array = json.dumps([prefix_path, offsets])
         else: 
-            json_array = json.dumps([prefix_path, offsets])
+            json_array = json.dumps([prefix_path])
         return generic_msg("tohdf {} {} {} {}".format(self.name, dataset, m, json_array))
 
 
@@ -636,7 +640,6 @@ def create_pdarray(repMsg : str) -> pdarray:
 def info(pda : pdarray) -> str:
     """
     Returns information about the pdarray instance
-
     """
     if isinstance(pda, pdarray):
         return generic_msg("info {}".format(pda.name))
