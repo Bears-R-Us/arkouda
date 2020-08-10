@@ -256,7 +256,7 @@ def save_all(columns, prefix_path, names=None, mode='truncate', offsets=None):
     for arr, name in zip(pdarrays, names):
         # Append all pdarrays to existing files as new datasets EXCEPT the first one, and only if user requests truncation
         if mode.lower() not in 'append' and first_iter:
-            arr.save(prefix_path=prefix_path, dataset=name, mode='truncate', offsets=offsets)
+            arr.save(prefix_path=prefix_path, dataset=name, mode='truncate')
             first_iter = False
         else:
-            arr.save(prefix_path=prefix_path, dataset=name, mode='append', offsets=offsets)
+            arr.save(prefix_path=prefix_path, dataset=name, mode='append')

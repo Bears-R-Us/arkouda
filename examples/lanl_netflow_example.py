@@ -30,37 +30,53 @@ if __name__ == '__main__':
     if len(args.hdffiles) == 0:
         print("usage: {} [--server server] [--port port] hdffiles ".format(sys.argv[0]))
 
+    # fields in the files to read and create pdarrays in the dict
     fields = ['srcIP', 'dstIP', 'srcPort', 'dstPort', 'start']
-    
+
+    # read in the files, all data from hdffiles
+    # will be concatenated together in the fields/columns
     nfDF = {field: ak.read_hdf(field, args.hdffiles) for field in fields}
-    
-    print(nfDF['start'])
-    print(nfDF['srcIP'])
-    print(nfDF['dstIP'])
-    print(nfDF['srcPort'])
-    print(nfDF['dstPort'])
+
+    # print out the pdarrays in the dict and their types
+    print(nfDF['start'],nfDF['start'].dtype)
+    print(nfDF['srcIP'],type(nfDF['srcIP'])) # Strings dosen't have a dtype?!?
+    print(nfDF['dstIP'],type(nfDF['dstIP'])) # Strings dosen't have a dtype?!?
+    print(nfDF['srcPort'],nfDF['srcPort'].dtype)
+    print(nfDF['dstPort'],nfDF['dstPort'].dtype)
     print(nfDF)
-    
+
+    # print oput the symbols the server knows about
     print(ak.info(ak.AllSymbols))
 
+    # print out how much memory is being used by the server
     print("mem used: ", ak.get_mem_used())
-    
+
+    # get the unique srcIP and the counts for each unique srcIP
     u,c = ak.unique(nfDF['srcIP'],return_counts=True)
     print("unique values = ", u.size,u)
     print("value counts = ", c.size,c)
     
+    # get the unique dstIP and the counts for each unique dstIP
     u,c = ak.unique(nfDF['dstIP'],return_counts=True)
     print("unique values = ", u.size,u)
     print("value counts = ", c.size,c)
     
+    # get the unique srcPort and the counts for each unique srcPort
     u,c = ak.unique(nfDF['srcPort'],return_counts=True)
     print("unique values = ", u.size,u)
     print("value counts = ", c.size,c)
     
+    # get the unique dstPort and the counts for each unique dstPort
     u,c = ak.unique(nfDF['dstPort'],return_counts=True)
     print("unique values = ", u.size,u)
     print("value counts = ", c.size,c)
+
+    # GroupBy (srcIP,dstIP)
     
+    # GroupBy (srcIP,srcPort)
+
+    # GruopBy (srcIP, srcPort, dstIP, dstPort)
+
     ak.shutdown()
     #ak.disconnect()
     
