@@ -10,7 +10,7 @@ from arkouda.sorting import *
 
 import pandas as pd
 
-__all__ = ["DFrame"]
+__all__ = ["DFrame", "to_akframe", "convert_columns"]
 
 class DFrame:
 
@@ -133,11 +133,8 @@ class DFrame:
         
 
         if isinstance(key, int) or isinstance(key, str):
-            if key not in self.columns and key not in self.index:
+            if key not in self.columns:
                 raise TypeError("key must exist in either the index or the columns")
-            if key in self.index:
-                newData = {col: array[key] for col, array in self.data.items()}
-                return DFrame(newData, index = self.index[key])
             elif key in self.columns:
                 index = self.columns.index(key)
                 return self.arrays[index]
@@ -540,6 +537,37 @@ class DFrame:
     #     self.size = self.shape[0] * self.shape[1]
     #     self.axes = (index, self.columns)
     #     self.ndim = self.shape[0]
+
+def to_akframe(df): 
+    names = []
+    dictionaries = []
+
+    for col in df.columns:
+        if df[col].dtype == pd.Timestamp:
+            altered = df[col] - df[col].min()
+            df[col] = altered.apply(lambda x: x.total_seconds())
+
+        elif df[col].dtype != int:
+            dictionaries.append(dict(zip(df[col].unique(), range(0, df[col].unique().size))))
+            names.append(col)
+    
+    if len(names) >= 1: 
+        df = convert_columns(df, names, dictionaries)
+    
+    return DFrame(df)
+
+def convert_columns(data, columns, dictionaries):
+    data_copy = data.copy()
+    i = 0
+    for col in columns:
+        data_copy[col] = data_copy[col].map(dictionaries[i])
+        i += 1
+    return data_copy
+
+
+
+    
+
         
     
             

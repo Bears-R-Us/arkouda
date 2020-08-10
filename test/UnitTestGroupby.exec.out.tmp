@@ -1,0 +1,22 @@
+Unit Test for groupBy
+Key: value
+
+argsortDefault
+argsort time = 0.05642sec
+
+findSegments time = 0.134373sec
+
+[pdarray] time = 0.065735sec
+
+created id_6 int64 0 1 (0) 8
+Unique key: segment start
+
+[pdarray] time = 0.055679sec
+
+created id_7 int64 0 1 (0) 8
+Sorted vals
+
+segmentedReduction time = 0.03628sec
+
+created id_8 int64 0 1 (0) 8
+Key: reduced value
