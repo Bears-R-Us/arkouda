@@ -8,16 +8,18 @@ module GenSymIO {
   use Sort;
   use CommAggregation;
   use NumPyDType;
+  use List;
+  use Map;
+  use PrivateDist;
 
   config const GenSymIO_DEBUG = false;
   config const SEGARRAY_OFFSET_NAME = "segments";
   config const SEGARRAY_GLOBAL_OFFSET_NAME = "global_segments";
   config const SEGARRAY_VALUE_NAME = "values";
-
+  config const NULL_STRINGS_VALUE = 0:uint(8);
   /*
    * Creates a pdarray server-side and returns the SymTab name used to
    * retrieve it.
-   *  
    */
   proc arrayMsg(cmd: string, payload: bytes, st: borrowed SymTab): string {
     var repMsg: string;
@@ -143,11 +145,10 @@ module GenSymIO {
   }
 
   /*
-  Spawns a separate Chapel process that executes the HDF5 h5ls method and returns
-  
-  */
-  proc lshdfMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
-    writeln("In lsdhdfMsg()");
+   * Spawns a separate Chapel process that executes the HDF5 h5ls method and returns
+   * the result of the h5ls command
+   */
+  proc lshdfMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws { 
     // reqMsg: "lshdf [<json_filename>]"
     use Spawn;
     const tmpfile = "/tmp/arkouda.lshdf.output";
@@ -291,10 +292,29 @@ module GenSymIO {
       fixupSegBoundaries(entrySeg.a, segSubdoms, subdoms);
       var entryVal = new shared SymEntry(len, uint(8));
       read_files_into_distributed_array(entryVal.a, subdoms, filenames, dsetName + "/" + SEGARRAY_VALUE_NAME);
+      try! writeln("READ IN VALUES %t".format(entryVal.a));
       var segName = st.nextName();
       st.addEntry(segName, entrySeg);
       var valName = st.nextName();
       st.addEntry(valName, entryVal);
+      var newString = true;
+      var stringsList: list(string, parSafe=true);
+      var charList: list(uint(8), parSafe=true);
+      for entry in entryVal.a do {
+    	  writeln("ENTRY %t".format(entry));
+    	  if entry == 0:uint(8) {
+    		  newString = true;
+    		  try! stringsList.append(createStringWithNewBuffer(c_ptrTo(charList.toArray()), 
+    				  charList.size-1, charList.size));
+    	  } else {
+    		  if newString {
+    			  charList.clear();
+    			  newString = false;
+    		  } 
+    		  charList.append(entry);
+    	  }
+      }
+      try! writeln("THE CHAR LIST %t".format(charList));
       return try! "created " + st.attrib(segName) + " +created " + st.attrib(valName);
     }
     when (false, C_HDF5.H5T_INTEGER) {
@@ -746,6 +766,7 @@ module GenSymIO {
     const fields = filename.split(".");
     var prefix:string;
     var extension:string;
+
     if fields.size == 1 {
       prefix = filename;
       extension = "";
@@ -753,6 +774,8 @@ module GenSymIO {
       prefix = ".".join(fields#(fields.size-1)); // take all but the last
       extension = "." + fields[fields.domain.high];
     }
+    
+    // Generate the filenames based upon the number of targetLocales.
     var filenames: [0..#A.targetLocales().size] string;
     for i in 0..#A.targetLocales().size {
       filenames[i] = try! "%s_LOCALE%s%s".format(prefix, i:string, extension);
@@ -788,22 +811,31 @@ module GenSymIO {
           throw new owned FileNotFoundError();
         }
 
-	/*
-	 * If DType is UInt8, need to create strings_array group to enable read/load with the
-	 * Arkouda infrastructure. The strings_array group contains two datasets: (1) segments, 
-	 * which are the indices for the string values embedded in the string binary and (2)
-	 * values, which are the corresponding string values within a null-delimited bytes object
-	 */ 
-	if array_type == DType.UInt8 {
-	  var group_id = C_HDF5.H5Gcreate2(file_id, "/strings_array", C_HDF5.H5P_DEFAULT, 
+	    /*
+	     * If DType is UInt8, need to create strings_array group to enable read/load with the
+	     * Arkouda infrastructure. The strings_array group contains two datasets: (1) segments, 
+	     * which are the indices for the string values embedded in the string binary and (2)
+	     * values, which are the corresponding string values within a null-delimited bytes object
+	     */ 
+	    if array_type == DType.UInt8 {
+	      var group_id = C_HDF5.H5Gcreate2(file_id, "/strings_array", C_HDF5.H5P_DEFAULT, 
 			  C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
           C_HDF5.H5Gclose(group_id);
-	}
+	    }
         C_HDF5.H5Fclose(file_id);
       }
     }
 
-    coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) do on loc {
+    /*
+     * Declare the indices object, which is a globally-scoped PrivateSpace array that contains
+     * the index slices for each locale. The index slices are used to remove the uint(8) 
+     * characters moved to the previous locale to ensure each complete string is written to
+     * one hdf file.
+     */
+    var indices: [PrivateSpace] int;
+    
+    
+    coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) with(ref indices) do on loc {
         const myFilename = filenames[idx];
         if GenSymIO_DEBUG {
           writeln(try! "%s exists? %t".format(myFilename, exists(myFilename)));
@@ -813,13 +845,13 @@ module GenSymIO {
         var dims: [0..#1] C_HDF5.hsize_t;
         dims[0] = locDom.size: C_HDF5.hsize_t;
         var myDsetName = "/" + dsetName;
-
+               
         use C_HDF5.HDF5_WAR;
 
         /* 
-         * If this is a segments dataset, need to generate a segments dataset, which enables 
-         * reads of distributed Strings arrays, and a global_segments dataset, which is
-         * needed to write the local slice of the Strings array to hdf5.
+         * If this is a segments dataset, need to generate a zero-based segments dataset, 
+         * which recalibrates the segments AKA offsets so that they line up with the
+         * strings contained in each hdf5 file.
          */
         if isSegmentsDataset(myDsetName) {
             /* 
@@ -830,7 +862,9 @@ module GenSymIO {
             if A.localSlice(locDom)[0] != 0 {
               var dec : int;
               var newSegments: [0..A.localSlice(locDom).size-1] int;
-              for (segment,i) in zip(A.localSlice(locDom),0..A.localSlice(locDom).size-1) do {
+              
+              // Create the new zero-based segments array for this locale
+              for (segment,i) in zip(A.localSlice(locDom),0..A.localSlice(locDom).size-1) {
             	/*
             	 * Get the first element in the dataset, the value of which is used to reset
             	 * (decrement) all indices within the segments dataset
@@ -840,17 +874,109 @@ module GenSymIO {
                 }
                 newSegments[i] = segment:int - dec;
               }
-              //Overwrite the original segments values with zero-based segments values
+
+              //Overwrite the original segments array with the zero-based segments array
               H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
                              getHDF5Type(A.eltType), c_ptrTo(newSegments));          
             } else {
+            	/* 
+            	 * The first element in the segments array is zero, so simply write
+            	 * the segments array out to hdf5
+            	 */
                 H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
                              getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
             }
-        } else if isStringsDataset(dsetName) {
-            writeln("THE LOCALE DATA %t".format(A.localSlice(locDom)));
-            H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
-                             getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));        
+        } else if isStringsDataset(dsetName) {            
+            /*
+             * Since this is a strings dataset, there is a possibility that 1..n
+             * strings span two neighboring locales; this possibility is checked by
+             * seeing if the final character in the local slice is the null uint(8)
+             * character. If it is not, then the last string is only a partial string.
+             */
+            if A.localSlice(locDom).back() != NULL_STRINGS_VALUE {
+              /*
+               * Since the last value of the local slice is other than the uint(8) null
+               * character, this means the last string in the local slice spans the 
+               * current and next locale. Consequently, need to do the following:
+               * 1. Add all local slice values to a list
+               * 2. Obtain remaining uint(8) values from the next locale
+               */
+              var charList: list(uint(8), parSafe=true);
+              for value in A.localSlice(locDom) {
+                charList.append(value:uint(8));
+              }
+  
+              writeln("CHAR LIST %i BEFORE LOOKAHEAD UPDATES: %t".format(idx, charList));
+              /*
+               * On the next locale do the following:
+               * 
+               * 1. Retrieve the non-null uint(8) chars followed by the null
+               *    uint(8) characters from the next locale
+               * 2. Add to new charList
+               * 3. Create charArray on next locale to hold updated values
+               */
+              on Locales[idx+1] {
+            	const locDom = A.localSubdomain();
+                var sliceIndex = -1;
+                
+                /*
+                 * Filter out the non-null uint(8) characters, which are the characters
+                 * that complete the string started in the previous locale, along with the
+                 * null uint(8) character so the slice starts at the first non-null uint(8)
+                 * character, which is the start of the first string to be assigned to 
+                 * the hdf5 file corresponding to this locale.
+                 */
+                for (value, i) in zip(A.localSlice(locDom), 0..A.localSlice(locDom).size-1) {
+                  if value != NULL_STRINGS_VALUE {
+                    charList.append(value:uint(8));
+                  } else {
+                	sliceIndex = i + 1;
+                	break;
+                  }
+                }
+
+                /*
+                 * The indices object is the PrivateDist, which is an array containing the 
+                 * sliceIndex for each locale. Set the sliceIndex for this local.
+                 */
+                indices[here.id] = sliceIndex;
+              }
+
+              /* 
+               * To prepare for writing revised values array to hdf5, must do the following:
+               * 1. Add a null uint(8) value to the end of the array so that reads work correctly
+               * 2. Set the dims[0] value, which is the revised length of the values array
+               */
+              charList.append(NULL_STRINGS_VALUE);
+              writeln("CHAR LIST %i AFTER LOOKAHEAD UPDATES: %t".format(idx, charList));              
+              var sliceIndex = indices[idx]:int;
+              var valuesList: list(uint(8), parSafe=true);
+
+              if sliceIndex > -1 {
+                for value in charList(sliceIndex..charList.size-1) {
+                  valuesList.append(value:uint(8));
+                }
+              } else {
+            	valuesList = charList;
+              }
+              writeln("CHAR LIST %i AFTER SLICE UPDATES: %t".format(idx, valuesList));                
+              
+              dims[0] = valuesList.size:uint(64);
+
+              /*
+               * Write the charList containing the uint(8) characters missing from the local
+               * slice and retrieved from the next locale to hdf5
+               */
+              H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
+                             getHDF5Type(A.eltType), c_ptrTo(valuesList.toArray()));               
+            } else {
+              /*
+               * The local slice ends with the uint(8) null character, which is the 
+               * required value to ensure correct read logic, so simply write out to hdf5.
+               */
+              H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
+                             getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));     
+            }
         } else {
         	/*
         	 * This is a non-Strings pdarray, so simply write out to the top-level
@@ -861,15 +987,26 @@ module GenSymIO {
         }
         // Close the file now that the pdarray has been written
         C_HDF5.H5Fclose(myFileID);
-      }
+    }
     return warnFlag;
   }
 
+  private inline proc getFileId(fileName : string): int {
+    return try! C_HDF5.H5Fcreate(fileName.c_str(), C_HDF5.H5F_ACC_TRUNC, 
+                		C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+  }
+
+  private inline proc prepareStringsFile(fileId : int) {
+    var group_id = try! C_HDF5.H5Gcreate2(fileId, "/strings_array", C_HDF5.H5P_DEFAULT, 
+		  C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+	C_HDF5.H5Gclose(group_id);
+  }
+  
   /*
    * Returns a boolean indicating whether the data set is a segments dataset 
    * corresponding to a Strings array save operation.
    */
-  proc isSegmentsDataset(dSetName: string) : bool {
+  private inline proc isSegmentsDataset(dSetName: string) : bool {
       return dSetName.find("strings_array/segments") > -1;
   }
 
@@ -877,7 +1014,7 @@ module GenSymIO {
    * Returns a boolean indicating whether the data set is a Strings values 
    * dataset corresponding to a Strings array save operation.
    */
-  proc isStringsDataset(dsetName: string) : bool {
+  private inline proc isStringsDataset(dsetName: string) : bool {
 	  return dsetName.find(needle="strings_array/values") > -1;
   }
   
@@ -887,7 +1024,7 @@ module GenSymIO {
    * 
    * :TODO: need to integrate this into the Write1DArray code block
    */
-  proc rebaseSegmentsDataset(segments) {
+  private inline proc rebaseSegmentsDataset(segments) {
       var dec : int;
       var newSegments: [0..segments.size-1] int;
       for (segment,i) in zip(segments,0..segments.size-1) do {
@@ -897,5 +1034,11 @@ module GenSymIO {
         newSegments[i] = segment:int - dec;
       }
       return newSegments;
+  }
+  
+  private inline proc outputToOneFile(filename : string, blockDist) {
+	  const outputFileName = "%s_LOCALE0".format(filename);
+	  
+
   }
 }
