@@ -964,8 +964,8 @@ def argmink(pda, k):
     Examples
     --------
     >>> A = ak.array([10,5,1,3,7,2,9,0])
-    >>> ak.mink(A, 3)
-    array([0, 1, 2])
+    >>> ak.argmink(A, 3)
+    array([7, 2, 5])
     """
     if isinstance(pda, pdarray):
         if k == 0:
@@ -1011,8 +1011,8 @@ def argmaxk(pda, k):
     Examples
     --------
     >>> A = ak.array([10,5,1,3,7,2,9,0])
-    >>> ak.maxk(A, 3)
-    array([7, 9, 10])
+    >>> ak.argmaxk(A, 3)
+    array([4, 6, 0])
     """
     if isinstance(pda, pdarray):
         if k == 0:
