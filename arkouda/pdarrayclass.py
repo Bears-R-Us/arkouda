@@ -853,13 +853,21 @@ def mink(pda, k):
 
     Returns
     -------
-    pdarray, int
+    pdarray
         The minimum `k` values from pda
 
     Notes
     -----
-    Currently only works on integers, could be exended to also work for floats.
+    This call is equivalent in value to:
+    
+        a[ak.argsort(a)[:k]]
+    
+    and generally outperforms this operation.
 
+    This reduction will see a significant drop in performance as `k` grows
+    beyond a certain value. This value is system dependent, but generally
+    about a `k` of 5 million is where performance degredation has been observed.
+    
     Examples
     --------
     >>> A = ak.array([10,5,1,3,7,2,9,0])
@@ -896,7 +904,16 @@ def maxk(pda, k):
 
     Notes
     -----
-    Currently only works on integers, could be exended to also work for floats.
+    This call is equivalent in value to:
+    
+        a[ak.argsort(a)[k:]]
+    
+    and generally outperforms this operation.
+
+    This reduction will see a significant drop in performance as `k` grows
+    beyond a certain value. This value is system dependent, but generally
+    about a `k` of 5 million is where performance degredation has been observed.
+
 
     Examples
     --------
@@ -930,11 +947,19 @@ def argmink(pda, k):
     Returns
     -------
     pdarray, int
-        The minimum `k` values from pda
+        The indcies of the minimum `k` values from pda
 
     Notes
     -----
-    Currently only works on integers, could be exended to also work for floats.
+    This call is equivalent in value to:
+    
+        ak.argsort(a)[:k]
+    
+    and generally outperforms this operation.
+
+    This reduction will see a significant drop in performance as `k` grows
+    beyond a certain value. This value is system dependent, but generally
+    about a `k` of 5 million is where performance degredation has been observed.
 
     Examples
     --------
@@ -968,11 +993,20 @@ def argmaxk(pda, k):
     Returns
     -------
     pdarray, int
-        The maximum `k` values from pda
+        The indices of the maximum `k` values from pda
 
     Notes
     -----
-    Currently only works on integers, could be exended to also work for floats.
+    This call is equivalent in value to:
+    
+        ak.argsort(a)[k:]
+    
+    and generally outperforms this operation.
+
+    This reduction will see a significant drop in performance as `k` grows
+    beyond a certain value. This value is system dependent, but generally
+    about a `k` of 5 million is where performance degredation has been observed.
+
 
     Examples
     --------

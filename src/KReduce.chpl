@@ -5,6 +5,19 @@
  * or min values is specified through the "isMin"
  * field (true gives min values, false gives max
  * values).
+ *
+ * **NOTE**
+ * This reduction performs well with a small `k`
+ * value, but sees a significant drop off in
+ * performance as `k` grows larger, although the
+ * exact value for this threshold is system dependent.
+ * This is because this is a per-task reduciton, so
+ * as `k` increases, the amount of random access that
+ * occurs will increase, slowing down access. This
+ * operation is equivalent to performing an `argsort()`
+ * on an array, and then using a slice of these values
+ * to retrieve the first or last `k` indices from that
+ * sorted indice array.
  */
 
 module KReduce {
@@ -67,15 +80,10 @@ module KReduce {
   proc computeExtremaInds(arr: [?D] ?t, kval: int, isMin=true) {
     var kred = new unmanaged kreduce(eltType=t, k=kval, isMin=isMin);
     var result = kred.identity;
-
-    var tmpArr: [D] (t, D.idxType);
-    forall (elem, val, i) in zip(tmpArr, arr, arr.domain) {
-      elem = (val, i);
+    forall idx in zip(arr, arr.domain) with (kred reduce result) {
+      result reduce= idx;
     }
-    [ elm in tmpArr with (kred reduce result) ]
-      result reduce= elm;
     delete kred;
-
     return result;
   }
 
