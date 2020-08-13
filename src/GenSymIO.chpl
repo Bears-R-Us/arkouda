@@ -301,20 +301,18 @@ module GenSymIO {
       var stringsList: list(string, parSafe=true);
       var charList: list(uint(8), parSafe=true);
       for entry in entryVal.a do {
-    	  writeln("ENTRY %t".format(entry));
     	  if entry == 0:uint(8) {
-    		  newString = true;
-    		  try! stringsList.append(createStringWithNewBuffer(c_ptrTo(charList.toArray()), 
-    				  charList.size-1, charList.size));
-    	  } else {
-    		  if newString {
-    			  charList.clear();
-    			  newString = false;
-    		  } 
-    		  charList.append(entry);
+            newString = true;
+            try! stringsList.append(createStringWithNewBuffer(c_ptrTo(charList.toArray()), 
+                   charList.size-1, charList.size));
+          } else {
+            if newString {
+              charList.clear();
+                newString = false;
+            } 
+            charList.append(entry);
     	  }
       }
-      try! writeln("THE CHAR LIST %t".format(charList));
       return try! "created " + st.attrib(segName) + " +created " + st.attrib(valName);
     }
     when (false, C_HDF5.H5T_INTEGER) {
@@ -709,9 +707,8 @@ module GenSymIO {
         var values = decode_json(jsonfile, 2);
 		filename = values[0];
 		offsets = values[1];
-      }
-      else {
-        filename = decode_json(jsonfile, 1)[0];
+      } else {
+    	  filename = decode_json(jsonfile, 1)[0];
       }
     } catch {
       return try! "Error: could not decode json filenames via tempfile (%i files: %s)".format(1, jsonfile);
@@ -832,13 +829,31 @@ module GenSymIO {
      */
     var indices: [PrivateSpace] int;
     
-    
-    coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) with(ref indices) do on loc {
+    /*
+     * If this is a strings dataset, loop through all locales and set the slice indices, 
+     * which are used to remove uint(8) characters that are part of a string that belongs
+     * to the previous locale in a list of locales configured for the Arkouda instance.
+     */
+    if isStringsDataset(dsetName) {
+      coforall (loc, idx) in zip(A.targetLocales(), 
+    		                         filenames.domain) with(ref indices) do on loc {
+	    if idx < A.targetLocales().size-1 {
+	      const locDom = A.localSubdomain();
+	      if A.localSlice(locDom).back() != NULL_STRINGS_VALUE {
+		    generateSliceIndex(idx,indices,A);
+	      }
+	    }
+      }
+    }
+
+    coforall (loc, idx) in zip(A.targetLocales(), 
+    		                         filenames.domain) with(ref indices) do on loc {
         const myFilename = filenames[idx];
         if GenSymIO_DEBUG {
           writeln(try! "%s exists? %t".format(myFilename, exists(myFilename)));
         }
-        var myFileID = C_HDF5.H5Fopen(myFilename.c_str(), C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
+        var myFileID = C_HDF5.H5Fopen(myFilename.c_str(), C_HDF5.H5F_ACC_RDWR, 
+                                                                    C_HDF5.H5P_DEFAULT);
         const locDom = A.localSubdomain();
         var dims: [0..#1] C_HDF5.hsize_t;
         dims[0] = locDom.size: C_HDF5.hsize_t;
@@ -852,6 +867,7 @@ module GenSymIO {
          * strings contained in each hdf5 file.
          */
         if isSegmentsDataset(myDsetName) {
+        	//:TODO: need to update client to stop sending now unneeded segments array
           writeln("NOOP");     
         } else if isStringsDataset(dsetName) {  
             /*
@@ -873,7 +889,6 @@ module GenSymIO {
                 charList.append(value:uint(8));
               }
   
-              writeln("CHAR LIST %i BEFORE LOOKAHEAD UPDATES: %t".format(idx, charList));
               /*
                * On the next locale do the following:
                * 
@@ -883,7 +898,6 @@ module GenSymIO {
                */
               on Locales[idx+1] {
             	const locDom = A.localSubdomain();
-                var sliceIndex = -1;
                 
                 /*
                  * Filter out the non-null uint(8) characters, which are the characters
@@ -896,16 +910,9 @@ module GenSymIO {
                   if value != NULL_STRINGS_VALUE {
                     charList.append(value:uint(8));
                   } else {
-                	sliceIndex = i + 1;
                 	break;
                   }
                 }
-                writeln("THE SLICE VALUE FOR %t is %t".format(here.id, sliceIndex));
-                /*
-                 * The indices object is the PrivateDist, which is an array containing the 
-                 * sliceIndex for each locale. Set the sliceIndex for this local.
-                 */
-                indices[here.id] = sliceIndex;
               }
 
               /* 
@@ -914,34 +921,43 @@ module GenSymIO {
                * 2. Set the dims[0] value, which is the revised length of the values array
                */
               charList.append(NULL_STRINGS_VALUE);
-              writeln("CHAR LIST %i AFTER LOOKAHEAD UPDATES: %t".format(idx, charList));              
+          
               var sliceIndex = indices[idx]:int;
               var valuesList: list(uint(8), parSafe=true);
 
+              /*
+               * If the slice index > -1, this means that the charList contains chars 
+               * that compose the last string from the previous locale.
+               */
               if sliceIndex > -1 {
                 valuesList = adjustForStringSlices(sliceIndex, charList);
               } else {
             	valuesList = charList;
               }
-              writeln("CHAR LIST %i AFTER SLICE UPDATES: %t".format(idx, valuesList));                
               
+              // Update the dimensions per the possibly re-sized valuesList
               dims[0] = valuesList.size:uint(64);
 
+     
+              /*
+               * Generate the segments array from the full-processed values array
+               * by firs specifying the first index of zero, and then subsequent
+               * indices mapping to the locations of null uint(8) characters
+               */
               var sequences: list(int, parSafe=true);
               sequences.append(0);
-
 			  for (value, i) in zip(valuesList,0..valuesList.size-1) do {
 			    if (value == NULL_STRINGS_VALUE) && (i < valuesList.size-1) {
 			      sequences.append(i+1);
 			    }
 			  }
-
+		  
               /*
                * Write the valuesList containing the uint(8) characters missing from
                * the local slice along with retrieved from the next locale to hdf5
                */
-              H5LTmake_dataset_WAR(myFileID, '/strings_array/values'.c_str(), 1, c_ptrTo(dims),
-                             getHDF5Type(A.eltType), c_ptrTo(valuesList.toArray()));     
+              H5LTmake_dataset_WAR(myFileID, '/strings_array/values'.c_str(), 1, 
+            		  c_ptrTo(dims), getHDF5Type(A.eltType), c_ptrTo(valuesList.toArray()));     
 
               H5LTmake_dataset_WAR(myFileID, '/strings_array/segments'.c_str(), 1, 
             		  c_ptrTo([sequences.size:uint(64)]), getHDF5Type(int), 
@@ -954,6 +970,7 @@ module GenSymIO {
                * previous locale.
                */
               var sliceIndex = indices[idx]:int;
+
               if sliceIndex == -1 {
             	/*
             	 * The local slice does not contain chars from previous locale, so generate
@@ -978,9 +995,9 @@ module GenSymIO {
                 }
 
           		var valuesList = adjustForStringSlices(sliceIndex, charList);
-  
           		var segmentsList = generateSegmentsList(valuesList); 
-
+          		
+                // Update the dimensions per the possibly re-sized valuesList
                 dims[0] = valuesList.size:uint(64);
 
                 H5LTmake_dataset_WAR(myFileID, '/strings_array/segments'.c_str(), 1, 
@@ -993,8 +1010,8 @@ module GenSymIO {
             }
         } else {
         	/*
-        	 * This is a non-Strings pdarray, so simply write the local slice out to the top-level
-        	 * group of the hdf file
+        	 * This is a non-Strings pdarray, so simply write the local slice out to the
+        	 * top-level group of the hdf5 file
         	 */
             H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
                              getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
@@ -1005,8 +1022,12 @@ module GenSymIO {
     return warnFlag;
   }
 
-  
-  private inline proc generateSliceIndex(idx, charList, indices) {
+  /*
+   * Generates the slice index for the locale strings array. The slice index
+   * will be used to remove characters that correspond to the last string of
+   * the previous locale.
+   */
+  private inline proc generateSliceIndex(idx, indices, A) {
     on Locales[idx+1] {
 	  const locDom = A.localSubdomain();
       var sliceIndex = -1;
@@ -1019,10 +1040,7 @@ module GenSymIO {
        * to the hdf5 file corresponding to this locale.
        */
       for (value, i) in zip(A.localSlice(locDom), 0..A.localSlice(locDom).size-1) {
-        writeln("THE SLICE TEST VALUE %t FOR LOCALE %t".format(value, here.id));
-        if value != NULL_STRINGS_VALUE {
-          charList.append(value:uint(8));
-        } else {
+        if value == NULL_STRINGS_VALUE {
     	  sliceIndex = i + 1;
     	  break;
         }
@@ -1032,17 +1050,15 @@ module GenSymIO {
   }
   
   /*
-   * Adjusts the incoming list of list of uint(8) characters to leading chars
+   * Adjusts the list of uint(8) characters by removing leading chars
    * that correspond to 1..n chars that compose a string started in the
-   * previous local by slicing those chars out and returning a new list.
+   * previous locale by slicing those chars out and returning a new list.
    */
   private inline proc adjustForStringSlices(sliceIndex : int, charList) {
-	try! writeln("CHAR LIST: %t SLICE INDEX %i".format(charList, sliceIndex));
     var valuesList: list(uint(8), parSafe=true);
     for value in charList(sliceIndex..charList.size-1) {
 	  valuesList.append(value:uint(8));
     }
-    try! writeln("THE SLICE-ADJUSTED valuesList %t".format(valuesList));
     return valuesList;
   }
   

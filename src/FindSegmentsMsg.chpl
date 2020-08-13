@@ -165,7 +165,6 @@ module FindSegmentsMsg
     }
 
     proc findLocalSegmentsMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
-    	try! writeln('FINDING LOCAL SEGMENTS %s'.format(cmd));
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
