@@ -93,13 +93,15 @@ endif
 
 .PHONY: check-deps
 ifndef ARKOUDA_SKIP_CHECK_DEPS
-CHECK_DEPS = check-zmq check-hdf5
+CHECK_DEPS = check-chpl check-zmq check-hdf5
 endif
-
-CHPL_MINOR := $(shell chpl --version | sed -n "s/chpl version 1\.\([0-9]*\).*/\1/p")
-CHPL_TOO_OLD := $(shell test $(CHPL_MINOR) -lt 21 && echo yes)
 check-deps: $(CHECK_DEPS)
-ifeq ($(CHPL_TOO_OLD),yes)
+
+CHPL_MINOR := $(shell $(CHPL) --version | sed -n "s/chpl version 1\.\([0-9]*\).*/\1/p")
+CHPL_VERSION_OK := $(shell test $(CHPL_MINOR) -ge 22 && echo yes)
+.PHONY: check-chpl
+check-chpl:
+ifneq ($(CHPL_VERSION_OK),yes)
 	$(error Chapel 1.22.0 or newer is required)
 endif
 
