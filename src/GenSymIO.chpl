@@ -244,7 +244,7 @@ module GenSymIO {
       } catch e: NotHDF5FileError {
         return try! "Error: cannot open as HDF5 file %s".format(fname);
       } catch e: SegArrayError {
-        return try! "Error: expecte segmented array but could not find sub-datasets '%s' and '%s'".format(SEGARRAY_OFFSET_NAME, SEGARRAY_VALUE_NAME);
+        return try! "Error: expected segmented array but could not find sub-datasets '%s' and '%s'".format(SEGARRAY_OFFSET_NAME, SEGARRAY_VALUE_NAME);
       } catch {
         // Need a catch-all for non-throwing function
         return try! "Error: unknown cause";
@@ -603,7 +603,6 @@ module GenSymIO {
       subdoms[i] = {offset..#lengths[i]};
       offset += lengths[i];
     }
-    writeln("SUBDOMS %t".format(subdoms));
     return (subdoms, (+ reduce lengths));
   }
 
@@ -723,7 +722,6 @@ module GenSymIO {
     select entry.dtype {
       when DType.Int64 {
         var e = toSymEntry(entry, int);
-        //C_HDF5.HDF5_WAR.H5LTmake_dataset_WAR(file_id, dsetName.c_str(), 1, c_ptrTo(dims), getHDF5Type(e.a.eltType), c_ptrTo(e.a));
         warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.Int64);
       }
       when DType.Float64 {
@@ -854,39 +852,8 @@ module GenSymIO {
          * strings contained in each hdf5 file.
          */
         if isSegmentsDataset(myDsetName) {
-            /* 
-             * Confirm if the first element in the segments dataset is zero. If not, this means 
-             * the indices need to be rebased to start at zero in order to ensure the 
-             * corresponding values are returned correctly during reads.
-             */
-            if A.localSlice(locDom)[0] != 0 {
-              var dec : int;
-              var newSegments: [0..A.localSlice(locDom).size-1] int;
-              
-              // Create the new zero-based segments array for this locale
-              for (segment,i) in zip(A.localSlice(locDom),0..A.localSlice(locDom).size-1) {
-            	/*
-            	 * Get the first element in the dataset, the value of which is used to reset
-            	 * (decrement) all indices within the segments dataset
-            	 */
-                if i == 0 {
-                  dec = segment:int;
-                }
-                newSegments[i] = segment:int - dec;
-              }
-
-              //Overwrite the original segments array with the zero-based segments array
-              H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
-                             getHDF5Type(A.eltType), c_ptrTo(newSegments));          
-            } else {
-            	/* 
-            	 * The first element in the segments array is zero, so simply write
-            	 * the segments array out to hdf5
-            	 */
-                H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
-                             getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
-            }
-        } else if isStringsDataset(dsetName) {            
+          writeln("NOOP");     
+        } else if isStringsDataset(dsetName) {  
             /*
              * Since this is a strings dataset, there is a possibility that 1..n
              * strings span two neighboring locales; this possibility is checked by
@@ -913,7 +880,6 @@ module GenSymIO {
                * 1. Retrieve the non-null uint(8) chars followed by the null
                *    uint(8) characters from the next locale
                * 2. Add to new charList
-               * 3. Create charArray on next locale to hold updated values
                */
               on Locales[idx+1] {
             	const locDom = A.localSubdomain();
@@ -921,10 +887,10 @@ module GenSymIO {
                 
                 /*
                  * Filter out the non-null uint(8) characters, which are the characters
-                 * that complete the string started in the previous locale, along with the
-                 * null uint(8) character so the slice starts at the first non-null uint(8)
-                 * character, which is the start of the first string to be assigned to 
-                 * the hdf5 file corresponding to this locale.
+                 * that complete the last string started in the previous locale, along with
+                 * the null uint(8) character so the slice starts at the first non-null 
+                 * uint(8) character, which is the start of the first string to be assigned 
+                 * to the hdf5 file corresponding to this locale.
                  */
                 for (value, i) in zip(A.localSlice(locDom), 0..A.localSlice(locDom).size-1) {
                   if value != NULL_STRINGS_VALUE {
@@ -934,7 +900,7 @@ module GenSymIO {
                 	break;
                   }
                 }
-
+                writeln("THE SLICE VALUE FOR %t is %t".format(here.id, sliceIndex));
                 /*
                  * The indices object is the PrivateDist, which is an array containing the 
                  * sliceIndex for each locale. Set the sliceIndex for this local.
@@ -953,9 +919,7 @@ module GenSymIO {
               var valuesList: list(uint(8), parSafe=true);
 
               if sliceIndex > -1 {
-                for value in charList(sliceIndex..charList.size-1) {
-                  valuesList.append(value:uint(8));
-                }
+                valuesList = adjustForStringSlices(sliceIndex, charList);
               } else {
             	valuesList = charList;
               }
@@ -963,23 +927,73 @@ module GenSymIO {
               
               dims[0] = valuesList.size:uint(64);
 
+              var sequences: list(int, parSafe=true);
+              sequences.append(0);
+
+			  for (value, i) in zip(valuesList,0..valuesList.size-1) do {
+			    if (value == NULL_STRINGS_VALUE) && (i < valuesList.size-1) {
+			      sequences.append(i+1);
+			    }
+			  }
+
               /*
-               * Write the charList containing the uint(8) characters missing from the local
-               * slice and retrieved from the next locale to hdf5
+               * Write the valuesList containing the uint(8) characters missing from
+               * the local slice along with retrieved from the next locale to hdf5
                */
-              H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
-                             getHDF5Type(A.eltType), c_ptrTo(valuesList.toArray()));               
+              H5LTmake_dataset_WAR(myFileID, '/strings_array/values'.c_str(), 1, c_ptrTo(dims),
+                             getHDF5Type(A.eltType), c_ptrTo(valuesList.toArray()));     
+
+              H5LTmake_dataset_WAR(myFileID, '/strings_array/segments'.c_str(), 1, 
+            		  c_ptrTo([sequences.size:uint(64)]), getHDF5Type(int), 
+					  c_ptrTo(sequences.toArray()));   
             } else {
               /*
                * The local slice ends with the uint(8) null character, which is the 
-               * required value to ensure correct read logic, so simply write out to hdf5.
+               * required value to ensure correct read logic, so next check to see if 
+               * this local slice contains 1..n chars that compose a string from the 
+               * previous locale.
                */
-              H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
-                             getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));     
+              var sliceIndex = indices[idx]:int;
+              if sliceIndex == -1 {
+            	/*
+            	 * The local slice does not contain chars from previous locale, so generate
+            	 * the segments list and write the values and segments arrays out
+            	 */ 
+                var segmentsList = generateSegmentsList(A.localSlice(locDom));
+
+                H5LTmake_dataset_WAR(myFileID, '/strings_array/segments'.c_str(), 1, 
+                              c_ptrTo([segmentsList.size:uint(64)]),getHDF5Type(int), 
+				              c_ptrTo(segmentsList.toArray()));  
+                H5LTmake_dataset_WAR(myFileID, '/strings_array/values'.c_str(), 1, c_ptrTo(dims),
+                              getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));   
+              } else {
+              	/*
+              	 * The  local slice does contain chars from previous locale, first adjust by
+              	 * slicing those chars out to generate a values list, generate the segments list 
+              	 * and then finally write the values and segments arrays out
+              	 */ 
+            	var charList: list(uint(8), parSafe=true);
+                for value in A.localSlice(locDom) {
+                  charList.append(value:uint(8));
+                }
+
+          		var valuesList = adjustForStringSlices(sliceIndex, charList);
+  
+          		var segmentsList = generateSegmentsList(valuesList); 
+
+                dims[0] = valuesList.size:uint(64);
+
+                H5LTmake_dataset_WAR(myFileID, '/strings_array/segments'.c_str(), 1, 
+                              c_ptrTo([segmentsList.size:uint(64)]),getHDF5Type(int), 
+				              c_ptrTo(segmentsList.toArray()));  
+                H5LTmake_dataset_WAR(myFileID, '/strings_array/values'.c_str(), 1, c_ptrTo(dims),
+                              getHDF5Type(A.eltType), 
+							  c_ptrTo(valuesList.toArray()));   
+              }
             }
         } else {
         	/*
-        	 * This is a non-Strings pdarray, so simply write out to the top-level
+        	 * This is a non-Strings pdarray, so simply write the local slice out to the top-level
         	 * group of the hdf file
         	 */
             H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
@@ -991,9 +1005,71 @@ module GenSymIO {
     return warnFlag;
   }
 
-  private inline proc getFileId(fileName : string): int {
-    return try! C_HDF5.H5Fcreate(fileName.c_str(), C_HDF5.H5F_ACC_TRUNC, 
-                		C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+  
+  private inline proc generateSliceIndex(idx, charList, indices) {
+    on Locales[idx+1] {
+	  const locDom = A.localSubdomain();
+      var sliceIndex = -1;
+    
+      /*
+       * Filter out the non-null uint(8) characters, which are the characters
+       * that complete the last string started in the previous locale, along with
+       * the null uint(8) character so the slice starts at the first non-null 
+       * uint(8) character, which is the start of the first string to be assigned 
+       * to the hdf5 file corresponding to this locale.
+       */
+      for (value, i) in zip(A.localSlice(locDom), 0..A.localSlice(locDom).size-1) {
+        writeln("THE SLICE TEST VALUE %t FOR LOCALE %t".format(value, here.id));
+        if value != NULL_STRINGS_VALUE {
+          charList.append(value:uint(8));
+        } else {
+    	  sliceIndex = i + 1;
+    	  break;
+        }
+      }
+      indices[here.id] = sliceIndex;
+    }
+  }
+  
+  /*
+   * Adjusts the incoming list of list of uint(8) characters to leading chars
+   * that correspond to 1..n chars that compose a string started in the
+   * previous local by slicing those chars out and returning a new list.
+   */
+  private inline proc adjustForStringSlices(sliceIndex : int, charList) {
+	try! writeln("CHAR LIST: %t SLICE INDEX %i".format(charList, sliceIndex));
+    var valuesList: list(uint(8), parSafe=true);
+    for value in charList(sliceIndex..charList.size-1) {
+	  valuesList.append(value:uint(8));
+    }
+    try! writeln("THE SLICE-ADJUSTED valuesList %t".format(valuesList));
+    return valuesList;
+  }
+  
+  /*
+   * Generates a list of segments, or indices to the start location
+   * of each string within a uint(8) array
+   */
+  private inline proc generateSegmentsList(valuesList) {
+    var segmentsList: list(int, parSafe=true);
+
+    /*
+     * The valuesList starts with non-null uint(8) char, so
+     * add zero index to mark the start of the first string
+     */
+    segmentsList.append(0);
+
+	for (value, i) in zip(valuesList,0..valuesList.size-1) do {
+      /*
+       * If the value is a null uint(8) character, then the next
+       * string sequence will start at the next list position,
+       * so append sequences with current position + 1
+       */
+	  if (value == NULL_STRINGS_VALUE) && (i < valuesList.size-1) {
+	    segmentsList.append(i+1);
+	  }
+	}	
+	return segmentsList;
   }
 
   private inline proc prepareStringsFile(fileId : int) {
@@ -1016,29 +1092,5 @@ module GenSymIO {
    */
   private inline proc isStringsDataset(dsetName: string) : bool {
 	  return dsetName.find(needle="strings_array/values") > -1;
-  }
-  
-  /*
-   * Resets the segments array values to start at zero, which is required if the
-   * Strings.save is executed with number of locales > 1.
-   * 
-   * :TODO: need to integrate this into the Write1DArray code block
-   */
-  private inline proc rebaseSegmentsDataset(segments) {
-      var dec : int;
-      var newSegments: [0..segments.size-1] int;
-      for (segment,i) in zip(segments,0..segments.size-1) do {
-        if i == 0 {
-          dec = segment:int;
-        }
-        newSegments[i] = segment:int - dec;
-      }
-      return newSegments;
-  }
-  
-  private inline proc outputToOneFile(filename : string, blockDist) {
-	  const outputFileName = "%s_LOCALE0".format(filename);
-	  
-
   }
 }
