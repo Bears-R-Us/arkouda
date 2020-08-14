@@ -27,11 +27,11 @@ module SegmentedArray {
    * operations.
    */
   class SegString {
-	  
-	/**
-	 * The name of the SymEntry corresponding to the pdarray containing
-	 * the offsets, which are start indices for each string bytearray
-	 */
+ 
+    /**
+     * The name of the SymEntry corresponding to the pdarray containing
+     * the offsets, which are start indices for each string bytearray
+     */
     var offsetName: string;
 
     /**
