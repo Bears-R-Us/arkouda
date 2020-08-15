@@ -816,7 +816,7 @@ module GenSymIO {
                var group_id = C_HDF5.H5Gcreate2(file_id, "/strings_array", C_HDF5.H5P_DEFAULT, 
                                                               C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
                C_HDF5.H5Gclose(group_id);
-	    }
+        }
         C_HDF5.H5Fclose(file_id);
       }
     }
@@ -840,7 +840,7 @@ module GenSymIO {
       if idx < A.targetLocales().size-1 {
           const locDom = A.localSubdomain();
           if A.localSlice(locDom).back() != NULL_STRINGS_VALUE {
-		    generateSliceIndex(idx,indices,A);
+            generateSliceIndex(idx,indices,A);
           }
         }
       }
@@ -986,17 +986,17 @@ module GenSymIO {
               } else {
                 /*
                  * The  local slice does contain chars from previous locale, first adjust by
-              	 * slicing those chars out to generate a values list, generate the segments list 
-              	 * and then finally write the values and segments arrays out
-              	 */ 
+                 * slicing those chars out to generate a values list, generate the segments list 
+                 * and then finally write the values and segments arrays out
+                 */ 
                 var charList: list(uint(8), parSafe=true);
                 for value in A.localSlice(locDom) {
                   charList.append(value:uint(8));
                 }
 
-          		var valuesList = adjustForStringSlices(sliceIndex, charList);
-          		var segmentsList = generateSegmentsList(valuesList); 
-          		
+                var valuesList = adjustForStringSlices(sliceIndex, charList);
+                var segmentsList = generateSegmentsList(valuesList); 
+
                 // Update the dimensions per the possibly re-sized valuesList
                 dims[0] = valuesList.size:uint(64);
 
@@ -1083,7 +1083,7 @@ module GenSymIO {
        if (value == NULL_STRINGS_VALUE) && (i < valuesList.size-1) {
          segmentsList.append(i+1);
        }
-    }	
+    }
     return segmentsList;
   }
 
