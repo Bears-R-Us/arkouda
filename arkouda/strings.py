@@ -574,7 +574,8 @@ class Strings:
         corresponding file.
 
         Important implementation notes: (1) Strings state is saved as two datasets within
-        a group: offsets and values(2) save logic is delegated to pdarrayIO.save_all
+        a group: offsets and values (2) save logic is delegated to pdarrayIO.save_all and
+        (3) offsets are generated server-side from the values pdarray
 
         Parameters
         ----------
@@ -584,7 +585,5 @@ class Strings:
             By default, truncate (overwrite) output files, if they exist.
             If 'append', attempt to create new dataset in existing files.
         """
-        return arkouda.save_all(columns=[self.bytes,self.offsets], 
-                prefix_path=prefix_path, names=['/{}/values'.format(self.name),
-                    '/{}/segments'.format(self.name)],mode=mode,
-                    offsets=','.join([str(offset) for offset in self.offsets]))
+        return arkouda.save_all(columns=[self.bytes], 
+                prefix_path=prefix_path, names=['/{}/values'.format(self.name)],mode=mode)

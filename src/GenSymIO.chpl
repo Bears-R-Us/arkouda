@@ -14,12 +14,11 @@ module GenSymIO {
 
   config const GenSymIO_DEBUG = false;
   config const SEGARRAY_OFFSET_NAME = "segments";
-  config const SEGARRAY_GLOBAL_OFFSET_NAME = "global_segments";
   config const SEGARRAY_VALUE_NAME = "values";
   config const NULL_STRINGS_VALUE = 0:uint(8);
   /*
    * Creates a pdarray server-side and returns the SymTab name used to
-   * retrieve it.
+   * retrieve the pdarray from the SymTab.
    */
   proc arrayMsg(cmd: string, payload: bytes, st: borrowed SymTab): string {
     var repMsg: string;
@@ -27,7 +26,7 @@ module GenSymIO {
     var dtype = str2dtype(try! dtypeBytes.decode());
     var size = try! sizeBytes:int;
     var tmpf:file;
-    try! writeln("THE DATA %t".format(data));
+
     // Write the data payload that will compose the pdarray to memory buffer
     try {
       tmpf = openmem();
@@ -154,14 +153,14 @@ module GenSymIO {
     const tmpfile = "/tmp/arkouda.lshdf.output";
     var repMsg: string;
     var (jsonfile) = payload.decode().splitMsgToTuple(1);
-    writeln("ls jsonfile %s".format(jsonfile));
+
     var filename: string;
     try {
       filename = decode_json(jsonfile, 1)[0];
     } catch {
       return try! "Error: could not decode json filenames via tempfile (%i files: %s)".format(1, jsonfile);
     }
-    writeln("ls FILENAME %s".format(filename));
+
     // Attempt to interpret filename as a glob expression and ls the first result
     var tmp = glob(filename);
     if GenSymIO_DEBUG {
@@ -693,27 +692,19 @@ module GenSymIO {
   }
 
   proc tohdfMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
-    // reqMsg = "tohdf <arrayName> <dsetName> <mode> [<json_filename>]"
     var (arrayName, dsetName, modeStr, jsonfile)
           = payload.decode().splitMsgToTuple(4);
-    try! writeln("arrayName: %s dsetName: %s modeStr: %s jsonfile: %s".format(arrayName, dsetName, modeStr, jsonfile));
+
     var mode = try! modeStr: int;
     var filename: string;
-    var offsets: string;
     var entry = st.lookup(arrayName);
 
     try {
-      if isStringsDataset(arrayName) || isSegmentsDataset(arrayName) {
-        var values = decode_json(jsonfile, 2);
-        filename = values[0];
-        offsets = values[1];
-      } else {
-        filename = decode_json(jsonfile, 1)[0];
-      }
+      filename = decode_json(jsonfile, 1)[0];
     } catch {
       return try! "Error: could not decode json filenames via tempfile (%i files: %s)".format(1, jsonfile);
     }
-    //var entry = st.lookup(arrayName);
+
     var warnFlag: bool;
     try {
     select entry.dtype {
@@ -805,7 +796,6 @@ module GenSymIO {
         if file_id < 0 { // Negative file_id means error
           throw new owned FileNotFoundError();
         }
-
             /*
              * If DType is UInt8, need to create strings_array group to enable read/load with the
              * Arkouda infrastructure. The strings_array group contains two datasets: (1) segments, 
@@ -824,15 +814,16 @@ module GenSymIO {
     /*
      * Declare the indices object, which is a globally-scoped PrivateSpace array that contains
      * the index slices for each locale. The index slices are used to remove the uint(8) 
-     * characters moved to the previous locale to ensure each complete string is written to
-     * one hdf file.
+     * characters moved to the previous locale to ensure each complete string from each
+     * locale is written to one hdf file.
      */
     var indices: [PrivateSpace] int;
     
     /*
      * If this is a strings dataset, loop through all locales and set the slice indices, 
-     * which are used to remove uint(8) characters that are part of a string that belongs
-     * to the previous locale in a list of locales configured for the Arkouda instance.
+     * which are used to remove uint(8) characters from the locale slice that are part 
+     * of a string that belongs to the previous locale in a list of locales configured 
+     * for the Arkouda instance.
      */
     if isStringsDataset(dsetName) {
       coforall (loc, idx) in zip(A.targetLocales(), 
@@ -861,15 +852,11 @@ module GenSymIO {
                
         use C_HDF5.HDF5_WAR;
 
-        /* 
-         * If this is a segments dataset, need to generate a zero-based segments dataset, 
-         * which recalibrates the segments AKA offsets so that they line up with the
-         * strings contained in each hdf5 file.
+        /*
+         * A strings dataset is handled differently, so check to see if this is
+         * indeed a strings dataset.
          */
-        if isSegmentsDataset(myDsetName) {
-          //:TODO: need to update client to stop sending now unneeded segments array
-          writeln("NOOP");     
-        } else if isStringsDataset(dsetName) {  
+        if isStringsDataset(dsetName) {  
             /*
              * Since this is a strings dataset, there is a possibility that 1..n
              * strings span two neighboring locales; this possibility is checked by
@@ -1009,11 +996,11 @@ module GenSymIO {
             }
         } else {
             /*
-             * This is a non-Strings pdarray, so simply write the local slice out to the
+             * This is not a strings pdarray, so simply write the local slice out to the
              * top-level group of the hdf5 file
              */
              H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
-                                          getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
+                                        getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
         }
         // Close the file now that the pdarray has been written
         C_HDF5.H5Fclose(myFileID);
@@ -1023,10 +1010,10 @@ module GenSymIO {
 
   /*
    * Generates the slice index for the locale strings array. The slice index
-   * will be used to remove characters that correspond to the last string of
-   * the previous locale.
+   * will be used to remove characters from the current locale that correspond 
+   * to the last string of the previous locale.
    */
-  private inline proc generateSliceIndex(idx, indices, A) {
+  private inline proc generateSliceIndex(idx : int, indices, A) {
     on Locales[idx+1] {
       const locDom = A.localSubdomain();
       var sliceIndex = -1;
@@ -1040,10 +1027,16 @@ module GenSymIO {
        */
       for (value, i) in zip(A.localSlice(locDom), 0..A.localSlice(locDom).size-1) {
         if value == NULL_STRINGS_VALUE {
+          /*
+           * Since the char is the null uint(8) character, that means that the chars
+           * composing the last string from the previous locale have been accounted
+           * for, so update the slice index and then breakout from the for loop.
+           */
           sliceIndex = i + 1;
           break;
         }
       }
+      // Assign the slice index to this locale id in the indices PrivateDist
       indices[here.id] = sliceIndex;
     }
   }
@@ -1053,7 +1046,8 @@ module GenSymIO {
    * that correspond to 1..n chars that compose a string started in the
    * previous locale by slicing those chars out and returning a new list.
    */
-  private inline proc adjustForStringSlices(sliceIndex : int, charList) {
+  private inline proc adjustForStringSlices(sliceIndex : int, 
+                                   charList : list(uint(8))) : list(uint(8)){
     var valuesList: list(uint(8), parSafe=true);
     for value in charList(sliceIndex..charList.size-1) {
       valuesList.append(value:uint(8));
@@ -1065,7 +1059,7 @@ module GenSymIO {
    * Generates a list of segments, or indices to the start location
    * of each string within a uint(8) array
    */
-  private inline proc generateSegmentsList(valuesList) {
+  private inline proc generateSegmentsList(valuesList) : list(int) {
     var segmentsList: list(int, parSafe=true);
 
     /*
@@ -1091,14 +1085,6 @@ module GenSymIO {
     var group_id = try! C_HDF5.H5Gcreate2(fileId, "/strings_array", C_HDF5.H5P_DEFAULT, 
                          C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT); 
     C_HDF5.H5Gclose(group_id);
-  }
-  
-  /*
-   * Returns a boolean indicating whether the data set is a segments dataset 
-   * corresponding to a Strings array save operation.
-   */
-  private inline proc isSegmentsDataset(dSetName: string) : bool {
-      return dSetName.find("strings_array/segments") > -1;
   }
 
   /*
