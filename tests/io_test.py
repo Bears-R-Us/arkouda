@@ -1,4 +1,4 @@
-import re, os, shutil
+import re, os, shutil, glob, sys
 import numpy as np
 import h5py
 from typing import List, Mapping, Union
@@ -244,6 +244,25 @@ class IOTest(ArkoudaTest):
         self.assertEqual(3, len(datasets)) 
         for dataset in datasets:
             self.assertIn(dataset, self.names)
+
+    def testStringsIO(self):
+        strings_array = ak.array(['string {}'.format(num) for num in list(range(1,11))])
+        strings_array.save('{}/strings-test'.format(IOTest.io_test_dir))
+        r_strings_array = ak.load_all('strings-test')['strings_array']
+        self.assertEqual(len(strings_array), len(r_strings_array))
+        for i in list(range(0,10)):
+            self.assertEqual(strings_array[i], r_strings_array[i])
+        self.assertTrue(ak.read_all(filenames='{}/strings-test_LOCALE0'.\
+                                    format(IOTest.io_test_dir)))
+        self.assertIsNotNone (ak.read_hdf(filenames='{}/strings-test_LOCALE0'.\
+                            format(IOTest.io_test_dir), dsetName='strings_array/values'))
+        self.assertIsNotNone(ak.read_hdf(filenames='{}/strings-test_LOCALE0'.\
+                            format(IOTest.io_test_dir), dsetName='strings_array/segments'))
+
+    def tearDown(self):
+        super(IOTest, self).tearDown()
+        for f in glob.glob('{}/*'.format(IOTest.io_test_dir)):
+            os.remove(f)
 
     @classmethod
     def tearDownClass(cls):
