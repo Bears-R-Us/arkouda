@@ -16,6 +16,7 @@ module GenSymIO {
   config const SEGARRAY_OFFSET_NAME = "segments";
   config const SEGARRAY_VALUE_NAME = "values";
   config const NULL_STRINGS_VALUE = 0:uint(8);
+  
   /*
    * Creates a pdarray server-side and returns the SymTab name used to
    * retrieve the pdarray from the SymTab.
@@ -340,7 +341,9 @@ module GenSymIO {
     }
   }
 
-  /* Read datasets from HDF5 files into arkouda symbol table. */
+  /* 
+   * Reads all datasets from one or more HDF5 files into an Arkouda symbol table. 
+   */
   proc readAllHdfMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     // reqMsg = "readAllHdf <ndsets> <nfiles> [<json_dsetname>] | [<json_filenames>]"
     var repMsg: string;
@@ -480,9 +483,6 @@ module GenSymIO {
     return try! rnames.strip(" , ", leading = false, trailing = true);
   }
 
-  /*
-  
-  */
   proc fixupSegBoundaries(a: [?D] int, segSubdoms: [?fD] domain(1), valSubdoms: [fD] domain(1)) {
     var boundaries: [fD] int; // First index of each region that needs to be raised
     var diffs: [fD] int; // Amount each region must be raised over previous region
@@ -796,26 +796,26 @@ module GenSymIO {
         if file_id < 0 { // Negative file_id means error
           throw new owned FileNotFoundError();
         }
-            /*
-             * If DType is UInt8, need to create strings_array group to enable read/load with the
-             * Arkouda infrastructure. The strings_array group contains two datasets: (1) segments, 
-             * which are the indices for the string values embedded in the string binary and (2)
-             * values, which are the corresponding string values within a null-delimited bytes object
-             */ 
-             if array_type == DType.UInt8 {
-               var group_id = C_HDF5.H5Gcreate2(file_id, "/strings_array", C_HDF5.H5P_DEFAULT, 
-                                                              C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
-               C_HDF5.H5Gclose(group_id);
+          /*
+           * If DType is UInt8, need to create strings_array group to enable read/load with the
+           * Arkouda infrastructure. The strings_array group contains two datasets: (1) segments, 
+           * which are the indices for the string values embedded in the string binary and (2)
+           * values, which are the corresponding string values within a null-delimited bytes object
+           */ 
+           if array_type == DType.UInt8 {
+             var group_id = C_HDF5.H5Gcreate2(file_id, "/strings_array", C_HDF5.H5P_DEFAULT, 
+                                              C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+             C_HDF5.H5Gclose(group_id);
         }
         C_HDF5.H5Fclose(file_id);
       }
     }
 
     /*
-     * Declare the indices object, which is a globally-scoped PrivateSpace array that contains
-     * the index slices for each locale. The index slices are used to remove the uint(8) 
-     * characters moved to the previous locale to ensure each complete string from each
-     * locale is written to one hdf file.
+     * Declare the indices object, which is a globally-scoped PrivateSpace array that
+     * contains the index slices for each locale. The index slices are used to remove 
+     * the uint(8) characters moved to the previous locale to ensure each complete 
+     * string from each locale is written to one hdf file.
      */
     var indices: [PrivateSpace] int;
     
@@ -871,11 +871,8 @@ module GenSymIO {
                * 1. Add all local slice values to a list
                * 2. Obtain remaining uint(8) values from the next locale
                */
-              var charList: list(uint(8), parSafe=true);
-              for value in A.localSlice(locDom) {
-                charList.append(value:uint(8));
-              }
-  
+              var charList = convertLocalSliceToList(A, locDom); 
+
               /*
                * On the next locale do the following:
                * 
@@ -904,7 +901,7 @@ module GenSymIO {
 
               /* 
                * To prepare for writing revised values array to hdf5, must do the following:
-               * 1. Add a null uint(8) value to the end of the array so that reads work correctly
+               * 1. Add null uint(8) value to the end of the array so reads work correctly
                * 2. Set the dims[0] value, which is the revised length of the values array
                */
               charList.append(NULL_STRINGS_VALUE);
@@ -921,34 +918,27 @@ module GenSymIO {
               } else {
                 valuesList = charList;
               }
-              
+
               // Update the dimensions per the possibly re-sized valuesList
               dims[0] = valuesList.size:uint(64);
 
-     
               /*
                * Generate the segments array from the full-processed values array
                * by firs specifying the first index of zero, and then subsequent
                * indices mapping to the locations of null uint(8) characters
                */
-              var sequences: list(int, parSafe=true);
-              sequences.append(0);
-              for (value, i) in zip(valuesList,0..valuesList.size-1) do {
-                if (value == NULL_STRINGS_VALUE) && (i < valuesList.size-1) {
-                  sequences.append(i+1);
-                }
-              }
+              var segmentsList = generateSegmentsList(valuesList); 
  
               /*
                * Write the valuesList containing the uint(8) characters missing from
                * the local slice along with retrieved from the next locale to hdf5
                */
               H5LTmake_dataset_WAR(myFileID, '/strings_array/values'.c_str(), 1, 
-                              c_ptrTo(dims), getHDF5Type(A.eltType), c_ptrTo(valuesList.toArray()));     
+                    c_ptrTo(dims), getHDF5Type(A.eltType), c_ptrTo(valuesList.toArray()));     
 
               H5LTmake_dataset_WAR(myFileID, '/strings_array/segments'.c_str(), 1, 
-                                          c_ptrTo([sequences.size:uint(64)]), getHDF5Type(int), 
-                                          c_ptrTo(sequences.toArray()));   
+                       c_ptrTo([segmentsList.size:uint(64)]), getHDF5Type(int), 
+                       c_ptrTo(segmentsList.toArray()));   
             } else {
               /*
                * The local slice ends with the uint(8) null character, which is the 
@@ -961,7 +951,7 @@ module GenSymIO {
               if sliceIndex == -1 {
                 /*
                  * The local slice does not contain chars from previous locale, so generate
-                 * the segments list and write the values and segments arrays out
+                 * the segments list and write the values and segments arrays out to hdf5
                  */ 
                 var segmentsList = generateSegmentsList(A.localSlice(locDom));
 
@@ -972,14 +962,11 @@ module GenSymIO {
                                    getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));   
               } else {
                 /*
-                 * The  local slice does contain chars from previous locale, first adjust by
-                 * slicing those chars out to generate a values list, generate the segments list 
-                 * and then finally write the values and segments arrays out
+                 * The local slice does contain chars from previous locale, first adjust by
+                 * slicing those chars out to generate a values list, generate the segments 
+                 * list and then finally write the values and segments arrays out to hdf5
                  */ 
-                var charList: list(uint(8), parSafe=true);
-                for value in A.localSlice(locDom) {
-                  charList.append(value:uint(8));
-                }
+                var charList = convertLocalSliceToList(A, locDom);
 
                 var valuesList = adjustForStringSlices(sliceIndex, charList);
                 var segmentsList = generateSegmentsList(valuesList); 
@@ -1040,6 +1027,17 @@ module GenSymIO {
       indices[here.id] = sliceIndex;
     }
   }
+
+  /*
+   * Converts a local slice into a uint(8) list
+   */
+  private inline proc convertLocalSliceToList(A, locDom) {
+    var charList: list(uint(8), parSafe=true);
+    for value in A.localSlice(locDom) {
+     charList.append(value:uint(8));
+    }
+    return charList;
+  }
   
   /*
    * Adjusts the list of uint(8) characters by removing leading chars
@@ -1081,9 +1079,12 @@ module GenSymIO {
     return segmentsList;
   }
 
+  /*
+   * Prepares the HDF5 file to hold a Strings array
+   */
   private inline proc prepareStringsFile(fileId : int) {
-    var group_id = try! C_HDF5.H5Gcreate2(fileId, "/strings_array", C_HDF5.H5P_DEFAULT, 
-                         C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT); 
+    var group_id = try! C_HDF5.H5Gcreate2(fileId, "/strings_array", 
+               C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT); 
     C_HDF5.H5Gclose(group_id);
   }
 
