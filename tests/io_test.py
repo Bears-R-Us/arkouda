@@ -248,7 +248,7 @@ class IOTest(ArkoudaTest):
     def testStringsIO(self):
         strings_array = ak.array(['string {}'.format(num) for num in list(range(1,11))])
         strings_array.save('{}/strings-test'.format(IOTest.io_test_dir))
-        r_strings_array = ak.load_all('strings-test')['strings_array']
+        r_strings_array = ak.load_all('{}/strings-test'.format(IOTest.io_test_dir))['strings_array']
         self.assertEqual(len(strings_array), len(r_strings_array))
         for i in list(range(0,10)):
             self.assertEqual(strings_array[i], r_strings_array[i])
