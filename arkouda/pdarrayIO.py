@@ -210,7 +210,7 @@ def load_all(path_prefix, group=None):
         firstname = ''.join([firstname, '/', group])
     return {dataset: load(path_prefix, dataset=dataset) for dataset in get_datasets(firstname)}
 
-def save_all(columns, prefix_path, names=None, mode='truncate', offsets=None):
+def save_all(columns, prefix_path, names=None, mode='truncate'):
     """
     Save multiple named pdarrays to HDF5 files.
 
