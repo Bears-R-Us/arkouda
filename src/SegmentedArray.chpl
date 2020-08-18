@@ -65,8 +65,10 @@ module SegmentedArray {
      */ 
     var nBytes: int;
 
-    /* This initializer is the most common, and is used when only the server
-       names of the SymEntries are known. It handles the lookup. */
+    /* 
+     * This version of the init method is the most common and is only used 
+     * when the names of the segments (offsets) and values SymEntries are known.
+     */
     proc init(segName: string, valName: string, st: borrowed SymTab) {
       offsetName = segName;
       // The try! is needed here because init cannot throw
@@ -75,7 +77,7 @@ module SegmentedArray {
       var segs = toSymEntry(gs, int): unmanaged SymEntry(int);
       offsets = segs;
       valueName = valName;
-      try! writeln("offsetName: %s valueName: %s".format(offsetName,valueName));
+
       var vs = try! st.lookup(valName);
       var vals = toSymEntry(vs, uint(8)): unmanaged SymEntry(uint(8));
       values = vals;
@@ -83,6 +85,11 @@ module SegmentedArray {
       nBytes = vals.size;
     }
 
+    /*
+     * This version of init method takes segments and values arrays as
+     * inputs, generates the SymEntry objects for each and passes the
+     * offset and value SymTab lookup names to the alternate init method
+     */
     proc init(segments: [] int, values: [] uint(8), st: borrowed SymTab) {
       var oName = st.nextName();
       var segEntry = new shared SymEntry(segments);
