@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 from arkouda.client import generic_msg, verbose, pdarrayIterThresh
 from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value
 from arkouda.dtypes import *
@@ -36,17 +36,21 @@ class Strings:
         The rank of the array (currently only rank 1 arrays supported)
     shape : tuple
         The sizes of each dimension of the array
-    arrays : List[pdarray]
-        List of pdarray objects composing the Strings object: bytes 
-        and offsets
-    name : str
-        Strings array name, defaults to strings_array
     """
 
     BinOps = frozenset(["==", "!="])
     objtype = "str"
 
-    def __init__(self, offset_attrib, bytes_attrib, name='strings_array'):
+    def __init__(self, offset_attrib : Union[pdarray,np.ndarray], 
+                 bytes_attrib : Union[pdarray,np.ndarray]) -> None:
+        """
+        Parameters
+        ----------
+        offset_attrib : Union[pdarray,np.ndarray,array]
+            the array containing the offsets 
+        bytes_attrib : Union[pdarray,np.ndarray,array]
+            the array containig the string values        
+        """
         if isinstance(offset_attrib, pdarray):
             self.offsets = offset_attrib
         else:
@@ -59,9 +63,6 @@ class Strings:
         self.nbytes = self.bytes.size
         self.ndim = self.offsets.ndim
         self.shape = self.offsets.shape
-        self.arrays = [self.bytes, self.offsets]
-        print('the offsets {} nbytes: {} ndim: {} shape: {}'.format(offset_attrib, self.nbytes, self.ndim, self.shape))
-        self.name = name
 
     def __iter__(self):
         # to_ndarray will error if array is too large to bring back
@@ -69,10 +70,26 @@ class Strings:
         for s in a:
             yield s
 
-    def __len__(self):
+    def __len__(self) -> int:
+        """
+        Returns the length of the underlying pdarray
+        
+        Returns
+        -------
+        int
+            length of the Strings pdarray
+        """
         return self.shape[0]
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """
+        Returns a string representation of Strings object state
+        
+        Returns
+        -------
+        str
+            object state in the form of a string      
+        """
         if self.size <= pdarrayIterThresh:
             vals = ["'{}'".format(self[i]) for i in range(self.size)]
         else:
@@ -81,15 +98,49 @@ class Strings:
             vals.extend([self[i] for i in range(self.size-3, self.size)])
         return "[{}]".format(', '.join(vals))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """
+        Returns a string representation of Strings object state encapsulated
+        with params
+        
+        Returns
+        -------
+        str
+            object state in the form of a string within params    
+        """
         return "array({})".format(self.__str__())
 
-    def binop(self, other, op):
+    def binop(self, other : object, op : str) -> pdarray:
+        """
+        Executes the requested binop on this Strings instance and the
+        parameter Strings object and returns the results within
+        a pdarray object.
+
+        Parameters
+        ----------
+        other : Union[Strings,str]
+            the other object is either a Strings or str object
+        op : str
+            name of the binary operation to be performed 
+      
+        Returns
+        -------
+        pdarray
+            encapsulates the results of the requested binop      
+
+        Raises
+    -   -----
+        ValueError
+            If (1) the op is not in the self.BinOps set, or (2) if the sizes
+            of this and the other instance don't match, or (3) the other
+            object is neither a Strings nor a str object
+        """
         if op not in self.BinOps:
             raise ValueError("Strings: unsupported operator: {}".format(op))
         if isinstance(other, Strings):
             if self.size != other.size:
-                raise ValueError("Strings: size mismatch {} {}".format(self.size, other.size))
+                raise ValueError("Strings: size mismatch {} {}".\
+                                 format(self.size, other.size))
             msg = "segmentedBinopvv {} {} {} {} {} {} {}".format(op,
                                                                  self.objtype,
                                                                  self.offsets.name,
@@ -105,14 +156,18 @@ class Strings:
                                                               self.objtype,
                                                               json.dumps([other]))
         else:
-            raise ValueError("Strings: {} not supported between Strings and {}".format(op, type(other)))
+            raise ValueError("Strings: {} not supported between Strings and {}"\
+                             .format(op, type(other)))
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
-    def __eq__(self, other):
-        return self.binop(other, "==")
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, Strings):
+            return False
+        else:
+            return self.binop(other, "==")
 
-    def __ne__(self, other):
+    def __ne__(self, other) -> bool:
         return self.binop(other, "!=")
 
     def __getitem__(self, key):
@@ -146,7 +201,7 @@ class Strings:
             offsets, values = repMsg.split('+')
             return Strings(offsets, values);
         elif isinstance(key, pdarray):
-            kind, itemsize = translate_np_dtype(key.dtype)
+            kind, _ = translate_np_dtype(key.dtype)
             if kind not in ("bool", "int"):
                 raise TypeError("unsupported pdarray index type {}".format(key.dtype))
             if kind == "bool" and self.size != key.size:
@@ -206,7 +261,7 @@ class Strings:
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
-    def startswith(self, substr):
+    def startswith(self, substr : str) -> pdarray:
         """
         Check whether each element starts with the given substring.
 
@@ -237,7 +292,7 @@ class Strings:
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
-    def endswith(self, substr):
+    def endswith(self, substr : str) -> pdarray:
         """
         Check whether each element ends with the given substring.
 
@@ -268,7 +323,8 @@ class Strings:
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
-    def peel(self, delimiter, times=1, includeDelimiter=False, keepPartial=False, fromRight=False):
+    def peel(self, delimiter, times=1, includeDelimiter=False, 
+             keepPartial=False, fromRight=False):
         """
         Peel off one or more delimited fields from each string (similar 
         to string.partition), returning two new arrays of strings.
@@ -340,7 +396,8 @@ class Strings:
         rightStr = Strings(arrays[2], arrays[3])
         return leftStr, rightStr
 
-    def rpeel(self, delimiter, times=1, includeDelimiter=False, keepPartial=False):
+    def rpeel(self, delimiter : str, times : int=1, includeDelimiter : bool=False, 
+                                      keepPartial : bool=False):
         """
         Peel off one or more delimited fields from the end of each string 
         (similar to string.rpartition), returning two new arrays of strings.
@@ -381,9 +438,11 @@ class Strings:
         >>> s.peel('.')
         (array(['a', 'c', 'e']), array(['b', 'd', 'f.g']))
         """
-        return self.peel(delimiter, times=times, includeDelimiter=includeDelimiter, keepPartial=keepPartial, fromRight=True)
+        return self.peel(delimiter, times=times, includeDelimiter=includeDelimiter, 
+                         keepPartial=keepPartial, fromRight=True)
 
-    def stick(self, other, delimiter="", toLeft=False):
+    def stick(self, other : object, delimiter : str="", 
+                                        toLeft : bool=False):
         """
         Join the strings from another array onto one end of the strings 
         of this array, optionally inserting a delimiter.
@@ -435,7 +494,7 @@ class Strings:
     def __add__(self, other):
         return self.stick(other)
     
-    def lstick(self, other, delimiter=""):
+    def lstick(self, other : object, delimiter : str=""):
         """
         Join the strings from another array onto the left of the strings 
         of this array, optionally inserting a delimiter.
@@ -465,7 +524,7 @@ class Strings:
         """
         return self.stick(other, delimiter=delimiter, toLeft=True)
 
-    def __radd__(self, other):
+    def __radd__(self, other : object):
         return self.lstick(other)
     
     def hash(self):
@@ -518,7 +577,7 @@ class Strings:
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
-    def to_ndarray(self):
+    def to_ndarray(self) -> np.ndarray:
         """
         Convert the array to a np.ndarray, transferring array data from the
         arkouda server to Python. If the array exceeds a builtin size limit,
@@ -566,16 +625,17 @@ class Strings:
             res[i] = np.str_(''.join(chr(b) for b in npvalues[o:o+l]))
         return res
 
-    def save(self, prefix_path : str, mode : str='truncate') -> str:
+    def save(self, prefix_path : str, mode : str='truncate') -> None:
         """
         Save the Strings object to HDF5. The result is a collection of HDF5 files,
         one file per locale of the arkouda server, where each filename starts
         with prefix_path. Each locale saves its chunk of the array to its
         corresponding file.
 
-        Important implementation notes: (1) Strings state is saved as two datasets within
-        a group: offsets and values (2) save logic is delegated to pdarrayIO.save_all and
-        (3) offsets are generated server-side from the values pdarray
+        Important implementation notes: (1) Strings state is saved as two datasets
+        within an hdf5 group: offsets AKA segments and values (2) save logic is
+        delegated to pdarrayIO.save_all and (3) offsets are generated server-side 
+        from the values pdarray
 
         Parameters
         ----------
@@ -584,6 +644,11 @@ class Strings:
         mode : {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', attempt to create new dataset in existing files.
+
+        Raises
+        ------
+        ValueError if the lengths of columns and values differ, or the mode is 
+        not 'truncate' or 'append'
         """
-        return arkouda.save_all(columns=[self.bytes], 
-                prefix_path=prefix_path, names=['/{}/values'.format(self.name)],mode=mode)
+        arkouda.save_all(columns=[self.bytes], prefix_path=prefix_path,
+                names=['/strings_array/values'], mode=mode)

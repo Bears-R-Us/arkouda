@@ -1,5 +1,5 @@
 import json, os
-
+from typing import List, Mapping, Optional, Union
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.strings import Strings
@@ -7,7 +7,7 @@ from arkouda.strings import Strings
 __all__ = ["ls_hdf", "read_hdf", "read_all", "load", "get_datasets",
            "load_all", "save_all"]
 
-def ls_hdf(filename):
+def ls_hdf(filename : str) -> str:
     """
     This function calls the h5ls utility on a filename visible to the arkouda
     server.
@@ -24,9 +24,11 @@ def ls_hdf(filename):
     """
     return generic_msg("lshdf {}".format(json.dumps([filename])))
 
-def read_hdf(dsetName, filenames):
+def read_hdf(dsetName : str, filenames : Union[str,List[str]]) \
+          -> Union[pdarray, Strings]:
     """
-    Read a single dataset from multiple HDF5 files into an arkouda pdarray.
+    Read a single dataset from multiple HDF5 files into an Arkouda
+    pdarray or Strings object.
 
     Parameters
     ----------
@@ -37,8 +39,12 @@ def read_hdf(dsetName, filenames):
 
     Returns
     -------
-    pdarray
-        A pdarray instance pointing to the server-side data read in
+    Union[pdarray,Strings] 
+        A pdarray or Strings instance pointing to the server-side data read in
+
+    Raises
+    ------
+        TypeError if dsetName is not a str       
 
     See Also
     --------
@@ -66,7 +72,9 @@ def read_hdf(dsetName, filenames):
     #     return create_pdarray(rep_msg)
     return read_all(filenames, datasets=dsetName)
 
-def read_all(filenames, datasets=None, iterative=False):
+def read_all(filenames : Union[str,List[str]], datasets : 
+             Optional[Union[str,List[str]]]=None, iterative : bool=False) \
+             -> Union[pdarray, Strings, Mapping[str,Union[pdarray,Strings]]]:
     """
     Read datasets from HDF5 files.
 
@@ -82,9 +90,13 @@ def read_all(filenames, datasets=None, iterative=False):
     Returns
     -------
     For a single dataset returns an Arkouda pdarray or Arkouda Strings object
-    and for multiple datasets returns a dictionary of Ardkouda pdarrays 
-    and Arkouda Strings.
+    and for multiple datasets returns a dictionary of Arkouda pdarrays or
+    Arkouda Strings.
         Dictionary of {datasetName: pdarray or String}
+
+    Raises
+    ------
+        ValueError if all datasets are not present int all hdf5 files
 
     See Also
     --------
@@ -104,10 +116,6 @@ def read_all(filenames, datasets=None, iterative=False):
     If datasets is None, infer the names of datasets from the first file
     and read all of them. Use ``get_datasets`` to show the names of datasets in
     HDF5 files.
-
-    If not all datasets are present in all HDF5 files, a RuntimeError
-    is raised.a
-
     """
     if isinstance(filenames, str):
         filenames = [filenames]
@@ -124,7 +132,9 @@ def read_all(filenames, datasets=None, iterative=False):
     if iterative == True: # iterative calls to server readhdf
         return {dset:read_hdf(dset, filenames) for dset in datasets}
     else:  # single call to server readAllHdf
-        rep_msg = generic_msg("readAllHdf {:n} {:n} {} | {}".format(len(datasets), len(filenames), json.dumps(datasets), json.dumps(filenames)))
+        rep_msg = generic_msg("readAllHdf {:n} {:n} {} | {}".\
+                format(len(datasets), len(filenames), json.dumps(datasets), 
+                       json.dumps(filenames)))
         if ',' in rep_msg:
             rep_msgs = rep_msg.split(' , ')
             d = dict()
@@ -141,7 +151,6 @@ def read_all(filenames, datasets=None, iterative=False):
 
 def load(path_prefix : str, dataset : str='array') -> pdarray:
     """
-
     Load a pdarray previously saved with ``pdarray.save()``.
 
     Parameters
@@ -149,12 +158,16 @@ def load(path_prefix : str, dataset : str='array') -> pdarray:
     path_prefix : str
         Filename prefix used to save the original pdarray
     dataset : str
-        Dataset name where the pdarray was saved
+        Dataset name where the pdarray was saved, defaults to 'array'
 
     Returns
     -------
     pdarray
         The pdarray that was previously saved
+
+    Raises
+    ------
+        TypeError if dataset is not a str    
 
     See Also
     --------
@@ -164,7 +177,7 @@ def load(path_prefix : str, dataset : str='array') -> pdarray:
     globstr = "{}_LOCALE*{}".format(prefix, extension)
     return read_hdf(dataset, globstr)
 
-def get_datasets(filename):
+def get_datasets(filename : str) -> List[str]:
     """
     Get the names of datasets in an HDF5 file.
 
@@ -175,7 +188,7 @@ def get_datasets(filename):
 
     Returns
     -------
-    list of str
+    List[str]
         Names of the datasets in the file
 
     See Also
@@ -186,7 +199,7 @@ def get_datasets(filename):
     datasets = [line.split()[0] for line in rep_msg.splitlines()]
     return datasets
 
-def load_all(path_prefix, group=None):
+def load_all(path_prefix : str, group : str=None) -> Mapping[str,pdarray]:
     """
     Load multiple pdarray previously saved with ``save_all()``.
 
@@ -194,10 +207,12 @@ def load_all(path_prefix, group=None):
     ----------
     path_prefix : str
         Filename prefix used to save the original pdarray
+    group : str
+        name of the hdf5 group, defaults to None
 
     Returns
     -------
-    dict of pdarrays
+    Mapping[str,pdarray]
         Dictionary of {datsetName: pdarray} with the previously saved pdarrays
 
     See Also
@@ -208,9 +223,11 @@ def load_all(path_prefix, group=None):
     firstname = "{}_LOCALE0{}".format(prefix, extension)
     if group:
         firstname = ''.join([firstname, '/', group])
-    return {dataset: load(path_prefix, dataset=dataset) for dataset in get_datasets(firstname)}
+    return {dataset: load(path_prefix, dataset=dataset) for \
+                                      dataset in get_datasets(firstname)}
 
-def save_all(columns, prefix_path, names=None, mode='truncate'):
+def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : str, 
+             names : List[str]=None, mode : str='truncate') -> None:
     """
     Save multiple named pdarrays to HDF5 files.
 
@@ -225,6 +242,11 @@ def save_all(columns, prefix_path, names=None, mode='truncate'):
     mode : {'truncate' | 'append'}
         By default, truncate (overwrite) the output files if they exist.
         If 'append', attempt to create new dataset in existing files.
+
+    Raises
+    ------
+        ValueError if (1) the lengths of columns and values differ or (2)
+        the mode is not 'truncate' or 'append'
 
     See Also
     --------
