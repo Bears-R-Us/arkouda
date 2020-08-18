@@ -7,7 +7,7 @@ module SegmentedMsg {
   use MultiTypeSymEntry;
   use RandArray;
   use IO;
-  use GenSymIO only decode_json;
+  use GenSymIO only jsonToPdArray;
 
   private config const DEBUG = false;
 
@@ -76,7 +76,7 @@ module SegmentedMsg {
       var strings = new owned SegString(segName, valName, st);
       select subcmd {
         when "contains" {
-          var json = decode_json(valStr, 1);
+          var json = jsonToPdArray(valStr, 1);
           var val = json[json.domain.low];
           var rname = st.nextName();
           var truth = st.addEntry(rname, strings.size, bool);
@@ -84,7 +84,7 @@ module SegmentedMsg {
           repMsg = "created "+st.attrib(rname);
         }
         when "startswith" {
-          var json = decode_json(valStr, 1);
+          var json = jsonToPdArray(valStr, 1);
           var val = json[json.domain.low];
           var rname = st.nextName();
           var truth = st.addEntry(rname, strings.size, bool);
@@ -92,7 +92,7 @@ module SegmentedMsg {
           repMsg = "created "+st.attrib(rname);
         }
         when "endswith" {
-          var json = decode_json(valStr, 1);
+          var json = jsonToPdArray(valStr, 1);
           var val = json[json.domain.low];
           var rname = st.nextName();
           var truth = st.addEntry(rname, strings.size, bool);
@@ -104,7 +104,7 @@ module SegmentedMsg {
           var includeDelimiter = (idStr.toLower() == "true");
           var keepPartial = (kpStr.toLower() == "true");
           var left = (lStr.toLower() == "true");
-          var json = decode_json(jsonStr, 1);
+          var json = jsonToPdArray(jsonStr, 1);
           var val = json[json.domain.low];
           var loname = st.nextName();
           var lvname = st.nextName();
@@ -372,7 +372,7 @@ module SegmentedMsg {
         }
         when "stick" {
           var left = (leftStr.toLower() != "false");
-          var json = decode_json(jsonStr, 1);
+          var json = jsonToPdArray(jsonStr, 1);
           const delim = json[json.domain.low];
           var oname = st.nextName();
           var vname = st.nextName();
@@ -401,7 +401,7 @@ module SegmentedMsg {
     var repMsg: string;
     var (op, objtype, segName, valName, valtype, encodedVal)
           = payload.decode().splitMsgToTuple(6);
-    var json = decode_json(encodedVal, 1);
+    var json = jsonToPdArray(encodedVal, 1);
     var value = json[json.domain.low];
     var rname = st.nextName();
     select (objtype, valtype) {
