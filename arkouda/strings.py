@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Tuple, Union
 from arkouda.client import generic_msg, verbose, pdarrayIterThresh
 from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value
 from arkouda.dtypes import *
@@ -44,25 +44,50 @@ class Strings:
     def __init__(self, offset_attrib : Union[pdarray,np.ndarray], 
                  bytes_attrib : Union[pdarray,np.ndarray]) -> None:
         """
+        Initializes the Strings instance by setting all instance
+        attributes, some of which are derived from the array parameters.
+        
         Parameters
         ----------
-        offset_attrib : Union[pdarray,np.ndarray,array]
+        offset_attrib : Union[pdarray, np.ndarray,array]
             the array containing the offsets 
-        bytes_attrib : Union[pdarray,np.ndarray,array]
-            the array containig the string values        
+        bytes_attrib : Union[pdarray, np.ndarray,array]
+            the array containing the string values    
+            
+        Returns
+        -------
+        None
+        
+        Raises
+        ------
+        RuntimeError
+            Raised if there's an error converting a Numpy array or standard
+            Python array to either the offset_attrib or bytes_attrib   
+        ValueError
+            Raised if there's an error in generating instance attributes 
+            from either the offset_attrib or bytes_attrib parameter 
         """
         if isinstance(offset_attrib, pdarray):
             self.offsets = offset_attrib
         else:
-            self.offsets = create_pdarray(offset_attrib)
+            try:
+                self.offsets = create_pdarray(offset_attrib)
+            except Exception as e:
+                raise RuntimeError(e)
         if isinstance(bytes_attrib, pdarray):
             self.bytes = bytes_attrib
         else:
-            self.bytes = create_pdarray(bytes_attrib)
-        self.size = self.offsets.size
-        self.nbytes = self.bytes.size
-        self.ndim = self.offsets.ndim
-        self.shape = self.offsets.shape
+            try:
+                self.bytes = create_pdarray(bytes_attrib)
+            except Exception as e:
+                raise RuntimeError(e)
+        try:
+            self.size = self.offsets.size
+            self.nbytes = self.bytes.size
+            self.ndim = self.offsets.ndim
+            self.shape = self.offsets.shape
+        except Exception as e:
+            raise ValueError(e)
 
     def __iter__(self):
         # to_ndarray will error if array is too large to bring back
@@ -72,7 +97,7 @@ class Strings:
 
     def __len__(self) -> int:
         """
-        Returns the length of the underlying pdarray
+        Returns the shape of the underlying offsets pdarray
         
         Returns
         -------
@@ -118,7 +143,7 @@ class Strings:
 
         Parameters
         ----------
-        other : Union[Strings,str]
+        other : Union[Strings, str]
             the other object is either a Strings or str object
         op : str
             name of the binary operation to be performed 
@@ -126,14 +151,17 @@ class Strings:
         Returns
         -------
         pdarray
-            encapsulates the results of the requested binop      
+            encapsulating the results of the requested binop      
 
         Raises
     -   -----
         ValueError
-            If (1) the op is not in the self.BinOps set, or (2) if the sizes
-            of this and the other instance don't match, or (3) the other
+            Raised if (1) the op is not in the self.BinOps set, or (2) if the
+            sizes of this and the other instance don't match, or (3) the other
             object is neither a Strings nor a str object
+        RuntimeError
+            Raised if a server-side error is thrown while executing the
+            binary operation
         """
         if op not in self.BinOps:
             raise ValueError("Strings: unsupported operator: {}".format(op))
@@ -162,12 +190,52 @@ class Strings:
         return create_pdarray(repMsg)
 
     def __eq__(self, other) -> bool:
+        """
+        Indicates whether the instance is equal to the other object
+        
+        Parameters
+        ----------
+        other : object
+            The object to be compared to the current instance
+        
+        Returns
+        -------
+        bool
+            boolean indicating whether the instance is equal to the 
+            other object
+        
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown in the 
+            execution of the binop('==') method
+        """
         if not isinstance(other, Strings):
             return False
         else:
             return self.binop(other, "==")
 
-    def __ne__(self, other) -> bool:
+    def __ne__(self, other : object) -> bool:
+        """
+        Indicates whether the instance not equal to the other object
+        
+        Parameters
+        ----------
+        other : object
+            The object to be compared to the current instance
+        
+        Returns
+        -------
+        bool
+            boolean indicating whether the instance is not equal 
+            to the other object
+            
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown in the 
+            execution of the binop('!=') method
+        """
         return self.binop(other, "!=")
 
     def __getitem__(self, key):
@@ -186,7 +254,8 @@ class Strings:
                 _, value = repMsg.split(maxsplit=1)
                 return parse_single_value(value)
             else:
-                raise IndexError("[int] {} is out of bounds with size {}".format(orig_key,self.size))
+                raise IndexError("[int] {} is out of bounds with size {}".\
+                                 format(orig_key,self.size))
         elif isinstance(key, slice):
             (start,stop,stride) = key.indices(self.size)
             if verbose: print(start,stop,stride)
@@ -225,24 +294,37 @@ class Strings:
         -------
         pdarray, int
             The length of each string
+            
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown
         """
-        msg = "segmentLengths {} {} {}".format(self.objtype, self.offsets.name, self.bytes.name)
+        msg = "segmentLengths {} {} {}".\
+                        format(self.objtype, self.offsets.name, self.bytes.name)
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
-    def contains(self, substr):
+    def contains(self, substr : Union[str, bytes]) -> pdarray:
         """
         Check whether each element contains the given substring.
 
         Parameters
         ----------
-        substr : str
-            The substring to search for
+        substr : Union[str, bytes]
+            The substring in the form of string or byte array to search for
 
         Returns
         -------
         pdarray, bool
             True for elements that contain substr, False otherwise
+
+        Raises
+        ------
+        TypeError
+            Raised if the substr parameter is neither bytes nor a str
+        RuntimeError
+            Raised if there is a server-side error thrown
 
         See Also
         --------
@@ -251,7 +333,8 @@ class Strings:
         if isinstance(substr, bytes):
             substr = substr.decode()
         if not isinstance(substr, str):
-            raise TypeError("Substring must be a string, not {}".format(type(substr)))
+            raise TypeError("Substring must be a string, not {}".\
+                            format(type(substr)))
         msg = "segmentedEfunc {} {} {} {} {} {}".format("contains",
                                                         self.objtype,
                                                         self.offsets.name,
@@ -261,7 +344,7 @@ class Strings:
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
-    def startswith(self, substr : str) -> pdarray:
+    def startswith(self, substr : Union[str, bytes]) -> pdarray:
         """
         Check whether each element starts with the given substring.
 
@@ -274,6 +357,13 @@ class Strings:
         -------
         pdarray, bool
             True for elements that start with substr, False otherwise
+
+        Raises
+        ------
+        TypeError
+            Raised if the substr parameter is neither bytes nor a str
+        RuntimeError
+            Raised if there is a server-side error thrown
 
         See Also
         --------
@@ -306,6 +396,13 @@ class Strings:
         pdarray, bool
             True for elements that end with substr, False otherwise
 
+        Raises
+        ------
+        TypeError
+            Raised if the substr parameter is neither bytes nor a str
+        RuntimeError
+            Raised if there is a server-side error thrown
+
         See Also
         --------
         Strings.contains, Strings.startswith
@@ -313,7 +410,8 @@ class Strings:
         if isinstance(substr, bytes):
             substr = substr.decode()
         if not isinstance(substr, str):
-            raise TypeError("Substring must be a string, not {}".format(type(substr)))
+            raise TypeError("Substring must be a string, not {}".\
+                            format(type(substr)))
         msg = "segmentedEfunc {} {} {} {} {} {}".format("endswith",
                                                         self.objtype,
                                                         self.offsets.name,
@@ -323,8 +421,8 @@ class Strings:
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
-    def peel(self, delimiter, times=1, includeDelimiter=False, 
-             keepPartial=False, fromRight=False):
+    def peel(self, delimiter : str, times : int=1, includeDelimiter : bool=False, 
+             keepPartial : bool=False, fromRight : bool=False) -> Tuple:
         """
         Peel off one or more delimited fields from each string (similar 
         to string.partition), returning two new arrays of strings.
@@ -349,12 +447,23 @@ class Strings:
 
         Returns
         -------
-        left : Strings
-            The field(s) peeled from the end of each string (unless 
-            fromRight is true)
-        right : Strings
-            The remainder of each string after peeling (unless fromRight 
-            is true)
+        Tuple[Strings,Strings]
+            left : Strings
+                The field(s) peeled from the end of each string (unless 
+                fromRight is true)
+            right : Strings
+                The remainder of each string after peeling (unless fromRight 
+                is true)
+ 
+        Raises
+        ------
+        TypeError
+            Raised if the delmiter parameter is neither bytes nor a str or
+            if times is not int64
+        ValueError
+            Raised if times is < 1
+        RuntimeError
+            Raised if there is a server-side error thrown
         
         See Also
         --------
@@ -379,7 +488,7 @@ class Strings:
         if not np.isscalar(times) or resolve_scalar_dtype(times) != 'int64':
             raise TypeError("Times must be integer, not {}".format(type(times)))
         if times < 1:
-            raise ValueError("Times must be > 0")
+            raise ValueError("Times must be >= 1")
         msg = "segmentedEfunc {} {} {} {} {} {} {} {} {} {}".format("peel",
                                                                     self.objtype,
                                                                     self.offsets.name,
@@ -424,7 +533,17 @@ class Strings:
             The remainder of the string after peeling
         right : Strings
             The field(s) that were peeled from the right of each string
-        
+
+        Raises
+        ------
+        TypeError
+            Raised if the delmiter parameter is neither bytes nor a str or
+            if times is not int64
+        ValueError
+            Raised if times is < 1
+        RuntimeError
+            Raised if there is a server-side error thrown
+
         See Also
         --------
         peel, stick, lstick
@@ -462,6 +581,16 @@ class Strings:
         Strings
             The array of joined strings
 
+        Raises
+        ------
+        TypeError
+            Raised if the delmiter parameter is neither bytes nor a str or if
+            the other parameter is not a Strings instance
+        ValueError
+            Raised if times is < 1
+        RuntimeError
+            Raised if there is a server-side error thrown
+
         See Also
         --------
         lstick, peel, rpeel
@@ -492,6 +621,27 @@ class Strings:
         return Strings(*repMsg.split('+'))
 
     def __add__(self, other):
+        """
+        Adds two Strings objects together via the underlying implemention 
+        logic delegated to the self.stick method.
+        
+        Parameters
+        ----------
+        other : Strings
+            The strings to join onto self's strings
+
+        Returns
+        -------
+        Strings
+            The array of joined strings
+
+        Raises
+        ------
+        TypeError
+            Raised if the other parameter is not a Strings instance
+        RuntimeError
+            Raised if there is a server-side error thrown
+        """
         return self.stick(other)
     
     def lstick(self, other : object, delimiter : str=""):
@@ -511,6 +661,15 @@ class Strings:
         Strings
             The array of joined strings, as other + self
 
+        Raises
+        ------
+        TypeError
+            Raised if the delmiter parameter is neither bytes nor a str or if
+            the other parameter is not a Strings instance
+
+        RuntimeError
+            Raised if there is a server-side error thrown
+
         See Also
         --------
         stick, peel, rpeel
@@ -525,16 +684,44 @@ class Strings:
         return self.stick(other, delimiter=delimiter, toLeft=True)
 
     def __radd__(self, other : object):
+        """
+        Join the strings from another array onto the left of the strings 
+        of this array, optionally inserting a delimiter.
+
+        Parameters
+        ----------
+        other : Strings
+            The strings to join onto self's strings
+        delimiter : str
+            String inserted between self and other
+
+        Returns
+        -------
+        Strings
+            The array of joined strings, as other + self
+
+        Raises
+        ------
+        TypeError
+            Raised if the other parameter is not a Strings instance
+
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        lstick
+        """
         return self.lstick(other)
     
-    def hash(self):
+    def hash(self) -> Tuple[pdarray,pdarray]:
         """
         Compute a 128-bit hash of each string.
 
         Returns
         -------
-        (pdarray, pdarray)
-            A pair of int64 pdarrays. The ith hash value is the concatenation
+        Tuple[pdarray,pdarray]
+            A tuple of two int64 pdarrays. The ith hash value is the concatenation
             of the ith values from each array.
 
         Notes
@@ -544,12 +731,13 @@ class Strings:
         to about 10**15), the probability of a collision between two 128-bit hash
         values is negligible.
         """
-        msg = "segmentedHash {} {} {}".format(self.objtype, self.offsets.name, self.bytes.name)
+        msg = "segmentedHash {} {} {}".format(self.objtype, self.offsets.name, 
+                                              self.bytes.name)
         repMsg = generic_msg(msg)
         h1, h2 = repMsg.split('+')
         return create_pdarray(h1), create_pdarray(h2)
 
-    def group(self):
+    def group(self) -> pdarray:
         """
         Return the permutation that groups the array, placing equivalent
         strings together. All instances of the same string are guaranteed to lie
@@ -572,8 +760,15 @@ class Strings:
         the strings directly. This method is fast, but the resulting permutation
         merely groups equivalent strings and does not sort them. If the "useHash"
         parameter is false, then a full sort is performed.
+        
+        Raises
+        ------  
+        RuntimeError
+            Raised if there is a server-side error in executing group request or
+            creating the pdarray encapsulating the return message
         """
-        msg = "segmentedGroup {} {} {}".format(self.objtype, self.offsets.name, self.bytes.name)
+        msg = "segmentedGroup {} {} {}".\
+                           format(self.objtype, self.offsets.name, self.bytes.name)
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
@@ -641,14 +836,15 @@ class Strings:
         ----------
         prefix_path : str
             Directory and filename prefix that all output files share
-        mode : {'truncate' | 'append'}
+        mode : str {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', attempt to create new dataset in existing files.
 
         Raises
         ------
-        ValueError if the lengths of columns and values differ, or the mode is 
-        not 'truncate' or 'append'
+        ValueError 
+            Raised if the lengths of columns and values differ, or the mode is 
+            not 'truncate' or 'append'
         """
         arkouda.save_all(columns=[self.bytes], prefix_path=prefix_path,
                 names=['/strings_array/values'], mode=mode)
