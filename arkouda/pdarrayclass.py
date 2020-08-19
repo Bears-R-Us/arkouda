@@ -878,7 +878,7 @@ def mink(pda, k):
         if k == 0:
             return []
         if pda.size == 0:
-            raise TypeError("must be a non-empty pdarray {} of type int".format(pda))
+            raise TypeError("must be a non-empty pdarray {} of type int or float".format(pda))
         repMsg = generic_msg("mink {} {} {}".format(pda.name, k, False))
         return create_pdarray(repMsg)
     else:
@@ -925,7 +925,7 @@ def maxk(pda, k):
         if k == 0:
             return []
         if pda.size == 0:
-            raise TypeError("must be a non-empty pdarray {} of type int".format(pda))
+            raise TypeError("must be a non-empty pdarray {} of type int or float".format(pda))
         repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, False))
         return create_pdarray(repMsg)
     else:
@@ -971,7 +971,7 @@ def argmink(pda, k):
         if k == 0:
             return []
         if pda.size == 0:
-            raise TypeError("must be a non-empty pdarray {} of type int".format(pda))
+            raise TypeError("must be a non-empty pdarray {} of type int or float".format(pda))
         repMsg = generic_msg("mink {} {} {}".format(pda.name, k, True))
         return create_pdarray(repMsg)
     else:
@@ -1018,7 +1018,7 @@ def argmaxk(pda, k):
         if k == 0:
             return []
         if pda.size == 0:
-            raise TypeError("must be a non-empty pdarray {} of type int".format(pda))
+            raise TypeError("must be a non-empty pdarray {} of type int or float".format(pda))
         repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, True))
         return create_pdarray(repMsg)
     else:

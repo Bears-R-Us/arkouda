@@ -21,8 +21,8 @@ module KExtremeMsg
     use ArraySetopsMsg;
 
     /*
-    Parse, execute, and respond to a intersect1d message
-    :arg reqMsg: request containing (cmd,name,name2,assume_unique)
+    Parse, execute, and respond to a mink message
+    :arg reqMsg: request containing (name,k,returnIndices)
     :type reqMsg: string
     :arg st: SymTab to act on
     :type st: borrowed SymTab
@@ -45,9 +45,9 @@ module KExtremeMsg
              var aV;
 
              if !stringtobool(returnIndices) {
-               aV = computeExtrema(e.a, k:int);
+               aV = computeExtremaValues(e.a, k:int);
              } else {
-               aV = computeInds(e.a, k:int);
+               aV = computeExtremaIndices(e.a, k:int);
              }
 
              st.addEntry(vname, new shared SymEntry(aV));
@@ -59,7 +59,7 @@ module KExtremeMsg
             if !stringtobool(returnIndices) {
              var e = toSymEntry(gEnt,real);
 
-             var aV = computeExtrema(e.a, k:int);
+             var aV = computeExtremaValues(e.a, k:int);
 
              st.addEntry(vname, new shared SymEntry(aV));
 
@@ -68,7 +68,7 @@ module KExtremeMsg
             } else {
              var e = toSymEntry(gEnt,real);
 
-             var aV = computeInds(e.a, k:int);
+             var aV = computeExtremaIndices(e.a, k:int);
 
              st.addEntry(vname, new shared SymEntry(aV));
 
@@ -81,7 +81,15 @@ module KExtremeMsg
            }
         }
     }
-
+    
+   /*
+    Parse, execute, and respond to a maxk message
+    :arg reqMsg: request containing (name,k,returnIndices)
+    :type reqMsg: string
+    :arg st: SymTab to act on
+    :type st: borrowed SymTab
+    :returns: (string) response message
+    */
     proc maxkMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
@@ -98,9 +106,9 @@ module KExtremeMsg
 
              var aV;
              if !stringtobool(returnIndices) {
-               aV = computeExtrema(e.a, k:int, false);
+               aV = computeExtremaValues(e.a, k:int, false);
              } else {
-               aV = computeInds(e.a, k:int, false);
+               aV = computeExtremaIndices(e.a, k:int, false);
              }
 
              st.addEntry(vname, new shared SymEntry(aV));
@@ -112,7 +120,7 @@ module KExtremeMsg
              if !stringtobool(returnIndices) {
                var e = toSymEntry(gEnt,real);
 
-               var aV = computeExtrema(e.a, k:int, false);
+               var aV = computeExtremaValues(e.a, k:int, false);
 
                st.addEntry(vname, new shared SymEntry(aV));
 
@@ -121,7 +129,7 @@ module KExtremeMsg
              } else {
                var e = toSymEntry(gEnt,real);
 
-               var aV = computeInds(e.a, k:int, false);
+               var aV = computeExtremaIndices(e.a, k:int, false);
 
                st.addEntry(vname, new shared SymEntry(aV));
 

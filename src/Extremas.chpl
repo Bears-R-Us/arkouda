@@ -1,17 +1,33 @@
-/*
- * kextreme data structure that is used
- * to track the minimum or maximum `size`
- * values that are in an array. Acts similar
- * to a heap data structure, but can be
- * sorted and merged to extract the
- * extreme values from multiple kextreme
- * objects.
- */
+// Extremas module with KExtreme record that is
+// used in
+//
+//
 
-module KExtreme {
+module Extremas {
   use SymArrayDmap;
   use Sort;
-  record kextreme {
+
+/*
+:record: `KExtreme` data structure that is used
+to track the minimum or maximum ``size``
+values that are in an array. Acts similar
+to a heap data structure, but can be
+sorted and merged to extract the
+extreme values from multiple kextreme
+objects.
+
+This record is used in the user-defined ``kreduce``
+reuction by having one :record: `KExtreme` instance
+per task, which is then built up by pushing the
+values into the heap-like :record: `KExtreme` by
+the ``accumulate()`` function. Once all of the values
+from each task have been accumulated, the ``combine()``
+function is called on each :record: `KExtreme` instance,
+which is handled by sorting the record, giving up
+its heap-like quality, and using it as a sorted array
+to increase the efficiency of the merge step.
+*/
+  record KExtreme {
     type eltType;
     var size: int;
     var dom = {0..#size};
@@ -26,7 +42,7 @@ module KExtreme {
       }
     }
 
-    // Push a value into the kextreme
+    // Push a value into the KExtreme
     // instance, only pushes a value if
     // it is an encountered extreme
     proc push(val: (eltType, int)) {
@@ -65,7 +81,7 @@ module KExtreme {
       }
     }
 
-    // Sort the kextreme values if needed,
+    // Sort the KExtreme values if needed,
     // moving from a heap to a sorted array
     proc doSort() {
       sort(_data);
@@ -83,7 +99,7 @@ module KExtreme {
   // returns an array that contains the
   // smallest values from each array sorted.
   // Returned array is size of the original heaps.
-  proc merge(ref v1: kextreme(?t), ref v2: kextreme(t)): [v1._data.domain] (t ,int) {
+  proc merge(ref v1: KExtreme(?t), ref v2: KExtreme(t)): [v1._data.domain] (t ,int) {
     const isMin = v1.isMinReduction;
     if !v1.isSorted then v1.doSort();
     if !v2.isSorted then v2.doSort();
