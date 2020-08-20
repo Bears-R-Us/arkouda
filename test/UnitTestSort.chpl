@@ -35,8 +35,8 @@ prototype module UnitTestSort
     if mode == testMode.performance {
       if printTimes {
         const sec = d.elapsed();
-        const mbPerNode = (nElems * numBytes(elemType)):real / (1024.0*1024.0) / numLocales:real;
-        writef(" -- %.2dr MB/s per node (%.2drs)", mbPerNode/sec, sec);
+        const mibPerNode = (nElems * numBytes(elemType)):real / (1024.0*1024.0) / numLocales:real;
+        writef(" -- %.2dr MiB/s per node (%.2drs)", mibPerNode/sec, sec);
       }
       if printDiagsSum {
         const dd = d.commSum();
@@ -64,7 +64,7 @@ prototype module UnitTestSort
       endDiag("radixSortLSD_ranks", elemType, nElems, sortDesc);
       if verify {
         var sortedA: [D] elemType;
-        forall (sA, i) in zip(sortedA, rankSortedA) with (var agg = newDstAggregator(elemType)) {
+        forall (sA, i) in zip(sortedA, rankSortedA) with (var agg = newSrcAggregator(elemType)) {
           agg.copy(sA, A[i]);
         }
         if printArrays { writeln(A); writeln(rankSortedA); writeln(sortedA); }
