@@ -9,12 +9,17 @@ prototype module UnitTestSort
   use RadixSortLSD;
   use CommAggregation;
 
+  config param perfOnlyCompile = false; // reduces compilation time
+
   enum testMode { correctness, correctnessFast, performance };
-  config const mode = testMode.correctnessFast;
+  config const mode = if perfOnlyCompile then testMode.performance
+                                         else testMode.correctnessFast;
 
   config const elemsPerLocale = -1;
   const numElems = numLocales * elemsPerLocale;
   config const printArrays = false;
+
+  config param verify = true;
 
   /* Timing and Comm diagnostic reporting helpers */
 
@@ -50,19 +55,21 @@ prototype module UnitTestSort
       var sortedA = radixSortLSD_keys(A, checkSorted=false);
       endDiag("radixSortLSD_keys", elemType, nElems, sortDesc);
       if printArrays { writeln(A); writeln(sortedA); }
-      assert(AryUtil.isSorted(sortedA));
+      if verify { assert(AryUtil.isSorted(sortedA)); }
     }
 
     {
       startDiag();
       var rankSortedA = radixSortLSD_ranks(A, checkSorted=false);
       endDiag("radixSortLSD_ranks", elemType, nElems, sortDesc);
-      var sortedA: [D] elemType;
-      forall (sA, i) in zip(sortedA, rankSortedA) with (var agg = newDstAggregator(elemType)) {
-        agg.copy(sA, A[i]);
+      if verify {
+        var sortedA: [D] elemType;
+        forall (sA, i) in zip(sortedA, rankSortedA) with (var agg = newDstAggregator(elemType)) {
+          agg.copy(sA, A[i]);
+        }
+        if printArrays { writeln(A); writeln(rankSortedA); writeln(sortedA); }
+        assert(AryUtil.isSorted(sortedA));
       }
-      if printArrays { writeln(A); writeln(rankSortedA); writeln(sortedA); }
-      assert(AryUtil.isSorted(sortedA));
     }
   }
  
@@ -174,7 +181,6 @@ prototype module UnitTestSort
   config type perfElemType = int,
               perfValRange = uint(16);
   config const perfMemFraction = 50;
-  config param perfOnlyCompile = false; // reduces compilation time
 
   proc testPerformance() {
     param elemSize = numBytes(perfElemType);
