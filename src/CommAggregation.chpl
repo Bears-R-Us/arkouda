@@ -6,8 +6,8 @@ module CommAggregation {
   // TODO these parameters need to be tuned and size should be user-settable at
   // creation time. iters before yield should be based on numLocales & buffSize
   private config const maxItersBeforeYield = 4096;
-  private config const dstBuffSize = 4096;
-  private config const srcBuffSize = 4096;
+  private config const dstBuffSize = getEnvInt("ARKOUDA_SERVER_AGGREGATION_DST_BUFF_SIZE", 4096);
+  private config const srcBuffSize = getEnvInt("ARKOUDA_SERVER_AGGREGATION_SRC_BUFF_SIZE", 4096);
 
 
   /* Creates a new destination aggregator (dst/lhs will be remote). */
@@ -240,5 +240,12 @@ module CommAggregation {
       compilerWarning("Missing optimized unorderedCopy for " + dst.type:string);
       dst = src;
     }
+  }
+
+  proc getEnvInt(name: string, default: int): int {
+    extern proc getenv(name : c_string) : c_string;
+    var strval = getenv(name.localize().c_str()): string;
+    if strval.isEmpty() { return default; }
+    return try! strval: int;
   }
 }
