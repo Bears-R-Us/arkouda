@@ -40,7 +40,7 @@ def read_hdf(dsetName : str, filenames : Union[str,List[str]]) \
     Returns
     -------
     Union[pdarray,Strings] 
-        A pdarray or Strings instance pointing to the server-side data read in
+        A pdarray or Strings instance pointing to the server-side data
 
     Raises
     ------
@@ -242,6 +242,10 @@ def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : 
     mode : {'truncate' | 'append'}
         By default, truncate (overwrite) the output files if they exist.
         If 'append', attempt to create new dataset in existing files.
+
+    Returns
+    -------
+    None
 
     Raises
     ------

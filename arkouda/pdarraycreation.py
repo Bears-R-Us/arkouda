@@ -12,16 +12,14 @@ __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", "arange",
            "linspace", "randint", "uniform", "standard_normal",
            "random_strings_uniform", "random_strings_lognormal"]
 
-def array(a : Union[pdarray,np.ndarray]) -> Union[pdarray,Strings]:
+def array(a : Union[pdarray,np.ndarray]) -> Union[pdarray, Strings]:
     """
     Convert an iterable to a pdarray or Strings object, sending the corresponding
-    data to the arkouda server. If the pdrray or ndarray is of type U, this
-    method is called twice recursively to create the Strings object and the
-    two corresponding pdarrays for string bytes and offsets, respectively.
+    data to the arkouda server. 
 
     Parameters
     ----------
-    a : array_like
+    a : Union[pdarray, np.ndarray]
         Rank-1 array of a supported dtype
 
     Returns
@@ -42,6 +40,10 @@ def array(a : Union[pdarray,np.ndarray]) -> Union[pdarray,Strings]:
     server, under the assumption that it is a low-bandwidth connection. The user
     may override this limit by setting ak.maxTransferBytes to a larger value, 
     but should proceed with caution.
+    
+    If the pdrray or ndarray is of type U, this method is called twice recursively 
+    to create the Strings object and the two corresponding pdarrays for string 
+    bytes and offsets, respectively.
 
     Examples
     --------
@@ -392,13 +394,15 @@ def randint(low : int, high : int, size : int, dtype=int64) -> pdarray:
     lowstr = NUMBER_FORMAT_STRINGS[dtype.name].format(low)
     highstr = NUMBER_FORMAT_STRINGS[dtype.name].format(high)
     sizestr = NUMBER_FORMAT_STRINGS['int64'].format(size)
-    repMsg = generic_msg("randint {} {} {} {}".format(sizestr, dtype.name, lowstr, highstr))
+    repMsg = generic_msg("randint {} {} {} {}".\
+                         format(sizestr, dtype.name, lowstr, highstr))
     return create_pdarray(repMsg)
 
 
 def uniform(size : int, low : float=0.0, high : float=1.0):
     """
-    Generate a pdarray with uniformly distributed random values in a specified range.
+    Generate a pdarray with uniformly distributed random values 
+    in a specified range.
 
     Parameters
     ----------
@@ -453,7 +457,8 @@ def standard_normal(size : int) -> pdarray:
     return create_pdarray(repMsg)
 
 
-def random_strings_uniform(minlen : int, maxlen : int, size : int, characters : str='uppercase') -> Strings:
+def random_strings_uniform(minlen : int, maxlen : int, size : int, 
+                           characters : str='uppercase') -> Strings:
     """
     Generate random strings with lengths uniformly distributed between 
     minlen and maxlen, and with characters drawn from a specified set.
@@ -489,7 +494,8 @@ def random_strings_uniform(minlen : int, maxlen : int, size : int, characters : 
     return Strings(*(repMsg.split('+')))
 
 
-def random_strings_lognormal(logmean : float, logstd : float, size : int, characters : str='uppercase') -> Strings:
+def random_strings_lognormal(logmean : float, logstd : float, 
+                             size : int, characters : str='uppercase') -> Strings:
     """
     Generate random strings with log-normally distributed lengths and 
     with characters drawn from a specified set.

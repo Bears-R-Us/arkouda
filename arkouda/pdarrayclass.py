@@ -21,13 +21,15 @@ def parse_single_value(msg : str):
         elif value == "False":
             return bool(False)
         else:
-            raise ValueError("unsupported value from server {} {}".format(mydtype.name, value))
+            raise ValueError(("unsupported value from server {} {}".format(mydtype.name, 
+                                                                           value)))
     try:
         if mydtype == str_:
             return mydtype.type(value.strip('"'))
         return mydtype.type(value)
     except:
-        raise ValueError("unsupported value from server {} {}".format(mydtype.name, value))
+        raise ValueError(("unsupported value from server {} {}".format(mydtype.name, 
+                                                                       value)))
 
 # class for the pdarray
 class pdarray:
@@ -55,8 +57,10 @@ class pdarray:
         The size in bytes of each element
     """
 
-    BinOps = frozenset(["+", "-", "*", "/", "//", "%", "<", ">", "<=", ">=", "!=", "==", "&", "|", "^", "<<", ">>","**"])
-    OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", "<<=", ">>=","**="])
+    BinOps = frozenset(["+", "-", "*", "/", "//", "%", "<", ">", "<=", ">=", 
+                        "!=", "==", "&", "|", "^", "<<", ">>","**"])
+    OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", 
+                         "<<=", ">>=","**="])
     objtype = "pdarray"
 
     __array_priority__ = 1000
@@ -77,7 +81,8 @@ class pdarray:
 
     def __bool__(self) -> bool:
         if self.size != 1:
-            raise ValueError("The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()")
+            raise ValueError(('The truth value of an array with more than one ' +
+                              'element is ambiguous. Use a.any() or a.all()'))
         return bool(self[0])
 
     def __len__(self):
@@ -85,7 +90,7 @@ class pdarray:
 
     def __str__(self):
         global pdarrayIterThresh
-        return generic_msg("str {} {}".format(self.name,pdarrayIterThresh) )
+        return generic_msg("str {} {}".format(self.name,pdarrayIterThresh))
 
     def __repr__(self):
         global pdarrayIterTresh
@@ -100,7 +105,8 @@ class pdarray:
         try:
             other = self.dtype.type(other)
         except:
-            raise TypeError("Unable to convert {} to {}".format(other, self.dtype.name))
+            raise TypeError("Unable to convert {} to {}".format(other, 
+                                                                self.dtype.name))
         if self.dtype == bool:
             return str(other)
         fmt = NUMBER_FORMAT_STRINGS[self.dtype.name]
@@ -120,8 +126,10 @@ class pdarray:
         # pdarray binop scalar
         dt = resolve_scalar_dtype(other)
         if dt not in DTypes:
-            raise TypeError("Unhandled scalar type: {} ({})".format(other, type(other)))
-        msg = "binopvs {} {} {} {}".format(op, self.name, dt, NUMBER_FORMAT_STRINGS[dt].format(other))
+            raise TypeError("Unhandled scalar type: {} ({})".format(other, 
+                                                                    type(other)))
+        msg = "binopvs {} {} {} {}".\
+                  format(op, self.name, dt, NUMBER_FORMAT_STRINGS[dt].format(other))
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
@@ -133,8 +141,11 @@ class pdarray:
         # pdarray binop scalar
         dt = resolve_scalar_dtype(other)
         if dt not in DTypes:
-            raise TypeError("Unhandled scalar type: {} ({})".format(other, type(other)))
-        msg = "binopsv {} {} {} {}".format(op, dt, NUMBER_FORMAT_STRINGS[dt].format(other), self.name)
+            raise TypeError("Unhandled scalar type: {} ({})".format(other, 
+                                                                    type(other)))
+        msg = "binopsv {} {} {} {}".\
+                      format(op, dt, NUMBER_FORMAT_STRINGS[dt].format(other), 
+                                                                    self.name)
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
@@ -268,7 +279,8 @@ class pdarray:
         except: # Can't cast other as dtype of pdarray
             raise TypeError("Unhandled scalar type: {} ({})".format(other, type(other)))
 
-        msg = "opeqvs {} {} {} {}".format(op, self.name, self.dtype.name, self.format_other(other))
+        msg = "opeqvs {} {} {} {}".\
+                         format(op, self.name, self.dtype.name, self.format_other(other))
         generic_msg(msg)
         return self
 
@@ -351,29 +363,40 @@ class pdarray:
                 # Interpret negative key as offset from end of array
                 key += self.size
             if (key >= 0 and key < self.size):
-                generic_msg("[int]=val {} {} {} {}".format(self.name, key, self.dtype.name, self.format_other(value)))
+                generic_msg("[int]=val {} {} {} {}".\
+                            format(self.name, key, self.dtype.name, 
+                                   self.format_other(value)))
             else:
-                raise IndexError("index {} is out of bounds with size {}".format(orig_key,self.size))
+                raise IndexError(("index {} is out of bounds with size {}".\
+                                 format(orig_key,self.size)))
         elif isinstance(key, pdarray):
             if isinstance(value, pdarray):
-                generic_msg("[pdarray]=pdarray {} {} {}".format(self.name,key.name,value.name))
+                generic_msg("[pdarray]=pdarray {} {} {}".\
+                            format(self.name,key.name,value.name))
             else:
-                generic_msg("[pdarray]=val {} {} {} {}".format(self.name, key.name, self.dtype.name, self.format_other(value)))
+                generic_msg("[pdarray]=val {} {} {} {}".\
+                            format(self.name, key.name, self.dtype.name, 
+                                   self.format_other(value)))
         elif isinstance(key, slice):
             (start,stop,stride) = key.indices(self.size)
             if verbose: print(start,stop,stride)
             if isinstance(value, pdarray):
-                generic_msg("[slice]=pdarray {} {} {} {} {}".format(self.name,start,stop,stride,value.name))
+                generic_msg("[slice]=pdarray {} {} {} {} {}".\
+                            format(self.name,start,stop,stride,value.name))
             else:
-                generic_msg("[slice]=val {} {} {} {} {} {}".format(self.name, start, stop, stride, self.dtype.name, self.format_other(value)))
+                generic_msg("[slice]=val {} {} {} {} {} {}".\
+                            format(self.name, start, stop, stride, self.dtype.name, 
+                                   self.format_other(value)))
         else:
-            raise TypeError("Unhandled key type: {} ({})".format(key, type(key)))
+            raise TypeError("Unhandled key type: {} ({})".\
+                            format(key, type(key)))
 
     def fill(self, value : object) -> None:
         """
         Fill the array (in place) with a constant value.
         """
-        generic_msg("set {} {} {}".format(self.name, self.dtype.name, self.format_other(value)))
+        generic_msg("set {} {} {}".format(self.name, 
+                                        self.dtype.name, self.format_other(value)))
 
     def any(self):
         """
@@ -491,7 +514,8 @@ class pdarray:
         arraybytes = self.size * self.dtype.itemsize
         # Guard against overflowing client memory
         if arraybytes > maxTransferBytes:
-            raise RuntimeError("Array exceeds allowed size for transfer. Increase ak.maxTransferBytes to allow")
+            raise RuntimeError(('Array exceeds allowed size for transfer. Increase ' +
+                               'ak.maxTransferBytes to allow'))
         # The reply from the server will be a bytes object
         rep_msg = generic_msg("tondarray {}".format(self.name), recv_bytes=True)
         # Make sure the received data has the expected length
@@ -550,28 +574,30 @@ class pdarray:
         try:
             from numba import cuda
             if not(cuda.is_available()):
-                raise ImportError('CUDA is not available. Check for the CUDA toolkit and ensure a GPU is installed.')
-                return
+                raise ImportError(('CUDA is not available. Check for the CUDA toolkit ' +
+                                  'and ensure a GPU is installed.'))
         except:
-            raise ModuleNotFoundError('Numba is not enabled or installed and is required for GPU support.')
-            return
+            raise ModuleNotFoundError(('Numba is not enabled or installed and ' +
+                                      'is required for GPU support.'))
 
         # Total number of bytes in the array data
         arraybytes = self.size * self.dtype.itemsize
         # Guard against overflowing client memory
         if arraybytes > maxTransferBytes:
-            raise RuntimeError("Array exceeds allowed size for transfer. Increase ak.maxTransferBytes to allow")
+            raise RuntimeError(("Array exceeds allowed size for transfer. " +
+                               "Increase ak.maxTransferBytes to allow"))
         # The reply from the server will be a bytes object
         rep_msg = generic_msg("tondarray {}".format(self.name), recv_bytes=True)
         # Make sure the received data has the expected length
         if len(rep_msg) != self.size*self.dtype.itemsize:
-            raise RuntimeError("Expected {} bytes but received {}".format(self.size*self.dtype.itemsize, len(rep_msg)))
+            raise RuntimeError("Expected {} bytes but received {}".\
+                               format(self.size*self.dtype.itemsize, len(rep_msg)))
         # Use struct to interpret bytes as a big-endian numeric array
         fmt = '>{:n}{}'.format(self.size, structDtypeCodes[self.dtype.name])
         # Return a numba devicendarray
         return cuda.to_device(struct.unpack(fmt, rep_msg))
 
-    def save(self, prefix_path, dataset='array', mode='truncate', offsets=None) -> str:
+    def save(self, prefix_path, dataset='array', mode='truncate') -> str:
         """
         Save the pdarray to HDF5. The result is a collection of HDF5 files,
         one file per locale of the arkouda server, where each filename starts
@@ -594,7 +620,7 @@ class pdarray:
             Raised if a server-side error is thrown saving the pdarray
         ValueError
             Raised if there is an error in parsing the prefix path pointing to
-            file write location r if the mode parameter is neither truncate
+            file write location or if the mode parameter is neither truncate
             nor append
 
         See Also
@@ -637,10 +663,7 @@ class pdarray:
         retrieve the array elements from the hdf5 files.
         """ 
         try:
-            if offsets:
-                json_array = json.dumps([prefix_path, offsets])
-            else: 
-                json_array = json.dumps([prefix_path])
+            json_array = json.dumps([prefix_path])
         except Exception as e:
             raise ValueError(e)
         return generic_msg("tohdf {} {} {} {}".format(self.name, dataset, m, json_array))

@@ -305,22 +305,6 @@ module GenSymIO {
       st.addEntry(segName, entrySeg);
       var valName = st.nextName();
       st.addEntry(valName, entryVal);
-      var newString = true;
-      var stringsList: list(string, parSafe=true);
-      var charList: list(uint(8), parSafe=true);
-      for entry in entryVal.a do {
-        if entry == 0:uint(8) {
-            newString = true;
-            try! stringsList.append(createStringWithNewBuffer(c_ptrTo(charList.toArray()), 
-                   charList.size-1, charList.size));
-          } else {
-            if newString {
-              charList.clear();
-                newString = false;
-          } 
-          charList.append(entry);
-        }
-      }
       return try! "created " + st.attrib(segName) + " +created " + st.attrib(valName);
     }
     when (false, C_HDF5.H5T_INTEGER) {
@@ -536,12 +520,12 @@ module GenSymIO {
       (dataclass, bytesize, isSigned) = get_dataset_info(file_id, dsetName);
       isSegArray = false;
     } catch e:DatasetNotFoundError {
-      var group = C_HDF5.H5Gopen2(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT);
-      if (group < 0) {
-        // 
-        try! writeln("The dataset is neither at the root of the HDF5 file not within a group");
+      var group_id = C_HDF5.H5Gopen2(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT);
+      if (group_id < 0) {
+        try! writeln("The dataset is neither at the root of the HDF5 file nor within a group");
         throw new owned SegArrayError();
       }
+      C_HDF5.H5Gclose(group_id);
       var offsetDset = dsetName + "/" + SEGARRAY_OFFSET_NAME;
       var valueDset = dsetName + "/" + SEGARRAY_VALUE_NAME;
       var (offsetClass, offsetByteSize, offsetSign) = try get_dataset_info(file_id, offsetDset);

@@ -17,10 +17,6 @@ class Strings:
     Represents an array of strings whose data resides on the
     arkouda server. The user should not call this class directly;
     rather its instances are created by other arkouda functions.
-    
-    Strings is composed of two pdarrays: (1) offsets, which contains the
-    starting indices for each string and (2) bytes, which contains the 
-    raw bytes of all strings, delimited by nulls.
 
     Attributes
     ----------
@@ -36,6 +32,12 @@ class Strings:
         The rank of the array (currently only rank 1 arrays supported)
     shape : tuple
         The sizes of each dimension of the array
+        
+    Notes
+    -----
+    Strings is composed of two pdarrays: (1) offsets, which contains the
+    starting indices for each string and (2) bytes, which contains the 
+    raw bytes of all strings, delimited by nulls.    
     """
 
     BinOps = frozenset(["==", "!="])
@@ -96,25 +98,9 @@ class Strings:
             yield s
 
     def __len__(self) -> int:
-        """
-        Returns the shape of the underlying offsets pdarray
-        
-        Returns
-        -------
-        int
-            length of the Strings pdarray
-        """
         return self.shape[0]
 
     def __str__(self) -> str:
-        """
-        Returns a string representation of Strings object state
-        
-        Returns
-        -------
-        str
-            object state in the form of a string      
-        """
         if self.size <= pdarrayIterThresh:
             vals = ["'{}'".format(self[i]) for i in range(self.size)]
         else:
@@ -124,15 +110,6 @@ class Strings:
         return "[{}]".format(', '.join(vals))
 
     def __repr__(self) -> str:
-        """
-        Returns a string representation of Strings object state encapsulated
-        with params
-        
-        Returns
-        -------
-        str
-            object state in the form of a string within params    
-        """
         return "array({})".format(self.__str__())
 
     def binop(self, other : object, op : str) -> pdarray:
@@ -190,52 +167,12 @@ class Strings:
         return create_pdarray(repMsg)
 
     def __eq__(self, other) -> bool:
-        """
-        Indicates whether the instance is equal to the other object
-        
-        Parameters
-        ----------
-        other : object
-            The object to be compared to the current instance
-        
-        Returns
-        -------
-        bool
-            boolean indicating whether the instance is equal to the 
-            other object
-        
-        Raises
-        ------
-        RuntimeError
-            Raised if there is a server-side error thrown in the 
-            execution of the binop('==') method
-        """
         if not isinstance(other, Strings):
             return False
         else:
             return self.binop(other, "==")
 
     def __ne__(self, other : object) -> bool:
-        """
-        Indicates whether the instance not equal to the other object
-        
-        Parameters
-        ----------
-        other : object
-            The object to be compared to the current instance
-        
-        Returns
-        -------
-        bool
-            boolean indicating whether the instance is not equal 
-            to the other object
-            
-        Raises
-        ------
-        RuntimeError
-            Raised if there is a server-side error thrown in the 
-            execution of the binop('!=') method
-        """
         return self.binop(other, "!=")
 
     def __getitem__(self, key):
@@ -621,27 +558,6 @@ class Strings:
         return Strings(*repMsg.split('+'))
 
     def __add__(self, other):
-        """
-        Adds two Strings objects together via the underlying implemention 
-        logic delegated to the self.stick method.
-        
-        Parameters
-        ----------
-        other : Strings
-            The strings to join onto self's strings
-
-        Returns
-        -------
-        Strings
-            The array of joined strings
-
-        Raises
-        ------
-        TypeError
-            Raised if the other parameter is not a Strings instance
-        RuntimeError
-            Raised if there is a server-side error thrown
-        """
         return self.stick(other)
     
     def lstick(self, other : object, delimiter : str=""):
@@ -684,34 +600,6 @@ class Strings:
         return self.stick(other, delimiter=delimiter, toLeft=True)
 
     def __radd__(self, other : object):
-        """
-        Join the strings from another array onto the left of the strings 
-        of this array, optionally inserting a delimiter.
-
-        Parameters
-        ----------
-        other : Strings
-            The strings to join onto self's strings
-        delimiter : str
-            String inserted between self and other
-
-        Returns
-        -------
-        Strings
-            The array of joined strings, as other + self
-
-        Raises
-        ------
-        TypeError
-            Raised if the other parameter is not a Strings instance
-
-        RuntimeError
-            Raised if there is a server-side error thrown
-
-        See Also
-        --------
-        lstick
-        """
         return self.lstick(other)
     
     def hash(self) -> Tuple[pdarray,pdarray]:

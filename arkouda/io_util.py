@@ -1,17 +1,26 @@
 from pathlib import Path
 from typing import Any, Mapping
-import csv
 
 def get_directory(path : str) -> Path:
     '''
     Creates the directory if it does not exist and then
     returns the corresponding Path object
 
-    :param str path: the path to the directory
-    :return: Path object corresponding to the directory
-    :rtype: Path
-    :raise: ValueError if there's an error in reading
-            existing directory or creating new one
+    Parameters
+    ----------
+    path : str
+        The path to the directory
+    
+    Returns
+    -------
+    str
+        Path object corresponding to the directory
+        
+    Raises
+    ------
+    ValueError
+        Raised if there's an error in reading an
+        existing directory or creating a new one
     '''
     try:
         Path(path).mkdir(parents=True, exist_ok=True)
@@ -25,11 +34,22 @@ def write_line_to_file(path : str, line : str) -> None:
     does not exist, the file is created first and then
     the specified line is written to it.
 
-    :param str path: path to the target file
-    :param str line: line to be written to file
-    :return: None
-    :raise: UnsupportedOption if there's an error creating
-            or writing to the file
+    Parameters
+    ----------
+    path : str
+        Path to the target file
+    line : str
+        Line to be written to the file
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    UnsupportedOption
+        Raised if there's an error in creating or 
+        writing to the file
     """
     with open(path, 'a') as f:
         f.write(''.join([line,'\n']))
@@ -40,19 +60,30 @@ def delimited_file_to_dict(path : str,
     Returns a dictionary populated by lines from a file where 
     the first delimited element of each line is the key and
     the second delimited element is the value. 
-  
-    :param str path: path to file
-    :param str delimiter: delimiter separating key and value
-    :return: dict containing key -> value
-    :rtype: Mapping[str,str]
-    :raise: UnsupportedOperation if there's an error in reading
-            the file
+
+    Parameters
+    ----------
+    path : str
+        Path to the file
+    delimiter : str
+        Delimiter separating key and value
+
+    Returns
+    -------
+    Mapping[str,str]
+        Dictionary containing key,value pairs derived from each
+        line of delimited strings
+
+    Raises
+    ------
+    UnsupportedOperation 
+        Raised if there's an error in reading the file
     """
     values : Mapping[str,str] = {}
     
     with open(path,'a+') as f:
-         f.seek(0)
-         for line in f:
+        f.seek(0)
+        for line in f:
             line = line.rstrip()
             key,value = line.split(delimiter)
             values[key] = value
@@ -66,13 +97,24 @@ def dict_to_delimited_file(path : str, values : Mapping[Any,Any],
     and the second delimited element is the dict value. If the 
     file does not exist, it is created and then written to.
 
-    :param str path: path to file
-    :param str delimiter: delimiter separating key and value
-    :return: dict containing key -> value
-    :rtype: Mapping[str,str]
-    :raise: IOError if there's an error opening or writing to
-            the specified file, ValueError if the delimiter is
-            not supported
+    Parameters
+    ----------
+    path : str
+        Path to the file
+    delimiter
+        Delimiter separating key and value
+        
+    Returns
+    -------
+    None
+    
+    Raises
+    ------
+    OError 
+        Raised if there's an error opening or writing to the 
+        specified file
+    ValueError 
+        Raised if the delimiter is not supported
     """
     if ',' == delimiter:
         with open(path, 'w+') as f:
