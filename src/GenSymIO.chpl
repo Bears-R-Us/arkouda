@@ -684,8 +684,8 @@ module GenSymIO {
   }
 
   proc tohdfMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
-    var (arrayName, dsetName, modeStr, jsonfile)
-          = payload.decode().splitMsgToTuple(4);
+    var (arrayName, dsetName, modeStr, jsonfile, dataType)
+          = payload.decode().splitMsgToTuple(5);
 
     var mode = try! modeStr: int;
     var filename: string;
@@ -733,7 +733,20 @@ module GenSymIO {
     }
   }
 
-  proc write1DDistArray(filename: string, mode: int, dsetName: string, A, array_type: DType) throws {
+  /*
+   * Returns the name of the hdf5 group
+   */
+  private inline proc getGroup(dsetName : string) : string throws { 
+    var values = dsetName.split('/');
+	    
+	if values.size < 1 {
+	  throw new IllegalArgumentError('The Strings dataset must be in form /{dset}/');
+	} else {
+	  return values[1];
+	}
+  }
+  
+  private inline proc write1DDistArray(filename: string, mode: int, dsetName: string, A, array_type: DType) throws {
     /* Output is 1 file per locale named <filename>_<loc>, and a dataset
        named <dsetName> is created in each one. If mode==1 (append) and the
        correct number of files already exists, then a new dataset named
@@ -744,6 +757,7 @@ module GenSymIO {
     const fields = filename.split(".");
     var prefix:string;
     var extension:string;
+    var group:string;
 
     if fields.size == 1 {
       prefix = filename;
@@ -795,8 +809,9 @@ module GenSymIO {
            * values, which are the corresponding string values within a null-delimited bytes object
            */ 
            if array_type == DType.UInt8 {
-             var group_id = C_HDF5.H5Gcreate2(file_id, "/strings_array", C_HDF5.H5P_DEFAULT, 
-                                              C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+        	 var group = getGroup(dsetName);
+             var group_id = C_HDF5.H5Gcreate2(file_id, "/%s".format(group).c_str(), 
+                              C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
              C_HDF5.H5Gclose(group_id);
         }
         C_HDF5.H5Fclose(file_id);
@@ -930,10 +945,10 @@ module GenSymIO {
                * Write the valuesList containing the uint(8) characters missing from
                * the local slice along with retrieved from the next locale to hdf5
                */
-              H5LTmake_dataset_WAR(myFileID, '/strings_array/values'.c_str(), 1, 
+              H5LTmake_dataset_WAR(myFileID, '/%s/values'.format(group).c_str(), 1, 
                     c_ptrTo(dims), getHDF5Type(A.eltType), c_ptrTo(valuesList.toArray()));     
 
-              H5LTmake_dataset_WAR(myFileID, '/strings_array/segments'.c_str(), 1, 
+              H5LTmake_dataset_WAR(myFileID, '/%s/segments'.format(group).c_str(), 1, 
                        c_ptrTo([segmentsList.size:uint(64)]), getHDF5Type(int), 
                        c_ptrTo(segmentsList.toArray()));   
             } else {
@@ -952,10 +967,10 @@ module GenSymIO {
                  */ 
                 var segmentsList = generateSegmentsList(A.localSlice(locDom));
 
-                H5LTmake_dataset_WAR(myFileID, '/strings_array/segments'.c_str(), 1, 
+                H5LTmake_dataset_WAR(myFileID, '/%s/segments'.format(group).c_str(), 1, 
                                    c_ptrTo([segmentsList.size:uint(64)]),getHDF5Type(int), 
                                    c_ptrTo(segmentsList.toArray()));  
-                H5LTmake_dataset_WAR(myFileID, '/strings_array/values'.c_str(), 1, 
+                H5LTmake_dataset_WAR(myFileID, '/%s/values'.format(group).c_str(), 1, 
                                    c_ptrTo(dims), getHDF5Type(A.eltType), 
                                    c_ptrTo(A.localSlice(locDom)));   
               } else {
@@ -972,10 +987,10 @@ module GenSymIO {
                 // Update the dimensions per the possibly re-sized valuesList
                 dims[0] = valuesList.size:uint(64);
 
-                H5LTmake_dataset_WAR(myFileID, '/strings_array/segments'.c_str(), 1, 
+                H5LTmake_dataset_WAR(myFileID, '/%s/segments'.format(group).c_str(), 1, 
                               c_ptrTo([segmentsList.size:uint(64)]),getHDF5Type(int), 
                               c_ptrTo(segmentsList.toArray()));  
-                H5LTmake_dataset_WAR(myFileID, '/strings_array/values'.c_str(), 1, 
+                H5LTmake_dataset_WAR(myFileID, '/%s/values'.format(group).c_str(), 1, 
                               c_ptrTo(dims), getHDF5Type(A.eltType),
                               c_ptrTo(valuesList.toArray()));   
               }

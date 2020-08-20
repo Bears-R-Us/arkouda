@@ -666,7 +666,8 @@ class pdarray:
             json_array = json.dumps([prefix_path])
         except Exception as e:
             raise ValueError(e)
-        return generic_msg("tohdf {} {} {} {}".format(self.name, dataset, m, json_array))
+        return generic_msg("tohdf {} {} {} {} {}".\
+                           format(self.name, dataset, m, json_array, self.dtype))
 
 
 # creates pdarray object

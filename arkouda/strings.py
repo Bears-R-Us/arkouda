@@ -708,31 +708,41 @@ class Strings:
             res[i] = np.str_(''.join(chr(b) for b in npvalues[o:o+l]))
         return res
 
-    def save(self, prefix_path : str, mode : str='truncate') -> None:
+    def save(self, prefix_path : str, dataset : str='strings_array', 
+             mode : str='truncate') -> None:
         """
         Save the Strings object to HDF5. The result is a collection of HDF5 files,
         one file per locale of the arkouda server, where each filename starts
         with prefix_path. Each locale saves its chunk of the array to its
         corresponding file.
 
-        Important implementation notes: (1) Strings state is saved as two datasets
-        within an hdf5 group: offsets AKA segments and values (2) save logic is
-        delegated to pdarrayIO.save_all and (3) offsets are generated server-side 
-        from the values pdarray
-
         Parameters
         ----------
         prefix_path : str
             Directory and filename prefix that all output files share
+        dataset : str
+            The name of the Strings dataset to be written, defaults to strings_array
         mode : str {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', attempt to create new dataset in existing files.
+
+        Returns
+        -------
+        None
 
         Raises
         ------
         ValueError 
             Raised if the lengths of columns and values differ, or the mode is 
             not 'truncate' or 'append'
+            
+        Notes
+        -----
+        Important implementation notes: (1) Strings state is saved as two datasets
+        within an hdf5 group: offsets AKA segments and values (2) save logic is
+        delegated to pdarrayIO.save_all and (3) offsets are generated server-side 
+        from the values pdarray
+      
         """
         arkouda.save_all(columns=[self.bytes], prefix_path=prefix_path,
-                names=['/strings_array/values'], mode=mode)
+                names=['/{}/values'.format(dataset)], mode=mode)
