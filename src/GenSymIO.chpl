@@ -737,13 +737,12 @@ module GenSymIO {
    * Returns the name of the hdf5 group
    */
   private inline proc getGroup(dsetName : string) : string throws { 
-    var values = dsetName.split('/');
-	    
-	if values.size < 1 {
-	  throw new IllegalArgumentError('The Strings dataset must be in form /{dset}/');
-	} else {
-	  return values[1];
-	}
+    var values = dsetName.split('/'); 
+    if values.size < 1 {
+      throw new IllegalArgumentError('The Strings dataset must be in form /{dset}/');
+    } else {
+      return values[1];
+    }
   }
   
   private inline proc write1DDistArray(filename: string, mode: int, dsetName: string, A, array_type: DType) throws {
@@ -809,7 +808,7 @@ module GenSymIO {
            * values, which are the corresponding string values within a null-delimited bytes object
            */ 
            if array_type == DType.UInt8 {
-        	 var group = getGroup(dsetName);
+             group = getGroup(dsetName);
              var group_id = C_HDF5.H5Gcreate2(file_id, "/%s".format(group).c_str(), 
                               C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
              C_HDF5.H5Gclose(group_id);
@@ -917,7 +916,6 @@ module GenSymIO {
           
               var sliceIndex = indices[idx]:int;
               var valuesList: list(uint(8), parSafe=true);
-
               /*
                * Now check to see if the current locale contains chars from the previous 
                * locale by checking the sliceIndex. If the sliceIndex > -1, this means that 
