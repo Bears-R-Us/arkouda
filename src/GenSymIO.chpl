@@ -737,13 +737,12 @@ module GenSymIO {
    * Returns the name of the hdf5 group
    */
   private inline proc getGroup(dsetName : string) : string throws { 
-    var values = dsetName.split('/');
-	    
-	if values.size < 1 {
-	  throw new IllegalArgumentError('The Strings dataset must be in form /{dset}/');
-	} else {
-	  return values[1];
-	}
+    var values = dsetName.split('/'); 
+    if values.size < 1 {
+      throw new IllegalArgumentError('The Strings dataset must be in form /{dset}/');
+    } else {
+      return values[1];
+    }
   }
   
   private inline proc write1DDistArray(filename: string, mode: int, dsetName: string, A, array_type: DType) throws {
