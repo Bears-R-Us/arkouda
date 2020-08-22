@@ -736,7 +736,7 @@ module GenSymIO {
   /*
    * Returns the name of the hdf5 group
    */
-  private inline proc getGroup(dsetName : string) : string throws { 
+  private proc getGroup(dsetName : string) : string throws { 
     var values = dsetName.split('/'); 
     if values.size < 1 {
       throw new IllegalArgumentError('The Strings dataset must be in form /{dset}/');
@@ -745,7 +745,7 @@ module GenSymIO {
     }
   }
   
-  private inline proc write1DDistArray(filename: string, mode: int, dsetName: string, A, array_type: DType) throws {
+  private proc write1DDistArray(filename: string, mode: int, dsetName: string, A, array_type: DType) throws {
     /* Output is 1 file per locale named <filename>_<loc>, and a dataset
        named <dsetName> is created in each one. If mode==1 (append) and the
        correct number of files already exists, then a new dataset named
@@ -830,7 +830,7 @@ module GenSymIO {
      * which are used to remove uint(8) characters from the locale slice that are part 
      * of a string that belongs to the previous locale in the pdarray list of locales.
      */
-    if isStringsDataset(dsetName) {
+    if isStringsDataset(array_type) {
       coforall (loc, idx) in zip(A.targetLocales(), 
                                        filenames.domain) with(ref indices) do on loc {
       if idx < A.targetLocales().size-1 {
@@ -863,7 +863,7 @@ module GenSymIO {
          * the first step in writing the local slice to hdf5 is to verify if this is
          * indeed a strings dataset.
          */
-        if isStringsDataset(dsetName) {  
+        if isStringsDataset(array_type) {  
             /*
              * Since this is a strings dataset, there is a possibility that 1..n
              * strings span two neighboring locales; this possibility is checked by
@@ -1012,7 +1012,7 @@ module GenSymIO {
    * indices parameter. Note: the slice index will be used to remove characters from 
    * the current locale that correspond to the last string of the previous locale.
    */
-  private inline proc generateSliceIndex(idx : int, indices, A) {
+  private proc generateSliceIndex(idx : int, indices, A) {
     on Locales[idx+1] {
       const locDom = A.localSubdomain();
       var sliceIndex = -1;
@@ -1044,7 +1044,7 @@ module GenSymIO {
    * Converts a local slice into a uint(8) list for use in methods that add
    * or remove entries from the resulting list.
    */
-  private inline proc convertLocalSliceToList(A, locDom) : list(uint(8)) {
+  private proc convertLocalSliceToList(A, locDom) : list(uint(8)) {
     var charList: list(uint(8), parSafe=true);
     for value in A.localSlice(locDom) {
      charList.append(value:uint(8));
@@ -1057,7 +1057,7 @@ module GenSymIO {
    * that correspond to 1..n chars that compose a string started in the
    * previous locale by slicing those chars out and returning a new list.
    */
-  private inline proc adjustForStringSlices(sliceIndex : int, 
+  private proc adjustForStringSlices(sliceIndex : int, 
                                    charList : list(uint(8))) : list(uint(8)){
     var valuesList: list(uint(8), parSafe=true);
     for value in charList(sliceIndex..charList.size-1) {
@@ -1071,7 +1071,7 @@ module GenSymIO {
    * of each string within a uint(8) array. The segmentsList will be 
    * written to the hdf5 file as the segments array.
    */
-  private inline proc generateSegmentsList(valuesList) : list(int) {
+  private proc generateSegmentsList(valuesList) : list(int) {
     var segmentsList: list(int, parSafe=true);
 
     /*
@@ -1096,7 +1096,7 @@ module GenSymIO {
   /*
    * Prepares the HDF5 file to hold a Strings array
    */
-  private inline proc prepareStringsFile(fileId : int) {
+  private proc prepareStringsFile(fileId : int) {
     var group_id = try! C_HDF5.H5Gcreate2(fileId, "/strings_array", 
                C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT); 
     C_HDF5.H5Gclose(group_id);
@@ -1106,7 +1106,7 @@ module GenSymIO {
    * Returns a boolean indicating whether the data set is a Strings values 
    * dataset corresponding to a Strings array save operation.
    */
-  private inline proc isStringsDataset(dsetName: string) : bool {
-    return dsetName.find(needle="strings_array/values") > -1;
+  private proc isStringsDataset(datasetType: DType) : bool {
+    return datasetType == DType.UInt8;
   }
 }
