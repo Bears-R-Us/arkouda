@@ -247,17 +247,21 @@ class IOTest(ArkoudaTest):
 
     def testStringsIO(self):
         strings_array = ak.array(['string {}'.format(num) for num in list(range(1,11))])
-        strings_array.save('{}/strings-test'.format(IOTest.io_test_dir))
-        r_strings_array = ak.load_all('{}/strings-test'.format(IOTest.io_test_dir))['strings_array']
+        strings_array_subset = ak.array(['string {}'.format(num) for num in list(range(1,7))])
+        strings_array.save('{}/strings-test'.format(IOTest.io_test_dir), dataset='strings')
+        r_strings_array = ak.load_all('{}/strings-test'.format(IOTest.io_test_dir))['strings']
         self.assertEqual(len(strings_array), len(r_strings_array))
         for i in list(range(0,10)):
             self.assertEqual(strings_array[i], r_strings_array[i])
-        self.assertTrue(ak.read_all(filenames='{}/strings-test_LOCALE0'.\
-                                    format(IOTest.io_test_dir)))
-        self.assertIsNotNone (ak.read_hdf(filenames='{}/strings-test_LOCALE0'.\
-                            format(IOTest.io_test_dir), dsetName='strings_array/values'))
+        r_strings_subset = ak.read_all(filenames='{}/strings-test_LOCALE0'.\
+                                    format(IOTest.io_test_dir))
+        self.assertEqual(len(strings_array_subset), len(r_strings_subset))
+        for i in list(range(0,6)):
+            self.assertEqual(strings_array_subset[i], r_strings_subset[i])
         self.assertIsNotNone(ak.read_hdf(filenames='{}/strings-test_LOCALE0'.\
-                            format(IOTest.io_test_dir), dsetName='strings_array/segments'))
+                            format(IOTest.io_test_dir), dsetName='strings/values'))
+        self.assertIsNotNone(ak.read_hdf(filenames='{}/strings-test_LOCALE0'.\
+                            format(IOTest.io_test_dir), dsetName='strings/segments'))
 
     def tearDown(self):
         super(IOTest, self).tearDown()
