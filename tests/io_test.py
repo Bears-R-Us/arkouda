@@ -247,7 +247,6 @@ class IOTest(ArkoudaTest):
 
     def testStringsIO(self):
         strings_array = ak.array(['string {}'.format(num) for num in list(range(1,11))])
-        strings_array_subset = ak.array(['string {}'.format(num) for num in list(range(1,7))])
         strings_array.save('{}/strings-test'.format(IOTest.io_test_dir), dataset='strings')
         r_strings_array = ak.load_all('{}/strings-test'.format(IOTest.io_test_dir))['strings']
         self.assertEqual(len(strings_array), len(r_strings_array))
@@ -255,13 +254,23 @@ class IOTest(ArkoudaTest):
             self.assertEqual(strings_array[i], r_strings_array[i])
         r_strings_subset = ak.read_all(filenames='{}/strings-test_LOCALE0'.\
                                     format(IOTest.io_test_dir))
-        self.assertEqual(len(strings_array_subset), len(r_strings_subset))
-        for i in list(range(0,6)):
-            self.assertEqual(strings_array_subset[i], r_strings_subset[i])
+        self.assertIsNotNone(r_strings_subset)
+        self.assertTrue(isinstance(r_strings_subset[0], str))    
         self.assertIsNotNone(ak.read_hdf(filenames='{}/strings-test_LOCALE0'.\
                             format(IOTest.io_test_dir), dsetName='strings/values'))
         self.assertIsNotNone(ak.read_hdf(filenames='{}/strings-test_LOCALE0'.\
                             format(IOTest.io_test_dir), dsetName='strings/segments'))
+        m_floats =  ak.ones(10)
+        m_ints = ak.array(list(range(0, 10)))
+        ak.save_all({'m_strings': strings_array,
+                     'm_floats' : m_floats,
+                     'm_ints' : m_ints}, 
+                     '{}/multi-type-test'.format(IOTest.io_test_dir))
+        r_multi_type = ak.load_all('{}/multi-type-test'.format(IOTest.io_test_dir))
+        for i in list(range(0,10)):
+            self.assertEqual(strings_array[i], r_multi_type['m_strings'][i])
+        self.assertEqual(m_floats.all(), r_multi_type['m_floats'].all())
+        self.assertEqual(m_ints.all(), r_multi_type['m_ints'].all())
 
     def tearDown(self):
         super(IOTest, self).tearDown()
