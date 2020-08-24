@@ -17,6 +17,8 @@ module GenSymIO {
   config const SEGARRAY_OFFSET_NAME = "segments";
   config const SEGARRAY_VALUE_NAME = "values";
   config const NULL_STRINGS_VALUE = 0:uint(8);
+  config const APPEND: int = 1;
+  config const TRUNCATE: int = 0;
   
   /*
    * Creates a pdarray server-side and returns the SymTab name used to
@@ -733,18 +735,6 @@ module GenSymIO {
       return "wrote array to file";
     }
   }
-
-  /*
-   * Returns the name of the hdf5 group
-   */
-  private proc getGroup(dsetName : string) : string throws { 
-    var values = dsetName.split('/'); 
-    if values.size < 1 {
-      throw new IllegalArgumentError('The Strings dataset must be in form /{dset}/');
-    } else {
-      return values[1];
-    }
-  }
   
   private proc write1DDistArray(filename: string, mode: int, dsetName: string, A, array_type: DType) throws {
     /* Output is 1 file per locale named <filename>_<loc>, and a dataset
@@ -755,9 +745,12 @@ module GenSymIO {
 
     var warnFlag = false;
     const fields = filename.split(".");
-    var prefix:string;
-    var extension:string;
-    var group:string;
+    var prefix: string;
+    var extension: string;
+    var group: string;
+    if isStringsDataset(array_type) {
+      group = getGroup(dsetName);	
+    }
 
     if fields.size == 1 || fields[fields.domain.high].count(pathSep) > 0 {
       prefix = filename;
@@ -802,18 +795,15 @@ module GenSymIO {
         if file_id < 0 { // Negative file_id means error
           throw new owned FileNotFoundError();
         }
-          /*
-           * If DType is UInt8, need to create strings_array group to enable read/load with the
-           * Arkouda infrastructure. The strings_array group contains two datasets: (1) segments, 
-           * which are the indices for the string values embedded in the string binary and (2)
-           * values, which are the corresponding string values within a null-delimited bytes object
-           */ 
-           if array_type == DType.UInt8 {
-             group = getGroup(dsetName);
-             var group_id = C_HDF5.H5Gcreate2(file_id, "/%s".format(group).c_str(), 
-                              C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
-             C_HDF5.H5Gclose(group_id);
-        }
+	    /*
+	     * If DType is UInt8, need to create Strings group to enable read/load with the
+	     * Arkouda infrastructure. The strings_array group contains two datasets: (1) segments, 
+	     * which are the indices for the string values embedded in the string binary and (2)
+	     * values, which are the corresponding string values within a null-delimited bytes object
+	     */ 
+	     if isStringsDataset(DType.UInt8) {
+		   prepareStringsGroup(file_id, group);
+	     }
         C_HDF5.H5Fclose(file_id);
       }
     }
@@ -864,7 +854,16 @@ module GenSymIO {
          * the first step in writing the local slice to hdf5 is to verify if this is
          * indeed a strings dataset.
          */
-        if isStringsDataset(array_type) {  
+        if isStringsDataset(array_type) { 
+            /*
+             * If mode == 1, mode is append, and therefore the Strings dataset is 
+             * going to be appended as a set of values and segments array within
+             * a group named after the dataset parameter
+             */
+            if mode == 1 {
+              prepareStringsGroup(myFileID, group);       		
+            }
+
             /*
              * Since this is a strings dataset, there is a possibility that 1..n
              * strings span two neighboring locales; this possibility is checked by
@@ -1002,7 +1001,7 @@ module GenSymIO {
              H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
                                      getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
         }
-        // Close the file now that the pdarray has been written
+        // Close the file now that the 1..n pdarrays have been written
         C_HDF5.H5Fclose(myFileID);
     }
     return warnFlag;
@@ -1095,12 +1094,25 @@ module GenSymIO {
   }
 
   /*
-   * Prepares the HDF5 file to hold a Strings array
+   * Returns the name of the hdf5 group
    */
-  private proc prepareStringsFile(fileId : int) {
-    var group_id = try! C_HDF5.H5Gcreate2(fileId, "/strings_array", 
+  private proc getGroup(dsetName : string) : string throws { 
+    var values = dsetName.split('/'); 
+    if values.size < 1 {
+      throw new IllegalArgumentError('The Strings dataset must be in form /{dset}/');
+    } else {
+      return values[1];
+    }
+  }  
+
+  /*
+   * Creates an HDF5 Group named via the dataset parameter to store the Strings
+   * segments and values pdarrays.
+   */
+  private proc prepareStringsGroup(fileId: int, group: string) throws {
+    var groupId = C_HDF5.H5Gcreate2(fileId, "/%s".format(group).c_str(), 
                C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT); 
-    C_HDF5.H5Gclose(group_id);
+    C_HDF5.H5Gclose(groupId);
   }
 
   /*
