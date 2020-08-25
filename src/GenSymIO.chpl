@@ -17,9 +17,9 @@ module GenSymIO {
   config const SEGARRAY_OFFSET_NAME = "segments";
   config const SEGARRAY_VALUE_NAME = "values";
   config const NULL_STRINGS_VALUE = 0:uint(8);
-  config const APPEND: int = 1;
   config const TRUNCATE: int = 0;
-  
+  config const APPEND: int = 1;
+
   /*
    * Creates a pdarray server-side and returns the SymTab name used to
    * retrieve the pdarray from the SymTab.
@@ -768,7 +768,7 @@ module GenSymIO {
 
     var matchingFilenames = glob(try! "%s_LOCALE*%s".format(prefix, extension));
     // if appending, make sure number of files hasn't changed and all are present
-    if (mode == 1) {
+    if (mode == APPEND) {
       var allexist = true;
       for f in filenames {
         allexist &= try! exists(f);
@@ -776,7 +776,7 @@ module GenSymIO {
       if !allexist || (matchingFilenames.size != filenames.size) {
         throw new owned MismatchedAppendError();
       }
-    } else { // if truncating, create new file per locale
+    } else if mode == TRUNCATE { // if truncating, create new file per locale
       if matchingFilenames.size > 0 {
         warnFlag = true;
       }
@@ -795,6 +795,7 @@ module GenSymIO {
         if file_id < 0 { // Negative file_id means error
           throw new owned FileNotFoundError();
         }
+
 	    /*
 	     * If DType is UInt8, need to create Strings group to enable read/load with the
 	     * Arkouda infrastructure. The strings_array group contains two datasets: (1) segments, 
@@ -804,20 +805,22 @@ module GenSymIO {
 	     if isStringsDataset(DType.UInt8) {
 		   prepareStringsGroup(file_id, group);
 	     }
-        C_HDF5.H5Fclose(file_id);
+         C_HDF5.H5Fclose(file_id);
       }
+    } else {
+    	throw new IllegalArgumentError("The mode %t is invalid".format(mode));
     }
 
     /*
-     * Declare the indices object, which is a globally-scoped PrivateSpace array that
-     * contains the slice index for each locale. Each slice index is used to remove 
-     * the uint(8) characters moved to the previous locale, which is done when a 
-     * string, which is an array of uint(8) chars, spans two locales.
+     * Declare the indices object, which applies to a Strings data and is a globally-scoped 
+     * PrivateSpace array that contains the slice index for each locale. Each slice index 
+     * is used to remove the uint(8) characters moved to the previous locale, which is done 
+     * when a string, which is an array of uint(8) chars, spans two locales.
      */
     var indices: [PrivateSpace] int;
     
     /*
-     * If this is a strings dataset, loop through all locales and set the slice indices, 
+     * If this is a Strings dataset, loop through all locales and set the slice indices, 
      * which are used to remove uint(8) characters from the locale slice that are part 
      * of a string that belongs to the previous locale in the pdarray list of locales.
      */
@@ -849,23 +852,23 @@ module GenSymIO {
         use C_HDF5.HDF5_WAR;
 
         /*
-         * A strings dataset is handled differently because a string can span multiple
+         * A Strings dataset is handled differently because a string can span multiple
          * locales since each string is composed of 1..n uint(8) characters. Accodingly,
          * the first step in writing the local slice to hdf5 is to verify if this is
          * indeed a strings dataset.
          */
         if isStringsDataset(array_type) { 
             /*
-             * If mode == 1, mode is append, and therefore the Strings dataset is 
-             * going to be appended as a set of values and segments array within
+             * If mode == APPPEND, the Strings dataset is going to be appended 
+             * to an hdf5 file as a set of values and segments array within
              * a group named after the dataset parameter
              */
-            if mode == 1 {
+            if mode == APPEND {
               prepareStringsGroup(myFileID, group);       		
             }
 
             /*
-             * Since this is a strings dataset, there is a possibility that 1..n
+             * Since this is a Strings dataset, there is a possibility that 1..n
              * strings span two neighboring locales; this possibility is checked by
              * seeing if the final character in the local slice is the null uint(8)
              * character. If it is not, then the last string is only a partial string.
@@ -1051,14 +1054,14 @@ module GenSymIO {
     }
     return charList;
   }
-  
+ 
   /*
    * Adjusts the list of uint(8) characters by removing leading chars
    * that correspond to 1..n chars that compose a string started in the
    * previous locale by slicing those chars out and returning a new list.
    */
   private proc adjustForStringSlices(sliceIndex : int, 
-                                   charList : list(uint(8))) : list(uint(8)){
+                                charList : list(uint(8))) : list(uint(8)){
     var valuesList: list(uint(8), parSafe=true);
     for value in charList(sliceIndex..charList.size-1) {
       valuesList.append(value:uint(8));
@@ -1106,8 +1109,8 @@ module GenSymIO {
   }  
 
   /*
-   * Creates an HDF5 Group named via the dataset parameter to store the Strings
-   * segments and values pdarrays.
+   * Creates an HDF5 Group named via the group parameter to store a String
+   * object's segments and values pdarrays.
    */
   private proc prepareStringsGroup(fileId: int, group: string) throws {
     var groupId = C_HDF5.H5Gcreate2(fileId, "/%s".format(group).c_str(), 
@@ -1116,8 +1119,8 @@ module GenSymIO {
   }
 
   /*
-   * Returns a boolean indicating whether the data set is a Strings values 
-   * dataset corresponding to a Strings array save operation.
+   * Returns a boolean indicating whether the data set is a Strings object 
+   * corresponding to a Strings array save operation.
    */
   private proc isStringsDataset(datasetType: DType) : bool {
     return datasetType == DType.UInt8;
