@@ -750,7 +750,7 @@ module GenSymIO {
     var group: string;
 
     if isStringsDataset(array_type) {
-      group = getGroup(dsetName);	
+      group = getGroup(dsetName);
     }
 
     if fields.size == 1 || fields[fields.domain.high].count(pathSep) > 0 {
@@ -865,7 +865,7 @@ module GenSymIO {
              * a group named after the dataset parameter
              */
             if mode == APPEND {
-              prepareStringsGroup(myFileID, group);       		
+              prepareStringsGroup(myFileID, group);
             }
 
             /*
