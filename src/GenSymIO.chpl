@@ -748,6 +748,7 @@ module GenSymIO {
     var prefix: string;
     var extension: string;
     var group: string;
+
     if isStringsDataset(array_type) {
       group = getGroup(dsetName);	
     }
@@ -796,19 +797,19 @@ module GenSymIO {
           throw new owned FileNotFoundError();
         }
 
-	    /*
-	     * If DType is UInt8, need to create Strings group to enable read/load with the
-	     * Arkouda infrastructure. The strings_array group contains two datasets: (1) segments, 
-	     * which are the indices for the string values embedded in the string binary and (2)
-	     * values, which are the corresponding string values within a null-delimited bytes object
-	     */ 
-	     if isStringsDataset(DType.UInt8) {
-		   prepareStringsGroup(file_id, group);
-	     }
+        /*
+         * If DType is UInt8, need to create Strings group to enable read/load with the
+         * Arkouda infrastructure. The strings_array group contains two datasets: (1) segments, 
+         * which are the indices for the string values embedded in the string binary and (2)
+         * values, which are the corresponding string values within a null-delimited bytes object
+         */ 
+         if isStringsDataset(DType.UInt8) {
+           prepareStringsGroup(file_id, group);
+         }
          C_HDF5.H5Fclose(file_id);
       }
     } else {
-    	throw new IllegalArgumentError("The mode %t is invalid".format(mode));
+        throw new IllegalArgumentError("The mode %t is invalid".format(mode));
     }
 
     /*
