@@ -30,6 +30,7 @@ module MsgProcessing
     public use JoinEqWithDTMsg;
     public use RegistrationMsg;
     public use ArraySetopsMsg;
+    public use KExtremeMsg;
     
     /* 
     Parse, execute, and respond to a create message 
