@@ -244,8 +244,8 @@ class IOTest(ArkoudaTest):
 
     def testSaveStringsDataset(self):
         # Create, save, and load Strings dataset
-        strings_array = ak.array(['string {}'.format(num) for num in list(range(1,11))])
-        strings_array.save('{}/strings-test'.format(IOTest.io_test_dir), dataset='strings')
+        strings_array = ak.array(['string{}'.format(num) for num in list(range(1,11))])
+        foon = strings_array.save('{}/strings-test'.format(IOTest.io_test_dir), dataset='strings')
         r_strings_array = ak.load_all('{}/strings-test'.format(IOTest.io_test_dir))['strings']
 
         self.assertEqual(len(strings_array), len(r_strings_array))
@@ -278,11 +278,11 @@ class IOTest(ArkoudaTest):
         
     def testAppendStringsDataset(self):
         strings_array = ak.array(['string {}'.format(num) for num in list(range(1,11))])
-        strings_array.save('{}/strings-test'.format(IOTest.io_test_dir), dataset='strings')
-        strings_array.save('{}/strings-test'.format(IOTest.io_test_dir), 
+        strings_array.save('{}/append-strings-test'.format(IOTest.io_test_dir), dataset='strings')
+        strings_array.save('{}/append-strings-test'.format(IOTest.io_test_dir), 
                            dataset='strings-dupe', mode='append')
 
-        r_all_strings = ak.load_all('{}/strings-test'.format(IOTest.io_test_dir))  
+        r_all_strings = ak.load_all('{}/append-strings-test'.format(IOTest.io_test_dir))  
         r_strings = r_all_strings['strings']
         r_strings_dupe = r_all_strings['strings-dupe']   
 
@@ -291,14 +291,14 @@ class IOTest(ArkoudaTest):
 
     def testAppendMixedStringsDataset(self):
         strings_array = ak.array(['string {}'.format(num) for num in list(range(1,11))])
-        strings_array.save('{}/multi-type-test'.format(IOTest.io_test_dir), 
+        strings_array.save('{}/append-multi-type-test'.format(IOTest.io_test_dir), 
                            dataset='m_strings') 
         m_floats =  ak.array([x / 10.0 for x in range(0, 10)])      
         m_ints = ak.array(list(range(0, 10)))
         ak.save_all({'m_floats' : m_floats,
                      'm_ints' : m_ints}, 
-                     '{}/multi-type-test'.format(IOTest.io_test_dir), mode='append')
-        r_mixed = ak.load_all('{}/multi-type-test'.format(IOTest.io_test_dir))
+                     '{}/append-multi-type-test'.format(IOTest.io_test_dir), mode='append')
+        r_mixed = ak.load_all('{}/append-multi-type-test'.format(IOTest.io_test_dir))
         for i in list(range(0,10)):
             self.assertEqual(strings_array[i], r_mixed['m_strings'][i])
         self.assertEqual(m_floats.all(), r_mixed['m_floats'].all())

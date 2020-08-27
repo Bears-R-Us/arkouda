@@ -199,7 +199,7 @@ def get_datasets(filename : str) -> List[str]:
     datasets = [line.split()[0] for line in rep_msg.splitlines()]
     return datasets
 
-def load_all(path_prefix : str, group : str=None) -> Mapping[str,pdarray]:
+def load_all(path_prefix : str) -> Mapping[str,pdarray]:
     """
     Load multiple pdarray previously saved with ``save_all()``.
 
@@ -207,8 +207,6 @@ def load_all(path_prefix : str, group : str=None) -> Mapping[str,pdarray]:
     ----------
     path_prefix : str
         Filename prefix used to save the original pdarray
-    group : str
-        name of the hdf5 group, defaults to None
 
     Returns
     -------
@@ -221,10 +219,7 @@ def load_all(path_prefix : str, group : str=None) -> Mapping[str,pdarray]:
     """
     prefix, extension = os.path.splitext(path_prefix)
     firstname = "{}_LOCALE0{}".format(prefix, extension)
-    if group:
-        firstname = ''.join([firstname, '/', group])
-    return {dataset: load(path_prefix, dataset=dataset) for \
-                                      dataset in get_datasets(firstname)}
+    return {dataset: load(path_prefix, dataset=dataset) for dataset in get_datasets(firstname)}
 
 def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : str, 
              names : List[str]=None, mode : str='truncate') -> None:
