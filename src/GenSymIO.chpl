@@ -1,6 +1,7 @@
 module GenSymIO {
   use HDF5;
   use IO;
+  use Path;
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
   use ServerErrorStrings;
@@ -16,7 +17,9 @@ module GenSymIO {
   config const SEGARRAY_OFFSET_NAME = "segments";
   config const SEGARRAY_VALUE_NAME = "values";
   config const NULL_STRINGS_VALUE = 0:uint(8);
-  
+  config const TRUNCATE: int = 0;
+  config const APPEND: int = 1;
+
   /*
    * Creates a pdarray server-side and returns the SymTab name used to
    * retrieve the pdarray from the SymTab.
@@ -732,20 +735,8 @@ module GenSymIO {
       return "wrote array to file";
     }
   }
-
-  /*
-   * Returns the name of the hdf5 group
-   */
-  private inline proc getGroup(dsetName : string) : string throws { 
-    var values = dsetName.split('/'); 
-    if values.size < 1 {
-      throw new IllegalArgumentError('The Strings dataset must be in form /{dset}/');
-    } else {
-      return values[1];
-    }
-  }
   
-  private inline proc write1DDistArray(filename: string, mode: int, dsetName: string, A, array_type: DType) throws {
+  private proc write1DDistArray(filename: string, mode: int, dsetName: string, A, array_type: DType) throws {
     /* Output is 1 file per locale named <filename>_<loc>, and a dataset
        named <dsetName> is created in each one. If mode==1 (append) and the
        correct number of files already exists, then a new dataset named
@@ -754,11 +745,15 @@ module GenSymIO {
 
     var warnFlag = false;
     const fields = filename.split(".");
-    var prefix:string;
-    var extension:string;
-    var group:string;
+    var prefix: string;
+    var extension: string;
+    var group: string;
 
-    if fields.size == 1 {
+    if isStringsDataset(array_type) {
+      group = getGroup(dsetName);
+    }
+
+    if fields.size == 1 || fields[fields.domain.high].count(pathSep) > 0 {
       prefix = filename;
       extension = "";
     } else {
@@ -774,7 +769,7 @@ module GenSymIO {
 
     var matchingFilenames = glob(try! "%s_LOCALE*%s".format(prefix, extension));
     // if appending, make sure number of files hasn't changed and all are present
-    if (mode == 1) {
+    if (mode == APPEND) {
       var allexist = true;
       for f in filenames {
         allexist &= try! exists(f);
@@ -782,7 +777,7 @@ module GenSymIO {
       if !allexist || (matchingFilenames.size != filenames.size) {
         throw new owned MismatchedAppendError();
       }
-    } else { // if truncating, create new file per locale
+    } else if mode == TRUNCATE { // if truncating, create new file per locale
       if matchingFilenames.size > 0 {
         warnFlag = true;
       }
@@ -801,36 +796,36 @@ module GenSymIO {
         if file_id < 0 { // Negative file_id means error
           throw new owned FileNotFoundError();
         }
-          /*
-           * If DType is UInt8, need to create strings_array group to enable read/load with the
-           * Arkouda infrastructure. The strings_array group contains two datasets: (1) segments, 
-           * which are the indices for the string values embedded in the string binary and (2)
-           * values, which are the corresponding string values within a null-delimited bytes object
-           */ 
-           if array_type == DType.UInt8 {
-             group = getGroup(dsetName);
-             var group_id = C_HDF5.H5Gcreate2(file_id, "/%s".format(group).c_str(), 
-                              C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
-             C_HDF5.H5Gclose(group_id);
-        }
-        C_HDF5.H5Fclose(file_id);
+
+        /*
+         * If DType is UInt8, need to create Strings group to enable read/load with the
+         * Arkouda infrastructure. The strings_array group contains two datasets: (1) segments, 
+         * which are the indices for the string values embedded in the string binary and (2)
+         * values, which are the corresponding string values within a null-delimited bytes object
+         */ 
+         if isStringsDataset(DType.UInt8) {
+           prepareStringsGroup(file_id, group);
+         }
+         C_HDF5.H5Fclose(file_id);
       }
+    } else {
+        throw new IllegalArgumentError("The mode %t is invalid".format(mode));
     }
 
     /*
-     * Declare the indices object, which is a globally-scoped PrivateSpace array that
-     * contains the slice index for each locale. Each slice index is used to remove 
-     * the uint(8) characters moved to the previous locale, which is done when a 
-     * string, which is an array of uint(8) chars, spans two locales.
+     * Declare the indices object, which applies to a Strings data and is a globally-scoped 
+     * PrivateSpace array that contains the slice index for each locale. Each slice index 
+     * is used to remove the uint(8) characters moved to the previous locale, which is done 
+     * when a string, which is an array of uint(8) chars, spans two locales.
      */
     var indices: [PrivateSpace] int;
     
     /*
-     * If this is a strings dataset, loop through all locales and set the slice indices, 
+     * If this is a Strings dataset, loop through all locales and set the slice indices, 
      * which are used to remove uint(8) characters from the locale slice that are part 
      * of a string that belongs to the previous locale in the pdarray list of locales.
      */
-    if isStringsDataset(dsetName) {
+    if isStringsDataset(array_type) {
       coforall (loc, idx) in zip(A.targetLocales(), 
                                        filenames.domain) with(ref indices) do on loc {
       if idx < A.targetLocales().size-1 {
@@ -858,14 +853,23 @@ module GenSymIO {
         use C_HDF5.HDF5_WAR;
 
         /*
-         * A strings dataset is handled differently because a string can span multiple
+         * A Strings dataset is handled differently because a string can span multiple
          * locales since each string is composed of 1..n uint(8) characters. Accodingly,
          * the first step in writing the local slice to hdf5 is to verify if this is
          * indeed a strings dataset.
          */
-        if isStringsDataset(dsetName) {  
+        if isStringsDataset(array_type) { 
             /*
-             * Since this is a strings dataset, there is a possibility that 1..n
+             * If mode == APPPEND, the Strings dataset is going to be appended 
+             * to an hdf5 file as a set of values and segments array within
+             * a group named after the dataset parameter
+             */
+            if mode == APPEND {
+              prepareStringsGroup(myFileID, group);
+            }
+
+            /*
+             * Since this is a Strings dataset, there is a possibility that 1..n
              * strings span two neighboring locales; this possibility is checked by
              * seeing if the final character in the local slice is the null uint(8)
              * character. If it is not, then the last string is only a partial string.
@@ -1001,7 +1005,7 @@ module GenSymIO {
              H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
                                      getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
         }
-        // Close the file now that the pdarray has been written
+        // Close the file now that the 1..n pdarrays have been written
         C_HDF5.H5Fclose(myFileID);
     }
     return warnFlag;
@@ -1012,7 +1016,7 @@ module GenSymIO {
    * indices parameter. Note: the slice index will be used to remove characters from 
    * the current locale that correspond to the last string of the previous locale.
    */
-  private inline proc generateSliceIndex(idx : int, indices, A) {
+  private proc generateSliceIndex(idx : int, indices, A) {
     on Locales[idx+1] {
       const locDom = A.localSubdomain();
       var sliceIndex = -1;
@@ -1044,21 +1048,21 @@ module GenSymIO {
    * Converts a local slice into a uint(8) list for use in methods that add
    * or remove entries from the resulting list.
    */
-  private inline proc convertLocalSliceToList(A, locDom) : list(uint(8)) {
+  private proc convertLocalSliceToList(A, locDom) : list(uint(8)) {
     var charList: list(uint(8), parSafe=true);
     for value in A.localSlice(locDom) {
      charList.append(value:uint(8));
     }
     return charList;
   }
-  
+ 
   /*
    * Adjusts the list of uint(8) characters by removing leading chars
    * that correspond to 1..n chars that compose a string started in the
    * previous locale by slicing those chars out and returning a new list.
    */
-  private inline proc adjustForStringSlices(sliceIndex : int, 
-                                   charList : list(uint(8))) : list(uint(8)){
+  private proc adjustForStringSlices(sliceIndex : int, 
+                                charList : list(uint(8))) : list(uint(8)){
     var valuesList: list(uint(8), parSafe=true);
     for value in charList(sliceIndex..charList.size-1) {
       valuesList.append(value:uint(8));
@@ -1071,7 +1075,7 @@ module GenSymIO {
    * of each string within a uint(8) array. The segmentsList will be 
    * written to the hdf5 file as the segments array.
    */
-  private inline proc generateSegmentsList(valuesList) : list(int) {
+  private proc generateSegmentsList(valuesList) : list(int) {
     var segmentsList: list(int, parSafe=true);
 
     /*
@@ -1094,19 +1098,32 @@ module GenSymIO {
   }
 
   /*
-   * Prepares the HDF5 file to hold a Strings array
+   * Returns the name of the hdf5 group
    */
-  private inline proc prepareStringsFile(fileId : int) {
-    var group_id = try! C_HDF5.H5Gcreate2(fileId, "/strings_array", 
+  private proc getGroup(dsetName : string) : string throws { 
+    var values = dsetName.split('/'); 
+    if values.size < 1 {
+      throw new IllegalArgumentError('The Strings dataset must be in form /{dset}/');
+    } else {
+      return values[1];
+    }
+  }  
+
+  /*
+   * Creates an HDF5 Group named via the group parameter to store a String
+   * object's segments and values pdarrays.
+   */
+  private proc prepareStringsGroup(fileId: int, group: string) throws {
+    var groupId = C_HDF5.H5Gcreate2(fileId, "/%s".format(group).c_str(), 
                C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT); 
-    C_HDF5.H5Gclose(group_id);
+    C_HDF5.H5Gclose(groupId);
   }
 
   /*
-   * Returns a boolean indicating whether the data set is a Strings values 
-   * dataset corresponding to a Strings array save operation.
+   * Returns a boolean indicating whether the data set is a Strings object 
+   * corresponding to a Strings array save operation.
    */
-  private inline proc isStringsDataset(dsetName: string) : bool {
-    return dsetName.find(needle="strings_array/values") > -1;
+  private proc isStringsDataset(datasetType: DType) : bool {
+    return datasetType == DType.UInt8;
   }
 }

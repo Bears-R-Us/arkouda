@@ -6,7 +6,7 @@ from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
 
 __all__ = ["pdarray", "info", "any", "all", "is_sorted", "sum", "prod", "min", "max",
-           "argmin", "argmax", "mean", "var", "std"]
+           "argmin", "argmax", "mean", "var", "std", "mink", "maxk", "argmink", "argmaxk"]
 
 def parse_single_value(msg : str):
     """
@@ -471,6 +471,33 @@ class pdarray:
         """
         return std(self, ddof=ddof)
 
+    def mink(self, k):
+        """
+        Compute the minimum "k" values.
+        """
+        return mink(self,k)
+
+
+    def maxk(self, k):
+        """
+        Compute the maximum "k" values.
+        """
+        return maxk(self,k)
+
+    def argmink(self, k):
+        """
+        Compute the minimum "k" values.
+        """
+        return argmink(self,k)
+
+
+    def argmaxk(self, k):
+        """
+        Compute the maximum "k" values.
+        """
+        return argmaxk(self,k)
+
+    
     def to_ndarray(self):
         """
         Convert the array to a np.ndarray, transferring array data from the
@@ -668,6 +695,7 @@ class pdarray:
             raise ValueError(e)
         return generic_msg("tohdf {} {} {} {} {}".\
                            format(self.name, dataset, m, json_array, self.dtype))
+
 
 
 # creates pdarray object
@@ -1103,3 +1131,189 @@ def std(pda : pdarray, ddof : int=0) -> float:
     if not isinstance(pda, pdarray):
         raise TypeError("must be pdarray {}".format(pda))
     return np.sqrt(var(pda, ddof=ddof))
+
+def mink(pda, k):
+    """
+    Find the `k` minimum values of an array.
+
+    Returns the smallest `k` values of an array, sorted
+
+    Parameters
+    ----------
+    pda : pdarray
+        Input array.
+    k : integer
+        The desired count of minimum values to be returned by the output.
+
+    Returns
+    -------
+    pdarray
+        The minimum `k` values from pda
+
+    Notes
+    -----
+    This call is equivalent in value to:
+    
+        a[ak.argsort(a)[:k]]
+    
+    and generally outperforms this operation.
+
+    This reduction will see a significant drop in performance as `k` grows
+    beyond a certain value. This value is system dependent, but generally
+    about a `k` of 5 million is where performance degredation has been observed.
+    
+    Examples
+    --------
+    >>> A = ak.array([10,5,1,3,7,2,9,0])
+    >>> ak.mink(A, 3)
+    array([0, 1, 2])
+    """
+    if isinstance(pda, pdarray):
+        if k == 0:
+            return []
+        if pda.size == 0:
+            raise TypeError("must be a non-empty pdarray {} of type int or float".format(pda))
+        repMsg = generic_msg("mink {} {} {}".format(pda.name, k, False))
+        return create_pdarray(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+
+def maxk(pda, k):
+    """
+    Find the `k` maximum values of an array.
+
+    Returns the largest `k` values of an array, sorted
+
+    Parameters
+    ----------
+    pda : pdarray
+        Input array.
+    k : integer
+        The desired count of maximum values to be returned by the output.
+
+    Returns
+    -------
+    pdarray, int
+        The maximum `k` values from pda
+
+    Notes
+    -----
+    This call is equivalent in value to:
+    
+        a[ak.argsort(a)[k:]]
+    
+    and generally outperforms this operation.
+
+    This reduction will see a significant drop in performance as `k` grows
+    beyond a certain value. This value is system dependent, but generally
+    about a `k` of 5 million is where performance degredation has been observed.
+
+
+    Examples
+    --------
+    >>> A = ak.array([10,5,1,3,7,2,9,0])
+    >>> ak.maxk(A, 3)
+    array([7, 9, 10])
+    """
+    if isinstance(pda, pdarray):
+        if k == 0:
+            return []
+        if pda.size == 0:
+            raise TypeError("must be a non-empty pdarray {} of type int or float".format(pda))
+        repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, False))
+        return create_pdarray(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+
+def argmink(pda, k):
+    """
+    Find the `k` minimum values of an array.
+
+    Returns the smallest `k` values of an array, sorted
+
+    Parameters
+    ----------
+    pda : pdarray
+        Input array.
+    k : integer
+        The desired count of minimum values to be returned by the output.
+
+    Returns
+    -------
+    pdarray, int
+        The indcies of the minimum `k` values from pda
+
+    Notes
+    -----
+    This call is equivalent in value to:
+    
+        ak.argsort(a)[:k]
+    
+    and generally outperforms this operation.
+
+    This reduction will see a significant drop in performance as `k` grows
+    beyond a certain value. This value is system dependent, but generally
+    about a `k` of 5 million is where performance degredation has been observed.
+
+    Examples
+    --------
+    >>> A = ak.array([10,5,1,3,7,2,9,0])
+    >>> ak.argmink(A, 3)
+    array([7, 2, 5])
+    """
+    if isinstance(pda, pdarray):
+        if k == 0:
+            return []
+        if pda.size == 0:
+            raise TypeError("must be a non-empty pdarray {} of type int or float".format(pda))
+        repMsg = generic_msg("mink {} {} {}".format(pda.name, k, True))
+        return create_pdarray(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+
+def argmaxk(pda, k):
+    """
+    Find the `k` maximum values of an array.
+
+    Returns the largest `k` values of an array, sorted
+
+    Parameters
+    ----------
+    pda : pdarray
+        Input array.
+    k : integer
+        The desired count of maximum values to be returned by the output.
+
+    Returns
+    -------
+    pdarray, int
+        The indices of the maximum `k` values from pda
+
+    Notes
+    -----
+    This call is equivalent in value to:
+    
+        ak.argsort(a)[k:]
+    
+    and generally outperforms this operation.
+
+    This reduction will see a significant drop in performance as `k` grows
+    beyond a certain value. This value is system dependent, but generally
+    about a `k` of 5 million is where performance degredation has been observed.
+
+
+    Examples
+    --------
+    >>> A = ak.array([10,5,1,3,7,2,9,0])
+    >>> ak.argmaxk(A, 3)
+    array([4, 6, 0])
+    """
+    if isinstance(pda, pdarray):
+        if k == 0:
+            return []
+        if pda.size == 0:
+            raise TypeError("must be a non-empty pdarray {} of type int or float".format(pda))
+        repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, True))
+        return create_pdarray(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))

@@ -724,7 +724,7 @@ class Strings:
             The name of the Strings dataset to be written, defaults to strings_array
         mode : str {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
-            If 'append', attempt to create new dataset in existing files.
+            If 'append', attempt to create a new Strings dataset in existing files.
 
         Returns
         -------
@@ -739,10 +739,9 @@ class Strings:
         Notes
         -----
         Important implementation notes: (1) Strings state is saved as two datasets
-        within an hdf5 group: offsets AKA segments and values (2) save logic is
-        delegated to pdarrayIO.save_all and (3) offsets are generated server-side 
-        from the values pdarray
-      
+        within an hdf5 group named via the datasets parameter: offsets AKA segments 
+        and values (2) save logic is delegated to pdarrayIO.save_all and (3) offsets 
+        are generated server-side from the values pdarray
         """
         arkouda.save_all(columns=[self.bytes], prefix_path=prefix_path,
                 names=['/{}/values'.format(dataset)], mode=mode)
