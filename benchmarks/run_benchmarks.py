@@ -125,6 +125,11 @@ def main():
             with open (comp_file, 'r') as f:
                 out = f.read()
             add_to_dat('comp-time', out, config_dat_dir, args.graph_infra)
+        emitted_code_file = os.getenv('ARKOUDA_EMITTED_CODE_SIZE_FILE', '')
+        if os.path.isfile(emitted_code_file):
+            with open (emitted_code_file, 'r') as f:
+                out = f.read()
+            add_to_dat('emitted-code-size', out, config_dat_dir, args.graph_infra)
         generate_graphs(args)
 
 if __name__ == '__main__':
