@@ -167,10 +167,7 @@ class Strings:
         return create_pdarray(repMsg)
 
     def __eq__(self, other) -> bool:
-        if not isinstance(other, Strings):
-            return False
-        else:
-            return self.binop(other, "==")
+        return self.binop(other, "==")
 
     def __ne__(self, other : object) -> bool:
         return self.binop(other, "!=")
@@ -739,9 +736,12 @@ class Strings:
         Notes
         -----
         Important implementation notes: (1) Strings state is saved as two datasets
-        within an hdf5 group named via the datasets parameter: offsets AKA segments 
+        within an hdf5 group named via the dataset parameter: offsets as segments 
         and values (2) save logic is delegated to pdarrayIO.save_all and (3) offsets 
         are generated server-side from the values pdarray
-        """
-        arkouda.save_all(columns=[self.bytes], prefix_path=prefix_path,
-                names=['/{}/values'.format(dataset)], mode=mode)
+        """       
+        # The STRINGS preface is needed to identify both the values and segments 
+        # arrays as part of the Strings object to be written to hdf5
+        arkouda.save_all(columns=[self.bytes, self.offsets], prefix_path=prefix_path,
+                names=['STRINGS/{}/values'.format(dataset),
+                       'STRINGS/{}/segments'.format(dataset)], mode=mode)
