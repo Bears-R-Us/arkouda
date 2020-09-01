@@ -737,11 +737,10 @@ class Strings:
         -----
         Important implementation notes: (1) Strings state is saved as two datasets
         within an hdf5 group named via the dataset parameter: offsets as segments 
-        and values (2) save logic is delegated to pdarrayIO.save_all and (3) offsets 
-        are generated server-side from the values pdarray
+        and values (2) save logic is delegated to pdarrayIO.save_all
         """       
-        # The STRINGS preface is needed to identify both the values and segments 
-        # arrays as part of the Strings object to be written to hdf5
+        # The STRINGS prefix is needed to identify both the values and segments 
+        # arrays as part of the same Strings object to be written to hdf5
         arkouda.save_all(columns=[self.bytes, self.offsets], prefix_path=prefix_path,
                 names=['STRINGS/{}/values'.format(dataset),
                        'STRINGS/{}/segments'.format(dataset)], mode=mode)
