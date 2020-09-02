@@ -245,12 +245,10 @@ class IOTest(ArkoudaTest):
     def testSaveStringsDataset(self):
         # Create, save, and load Strings dataset
         strings_array = ak.array(['string{}'.format(num) for num in list(range(1,11))])
-        foon = strings_array.save('{}/strings-test'.format(IOTest.io_test_dir), dataset='strings')
-        r_strings_array = ak.load_all('{}/strings-test'.format(IOTest.io_test_dir))['strings']
-
-        self.assertEqual(len(strings_array), len(r_strings_array))
-        for i in list(range(0,10)):
-            self.assertEqual(strings_array[i], r_strings_array[i])
+        strings_array.save('{}/strings-test'.format(IOTest.io_test_dir), dataset='strings')
+        r_strings_array = ak.load('{}/strings-test'.format(IOTest.io_test_dir), 
+                                  dataset='strings')
+        self.assertTrue((strings_array == r_strings_array).all())
 
         # Read a part of a saved Strings dataset from one hdf5 file
         r_strings_subset = ak.read_all(filenames='{}/strings-test_LOCALE0'.\
@@ -271,23 +269,29 @@ class IOTest(ArkoudaTest):
                      'm_ints' : m_ints}, 
                      '{}/multi-type-test'.format(IOTest.io_test_dir))
         r_mixed = ak.load_all('{}/multi-type-test'.format(IOTest.io_test_dir))
-        for i in list(range(0,10)):
-            self.assertEqual(strings_array[i], r_mixed['m_strings'][i])
-        self.assertEqual(m_floats.all(), r_mixed['m_floats'].all())
-        self.assertEqual(m_ints.all(), r_mixed['m_ints'].all())
-        
+        self.assertTrue((strings_array == r_mixed['m_strings']).all())
+        self.assertTrue((m_floats == r_mixed['m_floats']).all())
+        self.assertTrue((m_ints == r_mixed['m_ints']).all())
+
+        r_floats = ak.load('{}/multi-type-test'.format(IOTest.io_test_dir), 
+                           dataset='m_floats')
+        self.assertTrue((m_floats == r_floats).all())
+        r_strings = ak.load('{}/multi-type-test'.format(IOTest.io_test_dir), 
+                            dataset='m_strings')
+        self.assertTrue((strings_array == r_strings).all())
+
     def testAppendStringsDataset(self):
         strings_array = ak.array(['string {}'.format(num) for num in list(range(1,11))])
-        strings_array.save('{}/append-strings-test'.format(IOTest.io_test_dir), dataset='strings')
+        strings_array.save('{}/append-strings-test'.format(IOTest.io_test_dir), 
+                           dataset='strings')
         strings_array.save('{}/append-strings-test'.format(IOTest.io_test_dir), 
                            dataset='strings-dupe', mode='append')
 
-        r_all_strings = ak.load_all('{}/append-strings-test'.format(IOTest.io_test_dir))  
-        r_strings = r_all_strings['strings']
-        r_strings_dupe = r_all_strings['strings-dupe']   
-
-        for (rs, rsd) in zip(r_strings, r_strings_dupe):  
-            self.assertEqual(rs, rsd)
+        r_strings = ak.load('{}/append-strings-test'.format(IOTest.io_test_dir), 
+                                 dataset='strings')
+        r_strings_dupe = ak.load('{}/append-strings-test'.format(IOTest.io_test_dir), 
+                                 dataset='strings-dupe')  
+        self.assertTrue((r_strings == r_strings_dupe).all())
 
     def testAppendMixedStringsDataset(self):
         strings_array = ak.array(['string {}'.format(num) for num in list(range(1,11))])
@@ -299,10 +303,10 @@ class IOTest(ArkoudaTest):
                      'm_ints' : m_ints}, 
                      '{}/append-multi-type-test'.format(IOTest.io_test_dir), mode='append')
         r_mixed = ak.load_all('{}/append-multi-type-test'.format(IOTest.io_test_dir))
-        for i in list(range(0,10)):
-            self.assertEqual(strings_array[i], r_mixed['m_strings'][i])
-        self.assertEqual(m_floats.all(), r_mixed['m_floats'].all())
-        self.assertEqual(m_ints.all(), r_mixed['m_ints'].all())
+      
+        self.assertTrue((strings_array == r_mixed['m_strings']).all())   
+        self.assertTrue((m_floats == r_mixed['m_floats']).all())
+        self.assertTrue((m_ints == r_mixed['m_ints']).all())
 
     def tearDown(self):
         super(IOTest, self).tearDown()

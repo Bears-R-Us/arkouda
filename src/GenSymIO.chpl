@@ -771,6 +771,11 @@ module GenSymIO {
       var extension: string;
       var group: string;
 
+      /*
+       * If this is either a Strings values or Strings segments dataset, 
+       * generate the group name which will be used to create the hdf5
+       * group used to organize the Strings values and segments entries.
+       */
       if isStringsValuesDataset(dsetName) || isStringsSegmentsDataset(dsetName) {
           var rawGroupName = dsetName.split('STRINGS');
           group = getGroup(rawGroupName[1]);
@@ -807,8 +812,10 @@ module GenSymIO {
           }
 
           for loc in 0..#A.targetLocales().size {
-              // when done with a coforall over locales, only locale 0's file gets created correctly.
-              // The other locales' files have corrupted headers.
+              /*
+               * When done with a coforall over locales, only locale 0's file gets created
+               * correctly, whereas hhe other locales' files have corrupted headers.
+               */
               //filenames[loc] = try! "%s_LOCALE%s%s".format(prefix, loc:string, extension);
               var file_id: C_HDF5.hid_t;
 
@@ -826,13 +833,18 @@ module GenSymIO {
               /*
                * If DType is UInt8, need to create Strings group to enable read/load with the
                * Arkouda infrastructure. The Strings group contains two datasets for each locale
-               * and therefore each hdf5 file: (1) segments, which are the indices for the string 
-               * values embedded in the string binary and (2) values, which are the corresponding 
-               * string values within a null-delimited bytes object.
+               * and therefore each hdf5 file: (1) segments, which are the indices for the 
+               * Strings values embedded in the string binary and (2) values, which are the 
+               * corresponding Strings values within a null-delimited Chapel bytes object.
                */
               if isStringsValuesDataset(dsetName) {
                   prepareStringsGroup(file_id, group);
               }
+
+              /*
+               * Close the file now that it has been created and, if applicable, the 
+               * Strings group derived from the dsetName has been created.
+               */
               C_HDF5.H5Fclose(file_id);
            }
        } else {
@@ -840,32 +852,32 @@ module GenSymIO {
        }
 
            /*
-            * The indices object, which applies to a Strings data and is a 
+            * The indices object, which applies to a Strings values data and is a 
             * globally-scoped PrivateSpace array, contains the slice index for each 
-            * locale. Each slice index is used to remove the uint(8) characters moved to 
-            * the previous locale, which is done when a string, which is an array of 
-            * uint(8) chars, spans two locales.
+            * locale. Each slice index is used to remove the uint(8) characters moved 
+            * to the previous locale, which is done when a string, which is an array
+            * of int(8) chars, spans two locales.
             */
            var indices: [PrivateSpace] int;
-
+         
            /*
-            * The localeValuesFileIndexStart and localeValuesFileIndexEnd are globally-
-            * scoped PrivateSpace arrays, which contain the start and end index values
-            * for the Strings values array as written to hdf5. The start index is normally
-            * zero and the endIndex is the length of the String values array chunk written
-            * to each hdf5 file.
-            */
-           var localeValuesFileIndexStart: [PrivateSpace] int;
-           var localeValuesFileIndexEnd: [PrivateSpace] int;
-           
-           /*
-            * The localeValuesIndexStart and localeVlauesIndexEnd are globally-scoped
+            * The localeValuesIndexStart and localeValuesIndexEnd are globally-scoped
             * PrivateSpace arrays that represent the global start and end index for 
-            * the String values chunk written to hdf5. In other words, the start and end
-            * indices relative to the entire Strings object as written to hdf5.
+            * the Strings values chunk written to each hdf5 file. In other words, 
+            * the start and end indices relative to the entire Strings values object 
+            * as written to the collection of hdf5 files written to 1..n locales.
             */
            var localeValuesIndexStart: [PrivateSpace] int;
            var localeValuesIndexEnd: [PrivateSpace] int;
+           
+           /*
+            * The localeValuesFileIndexEnd object is a globally-scoped PrivateSpace
+            * array which contains the zero-based end index value for the Strings values 
+            * array chunk written to hdf5. The localeValuesFileIndexEnd value is used
+            * to generate localeValuesIndexStart and localeValuesIndexEnd values for
+            * each locale.
+            */
+           var localeValuesFileIndexEnd: [PrivateSpace] int;
 
            /*
             * If this is a Strings values dataset, loop through all locales and set the 
@@ -875,7 +887,7 @@ module GenSymIO {
             */
            if isStringsValuesDataset(dsetName) {
                coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) 
-                                                             with (ref indices) do on loc {
+                                                          with (ref indices) do on loc {
                    if idx < A.targetLocales().size-1 {
                        const locDom = A.localSubdomain();
                        if A.localSlice(locDom).back() != NULL_STRINGS_VALUE {
@@ -886,22 +898,19 @@ module GenSymIO {
            }
 
            /*
-            * If this is a Strings segments dataset, there are two tasks for correctly assigning the
-            * segments to each locale: (1) loop through all locales and set the start and end Strings 
-            * values indices, which are used to build up the global start and end indices and (2)
-            * calculate and assign the global start and end Strings values indices for each locale.
-            * The global Strings values indices assigned to each locale are used to shuffle segments
-            * per final assignment of the Strings values array elements to each locale and file.
+            * If this is a Strings segments dataset, there are two tasks for correctly assigning
+            * the segments to each locale: (1) loop through all locales and set the Strings values
+            * file end index, which is the zero-based index of uint(8) characters corresponding to
+            * the Strings values chunk written to that file and (2) calculate and assign the global 
+            * start and end Strings values indices for each locale.
+            * 
+            * The global Strings values indices assigned to each locale are used to shuffle Strings
+            * segments per final assignment of the Strings values array elements to each locale 
+            * and, consequently, each hdf5 file.
             */
            if isStringsSegmentsDataset(dsetName) {
-               /*
-                * Assign the localeValuesFieldIndexStart and localeValuesFieldIndexEnd values that 
-                * are used to build up the global localeValuesIndexStart and localeValuesIndexEnd
-                * used to shuffle segments as needed per the final placement of Strings values 
-                * array elements in each locale and corresponding file.
-                */
                coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) with (ref indices,
-                      ref localeValuesFileIndexStart, ref localeValuesFileIndexEnd) do on loc {
+                      ref localeValuesFileIndexEnd) do on loc {
                    if idx < A.targetLocales().size {
                        const fileName = filenames[idx];
                        if GenSymIO_DEBUG {
@@ -909,8 +918,8 @@ module GenSymIO {
                        }
 
                        /*
-                        * Retrieve the start and end indices for the Strings values array 
-                        * chunk written to the hdf5 file.
+                        * Retrieve the end index for the Strings values array chunk written 
+                        * to the hdf5 file corresponding to the locale.
                         */
                        var fileId = C_HDF5.H5Fopen(fileName.c_str(), C_HDF5.H5F_ACC_RDWR,
                                                                        C_HDF5.H5P_DEFAULT);
@@ -918,16 +927,15 @@ module GenSymIO {
                        var indexValues = getStringsValuesStartEndIndices(fileId, group);
 
                        /*
-                        * Set the locale, file-scoped Strings values start and end 
-                        * indices which will be used to build up the global start/end
-                        * indices for each hdf5 file.
+                        * Set the locale, and therefore hdf5 file-scoped Strings values 
+                        * end index which will be used to build up the global Strings 
+                        * segments start/end indices for each hdf5 file.
                         */
-                       localeValuesFileIndexStart[idx] = indexValues[0];
-                       localeValuesFileIndexEnd[idx] = indexValues[1];
+                       localeValuesFileIndexEnd[idx] = indexValues[0];
 
                        /*
-                        * Close the file now that the values start/end indices have been 
-                        * retrieved and the segments slices have been assigned
+                        * Close the file now that the Strings values end index has been 
+                        * retrieved and assigned to the localeValuesFileIndexEnd.ned
                         */
                         C_HDF5.H5Fclose(fileId);
                    }
@@ -939,7 +947,7 @@ module GenSymIO {
                * within each locale per the final assignment of Strings values array elements.
                * 
                * Note: the global values start and end indices need to be generated for each
-               * locale independently to prevent race conditions in multilocale deployments 
+               * locale independently to prevent race conditions in multilocale deployments. 
                */
               coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) with(ref indices,
                                      ref localeValuesIndexStart, ref localeValuesIndexEnd, 
@@ -1064,13 +1072,6 @@ module GenSymIO {
                     dims[0] = valuesList.size:uint(64);
 
                     /*
-                     * Generate the local Strings values start and end indices, where
-                     * start=0 and end=values.size-1 (for zero indexing)
-                     */
-                    var indexBounds = getLocaleValuesIndexBounds(localeValuesIndexStart, 
-                                                   localeValuesIndexEnd, idx, valuesList.size);
- 
-                    /*
                      * Write the valuesList containing the uint(8) characters missing from the
                      * current locale slice along with retrieved from the next locale to hdf5
                      */
@@ -1078,12 +1079,16 @@ module GenSymIO {
                             c_ptrTo(dims), getHDF5Type(A.eltType), c_ptrTo(valuesList.toArray()));
 
                     /*
-                     * Write the values start and end indices to hdf5, which will be used to
-                     * shuffle Strings segments as needed to match values and segments
+                     * Generate zero-based end index for values chunk written to hdf and write
+                     * to the Strings hdf5 group; this value will be used to calculate the 
+                     * global segments start and end indices that are used to shuffle Strings
+                     * segments as needed to match Strings values and segments for each locale
+                     * and, consequently, each hdf5 file.
                      */
+                    var valuesEndIndex = [valuesList.size-1];
                     H5LTmake_dataset_WAR(myFileID, '/%s/values-index-bounds'.format(group).c_str(), 
-                                        1, c_ptrTo([indexBounds.size]), getHDF5Type(int),
-                                        c_ptrTo(indexBounds));
+                                        1, c_ptrTo([valuesEndIndex.size]), getHDF5Type(int),
+                                        c_ptrTo(valuesEndIndex));
                   } else {
                       /*
                        * The local slice ends with the uint(8) null character, which is the 
@@ -1095,41 +1100,54 @@ module GenSymIO {
 
                       if sliceIndex == -1 {
                           /*
-                           * The local slice does not contain chars from previous locale, so generate
-                           * the indexBounds list and write the Strings values as well as the values 
-                           * start/end indices out to hdf5. Again, the start/stop indices will be used
-                           * to reshuffle Strings segments elements as needed to match Strings values 
-                           * and segments in hdf5.
+                           * The local slice ends with the uint(8) null character, which means it's
+                           * last string does not span two locales. Since the local slice also 
+                           * not does not contain chars from previous locale, simply write the 
+                           * Strings values slice out to hdf5.
                            */
-                          var indexBounds = getLocaleValuesIndexBounds(localeValuesIndexStart, 
-                                                 localeValuesIndexEnd, idx, A.localSlice(locDom).size);
-
                           H5LTmake_dataset_WAR(myFileID, '/%s/values'.format(group).c_str(), 1,
                                   c_ptrTo(dims), getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
+
+                          /*
+                           * Generate zero-based end index for values chunk written to hdf and write
+                           * to the Strings hdf5 group; this value will be used to calculate the 
+                           * global segments start and end indices that are used to shuffle Strings
+                           * segments as needed to match Strings values and segments for each locale
+                           * and, consequently, each hdf5 file.
+                           */
+                          var valuesEndIndex = [A.localSlice(locDom).size-1];
                           H5LTmake_dataset_WAR(myFileID, '/%s/values-index-bounds'.format(group).c_str(), 
-                                  1, c_ptrTo([[indexBounds.size:uint(64)]]), getHDF5Type(int), 
-                                  c_ptrTo(indexBounds));
+                                  1, c_ptrTo([[valuesEndIndex.size:uint(64)]]), getHDF5Type(int), 
+                                  c_ptrTo(valuesEndIndex));
                       } else {
                           /*
-                           * The local slice does contain chars from previous locale, first adjust
-                           * by slicing those chars out to generate an updated values list, generate 
-                           * the values start/end index list and then finally write the values 
-                           * and values start/end index lists out to hdf5
+                           * The local slice does contain chars from previous locale, so (1)
+                           * generate a corresponding Strings value list that can be sliced,
+                           * and (2) adjust the Strings values list by slicing the chars out
+                           * that correspond to chars from previous locale, and (3) adjust 
+                           * the dims value per the size of the updated Strings value list. 
                            */
-                          var charList = convertLocalSliceToList(A, locDom);
-                          var valuesList = adjustForStringSlices(sliceIndex, charList);
-                          var indexBounds = getLocaleValuesIndexBounds(localeValuesIndexStart, 
-                                                          localeValuesIndexEnd, idx, valuesList.size);
+                          var valuesList = adjustForStringSlices(sliceIndex, 
+                                  convertLocalSliceToList(A, locDom));
 
-                          // Update the dimensions per the possibly re-sized valuesList
+                          // Update the dimensions per the re-sized Strings values list
                           dims[0] = valuesList.size:uint(64);
 
                           H5LTmake_dataset_WAR(myFileID, '/%s/values'.format(group).c_str(), 1,
                                             c_ptrTo(dims), getHDF5Type(A.eltType),
                                             c_ptrTo(valuesList.toArray()));
+
+                          /*
+                           * Generate zero-based end index for values chunk written to hdf and write
+                           * to the Strings hdf5 group; this value will be used to calculate the 
+                           * global segments start and end indices that are used to shuffle Strings
+                           * segments as needed to match Strings values and segments for each locale
+                           * and, consequently, each hdf5 file.
+                           */
+                          var valuesEndIndex = [valuesList.size-1];
                           H5LTmake_dataset_WAR(myFileID, '/%s/values-index-bounds'.format(group).c_str(), 
-                                        1, c_ptrTo([indexBounds.size:uint(64)]), getHDF5Type(int),
-                                        c_ptrTo(indexBounds));
+                                        1, c_ptrTo([valuesEndIndex.size:uint(64)]), getHDF5Type(int),
+                                        c_ptrTo(valuesEndIndex));
                      }
                 }
             } else if isStringsSegmentsDataset(dsetName) {
@@ -1399,19 +1417,5 @@ module GenSymIO {
             newSegments[i] = segment:int - dec;
         }
         return newSegments;
-    }
-
-    /*
-     * Returns a two-member array containing the start and end indices for the Strings
-     * values segment partitioned to the current locale.
-     */
-    private proc getLocaleValuesIndexBounds(indexStart : [PrivateSpace] int, 
-                         indexEnd : [PrivateSpace] int, idx :int, numLocaleValues : int) {
-        var start: int = 0;
-        if (idx != 0) {
-            start = indexEnd[idx-1];
-        }
-        var end: int = start + numLocaleValues - 1;
-        return [start,end];
     }
 }
