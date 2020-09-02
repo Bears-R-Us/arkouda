@@ -174,7 +174,7 @@ module MultiTypeSymbolTable
         proc pretty(){
             for n in tab
             {
-                try! writeln("%10s = ".format(n), tab.getReference(n));try! stdout.flush();
+                try! writeln("%10s = ".format(n), tab.getValue(n));try! stdout.flush();
             }
         }
 
