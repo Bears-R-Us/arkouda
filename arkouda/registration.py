@@ -10,7 +10,7 @@ __all__ = ["register_pda","attach_pda","unregister_pda"]
 def register_pda(pda, user_defined_name):
     """
     Return a pdarray with a user defined name in the arkouda server so it can be attached to later using arkouda.attach_pda()
-    Note: registered names in the server are immune to delete and python object distruction until they are unregistered.
+    Note: registered names in the server are immune to deletion until they are unregistered.
     
     Parameters
     ----------
@@ -53,7 +53,7 @@ def register_pda(pda, user_defined_name):
 def attach_pda(name):
     """
     Return a pdarray attached to the a registered name in the arkouda server which was registered using arkouda.register_pda()
-    Note: registered names in the server are immune to delete and python object distruction until they are unregistered.
+    Note: registered names in the server are immune to deletion until they are unregistered.
     
     Parameters
     ----------
@@ -86,7 +86,7 @@ def attach_pda(name):
 def unregister_pda(pda):
     """
     Unregister a pdarray in the arkouda server which was previously regisgersted using arkouda.register_pda and/or attahced to using arkouda.attach_pda()
-    Note: registered names in the server are immune to delete and python object distruction until they are unregistered.
+    Note: registered names in the server are immune to deletion until they are unregistered.
     
     Parameters
     ----------
