@@ -2,43 +2,45 @@
 module SymArrayDmap
 {
     /*
-    Configure MyDmap on compile line by "-s MyDmap=0" or "-s MyDmap=1"
-    0 = Cyclic, 1 = Block. Cyclic may not work; we haven't tested it in a while.
-    BlockDist is the default.
+     Available domain maps. Cyclic isn't regularly tested and may not work.
+     */
+    enum Dmap {defaultRectangular, blockDist, cyclicDist};
+
+    private param defaultDmap = if CHPL_COMM == "none" then Dmap.defaultRectangular
+                                                       else Dmap.blockDist;
+    /*
+    How domains/arrays are distributed. Defaults to :enum:`Dmap.defaultRectangular` if
+    :param:`CHPL_COMM=none`, otherwise defaults to :enum:`Dmap.blockDist`.
     */
-    config param MyDmap = 1;
+    config param MyDmap:Dmap = defaultDmap;
 
     public use CyclicDist;
     public use BlockDist;
 
     /* 
-    Uses the MyDmap config param in ServerConfig.chpl::
-        *if MyDmap == 0 {return (type CyclicDom(1,int(64),false));}* 
-
-        *if MyDmap == 1 {return (type BlockDom(1,int(64),false,unmanaged DefaultDist));}*
+    Makes a domain distributed according to :param:`MyDmap`.
 
     :arg size: size of domain
     :type size: int
-
-    **Note**: if MyDmap does not evaluate to 0 or 1, Cyclic Distribution will be selected. 
-    Cyclic Distribution is currently not fully supported.
-    **Note 2**: MyDmap is by default set to 1 in ServerConfig.chpl
     */
     proc makeDistDom(size:int) {
         select MyDmap
         {
-            when 0 { // Cyclic distribution
-                return {0..#size} dmapped Cyclic(startIdx=0);
+            when Dmap.defaultRectangular {
+                return {0..#size};
             }
-            when 1 { // Block Distribution
+            when Dmap.blockDist {
                 if size > 0 {
                     return {0..#size} dmapped Block(boundingBox={0..#size});
                 }
                 // fix the annoyance about boundingBox being enpty
                 else {return {0..#0} dmapped Block(boundingBox={0..0});}
             }
-            otherwise { // default to cyclic distribution
+            when Dmap.cyclicDist {
                 return {0..#size} dmapped Cyclic(startIdx=0);
+            }
+            otherwise {
+                halt("Unsupported distribution " + MyDmap:string);
             }
         }
     }

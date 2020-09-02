@@ -16,11 +16,9 @@ module SegStringSort {
   private const MEMFACTOR = SSS_MEMFACTOR;
 
   record StringIntComparator {
-    proc keyPart((a0,_): (string, int), i: int) {
-      var len = a0.numBytes;
-      var section = if i <= len then 0:int(8) else -1:int(8);
-      var part = if i <= len then a0.byte(i) else 0:uint(8);
-      return (section, part);
+    proc keyPart((a0,_): (string, int), in i: int) {
+      // Just run the default comparator on the string
+      return Sort.defaultComparator.keyPart(a0, i);
     }
   }
   

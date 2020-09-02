@@ -6,7 +6,7 @@ import math
 import gc
 import sys
 
-import arkouda as ak
+from context import arkouda as ak
 
 print(">>> Sanity checks on the arkouda_server")
 
@@ -105,6 +105,24 @@ def check_argsort(N):
     return pass_fail(c.all())
 
 print("check argsort :", check_argsort(N))
+
+def check_coargsort(N):
+    # create np version
+    a = np.arange(N)
+    a = a[::-1]
+    iv = np.lexsort([a, a])
+    a = a[iv]
+    # create ak version
+    b = ak.arange(N)
+    b = b[::-1]
+    iv = ak.coargsort([b, b])
+    b = b[iv]
+    # print(a,b)
+    c = a == b.to_ndarray()
+    # print(type(c),c)
+    return pass_fail(c.all())
+
+print("check coargsort :", check_coargsort(N))
 
 def check_sort(N):
     # create np version

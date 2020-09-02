@@ -11,13 +11,12 @@ module IndexingMsg
     use CommAggregation;
 
     /* intIndex "a[int]" response to __getitem__(int) */
-    proc intIndexMsg(reqMsg: string, st: borrowed SymTab):string throws {
+    proc intIndexMsg(cmd: string, payload: bytes, st: borrowed SymTab):string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
-        var idx = try! fields[3]:int;
+        // split request into fields
+        var (name, idxStr) = payload.decode().splitMsgToTuple(2);
+        var idx = try! idxStr:int;
         if v {try! writeln("%s %s %i".format(cmd, name, idx));try! stdout.flush();}
 
          var gEnt: borrowed GenSymEntry = st.lookup(name);
@@ -43,15 +42,14 @@ module IndexingMsg
     }
 
     /* sliceIndex "a[slice]" response to __getitem__(slice) */
-    proc sliceIndexMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc sliceIndexMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
-        var start = try! fields[3]:int;
-        var stop = try! fields[4]:int;
-        var stride = try! fields[5]:int;
+        var (name, startStr, stopStr, strideStr)
+              = payload.decode().splitMsgToTuple(4); // split request into fields
+        var start = try! startStr:int;
+        var stop = try! stopStr:int;
+        var stride = try! strideStr:int;
         var slice: range(stridable=true);
 
         // convert python slice to chapel slice
@@ -95,13 +93,11 @@ module IndexingMsg
     }
 
     /* pdarrayIndex "a[pdarray]" response to __getitem__(pdarray) */
-    proc pdarrayIndexMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc pdarrayIndexMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
-        var iname = fields[3];
+        // split request into fields
+        var (name, iname) = payload.decode().splitMsgToTuple(2);
 
         // get next symbol name
         var rname = st.nextName();
@@ -185,15 +181,13 @@ module IndexingMsg
     }
 
     /* setIntIndexToValue "a[int] = value" response to __setitem__(int, value) */
-    proc setIntIndexToValueMsg(reqMsg: string, st: borrowed SymTab):string throws {
+    proc setIntIndexToValueMsg(cmd: string, payload: bytes, st: borrowed SymTab):string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
-        var idx = try! fields[3]:int;
-        var dtype = str2dtype(fields[4]);
-        var value = fields[5];
+        // split request into fields
+        var (name, idxStr, dtypeStr, value) = payload.decode().splitMsgToTuple(4);
+        var idx = try! idxStr:int;
+        var dtype = str2dtype(dtypeStr);
         if v {try! writeln("%s %s %i %s %s".format(cmd, name, idx, dtype2str(dtype), value));try! stdout.flush();}
 
          var gEnt: borrowed GenSymEntry = st.lookup(name);
@@ -259,15 +253,12 @@ module IndexingMsg
     }
 
     /* setPdarrayIndexToValue "a[pdarray] = value" response to __setitem__(pdarray, value) */
-    proc setPdarrayIndexToValueMsg(reqMsg: string, st: borrowed SymTab):string throws {
+    proc setPdarrayIndexToValueMsg(cmd: string, payload: bytes, st: borrowed SymTab):string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
-        var iname = fields[3];
-        var dtype = str2dtype(fields[4]);
-        var value = fields[5];
+        // split request into fields
+        var (name, iname, dtypeStr, value) = payload.decode().splitMsgToTuple(4);
+        var dtype = str2dtype(dtypeStr);
 
         if v {try! writeln("%s %s %s %s %s".format(cmd, name, iname, dtype2str(dtype), value));try! stdout.flush();}
 
@@ -342,14 +333,11 @@ module IndexingMsg
     }
 
     /* setPdarrayIndexToPdarray "a[pdarray] = pdarray" response to __setitem__(pdarray, pdarray) */
-    proc setPdarrayIndexToPdarrayMsg(reqMsg: string, st: borrowed SymTab):string throws {
+    proc setPdarrayIndexToPdarrayMsg(cmd: string, payload: bytes, st: borrowed SymTab):string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
-        var iname = fields[3];
-        var yname = fields[4];
+        // split request into fields
+        var (name, iname, yname) = payload.decode().splitMsgToTuple(3);
 
         if v {try! writeln("%s %s %s %s".format(cmd, name, iname, yname));try! stdout.flush();}
 
@@ -428,17 +416,15 @@ module IndexingMsg
     }
 
     /* setSliceIndexToValue "a[slice] = value" response to __setitem__(slice, value) */
-    proc setSliceIndexToValueMsg(reqMsg: string, st: borrowed SymTab):string throws {
+    proc setSliceIndexToValueMsg(cmd: string, payload: bytes, st: borrowed SymTab):string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
-        var start = try! fields[3]:int;
-        var stop = try! fields[4]:int;
-        var stride = try! fields[5]:int;
-        var dtype = str2dtype(fields[6]);
-        var value = fields[7];
+        var (name, startStr, stopStr, strideStr, dtypeStr, value)
+              = payload.decode().splitMsgToTuple(6); // split request into fields
+        var start = try! startStr:int;
+        var stop = try! stopStr:int;
+        var stride = try! strideStr:int;
+        var dtype = str2dtype(dtypeStr);
         var slice: range(stridable=true);
 
         // convert python slice to chapel slice
@@ -514,16 +500,14 @@ module IndexingMsg
     }
     
     /* setSliceIndexToPdarray "a[slice] = pdarray" response to __setitem__(slice, pdarray) */
-    proc setSliceIndexToPdarrayMsg(reqMsg: string, st: borrowed SymTab):string throws {
+    proc setSliceIndexToPdarrayMsg(cmd: string, payload: bytes, st: borrowed SymTab):string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
-        var start = try! fields[3]:int;
-        var stop = try! fields[4]:int;
-        var stride = try! fields[5]:int;
-        var yname = fields[6];
+        var (name, startStr, stopStr, strideStr, yname)
+              = payload.decode().splitMsgToTuple(5); // split request into fields
+        var start = try! startStr:int;
+        var stop = try! stopStr:int;
+        var stride = try! strideStr:int;
         var slice: range(stridable=true);
 
         // convert python slice to chapel slice

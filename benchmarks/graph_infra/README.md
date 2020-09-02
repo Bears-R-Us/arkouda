@@ -11,6 +11,6 @@ append to a .dat file. `genGraphs` then takes the .dat files and the meta
 information in the .graph file to generate interactive graphs. To view the
 graphs locally you can do:
 
-    cd graphdir
+    cd benchmarks/datdir/html
     python3 -m http.server 8000
     open http://localhost:8000/ (or navigate to localhost:8000 in your browser)

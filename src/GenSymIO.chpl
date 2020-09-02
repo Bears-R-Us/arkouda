@@ -1,6 +1,7 @@
 module GenSymIO {
   use HDF5;
   use IO;
+  use Path;
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
   use ServerErrorStrings;
@@ -8,19 +9,15 @@ module GenSymIO {
   use Sort;
   use CommAggregation;
 
-  use Chapel120;
-
   config const GenSymIO_DEBUG = false;
   config const SEGARRAY_OFFSET_NAME = "segments";
   config const SEGARRAY_VALUE_NAME = "values";
 
-  proc arrayMsg(reqMsg: bytes, st: borrowed SymTab): string {
+  proc arrayMsg(cmd: string, payload: bytes, st: borrowed SymTab): string {
     var repMsg: string;
-    var fields = reqMsg.split(3);
-    var cmd = try! fields[1].decode();
-    var dtype = str2dtype(try! fields[2].decode());
-    var size = try! fields[3]:int;
-    var data = fields[4];
+    var (dtypeBytes, sizeBytes, data) = payload.splitMsgToTuple(3);
+    var dtype = str2dtype(try! dtypeBytes.decode());
+    var size = try! sizeBytes:int;
     var tmpf:file;
     try {
       tmpf = openmem();
@@ -56,7 +53,7 @@ module GenSymIO {
       } else {
         tmpr.close();
         tmpf.close();
-        return try! "Error: Unhandled data type %s".format(fields[2]);
+        return try! "Error: Unhandled data type %s".format(dtypeBytes);
       }
       tmpr.close();
       tmpf.close();
@@ -66,10 +63,10 @@ module GenSymIO {
     return try! "created " + st.attrib(rname);
   }
 
-  proc tondarrayMsg(reqMsg: string, st: borrowed SymTab): bytes throws {
+  proc tondarrayMsg(cmd: string, payload: bytes, st: borrowed SymTab): bytes throws {
     var arrayBytes: bytes;
-    var fields = reqMsg.split();
-    var entry = st.lookup(fields[2]);
+    var entryStr = payload.decode();
+    var entry = st.lookup(entryStr);
     var tmpf: file;
     try {
       tmpf = openmem();
@@ -127,15 +124,12 @@ module GenSymIO {
     return array;
   }
 
-  proc lshdfMsg(reqMsg: string, st: borrowed SymTab): string {
-    write("In lsdhdfMsg()");
+  proc lshdfMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     // reqMsg: "lshdf [<json_filename>]"
     use Spawn;
     const tmpfile = "/tmp/arkouda.lshdf.output";
     var repMsg: string;
-    var fields = reqMsg.split(1);
-    var cmd = fields[1];
-    var jsonfile = fields[2];
+    var (jsonfile) = payload.decode().splitMsgToTuple(1);
     var filename: string;
     try {
       filename = decode_json(jsonfile, 1)[0];
@@ -156,7 +150,7 @@ module GenSymIO {
       if exists(tmpfile) {
         remove(tmpfile);
       }
-      var cmd = try! "h5ls \"%s\" > \"%s\"".format(filename, tmpfile);
+      var cmd = try! "h5ls \"%s\" > \"%s\" 2>&1".format(filename, tmpfile);
       var sub = spawnshell(cmd);
       // sub.stdout.readstring(repMsg);
       sub.wait();
@@ -179,14 +173,11 @@ module GenSymIO {
   }
 
   /* Read dataset from HDF5 files into arkouda symbol table. */
-  proc readhdfMsg(reqMsg: string, st: borrowed SymTab): string throws {
+  proc readhdfMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     var repMsg: string;
     // reqMsg = "readhdf <dsetName> <nfiles> [<json_filenames>]"
-    var fields = reqMsg.split(3);
-    var cmd = fields[1];
-    var dsetName = fields[2];
-    var nfiles = try! fields[3]:int;
-    var jsonfiles = fields[4];
+    var (dsetName, nfilesStr, jsonfiles) = payload.decode().splitMsgToTuple(3);
+    var nfiles = try! nfilesStr:int;
     var filelist: [0..#nfiles] string;
     try {
       filelist = decode_json(jsonfiles, nfiles);
@@ -307,17 +298,14 @@ module GenSymIO {
   }
 
   /* Read datasets from HDF5 files into arkouda symbol table. */
-  proc readAllHdfMsg(reqMsg: string, st: borrowed SymTab): string throws {
+  proc readAllHdfMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     // reqMsg = "readAllHdf <ndsets> <nfiles> [<json_dsetname>] | [<json_filenames>]"
     var repMsg: string;
     // May need a more robust delimiter then " | "
-    var fields = reqMsg.split(3);
-    var arrays = fields[4].split(" | ",1);
-    var cmd = fields[1];
-    var ndsets = try! fields[2]:int;
-    var nfiles = try! fields[3]:int;
-    var jsondsets = arrays[1];
-    var jsonfiles = arrays[2];
+    var (ndsetsStr, nfilesStr, arraysStr) = payload.decode().splitMsgToTuple(3);
+    var (jsondsets, jsonfiles) = arraysStr.splitMsgToTuple(" | ",2);
+    var ndsets = try! ndsetsStr:int;
+    var nfiles = try! nfilesStr:int;
     var dsetlist: [0..#ndsets] string;
     var filelist: [0..#nfiles] string;
     try {
@@ -564,8 +552,9 @@ module GenSymIO {
     return (subdoms, (+ reduce lengths));
   }
 
-  /* This function gets called when A is a BlockDist array. */
-  proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), filenames: [FD] string, dsetName: string) where (MyDmap == 1) {
+  /* This function gets called when A is a BlockDist or DefaultRectangular array. */
+  proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), filenames: [FD] string, dsetName: string)
+    where (MyDmap == Dmap.blockDist || MyDmap == Dmap.defaultRectangular) {
     if GenSymIO_DEBUG {
       writeln("entry.a.targetLocales() = ", A.targetLocales()); try! stdout.flush();
       writeln("Filedomains: ", filedomains); try! stdout.flush();
@@ -622,7 +611,8 @@ module GenSymIO {
   }
 
   /* This function is called when A is a CyclicDist array. */
-  proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), filenames: [FD] string, dsetName: string) where (MyDmap == 0) {
+  proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), filenames: [FD] string, dsetName: string)
+    where (MyDmap == Dmap.cyclicDist) {
     use CyclicDist;
     // Distribute filenames across locales, and ensure single-threaded reads on each locale
     var fileSpace: domain(1) dmapped Cyclic(startIdx=FD.low, dataParTasksPerLocale=1) = FD;
@@ -650,14 +640,11 @@ module GenSymIO {
     return {low..high by stride};
   }
 
-  proc tohdfMsg(reqMsg, st: borrowed SymTab): string throws {
+  proc tohdfMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     // reqMsg = "tohdf <arrayName> <dsetName> <mode> [<json_filename>]"
-    var fields = reqMsg.split(4);
-    var cmd = fields[1];
-    var arrayName = fields[2];
-    var dsetName = fields[3];
-    var mode = try! fields[4]: int;
-    var jsonfile = fields[5];
+    var (arrayName, dsetName, modeStr, jsonfile)
+          = payload.decode().splitMsgToTuple(4);
+    var mode = try! modeStr: int;
     var filename: string;
     try {
       filename = decode_json(jsonfile, 1)[0];
@@ -710,12 +697,12 @@ module GenSymIO {
     const fields = filename.split(".");
     var prefix:string;
     var extension:string;
-    if fields.size == 1 {
+    if fields.size == 1 || fields[fields.domain.high].count(pathSep) > 0 {
       prefix = filename;
       extension = "";
     } else {
-      prefix = ".".join(fields[1..fields.size-1]);
-      extension = "." + fields[fields.size];
+      prefix = ".".join(fields#(fields.size-1)); // take all but the last
+      extension = "." + fields[fields.domain.high];
     }
     var filenames: [0..#A.targetLocales().size] string;
     for i in 0..#A.targetLocales().size {

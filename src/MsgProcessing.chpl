@@ -29,24 +29,26 @@ module MsgProcessing
     public use SegmentedMsg;
     public use JoinEqWithDTMsg;
     public use RegistrationMsg;
+    public use ArraySetopsMsg;
+    public use KExtremeMsg;
     
     /* 
     Parse, execute, and respond to a create message 
 
-    :arg reqMsg: request containing (cmd,dtype,size)
-    :type reqMsg: string 
+    :arg : payload
+    :type bytes: containing (dtype,size)
 
     :arg st: SymTab to act on
     :type st: borrowed SymTab 
 
     :returns: (string) response message
     */
-    proc createMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc createMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var dtype = str2dtype(fields[2]);
-        var size = try! fields[3]:int;
+        // split request into fields
+        var (dtypestr, sizestr) = payload.decode().splitMsgToTuple(2);
+        var dtype = str2dtype(dtypestr);
+        var size = try! sizestr:int;
 
         // get next symbol name
         var rname = st.nextName();
@@ -70,11 +72,10 @@ module MsgProcessing
 
     :returns: (string) response message
     */
-    proc deleteMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc deleteMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
+        // split request into fields
+        var (name) = payload.decode().splitMsgToTuple(1);
         if v {try! writeln("%s %s".format(cmd,name));try! stdout.flush();}
         // delete entry from symbol table
         st.deleteEntry(name);
@@ -93,11 +94,10 @@ module MsgProcessing
 
     :returns: (string)
      */
-    proc infoMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc infoMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
+        // split request into fields
+        var (name) = payload.decode().splitMsgToTuple(1);
         if v {try! writeln("%s %s".format(cmd,name));try! stdout.flush();}
         // if name == "__AllSymbols__" passes back info on all symbols
         return st.info(name);
@@ -114,10 +114,9 @@ module MsgProcessing
 
     :returns: (string)
      */
-    proc getconfigMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc getconfigMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
+        var (_) = payload.decode().splitMsgToTuple(1); // split request into fields
         if v {try! writeln("%s".format(cmd));try! stdout.flush();}
         return getConfig();
     }
@@ -133,10 +132,9 @@ module MsgProcessing
 
     :returns: (string)
      */
-    proc getmemusedMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc getmemusedMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
+        var (_) = payload.decode().splitMsgToTuple(1); // split request into fields
         if v {try! writeln("%s".format(cmd));try! stdout.flush();}
         if (memTrack) {
             return (memoryUsed():uint * numLocales:uint):string;
@@ -157,12 +155,11 @@ module MsgProcessing
 
     :returns: (string)
    */
-    proc strMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc strMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
-        var printThresh = try! fields[3]:int;
+        // split request into fields
+        var (name, ptstr) = payload.decode().splitMsgToTuple(2);
+        var printThresh = try! ptstr:int;
         if v {try! writeln("%s %s %i".format(cmd,name,printThresh));try! stdout.flush();}
         return st.datastr(name,printThresh);
     }
@@ -178,12 +175,11 @@ module MsgProcessing
 
        :returns: (string)
       */ 
-    proc reprMsg(reqMsg: string, st: borrowed SymTab): string {
+    proc reprMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
-        var printThresh = try! fields[3]:int;
+        // split request into fields
+        var (name, ptstr) = payload.decode().splitMsgToTuple(2);
+        var printThresh = try! ptstr:int;
         if v {try! writeln("%s %s %i".format(cmd,name,printThresh));try! stdout.flush();}
         return st.datarepr(name,printThresh);
     }
@@ -200,13 +196,13 @@ module MsgProcessing
 
     :returns: (string)
     */
-    proc arangeMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc arangeMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var start = try! fields[2]:int;
-        var stop = try! fields[3]:int;
-        var stride = try! fields[4]:int;
+//        var (cmd, start, stop, stride) = try! (reqMsg.splitMsgToTuple(4): (string, int, int, int));
+        var (startstr, stopstr, stridestr) = payload.decode().splitMsgToTuple(3);
+        var start = try! startstr:int;
+        var stop = try! stopstr:int;
+        var stride = try! stridestr:int;
         // compute length
         var len = (stop - start + stride - 1) / stride;
         // get next symbol name
@@ -239,13 +235,13 @@ module MsgProcessing
 
     :returns: (string)
     */
-    proc linspaceMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc linspaceMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var start = try! fields[2]:real;
-        var stop = try! fields[3]:real;
-        var len = try! fields[4]:int;
+//        var (start, stop, len) = try! (payload.decode().splitMsgToTuple(3): (real, real, int));
+        var (startstr, stopstr, lenstr) = payload.decode().splitMsgToTuple(3);
+        var start = try! startstr:real;
+        var stop = try! stopstr:real;
+        var len = try! lenstr:int;
         // compute stride
         var stride = (stop - start) / (len-1);
         // get next symbol name
@@ -281,14 +277,11 @@ module MsgProcessing
     :returns: (string)
     :throws: `UndefinedSymbolError(name)`
     */
-    proc setMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc setMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
-        var dtype = str2dtype(fields[3]);
-        var value = fields[4];
+        var (name, dtypestr, value) = payload.decode().splitMsgToTuple(3);
+        var dtype = str2dtype(dtypestr);
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
@@ -362,10 +355,8 @@ module MsgProcessing
                 e.a = val;
                 repMsg = try! "set %s to %t".format(name, val);
             }
-            otherwise {return unrecognizedTypeError(pn,fields[3]);}
+            otherwise {return unrecognizedTypeError(pn,dtypestr);}
         }
         return repMsg;
     }
-    
-
 }

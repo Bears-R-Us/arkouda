@@ -1,10 +1,8 @@
-use RandArray;
-use MultiTypeSymbolTable;
-use SegmentedArray;
-use SegmentedMsg;
-use Time;
+use TestBase;
 
-config const N: int = 10_000;
+use SegmentedMsg;
+
+config const N: int = 1_000;
 config const MINLEN: int = 6;
 config const MAXLEN: int = 30;
 config const SUBSTRING: string = "hi";
@@ -39,18 +37,17 @@ proc make_strings(substr, n, minLen, maxLen, characters, st) {
       }
     }
   }
-  var strings2 = new owned SegString(segs, vals, st);
+  var strings2 = new shared SegString(segs, vals, st);
   return (splits, strings2);
 }
 
 proc testPeel(substr:string, n:int, minLen:int, maxLen:int, characters:charSet = charSet.Uppercase) throws {
   var st = new owned SymTab();
-  var t = new Timer();
+  var d: Diags;
   writeln("Generating random strings..."); stdout.flush();
-  t.start();
+  d.start();
   var (answer, strings) = make_strings(substr, n, minLen, maxLen, characters, st);
-  t.stop();
-  writeln("%t seconds".format(t.elapsed())); stdout.flush(); t.clear();
+  d.stop("make_strings");
   const lengths = strings.getLengths();
   var allSuccess = true;
   for param times in 1..2 {
@@ -61,10 +58,9 @@ proc testPeel(substr:string, n:int, minLen:int, maxLen:int, characters:charSet =
         for param l in 0..1 {
           param left:bool = l > 0;
           writeln("strings.peel(%s, %i, includeDelimiter=%t, keepPartial=%t, left=%t)".format(substr, times, includeDelimiter, keepPartial, left));
-          t.start();
+          d.start();
           var (leftOffsets, leftVals, rightOffsets, rightVals) = strings.peel(substr, times, includeDelimiter, keepPartial, left);
-          t.stop();
-          writeln("%t seconds".format(t.elapsed())); stdout.flush();
+          d.stop("peel");
           var lstr = new owned SegString(leftOffsets, leftVals, st);
           var rstr = new owned SegString(rightOffsets, rightVals, st);
           if DEBUG {
@@ -89,14 +85,7 @@ proc testPeel(substr:string, n:int, minLen:int, maxLen:int, characters:charSet =
               }
             }
           } 
-          for i in 0..#min(lstr.size, 5) {
-            writeln("%i: %s  |  %s".format(i, lstr[i], rstr[i]));
-          }
-          if lstr.size >= 10 {
-            for i in (lstr.size-5)..#4 {
-              writeln("%i: %s  |  %s".format(i, lstr[i], rstr[i]));
-            }
-          }
+          writeSegString("lstr", lstr);
           const delim = if includeDelimiter then "" else substr;
           var temp: owned SegString?;
           if left {
@@ -109,7 +98,7 @@ proc testPeel(substr:string, n:int, minLen:int, maxLen:int, characters:charSet =
           var roundTrip: borrowed SegString = temp!;
           var eq = (strings == roundTrip) | (answer < times);
           var success = && reduce eq;
-          writeln("\nRound trip success? >>> %t <<<\n".format(success));
+          writeln("Round trip success? >>> %t <<<".format(success));
           allSuccess &&= success;
           if !success {
             var n = 0;
@@ -133,34 +122,27 @@ proc testPeel(substr:string, n:int, minLen:int, maxLen:int, characters:charSet =
 
 proc testMessageLayer(substr, n, minLen, maxLen) throws {
   var st = new owned SymTab();
-  var t = new Timer();
+  var d: Diags;
   writeln("Generating random strings..."); stdout.flush();
-  t.start();
+  d.start();
   var (answer, strings) = make_strings(substr, n, minLen, maxLen, charSet.Uppercase, st);
-  t.stop();
-  writeln("%t seconds".format(t.elapsed())); stdout.flush(); t.clear();
-  var reqMsg = "segmentedEfunc peel str %s %s str 1 True True True %jt".format(strings.offsetName, strings.valueName, [substr]);
-  writeln(reqMsg);
-  var repMsg = segmentedEfuncMsg(reqMsg, st);
-  writeln(repMsg);
-  var attribs = repMsg.split('+');
-  var temp = attribs[1].split();
-  var loname = temp[2];
-  temp = attribs[2].split();
-  var lvname = temp[2];
-  temp = attribs[3].split();
-  var roname = temp[2];
-  temp = attribs[4].split();
-  var rvname = temp[2];
-  reqMsg = "segBinopvv stick str %s %s str %s %s False %jt".format(loname, lvname, roname, rvname, [""]);
-  writeln(reqMsg);
-  repMsg = segBinopvvMsg(reqMsg, st);
-  writeln(repMsg);
-  var attribs2 = repMsg.split('+');
-  temp = attribs2[1].split();
-  var rtoname = temp[2];
-  temp = attribs2[2].split();
-  var rtvname = temp[2];
+  d.stop("make_strings");
+  var reqMsg = "peel str %s %s str 1 True True True %jt".format(strings.offsetName, strings.valueName, [substr]);
+  writeReq(reqMsg);
+  var repMsg = segmentedEfuncMsg(cmd="segmentedEfunc", payload=reqMsg.encode(), st);
+  writeRep(repMsg);
+  var (loAttribs,lvAttribs,roAttribs,rvAttribs) = repMsg.splitMsgToTuple('+', 4);
+  var loname = parseName(loAttribs);
+  var lvname = parseName(lvAttribs);
+  var roname = parseName(roAttribs);
+  var rvname = parseName(rvAttribs);
+  reqMsg = "stick str %s %s str %s %s False %jt".format(loname, lvname, roname, rvname, [""]);
+  writeReq(reqMsg);
+  repMsg = segBinopvvMsg(cmd="segBinopvv", payload=reqMsg.encode(), st);
+  writeRep(repMsg);
+  var (rtoAttribs,rtvAttribs) = repMsg.splitMsgToTuple('+', 2);
+  var rtoname = parseName(rtoAttribs);
+  var rtvname = parseName(rtvAttribs);
   var roundTrip = new owned SegString(rtoname, rtvname, st);
   var success = && reduce (strings == roundTrip);
   writeln("Round trip successful? >>> %t <<<".format(success));

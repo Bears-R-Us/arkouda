@@ -1,4 +1,5 @@
 module Merge {
+  use IO;
   use SegmentedArray;
   use RadixSortLSD only numTasks, calcBlock;
 
@@ -51,26 +52,19 @@ module Merge {
     var vals = makeDistArray(nBytes, uint(8));
     const tD = {0..#numTasks};
     // Element: (bigStart, bigStop, smallStart, smallStop)
-    param BI = 1, BF = 2, SI = 3, SF = 4;
     var bounds: [LocaleSpace] [tD] 4*int;
-    bounds[LocaleSpace.high][tD.high][BF] = big.size - 1;
-    bounds[LocaleSpace.high][tD.high][SF] = small.size - 1;
+    bounds[LocaleSpace.high][tD.high] = (0, big.size-1, 0, small.size-1);
     coforall loc in Locales {
       on loc {
         coforall task in tD {
-          var bigPos = findStart(loc.id, task, big);
-          bounds[loc.id][task][BI] = bigPos;
+          ref (bigPos, _, smallPos, _) = bounds[loc.id][task];
+          bigPos = findStart(loc.id, task, big);
           var bigS = big[bigPos];
-          var smallPos = binarySearch(small, bigS);
-          bounds[loc.id][task][SI] = smallPos;
-          // bounds[loc.id][task][OUTBASE] = big.offsets.a[bigPos] + small.offsets.a[smallPos];
-          if task > 0 {
-            bounds[loc.id][task-1][BF] = bigPos - 1;
-            bounds[loc.id][task-1][SF] = smallPos - 1;
-          } else if loc.id > 0 {
-            bounds[loc.id-1][tD.high][BF] = bigPos - 1;
-            bounds[loc.id-1][tD.high][SF] = smallPos - 1;
-          }
+          smallPos = binarySearch(small, bigS);
+          ref (_, bigEnd, _, smallEnd) = if task > 0 then bounds[loc.id][task-1]
+                                                     else bounds[loc.id-1][tD.high];
+          bigEnd = bigPos - 1;
+          smallEnd = smallPos - 1;
         }
       }
     }
@@ -82,12 +76,9 @@ module Merge {
         ref biga = big.offsets.a;
         ref smalla = small.offsets.a;
         coforall task in tD {
-          var bigPos = bounds[loc.id][task][BI];
-          const bigEnd = bounds[loc.id][task][BF];
-          var smallPos = bounds[loc.id][task][SI];
-          const smallEnd = bounds[loc.id][task][SF];
+          var (bigPos, bigEnd, smallPos, smallEnd) = bounds[loc.id][task];
           var outPos = bigPos + smallPos;
-          const end = bounds[loc.id][task][BF] + bounds[loc.id][task][SF] + 1;
+          const end = bigEnd + smallEnd + 1;
           var outOffset = biga[bigPos] + smalla[smallPos];
           var bigS = big[bigPos];
           var smallS = small[smallPos];

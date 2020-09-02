@@ -48,17 +48,14 @@ module ServerConfig
     var serverHostname: string = try! get_hostname();
 
     proc get_hostname(): string {
-      // Want:
-      //   return here.hostname;
-      // but this isn't implemented yet; could use:
-      //   return here.name;
-      // but this munges the hostname when using local spawning with GASNet
-      // so the following is used as a temporary workaround:
-      extern proc chpl_nodeName(): c_string;
-      var hostname = chpl_nodeName(): string;
-      return hostname;
+      return here.hostname;
     }
 
+    /*
+    Indicates whether token authentication is being used for Akrouda server requests
+    */
+    config const authenticate : bool = false;
+   
     proc getConfig(): string {
         use SysCTypes;
 
@@ -82,6 +79,7 @@ module ServerConfig
             var distributionType: string;
             var LocaleConfigs: [LocaleSpace] owned LocaleConfig =
                 [loc in LocaleSpace] new owned LocaleConfig();
+            var authenticate: bool;
         }
         var (Zmajor, Zminor, Zmicro) = ZMQ.version;
         var H5major: c_uint, H5minor: c_uint, H5micro: c_uint;
@@ -97,6 +95,7 @@ module ServerConfig
         cfg.maxTaskPar = here.maxTaskPar;
         cfg.physicalMemory = here.physicalMemory();
         cfg.distributionType = (makeDistDom(10).type):string;
+        cfg.authenticate = authenticate; 
 
         for loc in Locales {
             on loc {
@@ -150,6 +149,60 @@ module ServerConfig
                                              +total:string+","+getMemLimit():string+")");
             }
         }
+    }
+
+    proc string.splitMsgToTuple(param numChunks: int) {
+      var tup: numChunks*string;
+      var count = tup.indices.low;
+
+      // fill in the initial tuple elements defined by split()
+      for s in this.split(numChunks-1) {
+        tup(count) = s;
+        count += 1;
+      }
+      // if split() had fewer items than the tuple, fill in the rest
+      if (count < numChunks) {
+        for i in count..numChunks-1 {
+          tup(i) = "";
+        }
+      }
+      return tup;
+    }
+
+    proc string.splitMsgToTuple(sep: string, param numChunks: int) {
+      var tup: numChunks*string;
+      var count = tup.indices.low;
+
+      // fill in the initial tuple elements defined by split()
+      for s in this.split(sep, numChunks-1) {
+        tup(count) = s;
+        count += 1;
+      }
+      // if split() had fewer items than the tuple, fill in the rest
+      if (count < numChunks) {
+        for i in count..numChunks-1 {
+          tup(i) = "";
+        }
+      }
+      return tup;
+    }
+
+    proc bytes.splitMsgToTuple(param numChunks: int) {
+      var tup: numChunks*bytes;
+      var count = tup.indices.low;
+
+      // fill in the initial tuple elements defined by split()
+      for s in this.split(numChunks-1) {
+        tup(count) = s;
+        count += 1;
+      }
+      // if split() had fewer items than the tuple, fill in the rest
+      if (count < numChunks) {
+        for i in count..numChunks-1 {
+          tup(i) = b"";
+        }
+      }
+      return tup;
     }
 
 }

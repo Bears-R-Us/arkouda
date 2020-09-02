@@ -24,14 +24,11 @@ module OperatorMsg
     :returns: (string) 
     :throws: `UndefinedSymbolError(name)`
     */
-    proc binopvvMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc binopvvMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var op = fields[2];
-        var aname = fields[3];
-        var bname = fields[4];
+        // split request into fields
+        var (op, aname, bname) = payload.decode().splitMsgToTuple(3);
         var rname = st.nextName();
         if v {try! writeln("%s %s %s %s : %s".format(cmd,op,aname,bname,rname));try! stdout.flush();}
 
@@ -437,15 +434,12 @@ module OperatorMsg
     :returns: (string) 
     :throws: `UndefinedSymbolError(name)`
     */
-    proc binopvsMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc binopvsMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string = ""; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var op = fields[2];
-        var aname = fields[3];
-        var dtype = str2dtype(fields[4]);
-        var value = fields[5];
+        // split request into fields
+        var (op, aname, dtypeStr, value) = payload.decode().splitMsgToTuple(4);
+        var dtype = str2dtype(dtypeStr);
         var rname = st.nextName();
         if v {try! writeln("%s %s %s %s %s : %s".format(cmd,op,aname,dtype2str(dtype),value,rname));try! stdout.flush();}
 
@@ -827,15 +821,12 @@ module OperatorMsg
     :returns: (string) 
     :throws: `UndefinedSymbolError(name)`
     */
-    proc binopsvMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc binopsvMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string = ""; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var op = fields[2];
-        var dtype = str2dtype(fields[3]);
-        var value = fields[4];
-        var aname = fields[5];
+        // split request into fields
+        var (op, dtypeStr, value, aname) = payload.decode().splitMsgToTuple(4);
+        var dtype = str2dtype(dtypeStr);
         var rname = st.nextName();
         if v {try! writeln("%s %s %s %s %s : %s".format(cmd,op,dtype2str(dtype),value,aname,rname));try! stdout.flush();}
 
@@ -1217,14 +1208,11 @@ module OperatorMsg
     :returns: (string) 
     :throws: `UndefinedSymbolError(name)`
     */
-    proc opeqvvMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc opeqvvMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var op = fields[2];
-        var aname = fields[3];
-        var bname = fields[4];
+        // split request into fields
+        var (op, aname, bname) = payload.decode().splitMsgToTuple(3);
         if v {try! writeln("%s %s %s %s".format(cmd,op,aname,bname));try! stdout.flush();}
         
         var left: borrowed GenSymEntry = st.lookup(aname);
@@ -1353,15 +1341,12 @@ module OperatorMsg
     :throws: `UndefinedSymbolError(name)`
 
     */
-    proc opeqvsMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc opeqvsMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var op = fields[2];
-        var aname = fields[3];
-        var dtype = str2dtype(fields[4]);
-        var value = fields[5];
+        // split request into fields
+        var (op, aname, dtypeStr, value) = payload.decode().splitMsgToTuple(4);
+        var dtype = str2dtype(dtypeStr);
         if v {try! writeln("%s %s %s %s %s".format(cmd,op,aname,dtype2str(dtype),value));try! stdout.flush();}
 
         var left: borrowed GenSymEntry = st.lookup(aname);

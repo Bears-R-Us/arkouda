@@ -22,13 +22,11 @@ module ReductionMsg
     // these functions take an array and produce a scalar
     // parse and respond to reduction message
     // scalar = reductionop(vector)
-    proc reductionMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc reductionMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var reductionop = fields[2];
-        var name = fields[3];
+        // split request into fields
+        var (reductionop, name) = payload.decode().splitMsgToTuple(2);
         if v {try! writeln("%s %s %s".format(cmd,reductionop,name));try! stdout.flush();}
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
@@ -193,13 +191,12 @@ module ReductionMsg
         }
     }
 
-    proc countReductionMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc countReductionMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
       // reqMsg: segmentedReduction values segments operator
-      var fields = reqMsg.split();
-      var cmd = fields[1];
-      var segments_name = fields[2]; // segment offsets
-      var size = try! fields[3]:int;
+      // 'segments_name' describes the segment offsets
+      var (segments_name, sizeStr) = payload.decode().splitMsgToTuple(2);
+      var size = try! sizeStr:int;
       var rname = st.nextName();
       if v {try! writeln("%s %s %s".format(cmd,segments_name, size));try! stdout.flush();}
 
@@ -226,14 +223,14 @@ module ReductionMsg
       return counts;
     }
     
-    proc countLocalRdxMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc countLocalRdxMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
       // reqMsg: countLocalRdx segments
       // segments.size = numLocales * numKeys
-      var fields = reqMsg.split();
-      var cmd = fields[1];
-      var segments_name = fields[2]; // segment offsets
-      var size = try! fields[3]:int; // size of original keys array
+      // 'segments_name' describes the segment offsets
+      // 'size[Str]' is the size of the original keys array
+      var (segments_name, sizeStr) = payload.decode().splitMsgToTuple(2);
+      var size = try! sizeStr:int; // size of original keys array
       var rname = st.nextName();
       if v {try! writeln("%s %s %s".format(cmd,segments_name, size));try! stdout.flush();}
 
@@ -261,16 +258,17 @@ module ReductionMsg
     }
 
 
-    proc segmentedReductionMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc segmentedReductionMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
       // reqMsg: segmentedReduction values segments operator
-      var fields = reqMsg.split();
-      var cmd = fields[1];
-      var values_name = fields[2];   // segmented array of values to be reduced
-      var segments_name = fields[3]; // segment offsets
-      var operator = fields[4];      // reduction operator
+      // 'values_name' is the segmented array of values to be reduced
+      // 'segments_name' is the sement offsets
+      // 'operator' is the reduction operator
+      var (values_name, segments_name, operator, skip_nan) = payload.decode().splitMsgToTuple(4);
+      var skipNan = stringtobool(skip_nan);
+      
       var rname = st.nextName();
-      if v {try! writeln("%s %s %s %s".format(cmd,values_name,segments_name,operator));try! stdout.flush();}
+      if v {try! writeln("%s %s %s %s %s".format(cmd,values_name,segments_name,operator,skipNan));try! stdout.flush();}
       var gVal: borrowed GenSymEntry = st.lookup(values_name);
       var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
       var segments = toSymEntry(gSeg, int);
@@ -318,23 +316,23 @@ module ReductionMsg
         var values = toSymEntry(gVal, real);
         select operator {
           when "sum" {
-            var res = segSum(values.a, segments.a);
+            var res = segSum(values.a, segments.a, skipNan);
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "prod" {
-            var res = segProduct(values.a, segments.a);
+            var res = segProduct(values.a, segments.a, skipNan);
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "mean" {
-            var res = segMean(values.a, segments.a);
+            var res = segMean(values.a, segments.a, skipNan);
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "min" {
-            var res = segMin(values.a, segments.a);
+            var res = segMin(values.a, segments.a, skipNan);
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "max" {
-            var res = segMax(values.a, segments.a);
+            var res = segMax(values.a, segments.a, skipNan);
             st.addEntry(rname, new shared SymEntry(res));
           }
           when "argmin" {
@@ -375,15 +373,13 @@ module ReductionMsg
       return try! "created " + st.attrib(rname);
     }
 
-    proc segmentedLocalRdxMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc segmentedLocalRdxMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
       // reqMsg: segmentedReduction keys values segments operator
-      var fields = reqMsg.split();
-      var cmd = fields[1];
-      var keys_name = fields[2];
-      var values_name = fields[3];   // segmented array of values to be reduced
-      var segments_name = fields[4]; // segment offsets
-      var operator = fields[5];      // reduction operator
+      // 'values_name' is the segmented array of values to be reduced
+      // 'segments_name' is the segmented offsets
+      // 'operator' is the reduction operator
+      var (keys_name, values_name, segments_name, operator) = payload.decode().splitMsgToTuple(4);
       var rname = st.nextName();
       if v {try! writeln("%s %s %s %s %s".format(cmd,keys_name,values_name,segments_name,operator));try! stdout.flush();}
 
@@ -499,10 +495,17 @@ module ReductionMsg
        and then reduce over each chunk uisng the operator <Op>. The return array 
        of reduced values is the same size as <segments>.
      */
-    proc segSum(values:[] ?t, segments:[?D] int): [D] t {
+    proc segSum(values:[] ?t, segments:[?D] int, skipNan=false): [D] t {
       var res: [D] t;
       if (D.size == 0) { return res; }
-      var cumsum = + scan values;
+      var cumsum;
+      if (isFloatType(t) && skipNan) {
+        var arrCopy = [elem in values] if isnan(elem) then 0.0 else elem;
+        cumsum = + scan arrCopy;
+      }
+      else {
+        cumsum = + scan values;
+      }
       // Iterate over segments
       forall (i, r) in zip(D, res) {
         // Find the segment boundaries
@@ -519,7 +522,6 @@ module ReductionMsg
       }
       return res;
     }
-
 
     /* Per-Locale Segmented Reductions have the same form as segmented reductions:
        perLoc<Op>(values:[] t, segments: [] int)
@@ -583,20 +585,47 @@ module ReductionMsg
       return res;
     }
     
-    proc segProduct(values:[], segments:[?D] int): [D] real {
-      // Segmented sum of log-magnitudes
+    proc segProduct(values:[] ?t, segments:[?D] int, skipNan=false): [D] real {
+      /* Compute the product of values in each segment. The logic here 
+         is to convert the product into a sum in the log-domain. To 
+         operate in the log-domain, signs and zeros must be removed and 
+         handled separately at the end. Thus, we take the absolute 
+         value of the array and replace all zeros with ones, keeping 
+         track of the original signs and locations of zeros for later. 
+         In computing the result, if there are any zeros in the segment, 
+         the product is zero. Otherwise, the sign of the segment product 
+         is the parity of the negative bits in the segment.
+       */
+      // Regardless of input type, the product is real
       var res: [D] real = 0.0;
       if (D.size == 0) { return res; }
-      const epsilon:real = 1 / max(real);
-      var magnitudes = Math.abs(values);
-      var logs = Math.log(magnitudes:real + epsilon);
+      const isZero = (values == 0);
+      // Take absolute value, replacing zeros with ones
+      // Ones will become zeros in log-domain and not affect + scan
+      var magnitudes: [values.domain] real;
+      if (isFloatType(t) && skipNan) {
+        forall (m, v, z) in zip(magnitudes, values, isZero) {
+          if isnan(v) {
+            m = 1.0;
+          } else {
+            m = Math.abs(v) + z:real;
+          }
+        }
+      } else {
+        magnitudes = Math.abs(values) + isZero:real;
+      }
+      var logs = Math.log(magnitudes);
       var negatives = (Math.sgn(values) == -1);
-      forall (r, m, v, n) in zip(res,
-                                 segMin(magnitudes, segments),
+      forall (r, v, n, z) in zip(res,
                                  segSum(logs, segments),
-                                 segSum(negatives, segments)) {
-        if m > epsilon {
+                                 segSum(negatives, segments),
+                                 segSum(isZero, segments)) {
+        // if any zeros in segment, leave result zero
+        if z == 0 {
+          // n = number of negative values in segment
+          // if n is even, product is positive; if odd, negative
           var sign = -2*(n%2) + 1;
+          // v = the sum of log-magnitudes; must be exponentiated and signed
           r = sign * Math.exp(v);
         }
       }
@@ -617,11 +646,39 @@ module ReductionMsg
       return res;
     }
     
-    proc segMean(values:[] ?t, segments:[?D] int): [D] real {
+    proc segMean(values:[] ?t, segments:[?D] int, skipNan=false): [D] real {
       var res: [D] real;
       if (D.size == 0) { return res; }
-      var sums = segSum(values, segments);
-      var counts = segCount(segments, values.size);
+      var sums;
+      var counts;
+      if (isFloatType(t) && skipNan) {
+        // count cumulative nans over all values
+        var cumnans = isnan(values):int;
+        cumnans = + scan cumnans;
+        
+        // find cumulative nans at segment boundaries
+        var segnans: [D] int;
+        forall si in D {
+          if si == D.high {
+              segnans[si] = cumnans[cumnans.domain.high];
+          } else {
+              segnans[si] = cumnans[segments[si+1]-1];
+          }
+        }
+        
+        // take diffs of adjacent segments to find nan count in each segment
+        var nancounts: [D] int;
+        nancounts[D.low] = segnans[D.low];
+        nancounts[D.low+1..] = segnans[D.low+1..] - segnans[..D.high-1];
+        
+        // calculate sum and counts with nan values replaced with 0.0
+        var arrCopy = [elem in values] if isnan(elem) then 0.0 else elem;
+        sums = segSum(arrCopy, segments);
+        counts = segCount(segments, values.size) - nancounts;
+      } else {
+        sums = segSum(values, segments);
+        counts = segCount(segments, values.size);
+      }
       forall (r, s, c) in zip(res, sums, counts) {
         if (c > 0) {
           r = s:real / c:real;
@@ -653,11 +710,17 @@ module ReductionMsg
       return res:real / keyCounts:real;
     }
 
-    proc segMin(values:[?vD] ?t, segments:[?D] int): [D] t {
+    proc segMin(values:[?vD] ?t, segments:[?D] int, skipNan=false): [D] t {
       var res: [D] t = max(t);
       if (D.size == 0) { return res; }
       var keys = expandKeys(vD, segments);
-      var kv = [(k, v) in zip(keys, values)] (-k, v);
+      var kv: [keys.domain] (int, t);
+      if (isFloatType(t) && skipNan) {
+        var arrCopy = [elem in values] if isnan(elem) then max(real) else elem;
+        kv = [(k, v) in zip(keys, arrCopy)] (-k, v);
+      } else {
+        kv = [(k, v) in zip(keys, values)] (-k, v);
+      }
       var cummin = min scan kv;
       forall (i, r, low) in zip(D, res, segments) {
         var vi: int;
@@ -690,12 +753,19 @@ module ReductionMsg
       return res;
     }    
 
-    proc segMax(values:[?vD] ?t, segments:[?D] int): [D] t {
+    proc segMax(values:[?vD] ?t, segments:[?D] int, skipNan=false): [D] t {
       var res: [D] t = min(t);
       if (D.size == 0) { return res; }
       var keys = expandKeys(vD, segments);
-      var kv = [(k, v) in zip(keys, values)] (k, v);
+      var kv: [keys.domain] (int, t);
+      if (isFloatType(t) && skipNan) {
+        var arrCopy = [elem in values] if isnan(elem) then min(real) else elem;
+        kv = [(k, v) in zip(keys, arrCopy)] (k, v);
+      } else {
+        kv = [(k, v) in zip(keys, values)] (k, v);
+      }
       var cummax = max scan kv;
+      
       forall (i, r, low) in zip(D, res, segments) {
         var vi: int;
         if (i < D.high) {
@@ -1186,6 +1256,12 @@ module ReductionMsg
         r = (+ reduce [i in PrivateSpace] localUvals[i][keyInd]).size;
       }
       return res;
+    }
+
+    proc stringtobool(str: string): bool throws {
+      if str == "True" then return true;
+      else if str == "False" then return false;
+      throw new owned ErrorWithMsg("message: skipNan must be of type bool");
     }
 }
 

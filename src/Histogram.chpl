@@ -7,15 +7,6 @@ module Histogram
 
     use PrivateDist;
     use SymArrayDmap;
-
-    // need + and += defined to support reduction on atomic int 
-    proc +(x: atomic int, y: atomic int) {
-        return x.read() + y.read();
-    }
-    // need + and += defined to support reduction on atomic int     
-    proc +=(X: [?D] int, Y: [D] atomic int) {
-        [i in D] {X[i] += Y[i].read();}
-    }
     
     /*
     Takes the data in array a, creates an atomic histogram in parallel, 
@@ -97,12 +88,14 @@ module Histogram
             if v == aMax {vBin = bins-1;}
             atomicHist[here.id][vBin].add(1);
         }
-        
-        var hist = makeDistArray(bins,int);
 
         // +reduce across per-locale histograms to get counts
-        hist = + reduce [i in PrivateSpace] atomicHist[i];
+        var lHist: [0..#bins] int;
+        forall i in PrivateSpace with (+ reduce lHist) do
+          lHist reduce= atomicHist[i].read();
 
+        var hist = makeDistArray(bins,int);        
+        hist = lHist;
         return hist;
     }
     

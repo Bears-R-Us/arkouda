@@ -1,0 +1,9 @@
+>>> uniqueSort
+all values present? >>> true <<<
+testing return_inverse...
+values and counts match? >>> true <<<
+original array correctly reconstructed from inverse? >>> true <<<
+>>> uniqueGroup
+testing return_inverse...
+offsets, values, and counts match? >>> true <<<
+original array correctly reconstructed from inverse? >>> true <<<

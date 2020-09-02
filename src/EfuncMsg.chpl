@@ -29,13 +29,11 @@ module EfuncMsg
       :throws: `UndefinedSymbolError(name)`
       */
 
-    proc efuncMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc efuncMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var efunc = fields[2];
-        var name = fields[3];
+        // split request into fields
+        var (efunc, name) = payload.decode().splitMsgToTuple(2);
         var rname = st.nextName();
         if v {try! writeln("%s %s %s : %s".format(cmd,efunc,name,rname));try! stdout.flush();}
 
@@ -148,15 +146,11 @@ module EfuncMsg
     :returns: (string)
     :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3vvMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc efunc3vvMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var efunc = fields[2];
-        var name1 = fields[3];
-        var name2 = fields[4];
-        var name3 = fields[5];
+        // split request into fields
+        var (efunc, name1, name2, name3) = payload.decode().splitMsgToTuple(4);
         var rname = st.nextName();
         if v {try! writeln("%s %s %s %s %s %s : %s".format(cmd,efunc,name1,name2,name3,rname));try! stdout.flush();}
 
@@ -220,16 +214,12 @@ module EfuncMsg
     :returns: (string)
     :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3vsMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc efunc3vsMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var efunc = fields[2];
-        var name1 = fields[3];
-        var name2 = fields[4];
-        var dtype = str2dtype(fields[5]);
-        var value = fields[6];
+        var (efunc, name1, name2, dtypestr, value)
+              = payload.decode().splitMsgToTuple(5); // split request into fields
+        var dtype = str2dtype(dtypestr);
         var rname = st.nextName();
         if v {try! writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,name2,dtype,value,rname));try! stdout.flush();}
 
@@ -292,16 +282,12 @@ module EfuncMsg
     :returns: (string)
     :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3svMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc efunc3svMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var efunc = fields[2];
-        var name1 = fields[3];
-        var dtype = str2dtype(fields[4]);
-        var value = fields[5];
-        var name2 = fields[6];
+        var (efunc, name1, dtypestr, value, name2)
+              = payload.decode().splitMsgToTuple(5); // split request into fields
+        var dtype = str2dtype(dtypestr);
         var rname = st.nextName();
         if v {try! writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,dtype,value,name2,rname));try! stdout.flush();}
 
@@ -364,17 +350,13 @@ module EfuncMsg
     :returns: (string)
     :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3ssMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc efunc3ssMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var efunc = fields[2];
-        var name1 = fields[3];
-        var dtype1 = str2dtype(fields[4]);
-        var value1 = fields[5];
-        var dtype2 = str2dtype(fields[6]);
-        var value2 = fields[7];
+        var (efunc, name1, dtype1str, value1, dtype2str, value2)
+              = payload.decode().splitMsgToTuple(6); // split request into fields
+        var dtype1 = str2dtype(dtype1str);
+        var dtype2 = str2dtype(dtype2str);
         var rname = st.nextName();
         if v {try! writeln("%s %s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,dtype1,value1,dtype2,value2,rname));try! stdout.flush();}
 

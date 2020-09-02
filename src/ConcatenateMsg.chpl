@@ -16,14 +16,14 @@ module ConcatenateMsg
     /* Concatenate a list of arrays together
        to form one array
      */
-    proc concatenateMsg(reqMsg: string, st: borrowed SymTab) throws {
+    proc concatenateMsg(cmd: string, payload: bytes, st: borrowed SymTab) throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
-        var fields = reqMsg.split();
-        var cmd = fields[1];
-        var n = try! fields[2]:int; // number of arrays to sort
-        var objtype = fields[3];
-        var names = fields[4..];
+        var (nstr, objtype, rest) = payload.decode().splitMsgToTuple(3);
+        var n = try! nstr:int; // number of arrays to sort
+        var fields = rest.split();
+        const low = fields.domain.low;
+        var names = fields[low..];
         // Check that fields contains the stated number of arrays
         if (n != names.size) { return try! incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(n, names.size)); }
         /* var arrays: [0..#n] borrowed GenSymEntry; */
@@ -36,9 +36,8 @@ module ConcatenateMsg
             var name: string;
             select objtype {
                 when "str" {
-                    var nameFields = rawName.split('+');
-                    name = nameFields[1];
-                    var valName = nameFields[2];
+                    var valName: string;
+                    (name, valName) = rawName.splitMsgToTuple('+', 2);
                     var gval = st.lookup(valName);
                     nbytes += gval.size;
                 }
@@ -71,10 +70,10 @@ module ConcatenateMsg
                 var segStart = 0;
                 var valStart = 0;
                 for (rawName, i) in zip(names, 1..) {
-                    var nameFields = rawName.split('+');
-                    var thisSegs = toSymEntry(st.lookup(nameFields[1]), int);
+                    var (segName, valName) = rawName.splitMsgToTuple('+', 2);
+                    var thisSegs = toSymEntry(st.lookup(segName), int);
                     var newSegs = thisSegs.a + valStart;
-                    var thisVals = toSymEntry(st.lookup(nameFields[2]), uint(8));
+                    var thisVals = toSymEntry(st.lookup(valName), uint(8));
                     forall (i, s) in zip(newSegs.domain, newSegs) with (var agg = newDstAggregator(int)) {
                         agg.copy(esa[i+segStart], s);
                     }

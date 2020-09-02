@@ -19,14 +19,17 @@ from util import *
 
 logging.basicConfig(level=logging.INFO)
 
-BENCHMARKS = ['stream', 'argsort', 'gather', 'scatter', 'reduce', 'scan']
+BENCHMARKS = ['stream', 'argsort', 'coargsort', 'gather', 'scatter', 'reduce', 'scan', 'noop', 'setops']
 
 def get_chpl_util_dir():
     """ Get the Chapel directory that contains graph generation utilities. """
     CHPL_HOME = os.getenv('CHPL_HOME')
+    if not CHPL_HOME:
+        logging.error('$CHPL_HOME not set')
+        sys.exit(1)
     chpl_util_dir = os.path.join(CHPL_HOME, 'util', 'test')
-    if not CHPL_HOME or not os.path.isdir(chpl_util_dir):
-        logging.error('$CHPL_HOME not set, or {} missing'.format(chpl_util_dir))
+    if not os.path.isdir(chpl_util_dir):
+        logging.error('{} does not exist'.format(chpl_util_dir))
         sys.exit(1)
     return chpl_util_dir
 
@@ -117,6 +120,16 @@ def main():
     stop_arkouda_server()
 
     if args.gen_graphs:
+        comp_file = os.getenv('ARKOUDA_PRINT_PASSES_FILE', '')
+        if os.path.isfile(comp_file):
+            with open (comp_file, 'r') as f:
+                out = f.read()
+            add_to_dat('comp-time', out, config_dat_dir, args.graph_infra)
+        emitted_code_file = os.getenv('ARKOUDA_EMITTED_CODE_SIZE_FILE', '')
+        if os.path.isfile(emitted_code_file):
+            with open (emitted_code_file, 'r') as f:
+                out = f.read()
+            add_to_dat('emitted-code-size', out, config_dat_dir, args.graph_infra)
         generate_graphs(args)
 
 if __name__ == '__main__':

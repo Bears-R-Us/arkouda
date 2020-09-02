@@ -13,19 +13,14 @@ default: $(DEFAULT_TARGET)
 VERBOSE ?= 0
 
 CHPL := chpl
-ifeq ("$(shell chpl --version | sed -n "s/chpl version 1\.\([0-9]*\).*/\1/p")", "20")
-  CHPL_VERSION_120 := 1
-endif
-
 CHPL_DEBUG_FLAGS += --print-passes
-ifndef ARKOUDA_DEVELOPER
-CHPL_FLAGS += --fast
-else
+ifdef ARKOUDA_DEVELOPER
 CHPL_FLAGS += --ccflags="-O1"
+else ifdef ARKOUDA_QUICK_COMPILE
+CHPL_FLAGS += --no-checks --no-loop-invariant-code-motion --no-fast-followers --ccflags="-O0"
+else
+CHPL_FLAGS += --fast
 endif
-# need this to avoid a slew of warnings from HDF5 on some platforms
-# --ccflags="-Wno-incompatible-pointer-types"
-CHPL_FLAGS += --ccflags="-Wno-incompatible-pointer-types"
 CHPL_FLAGS += -smemTrack=true
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
 
@@ -97,7 +92,18 @@ CHPL_FLAGS += $(patsubst %,-L%,$(strip $(subst :, ,$(LD_LIBRARY_PATH))))
 endif
 
 .PHONY: check-deps
-check-deps: check-zmq check-hdf5
+ifndef ARKOUDA_SKIP_CHECK_DEPS
+CHECK_DEPS = check-chpl check-zmq check-hdf5
+endif
+check-deps: $(CHECK_DEPS)
+
+CHPL_MINOR := $(shell $(CHPL) --version | sed -n "s/chpl version 1\.\([0-9]*\).*/\1/p")
+CHPL_VERSION_OK := $(shell test $(CHPL_MINOR) -ge 22 && echo yes)
+.PHONY: check-chpl
+check-chpl:
+ifneq ($(CHPL_VERSION_OK),yes)
+	$(error Chapel 1.22.0 or newer is required)
+endif
 
 ZMQ_CHECK = $(DEP_INSTALL_DIR)/checkZMQ.chpl
 check-zmq: $(ZMQ_CHECK)
@@ -161,17 +167,15 @@ endif
 CHPL_FLAGS_WITH_VERSION = $(CHPL_FLAGS)
 CHPL_FLAGS_WITH_VERSION += -sarkoudaVersion="\"$(VERSION)\""
 
-ifdef CHPL_VERSION_120
-	CHPL_COMPAT_FLAGS := -sversion120=true --no-overload-sets-checks
-else
-	CHPL_COMPAT_FLAGS := -sversion120=false
+ifdef ARKOUDA_PRINT_PASSES_FILE
+	PRINT_PASSES_FLAGS := --print-passes-file $(ARKOUDA_PRINT_PASSES_FILE)
 endif
 
 ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
 $(ARKOUDA_MAIN_MODULE): check-deps $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
-	$(CHPL) $(CHPL_DEBUG_FLAGS) $(CHPL_COMPAT_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) -o $@
+	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) -o $@
 
 CLEAN_TARGETS += arkouda-clean
 .PHONY: arkouda-clean
@@ -231,9 +235,9 @@ define DOC_HELP_TEXT
 endef
 $(eval $(call create_help_target,doc-help,DOC_HELP_TEXT))
 
-DOC_DIR := doc
+DOC_DIR := docs
 DOC_SERVER_OUTPUT_DIR := $(ARKOUDA_PROJECT_DIR)/$(DOC_DIR)/server
-DOC_PYTHON_OUTPUT_DIR := $(ARKOUDA_PROJECT_DIR)/$(DOC_DIR)/python
+DOC_PYTHON_OUTPUT_DIR := $(ARKOUDA_PROJECT_DIR)/$(DOC_DIR)
 
 DOC_COMPONENTS := \
 	$(DOC_SERVER_OUTPUT_DIR) \
@@ -241,30 +245,42 @@ DOC_COMPONENTS := \
 $(DOC_COMPONENTS):
 	mkdir -p $@
 
+$(DOC_DIR):
+	mkdir -p $@
+
 .PHONY: doc
-doc: doc-server doc-python
+doc: doc-python doc-server 
 
 CHPLDOC := chpldoc
 CHPLDOC_FLAGS := --process-used-modules
 .PHONY: doc-server
-doc-server: $(DOC_SERVER_OUTPUT_DIR)/index.html
+doc-server: ${DOC_DIR} $(DOC_SERVER_OUTPUT_DIR)/index.html
 $(DOC_SERVER_OUTPUT_DIR)/index.html: $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES) | $(DOC_SERVER_OUTPUT_DIR)
 	@echo "Building documentation for: Server"
+	@# Build the documentation to the Chapel output directory
 	$(CHPLDOC) $(CHPLDOC_FLAGS) $(ARKOUDA_MAIN_SOURCE) -o $(DOC_SERVER_OUTPUT_DIR)
+	@# Create the .nojekyll file needed for github pages in the  Chapel output directory
+	touch $(DOC_SERVER_OUTPUT_DIR)/.nojekyll
+	@echo "Completed building documentation for: Server"
 
 DOC_PYTHON_SOURCE_DIR := pydoc
 DOC_PYTHON_SOURCES = $(shell find $(DOC_PYTHON_SOURCE_DIR)/ -type f)
 .PHONY: doc-python
-doc-python: $(DOC_PYTHON_OUTPUT_DIR)/index.html
+doc-python: ${DOC_DIR} $(DOC_PYTHON_OUTPUT_DIR)/index.html
 $(DOC_PYTHON_OUTPUT_DIR)/index.html: $(DOC_PYTHON_SOURCES) $(ARKOUDA_MAKEFILES)
 	@echo "Building documentation for: Python"
 	$(eval $@_TMP := $(shell mktemp -d))
 	@# Build the documentation to a temporary output directory.
 	cd $(DOC_PYTHON_SOURCE_DIR) && $(MAKE) BUILDDIR=$($@_TMP) html
-	@# Delete old output directory and move `html` directory to its place.
-	$(RM) -r $(DOC_PYTHON_OUTPUT_DIR)
-	mv $($@_TMP)/html $(DOC_PYTHON_OUTPUT_DIR)
+	@# Delete old python docs but retain Chapel docs in $(DOC_SERVER_OUTPUT_DIR).
+	$(RM) -r docs/*html docs/*js docs/_static docs/_sources docs/autoapi docs/setup/ docs/usage docs/*inv
+	@# Move newly-generated python docs including .nojekyll file needed for github pages.
+	mv $($@_TMP)/html/* $($@_TMP)/html/.nojekyll $(DOC_PYTHON_OUTPUT_DIR)
+	@# Remove temporary directory.
 	$(RM) -r $($@_TMP)
+	@# Remove server/index.html placeholder file to prepare for doc-server content
+	$(RM) docs/server/index.html
+	@echo "Completed building documentation for: Python"
 
 CLEAN_TARGETS += doc-clean
 .PHONY: doc-clean
@@ -301,7 +317,13 @@ endef
 $(eval $(call create_help_target,test-help,TEST_HELP_TEXT))
 
 .PHONY: test
-test: $(TEST_TARGETS)
+test: test-python
+
+.PHONY: test-chapel
+test-chapel: $(TEST_TARGETS)
+
+.PHONY: test-all
+test-all: test-python test-chapel
 
 $(TEST_BINARY_DIR):
 	mkdir -p $(TEST_BINARY_DIR)
@@ -315,6 +337,9 @@ test/%: test/%.chpl
 
 print-%:
 	@echo "$($*)"
+
+test-python: 
+	python3 -m pytest -c pytest.ini
 
 CLEAN_TARGETS += test-clean
 .PHONY: test-clean

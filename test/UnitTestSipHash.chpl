@@ -1,3 +1,4 @@
+use TestBase;
 use SipHash;
 
 const vectors_sip64_raw: [0..#64][0..#8] int = [
@@ -471,16 +472,13 @@ for i in 0..#64 {
 proc U8TOU64_LE(vec: [?D] uint(8)): uint(64) {
   var res: uint(64);
   for i in D.low..#8 {
-    res |= (vec[i]:uint(64)) << ((7-i)*8);
+    res |= (vec[i]:uint(64)) << (mod(7-i, 8)*8);
   }
   return res;
 }
 
 proc U8TO2U64_LE(vec: [?D] uint(8)): 2*uint(64) {
-  var res: 2*uint(64);
-  res[1] = U8TOU64_LE(vec[D.low..#8]);
-  res[2] = U8TOU64_LE(vec[D.low+8..#8]);
-  return res;
+  return (U8TOU64_LE(vec[D.low..#8]), U8TOU64_LE(vec[D.low+8..#8]));
 }
 
 const version = ["sip64", "sip128"];
@@ -501,8 +499,10 @@ proc main() {
         const h = sipHash128(msg, 0..#i);
         const vec = U8TO2U64_LE(vectors_sip128[i]);
         if (h != vec) {
+          const (h1, h2) = h;
+          const (vec1, vec2) = vec;
           errors += 1;
-          writeln("%i:\n%016xu%016xu vs \n%016xu%016xu\n".format(i, h[1], h[2], vec[1], vec[2]));
+          writeln("%i:\n%016xu%016xu vs \n%016xu%016xu\n".format(i, h1, h2, vec1, vec2));
         }
       }
     }

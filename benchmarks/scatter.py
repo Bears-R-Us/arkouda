@@ -4,6 +4,8 @@ import time, argparse
 import numpy as np
 import arkouda as ak
 
+TYPES = ('int64', 'float64', 'bool')
+
 def time_ak_scatter(isize, vsize, trials, dtype, random):
     print(">>> arkouda scatter")
     cfg = ak.get_config()
@@ -89,7 +91,7 @@ def create_parser():
     parser.add_argument('-i', '--index-size', type=int, help='Length of index array (number of scatters to perform)')
     parser.add_argument('-v', '--value-size', type=int, help='Length of array from which values are scattered')
     parser.add_argument('-t', '--trials', type=int, default=6, help='Number of times to run the benchmark')
-    parser.add_argument('-d', '--dtype', default='int64', help='Dtype of value array (int64, float64, or bool)')
+    parser.add_argument('-d', '--dtype', default='int64', help='Dtype of value array ({})'.format(', '.join(TYPES)))
     parser.add_argument('-r', '--randomize', default=False, action='store_true', help='Use random values instead of ones')
     parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
     parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
@@ -101,13 +103,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
     args.index_size = args.size if args.index_size is None else args.index_size
     args.value_size = args.size if args.value_size is None else args.value_size
-    if args.dtype not in ('int64', 'float64', 'bool'):
-        raise ValueError("Dtype must be either int64, float64, or bool, not {}".format(args.dtype))
+    if args.dtype not in TYPES:
+        raise ValueError("Dtype must be {}, not {}".format('/'.join(TYPES), args.dtype))
     ak.verbose = False
     ak.connect(args.hostname, args.port)
 
     if args.correctness_only:
-        check_correctness(args.dtype, args.randomize)
+        for dtype in TYPES:
+            check_correctness(dtype, args.randomize)
         sys.exit(0)
     
     print("size of index array = {:,}".format(args.index_size))

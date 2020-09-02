@@ -1,53 +1,42 @@
-module UnitTestUnique
+prototype module UnitTestUnique
 {
+    use TestBase;
+
     use Unique;
-    use MultiTypeSymbolTable;
-    use MultiTypeSymEntry;
-    use SegmentedArray;
     
     use Random;
-    use Time only;
-
-    use BlockDist;
-    use AryUtil;
 
 
     // fill a with integers from interval aMin..(aMax-1)
     proc fillRandInt(a: [?aD] ?t, aMin: t, aMax: t) {
-
-        var t1 = Time.getCurrentTime();
-        
-        coforall loc in Locales {
-            on loc {
-                var R = new owned RandomStream(real); R.getNext();
-                for i in a.localSubdomain() { a[i] = (R.getNext() * (aMax -aMin) + aMin):t; }
-            }
+      var d: Diags; d.start();
+      coforall loc in Locales {
+        on loc {
+          var R = new owned RandomStream(real); R.getNext();
+          for i in a.localSubdomain() { a[i] = (R.getNext() * (aMax -aMin) + aMin):t; }
         }
-
-        writeln("compute time = ", Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+      }
+      d.stop("fillRandInt");
     }
 
     // fill a with integers from interval aMin..(aMax-1)
     proc fillRandFromArray(a: [?aD] int, b: [?bD] int) {
-
-        var t1 = Time.getCurrentTime();
-        
-        coforall loc in Locales {
-            on loc {
-                var R = new owned RandomStream(real); R.getNext();
-                for i in a.localSubdomain() {
-                    var vi = (R.getNext() * ((bD.high+1) - bD.low) + bD.low):int;//is this right????
-                    a[i] = b[vi];
-                }
-            }
+      var d: Diags; d.start();
+      coforall loc in Locales {
+        on loc {
+          var R = new owned RandomStream(real); R.getNext();
+          for i in a.localSubdomain() {
+            var vi = (R.getNext() * ((bD.high+1) - bD.low) + bD.low):int;//is this right????
+            a[i] = b[vi];
+          }
         }
-
-        writeln("compute time = ", Time.getCurrentTime() - t1,"sec"); try! stdout.flush();
+      }
+      d.stop("fillRandFromArray");
     }
 
     proc createRandomStrings(n: int, minLen: int, maxLen: int, nUnique: int, st: borrowed SymTab) throws {
-      var t = new Timer();
-      t.start();
+      var d: Diags;
+      d.start();
       var uLens = makeDistArray(nUnique, int);
       // Add 1 for null byte
       fillRandInt(uLens, minLen+1, maxLen+1);
@@ -63,9 +52,8 @@ module UnitTestUnique
       fillRandInt(inds, 0, nUnique - 1);
       var (segs, vals) = uStr[inds];
       var str = new shared SegString(segs, vals, st);
-      writeln("compute time = ", t.elapsed());
-      writeln("Random strings:");
-      show(str);
+      d.stop("createRandomStrings");
+      writeSegString("str", str);
       return str;
     }
 
@@ -80,37 +68,17 @@ module UnitTestUnique
       return str;
     }
 
-    proc show(str: SegString) throws {
-      const n = str.size;
-      for i in 0..#min(n, 5) {
-        writeln(str[i]);
-      }
-      if (n >= 10) {
-        writeln("...");
-        for i in n-5..#5 {
-          writeln(str[i]);
-        }
-      }
-    }
-
     // n: length of array
     // aMin: min value
     // aMax: max value
     // nValues: number of unique values
     
     proc test_unique(n: int, aMin: int, aMax: int, nVals: int) {
-
-        writeln("n = ",n);
-        writeln("aMin = ", aMin);
-        writeln("aMax = ", aMax);
-        writeln("nVals = ",nVals);
-        try! stdout.flush();
-
-        const aDom = newBlockDom({0..#n});
+        const aDom = makeDistDom(n);
 
         var a: [aDom] int;
 
-        const valsDom = newBlockDom({0..#nVals});
+        const valsDom = makeDistDom(nVals);
         var vals: [valsDom] int;
         
         // fill a with random ints from a range
@@ -118,17 +86,17 @@ module UnitTestUnique
         fillRandFromArray(a,vals);
         
         writeln(">>> uniqueSort");
-        var t1 = Time.getCurrentTime();
+        var d: Diags;
 
+        d.start();
         var (aV1,aC1) = uniqueSort(a);
+        d.stop("uniqueSort");
 
-        writeln("total time = ", Time.getCurrentTime() - t1, "sec"); try! stdout.flush();
+        //printAry("aV1 = ",aV1);
+        //printAry("aC1 = ",aC1);
 
-        printAry("aV1 = ",aV1);
-        printAry("aC1 = ",aC1);
-
-        writeln("aV1.size = ",aV1.size);
-        writeln("totalCounts = ",+ reduce aC1); try! stdout.flush();
+        //writeln("aV1.size = ",aV1.size);
+        //writeln("totalCounts = ",+ reduce aC1); try! stdout.flush();
         var present: [aDom] bool;
         forall (x, p) in zip(a, present) {
           for u in aV1 {
@@ -150,29 +118,21 @@ module UnitTestUnique
     }
 
     proc test_strings(n: int, minLen: int, maxLen: int, nVals: int) throws {
-
-        writeln("n = ",n);
-        writeln("minLen = ", minLen);
-        writeln("maxLen = ", maxLen);
-        writeln("nVals = ",nVals);
-        try! stdout.flush();
-
         var st = new owned SymTab();
         var str = createRandomStrings(n, minLen, maxLen, nVals, st);
         
         writeln(">>> uniqueGroup");
-        var t1 = Time.getCurrentTime();
-
+        var d: Diags;
+        d.start();
         var (uo1, uv1, c1, inv1) = uniqueGroup(str);
+        d.stop("uniqueGroup");
 
-        writeln("total time = ", Time.getCurrentTime() - t1, "sec"); try! stdout.flush();
         // var uStr1 = strFromArrays(uo1, uv1, st);
         var uStr1 = new owned SegString(uo1, uv1, st);
-        writeln("Unique strings:");
-        show(uStr1);
+        writeSegString("Unique strings:", uStr1);
         
-        writeln("uStr1.size = ",uStr1.size);
-        writeln("totalCounts = ",+ reduce c1); try! stdout.flush();
+        //writeln("uStr1.size = ",uStr1.size);
+        //writeln("totalCounts = ",+ reduce c1); try! stdout.flush();
         writeln("testing return_inverse...");
         var (uo2, uv2, c2, inv2) = uniqueGroup(str, returnInverse=true);
         // var uStr2 = strFromArrays(uo2, uv2, st);

@@ -27,17 +27,15 @@ module In1dMsg
        in1dMsg processes the request, considers the size of the arguements, and decides which implementation
        of in1d to utilize.
     */
-    proc in1dMsg(reqMsg: string, st: borrowed SymTab): string throws {
+    proc in1dMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var fields = reqMsg.split(); // split request into fields
-        var cmd = fields[1];
-        var name = fields[2];
-        var sname = fields[3];
+        // split request into fields
+        var (name, sname, flag) = payload.decode().splitMsgToTuple(3);
         var invert: bool;
-        if fields[4] == "True" {invert = true;}
-        else if fields[4] == "False" {invert = false;}
-        else {return try! "Error: %s: %s".format(pn,fields[4]);}
+        if flag == "True" {invert = true;}
+        else if flag == "False" {invert = false;}
+        else {return try! "Error: %s: %s".format(pn,flag);}
 
         // get next symbol name
         var rname = st.nextName();
