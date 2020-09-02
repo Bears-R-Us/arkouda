@@ -15,11 +15,14 @@ def register_pda(pda, user_defined_name):
     Parameters
     ----------
     pda : str or pdarray
-    user_defined_name : string of user defined name
+        the array to register
+    user_defined_name : str
+        user defined name array is to be registered under
 
     Returns
     -------
-    pdarray : points to original input pda but has user defined name in the arkouda server
+    pdarray
+        points to original input pda but is also registered with user defined name in the arkouda server
 
     See also
     --------
@@ -50,18 +53,20 @@ def register_pda(pda, user_defined_name):
     return ret
 
 
-def attach_pda(name):
+def attach_pda(user_defined_name):
     """
     Return a pdarray attached to the a registered name in the arkouda server which was registered using arkouda.register_pda()
     Note: registered names in the server are immune to deletion until they are unregistered.
     
     Parameters
     ----------
-    name : string of user defined name
+    user_defined_name : str
+        user defined name which array was registered under
 
     Returns
     -------
-    pdarray : points to pdarray with user defined name in the arkouda server
+    pdarray
+        points to pdarray registered with user defined name in the arkouda server
 
     See also
     --------
@@ -76,10 +81,10 @@ def attach_pda(name):
     >>> # ...other work...
     >>> ak.unregister_pda(b)
     """
-    if not isinstance(name, str):
+    if not isinstance(user_defined_name, str):
         raise ValueError("user_defined_name must be a str")
 
-    repMsg = generic_msg("attach {}".format(name))
+    repMsg = generic_msg("attach {}".format(user_defined_name))
     return create_pdarray(repMsg)
 
 
@@ -90,7 +95,8 @@ def unregister_pda(pda):
     
     Parameters
     ----------
-    pda : str or pdarray which has previously been registered with a user define name using register_pda
+    pda : str or pdarray
+        user define name which array was registered under
 
     Returns
     -------
