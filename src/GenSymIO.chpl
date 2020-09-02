@@ -652,12 +652,13 @@ module GenSymIO {
                             }
 
                             /*
-                             * The fact that intersection is a subset of a local subdomain means there 
-                             * should be no communication in the read
+                             * The fact that intersection is a subset of a local subdomain means
+                             * there should be no communication in the read
                              */
                             local {
-                                C_HDF5.H5Dread(dataset, getHDF5Type(A.eltType), memspace, dataspace, 
-                                                      C_HDF5.H5P_DEFAULT, c_ptrTo(A.localSlice(intersection)));
+                                C_HDF5.H5Dread(dataset, getHDF5Type(A.eltType), memspace, 
+                                        dataspace, C_HDF5.H5P_DEFAULT, 
+                                        c_ptrTo(A.localSlice(intersection)));
                             }
                             C_HDF5.H5Sclose(memspace);
                             C_HDF5.H5Sclose(dataspace);
@@ -717,7 +718,8 @@ module GenSymIO {
         try {
             filename = jsonToPdArray(jsonfile, 1)[0];
         } catch {
-            return try! "Error: could not decode json filenames via tempfile (%i files: %s)".format(1, jsonfile);
+            return try! "Error: could not decode json filenames via tempfile " +
+                                                      "(%i files: %s)".format(1, jsonfile);
         }
 
         var warnFlag: bool;
@@ -746,7 +748,8 @@ module GenSymIO {
         } catch e: FileNotFoundError {
               return try! "Error: unable to open file for writing: %s".format(filename);
         } catch e: MismatchedAppendError {
-              return "Error: appending to existing files must be done with the same number of locales. Try saving with a different directory or filename prefix?";
+              return "Error: appending to existing files must be done with the same number" +
+                      "of locales. Try saving with a different directory or filename prefix?";
         } catch e: Error {
               return "Error: problem writing to file %s".format(e);
         }
@@ -869,7 +872,7 @@ module GenSymIO {
             */
            var localeValuesIndexStart: [PrivateSpace] int;
            var localeValuesIndexEnd: [PrivateSpace] int;
-           
+           var forwardShuffleSliceIndices: [PrivateSpace] int;
            /*
             * The localeValuesFileIndexEnd object is a globally-scoped PrivateSpace
             * array which contains the zero-based end index value for the Strings values 
@@ -935,7 +938,7 @@ module GenSymIO {
 
                        /*
                         * Close the file now that the Strings values end index has been 
-                        * retrieved and assigned to the localeValuesFileIndexEnd.ned
+                        * retrieved and assigned to the localeValuesFileIndexEnd array.
                         */
                         C_HDF5.H5Fclose(fileId);
                    }
@@ -951,7 +954,7 @@ module GenSymIO {
                */
               coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) with(ref indices,
                                      ref localeValuesIndexStart, ref localeValuesIndexEnd, 
-                                     ref localeValuesFileIndexEnd) do on loc {
+                                     ref localeValuesFileIndexEnd, ref forwardShuffleSliceIndices) do on loc {
                   var start: int;
                   var end: int;
                   for i in 0..idx - 1 do {
@@ -961,6 +964,15 @@ module GenSymIO {
 
                   localeValuesIndexEnd[idx] = end;
                   localeValuesIndexStart[idx] = start;
+                  const locDom = A.localSubdomain();
+                  for (value, i) in zip(A.localSlice(locDom),
+                                                    0..A.localSlice(locDom).size-1) {
+                      if value >= localeValuesIndexEnd[idx] {
+                          forwardShuffleSliceIndices[idx] = i;
+                          writeln("THE FORWARD SHUFFLE SLICE %t for locale %t".format(i,idx));
+                          break;
+                      }
+                  }
               }
             }
 
@@ -970,7 +982,7 @@ module GenSymIO {
             * hdf5 file and (4) close the hdf5 file
             */
             coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) with 
-                            (ref indices, ref localeValuesIndexStart, 
+                            (ref indices, ref localeValuesIndexStart, ref forwardShuffleSliceIndices,
                                     ref localeValuesIndexEnd) do on loc {
               const myFilename = filenames[idx];
               if GenSymIO_DEBUG {
@@ -1160,15 +1172,16 @@ module GenSymIO {
                  * elements to be appended to this locale's segments array.
                  */
                 var segments = convertLocalSegmentsSliceToList(A, locDom);
-
+                writeln("ORIGINAL SEGMENTS FOR locale %t: %t".format(idx,segments));
                 /*
                  * Removes any segments elements that are less than the start index of
                  * the Strings values array corresponding to this locale. Note: this situation
                  * occurs when String values elements are shuffled to complete strings that
                  * span two locales.
                  */
-                var newSegmentsList = adjustForStringSegmentsSlices(localeValuesIndexStart[idx], 
-                                                                              segments);
+                var newSegmentsList = adjustForStringSegmentsSlices(localeValuesIndexStart[idx], localeValuesIndexEnd[idx],
+                                                                              A, locDom, idx);
+                writeln("SEGMENTS FOR %t AFTER SLICES %t".format(idx,newSegmentsList));
                 /*
                  * Iterate the next locale's segments elements and, if any of them are 
                  * less than the startIndex of the next locale's segments array, append
@@ -1176,6 +1189,20 @@ module GenSymIO {
                  * occurs when String values elements are shuffled to complete strings that
                  * span two locales.
                  */
+                if idx > 0 {
+                    var forwardShuffleSliceIndex = forwardShuffleSliceIndices[idx-1];
+                    
+                    on Locales[idx-1] {
+                        const locDom = A.localSubdomain();
+                        for (value, i) in zip(A.localSlice(locDom),
+                                                       0..A.localSlice(locDom).size-1) {
+                            if i >= forwardShuffleSliceIndex {
+                                newSegmentsList.insert(0, value:int);
+                            }
+                        }
+                    }
+                }
+                
                 if idx < filenames.size-1 {
                     on Locales[idx+1] {
                         const locDom = A.localSubdomain();
@@ -1183,6 +1210,7 @@ module GenSymIO {
 
                         for (value, i) in zip(A.localSlice(locDom), 
                                                             0..A.localSlice(locDom).size-1) {
+                            writeln("CHECKING for locale %t SEGMENT VALUE %t AGAINST stopIndex: %t".format(idx,value,stopIndex));
                             if value < stopIndex {
                                 newSegmentsList.append(value:int);
                             } else {
@@ -1191,7 +1219,7 @@ module GenSymIO {
                         }
                     }
                 }
-
+                writeln("SEGMENTS for locale %t AFTER APPENDING %".format(idx, newSegmentsList));
                 /*
                  * Now that the segments are correctly assigned to the locale following adjustments
                  * per Strings values shuffling, rebase the segments list to an array starting at
@@ -1199,15 +1227,15 @@ module GenSymIO {
                  */
                 var finalSegments = rebaseSegmentsDataset(newSegmentsList);
                 H5LTmake_dataset_WAR(myFileID, '/%s/segments'.format(group).c_str(), 1,
-                                             c_ptrTo([finalSegments.size:uint(64)]),getHDF5Type(int),
-                                             c_ptrTo(finalSegments));
+                                           c_ptrTo([finalSegments.size:uint(64)]),getHDF5Type(int),
+                                           c_ptrTo(finalSegments));
             } else {
                 /*
                  * This is neither a Strings values nor a Strings segments pdarray, so 
                  * simply write the local slice out to the top-level group of the hdf5 file
                  */
                 H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
-                                            getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
+                                          getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
             }
             // Close the file now that the 1..n pdarrays have been written
             C_HDF5.H5Fclose(myFileID);
@@ -1216,7 +1244,7 @@ module GenSymIO {
     }
 
     /*
-     * Generates the slice index for the locale strings array and adds it to the 
+     * Generates the slice index for the locale Strings values array and adds it to the 
      * indices parameter. Note: the slice index will be used to remove characters from 
      * the current locale that correspond to the last string of the previous locale.
      */
@@ -1228,17 +1256,17 @@ module GenSymIO {
             /*
              * Generate the list slice index that will filter out the non-null uint(8) 
              * characters, which are the characters that complete the last string started 
-             * in the previous locale, along with the null uint(8) character. The result
-             * is that the resulting list will start at the first non-null uint(8) character, 
+             * in the previous locale, along with the null uint(8) character. Consequently,
+             * the resulting list will start at the first non-null uint(8) character,
              * which is the start of the first string to be assigned to the hdf5 file 
              * corresponding to this locale.
              */
             for (value, i) in zip(A.localSlice(locDom), 0..A.localSlice(locDom).size-1) {
                 if value == NULL_STRINGS_VALUE {
                     /*
-                     * Since the char is the null uint(8) character, that means that the chars
-                     * composing the last string from the previous locale have been accounted
-                     * for, so update the slice index and then breakout from the for loop.
+                     * Since the char is the null uint(8) character, that means that the
+                     * chars composing the last string from the previous locale have been
+                     * accounted for, so update the slice index andbreakout from the for loop.
                      */
                     sliceIndex = i + 1;
                     break;
@@ -1294,13 +1322,15 @@ module GenSymIO {
      * 
      * Note: this method is required to handle situations where the Strings values 
      * array is shuffled to the extent that 1..n of the segment values no longer 
-     * correspond to the current locale.
+     * correspond to a particular locale.
      */
-    private proc adjustForStringSegmentsSlices(startIndex : int, 
-                                                   segmentsList : list(int)) {;
+    private proc adjustForStringSegmentsSlices(startIndex : int, endIndex : int, 
+                                           A, locDom, idx) : list(int){;
         var newSegmentsList: list(int, parSafe=true);
-        for segment in segmentsList {
-            if segment >= startIndex {
+        try! writeln("START INDEX: %t END INDEX: %t for locale %t".format(startIndex,endIndex,idx));
+        for segment in A.localSlice(locDom) {
+            try! writeln("CHECKING %t with startIndex: %t endIndex: %t for locale %t".format(segment, startIndex, endIndex, idx));
+            if segment >= startIndex && segment < endIndex {
                 newSegmentsList.append(segment:int);
             }
         }
@@ -1308,13 +1338,14 @@ module GenSymIO {
     }
 
     /*
-     * Reads the Strings values start and end indices for a file, which correspond to 
+     * Reads the Strings values zero-based end index for a file, which corresponds to 
      * the values array chunk written to the file.
      */
-    private proc getStringsValuesStartEndIndices(fileId: int, group: string) throws {
-        var valuesLocaleIndices = [0,0];
+    private proc getStringsValuesStartEndIndices(fileId: int, 
+                                                   group: string) : [] int throws {
+        var valuesLocaleIndices = [0];
         readHDF5Dataset(file_id=fileId, dsetName='/%s/values-index-bounds'.format(group), 
-                                                data=valuesLocaleIndices);
+                             data=valuesLocaleIndices);
         return valuesLocaleIndices;
     }
 
@@ -1322,6 +1353,9 @@ module GenSymIO {
      * Generates a list of segments, or indices to the start location
      * of each string within a uint(8) array. The segmentsList will be 
      * written to the hdf5 file as the segments dataset.
+     * 
+     * NOTE: this is deprecated as it was used in the first version of
+     * Strings hdf5 file persistence
      */
     private proc generateSegmentsList(valuesList: list(uint(8))) : list(int) {
         var segmentsList: list(int, parSafe=true);
