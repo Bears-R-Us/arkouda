@@ -244,7 +244,7 @@ class IOTest(ArkoudaTest):
 
     def testSaveStringsDataset(self):
         # Create, save, and load Strings dataset
-        strings_array = ak.array(['string{}'.format(num) for num in list(range(1,11))])
+        strings_array = ak.array(['testing string{}'.format(num) for num in list(range(1,11))])
         strings_array.save('{}/strings-test'.format(IOTest.io_test_dir), dataset='strings')
         r_strings_array = ak.load('{}/strings-test'.format(IOTest.io_test_dir), 
                                   dataset='strings')
@@ -259,6 +259,15 @@ class IOTest(ArkoudaTest):
                             format(IOTest.io_test_dir), dsetName='strings/values'))
         self.assertIsNotNone(ak.read_hdf(filenames='{}/strings-test_LOCALE0'.\
                             format(IOTest.io_test_dir), dsetName='strings/segments'))
+        
+    def testSaveLongStringsDataset(self):
+        # Create, save, and load Strings dataset
+        strings_array = ak.array(['testing a longer string{} to be written, loaded and appended'.\
+                                  format(num) for num in list(range(1,11))])
+        strings_array.save('{}/strings-test'.format(IOTest.io_test_dir), dataset='strings')
+        r_strings_array = ak.load('{}/strings-test'.format(IOTest.io_test_dir), 
+                                  dataset='strings')
+        self.assertTrue((strings_array == r_strings_array).all())       
 
     def testSaveMixedStringsDataset(self):
         strings_array = ak.array(['string {}'.format(num) for num in list(range(1,11))])
