@@ -22,7 +22,7 @@ def register_pda(pda, user_defined_name):
     Returns
     -------
     pdarray
-        points to original input pda but is also registered with user defined name in the arkouda server
+        pdarray which points to original input pda but is also registered with user defined name in the arkouda server
 
     See also
     --------
@@ -66,7 +66,7 @@ def attach_pda(user_defined_name):
     Returns
     -------
     pdarray
-        points to pdarray registered with user defined name in the arkouda server
+        pdarray which points to pdarray registered with user defined name in the arkouda server
 
     See also
     --------
