@@ -109,6 +109,7 @@ module GenSymIO {
   class DatasetNotFoundError: Error { proc init() {} }
   class NotHDF5FileError: Error { proc init() {} }
   class MismatchedAppendError: Error { proc init() {} }
+  class WriteModeError: Error { proc init() {} }
   class SegArrayError: Error { proc init() {} }
 
   proc decode_json(json: string, size: int) throws {
@@ -218,7 +219,7 @@ module GenSymIO {
       } catch e: NotHDF5FileError {
         return try! "Error: cannot open as HDF5 file %s".format(fname);
       } catch e: SegArrayError {
-        return try! "Error: expecte segmented array but could not find sub-datasets '%s' and '%s'".format(SEGARRAY_OFFSET_NAME, SEGARRAY_VALUE_NAME);
+        return try! "Error: expected segmented array but could not find sub-datasets '%s' and '%s'".format(SEGARRAY_OFFSET_NAME, SEGARRAY_VALUE_NAME);
       } catch {
         // Need a catch-all for non-throwing function
         return try! "Error: unknown cause";
@@ -676,6 +677,8 @@ module GenSymIO {
       return try! "Error: unable to open file for writing: %s".format(filename);
     } catch e: MismatchedAppendError {
       return "Error: appending to existing files must be done with the same number of locales. Try saving with a different directory or filename prefix?";
+    } catch e: WriteModeError {
+      return "Error: cannot append the non-existent file %s. Please save the file in standard truncate mode".format(filename);
     } catch {
       return "Error: problem writing to file";
     }
@@ -712,8 +715,16 @@ module GenSymIO {
     // if appending, make sure number of files hasn't changed and all are present
     if (mode == 1) {
       var allexist = true;
+      var anyexist = false;
       for f in filenames {
-        allexist &= try! exists(f);
+        var result =  try! exists(f);
+        allexist &= result;
+        if result {
+            anyexist = true;
+        }
+      }
+      if !anyexist {
+          throw new owned WriteModeError();
       }
       if !allexist || (matchingFilenames.size != filenames.size) {
         throw new owned MismatchedAppendError();
