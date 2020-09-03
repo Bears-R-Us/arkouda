@@ -48,10 +48,10 @@ proc main() {
     // configure token authentication and server startup message accordingly
     if authenticate {
         serverToken = getArkoudaToken('%s%s%s'.format(arkDirectory, pathSep, 'tokens.txt'));
-        serverMessage = "server listening on %s:%t with token %s".format(serverHostname, 
+        serverMessage = "server listening on tcp://%s:%t?token=%s".format(serverHostname, 
                                         ServerPort, serverToken);
     } else {
-        serverMessage = "server listening on %s:%t".format(serverHostname, ServerPort);
+        serverMessage = "server listening on tcp://%s:%t".format(serverHostname, ServerPort);
     }
 
     socket.bind("tcp://*:%t".format(ServerPort));
