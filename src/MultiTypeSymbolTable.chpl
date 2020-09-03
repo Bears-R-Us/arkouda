@@ -5,6 +5,7 @@ module MultiTypeSymbolTable
     use ServerErrorStrings;
     
     use MultiTypeSymEntry;
+    use Map;
 
     /* symbol table */
     class SymTab
@@ -15,14 +16,9 @@ module MultiTypeSymbolTable
         var registry: domain(string);
 
         /*
-        Associative domain of strings
+        Map indexed by strings
         */
-        var tD: domain(string);
-
-        /*
-        Associative array indexed by strings
-        */
-        var tab: [tD] shared GenSymEntry?;
+        var tab: map(string, shared GenSymEntry);
 
         var nid = 0;
         /*
@@ -36,7 +32,7 @@ module MultiTypeSymbolTable
         proc regName(name: string, userDefinedName: string) throws {
 
             // check to see if name is defined
-            if (!tD.contains(name) || tab[name] == nil) {
+            if (!tab.contains(name)) {
                 if (v) {writeln("regName: undefined symbol ",name);try! stdout.flush();}
                 throw new owned ErrorWithMsg(unknownSymbolError("regName", name));
             }
@@ -48,20 +44,18 @@ module MultiTypeSymbolTable
             }
             
             registry += userDefinedName; // add user defined name to registry
-            tD += userDefinedName; // add user defined name to symbol table
-            tab[userDefinedName] = tab[name]; // point at same shared table entry
+            tab.addOrSet(userDefinedName, tab.getValue(name)); // point at same shared table entry
         }
 
         proc unregName(name: string) throws {
             
             // check to see if name is defined
-            if (!registry.contains(name) || !tD.contains(name) || tab[name] == nil)  {
+            if (!registry.contains(name) || !tab.contains(name))  {
                 if (v) {writeln("unregName: undefined symbol ",name);try! stdout.flush();}
                 throw new owned ErrorWithMsg(unknownSymbolError("regName", name));
             }
-            tab[name] = nil; // clear out entry for name
+            tab.remove(name); // clear out entry for name
             registry -= name; // take name out of registry
-            tD -= name; // take name out of symbol table
         }
         
         // is it an error to redefine an entry? ... probably not
@@ -85,16 +79,12 @@ module MultiTypeSymbolTable
             if t == bool {overMemLimit(len);} else {overMemLimit(len*numBytes(t));}
             
             var entry = new shared SymEntry(len, t);
-            if (tD.contains(name)) {
+            if (tab.contains(name)) {
                 if (v) {writeln("redefined symbol ",name);try! stdout.flush();}
             }
-            else {
-                tD += name;
-            }
-            
-            ref tableEntry = tab[name];
-            tableEntry = entry;
-            return tableEntry!.borrow().toSymEntry(t);
+
+            tab.addOrSet(name, entry);
+            return tab.getBorrowed(name).toSymEntry(t);
         }
 
         /*
@@ -112,16 +102,12 @@ module MultiTypeSymbolTable
             // check and throw if memory limit would be exceeded
             overMemLimit(entry.size*entry.itemsize);
 
-            if (tD.contains(name)) {
+            if (tab.contains(name)) {
                 if (v) {writeln("redefined symbol ",name);try! stdout.flush();}
             }
-            else {
-                tD += name;
-            }
-            
-            ref tableEntry = tab[name];
-            tableEntry = entry;
-            return tableEntry!.borrow();
+
+            tab.addOrSet(name, entry);
+            return tab.getBorrowed(name);
         }
 
         /*
@@ -153,9 +139,8 @@ module MultiTypeSymbolTable
         :type name: string
         */
         proc deleteEntry(name: string) {
-            if (tD.contains(name) && !registry.contains(name)) {
-                tab[name] = nil;
-                tD -= name;
+            if (tab.contains(name) && !registry.contains(name)) {
+                tab.remove(name);
             }
             else {
                 if (v) {writeln("deleteEntry: unkown symbol ",name);try! stdout.flush();}
@@ -172,14 +157,14 @@ module MultiTypeSymbolTable
         :throws: `unkownSymbolError(name)`
         */
         proc lookup(name: string): borrowed GenSymEntry throws {
-            if (!tD.contains(name) || tab[name] == nil)
+            if (!tab.contains(name))
             {
                 if (v) {writeln("undefined symbol ",name);try! stdout.flush();}
                 throw new owned ErrorWithMsg(unknownSymbolError("", name));
             }
             else
             {
-                return tab[name]!;
+                return tab.getBorrowed(name);
             }
         }
 
@@ -187,9 +172,9 @@ module MultiTypeSymbolTable
         Prints the SymTable in a pretty format (name,SymTable[name])
         */
         proc pretty(){
-            for n in tD
+            for n in tab
             {
-                try! writeln("%10s = ".format(n), tab[n]);try! stdout.flush();
+                try! writeln("%10s = ".format(n), tab.getValue(n));try! stdout.flush();
             }
         }
 
@@ -197,7 +182,7 @@ module MultiTypeSymbolTable
         returns total bytes in arrays in the symbol table
         */
         proc memUsed(): int {
-            var total: int = + reduce [e in tab] e!.size * e!.itemsize;
+            var total: int = + reduce [e in tab.values()] e.size * e.itemsize;
             return total;
         }
         
@@ -210,7 +195,7 @@ module MultiTypeSymbolTable
         */
         proc dump(name:string): string {
             if name == "__AllSymbols__" {return try! "%jt".format(this);}
-            else if (tD.contains(name)) {return try! "%jt %jt".format(name, tab[name]);}
+            else if (tab.contains(name)) {return try! "%jt %jt".format(name, tab.getReference(name));}
             else {return try! "Error: dump: undefined name: %s".format(name);}
         }
         
@@ -228,16 +213,14 @@ module MultiTypeSymbolTable
         proc info(name:string): string {
             var s: string;
             if name == "__AllSymbols__" {
-                for n in tD {
-                    if (tab[n] != nil) {
-                        try! s += "name:%t dtype:%t size:%t ndim:%t shape:%t itemsize:%t\n".format(n, dtype2str(tab[n]!.dtype), tab[n]!.size, tab[n]!.ndim, tab[n]!.shape, tab[n]!.itemsize);
-                    }
+                for n in tab {
+                    try! s += "name:%t dtype:%t size:%t ndim:%t shape:%t itemsize:%t\n".format(n, dtype2str(tab.getBorrowed(n).dtype), tab.getBorrowed(n).size, tab.getBorrowed(n).ndim, tab.getBorrowed(n).shape, tab.getBorrowed(n).itemsize);
                 }
             }
             else
             {
-                if (tD.contains(name)) {
-                    try! s = "name:%t dtype:%t size:%t ndim:%t shape:%t itemsize:%t\n".format(name, dtype2str(tab[name]!.dtype), tab[name]!.size, tab[name]!.ndim, tab[name]!.shape, tab[name]!.itemsize);
+                if (tab.contains(name)) {
+                    try! s = "name:%t dtype:%t size:%t ndim:%t shape:%t itemsize:%t\n".format(name, dtype2str(tab.getBorrowed(name).dtype), tab.getBorrowed(name).size, tab.getBorrowed(name).ndim, tab.getBorrowed(name).shape, tab.getBorrowed(name).itemsize);
                 }
                 else {s = unknownSymbolError("info",name);}
             }
@@ -255,8 +238,8 @@ module MultiTypeSymbolTable
         */
         proc attrib(name:string):string {
             var s:string;
-            if (tD.contains(name)) {
-                try! s = "%s %s %t %t %t %t".format(name, dtype2str(tab[name]!.dtype), tab[name]!.size, tab[name]!.ndim, tab[name]!.shape, tab[name]!.itemsize);
+            if (tab.contains(name)) {
+                try! s = "%s %s %t %t %t %t".format(name, dtype2str(tab.getBorrowed(name).dtype), tab.getBorrowed(name).size, tab.getBorrowed(name).ndim, tab.getBorrowed(name).shape, tab.getBorrowed(name).itemsize);
             }
             else {s = unknownSymbolError("attrib",name);}
             return s;
@@ -278,8 +261,8 @@ module MultiTypeSymbolTable
         */
         proc datastr(name: string, thresh:int): string {
             var s:string;
-            if (tD.contains(name)) {
-                var u: borrowed GenSymEntry = tab[name]!;
+            if (tab.contains(name)) {
+                var u: borrowed GenSymEntry = tab.getBorrowed(name);
                 select u.dtype
                 {
                     when DType.Int64
@@ -355,8 +338,8 @@ module MultiTypeSymbolTable
         */
         proc datarepr(name: string, thresh:int): string {
             var s:string;
-            if (tD.contains(name)) {
-                var u: borrowed GenSymEntry = tab[name]!;
+            if (tab.contains(name)) {
+                var u: borrowed GenSymEntry = tab.getBorrowed(name);
                 select u.dtype
                 {
                     when DType.Int64
