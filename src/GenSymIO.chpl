@@ -31,7 +31,7 @@ module GenSymIO {
         var size = try! sizeBytes:int;
         var tmpf:file;
 
-        // Write the data payload cmposing the pdarray to a memory buffer
+        // Write the data payload composing the pdarray to a memory buffer
         try {
             tmpf = openmem();
             var tmpw = tmpf.writer(kind=iobig);
@@ -139,6 +139,7 @@ module GenSymIO {
     class DatasetNotFoundError: Error {proc init() {}}
     class NotHDF5FileError: Error {proc init() {}}
     class MismatchedAppendError: Error {proc init() {}}
+    class WriteModeError: Error { proc init() {} }
     class SegArrayError: Error {proc init() {}}
 
     /*
@@ -728,7 +729,11 @@ module GenSymIO {
             select entry.dtype {
                 when DType.Int64 {
                     var e = toSymEntry(entry, int);
-                    warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.Int64);
+                    if isStringsSegmentsDataset(dsetName) {
+                        warnFlag = write1DDistStrings(filename, mode, dsetName, e.a, DType.Int64);
+                    } else {
+                        warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.Int64);
+                    }
                 }
                 when DType.Float64 {
                     var e = toSymEntry(entry, real);
@@ -740,7 +745,7 @@ module GenSymIO {
                 }
                 when DType.UInt8 {
                     var e = toSymEntry(entry, uint(8));
-                    warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.UInt8);
+                    warnFlag = write1DDistStrings(filename, mode, dsetName, e.a, DType.UInt8);
                 } otherwise {
                     return unrecognizedTypeError("tohdf", dtype2str(entry.dtype));
                 }
@@ -750,6 +755,9 @@ module GenSymIO {
         } catch e: MismatchedAppendError {
               return "Error: appending to existing files must be done with the same number" +
                       "of locales. Try saving with a different directory or filename prefix?";
+        } catch e: WriteModeError {
+              return "Error: cannot append the non-existent file %s. Please save the file in " +
+              "standard truncate mode".format(filename);
         } catch e: Error {
               return "Error: problem writing to file %s".format(e);
         }
@@ -760,100 +768,31 @@ module GenSymIO {
         }
     }
 
-    private proc write1DDistArray(filename: string, mode: int, dsetName: string, A, 
-                                                                 array_type: DType) throws {
-      /* Output is 1 file per locale named <filename>_<loc>, and a dataset
-      named <dsetName> is created in each one. If mode==1 (append) and the
-      correct number of files already exists, then a new dataset named
-      <dsetName> will be created in each. Strongly recommend only using
-      append mode to write arrays with the same domain. */
-
-      var warnFlag = false;
-      const fields = filename.split(".");
-      var prefix: string;
-      var extension: string;
-      var group: string;
-
-      /*
-       * If this is either a Strings values or Strings segments dataset, 
-       * generate the group name which will be used to create the hdf5
-       * group used to organize the Strings values and segments entries.
-       */
-      if isStringsValuesDataset(dsetName) || isStringsSegmentsDataset(dsetName) {
-          var rawGroupName = dsetName.split('STRINGS');
-          group = getGroup(rawGroupName[1]);
-      }
+    /*
+     * Writes out the two pdarrays composing a Strings object to hdf5.
+     */
+    private proc write1DDistStrings(filename: string, mode: int, dsetName: string, A, 
+                                                                array_type: DType) throws {
+        var prefix: string;
+        var extension: string;  
+        var warnFlag: bool;      
+        
+        (prefix,extension) = getFileMetadata(filename);
  
-      if fields.size == 1 || fields[fields.domain.high].count(pathSep) > 0 { 
-          prefix = filename;
-          extension = "";
-      } else {
-          prefix = ".".join(fields#(fields.size-1)); // take all but the last
-          extension = "." + fields[fields.domain.high];
-      }
-
-      // Generate the filenames based upon the number of targetLocales.
-      var filenames: [0..#A.targetLocales().size] string;
-      for i in 0..#A.targetLocales().size {
-          filenames[i] = try! "%s_LOCALE%s%s".format(prefix, i:string, extension);
-      }
-
-      var matchingFilenames = glob(try! "%s_LOCALE*%s".format(prefix, extension));
-      // if appending, make sure number of files hasn't changed and all are present
-      if (mode == APPEND) {
-          var allexist = true;
-          for f in filenames {
-            allexist &= try! exists(f);
-          }
-
-          if !allexist || (matchingFilenames.size != filenames.size) {
-              throw new owned MismatchedAppendError();
-          }
-      } else if mode == TRUNCATE { // if truncating, create new file per locale
-          if matchingFilenames.size > 0 {
-              warnFlag = true;
-          }
-
-          for loc in 0..#A.targetLocales().size {
-              /*
-               * When done with a coforall over locales, only locale 0's file gets created
-               * correctly, whereas hhe other locales' files have corrupted headers.
-               */
-              //filenames[loc] = try! "%s_LOCALE%s%s".format(prefix, loc:string, extension);
-              var file_id: C_HDF5.hid_t;
-
-              if GenSymIO_DEBUG {
-                  writeln("Creating or truncating file");
-              }
-
-              file_id = C_HDF5.H5Fcreate(filenames[loc].c_str(), C_HDF5.H5F_ACC_TRUNC,
-                                                        C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
-
-              if file_id < 0 { // Negative file_id means error
-                  throw new owned FileNotFoundError();
-              }
-
-              /*
-               * If DType is UInt8, need to create Strings group to enable read/load with the
-               * Arkouda infrastructure. The Strings group contains two datasets for each locale
-               * and therefore each hdf5 file: (1) segments, which are the indices for the 
-               * Strings values embedded in the string binary and (2) values, which are the 
-               * corresponding Strings values within a null-delimited Chapel bytes object.
-               */
-              if isStringsValuesDataset(dsetName) {
-                  prepareStringsGroup(file_id, group);
-              }
-
-              /*
-               * Close the file now that it has been created and, if applicable, the 
-               * Strings group derived from the dsetName has been created.
-               */
-              C_HDF5.H5Fclose(file_id);
-           }
-       } else {
-           throw new IllegalArgumentError("The mode %t is invalid".format(mode));
-       }
-
+        // Generate the filenames based upon the number of targetLocales.
+        var filenames = generateFilenames(prefix, extension, A);
+        
+        //Generate a list of matching filenames to test against. 
+        var matchingFilenames = getMatchingFilenames(prefix, extension);
+        
+        var group = getGroup(dsetName); 
+ 
+        if isStringsValuesDataset(dsetName) {
+            warnFlag = processFilenames(filenames, matchingFilenames, mode, A, group);
+        } else {
+            warnFlag = false;
+        }
+        
            /*
             * The indices object, which applies to a Strings values data and is a 
             * globally-scoped PrivateSpace array, contains the slice index for each 
@@ -989,195 +928,195 @@ module GenSymIO {
                   }
               }
            }
-
-           /*
-            * Iterate through each locale and (1) open the hdf5 file corresponding to the
-            * locale (2) prepare pdarray(s) to be written (3) write pdarray(s) to open
-            * hdf5 file and (4) close the hdf5 file
-            */
-            coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) with 
-                            (ref indices, ref localeValuesIndexStart, ref forwardShuffleSliceIndices,
-                                    ref localeValuesIndexEnd) do on loc {
-              const myFilename = filenames[idx];
-              if GenSymIO_DEBUG {
+                                                       
+        /*
+         * Iterate through each locale and (1) open the hdf5 file corresponding to the
+         * locale (2) prepare pdarray(s) to be written (3) write pdarray(s) to open
+         * hdf5 file and (4) close the hdf5 file
+         */
+        coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) with 
+                        (ref indices, ref localeValuesIndexStart, ref forwardShuffleSliceIndices,
+                                ref localeValuesIndexEnd) do on loc {
+            const myFilename = filenames[idx];
+            if GenSymIO_DEBUG {
                 writeln(try! "%s exists? %t".format(myFilename, exists(myFilename)));
-              }
-              var myFileID = C_HDF5.H5Fopen(myFilename.c_str(), 
-                                           C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
-              const locDom = A.localSubdomain();
-              var dims: [0..#1] C_HDF5.hsize_t;
-              dims[0] = locDom.size: C_HDF5.hsize_t;
-              var myDsetName = "/" + dsetName;
+            }
+            var myFileID = C_HDF5.H5Fopen(myFilename.c_str(), 
+                                       C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
+            const locDom = A.localSubdomain();
+            var dims: [0..#1] C_HDF5.hsize_t;
+            dims[0] = locDom.size: C_HDF5.hsize_t;
+            var myDsetName = "/" + dsetName;
 
-              use C_HDF5.HDF5_WAR;
+            use C_HDF5.HDF5_WAR;
+
+          /*
+           * A Strings values or segments dataset is handled differently because a string  
+           * can span multiple locales since each string is composed of 1..n uint(8) 
+           * characters. Accordingly, the first step in writing the local slice to hdf5 
+           * is to verify if this is indeed a Strings values or segments dataset.
+           */
+          if isStringsValuesDataset(dsetName) {
+            /*
+             * Since this is Strings values array, confirm if it's in append mode. If
+             * so, the Strings dataset is going to be appended to an hdf5 file as a 
+             * set of values and segments arrays within a group named after the 
+             * dsetName parameter.
+             */
+            if mode == APPEND {
+                prepareStringsGroup(myFileID, group);
+            }
+
+            /*
+             * Since this is a Strings values array, there is a possibility that 1..n
+             * strings span two neighboring locales; this possibility is checked by
+             * seeing if the final character in the local slice is the null uint(8)
+             * character. If it is not, then the last string is only a partial string.
+             */
+            if A.localSlice(locDom).back() != NULL_STRINGS_VALUE {
+              /*
+               * Since the last value of the local slice is other than the uint(8) null
+               * character, this means the last string in the current, local slice spans 
+               * the current AND next locale. Consequently, need to do the following:
+               * 1. Add all current locale slice values to a list
+               * 2. Obtain remaining uint(8) values from the next locale
+               */
+              var charList = convertLocalSliceToList(A, locDom);
 
               /*
-               * A Strings values or segments dataset is handled differently because a string  
-               * can span multiple locales since each string is composed of 1..n uint(8) 
-               * characters. Accordingly, the first step in writing the local slice to hdf5 
-               * is to verify if this is indeed a Strings values or segments dataset.
+               * On the next locale do the following:
+               * 
+               * 1. Retrieve the non-null uint(8) chars from the start of the local 
+               *    slice until the next null uint(8) character is encountered
+               * 2. Add to the newly-created charList
                */
-              if isStringsValuesDataset(dsetName) {
+              on Locales[idx+1] {
+                const locDom = A.localSubdomain();
+
                 /*
-                 * Since this is Strings values array, confirm if it's in append mode. If
-                 * so, the Strings dataset is going to be appended to an hdf5 file as a 
-                 * set of values and segments arrays within a group named after the 
-                 * dsetName parameter.
+                 * Iterate through the local slice values for the next locale and add
+                 * each to the charList, which is the local slice corresponding to the
+                 * current locale, until the null uint(8) character is reached. This 
+                 * subset of chars corresponds to the chars that complete the string 
+                 * at the end of the current locale
                  */
-                if mode == APPEND {
-                    prepareStringsGroup(myFileID, group);
+                 for (value, i) in zip(A.localSlice(locDom),
+                                                  0..A.localSlice(locDom).size-1) {
+                   if value != NULL_STRINGS_VALUE {
+                     charList.append(value:uint(8));
+                   } else {
+                       break;
+                   }
+                 }
+               }
+
+               /* 
+                * To prepare for writing revised values array to hdf5, do the following:
+                * 1. Add null uint(8) char to the end of the array so reads work correctly
+                * 2. Adjust the dims[0] value, which is the revised length of the valuesList
+                */
+               charList.append(NULL_STRINGS_VALUE);
+
+               var sliceIndex = indices[idx]:int;
+               var valuesList: list(uint(8), parSafe=true);
+
+               /*
+                * Now check to see if the current locale contains chars from the previous 
+                * locale by checking the sliceIndex. If the sliceIndex > -1, this means that 
+                * the charList contains chars that compose the last string from the previous 
+                * locale. If so, generate a new valuesList that has those values sliced
+                * from the charList
+                */
+                if sliceIndex > -1 {
+                    valuesList = adjustForStringSlices(sliceIndex, charList);
+                } else {
+                    valuesList = charList;
                 }
 
+                // Update the dimensions per the possibly re-sized valuesList
+                dims[0] = valuesList.size:uint(64);
+
                 /*
-                 * Since this is a Strings values array, there is a possibility that 1..n
-                 * strings span two neighboring locales; this possibility is checked by
-                 * seeing if the final character in the local slice is the null uint(8)
-                 * character. If it is not, then the last string is only a partial string.
+                 * Write the valuesList containing the uint(8) characters missing from the
+                 * current locale slice along with retrieved from the next locale to hdf5
                  */
-                if A.localSlice(locDom).back() != NULL_STRINGS_VALUE {
+                H5LTmake_dataset_WAR(myFileID, '/%s/values'.format(group).c_str(), 1,
+                        c_ptrTo(dims), getHDF5Type(A.eltType), c_ptrTo(valuesList.toArray()));
+
+                /*
+                 * Generate zero-based end index for values chunk written to hdf and write
+                 * to the Strings hdf5 group; this value will be used to calculate the 
+                 * global segments start and end indices that are used to shuffle Strings
+                 * segments as needed to match Strings values and segments for each locale
+                 * and, consequently, each hdf5 file.
+                 */
+                var valuesEndIndex = [valuesList.size-1];
+                H5LTmake_dataset_WAR(myFileID, '/%s/values-index-bounds'.format(group).c_str(), 
+                                    1, c_ptrTo([valuesEndIndex.size]), getHDF5Type(int),
+                                    c_ptrTo(valuesEndIndex));
+              } else {
                   /*
-                   * Since the last value of the local slice is other than the uint(8) null
-                   * character, this means the last string in the current, local slice spans 
-                   * the current AND next locale. Consequently, need to do the following:
-                   * 1. Add all current locale slice values to a list
-                   * 2. Obtain remaining uint(8) values from the next locale
+                   * The local slice ends with the uint(8) null character, which is the 
+                   * required value to ensure correct read logic, so next check to see if 
+                   * this local slice contains 1..n chars that compose a string from the 
+                   * previous locale.
                    */
-                  var charList = convertLocalSliceToList(A, locDom);
+                  var sliceIndex = indices[idx]:int;
 
-                  /*
-                   * On the next locale do the following:
-                   * 
-                   * 1. Retrieve the non-null uint(8) chars from the start of the local 
-                   *    slice until the next null uint(8) character is encountered
-                   * 2. Add to the newly-created charList
-                   */
-                  on Locales[idx+1] {
-                    const locDom = A.localSubdomain();
+                  if sliceIndex == -1 {
+                      /*
+                       * The local slice ends with the uint(8) null character, which means it's
+                       * last string does not span two locales. Since the local slice also 
+                       * not does not contain chars from previous locale, simply write the 
+                       * Strings values slice out to hdf5.
+                       */
+                      H5LTmake_dataset_WAR(myFileID, '/%s/values'.format(group).c_str(), 1,
+                              c_ptrTo(dims), getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
 
-                    /*
-                     * Iterate through the local slice values for the next locale and add
-                     * each to the charList, which is the local slice corresponding to the
-                     * current locale, until the null uint(8) character is reached. This 
-                     * subset of chars corresponds to the chars that complete the string 
-                     * at the end of the current locale
-                     */
-                     for (value, i) in zip(A.localSlice(locDom),
-                                                      0..A.localSlice(locDom).size-1) {
-                       if value != NULL_STRINGS_VALUE {
-                         charList.append(value:uint(8));
-                       } else {
-                           break;
-                       }
-                     }
-                   }
-
-                   /* 
-                    * To prepare for writing revised values array to hdf5, do the following:
-                    * 1. Add null uint(8) char to the end of the array so reads work correctly
-                    * 2. Adjust the dims[0] value, which is the revised length of the valuesList
-                    */
-                   charList.append(NULL_STRINGS_VALUE);
-
-                   var sliceIndex = indices[idx]:int;
-                   var valuesList: list(uint(8), parSafe=true);
-
-                   /*
-                    * Now check to see if the current locale contains chars from the previous 
-                    * locale by checking the sliceIndex. If the sliceIndex > -1, this means that 
-                    * the charList contains chars that compose the last string from the previous 
-                    * locale. If so, generate a new valuesList that has those values sliced
-                    * from the charList
-                    */
-                    if sliceIndex > -1 {
-                        valuesList = adjustForStringSlices(sliceIndex, charList);
-                    } else {
-                        valuesList = charList;
-                    }
-
-                    // Update the dimensions per the possibly re-sized valuesList
-                    dims[0] = valuesList.size:uint(64);
-
-                    /*
-                     * Write the valuesList containing the uint(8) characters missing from the
-                     * current locale slice along with retrieved from the next locale to hdf5
-                     */
-                    H5LTmake_dataset_WAR(myFileID, '/%s/values'.format(group).c_str(), 1,
-                            c_ptrTo(dims), getHDF5Type(A.eltType), c_ptrTo(valuesList.toArray()));
-
-                    /*
-                     * Generate zero-based end index for values chunk written to hdf and write
-                     * to the Strings hdf5 group; this value will be used to calculate the 
-                     * global segments start and end indices that are used to shuffle Strings
-                     * segments as needed to match Strings values and segments for each locale
-                     * and, consequently, each hdf5 file.
-                     */
-                    var valuesEndIndex = [valuesList.size-1];
-                    H5LTmake_dataset_WAR(myFileID, '/%s/values-index-bounds'.format(group).c_str(), 
-                                        1, c_ptrTo([valuesEndIndex.size]), getHDF5Type(int),
-                                        c_ptrTo(valuesEndIndex));
+                      /*
+                       * Generate zero-based end index for values chunk written to hdf and write
+                       * to the Strings hdf5 group; this value will be used to calculate the 
+                       * global segments start and end indices that are used to shuffle Strings
+                       * segments as needed to match Strings values and segments for each locale
+                       * and, consequently, each hdf5 file.
+                       */
+                      var valuesEndIndex = [A.localSlice(locDom).size-1];
+                      H5LTmake_dataset_WAR(myFileID, 
+                              '/%s/values-index-bounds'.format(group).c_str(), 
+                              1, c_ptrTo([[valuesEndIndex.size:uint(64)]]), getHDF5Type(int), 
+                              c_ptrTo(valuesEndIndex));
                   } else {
                       /*
-                       * The local slice ends with the uint(8) null character, which is the 
-                       * required value to ensure correct read logic, so next check to see if 
-                       * this local slice contains 1..n chars that compose a string from the 
-                       * previous locale.
+                       * The local slice does contain chars from previous locale, so (1)
+                       * generate a corresponding Strings value list that can be sliced,
+                       * and (2) adjust the Strings values list by slicing the chars out
+                       * that correspond to chars from previous locale, and (3) adjust 
+                       * the dims value per the size of the updated Strings value list. 
                        */
-                      var sliceIndex = indices[idx]:int;
+                      var valuesList = adjustForStringSlices(sliceIndex, 
+                              convertLocalSliceToList(A, locDom));
 
-                      if sliceIndex == -1 {
-                          /*
-                           * The local slice ends with the uint(8) null character, which means it's
-                           * last string does not span two locales. Since the local slice also 
-                           * not does not contain chars from previous locale, simply write the 
-                           * Strings values slice out to hdf5.
-                           */
-                          H5LTmake_dataset_WAR(myFileID, '/%s/values'.format(group).c_str(), 1,
-                                  c_ptrTo(dims), getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
+                      // Update the dimensions per the re-sized Strings values list
+                      dims[0] = valuesList.size:uint(64);
 
-                          /*
-                           * Generate zero-based end index for values chunk written to hdf and write
-                           * to the Strings hdf5 group; this value will be used to calculate the 
-                           * global segments start and end indices that are used to shuffle Strings
-                           * segments as needed to match Strings values and segments for each locale
-                           * and, consequently, each hdf5 file.
-                           */
-                          var valuesEndIndex = [A.localSlice(locDom).size-1];
-                          H5LTmake_dataset_WAR(myFileID, 
+                      H5LTmake_dataset_WAR(myFileID, '/%s/values'.format(group).c_str(), 1,
+                                        c_ptrTo(dims), getHDF5Type(A.eltType),
+                                        c_ptrTo(valuesList.toArray()));
+
+                      /*
+                       * Generate zero-based end index for values chunk written to hdf and write
+                       * to the Strings hdf5 group; this value will be used to calculate the 
+                       * global segments start and end indices that are used to shuffle Strings
+                       * segments as needed to match Strings values and segments for each locale
+                       * and, consequently, each hdf5 file.
+                       */
+                      var valuesEndIndex = [valuesList.size-1];
+                      H5LTmake_dataset_WAR(myFileID, 
                                   '/%s/values-index-bounds'.format(group).c_str(), 
-                                  1, c_ptrTo([[valuesEndIndex.size:uint(64)]]), getHDF5Type(int), 
+                                  1, c_ptrTo([valuesEndIndex.size:uint(64)]), getHDF5Type(int),
                                   c_ptrTo(valuesEndIndex));
-                      } else {
-                          /*
-                           * The local slice does contain chars from previous locale, so (1)
-                           * generate a corresponding Strings value list that can be sliced,
-                           * and (2) adjust the Strings values list by slicing the chars out
-                           * that correspond to chars from previous locale, and (3) adjust 
-                           * the dims value per the size of the updated Strings value list. 
-                           */
-                          var valuesList = adjustForStringSlices(sliceIndex, 
-                                  convertLocalSliceToList(A, locDom));
-
-                          // Update the dimensions per the re-sized Strings values list
-                          dims[0] = valuesList.size:uint(64);
-
-                          H5LTmake_dataset_WAR(myFileID, '/%s/values'.format(group).c_str(), 1,
-                                            c_ptrTo(dims), getHDF5Type(A.eltType),
-                                            c_ptrTo(valuesList.toArray()));
-
-                          /*
-                           * Generate zero-based end index for values chunk written to hdf and write
-                           * to the Strings hdf5 group; this value will be used to calculate the 
-                           * global segments start and end indices that are used to shuffle Strings
-                           * segments as needed to match Strings values and segments for each locale
-                           * and, consequently, each hdf5 file.
-                           */
-                          var valuesEndIndex = [valuesList.size-1];
-                          H5LTmake_dataset_WAR(myFileID, 
-                                      '/%s/values-index-bounds'.format(group).c_str(), 
-                                      1, c_ptrTo([valuesEndIndex.size:uint(64)]), getHDF5Type(int),
-                                      c_ptrTo(valuesEndIndex));
-                     }
-                }
+                 }
+            }
             } else if isStringsSegmentsDataset(dsetName) {
                 /*
                  * Since this is a Strings segments pdarray, there are three situations that
@@ -1270,6 +1209,236 @@ module GenSymIO {
         return warnFlag;
     }
 
+    private proc write1DDistArray(filename: string, mode: int, dsetName: string, A, 
+                                                                 array_type: DType) throws {
+        /* Output is 1 file per locale named <filename>_<loc>, and a dataset
+        named <dsetName> is created in each one. If mode==1 (append) and the
+        correct number of files already exists, then a new dataset named
+        <dsetName> will be created in each. Strongly recommend only using
+        append mode to write arrays with the same domain. */
+
+        var prefix: string;
+        var extension: string;
+      
+        (prefix,extension) = getFileMetadata(filename);
+
+        // Generate the filenames based upon the number of targetLocales.
+        var filenames = generateFilenames(prefix, extension, A);
+
+        //Generate a list of matching filenames to test against. 
+        var matchingFilenames = getMatchingFilenames(prefix, extension);
+
+        var warnFlag = processFilenames(filenames, matchingFilenames, mode, A);
+
+        /*
+         * Iterate through each locale and (1) open the hdf5 file corresponding to the
+         * locale (2) prepare pdarray(s) to be written (3) write pdarray(s) to open
+         * hdf5 file and (4) close the hdf5 file
+         */
+        coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) do on loc {
+            const myFilename = filenames[idx];
+            if GenSymIO_DEBUG {
+                writeln(try! "%s exists? %t".format(myFilename, exists(myFilename)));
+            }
+            var myFileID = C_HDF5.H5Fopen(myFilename.c_str(), 
+                                       C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
+            const locDom = A.localSubdomain();
+            var dims: [0..#1] C_HDF5.hsize_t;
+            dims[0] = locDom.size: C_HDF5.hsize_t;
+            var myDsetName = "/" + dsetName;
+
+            use C_HDF5.HDF5_WAR;
+
+            /*
+             * This is neither a Strings values nor a Strings segments pdarray, so 
+             * simply write the local slice out to the top-level group of the hdf5 file
+             */
+            H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
+                                      getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
+
+            // Close the file now that the 1..n pdarrays have been written
+            C_HDF5.H5Fclose(myFileID);
+        }
+        return warnFlag;
+    }
+
+    /*
+     * Returns a tuple composed of a file prefix and extension to be used to generate
+     * locale-specific filenames to be written to.
+     */
+    proc getFileMetadata(filename : string) {
+        const fields = filename.split(".");
+        var prefix: string;
+        var extension: string;
+ 
+        if fields.size == 1 || fields[fields.domain.high].count(pathSep) > 0 { 
+            prefix = filename;
+            extension = "";
+        } else {
+            prefix = ".".join(fields#(fields.size-1)); // take all but the last
+            extension = "." + fields[fields.domain.high];
+        }
+
+        return (prefix,extension);
+    }
+
+    /*
+     * Generates a list of filenames to be written to based upon a file prefix,
+     * extension, and number of locales
+     */
+    proc generateFilenames(prefix : string, extension : string, A) : [] string { 
+        // Generate the filenames based upon the number of targetLocales.
+        var filenames: [0..#A.targetLocales().size] string;
+        for i in 0..#A.targetLocales().size {
+            filenames[i] = try! "%s_LOCALE%s%s".format(prefix, i:string, extension);
+        }
+        return filenames;
+    }
+
+
+    /*
+     * If APPEND mode, checks to see if the matchingFilenams matches the filenames
+     * array and, if not, raises a MismatchedAppendError. If in TRUNCATE mode, creates
+     * the files matching the filenames. If 1..n of the filenames exist, returns 
+     * warning to the user that 1..n files were overwritten. Since a group name is 
+     * passed in, and hdf5 group is created in the file(s).
+     */
+    proc processFilenames(filenames: [] string, matchingFilenames: [] string, mode: int, 
+                                            A, group: string) throws {
+      // if appending, make sure number of files hasn't changed and all are present
+      var warnFlag: bool;
+      
+      /*
+       * Generate a list of matching filenames to test against. If in 
+       * APPEND mode, check to see if list of filenames to be written
+       * to match the names of existing files corresponding to the dsetName.
+       * if in TRUNCATE mode, see if there are any filenames that match, 
+       * meaning that 1..n files will be overwritten.
+       */
+      if (mode == APPEND) {
+          var allexist = true;
+          var anyexist = false;
+          
+          for f in filenames {
+              var result =  try! exists(f);
+              allexist &= result;
+              if result {
+                  anyexist = true;
+              }
+          }
+
+          if !allexist || (matchingFilenames.size != filenames.size) {
+              throw new owned MismatchedAppendError();
+          }
+
+          if !anyexist {
+              throw new owned WriteModeError();
+          }
+      } else if mode == TRUNCATE { // if truncating, create new file per locale
+          if matchingFilenames.size > 0 {
+              warnFlag = true;
+          } else {
+              warnFlag = false;
+          }
+
+          for loc in 0..#A.targetLocales().size {
+              /*
+               * When done with a coforall over locales, only locale 0's file gets created
+               * correctly, whereas hhe other locales' files have corrupted headers.
+               */
+              //filenames[loc] = try! "%s_LOCALE%s%s".format(prefix, loc:string, extension);
+              var file_id: C_HDF5.hid_t;
+
+              if GenSymIO_DEBUG {
+                  writeln("Creating or truncating file");
+              }
+
+              file_id = C_HDF5.H5Fcreate(filenames[loc].c_str(), C_HDF5.H5F_ACC_TRUNC,
+                                                        C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+              
+              prepareStringsGroup(file_id, group);
+
+              if file_id < 0 { // Negative file_id means error
+                  throw new owned FileNotFoundError();
+              }
+
+              /*
+               * Close the file now that it has been created and, if applicable, the 
+               * Strings group derived from the dsetName has been created.
+               */
+              C_HDF5.H5Fclose(file_id);
+           }
+        } else {
+            throw new IllegalArgumentError("The mode %t is invalid".format(mode));
+        }    
+        return warnFlag;
+    }
+
+    /*
+     * If APPEND mode, checks to see if the matchingFilenams matches the filenames
+     * array and, if not, raises a MismatchedAppendError. If in TRUNCATE mode, creates
+     * the files matching the filenames. If 1..n of the filenames exist, returns 
+     * warning to the user that 1..n files were overwritten.
+     */
+    proc processFilenames(filenames: [] string, matchingFilenames: [] string, mode: int, A) throws {
+      // if appending, make sure number of files hasn't changed and all are present
+      var warnFlag: bool;
+      if (mode == APPEND) {
+          var allexist = true;
+          for f in filenames {
+            allexist &= try! exists(f);
+          }
+
+          if !allexist || (matchingFilenames.size != filenames.size) {
+              throw new owned MismatchedAppendError();
+          }
+      } else if mode == TRUNCATE { // if truncating, create new file per locale
+          if matchingFilenames.size > 0 {
+              warnFlag = true;
+          } else {
+              warnFlag = false;
+          }
+
+          for loc in 0..#A.targetLocales().size {
+              /*
+               * When done with a coforall over locales, only locale 0's file gets created
+               * correctly, whereas hhe other locales' files have corrupted headers.
+               */
+              //filenames[loc] = try! "%s_LOCALE%s%s".format(prefix, loc:string, extension);
+              var file_id: C_HDF5.hid_t;
+
+              if GenSymIO_DEBUG {
+                  writeln("Creating or truncating file");
+              }
+
+              file_id = C_HDF5.H5Fcreate(filenames[loc].c_str(), C_HDF5.H5F_ACC_TRUNC,
+                                                        C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
+
+              if file_id < 0 { // Negative file_id means error
+                  throw new owned FileNotFoundError();
+              }
+
+              /*
+               * Close the file now that it has been created and, if applicable, the 
+               * Strings group derived from the dsetName has been created.
+               */
+              C_HDF5.H5Fclose(file_id);
+           }
+        } else {
+            throw new IllegalArgumentError("The mode %t is invalid".format(mode));
+        }    
+        return warnFlag;
+    }
+    
+    /*
+     * Generates an array of filenames to be matched in APPEND mode and to be
+     * checked in TRUNCATE mode that will warn the user that 1..n files are
+     * being overwritten.
+     */
+    proc getMatchingFilenames(prefix : string, extension : string) throws {
+        return glob(try! "%s_LOCALE*%s".format(prefix, extension));    
+    }
+
     /*
      * Generates the slice index for the locale Strings values array and adds it to the 
      * indices parameter. Note: the slice index will be used to remove characters from 
@@ -1352,7 +1521,7 @@ module GenSymIO {
      * correspond to a particular locale.
      */
     private proc generateBoundedStringsSegments(startIndex : int, endIndex : int, 
-                                           A, locDom, idx) : list(int){;
+                                           A, locDom, idx) : list(int) {
         var newSegmentsList: list(int, parSafe=true);
 
         for segment in A.localSlice(locDom) {
@@ -1409,7 +1578,8 @@ module GenSymIO {
      * Returns the name of the hdf5 group corresponding to a dataset name.
      */
     private proc getGroup(dsetName : string) : string throws {
-        var values = dsetName.split('/');
+        var rawGroupName = dsetName.split('STRINGS');
+        var values = rawGroupName[1].split('/');
         if values.size < 1 {
             throw new IllegalArgumentError('The Strings dataset must be in form / {dset}/');
         } else {

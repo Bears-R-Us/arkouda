@@ -22,8 +22,8 @@ class IOTest(ArkoudaTest):
         self.int_tens_pdarray_dupe = ak.array(np.random.randint(-100,100,1000))
         self.int_hundreds_pdarray = ak.array(np.random.randint(-1000,1000,1000))
         self.int_hundreds_pdarray_dupe = ak.array(np.random.randint(-1000,1000,1000))
-        self.float_pdarray = ak.array(np.random.default_rng().uniform(-100,100,1000))  
-        self.float_pdarray_dupe = ak.array(np.random.default_rng().uniform(-100,100,1000))   
+        self.float_pdarray = ak.array(np.random.uniform(-100,100,1000))  
+        self.float_pdarray_dupe = ak.array(np.random.uniform(-100,100,1000))   
         
         self.dict_columns =  {
            'int_tens_pdarray' : self.int_tens_pdarray,
