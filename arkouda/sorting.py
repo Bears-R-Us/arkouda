@@ -3,6 +3,7 @@ from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros
 from arkouda.strings import Strings
+from arkouda.dtypes import *
 
 __all__ = ["argsort", "coargsort", "local_argsort", "sort"]
 
