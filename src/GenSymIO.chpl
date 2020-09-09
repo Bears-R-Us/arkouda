@@ -259,7 +259,8 @@ module GenSymIO {
             } catch e: NotHDF5FileError {
                 return try! "Error: cannot open as HDF5 file %s".format(fname);
             } catch e: SegArrayError {
-                return try! "Error: expected segmented array but could not find sub-datasets '%s' and '%s'".format(SEGARRAY_OFFSET_NAME, SEGARRAY_VALUE_NAME);
+                return try! "Error: expected segmented array but could not find sub-datasets '%s' and '%s'".
+                                                                   format(SEGARRAY_OFFSET_NAME, SEGARRAY_VALUE_NAME);
             } catch {
                 // Need a catch-all for non-throwing function
                 return try! "Error: unknown cause";
@@ -300,7 +301,8 @@ module GenSymIO {
         select (isSegArray, dataclass) {
             when (true, C_HDF5.H5T_INTEGER) {
                 if (bytesize != 1) || isSigned {
-                    return try! "Error: detected unhandled datatype: segmented? %t, class %i, size %i, signed? %t".format(isSegArray, dataclass, bytesize, isSigned);
+                    return try! "Error: detected unhandled datatype: segmented? %t, class %i, size %i, signed? %t".
+                                            format(isSegArray, dataclass, bytesize, isSigned);
                 }
                 var entrySeg = new shared SymEntry(nSeg, int);
                 read_files_into_distributed_array(entrySeg.a, segSubdoms, filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);
@@ -402,7 +404,8 @@ module GenSymIO {
                 } catch e: NotHDF5FileError {
                     return try! "Error: cannot open as HDF5 file %s".format(fname);
                 } catch e: SegArrayError {
-                    return try! "Error: expected segmented array but could not find sub-datasets '%s' and '%s'".format(SEGARRAY_OFFSET_NAME, SEGARRAY_VALUE_NAME);
+                    return try! "Error: expected segmented array but could not find sub-datasets '%s' and '%s'".
+                                          format(SEGARRAY_OFFSET_NAME, SEGARRAY_VALUE_NAME);
                 } catch {
                     // Need a catch-all for non-throwing function
                     return try! "Error: unknown cause";
@@ -813,7 +816,7 @@ module GenSymIO {
            
            /*
             * The forwardShuffleSliceIndices is a globally-scoped PrivateSpace array
-            * that index at which 1..n Strings segment elemets are misassigned to the 
+            * that index at which 1..n Strings segment elements are misassigned to the 
             * current locale and need to be re-assigned to the next locale.
             * 
             * :TODO: at some point, would be good to integrate an analogous array to
@@ -840,9 +843,12 @@ module GenSymIO {
            if isStringsValuesDataset(dsetName) {
                coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) 
                                                           with (ref indices) do on loc {
+                   const locDom = A.localSubdomain();
+                   writeln("LOCALE %t STRINGS ARRAY LENGTH DIRECTLY FROM LOCALE IS %t".format(idx, A.localSlice(locDom).size));
                    if idx < A.targetLocales().size-1 {
                        const locDom = A.localSubdomain();
                        if A.localSlice(locDom).back() != NULL_STRINGS_VALUE {
+                           writeln("LOCALE %t STRINGS ARRAY DOES NOT END WITH NULL".format(idx));
                            generateSliceIndex(idx,indices,A);
                        }
                    }
@@ -930,12 +936,12 @@ module GenSymIO {
                                                        
         /*
          * Iterate through each locale and (1) open the hdf5 file corresponding to the
-         * locale (2) prepare pdarray(s) to be written (3) write pdarray(s) to open
+         * locale (2) prepare segments or values pdarray to be written (3) write pdarray to open
          * hdf5 file and (4) close the hdf5 file
          */
         coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) with 
                         (ref indices, ref localeValuesIndexStart, ref forwardShuffleSliceIndices,
-                                ref localeValuesIndexEnd) do on loc {
+                            ref localeValuesIndexEnd, ref localeValuesFileIndexEnd) do on loc {
             const myFilename = filenames[idx];
             if GenSymIO_DEBUG {
                 writeln(try! "%s exists? %t".format(myFilename, exists(myFilename)));
@@ -980,8 +986,11 @@ module GenSymIO {
                * 1. Add all current locale slice values to a list
                * 2. Obtain remaining uint(8) values from the next locale
                */
-              var charList = convertLocalStringsSliceToList(A, locDom);
-
+              var charList : list(uint(8));
+              var slicesList : list(int);
+              (charList, slicesList) = convertLocalStringsSliceToList(A, locDom);
+              writeln("LOCALE %t STRINGS VALUES CHARLIST %t DOES NOT END WITH NULL IS SIZE %t".format(idx, charList, charList.size));
+              writeln("LOCALE %t slicesList %t".format(idx, slicesList));
               /*
                * On the next locale do the following:
                * 
@@ -992,6 +1001,7 @@ module GenSymIO {
               on Locales[idx+1] {
                 const locDom = A.localSubdomain();
 
+                var sliceList: list(uint(8), parSafe=true);
                 /*
                  * Iterate through the local slice values for the next locale and add
                  * each to the charList, which is the local slice corresponding to the
@@ -1002,13 +1012,25 @@ module GenSymIO {
                  for (value, i) in zip(A.localSlice(locDom),
                                                   0..A.localSlice(locDom).size-1) {
                    if value != NULL_STRINGS_VALUE {
-                     charList.append(value:uint(8));
+                       sliceList.append(value:uint(8));
                    } else {
                        break;
                    }
                  }
+                 
+                 writeln("FOR LOCALE %t CHECKING %t against %t FOR APPEND TO %t".format(idx+1, sliceList.size, A.localSlice(locDom).size, idx));
+                 /*
+                  * Check for an edge case where only one string maps to this locale. If so, then keep
+                  * the uint(0) chars here and shuffle start of string from the previous locale.
+                  */
+                 if sliceList.size == A.localSlice(locDom).size {
+                     writeln("NOT ADDING %t TO %t FROM %t".format(sliceList,idx,idx+1));
+                     slicesList.pop();
+                 } else {
+                     charList.extend(sliceList);
+                 }
                }
-
+              writeln("LOCALE %t STRINGS VALUES CHARLIST %t AFTER ACCOUNT FOR NULL NOW SIZE %t".format(idx, charList, charList.size));
                /* 
                 * To prepare for writing revised values array to hdf5, do the following:
                 * 1. Add null uint(8) char to the end of the array so reads work correctly
@@ -1035,6 +1057,7 @@ module GenSymIO {
                 // Update the dimensions per the possibly re-sized valuesList
                 dims[0] = valuesList.size:uint(64);
 
+                writeln("LOCALE %t CHARS LIST AFTER SLICE ADJUSTMENT %t NOW SIZED %t".format(idx,valuesList,valuesList.size));
                 /*
                  * Write the valuesList containing the uint(8) characters missing from the
                  * current locale slice along with retrieved from the next locale to hdf5
@@ -1092,9 +1115,13 @@ module GenSymIO {
                        * that correspond to chars from previous locale, and (3) adjust 
                        * the dims value per the size of the updated Strings value list. 
                        */
-                      var valuesList = adjustForStringSlices(sliceIndex, 
-                              convertLocalStringsSliceToList(A, locDom));
-
+                       
+                      var charList : list(uint(8));
+                      var slicesList : list(int);
+                      
+                      (charList,slicesList) = convertLocalStringsSliceToList(A, locDom);                
+                      var valuesList = adjustForStringSlices(sliceIndex, charList);
+                      writeln("LOCALE %t slicesList %t".format(idx, slicesList));
                       // Update the dimensions per the re-sized Strings values list
                       dims[0] = valuesList.size:uint(64);
 
@@ -1134,7 +1161,7 @@ module GenSymIO {
                         localeValuesIndexEnd[idx], A, locDom, idx);
 
                 /*
-                 * In terms of the previous locale, (appliable to locales 1..n), retrieve the 
+                 * In terms of the previous locale, (applicable to locales 1..n), retrieve the 
                  * forwardShuffleSliceIndices element for the previous locale; if it is > -1, 
                  * this means that 1..n segments elements are incorrectly assigned to the wrong
                  * locale per the preceding Strings values reshuffle. Append newSegmentsList
@@ -1145,6 +1172,7 @@ module GenSymIO {
                  */
                 if idx > 0 {
                     var forwardShuffleSliceIndex = forwardShuffleSliceIndices[idx-1];
+                    writeln("LOCALE %t FORWARD SHUFFLE INDEX IS %t".format(idx, forwardShuffleSliceIndex));
                     if forwardShuffleSliceIndex > -1 {
                         on Locales[idx-1] {
                             const locDom = A.localSubdomain();
@@ -1152,6 +1180,7 @@ module GenSymIO {
                                                        0..A.localSlice(locDom).size-1) {
                                 if i >= forwardShuffleSliceIndex {
                                     newSegmentsList.insert(0, value:int);
+                                    writeln("LOCALE %t INSERTING FORWARD SHUFFLE SEGMENT %t".format(idx, value));
                                 }
                             }
                         }
@@ -1171,6 +1200,7 @@ module GenSymIO {
                         for (value, i) in zip(A.localSlice(locDom), 
                                                         0..A.localSlice(locDom).size-1) {
                             if value < stopIndex {
+                                writeln("APPENDING %t FOR LOCALE %t".format(value,idx));
                                 newSegmentsList.append(value:int);
                             } else {
                                 break;
@@ -1194,14 +1224,8 @@ module GenSymIO {
                 H5LTmake_dataset_WAR(myFileID, '/%s/segments'.format(group).c_str(), 1,
                                            c_ptrTo([finalSegments.size:uint(64)]),getHDF5Type(int),
                                            c_ptrTo(finalSegments));
-            } else {
-                /*
-                 * This is neither a Strings values nor a Strings segments pdarray, so 
-                 * simply write the local slice out to the top-level group of the hdf5 file
-                 */
-                H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
-                                          getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
             }
+
             // Close the file now that the 1..n pdarrays have been written
             C_HDF5.H5Fclose(myFileID);
         }
@@ -1486,12 +1510,20 @@ module GenSymIO {
      * Converts a local Strings values slice into a uint(8) list for use in methods 
      * that add or remove entries from the resulting list.
      */
-    private proc convertLocalStringsSliceToList(A, locDom) : list(uint(8)) {
+    private proc convertLocalStringsSliceToList(A, locDom) {
         var charList: list(uint(8), parSafe=true);
-        for value in A.localSlice(locDom) {
+        var indices: list(int, parSafe=true);
+
+        for (value, i) in zip(A.localSlice(locDom),
+                                               0..A.localSlice(locDom).size-1) do {
             charList.append(value:uint(8));
+            if value == NULL_STRINGS_VALUE {
+                indices.append(i);            
+            }
+
         }
-        return charList;
+
+        return (charList, indices);
     }
 
     /*
@@ -1532,12 +1564,13 @@ module GenSymIO {
     private proc generateBoundedStringsSegments(startIndex : int, endIndex : int, 
                                            A, locDom, idx) : list(int) {
         var newSegmentsList: list(int, parSafe=true);
-
+        try! writeln("ORIGINAL SEGMENTS %t FOR LOCALE %t with SI %t and EI %t".format(A.localSlice(locDom), idx, startIndex, endIndex));
         for segment in A.localSlice(locDom) {
             if segment >= startIndex && segment < endIndex {
                 newSegmentsList.append(segment:int);
             }
         }
+        try! writeln("LOCALE %t BOUNDED SEGMENTS %t".format(idx,newSegmentsList));
         return newSegmentsList;
     }
 
