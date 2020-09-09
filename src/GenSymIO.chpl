@@ -402,7 +402,7 @@ module GenSymIO {
                 } catch e: NotHDF5FileError {
                     return try! "Error: cannot open as HDF5 file %s".format(fname);
                 } catch e: SegArrayError {
-                    return try! "Error: expecte segmented array but could not find sub-datasets '%s' and '%s'".format(SEGARRAY_OFFSET_NAME, SEGARRAY_VALUE_NAME);
+                    return try! "Error: expected segmented array but could not find sub-datasets '%s' and '%s'".format(SEGARRAY_OFFSET_NAME, SEGARRAY_VALUE_NAME);
                 } catch {
                     // Need a catch-all for non-throwing function
                     return try! "Error: unknown cause";
@@ -756,8 +756,7 @@ module GenSymIO {
               return "Error: appending to existing files must be done with the same number" +
                       "of locales. Try saving with a different directory or filename prefix?";
         } catch e: WriteModeError {
-              return "Error: cannot append the non-existent file %s. Please save the file in " +
-              "standard truncate mode".format(filename);
+              return "Error: cannot append the non-existent file %s. Please save the file in standard truncate mode".format(filename);
         } catch e: Error {
               return "Error: problem writing to file %s".format(e);
         }
@@ -981,7 +980,7 @@ module GenSymIO {
                * 1. Add all current locale slice values to a list
                * 2. Obtain remaining uint(8) values from the next locale
                */
-              var charList = convertLocalSliceToList(A, locDom);
+              var charList = convertLocalStringsSliceToList(A, locDom);
 
               /*
                * On the next locale do the following:
@@ -1094,7 +1093,7 @@ module GenSymIO {
                        * the dims value per the size of the updated Strings value list. 
                        */
                       var valuesList = adjustForStringSlices(sliceIndex, 
-                              convertLocalSliceToList(A, locDom));
+                              convertLocalStringsSliceToList(A, locDom));
 
                       // Update the dimensions per the re-sized Strings values list
                       dims[0] = valuesList.size:uint(64);
@@ -1104,7 +1103,7 @@ module GenSymIO {
                                         c_ptrTo(valuesList.toArray()));
 
                       /*
-                       * Generate zero-based end index for values chunk written to hdf and write
+                       * Generate zero-based end index for values chunk written to hdf5 and write
                        * to the Strings hdf5 group; this value will be used to calculate the 
                        * global segments start and end indices that are used to shuffle Strings
                        * segments as needed to match Strings values and segments for each locale
@@ -1327,13 +1326,23 @@ module GenSymIO {
               }
           }
 
+          /*
+           * Check to see if any exist. If not, this means the user is attempting to append
+           * to 1..n files that don't exist. In this situation, the user is alerted that
+           * the dataset must be saved in TRUNCATE mode.
+           */
+          if !anyexist {
+              throw new owned WriteModeError();
+          }
+
+          /*
+           * There is a mismatch between the number of files to be appended to and the 
+           * number of files actually on the file system.
+           */
           if !allexist || (matchingFilenames.size != filenames.size) {
               throw new owned MismatchedAppendError();
           }
 
-          if !anyexist {
-              throw new owned WriteModeError();
-          }
       } else if mode == TRUNCATE { // if truncating, create new file per locale
           if matchingFilenames.size > 0 {
               warnFlag = true;
@@ -1474,10 +1483,10 @@ module GenSymIO {
     }
 
     /*
-     * Converts a local slice into a uint(8) list for use in methods that add
-     * or remove entries from the resulting list.
+     * Converts a local Strings values slice into a uint(8) list for use in methods 
+     * that add or remove entries from the resulting list.
      */
-    private proc convertLocalSliceToList(A, locDom) : list(uint(8)) {
+    private proc convertLocalStringsSliceToList(A, locDom) : list(uint(8)) {
         var charList: list(uint(8), parSafe=true);
         for value in A.localSlice(locDom) {
             charList.append(value:uint(8));
