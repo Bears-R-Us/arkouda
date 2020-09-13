@@ -808,6 +808,8 @@ module GenSymIO {
          */
         var leadingSliceIndices: [PrivateSpace] int;    
         var trailingSliceIndices: [PrivateSpace] int;
+        var isSingularStrings: [PrivateSpace] bool;
+        var containsCompleteStrings: [PrivateSpace] bool;
                   
         /*
          * The localeValuesIndexStart and localeValuesIndexEnd are globally-scoped
@@ -819,125 +821,41 @@ module GenSymIO {
          var localeValuesIndexStart: [PrivateSpace] int;
          var localeValuesIndexEnd: [PrivateSpace] int;
            
-           /*
-            * The forwardShuffleSliceIndices is a globally-scoped PrivateSpace array
-            * that index at which 1..n Strings segment elements are misassigned to the 
-            * current locale and need to be re-assigned to the next locale.
-            * 
-            * :TODO: at some point, would be good to integrate an analogous array to
-            * handle the situation where 1..n Strings segments elements are misassigned
-            * to the next locale
-            */
-           var forwardShuffleSliceIndices: [PrivateSpace] int;
+        /*
+         * The forwardShuffleSliceIndices is a globally-scoped PrivateSpace array
+         * that index at which 1..n Strings segment elements are misassigned to the 
+         * current locale and need to be re-assigned to the next locale.
+         * 
+         * :TODO: at some point, would be good to integrate an analogous array to
+         * handle the situation where 1..n Strings segments elements are misassigned
+         * to the next locale
+         */
+        var forwardShuffleSliceIndices: [PrivateSpace] int;
 
-           /*
-            * The localeValuesFileIndexEnd object is a globally-scoped PrivateSpace
-            * array which contains the zero-based end index value for the Strings values 
-            * array chunk written to hdf5. The localeValuesFileIndexEnd value is used
-            * to generate localeValuesIndexStart and localeValuesIndexEnd values for
-            * each locale.
-            */
-           var localeValuesFileIndexEnd: [PrivateSpace] int;
+        /*
+         * The localeValuesFileIndexEnd object is a globally-scoped PrivateSpace
+         * array which contains the zero-based end index value for the Strings values 
+         * array chunk written to hdf5. The localeValuesFileIndexEnd value is used
+         * to generate localeValuesIndexStart and localeValuesIndexEnd values for
+         * each locale.
+         */
+        var localeValuesFileIndexEnd: [PrivateSpace] int;
 
-           /*
-            * If this is a Strings values dataset, loop through all locales and set 
-            * (1) leadingSliceIndices, which are used to remove leading uint(8) characters 
-            * from the local slice that complete a string started in the previous locale and
-            * (2) trailingSliceIndices, which are used to start strings that are completed in
-            * the new locale.remove that belongs to the previous locale.
-            */
-           if isStringsValuesDataset(dsetName) {
-               coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) 
-                              with (ref leadingSliceIndices, ref trailingSliceIndices) do on loc {
-                   const locDom = A.localSubdomain();
-                   if idx < A.targetLocales().size-1 {
-                       const locDom = A.localSubdomain();
-                       if A.localSlice(locDom).back() != NULL_STRINGS_VALUE {
-                           writeln("LOCALE %t STRINGS ARRAY DOES NOT END WITH NULL".format(idx));
-                           generateSliceIndices(idx,leadingSliceIndices,trailingSliceIndices, A);
-                       }
-                   }
-               }
-           }
-
-           /*
-            * If this is a Strings segments dataset, there are three tasks for correctly assigning
-            * the segments to each locale: (1) loop through all locales and set the Strings values
-            * file end index, which is the zero-based index of uint(8) characters corresponding to
-            * the Strings values chunk written to that file (2) calculate and assign the global 
-            * start and end Strings values indices for each locale and (3) assign the forward
-            * shuffle index needed to move miassigned segments elements from previous to the 
-            * current locale.
-            * 
-            * The global Strings values indices assigned to each locale are used to shuffle Strings
-            * segments per final assignment of the Strings values array elements to each locale 
-            * and, consequently, each hdf5 file.
-            */
-           if isStringsSegmentsDataset(dsetName) {
-               coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) with (ref leadingSliceIndices,
-                      ref localeValuesFileIndexEnd) do on loc {
-                   if idx < A.targetLocales().size {
-                       const fileName = filenames[idx];
-                       if GenSymIO_DEBUG {
-                           writeln(try! "%s exists? %t".format(fileName, exists(fileName)));
-                       }
-
-                       /*
-                        * Retrieve the end index for the Strings values array chunk written 
-                        * to the hdf5 file corresponding to the locale.
-                        */
-                       var fileId = C_HDF5.H5Fopen(fileName.c_str(), C_HDF5.H5F_ACC_RDWR,
-                                                                       C_HDF5.H5P_DEFAULT);
-
-                       var indexValues = getStringsValuesEndIndex(fileId, group);
-
-                       /*
-                        * Set the locale, and therefore hdf5 file-scoped Strings values 
-                        * end index which will be used to build up the global Strings 
-                        * segments start/end indices for each hdf5 file.
-                        */
-                       localeValuesFileIndexEnd[idx] = indexValues[0];
-
-                       /*
-                        * Close the file now that the Strings values end index has been 
-                        * retrieved and assigned to the localeValuesFileIndexEnd array.
-                        */
-                        C_HDF5.H5Fclose(fileId);
-                   }
-              }
-
-              /*
-               * Loop through all of the locales, building up the global Strings values start
-               * and end indices for each locale; these values will be used to shuffle segments
-               * within each locale per the final assignment of Strings values array elements.
-               * 
-               * Note: the global values start and end indices need to be generated for each
-               * locale independently to prevent race conditions in multilocale deployments. 
-               */
-              coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) with (ref leadingSliceIndices,
-                            ref localeValuesIndexStart, ref localeValuesIndexEnd, 
-                      ref localeValuesFileIndexEnd, ref forwardShuffleSliceIndices) do on loc {
-                  var start: int;
-                  var end: int;
-                  for i in 0..idx - 1 do {
-                    start += localeValuesFileIndexEnd[i] + 1;
-                  }
-                  end = start + localeValuesFileIndexEnd[idx];
-
-                  localeValuesIndexEnd[idx] = end;
-                  localeValuesIndexStart[idx] = start;
-                  forwardShuffleSliceIndices[idx] = -1;
-
-                  const locDom = A.localSubdomain();
-                  for (value, i) in zip(A.localSlice(locDom),
-                                                    0..A.localSlice(locDom).size-1) {
-                      if value >= localeValuesIndexEnd[idx] {
-                          forwardShuffleSliceIndices[idx] = i;
-                          break;
-                      }
-                  }
-              }
-           }
+        /*
+         * If this is a Strings values dataset, loop through all locales and set 
+         * (1) leadingSliceIndices, which are used to remove leading uint(8) characters 
+         * from the local slice that complete a string started in the previous locale and
+         * (2) trailingSliceIndices, which are used to start strings that are completed in
+         * the new locale.remove that belongs to the previous locale.
+         */
+        if isStringsValuesDataset(dsetName) {
+            coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) 
+                          with (ref leadingSliceIndices, ref trailingSliceIndices, 
+                                                           ref isSingularStrings) do on loc {
+                generateSliceIndices(idx,leadingSliceIndices, trailingSliceIndices, 
+                                            isSingularStrings, containsCompleteStrings, A);
+            }
+        }
                                                        
         /*
          * Iterate through each locale and (1) open the hdf5 file corresponding to the
@@ -992,10 +910,26 @@ module GenSymIO {
                * 2. Obtain remaining uint(8) values from the next locale
                */
               var charList : list(uint(8));
-              var slicesList : list(int);
-              (charList, slicesList) = convertLocalStringsSliceToList(A, locDom);
+              var segmentsList : list(int);
+              (charList, segmentsList) = convertLocalStringsSliceToList(A.localSlice(locDom));
               writeln("LOCALE %t STRINGS VALUES CHARLIST %t DOES NOT END WITH NULL IS SIZE %t".format(idx, charList, charList.size));
-              writeln("LOCALE %t slicesList %t".format(idx, slicesList));
+              writeln("LOCALE %t segmentsList %t".format(idx, segmentsList));
+              
+              if isSingularStrings[idx] && idx > 0 {
+                  writeln("LOCALE %t IS SINGULAR".format(idx));
+                  var trailingIndex = trailingSliceIndices[idx-1];
+                  if trailingIndex > -1 {
+                      var trailingIndex = trailingSliceIndices[idx-1];
+                      var trailingValuesList : list(uint(8));
+                      on Locales[idx-1] {
+                          for (value, i) in zip(trailingValuesList,trailingIndex..A.localSlice(locDom).size-1) {
+                              trailingValuesList.append(value);
+                          }
+                      }
+                      charList.insert(0, trailingValuesList);
+                  }
+              }
+              
               /*
                * On the next locale do the following:
                * 
@@ -1031,7 +965,7 @@ module GenSymIO {
                     */
                    if sliceList.size != A.localSlice(locDom).size {
                        charList.extend(sliceList);
-                   } 
+                   }
                }
               writeln("LOCALE %t STRINGS VALUES CHARLIST %t AFTER ACCOUNT FOR NULL NOW SIZE %t".format(idx, charList, charList.size));
                /* 
@@ -1039,27 +973,20 @@ module GenSymIO {
                 * 1. Add null uint(8) char to the end of the array so reads work correctly
                 * 2. Adjust the dims[0] value, which is the revised length of the valuesList
                 */
-
                var leadingSliceIndex = leadingSliceIndices[idx]:int;
-               var trailingSliceIndex : int; 
-               
-               if idx > 0 {
-                   trailingSliceIndex = trailingSliceIndices[idx-1]:int;
-               } else {
-                   trailingSliceIndex = -1;
-               }
+               var trailingSliceIndex = trailingSliceIndices[idx]:int;
 
-               writeln("THE TRAILING INDEX FOR LOCALE %t IS %t".format(idx, trailingSliceIndices[idx]));
                var valuesList: list(uint(8), parSafe=true);
 
                /*
                 * Now check to see if the current locale contains chars from the previous 
-                * locale by checking the leadingSliceIndex. If the leadingSliceIndex > -1, this means 
-                * that the charList contains chars that compose the last string from the previous 
-                * locale. If so, generate a new valuesList that has those values sliced out.
+                * locale by checking the leadingSliceIndex. If the leadingSliceIndex > -1, and  
+                * this locale has 2..n strings, this means that the charList contains chars  
+                * that compose the last string from the previous locale. If so, generate a new 
+                * valuesList that has those values sliced out.
                 */
-                if leadingSliceIndex > -1 {
-                    (valuesList, slicesList) = adjustForLeadingSlice(leadingSliceIndex, charList);
+                if leadingSliceIndex > -1 && !isSingularStrings[idx] {
+                    (valuesList, segmentsList) = adjustForLeadingSlice(leadingSliceIndex, charList);
                 } else {
                     valuesList = charList;
                 }
@@ -1070,19 +997,18 @@ module GenSymIO {
                  * characters, at which point the null uint(8) char is at the end of the values list.
                  * Otherwise, add the null uint(8) char to the end of the values list
                  */
-                if trailingSliceIndex > -1 {
-                    var sliceIndex = slicesList.last();
-                    writeln("THE INDEX TO CHECK TAILING FOR %t: %t".format(idx,sliceIndex));
-                    (valuesList, slicesList) = adjustForTrailingSlice(sliceIndex, valuesList);                
+                if trailingSliceIndex > -1 && isSingularStrings[idx+1] {
+                    var sliceIndex = segmentsList.last();
+                    (valuesList, segmentsList) = adjustForTrailingSlice(sliceIndex, valuesList);                
                 } else {
                     valuesList.append(NULL_STRINGS_VALUE);            
                 }
-                
+
                 // Update the dimensions per the possibly re-sized valuesList
                 dims[0] = valuesList.size:uint(64);
 
                 writeln("LOCALE %t CHARS LIST AFTER TRAILING SLICE ADJUSTMENT %t NOW SIZED %t".format(idx,valuesList,valuesList.size));
-                writeln("THE SEGMENTS FOR LOCALE %t: %t".format(idx, slicesList));
+                writeln("THE SEGMENTS FOR LOCALE %t: %t".format(idx, segmentsList));
                 /*
                  * Write the valuesList containing the uint(8) characters missing from the
                  * current locale slice along with retrieved from the next locale to hdf5
@@ -1090,17 +1016,9 @@ module GenSymIO {
                 H5LTmake_dataset_WAR(myFileID, '/%s/values'.format(group).c_str(), 1,
                         c_ptrTo(dims), getHDF5Type(A.eltType), c_ptrTo(valuesList.toArray()));
 
-                /*
-                 * Generate zero-based end index for values chunk written to hdf and write
-                 * to the Strings hdf5 group; this value will be used to calculate the 
-                 * global segments start and end indices that are used to shuffle Strings
-                 * segments as needed to match Strings values and segments for each locale
-                 * and, consequently, each hdf5 file.
-                 */
-                var valuesEndIndex = [valuesList.size-1];
-                H5LTmake_dataset_WAR(myFileID, '/%s/values-index-bounds'.format(group).c_str(), 
-                                    1, c_ptrTo([valuesEndIndex.size]), getHDF5Type(int),
-                                    c_ptrTo(valuesEndIndex));
+                H5LTmake_dataset_WAR(myFileID, '/%s/segments'.format(group).c_str(), 1,
+                                           c_ptrTo([segmentsList.size:uint(64)]),getHDF5Type(int),
+                                           c_ptrTo(segmentsList.toArray()));
               } else {
                   /*
                    * The local slice ends with the uint(8) null character, which is the 
@@ -1114,24 +1032,24 @@ module GenSymIO {
                       /*
                        * The local slice ends with the uint(8) null character, which means it's
                        * last string does not span two locales. Since the local slice also 
-                       * not does not contain chars from previous locale, simply write the 
-                       * Strings values slice out to hdf5.
+                       * not does not contain chars from previous locale, simply convert the
+                       * local slice to a values and segments list and write the resulting
+                       * arrays out to hdf5.
                        */
-                      H5LTmake_dataset_WAR(myFileID, '/%s/values'.format(group).c_str(), 1,
-                              c_ptrTo(dims), getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
+                      var valuesList : list(uint(8));
+                      var segmentsList : list(int);
 
-                      /*
-                       * Generate zero-based end index for values chunk written to hdf and write
-                       * to the Strings hdf5 group; this value will be used to calculate the 
-                       * global segments start and end indices that are used to shuffle Strings
-                       * segments as needed to match Strings values and segments for each locale
-                       * and, consequently, each hdf5 file.
-                       */
-                      var valuesEndIndex = [A.localSlice(locDom).size-1];
-                      H5LTmake_dataset_WAR(myFileID, 
-                              '/%s/values-index-bounds'.format(group).c_str(), 
-                              1, c_ptrTo([[valuesEndIndex.size:uint(64)]]), getHDF5Type(int), 
-                              c_ptrTo(valuesEndIndex));
+                      (valuesList, segmentsList) = convertLocalStringsSliceToList(A.localSlice(locDom));
+                      
+                      writeln("LOCALE %t SEGMENTS %t WITH NO ADJUSTMENTS".format(idx, segmentsList));
+                      writeln("LOCALE %t VALUES %t WITH NO ADJUSTMENTS".format(idx, valuesList));
+
+                      H5LTmake_dataset_WAR(myFileID, '/%s/values'.format(group).c_str(), 1,
+                              c_ptrTo(dims), getHDF5Type(A.eltType), c_ptrTo(valuesList.toArray()));
+
+                      H5LTmake_dataset_WAR(myFileID, '/%s/segments'.format(group).c_str(), 1,
+                                           c_ptrTo([segmentsList.size:uint(64)]),getHDF5Type(int),
+                                           c_ptrTo(segmentsList.toArray()));
                   } else {
                       /*
                        * The local slice does contain chars from previous locale, so (1)
@@ -1142,12 +1060,30 @@ module GenSymIO {
                        */
                        
                       var charList : list(uint(8));
-                      var slicesList : list(int);
+                      var segmentsList : list(int);
                       var valuesList : list(uint(8));
                      
-                      (charList,slicesList) = convertLocalStringsSliceToList(A, locDom);                
-                      (valuesList, slicesList) = adjustForLeadingSlice(leadingSliceIndex, charList);
-                      writeln("LOCALE %t slicesList %t".format(idx, slicesList));
+                      (charList, segmentsList) = convertLocalStringsSliceToList(A.localSlice(locDom));
+                      writeln("LOCALE %t VALUES %t BEFORE ADJUSTING FOR LEADING SLICE %t".format(idx, charList, leadingSliceIndex));            
+                      (valuesList, segmentsList) = adjustForLeadingSlice(leadingSliceIndex, charList);
+                      writeln("LOCALE %t SEGMENTS AFTER ADJUSTING %t".format(idx, segmentsList));
+                      writeln("LOCALE %t VALUES %t AFTER ADJUSTING FOR LEADING SLICE %t".format(idx, valuesList, leadingSliceIndex));
+                      
+                      if isSingularStrings[idx] && idx > 0 {
+                         writeln("LOCALE %t IS SINGULAR".format(idx));
+                         var trailingIndex = trailingSliceIndices[idx-1];
+                         if trailingIndex > -1 {
+                             var trailingIndex = trailingSliceIndices[idx-1];
+                             var trailingValuesList : list(uint(8));
+                             on Locales[idx-1] {
+                                 for (value, i) in zip(trailingValuesList,trailingIndex..A.localSlice(locDom).size-1) {
+                                     trailingValuesList.append(value);
+                                 }
+                             }
+                             charList.insert(0, trailingValuesList);
+                         }
+                      }
+
                       // Update the dimensions per the re-sized Strings values list
                       dims[0] = valuesList.size:uint(64);
 
@@ -1155,101 +1091,13 @@ module GenSymIO {
                                         c_ptrTo(dims), getHDF5Type(A.eltType),
                                         c_ptrTo(valuesList.toArray()));
 
-                      /*
-                       * Generate zero-based end index for values chunk written to hdf5 and write
-                       * to the Strings hdf5 group; this value will be used to calculate the 
-                       * global segments start and end indices that are used to shuffle Strings
-                       * segments as needed to match Strings values and segments for each locale
-                       * and, consequently, each hdf5 file.
-                       */
-                      var valuesEndIndex = [valuesList.size-1];
-                      H5LTmake_dataset_WAR(myFileID, 
-                                  '/%s/values-index-bounds'.format(group).c_str(), 
-                                  1, c_ptrTo([valuesEndIndex.size:uint(64)]), getHDF5Type(int),
-                                  c_ptrTo(valuesEndIndex));
-                 }
-            }
+                      H5LTmake_dataset_WAR(myFileID, '/%s/segments'.format(group).c_str(), 1,
+                                           c_ptrTo([segmentsList.size:uint(64)]),getHDF5Type(int),
+                                           c_ptrTo(segmentsList.toArray()));
+                    }
+                }
             } else if isStringsSegmentsDataset(dsetName) {
-                /*
-                 * Since this is a Strings segments pdarray, there are three situations that
-                 * need to be accounted for: (1) ensure Strings segments elements are within the
-                 * Strings values boundaries for the current locale (2) segments that are 
-                 * misassigned to the previous locale (3) segments misassigned to the next locale. 
-                 * 
-                 * For the current locale, generate a segments list that contains elements that
-                 * are within the String values range defined by the localeValuesIndexStart
-                 * localeValuesIndexStart and localeValuesIndexEnd boundaries. 
-                 * 
-                 * Note: this situation occurs when Strings values elements are shuffled to 
-                 * complete strings that span two locales.
-                 */
-                var newSegmentsList = generateBoundedStringsSegments(localeValuesIndexStart[idx], 
-                        localeValuesIndexEnd[idx], A, locDom, idx);
-
-                /*
-                 * In terms of the previous locale, (applicable to locales 1..n), retrieve the 
-                 * forwardShuffleSliceIndices element for the previous locale; if it is > -1, 
-                 * this means that 1..n segments elements are incorrectly assigned to the wrong
-                 * locale per the preceding Strings values reshuffle. Append newSegmentsList
-                 * with all of the segments elements from that slice index and up.
-                 *  
-                 * Note: this situation occurs when String values elements are shuffled to 
-                 * complete strings that span two locales.
-                 */
-                if idx > 0 {
-                    var forwardShuffleSliceIndex = forwardShuffleSliceIndices[idx-1];
-                    writeln("LOCALE %t FORWARD SHUFFLE INDEX IS %t".format(idx, forwardShuffleSliceIndex));
-                    if forwardShuffleSliceIndex > -1 {
-                        on Locales[idx-1] {
-                            const locDom = A.localSubdomain();
-                            for (value, i) in zip(A.localSlice(locDom),
-                                                       0..A.localSlice(locDom).size-1) {
-                                if i >= forwardShuffleSliceIndex {
-                                    newSegmentsList.insert(0, value:int);
-                                    writeln("LOCALE %t INSERTING FORWARD SHUFFLE SEGMENT %t".format(idx, value));
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                /*
-                 * In terms of the next locale, iterate through that locale's Strings
-                 * segments and, if any of those segments are outside that locale's 
-                 * Strings values boundaries, append to this locale's segments list.
-                 */
-                if idx < filenames.size-1 {
-                    on Locales[idx+1] {
-                        const locDom = A.localSubdomain();
-                        var stopIndex = localeValuesIndexStart[idx+1];
-
-                        for (value, i) in zip(A.localSlice(locDom), 
-                                                        0..A.localSlice(locDom).size-1) {
-                            if value < stopIndex {
-                                writeln("APPENDING %t FOR LOCALE %t".format(value,idx));
-                                newSegmentsList.append(value:int);
-                            } else {
-                                break;
-                            }
-                        }
-                    }
-                }
-                
-                /*
-                 * Sort the resulting newSegmentsList to ensure correct ordering of segments
-                 * which is needed due to parallel processing in the on Locales statement blocks
-                 */
-                newSegmentsList.sort();
-
-                /*
-                 * Now that the segments are correctly assigned to the locale following adjustments
-                 * per Strings values shuffling and ordered, rebase the segments list to a zero-based 
-                 * array, which is needed to integrate into the Strings read framework. 
-                 */
-                var finalSegments = rebaseSegmentsDataset(newSegmentsList);
-                H5LTmake_dataset_WAR(myFileID, '/%s/segments'.format(group).c_str(), 1,
-                                           c_ptrTo([finalSegments.size:uint(64)]),getHDF5Type(int),
-                                           c_ptrTo(finalSegments));
+              //noop
             }
 
             // Close the file now that the 1..n pdarrays have been written
@@ -1503,60 +1351,105 @@ module GenSymIO {
      * indices parameter. Note: the slice index will be used to remove characters from 
      * the current locale that correspond to the last string of the previous locale.
      */
-    private proc generateSliceIndices(idx : int, leadingSliceIndices, trailingSliceIndices, A) {
-        on Locales[idx+1] {
-            const locDom = A.localSubdomain();
-            var sliceIndex = -1;
+    private proc generateSliceIndices(idx : int, leadingSliceIndices, trailingSliceIndices, 
+                               isSingularStrings, containsCompleteStrings, A) {
+        /*
+         * Generate the leadlingSliceIndex that will filter out the non-null uint(8) 
+         * characters, which are the characters that complete the last string started 
+         * in the previous locale, along with the null uint(8) character. Consequently,
+         * the resulting list will start at the first non-null uint(8) character,
+         * which is the start of the first string to be assigned to the hdf5 file 
+         * corresponding to this locale.
+         */
+        on Locales[idx] {
+        const locDom = A.localSubdomain();
+        var leadingSliceSet = false;
+        var leadingSliceIndex = -1;
+        var trailingSliceIndex = -1;
 
-            /*
-             * Generate the leadlingSliceIndex that will filter out the non-null uint(8) 
-             * characters, which are the characters that complete the last string started 
-             * in the previous locale, along with the null uint(8) character. Consequently,
-             * the resulting list will start at the first non-null uint(8) character,
-             * which is the start of the first string to be assigned to the hdf5 file 
-             * corresponding to this locale.
-             */
-            var leadingSliceSet = false;
-            var leadingSliceIndex = -1;
-            var trailingSliceIndex = -1;
-            for (value, i) in zip(A.localSlice(locDom), 0..A.localSlice(locDom).size-1) {
+        for (value, i) in zip(A.localSlice(locDom), 0..A.localSlice(locDom).size-1) {
+            if i < A.localSlice(locDom).size-1 {
                 if value == NULL_STRINGS_VALUE {
+                    /*
+                     * The first null char is the leadingSliceIndex, which will be used
+                     * to pull chars from current locale to complete string started
+                     * in the previous locale.
+                     */
                     if !leadingSliceSet {
-                        /*
-                         * Since the char is the null uint(8) character, that means that the
-                         * chars composing the last string from the previous locale have been
-                         * accounted for, so update the slice index and breakout from the for loop.
-                         */
                         leadingSliceIndex = i + 1;
-                        leadingSliceSet = true;
-                        break;
+                        leadingSliceSet = true; 
                     } else {
+                        /*
+                         * If the leadingSliceIndex has already been set, the next null char
+                         * is a candidate to be the trailingSliceIndex.
+                         */
                         trailingSliceIndex = i;
                     }
                 }
+            } else {
+                /*
+                 * Since this is the last character within the array, check to see if it is
+                 * a null char. If it is, that means that none of the strings corresponding
+                 * to this values array span to the next locale, meaning that this values
+                 * array corresponds to complete strings. Consequently, (1) no chars from
+                 * the next locale will be used to complete strings in this locale and 
+                 * (2) no chars from this locale will be sliced to complete first string
+                 * in the next locale.
+                 */
+                if value == NULL_STRINGS_VALUE {
+                    containsCompleteStrings[idx] = true;
+                } else {
+                    containsCompleteStrings[idx] = false;
+                }
             }
+        }
 
-            leadingSliceIndices[here.id] = leadingSliceIndex;
-            trailingSliceIndices[here.id] = trailingSliceIndex;
-            try! writeln("FOR LOCALE %t GENERATED TSI %t".format(here.id, trailingSliceIndices[here.id]));
+        leadingSliceIndices[idx] = leadingSliceIndex;
+        trailingSliceIndices[idx] = trailingSliceIndex;
+        
+        if leadingSliceIndices[idx] > -1 || trailingSliceIndices[idx] > -1 {    
+            /*
+             * If either of the indices are > -1, this means there's 2..n null characters
+             * in the string corresponding to the values array, which means the values
+             * array contains 2..n strings and is not singular.
+             */   
+            isSingularStrings[idx] = false;
+        } else {
+            isSingularStrings[idx] = true;
+        }
+
+        /* 
+         * For the special case of this being the first locale, set the leadingSliceIndex 
+         * to -1 since there is no previous locale that has an incomplete string at the
+         * end that will require chars sliced from locale 0 to complete.
+         */
+        if idx == 0 {
+            leadingSliceIndices[idx] = -1;
+        }
+
+        try! writeln("FOR LOCALE %t GENERATED LSI %t AND TSI %t AND ISS %t AND COMPLETE STRINGS %t".format(idx, leadingSliceIndices[idx], 
+                           trailingSliceIndices[idx], isSingularStrings[idx], containsCompleteStrings[idx]));
         }
     }
 
     /*
-     * Converts a local Strings values slice into a uint(8) list for use in methods 
-     * that add or remove entries from the resulting list.
+     * Processes a local Strings values slice into (1) a uint(8) list for use in methods 
+     * that add or remove entries from the resulting list and (2) a corresponding
+     * segments list.
      */
-    private proc convertLocalStringsSliceToList(A, locDom) {
+    private proc convertLocalStringsSliceToList(rawChars) {
         var charList: list(uint(8), parSafe=true);
         var indices: list(int, parSafe=true);
 
-        for (value, i) in zip(A.localSlice(locDom),
-                                               0..A.localSlice(locDom).size-1) do {
+        indices.append(0);
+        
+        for (value, i) in zip(rawChars, 0..rawChars.size-1) do {
             charList.append(value:uint(8));
-            if value == NULL_STRINGS_VALUE {
-                indices.append(i);            
+            // if the char is uint(8) and is not the last char, add to indices list
+            if value == NULL_STRINGS_VALUE && i < rawChars.size-1 {
+                indices.append(i+1);   
+                try! writeln("ADDING THE INDEX %t".format(i));         
             }
-
         }
 
         return (charList, indices);
@@ -1578,7 +1471,7 @@ module GenSymIO {
      * Adjusts for the shuffling of a leading char sequence to the 
      * previous locale by (1) slicing leading chars that correspond
      * to 1..n chars composing a string started in the previous locale
-     * and returning a new values list that composes all of the strings
+     * and returning (1) a new values list that composes all of the strings
      * that start in the current locale and (2) returns a new segments
      * list corresponding to the new values list
      */
@@ -1587,34 +1480,50 @@ module GenSymIO {
         var valuesList: list(uint(8), parSafe=true);
         var indices: list(int);
         var i: int = 0;
+        indices.append(0);
+        
+        var segmentsBound = charList.size - sliceIndex - 1;
         for value in charList(sliceIndex..charList.size-1)  {
             valuesList.append(value:uint(8));
-            if value == NULL_STRINGS_VALUE {
-                indices.append(i);
+            
+            /*
+             * If the value is a null char and is not the last char
+             * in the list, then it is a segment use to delimit
+             * strings within the corresponding values array.
+             */
+            if value == NULL_STRINGS_VALUE && i < segmentsBound {
+                try! writeln("APPENDING FOR LS ADJUSTMENT %t FOR CHAR LIST WITH IB %t".format(i,segmentsBound));
+                indices.append(i+1);
             }
             i+=1;
+        }
+        
+        if indices.last() == valuesList.size {
+            indices.pop();
         }
         return (valuesList,indices);
     }
 
     /* 
-     * Adjusts for the shuffling of a trailing char sequence to
-     * the next locale by (1) slicing trailing chars that correspond
-     * to 1..n chars composing a string that completes in the next
-     * locale, returning a new list that composes all strings that
-     * end in the current locale and (2) returns a new segments
-     * list corresponding to the new values list
+     * Adjusts for the shuffling of a trailing char sequence to the next 
+     * locale by (1) slicing trailing chars that correspond to 1..n
+     * chars composing a string that completes in the next locale,
+     * returning (1) a new list that composes all strings that end in the 
+     * current locale and (2) returns a new segments list corresponding
+     * to the new values list
      */
     private proc adjustForTrailingSlice(sliceIndex : int,
                                    charList : list(uint(8))) {
         var valuesList: list(uint(8), parSafe=true);
         var indices: list(int);
         var i: int = 0;
+        indices.append(0);
 
-        for value in charList(0..sliceIndex)  {
+        for value in charList(0..sliceIndex-1)  {
             valuesList.append(value:uint(8));
-            if value == NULL_STRINGS_VALUE {
-                indices.append(i);
+            if value == NULL_STRINGS_VALUE && i < sliceIndex-1 {
+                try! writeln("APPENDING SEGMENT WHILE ADJUSTING FOR TS %t".format(i));
+                indices.append(i+1);
             }
             i+=1;
         }
@@ -1642,18 +1551,6 @@ module GenSymIO {
             }
         }
         return newSegmentsList;
-    }
-
-    /*
-     * Reads the Strings values zero-based end index for a file, which corresponds to 
-     * the values array chunk written to the file.
-     */
-    private proc getStringsValuesEndIndex(fileId: int, 
-                                                   group: string) : [] int throws {
-        var valuesLocaleIndices = [0];
-        readHDF5Dataset(file_id=fileId, dsetName='/%s/values-index-bounds'.format(group), 
-                             data=valuesLocaleIndices);
-        return valuesLocaleIndices;
     }
 
     /*
@@ -1742,22 +1639,5 @@ module GenSymIO {
      */
     private proc isStringsDataset(dataset: string) : bool {
         return dataset.find(needle="STRINGS") > -1;
-    }
-
-    /*
-     * Resets the segments array values to start at zero, which is required if
-     * the Strings.save is executed with number of locales > 1.
-     */
-    private proc rebaseSegmentsDataset(segments: list(int)) :  [] int {
-        var dec : int;
-        var newSegments: [0..segments.size-1] int;
-
-        for (segment,i) in zip(segments,0..segments.size-1) do {
-            if i == 0 {
-                dec = segment:int;
-            }
-            newSegments[i] = segment:int - dec;
-        }
-        return newSegments;
     }
 }
