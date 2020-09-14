@@ -14,6 +14,20 @@ jobs:
       run: |
         ! git --no-pager grep -n $'\t' -- '*.chpl'
 
+  docs:
+    runs-on: ubuntu-latest
+    container:
+      image: chapel/chapel:1.22.0
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dependencies
+      run: |
+        apt-get update && apt-get install -y python3-pip
+        python3 -m pip install -e .[dev]
+    - name: Arkouda make doc
+      run: |
+        make doc
+
   arkouda_tests_linux:
     runs-on: ubuntu-latest
     strategy:
