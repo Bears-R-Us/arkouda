@@ -2,7 +2,7 @@ module KReduce {
   use Extremas;
 
  /*
-    :class: `KReduce` is a user defined reduction. 
+    :class:`KReduce` is a user defined reduction.
     Returns array of the k extreme values of an array of type eltType.
     Whether it will be the max or min values is specified through the "isMin" field (true gives min values, false gives max values).
    

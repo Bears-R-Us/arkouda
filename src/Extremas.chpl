@@ -8,7 +8,7 @@ module Extremas {
   use Sort;
 
 /*
-:record: `KExtreme` data structure that is used
+:record:`KExtreme` data structure that is used
 to track the minimum or maximum ``size``
 values that are in an array. Acts similar
 to a heap data structure, but can be
