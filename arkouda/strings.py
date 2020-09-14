@@ -746,6 +746,5 @@ class Strings:
         """       
         # IMPORTANT: The STRINGS prefix is needed to identify both the values and 
         # segments arrays as part of the same Strings object to be written to hdf5
-        arkouda.save_all(columns=[self.bytes, self.offsets], prefix_path=prefix_path,
-                names=['STRINGS/{}/values'.format(dataset),
-                       'STRINGS/{}/segments'.format(dataset)], mode=mode)
+        arkouda.save_all(columns=[self.bytes], prefix_path=prefix_path,
+                names=['STRINGS/{}/values'.format(dataset)], mode=mode)
