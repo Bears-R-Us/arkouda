@@ -741,10 +741,8 @@ class Strings:
         -----
         Important implementation notes: (1) Strings state is saved as two datasets
         within an hdf5 group, named via the dataset parameter, corresponding to 
-        the two pdarrays composing a Strings object: segments and values (2) 
+        the two pdarrays composing a Strings object--segments and values; (2) 
         save logic is delegated to pdarrayIO.save_all
         """       
-        # IMPORTANT: The STRINGS prefix is needed to identify both the values and 
-        # segments arrays as part of the same Strings object to be written to hdf5
         arkouda.save_all(columns=[self.bytes], prefix_path=prefix_path,
-                names=['STRINGS/{}/values'.format(dataset)], mode=mode)
+                names=['{}/values'.format(dataset)], mode=mode)
