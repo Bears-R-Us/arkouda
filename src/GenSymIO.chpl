@@ -1446,7 +1446,6 @@ module GenSymIO {
                      } else {
                         endsWithCompleteString[idx] = false;
                      }
-                     writeln("THE LOCALE %t ENDS WITH null %t".format(idx, endsWithCompleteString[idx]);
                 }
             }    
 
