@@ -886,7 +886,7 @@ module GenSymIO {
                           } else {
                               for (value, i) in zip(A.localSlice(locDom),
                                                                0..A.localSlice(locDom).size-1) {
-                                  if i > trailingIndex {
+                                  if i >= trailingIndex {
                                       trailingValuesList.append(value:uint(8));
                                   }
                               }
@@ -1033,7 +1033,7 @@ module GenSymIO {
                                   } else {
                                       for (value, i) in zip(A.localSlice(locDom), 
                                                                        0..A.localSlice(locDom).size-1) {
-                                          if i > trailingIndex {
+                                          if i >= trailingIndex {
                                               trailingValuesList.append(value:uint(8));
                                           }
                                       } 
@@ -1103,7 +1103,7 @@ module GenSymIO {
                              on Locales[idx-1] {
                                  const locDom = A.localSubdomain();
                                  for (value, i) in zip(A.localSlice(locDom), 0..A.localSlice(locDom).size-1) {
-                                     if i > trailingIndex {
+                                     if i >= trailingIndex {
                                          trailingValuesList.append(value:uint(8));
                                      }
                                  }
@@ -1558,7 +1558,7 @@ module GenSymIO {
      * chars composing a string that completes in the next locale,
      * returning (1) a new list that composes all strings that end in the 
      * current locale and (2) returns a new segments list corresponding
-     * to the new values list
+     * to the new values list for the current locale
      */
     private proc adjustForTrailingSlice(sliceIndex : int,
                                    charList : list(uint(8))) {
