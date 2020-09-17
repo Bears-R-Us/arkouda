@@ -64,7 +64,9 @@ jobs:
       run: |
         brew install hdf5 zeromq
         # brew install chapel@1.22.0 (except that isn't actually supported, so use sha with 1.22.0)
-        brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/f305658fa8/Formula/chapel.rb
+        CHAPEL_FORMULA=$(mktemp -d)/chapel.rb
+        curl -fsSL https://raw.githubusercontent.com/Homebrew/homebrew-core/f305658fa8/Formula/chapel.rb -o $CHAPEL_FORMULA
+        brew install $CHAPEL_FORMULA
     - name: Build/Install Arkouda
       run: |
         make
