@@ -1,4 +1,4 @@
-import unittest, os, sys, shutil
+import os, shutil
 from pathlib import Path
 from context import arkouda as ak
 from arkouda import io_util
@@ -13,7 +13,6 @@ class IOUtilTest(ArkoudaTest):
         io_util.get_directory(IOUtilTest.io_test_dir)
 
     def testGetDirectory(self):
-        dir = io_util.get_directory(IOUtilTest.io_test_dir)
         self.assertTrue(dir)
         Path.rmdir(Path(IOUtilTest.io_test_dir))
         self.assertFalse(os.path.exists(IOUtilTest.io_test_dir))

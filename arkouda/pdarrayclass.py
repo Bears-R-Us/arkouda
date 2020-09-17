@@ -1,6 +1,6 @@
 import json, struct
 import numpy as np
-
+from typing import Union
 from arkouda.client import generic_msg, verbose, maxTransferBytes, pdarrayIterThresh
 from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
@@ -8,7 +8,7 @@ from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
 __all__ = ["pdarray", "info", "any", "all", "is_sorted", "sum", "prod", "min", "max",
            "argmin", "argmax", "mean", "var", "std", "mink", "maxk", "argmink", "argmaxk"]
 
-def parse_single_value(msg):
+def parse_single_value(msg : str):
     """
     Attempt to convert a scalar return value from the arkouda server to a numpy
     scalar in Python. The user should not call this function directly.
@@ -21,13 +21,15 @@ def parse_single_value(msg):
         elif value == "False":
             return bool(False)
         else:
-            raise ValueError("unsupported value from server {} {}".format(mydtype.name, value))
+            raise ValueError(("unsupported value from server {} {}".format(mydtype.name, 
+                                                                           value)))
     try:
         if mydtype == str_:
             return mydtype.type(value.strip('"'))
         return mydtype.type(value)
     except:
-        raise ValueError("unsupported value from server {} {}".format(mydtype.name, value))
+        raise ValueError(("unsupported value from server {} {}".format(mydtype.name, 
+                                                                       value)))
 
 # class for the pdarray
 class pdarray:
@@ -55,8 +57,10 @@ class pdarray:
         The size in bytes of each element
     """
 
-    BinOps = frozenset(["+", "-", "*", "/", "//", "%", "<", ">", "<=", ">=", "!=", "==", "&", "|", "^", "<<", ">>","**"])
-    OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", "<<=", ">>=","**="])
+    BinOps = frozenset(["+", "-", "*", "/", "//", "%", "<", ">", "<=", ">=", 
+                        "!=", "==", "&", "|", "^", "<<", ">>","**"])
+    OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", 
+                         "<<=", ">>=","**="])
     objtype = "pdarray"
 
     __array_priority__ = 1000
@@ -75,9 +79,10 @@ class pdarray:
         except:
             pass
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         if self.size != 1:
-            raise ValueError("The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()")
+            raise ValueError(('The truth value of an array with more than one ' +
+                              'element is ambiguous. Use a.any() or a.all()'))
         return bool(self[0])
 
     def __len__(self):
@@ -85,13 +90,13 @@ class pdarray:
 
     def __str__(self):
         global pdarrayIterThresh
-        return generic_msg("str {} {}".format(self.name,pdarrayIterThresh) )
+        return generic_msg("str {} {}".format(self.name,pdarrayIterThresh))
 
     def __repr__(self):
         global pdarrayIterTresh
         return generic_msg("repr {} {}".format(self.name,pdarrayIterThresh))
 
-    def format_other(self, other):
+    def format_other(self, other : object) -> object:
         """
         Attempt to cast scalar other to the element dtype of this pdarray,
         and print the resulting value to a string (e.g. for sending to a
@@ -100,14 +105,15 @@ class pdarray:
         try:
             other = self.dtype.type(other)
         except:
-            raise TypeError("Unable to convert {} to {}".format(other, self.dtype.name))
+            raise TypeError("Unable to convert {} to {}".format(other, 
+                                                                self.dtype.name))
         if self.dtype == bool:
             return str(other)
         fmt = NUMBER_FORMAT_STRINGS[self.dtype.name]
         return fmt.format(other)
 
     # binary operators
-    def binop(self, other, op):
+    def binop(self, other : object, op : str):
         if op not in self.BinOps:
             raise ValueError("bad operator {}".format(op))
         # pdarray binop pdarray
@@ -120,8 +126,10 @@ class pdarray:
         # pdarray binop scalar
         dt = resolve_scalar_dtype(other)
         if dt not in DTypes:
-            raise TypeError("Unhandled scalar type: {} ({})".format(other, type(other)))
-        msg = "binopvs {} {} {} {}".format(op, self.name, dt, NUMBER_FORMAT_STRINGS[dt].format(other))
+            raise TypeError("Unhandled scalar type: {} ({})".format(other, 
+                                                                    type(other)))
+        msg = "binopvs {} {} {} {}".\
+                  format(op, self.name, dt, NUMBER_FORMAT_STRINGS[dt].format(other))
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
@@ -133,8 +141,11 @@ class pdarray:
         # pdarray binop scalar
         dt = resolve_scalar_dtype(other)
         if dt not in DTypes:
-            raise TypeError("Unhandled scalar type: {} ({})".format(other, type(other)))
-        msg = "binopsv {} {} {} {}".format(op, dt, NUMBER_FORMAT_STRINGS[dt].format(other), self.name)
+            raise TypeError("Unhandled scalar type: {} ({})".format(other, 
+                                                                    type(other)))
+        msg = "binopsv {} {} {} {}".\
+                      format(op, dt, NUMBER_FORMAT_STRINGS[dt].format(other), 
+                                                                    self.name)
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
@@ -268,7 +279,8 @@ class pdarray:
         except: # Can't cast other as dtype of pdarray
             raise TypeError("Unhandled scalar type: {} ({})".format(other, type(other)))
 
-        msg = "opeqvs {} {} {} {}".format(op, self.name, self.dtype.name, self.format_other(other))
+        msg = "opeqvs {} {} {} {}".\
+                         format(op, self.name, self.dtype.name, self.format_other(other))
         generic_msg(msg)
         return self
 
@@ -351,29 +363,40 @@ class pdarray:
                 # Interpret negative key as offset from end of array
                 key += self.size
             if (key >= 0 and key < self.size):
-                generic_msg("[int]=val {} {} {} {}".format(self.name, key, self.dtype.name, self.format_other(value)))
+                generic_msg("[int]=val {} {} {} {}".\
+                            format(self.name, key, self.dtype.name, 
+                                   self.format_other(value)))
             else:
-                raise IndexError("index {} is out of bounds with size {}".format(orig_key,self.size))
+                raise IndexError(("index {} is out of bounds with size {}".\
+                                 format(orig_key,self.size)))
         elif isinstance(key, pdarray):
             if isinstance(value, pdarray):
-                generic_msg("[pdarray]=pdarray {} {} {}".format(self.name,key.name,value.name))
+                generic_msg("[pdarray]=pdarray {} {} {}".\
+                            format(self.name,key.name,value.name))
             else:
-                generic_msg("[pdarray]=val {} {} {} {}".format(self.name, key.name, self.dtype.name, self.format_other(value)))
+                generic_msg("[pdarray]=val {} {} {} {}".\
+                            format(self.name, key.name, self.dtype.name, 
+                                   self.format_other(value)))
         elif isinstance(key, slice):
             (start,stop,stride) = key.indices(self.size)
             if verbose: print(start,stop,stride)
             if isinstance(value, pdarray):
-                generic_msg("[slice]=pdarray {} {} {} {} {}".format(self.name,start,stop,stride,value.name))
+                generic_msg("[slice]=pdarray {} {} {} {} {}".\
+                            format(self.name,start,stop,stride,value.name))
             else:
-                generic_msg("[slice]=val {} {} {} {} {} {}".format(self.name, start, stop, stride, self.dtype.name, self.format_other(value)))
+                generic_msg("[slice]=val {} {} {} {} {} {}".\
+                            format(self.name, start, stop, stride, self.dtype.name, 
+                                   self.format_other(value)))
         else:
-            raise TypeError("Unhandled key type: {} ({})".format(key, type(key)))
+            raise TypeError("Unhandled key type: {} ({})".\
+                            format(key, type(key)))
 
-    def fill(self, value):
+    def fill(self, value : object) -> None:
         """
         Fill the array (in place) with a constant value.
         """
-        generic_msg("set {} {} {}".format(self.name, self.dtype.name, self.format_other(value)))
+        generic_msg("set {} {} {}".format(self.name, 
+                                        self.dtype.name, self.format_other(value)))
 
     def any(self):
         """
@@ -430,19 +453,19 @@ class pdarray:
         """
         return argmax(self)
 
-    def mean(self):
+    def mean(self) -> float:
         """
         Return the mean of the array.
         """
         return mean(self)
 
-    def var(self, ddof=0):
+    def var(self, ddof : int=0):
         """
         Compute the variance. See ``arkouda.var`` for details.
         """
         return var(self, ddof=ddof)
 
-    def std(self, ddof=0):
+    def std(self, ddof : int=0) -> float:
         """
         Compute the standard deviation. See ``arkouda.std`` for details.
         """
@@ -478,14 +501,19 @@ class pdarray:
     def to_ndarray(self):
         """
         Convert the array to a np.ndarray, transferring array data from the
-        arkouda server to Python. If the array exceeds a builtin size limit,
-        a RuntimeError is raised.
+        Arkouda server to client-side Python. Note: if the pdarray size exceeds 
+        arkouda.maxTransferBytes, a RuntimeError is raised.
 
         Returns
         -------
         np.ndarray
             A numpy ndarray with the same attributes and data as the pdarray
 
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown or if the pdarray size
+            exceeds the built-in size limit
         Notes
         -----
         The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
@@ -513,12 +541,14 @@ class pdarray:
         arraybytes = self.size * self.dtype.itemsize
         # Guard against overflowing client memory
         if arraybytes > maxTransferBytes:
-            raise RuntimeError("Array exceeds allowed size for transfer. Increase ak.maxTransferBytes to allow")
+            raise RuntimeError(('Array exceeds allowed size for transfer. Increase ' +
+                               'ak.maxTransferBytes to allow'))
         # The reply from the server will be a bytes object
         rep_msg = generic_msg("tondarray {}".format(self.name), recv_bytes=True)
         # Make sure the received data has the expected length
         if len(rep_msg) != self.size*self.dtype.itemsize:
-            raise RuntimeError("Expected {} bytes but received {}".format(self.size*self.dtype.itemsize, len(rep_msg)))
+            raise RuntimeError("Expected {} bytes but received {}".\
+                               format(self.size*self.dtype.itemsize, len(rep_msg)))
         # Use struct to interpret bytes as a big-endian numeric array
         fmt = '>{:n}{}'.format(self.size, structDtypeCodes[self.dtype.name])
         # Return a numpy ndarray
@@ -534,6 +564,16 @@ class pdarray:
         -------
         numba.DeviceNDArray
             A Numba ndarray with the same attributes and data as the pdarray; on GPU
+
+        Raises
+        ------
+        ImportError
+            Raised if CUDA is not available
+        ModuleNotFoundError
+            Raised if Numba is either not installed or not enabled
+        RuntimeError
+            Raised if there is a server-side error thrown in the course of retrieving
+            the pdarray.
 
         Notes
         -----
@@ -561,28 +601,30 @@ class pdarray:
         try:
             from numba import cuda
             if not(cuda.is_available()):
-                raise ImportError('CUDA is not available. Check for the CUDA toolkit and ensure a GPU is installed.')
-                return
+                raise ImportError(('CUDA is not available. Check for the CUDA toolkit ' +
+                                  'and ensure a GPU is installed.'))
         except:
-            raise ModuleNotFoundError('Numba is not enabled or installed and is required for GPU support.')
-            return
+            raise ModuleNotFoundError(('Numba is not enabled or installed and ' +
+                                      'is required for GPU support.'))
 
         # Total number of bytes in the array data
         arraybytes = self.size * self.dtype.itemsize
         # Guard against overflowing client memory
         if arraybytes > maxTransferBytes:
-            raise RuntimeError("Array exceeds allowed size for transfer. Increase ak.maxTransferBytes to allow")
+            raise RuntimeError(("Array exceeds allowed size for transfer. " +
+                               "Increase ak.maxTransferBytes to allow"))
         # The reply from the server will be a bytes object
         rep_msg = generic_msg("tondarray {}".format(self.name), recv_bytes=True)
         # Make sure the received data has the expected length
         if len(rep_msg) != self.size*self.dtype.itemsize:
-            raise RuntimeError("Expected {} bytes but received {}".format(self.size*self.dtype.itemsize, len(rep_msg)))
+            raise RuntimeError("Expected {} bytes but received {}".\
+                               format(self.size*self.dtype.itemsize, len(rep_msg)))
         # Use struct to interpret bytes as a big-endian numeric array
         fmt = '>{:n}{}'.format(self.size, structDtypeCodes[self.dtype.name])
         # Return a numba devicendarray
         return cuda.to_device(struct.unpack(fmt, rep_msg))
 
-    def save(self, prefix_path, dataset='array', mode='truncate'):
+    def save(self, prefix_path, dataset='array', mode='truncate') -> str:
         """
         Save the pdarray to HDF5. The result is a collection of HDF5 files,
         one file per locale of the arkouda server, where each filename starts
@@ -599,14 +641,23 @@ class pdarray:
             By default, truncate (overwrite) output files, if they exist.
             If 'append', attempt to create new dataset in existing files.
 
+        Raises
+        ------
+        RuntimeError
+            Raised if a server-side error is thrown saving the pdarray
+        ValueError
+            Raised if there is an error in parsing the prefix path pointing to
+            file write location or if the mode parameter is neither truncate
+            nor append
+
         See Also
         --------
         save_all, load, read_hdf, read_all
 
         Notes
         -----
-        The prefix_path must be visible to the arkouda server and the user must have
-        write permission.
+        The prefix_path must be visible to the arkouda server and the user must
+        have write permission.
 
         Output files have names of the form ``<prefix_path>_LOCALE<i>.hdf``, where ``<i>``
         ranges from 0 to ``numLocales``. If any of the output files already exist and
@@ -633,7 +684,17 @@ class pdarray:
             m = 0
         else:
             raise ValueError("Allowed modes are 'truncate' and 'append'")
-        rep_msg = generic_msg("tohdf {} {} {} {}".format(self.name, dataset, m, json.dumps([prefix_path])))
+
+        """
+        If offsets are provided, add to the json_array as the offsets will be used to 
+        retrieve the array elements from the hdf5 files.
+        """ 
+        try:
+            json_array = json.dumps([prefix_path])
+        except Exception as e:
+            raise ValueError(e)
+        return generic_msg("tohdf {} {} {} {} {}".\
+                           format(self.name, dataset, m, json_array, self.dtype))
 
 
 
@@ -641,22 +702,67 @@ class pdarray:
 #   only after:
 #       all values have been checked by python module and...
 #       server has created pdarray already befroe this is called
-def create_pdarray(repMsg):
+def create_pdarray(reqMsg : str) -> pdarray:
     """
     Return a pdarray instance pointing to an array created by the arkouda server.
     The user should not call this function directly.
-    """
-    fields = repMsg.split()
-    name = fields[1]
-    mydtype = fields[2]
-    size = int(fields[3])
-    ndim = int(fields[4])
-    shape = [int(el) for el in fields[5][1:-1].split(',')]
-    itemsize = int(fields[6])
-    if verbose: print("{} {} {} {} {} {}".format(name,mydtype,size,ndim,shape,itemsize))
-    return pdarray(name,mydtype,size,ndim,shape,itemsize)
 
-def info(pda):
+    Parameters
+    ----------
+    reqMsg : str
+        space-delimited string containing the pdarray name, datatype, size
+        dimension, shape,and itemsize
+
+    Returns
+    -------
+    pdarray
+        A pdarray with the same attributes and data as the pdarray; on GPU
+
+    Raises
+-   -----
+    ValueError
+        If there's an error in parsing the reqMsg parameter into the six 
+        values needed to create the pdarray instance
+    RuntimeError
+        Raised if a server-side error is thrown in the process of creating
+        the pdarray instance
+    """
+    try:
+        fields = reqMsg.split()
+        name = fields[1]
+        mydtype = fields[2]
+        size = int(fields[3])
+        ndim = int(fields[4])
+        shape = [int(el) for el in fields[5][1:-1].split(',')]
+        itemsize = int(fields[6])
+    except Exception as e:
+        raise ValueError(e)
+    if verbose: print("{} {} {} {} {} {}".\
+                      format(name,mydtype,size,ndim,shape,itemsize))
+    return pdarray(name, mydtype, size, ndim, shape, itemsize)
+
+def info(pda : Union[pdarray, str]) -> str:
+    """
+    Returns information about the pdarray instance
+    
+    Parameters
+    ----------
+    pda : Union[pdarray, str]
+       pda is either the pdarray instance or the pdarray.name string
+    
+    Returns
+    ------
+    str
+        Information regarding the pdarray in the form of a string
+    
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is neither a pdarray or string
+    RuntimeError
+        Raised if a server-side error is thrown in the process of 
+        retrieving information about the pdarray
+    """
     if isinstance(pda, pdarray):
         return generic_msg("info {}".format(pda.name))
     elif isinstance(pda, str):
@@ -664,9 +770,26 @@ def info(pda):
     else:
         raise TypeError("info: must be pdarray or string {}".format(pda))
 
-def any(pda):
+def any(pda : pdarray) -> bool:
     """
     Return True iff any element of the array evaluates to True.
+    
+    Parameters
+    ----------
+    pda : pdarray
+        The pdarray instance to be evaluated    
+    
+    Returns
+    -------
+    bool 
+        Indicates if 1..n pdarray elements evaluate to True
+        
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray instance
+    RuntimeError
+        Raised if there's a server-side error thrown
     """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("any", pda.name))
@@ -674,9 +797,26 @@ def any(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def all(pda):
+def all(pda : pdarray) -> bool:
     """
     Return True iff all elements of the array evaluate to True.
+
+    Parameters
+    ----------
+    pda : pdarray
+        The pdarray instance to be evaluated
+
+    Returns
+    -------
+    bool 
+        Indicates if all pdarray elements evaluate to True
+        
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray instance
+    RuntimeError
+        Raised if there's a server-side error thrown
     """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("all", pda.name))
@@ -684,9 +824,26 @@ def all(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def is_sorted(pda):
+def is_sorted(pda : pdarray) -> bool:
     """
     Return True iff the array is monotonically non-decreasing.
+    
+    Parameters
+    ----------
+    pda : pdarray
+        The pdarray instance to be evaluated
+    
+    Returns
+    -------
+    bool 
+        Indicates if the array is monotonically non-decreasing
+        
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray instance
+    RuntimeError
+        Raised if there's a server-side error thrown
     """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("is_sorted", pda.name))
@@ -694,9 +851,26 @@ def is_sorted(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def sum(pda):
+def sum(pda : pdarray) -> float:
     """
     Return the sum of all elements in the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+        Values for which to calculate the sum
+    
+    Returns
+    -------
+    float
+        The sum of all elements in the array
+        
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray instance
+    RuntimeError
+        Raised if there's a server-side error thrown
     """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("sum", pda.name))
@@ -704,10 +878,27 @@ def sum(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def prod(pda):
+def prod(pda : pdarray) -> float:
     """
     Return the product of all elements in the array. Return value is
     always a float.
+    
+    Parameters
+    ----------
+    pda : pdarray
+        Values for which to calculate the product
+
+    Returns
+    -------
+    float
+        The product calculated from the pda
+        
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray instance
+    RuntimeError
+        Raised if there's a server-side error thrown
     """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("prod", pda.name))
@@ -715,9 +906,26 @@ def prod(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def min(pda):
+def min(pda : pdarray) -> float:
     """
     Return the minimum value of the array.
+    
+    Parameters
+    ----------
+    pda : pdarray
+        Values for which to calculate the min
+
+    Returns
+    -------
+    float
+        The min calculated from the pda
+        
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray instance
+    RuntimeError
+        Raised if there's a server-side error thrown
     """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("min", pda.name))
@@ -725,9 +933,26 @@ def min(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def max(pda):
+def max(pda : pdarray) -> float:
     """
     Return the maximum value of the array.
+    
+    Parameters
+    ----------
+    pda : pdarray
+        Values for which to calculate the max
+
+    Returns
+    -------
+    float
+        The max calculated from the pda
+       
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray instance
+    RuntimeError
+        Raised if there's a server-side error thrown
     """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("max", pda.name))
@@ -735,9 +960,26 @@ def max(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def argmin(pda):
+def argmin(pda : pdarray) -> float:
     """
     Return the index of the first minimum value of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+        Values for which to calculate the argmin
+
+    Returns
+    -------
+    float
+        The argmin calculated from the pda
+        
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray instance
+    RuntimeError
+        Raised if there's a server-side error thrown
     """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("argmin", pda.name))
@@ -745,9 +987,26 @@ def argmin(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def argmax(pda):
+def argmax(pda : pdarray) -> float:
     """
     Return the index of the first maximum value of the array.
+    
+    Parameters
+    ----------
+    pda : pdarray
+        Values for which to calculate the argmax
+
+    Returns
+    -------
+    float
+        The argmax calculated from the pda
+
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray instance
+    RuntimeError
+        Raised if there's a server-side error thrown
     """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("reduction {} {}".format("argmax", pda.name))
@@ -755,27 +1014,53 @@ def argmax(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def mean(pda):
+def mean(pda : pdarray) -> float:
     """
     Return the mean of the array.
+    
+    Parameters
+    ----------
+    pda : pdarray
+        Values for which to calculate the mean
+
+    Returns
+    -------
+    float
+        The mean calculated from the pda sum and size
+
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray instance
+    RuntimeError
+        Raised if there's a server-side error thrown
     """
     return pda.sum() / pda.size
 
-def var(pda, ddof=0):
+def var(pda : pdarray, ddof : int=0) -> float:
     """
     Return the variance of values in the array.
 
     Parameters
     ----------
     pda : pdarray
-        Values for which to find the variance
+        Values for which to calculate the variance
     ddof : int
-        "Delta Degrees of Freedom" used in calculating mean
+        "Delta Degrees of Freedom" used in calculating var
 
     Returns
     -------
     float
         The scalar variance of the array
+
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray instance
+    ValueError
+        Raised if the ddof >= pdarray size
+    RuntimeError
+        Raised if there's a server-side error thrown
 
     See Also
     --------
@@ -800,7 +1085,7 @@ def var(pda, ddof=0):
     m = mean(pda)
     return ((pda - m)**2).sum() / (pda.size - ddof)
 
-def std(pda, ddof=0):
+def std(pda : pdarray, ddof : int=0) -> float:
     """
     Return the standard deviation of values in the array. The standard
     deviation is implemented as the square root of the variance.
@@ -808,14 +1093,21 @@ def std(pda, ddof=0):
     Parameters
     ----------
     pda : pdarray
-        values for which to find the variance
+        values for which to calculate the standard deviation
     ddof : int
-        "Delta Degrees of Freedom" used in calculating mean
+        "Delta Degrees of Freedom" used in calculating std
 
     Returns
     -------
     float
         The scalar standard deviation of the array
+
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray instance
+    RuntimeError
+        Raised if there's a server-side error thrown
 
     See Also
     --------
@@ -836,6 +1128,8 @@ def std(pda, ddof=0):
     the estimated variance, so even with ``ddof=1``, it will not be an
     unbiased estimate of the standard deviation per se.
     """
+    if not isinstance(pda, pdarray):
+        raise TypeError("must be pdarray {}".format(pda))
     return np.sqrt(var(pda, ddof=ddof))
 
 def mink(pda, k):

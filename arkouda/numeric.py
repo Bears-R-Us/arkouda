@@ -1,5 +1,5 @@
 import numpy as np
-
+from typing import Tuple
 from arkouda.client import generic_msg
 from arkouda.dtypes import *
 from arkouda.pdarrayclass import pdarray, parse_single_value, create_pdarray
@@ -8,9 +8,23 @@ from arkouda.pdarraysetops import unique
 __all__ = ["abs", "log", "exp", "cumsum", "cumprod", "sin", "cos", "where",
            "histogram", "value_counts"]
 
-def abs(pda):
+def abs(pda : pdarray) -> pdarray:
     """
     Return the element-wise absolute value of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+    
+    Returns
+    -------
+    pdarray
+        A pdarray containing absolute values of the input array elements
+   
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
     """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("efunc {} {}".format("abs", pda.name))
@@ -21,6 +35,21 @@ def abs(pda):
 def log(pda):
     """
     Return the element-wise natural log of the array. 
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing natural log values of the input 
+        array elements
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
 
     Notes
     -----
@@ -43,9 +72,24 @@ def log(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def exp(pda):
+def exp(pda : pdarray) -> pdarray:
     """
     Return the element-wise exponential of the array.
+    
+    Parameters
+    ----------
+    pda : pdarray
+
+    Returns
+    -------
+    pdarray
+        A pdarray containing exponential values of the input 
+        array elements
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
     """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("efunc {} {}".format("exp", pda.name))
@@ -59,6 +103,15 @@ def cumsum(pda):
 
     The sum is inclusive, such that the ``i`` th element of the 
     result is the sum of elements up to and including ``i``.
+    
+    Parameters
+    ----------
+    pda : pdarray
+    
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
     """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("efunc {} {}".format("cumsum", pda.name))
@@ -72,6 +125,15 @@ def cumprod(pda):
 
     The product is inclusive, such that the ``i`` th element of the 
     result is the product of elements up to and including ``i``.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
     """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("efunc {} {}".format("cumprod", pda.name))
@@ -82,6 +144,15 @@ def cumprod(pda):
 def sin(pda):
     """
     Return the element-wise sine of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+    
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
     """
     if isinstance(pda,pdarray):
         repMsg = generic_msg("efunc {} {}".format("sin",pda.name))
@@ -89,9 +160,18 @@ def sin(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def cos(pda):
+def cos(pda : pdarray) -> pdarray:
     """
     Return the element-wise cosine of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+    
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
     """
     if isinstance(pda,pdarray):
         repMsg = generic_msg("efunc {} {}".format("cos",pda.name))
@@ -99,7 +179,7 @@ def cos(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
     
-def where(condition, A, B):
+def where(condition : pdarray, A, B):
     """
     Return an array with elements chosen from A and B based on a conditioning array.
     
@@ -170,7 +250,7 @@ def where(condition, A, B):
     return create_pdarray(repMsg)
 
 
-def histogram(pda, bins=10):
+def histogram(pda : pdarray, bins : int=10) -> pdarray:
     """
     Compute a histogram of evenly spaced bins over the range of an array.
     
@@ -186,6 +266,11 @@ def histogram(pda, bins=10):
     -------
     pdarray
         The number of values present in each bin
+        
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
 
     See Also
     --------
@@ -218,7 +303,7 @@ def histogram(pda, bins=10):
         raise TypeError("must be pdarray {} and bins must be an int {}".format(pda,bins))
 
 
-def value_counts(pda):
+def value_counts(pda : pdarray) -> Tuple[pdarray,int]:
     """
     Count the occurrences of the unique values of an array.
 
@@ -234,6 +319,11 @@ def value_counts(pda):
 
     counts : pdarray, int64
         The number of times the corresponding unique value occurs
+        
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
 
     See Also
     --------
@@ -250,4 +340,7 @@ def value_counts(pda):
     >>> ak.value_counts(A)
     (array([0, 2, 4]), array([3, 2, 1]))
     """
-    return unique(pda, return_counts=True)
+    if isinstance(pda, pdarray):
+        return unique(pda, return_counts=True)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))

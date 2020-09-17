@@ -7,7 +7,7 @@ module SegmentedMsg {
   use MultiTypeSymEntry;
   use RandArray;
   use IO;
-  use GenSymIO only decode_json;
+  use GenSymIO only jsonToPdArray;
 
   private config const DEBUG = false;
 
@@ -76,7 +76,7 @@ module SegmentedMsg {
       var strings = new owned SegString(segName, valName, st);
       select subcmd {
         when "contains" {
-          var json = decode_json(valStr, 1);
+          var json = jsonToPdArray(valStr, 1);
           var val = json[json.domain.low];
           var rname = st.nextName();
           var truth = st.addEntry(rname, strings.size, bool);
@@ -84,7 +84,7 @@ module SegmentedMsg {
           repMsg = "created "+st.attrib(rname);
         }
         when "startswith" {
-          var json = decode_json(valStr, 1);
+          var json = jsonToPdArray(valStr, 1);
           var val = json[json.domain.low];
           var rname = st.nextName();
           var truth = st.addEntry(rname, strings.size, bool);
@@ -92,7 +92,7 @@ module SegmentedMsg {
           repMsg = "created "+st.attrib(rname);
         }
         when "endswith" {
-          var json = decode_json(valStr, 1);
+          var json = jsonToPdArray(valStr, 1);
           var val = json[json.domain.low];
           var rname = st.nextName();
           var truth = st.addEntry(rname, strings.size, bool);
@@ -104,7 +104,7 @@ module SegmentedMsg {
           var includeDelimiter = (idStr.toLower() == "true");
           var keepPartial = (kpStr.toLower() == "true");
           var left = (lStr.toLower() == "true");
-          var json = decode_json(jsonStr, 1);
+          var json = jsonToPdArray(jsonStr, 1);
           var val = json[json.domain.low];
           var loname = st.nextName();
           var lvname = st.nextName();
@@ -194,7 +194,18 @@ module SegmentedMsg {
     otherwise {return notImplementedError(pn, objtype);}
     }
   }
-  
+
+
+  /*
+   * Assigns a segIntIndex, sliceIndex, or pdarrayIndex to the incoming payload
+   * consisting of a sub-command, object type, offset SymTab key, array SymTab
+   * key, and index value for the incoming payload.
+   * 
+   * Note: the sub-command indicates the index type which can be one of the following:
+   * 1. intIndex : setIntIndex
+   * 2. sliceIndex : segSliceIndex
+   * 3. pdarrayIndex : segPdarrayIndex
+  */ 
   proc segmentedIndexMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
@@ -203,6 +214,7 @@ module SegmentedMsg {
     var (subcmd, objtype, rest) = payload.decode().splitMsgToTuple(3);
     var fields = rest.split();
     var args: [1..#fields.size] string = fields; // parsed by subroutines
+    writeln("subcmd: %s objtype: %s rest: %s".format(subcmd,objtype,rest));
     try {
       select subcmd {
         when "intIndex" {
@@ -224,7 +236,10 @@ module SegmentedMsg {
       return "Error: unknown cause";
     }
   }
-  
+ 
+  /*
+  Returns the object corresponding to the index
+  */ 
   proc segIntIndex(objtype: string, args: [] string, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     select objtype {
@@ -357,7 +372,7 @@ module SegmentedMsg {
         }
         when "stick" {
           var left = (leftStr.toLower() != "false");
-          var json = decode_json(jsonStr, 1);
+          var json = jsonToPdArray(jsonStr, 1);
           const delim = json[json.domain.low];
           var oname = st.nextName();
           var vname = st.nextName();
@@ -386,7 +401,7 @@ module SegmentedMsg {
     var repMsg: string;
     var (op, objtype, segName, valName, valtype, encodedVal)
           = payload.decode().splitMsgToTuple(6);
-    var json = decode_json(encodedVal, 1);
+    var json = jsonToPdArray(encodedVal, 1);
     var value = json[json.domain.low];
     var rname = st.nextName();
     select (objtype, valtype) {

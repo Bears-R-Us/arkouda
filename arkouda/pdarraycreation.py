@@ -1,6 +1,6 @@
 import numpy as np
 import struct
-
+from typing import Union
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
@@ -12,19 +12,21 @@ __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", "arange",
            "linspace", "randint", "uniform", "standard_normal",
            "random_strings_uniform", "random_strings_lognormal"]
 
-def array(a):
+def array(a : Union[pdarray,np.ndarray]) -> Union[pdarray, Strings]:
     """
-    Convert an iterable to a pdarray, sending data to the arkouda server.
+    Convert an iterable to a pdarray or Strings object, sending the corresponding
+    data to the arkouda server. 
 
     Parameters
     ----------
-    a : array_like
+    a : Union[pdarray, np.ndarray]
         Rank-1 array of a supported dtype
 
     Returns
     -------
-    pdarray
-        Instance of pdarray stored on arkouda server
+    pdarray or Strings
+        A pdarray instance stored on arkouda server or Strings instance, which
+        is composed of two pdarrays stored on arkouda server
 
     See Also
     --------
@@ -38,6 +40,10 @@ def array(a):
     server, under the assumption that it is a low-bandwidth connection. The user
     may override this limit by setting ak.maxTransferBytes to a larger value, 
     but should proceed with caution.
+    
+    If the pdrray or ndarray is of type U, this method is called twice recursively 
+    to create the Strings object and the two corresponding pdarrays for string 
+    bytes and offsets, respectively.
 
     Examples
     --------
@@ -60,7 +66,7 @@ def array(a):
             raise TypeError("Argument must be array-like")
     # Only rank 1 arrays currently supported
     if a.ndim != 1:
-        raise RuntimeError("Only rank-1 arrays supported")
+        raise RuntimeError("Only rank-1 pdarrays or ndarrays supported")
     # Check if array of strings
     if a.dtype.kind == 'U':
         # Length of each string, plus null byte terminator
@@ -70,7 +76,9 @@ def array(a):
         # Allocate and fill bytes array with string segments
         nbytes = offsets[-1] + lengths[-1]
         if nbytes > maxTransferBytes:
-            raise RuntimeError("Creating pdarray would require transferring {} bytes, which exceeds allowed transfer size. Increase ak.maxTransferBytes to force.".format(nbytes))
+            raise RuntimeError(("Creating pdarray would require transferring {} bytes, which exceeds " +
+                                "allowed transfer size. Increase ak.maxTransferBytes to force.").\
+                                format(nbytes))
         values = np.zeros(nbytes, dtype=np.uint8)
         for s, o in zip(a, offsets):
             for i, b in enumerate(s.encode()):
@@ -91,7 +99,7 @@ def array(a):
     rep_msg = generic_msg(req_msg, send_bytes=True)
     return create_pdarray(rep_msg)
 
-def zeros(size, dtype=np.float64):
+def zeros(size : int, dtype : type=np.float64) -> pdarray:
     """
     Create a pdarray filled with zeros.
 
@@ -130,7 +138,7 @@ def zeros(size, dtype=np.float64):
     repMsg = generic_msg("create {} {}".format(dtype.name, size))
     return create_pdarray(repMsg)
 
-def ones(size, dtype=float64):
+def ones(size : int, dtype : type=float64) -> pdarray:
     """
     Create a pdarray filled with ones.
 
@@ -171,7 +179,7 @@ def ones(size, dtype=float64):
     a.fill(1)
     return a
 
-def zeros_like(pda):
+def zeros_like(pda : pdarray) -> pdarray:
     """
     Create a zero-filled pdarray of the same size and dtype as an existing pdarray.
 
@@ -194,7 +202,7 @@ def zeros_like(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def ones_like(pda):
+def ones_like(pda : pdarray) -> pdarray:
     """
     Create a one-filled pdarray of the same size and dtype as an existing pdarray.
 
@@ -217,7 +225,7 @@ def ones_like(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def arange(*args):
+def arange(*args) -> pdarray:
     """
     arange([start,] stop[, stride])
 
@@ -296,7 +304,7 @@ def arange(*args):
     else:
         raise TypeError("start,stop,stride must be type int {} {} {}".format(start,stop,stride))
 
-def linspace(start, stop, length):
+def linspace(start : int, stop : int, length : int) -> pdarray:
     """
     Create a pdarray of linearly spaced points in a closed interval.
 
@@ -337,7 +345,7 @@ def linspace(start, stop, length):
     return create_pdarray(repMsg)
 
 
-def randint(low, high, size, dtype=int64):
+def randint(low : int, high : int, size : int, dtype=int64) -> pdarray:
     """
     Generate a pdarray with random values in a specified range.
 
@@ -386,19 +394,21 @@ def randint(low, high, size, dtype=int64):
     lowstr = NUMBER_FORMAT_STRINGS[dtype.name].format(low)
     highstr = NUMBER_FORMAT_STRINGS[dtype.name].format(high)
     sizestr = NUMBER_FORMAT_STRINGS['int64'].format(size)
-    repMsg = generic_msg("randint {} {} {} {}".format(sizestr, dtype.name, lowstr, highstr))
+    repMsg = generic_msg("randint {} {} {} {}".\
+                         format(sizestr, dtype.name, lowstr, highstr))
     return create_pdarray(repMsg)
 
 
-def uniform(size, low=0.0, high=1.0):
+def uniform(size : int, low : float=0.0, high : float=1.0):
     """
-    Generate a pdarray with uniformly distributed random values in a specified range.
+    Generate a pdarray with uniformly distributed random values 
+    in a specified range.
 
     Parameters
     ----------
-    low : int
+    low : float
         The low value (inclusive) of the range
-    high : int
+    high : float
         The high value (inclusive) of the range
     size : int
         The length of the returned array
@@ -416,7 +426,7 @@ def uniform(size, low=0.0, high=1.0):
     return randint(size, low=low, high=high, dtype='float64')
     
 
-def standard_normal(size):
+def standard_normal(size : int) -> pdarray:
     """
     Draw real numbers from the standard normal distribution.
 
@@ -447,7 +457,8 @@ def standard_normal(size):
     return create_pdarray(repMsg)
 
 
-def random_strings_uniform(minlen, maxlen, size, characters='uppercase'):
+def random_strings_uniform(minlen : int, maxlen : int, size : int, 
+                           characters : str='uppercase') -> Strings:
     """
     Generate random strings with lengths uniformly distributed between 
     minlen and maxlen, and with characters drawn from a specified set.
@@ -483,7 +494,8 @@ def random_strings_uniform(minlen, maxlen, size, characters='uppercase'):
     return Strings(*(repMsg.split('+')))
 
 
-def random_strings_lognormal(logmean, logstd, size, characters='uppercase'):
+def random_strings_lognormal(logmean : float, logstd : float, 
+                             size : int, characters : str='uppercase') -> Strings:
     """
     Generate random strings with log-normally distributed lengths and 
     with characters drawn from a specified set.

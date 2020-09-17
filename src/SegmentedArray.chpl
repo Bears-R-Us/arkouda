@@ -19,34 +19,65 @@ module SegmentedArray {
   
   class OutOfBoundsError: Error {}
 
-  /* Represents an array of strings, implemented as a segmented array of bytes.
-     Instances are ephemeral, not stored in the symbol table. Instead, attributes
-     of this class refer to symbol table entries that persist. This class is a
-     convenience for bundling those persistent objects and defining string-relevant
-     operations.
+  /**
+   * Represents an array of strings, implemented as a segmented array of bytes.
+   * Instances are ephemeral, not stored in the symbol table. Instead, attributes
+   * of this class refer to symbol table entries that persist. This class is a
+   * convenience for bundling those persistent objects and defining string-relevant
+   * operations.
    */
   class SegString {
+ 
+    /**
+     * The name of the SymEntry corresponding to the pdarray containing
+     * the offsets, which are start indices for each string bytearray
+     */
     var offsetName: string;
-    // Start indices of individual strings
+
+    /**
+     * The pdarray containing the offsets, which are the start indices of
+     * the bytearrays, each of whichs corresponds to an individual string.
+     */ 
     var offsets: borrowed SymEntry(int);
+
+    /**
+     * The name of the SymEntry corresponding to the pdarray containing
+     * the string values where each value is byte array.
+     */
     var valueName: string;
-    // Bytes of all strings, joined by nulls
+
+    /**
+     * The pdaray containing the complete byte array composed of bytes
+     * corresponding to each string, joined by nulls. Note: the null byte
+     * is uint(8) value of zero.
+     */ 
     var values: borrowed SymEntry(uint(8));
-    // Number of strings
+    
+    /**
+     * The number of strings in the segmented array
+     */
     var size: int;
-    // Total number of bytes in all strings, including nulls
+    
+    /**
+     * The total number of bytes in the entire segmented array including
+     * the bytes corresonding to the strings as well as the nulls
+     * separating the string bytes.
+     */ 
     var nBytes: int;
 
-    /* This initializer is the most common, and is used when only the server
-       names of the SymEntries are known. It handles the lookup. */
+    /* 
+     * This version of the init method is the most common and is only used 
+     * when the names of the segments (offsets) and values SymEntries are known.
+     */
     proc init(segName: string, valName: string, st: borrowed SymTab) {
       offsetName = segName;
       // The try! is needed here because init cannot throw
       var gs = try! st.lookup(segName);
-      // I want this to be borrowed, but that give a lifetime error
+      // I want this to be borrowed, but that throws a lifetime error
       var segs = toSymEntry(gs, int): unmanaged SymEntry(int);
       offsets = segs;
       valueName = valName;
+
       var vs = try! st.lookup(valName);
       var vals = toSymEntry(vs, uint(8)): unmanaged SymEntry(uint(8));
       values = vals;
@@ -54,6 +85,11 @@ module SegmentedArray {
       nBytes = vals.size;
     }
 
+    /*
+     * This version of init method takes segments and values arrays as
+     * inputs, generates the SymEntry objects for each and passes the
+     * offset and value SymTab lookup names to the alternate init method
+     */
     proc init(segments: [] int, values: [] uint(8), st: borrowed SymTab) {
       var oName = st.nextName();
       var segEntry = new shared SymEntry(segments);

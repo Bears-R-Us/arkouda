@@ -102,6 +102,7 @@ module FindSegmentsMsg
         }
         when "str" {
           var (myNames1,myNames2) = name.splitMsgToTuple('+', 2);
+          try! writeln("findSegmentsMessage myNames1: {} myNames2: {}".format(myNames1,myNames2));
           var str = new owned SegString(myNames1, myNames2, st);
           var (permOffsets, permVals) = str[pa];
           const ref D = permOffsets.domain;

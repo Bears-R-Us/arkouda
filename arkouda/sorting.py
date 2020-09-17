@@ -1,3 +1,4 @@
+from typing import Iterable, Union
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros
@@ -6,7 +7,7 @@ from arkouda.dtypes import *
 
 __all__ = ["argsort", "coargsort", "local_argsort", "sort"]
 
-def argsort(pda):
+def argsort(pda : Union[pdarray,Strings]) -> pdarray:
     """
     Return the permutation that sorts the array.
     
@@ -19,6 +20,11 @@ def argsort(pda):
     -------
     pdarray, int64
         The indices such that ``pda[indices]`` is sorted
+        
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is other than a pdarray or Strings
 
     See Also
     --------
@@ -26,8 +32,8 @@ def argsort(pda):
 
     Notes
     -----
-    Uses a least-significant-digit radix sort, which is stable and resilient
-    to non-uniformity in data but communication intensive.
+    Uses a least-significant-digit radix sort, which is stable and
+    resilinent to non-uniformity in data but communication intensive.
 
     Examples
     --------
@@ -50,7 +56,7 @@ def argsort(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def coargsort(arrays):
+def coargsort(arrays : Iterable[Union[Strings,pdarray]]) -> pdarray:
     """
     Return the permutation that groups the rows (left-to-right), if the
     input arrays are treated as columns. The permutation sorts numeric
@@ -65,6 +71,12 @@ def coargsort(arrays):
     -------
     pdarray, int64
         The indices that permute the rows to grouped order
+        
+    Raises
+    ------
+    ValueError
+        Raised if the pdarrays are not of the same size or if the parameter
+        is not an Iterable containing pdarrays or Strings
 
     See Also
     --------
@@ -101,11 +113,11 @@ def coargsort(arrays):
             anames.append(a.name)
             atypes.append('pdarray')
         else:
-            raise ValueError("Argument must be an iterable of pdarrays")
+            raise ValueError("Argument must be an iterable of pdarrays or Strings")
         if size == -1:
             size = a.size
         elif size != a.size:
-            raise ValueError("All pdarrays must have same size")
+            raise ValueError("All pdarrays or Strings must be of the same size")
     if size == 0:
         return zeros(0, dtype=int64)
     cmd = "coargsort"
@@ -116,18 +128,10 @@ def coargsort(arrays):
     repMsg = generic_msg(reqMsg)
     return create_pdarray(repMsg)
 
-def local_argsort(pda):
-    if isinstance(pda, pdarray):
-        if pda.size == 0:
-            return zeros(0, dtype=int64)
-        repMsg = generic_msg("localArgsort {}".format(pda.name))
-        return create_pdarray(repMsg)
-    else:
-        raise TypeError("must be pdarray {}".format(pda))
-
-def sort(pda):
+def local_argsort(pda : pdarray) -> pdarray:
     """
-    Return a sorted copy of the array. Only sorts numeric arrays; for Strings, use argsort.
+    local_argsort takes a pdarray and returns an index vector which sorts 
+    the array on a per-locale basis.
     
     Parameters
     ----------
@@ -138,6 +142,43 @@ def sort(pda):
     -------
     pdarray, int64 or float64
         The sorted copy of pda
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    See Also
+    --------
+    argsort
+    """
+    if isinstance(pda, pdarray):
+        if pda.size == 0:
+            return zeros(0, dtype=int64)
+        repMsg = generic_msg("localArgsort {}".format(pda.name))
+        return create_pdarray(repMsg)
+    else:
+        raise TypeError("must be pdarray {}".format(pda))
+
+def sort(pda : pdarray) -> pdarray:
+    """
+    Return a sorted copy of the array. Only sorts numeric arrays; 
+    for Strings, use argsort.
+    
+    Parameters
+    ----------
+    pda : pdarray or Categorical
+        The array to sort (int64 or float64)
+
+    Returns
+    -------
+    pdarray, int64 or float64
+        The sorted copy of pda
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
 
     See Also
     --------
