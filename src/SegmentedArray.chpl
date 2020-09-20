@@ -196,7 +196,7 @@ module SegmentedArray {
       // NOTE: cannot compute lengths inside forall because agg.copy will
       // experience race condition with loop-private variable
       var right: [D] int, left: [D] int;
-      forall (r, l, idx) in zip(right, left, iv) with (var agg = new SrcAggregator(int)) {
+      forall (r, l, idx) in zip(right, left, iv) with (var agg = newSrcAggregator(int)) {
         if (idx == high) {
           agg.copy(r, values.size);
         } else {
