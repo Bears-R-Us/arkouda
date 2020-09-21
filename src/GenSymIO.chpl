@@ -803,6 +803,15 @@ module GenSymIO {
          * string on a locale; in this case, the trailing slice index is used
          * to move the smaller string chunk to the locale containing the large
          * string chunk that is the sole string chunk on a locale.
+         *
+         * The isSingleString PrivateSpace indicates whether each locale contains
+         * chars corresponding to one string/string segment, which occurs if 
+         * (1) the char array contains no null uint(8) characters or (2) there is
+         * only one null uint(8) char at the end of the string/string segment
+         *
+         * The endsWithCompleteString PrivateSpace indicates whether the chars
+         * array for each locale ends with complete string, meaning that the last
+         * character in the local slice is a null uint(8) char.
          */
         var leadingSliceIndices: [PrivateSpace] int;    
         var trailingSliceIndices: [PrivateSpace] int;
@@ -816,8 +825,8 @@ module GenSymIO {
          * which are used to removing trailing uint(8) characters used to start
          * strings that are completed in the next locale locale (3) isSingleString,
          * which indicates if a locale contains a Strings values array that
-         * corresponds to one complete string or one string segment and (4)
-         * endsWithCompleteString, which indicates if the values array has 
+         * corresponds to only one complete string or string segment and (4)
+         * endsWithCompleteString, which indicates if the local slice array has 
          * a complete string at the end of the array.
          */
         coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) 
@@ -867,9 +876,9 @@ module GenSymIO {
             if A.localSlice(locDom).back() != NULL_STRINGS_VALUE {
                 /*
                  * Since the last value of the local slice is other than the uint(8) null
-                 * character, this means the last string in the current, local slice spans 
+                 * character, this means the last string in the current locale (idx) spans 
                  * the current AND next locale. Consequently, need to do the following:
-                 * 1. Add all current locale slice values to a list
+                 * 1. Add all current locale values to a list
                  * 2. Obtain remaining uint(8) values from the next locale
                  */
                 var charList : list(uint(8));
@@ -883,10 +892,10 @@ module GenSymIO {
                 (charList, segmentsList) = sliceToValuesAndSegments(A.localSlice(locDom));
 
                 /*
-                 * If this locale contains a single string or string segment (no leadingSlice 
-                 * or trailingSlice), and is not the first locale, retrieve the trailing chars 
-                 * from the previous locale, if applicable, to create the correct starting 
-                 * chars for the lone string or string segment on this locale.
+                 * If this locale contains a single string/string segment (and therefore no 
+                 * leading slice or trailing slice), and is not the first locale, retrieve 
+                 * the trailing chars from the previous locale, if applicable, to set the
+                 * correct starting chars for the lone string/string segment on this locale.
                  * 
                  * Note: if this is the first locale, there are no trailing chars from a
                  * previous locale, so this code block is not executed in this case.
@@ -895,12 +904,17 @@ module GenSymIO {
                     var trailingIndex = trailingSliceIndices[idx-1];
 
                     if trailingIndex > -1 {
+                        /*
+                         * There are 1..n chars to be shuffled from the previous locale
+                         * (idx-1) to complete the beginning of the one string assigned 
+                         * to the current locale (idx)
+                         */
                         var trailingValuesList : list(uint(8));
                         on Locales[idx-1] {
                             const locDom = A.localSubdomain();
 
                             for (value, i) in zip(A.localSlice(locDom),
-                                                           0..A.localSlice(locDom).size-1) {
+                                                        0..A.localSlice(locDom).size-1) {
                                 if i >= trailingIndex {
                                     trailingValuesList.append(value:uint(8));
                                 }
@@ -911,7 +925,7 @@ module GenSymIO {
                 }
 
                 /*
-                 * Now that the start of the first string of the current locale is correct,
+                 * Now that the start of the first string of the current locale (idx) is correct,
                  * shuffle chars to place a complete string at the end the current locale. 
                  * There are two possible scenarios to account for. First, the next locale 
                  * has a leadingSliceIndex > -1. If so, the chars up to the leadingSliceIndex 
@@ -933,26 +947,12 @@ module GenSymIO {
                          */
                         for value in A.localSlice(locDom) {
                             if value != NULL_STRINGS_VALUE {
-                                 sliceList.append(value:uint(8));
+                                sliceList.append(value:uint(8));
                             } else {
                                 break;
                             }
-                        }
-
-                        /*
-                         * Check if only one string or string segment maps to the next locale 
-                         * (idx+1), which is indicated by the sliceList size matching the
-                         * local slice size (no null uint(8) chars separating string chars).  
-                         * If not, append the current locale (idx) charList with the next 
-                         * locale (idx+1) sliceList to complete the last string. If there is 
-                         * only one string/string segment in the next locale (idx+1), keep  
-                         * the uint(8) chars on the next locale (idx+1) and instead shuffle 
-                         * chars from the current locale (idx) to start the one and only  
-                         * string of the next (idx+1) locale.
-                         */
-                        if sliceList.size != A.localSlice(locDom).size {
-                            charList.extend(sliceList);
-                        }                
+                        }                       
+                        charList.extend(sliceList);   
                     }
                 }
 
@@ -979,7 +979,7 @@ module GenSymIO {
                  */
                  if leadingSliceIndex > -1 && !isSingleString[idx] {
                      (valuesList, segmentsList) = 
-                                      adjustForLeadingSlice(leadingSliceIndex, charList);
+                                          adjustForLeadingSlice(leadingSliceIndex, charList);
                  } else {
                      valuesList = charList;
                  }
@@ -987,27 +987,27 @@ module GenSymIO {
                  /*
                   * Verify if the current locale contains chars shuffled to the next locale 
                   * (idx+1) because the next locale only has one string/string segment and
-                  * the the current locale's trailingSliceIndex > -1. . If so, remove the
-                  * remove the chars starting with the trailingSliceIndex, at which point 
-                  * the null uint(8) char is at the end of the valuesList. Otherwise, add 
-                  * the null uint(8) char to the end of the valuesList.
+                  * the current locale's trailingSliceIndex > -1. . If so, remove the
+                  * chars starting with the trailingSliceIndex, which will place the null 
+                  * uint(8) char is at the end of the valuesList. Otherwise, manually 
+                  * add the null uint(8) char to the end of the valuesList.
                   */
                  if trailingSliceIndex > -1 && isSingleString[idx+1] {
                      var sliceIndex = segmentsList.last();
                      (valuesList, segmentsList) = 
                                           adjustForTrailingSlice(sliceIndex, valuesList);                
                  } else {
-                      valuesList.append(NULL_STRINGS_VALUE);            
+                     valuesList.append(NULL_STRINGS_VALUE);            
                  }
                                   
                  // Write the finalized valuesList and segmentsList to the hdf5 group
                  writeStringsToHdf(myFileID, group, valuesList, segmentsList);
              } else {
                  /*
-                  * The current local slice (idx)  ends with the uint(8) null character,  
-                  * which is the value required value to ensure correct read logic; with 
-                  * this confirmed, check to see if the current locale (idx) slice 
-                  * contains 1..n chars that compose a string from the previous (idx-1) locale.
+                  * The current local slice (idx) ends with the uint(8) null character,  
+                  * which is the value required to ensure correct read logic; with this
+                  * confirmed, check to see if the current locale (idx) slice contains
+                  * 1..n chars that compose a string from the previous (idx-1) locale.
                   */
                  var leadingSliceIndex = leadingSliceIndices[idx]:int;
 
