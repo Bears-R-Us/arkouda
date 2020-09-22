@@ -1,0 +1,91 @@
+#!/usr/bin/env gnuplot
+
+load 'chapel-settings.gpi'
+
+set ylabel "GiB/s"
+
+set xlabel "Locales (x 36 cores / locale)"
+set xtics (1,2,4,8,16,32)
+
+set title "Arkouda Argsort Performance\n{/*0.7 Cray CS (FDR IB) -- 3/4 GiB arrays}"
+set output "ak-argsort-perf-cs-fdr.pdf"
+plot \
+ 'cray-cs/data/56gb-after/argsort.dat'      using 1:3 title "after"  with linespoints linestyle 1, \
+ 'cray-cs/data/56gb-before/argsort.dat'     using 1:3 title "before" with linespoints linestyle 4, \
+
+set title "Arkouda Scatter Performance\n{/*0.7 Cray CS (FDR IB) -- 3/4 GiB arrays}"
+set output "ak-scatter-perf-cs-fdr.pdf"
+plot \
+  'cray-cs/data/56gb-after/scatter.dat'     using 1:3 title "after"  with linespoints linestyle 1, \
+  'cray-cs/data/56gb-before/scatter.dat'    using 1:3 title "before" with linespoints linestyle 4, \
+
+set title "Arkouda Argsort Performance\n{/*0.7 Cray CS (FDR IB) -- 8 GiB arrays}"
+set output "ak-argsort-perf-cs-fdr-lg.pdf"
+plot \
+ 'cray-cs/data/56gb-after/lg-argsort.dat'   using 1:3 title "after"  with linespoints linestyle 1, \
+ 'cray-cs/data/56gb-before/lg-argsort.dat'  using 1:3 title "before" with linespoints linestyle 4, \
+
+set title "Arkouda Scatter Performance\n{/*0.7 Cray CS (FDR IB) -- 8 GiB arrays}"
+set output "ak-scatter-perf-cs-fdr-lg.pdf"
+plot \
+  'cray-cs/data/56gb-after/lg-scatter.dat'  using 1:3 title "after"  with linespoints linestyle 1, \
+  'cray-cs/data/56gb-before/lg-scatter.dat' using 1:3 title "before" with linespoints linestyle 4, \
+
+#########
+
+set xlabel "Locales (x 128 cores / locale)"
+set xtics (1,2,4,8,16,32)
+
+set title "Arkouda Argsort Performance\n{/*0.7 Cray CS (HDR IB) -- 3/4 GiB arrays}"
+set output "ak-argsort-perf-cs-hdr.pdf"
+plot \
+  'cray-cs/data/200gb-after/argsort.dat'     using 1:3 title "after"  with linespoints linestyle 1,  \
+  'cray-cs/data/200gb-before/argsort.dat'    using 1:3 title "before" with linespoints linestyle 4,  \
+
+set title "Arkouda Scatter Performance\n{/*0.7 Cray CS (HDR IB) -- 3/4 GiB arrays}"
+set output "ak-scatter-perf-cs-hdr.pdf"
+plot \
+  'cray-cs/data/200gb-after/scatter.dat'     using 1:3 title "after"  with linespoints linestyle 1,  \
+  'cray-cs/data/200gb-before/scatter.dat'    using 1:3 title "before" with linespoints linestyle 4,  \
+
+set title "Arkouda Argsort Performance\n{/*0.7 Cray CS (HDR IB) -- 8 GiB arrays}"
+set output "ak-argsort-perf-cs-hdr-lg.pdf"
+plot \
+  'cray-cs/data/200gb-after/lg-argsort.dat'  using 1:3 title "after"  with linespoints linestyle 1,  \
+  'cray-cs/data/200gb-before/lg-argsort.dat' using 1:3 title "before" with linespoints linestyle 4,  \
+
+set title "Arkouda Scatter Performance\n{/*0.7 Cray CS (HDR IB) -- 8 GiB arrays}"
+set output "ak-scatter-perf-cs-hdr-lg.pdf"
+plot \
+  'cray-cs/data/200gb-after/lg-scatter.dat'  using 1:3 title "after"  with linespoints linestyle 1, \
+  'cray-cs/data/200gb-before/lg-scatter.dat' using 1:3 title "before" with linespoints linestyle 4, \
+
+#########
+
+
+set xlabel "Locales (x 36 cores / locale)"
+set xtics (16,64,128,256)
+
+set title "Arkouda Scatter Performance\n{/*0.7Cray XC (Aries) -- 3/4 GiB arrays}"
+set output "ak-scatter-perf-xc.pdf"
+plot \
+  'cray-xc/data/after/scatter.dat'     using 1:3 title "after"  with linespoints linestyle 1,  \
+  'cray-xc/data/before/scatter.dat'    using 1:3 title "before" with linespoints linestyle 4,  \
+
+set title "Arkouda Argsort Performance\n{/*0.7Cray XC (Aries) -- 3/4 GiB arrays}"
+set output "ak-argsort-perf-xc.pdf"
+plot \
+  'cray-xc/data/after/argsort.dat'     using 1:3 title "after"  with linespoints linestyle 1,  \
+  'cray-xc/data/before/argsort.dat'    using 1:3 title "before" with linespoints linestyle 4,  \
+
+set title "Arkouda Argsort Performance\n{/*0.7Cray XC (Aries) -- 8 GiB arrays}"
+set output "ak-argsort-perf-xc-lg.pdf"
+plot \
+  'cray-xc/data/after/lg-argsort.dat'     using 1:3 title "after"  with linespoints linestyle 1,  \
+  'cray-xc/data/before/lg-argsort.dat'    using 1:3 title "before" with linespoints linestyle 4,  \
+
+set title "Arkouda Scatter Performance\n{/*0.7Cray XC (Aries) -- 8 GiB arrays}"
+set output "ak-scatter-perf-xc-lg.pdf"
+plot \
+  'cray-xc/data/after/lg-scatter.dat'     using 1:3 title "after"  with linespoints linestyle 1,  \
+  'cray-xc/data/before/lg-scatter.dat'    using 1:3 title "before" with linespoints linestyle 4,  \
