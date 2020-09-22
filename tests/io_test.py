@@ -4,6 +4,7 @@ from typing import List, Mapping, Union
 from base_test import ArkoudaTest
 from context import arkouda as ak
 from arkouda import io_util
+import unittest
 
 '''
 Tests writting Arkouda pdarrays to and from files
@@ -242,6 +243,7 @@ class IOTest(ArkoudaTest):
         for dataset in datasets:
             self.assertIn(dataset, self.names)
 
+    @unittest.skip
     def testSaveStringsDataset(self):
         # Create, save, and load Strings dataset
         strings_array = ak.array(['testing string{}'.format(num) for num in list(range(1,11))])
@@ -259,7 +261,8 @@ class IOTest(ArkoudaTest):
                             format(IOTest.io_test_dir), dsetName='strings/values'))
         self.assertIsNotNone(ak.read_hdf(filenames='{}/strings-test_LOCALE0'.\
                             format(IOTest.io_test_dir), dsetName='strings/segments'))
-        
+
+    @unittest.skip       
     def testSaveLongStringsDataset(self):
         # Create, save, and load Strings dataset
         strings_array = ak.array(['testing a longer string{} to be written, loaded and appended'.\
@@ -269,6 +272,7 @@ class IOTest(ArkoudaTest):
                                   dataset='strings')
         self.assertTrue((strings_array == r_strings_array).all())       
 
+    @unittest.skip
     def testSaveMixedStringsDataset(self):
         strings_array = ak.array(['string {}'.format(num) for num in list(range(1,11))])
         m_floats =  ak.array([x / 10.0 for x in range(0, 10)])      
@@ -289,6 +293,7 @@ class IOTest(ArkoudaTest):
                             dataset='m_strings')
         self.assertTrue((strings_array == r_strings).all())
 
+    @unittest.skip
     def testAppendStringsDataset(self):
         strings_array = ak.array(['string {}'.format(num) for num in list(range(1,11))])
         strings_array.save('{}/append-strings-test'.format(IOTest.io_test_dir), 
@@ -302,6 +307,7 @@ class IOTest(ArkoudaTest):
                                  dataset='strings-dupe')  
         self.assertTrue((r_strings == r_strings_dupe).all())
 
+    @unittest.skip
     def testAppendMixedStringsDataset(self):
         strings_array = ak.array(['string {}'.format(num) for num in list(range(1,11))])
         strings_array.save('{}/append-multi-type-test'.format(IOTest.io_test_dir), 
