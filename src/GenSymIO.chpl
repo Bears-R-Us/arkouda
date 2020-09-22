@@ -971,13 +971,20 @@ module GenSymIO {
                 /*
                  * Verify if the current locale (idx) contains chars shuffled to the previous 
                  * locale (idx-1) by checking the leadingSliceIndex and number of strings in 
-                 * the current locale. If (1) the leadingSliceIndex > -1 and (2) this locale 
-                 * contains 2..n strings, this means that the charList contains chars that
-                 * compose the last string from the previous locale (idx-1) . If so, generate
+                 * the current locale. If (1) the leadingSliceIndex > -1, (2) this locale 
+                 * contains 2..n strings, and (3) the previous locale does not end with a
+                 * complete string, this means that the charList contains chars that compose 
+                 * the last string from the previous locale (idx-1) . If so, generate
                  * a new valuesList that has those values sliced out. Otherwise, set the
                  * valuesList reference to the charList
                  */
-                 if leadingSliceIndex > -1 && !isSingleString[idx] {
+                 if leadingSliceIndex > -1 && !isSingleString[idx] 
+                                                       && !endsWithCompleteString[idx-1] {
+                     /*
+                      * Confirm if the leading slice was used to complete the last string in
+                      * the previous locale (idx-1) by checking if endsWithCompleteString[idx-1] 
+                      * returns false. If so, slice those chars from the current values list
+                      */
                      (valuesList, segmentsList) = 
                                           adjustForLeadingSlice(leadingSliceIndex, charList);
                  } else {
@@ -1048,21 +1055,21 @@ module GenSymIO {
                      }
                       
                      /*
-                      * Account for the special case where the following is true about the current 
-                      * locale (idx):
+                      * Account for the special case where the following is true about the
+                      * current locale (idx):
                       *
                       * 1. This is the last locale
                       * 2. There is one partial string started in the previous locale
                       * 3. The previous locale has no trailing slice to complete the partial
                       *    string in the current locale
                       *
-                      * In this very special case, (1) move the current locale (idx) chars to the 
-                      * previous locale (idx-1) and (2) clear out the current locale segments list
-                      * because the current locale (idx) values list is now empty.
+                      * In this very special case, (1) move the current locale (idx) chars to 
+                      * the previous locale (idx-1) and (2) clear out the current locale
+                      * segments list because the current locale values list is now empty.
                       */                     
                      if isLastLocale(idx) {
                          if !endsWithCompleteString[idx-1] && isSingleString[idx] 
-                                                             && trailingSliceIndices[idx-1] == -1 {
+                                                        && trailingSliceIndices[idx-1] == -1 {
                              valuesList.clear();
                              segmentsList.clear();
                          }
@@ -1072,19 +1079,30 @@ module GenSymIO {
                       writeStringsToHdf(myFileID, group, valuesList, segmentsList);
                   } else {
                       /*
-                       * The local slice (idx) does contain chars from previous locale (idx-1).
-                       * Accordingly, (1) generate a corresponding valuesList that can be 
-                       * sliced and (2) adjust the valuesList by slicing the chars out that
+                       * The local slice (idx) does possibly contain chars from previous locale 
+                       * (idx-1). Accordingly, generate a corresponding valuesList that can be 
+                       * sliced and check to see if the previous locale ends with a complete
+                       * string. If not, (1) adjust the valuesList by slicing the chars out that
                        * correspond to chars shuffled to the previous locale (idx-1) and 
-                       * (3) generate a new, corresponding Strings segments list. 
+                       * (2) generate a new, corresponding Strings segments list. 
                        */  
                       var charList : list(uint(8));
                       var segmentsList : list(int);
                       var valuesList : list(uint(8));
                      
-                      (charList, segmentsList) = sliceToValuesAndSegments(A.localSlice(locDom));           
-                      (valuesList, segmentsList) = 
+                      (charList, segmentsList) = sliceToValuesAndSegments(A.localSlice(locDom)); 
+          
+                      /*
+                       * Check to see if previous locale (idx-1) ends with a complete string.
+                       * If not, then the leading slice of this string was used to complete
+                       * the last string in the previous locale, so slice those chars.
+                       */
+                      if !endsWithCompleteString(idx-1) {
+                          (valuesList, segmentsList) = 
                                              adjustForLeadingSlice(leadingSliceIndex, charList);
+                      } else {
+                          valuesList = charList;
+                      }
 
                       // Write the finalized valuesList and segmentsList to the hdf5 group
                       writeStringsToHdf(myFileID, group, valuesList, segmentsList);
