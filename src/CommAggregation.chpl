@@ -142,9 +142,20 @@ module CommAggregation {
     const bufferSize = srcBuffSize;
     const myLocaleSpace = LocaleSpace;
     var itersSinceYield: int;
-    var dstBuffer: [myLocaleSpace][0..#bufferSize] aggType;
-    var srcBuffer: [myLocaleSpace][0..#bufferSize] aggType;
+    var dstAddrs: [myLocaleSpace][0..#bufferSize] aggType;
+    var lSrcAddrs: [myLocaleSpace][0..#bufferSize] aggType;
+    var lSrcVals: [myLocaleSpace][0..#bufferSize] elemType;
+    var rSrcAddrs: [myLocaleSpace] remoteBuffer(aggType);
+    var rSrcVals: [myLocaleSpace] remoteBuffer(elemType);
+
     var bufferIdxs: [myLocaleSpace] int;
+
+    proc postinit() {
+      for loc in myLocaleSpace {
+        rSrcAddrs[loc] = new remoteBuffer(aggType, bufferSize, loc);
+        rSrcVals[loc] = new remoteBuffer(elemType, bufferSize, loc);
+      }
+    }
 
     proc deinit() {
       flush();
@@ -152,7 +163,7 @@ module CommAggregation {
 
     proc flush() {
       for loc in myLocaleSpace {
-        _flushBuffer(loc, bufferIdxs[loc]);
+        _flushBuffer(loc, bufferIdxs[loc], freeData=true);
       }
     }
 
@@ -164,12 +175,12 @@ module CommAggregation {
       const srcAddr = getAddr(src);
 
       ref bufferIdx = bufferIdxs[loc];
-      srcBuffer[loc][bufferIdx] = srcAddr;
-      dstBuffer[loc][bufferIdx] = dstAddr;
+      lSrcAddrs[loc][bufferIdx] = srcAddr;
+      dstAddrs[loc][bufferIdx] = dstAddr;
       bufferIdx += 1;
 
       if bufferIdx == bufferSize {
-        _flushBuffer(loc, bufferIdx);
+        _flushBuffer(loc, bufferIdx, freeData=false);
       } else if itersSinceYield % maxItersBeforeYield == 0 {
         chpl_task_yield();
         itersSinceYield = 0;
@@ -177,27 +188,43 @@ module CommAggregation {
       itersSinceYield += 1;
     }
 
-    proc _flushBuffer(loc: int, ref bufferIdx) {
+    proc _flushBuffer(loc: int, ref bufferIdx, freeData) {
       const myBufferIdx = bufferIdx;
       if myBufferIdx == 0 then return;
 
-      // Create an array to store the src values.
-      var srcVals: [0..#myBufferIdx] elemType;
+      ref myLSrcVals = lSrcVals[loc];
+      ref myRSrcAddrs = rSrcAddrs[loc];
+      ref myRSrcVals = rSrcVals[loc];
+
+      // Allocate remote buffers
+      const rSrcAddrPtr = myRSrcAddrs.cachedAlloc();
+      const rSrcValPtr = myRSrcVals.cachedAlloc();
+
+      // Copy local addresses to remote buffer
+      myRSrcAddrs.PUT(lSrcAddrs[loc], myBufferIdx);
+
+      // Process remote buffer, copying the value of our addresses into a
+      // remote buffer
       on Locales[loc] {
-        // GET the src addrs
-        const localSrcAddrs = srcBuffer[loc][0..#myBufferIdx];
-        // Create a local array to store the src values
-        var localSrcVals:  [0..#myBufferIdx] elemType;
-        for (srcVal, srcAddr) in zip (localSrcVals, localSrcAddrs) {
-          srcVal = srcAddr.deref();
+        for i in 0..<myBufferIdx {
+          rSrcValPtr[i] = rSrcAddrPtr[i].deref();
         }
-        // PUT the src values back
-        srcVals = localSrcVals;
+        if freeData {
+          myRSrcAddrs.localFree(rSrcAddrPtr);
+        }
+      }
+      if freeData {
+        myRSrcAddrs.markFreed();
       }
 
+      // Copy remote values into local buffer
+      myRSrcVals.GET(myLSrcVals, myBufferIdx);
+
       // Assign the srcVal to the dstAddrs
-      for (dstAddr, srcVal) in zip (dstBuffer[loc][0..#myBufferIdx], srcVals) {
-        dstAddr.deref() = srcVal;
+      var dstAddrPtr = c_ptrTo(dstAddrs[loc][0]);
+      var srcValPtr = c_ptrTo(myLSrcVals[0]);
+      for i in 0..<myBufferIdx {
+        dstAddrPtr[i].deref() = srcValPtr[i];
       }
 
       bufferIdx = 0;
@@ -288,6 +315,18 @@ module CommAggregation {
       // TODO align up to 8-byte boundary to avoid misaligned comm perf hit
       const byte_size = size:size_t * c_sizeof(elemType);
       CommPrimitives.PUT(c_ptrTo(lArr[0]), loc, data, byte_size);
+    }
+
+    proc GET(lArr: [] elemType, size: int) where lArr.isDefaultRectangular() {
+      if boundsChecking {
+        assert(size <= this.size);
+        assert(this.size == lArr.size);
+        assert(lArr.domain.low == 0);
+        assert(lArr.locale.id == here.id);
+      }
+      // TODO align up to 8-byte boundary to avoid misaligned comm perf hit
+      const byte_size = size:size_t * c_sizeof(elemType);
+      CommPrimitives.GET(c_ptrTo(lArr[0]), loc, data, byte_size);
     }
 
     proc deinit() {
