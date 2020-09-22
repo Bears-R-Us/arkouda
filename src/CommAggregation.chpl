@@ -36,10 +36,11 @@ module CommAggregation {
    */
   record DstAggregator {
     type elemType;
+    type aggType = (c_ptr(elemType), elemType);
     const bufferSize = dstBuffSize;
     const myLocaleSpace = LocaleSpace;
     var itersSinceYield: int;
-    var buffer: [myLocaleSpace][0..#bufferSize] (c_void_ptr, elemType);
+    var lBuffers: [myLocaleSpace][0..#bufferSize] aggType;
     var bufferIdxs: [myLocaleSpace] int;
 
     proc deinit() {
@@ -61,7 +62,7 @@ module CommAggregation {
       ref bufferIdx = bufferIdxs[loc];
 
       // Buffer the address and desired value
-      buffer[loc][bufferIdx] = (dstAddr, srcVal);
+      lBuffers[loc][bufferIdx] = (dstAddr, srcVal);
       bufferIdx += 1;
 
       // Flush our buffer if it's full. If it's been a while since we've let
@@ -89,23 +90,23 @@ module CommAggregation {
 
       // Allocate a remote buffer (and capture the address to it)
       const origLoc = here.locale.id;
-      var remBufferPtr: c_ptr((c_void_ptr, elemType));
+      var remBufferPtr: c_ptr(aggType);
       var remBufferPtrAddr = c_ptrTo(remBufferPtr);
       on Locales[loc] {
-        var bufferPtr = c_malloc((c_void_ptr, elemType), myBufferIdx);
+        var bufferPtr = c_malloc(aggType, myBufferIdx);
         PUT(c_ptrTo(bufferPtr), origLoc, remBufferPtrAddr, c_sizeof(bufferPtr.type));
       }
 
       // Send our buffered data to the remote node's buffer
-      const size = myBufferIdx:size_t * c_sizeof((c_void_ptr, elemType));
-      PUT(c_ptrTo(buffer[loc][0]), loc, remBufferPtr, size);
+      const size = myBufferIdx:size_t * c_sizeof(aggType);
+      PUT(c_ptrTo(lBuffers[loc][0]), loc, remBufferPtr, size);
 
       // Process the remote buffer on the remote node
       on Locales[loc] {
         var bufferPtr = remBufferPtr;
         for i in 0..myBufferIdx-1 {
           var (dstAddr, srcVal) = bufferPtr[i];
-          (dstAddr:c_ptr(elemType)).deref() = srcVal;
+          dstAddr.deref() = srcVal;
         }
        c_free(bufferPtr);
       }
@@ -139,11 +140,12 @@ module CommAggregation {
    */
   record SrcAggregator {
     type elemType;
+    type aggType = c_ptr(elemType);
     const bufferSize = srcBuffSize;
     const myLocaleSpace = LocaleSpace;
     var itersSinceYield: int;
-    var dstBuffer: [myLocaleSpace][0..#bufferSize] c_void_ptr;
-    var srcBuffer: [myLocaleSpace][0..#bufferSize] c_void_ptr;
+    var dstBuffer: [myLocaleSpace][0..#bufferSize] aggType;
+    var srcBuffer: [myLocaleSpace][0..#bufferSize] aggType;
     var bufferIdxs: [myLocaleSpace] int;
 
     proc deinit() {
@@ -189,7 +191,7 @@ module CommAggregation {
         // Create a local array to store the src values
         var localSrcVals:  [0..#myBufferIdx] elemType;
         for (srcVal, srcAddr) in zip (localSrcVals, localSrcAddrs) {
-          srcVal = (srcAddr:c_ptr(elemType)).deref();
+          srcVal = srcAddr.deref();
         }
         // PUT the src values back
         srcVals = localSrcVals;
@@ -197,7 +199,7 @@ module CommAggregation {
 
       // Assign the srcVal to the dstAddrs
       for (dstAddr, srcVal) in zip (dstBuffer[loc][0..#myBufferIdx], srcVals) {
-        (dstAddr:c_ptr(elemType)).deref() = srcVal;
+        dstAddr.deref() = srcVal;
       }
 
       bufferIdx = 0;
@@ -242,7 +244,7 @@ module CommAggregation {
     }
   }
 
-  proc getEnvInt(name: string, default: int): int {
+  private proc getEnvInt(name: string, default: int): int {
     extern proc getenv(name : c_string) : c_string;
     var strval = getenv(name.localize().c_str()): string;
     if strval.isEmpty() { return default; }
