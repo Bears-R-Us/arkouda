@@ -36,11 +36,19 @@ module CommAggregation {
    */
   record DstAggregator {
     type elemType;
+    type aggType = (c_ptr(elemType), elemType);
     const bufferSize = dstBuffSize;
     const myLocaleSpace = LocaleSpace;
     var itersSinceYield: int;
-    var buffer: [myLocaleSpace][0..#bufferSize] (c_void_ptr, elemType);
+    var lBuffers: [myLocaleSpace] [0..#bufferSize] aggType;
+    var rBuffers: [myLocaleSpace] remoteBuffer(aggType);
     var bufferIdxs: [myLocaleSpace] int;
+
+    proc postinit() {
+      for loc in myLocaleSpace {
+        rBuffers[loc] = new remoteBuffer(aggType, bufferSize, loc);
+      }
+    }
 
     proc deinit() {
       flush();
@@ -48,7 +56,7 @@ module CommAggregation {
 
     proc flush() {
       for loc in myLocaleSpace {
-        _flushBuffer(loc, bufferIdxs[loc]);
+        _flushBuffer(loc, bufferIdxs[loc], freeData=true);
       }
     }
 
@@ -61,14 +69,14 @@ module CommAggregation {
       ref bufferIdx = bufferIdxs[loc];
 
       // Buffer the address and desired value
-      buffer[loc][bufferIdx] = (dstAddr, srcVal);
+      lBuffers[loc][bufferIdx] = (dstAddr, srcVal);
       bufferIdx += 1;
 
       // Flush our buffer if it's full. If it's been a while since we've let
       // other tasks run, yield so that we're not blocking remote tasks from
       // flushing their buffers.
       if bufferIdx == bufferSize {
-        _flushBuffer(loc, bufferIdx);
+        _flushBuffer(loc, bufferIdx, freeData=false);
       } else if itersSinceYield % maxItersBeforeYield == 0 {
         chpl_task_yield();
         itersSinceYield = 0;
@@ -76,38 +84,28 @@ module CommAggregation {
       itersSinceYield += 1;
     }
 
-    proc _flushBuffer(loc: int, ref bufferIdx) {
+    proc _flushBuffer(loc: int, ref bufferIdx, freeData) {
       const myBufferIdx = bufferIdx;
       if myBufferIdx == 0 then return;
 
-      //
-      // Allocate a remote buffer, PUT our data there, and then process the
-      // remote buffer. We do this with 2 ons + PUT instead of 1 on + GET in
-      // order to limit the lifetime of remote tasks for configurations that
-      // yield while doing comm.
-      //
+      // Allocate a remote buffer
+      ref rBuffer = rBuffers[loc];
+      const remBufferPtr = rBuffer.cachedAlloc();
 
-      // Allocate a remote buffer (and capture the address to it)
-      const origLoc = here.locale.id;
-      var remBufferPtr: c_ptr((c_void_ptr, elemType));
-      var remBufferPtrAddr = c_ptrTo(remBufferPtr);
+      // Copy local buffer to remote buffer
+      rBuffer.PUT(lBuffers[loc], myBufferIdx);
+
+      // Process remote buffer
       on Locales[loc] {
-        var bufferPtr = c_malloc((c_void_ptr, elemType), myBufferIdx);
-        PUT(c_ptrTo(bufferPtr), origLoc, remBufferPtrAddr, c_sizeof(bufferPtr.type));
-      }
-
-      // Send our buffered data to the remote node's buffer
-      const size = myBufferIdx:size_t * c_sizeof((c_void_ptr, elemType));
-      PUT(c_ptrTo(buffer[loc][0]), loc, remBufferPtr, size);
-
-      // Process the remote buffer on the remote node
-      on Locales[loc] {
-        var bufferPtr = remBufferPtr;
-        for i in 0..myBufferIdx-1 {
-          var (dstAddr, srcVal) = bufferPtr[i];
-          (dstAddr:c_ptr(elemType)).deref() = srcVal;
+        for (dstAddr, srcVal) in rBuffer.localIter(remBufferPtr, myBufferIdx) {
+          dstAddr.deref() = srcVal;
         }
-       c_free(bufferPtr);
+        if freeData {
+          rBuffer.localFree(remBufferPtr);
+        }
+      }
+      if freeData {
+        rBuffer.markFreed();
       }
       bufferIdx = 0;
     }
@@ -139,11 +137,12 @@ module CommAggregation {
    */
   record SrcAggregator {
     type elemType;
+    type aggType = c_ptr(elemType);
     const bufferSize = srcBuffSize;
     const myLocaleSpace = LocaleSpace;
     var itersSinceYield: int;
-    var dstBuffer: [myLocaleSpace][0..#bufferSize] c_void_ptr;
-    var srcBuffer: [myLocaleSpace][0..#bufferSize] c_void_ptr;
+    var dstBuffer: [myLocaleSpace][0..#bufferSize] aggType;
+    var srcBuffer: [myLocaleSpace][0..#bufferSize] aggType;
     var bufferIdxs: [myLocaleSpace] int;
 
     proc deinit() {
@@ -189,7 +188,7 @@ module CommAggregation {
         // Create a local array to store the src values
         var localSrcVals:  [0..#myBufferIdx] elemType;
         for (srcVal, srcAddr) in zip (localSrcVals, localSrcAddrs) {
-          srcVal = (srcAddr:c_ptr(elemType)).deref();
+          srcVal = srcAddr.deref();
         }
         // PUT the src values back
         srcVals = localSrcVals;
@@ -197,7 +196,7 @@ module CommAggregation {
 
       // Assign the srcVal to the dstAddrs
       for (dstAddr, srcVal) in zip (dstBuffer[loc][0..#myBufferIdx], srcVals) {
-        (dstAddr:c_ptr(elemType)).deref() = srcVal;
+        dstAddr.deref() = srcVal;
       }
 
       bufferIdx = 0;
@@ -218,6 +217,86 @@ module CommAggregation {
     inline proc copy(ref dst: elemType, const ref src: elemType) {
       assert(dst.locale.id == here.id);
       unorderedCopyWrapper(dst, src);
+    }
+  }
+
+
+  // A remote buffer with lazy allocation
+  record remoteBuffer {
+    type elemType;
+    var size: int;
+    var loc: int;
+    var data: c_ptr(elemType);
+
+    // Allocate a buffer on loc if we haven't already. Return a c_ptr to the
+    // remote locales buffer
+    proc cachedAlloc(): c_ptr(elemType) {
+      if data == c_nil {
+        const rvf_size = size;
+        on Locales[loc] do {
+          data = c_malloc(elemType, rvf_size);
+        }
+      }
+      return data;
+    }
+
+    // Iterate through buffer elements, must be running on loc. data is passed
+    // in to avoid communication.
+    iter localIter(data: c_ptr(elemType), size: int) ref : elemType {
+      if boundsChecking {
+        assert(this.loc == here.id);
+        assert(this.data == data);
+        assert(data != c_nil);
+      }
+      for i in 0..<size {
+        yield data[i];
+      }
+    }
+
+    // Free the data, must be running on the owning locale, data is passed in
+    // to avoid communication. Data is freed'd automatically when this record
+    // goes out of scope, but this is an optimization to free when already
+    // running on loc
+    inline proc localFree(data: c_ptr(elemType)) {
+      if boundsChecking {
+        assert(this.loc == here.id);
+        assert(this.data == data);
+        assert(data != c_nil);
+      }
+      c_free(data);
+    }
+
+    // After free'ing the data, need to nil out the records copy of the pointer
+    // so we don't double-free on deinit
+    inline proc markFreed() {
+      if boundsChecking {
+        assert(this.locale.id == here.id);
+      }
+      data = c_nil;
+    }
+
+    // Copy size elements from lArr to the remote buffer. Must be running on
+    // lArr's locale.
+    proc PUT(lArr: [] elemType, size: int) where lArr.isDefaultRectangular() {
+      if boundsChecking {
+        assert(size <= this.size);
+        assert(this.size == lArr.size);
+        assert(lArr.domain.low == 0);
+        assert(lArr.locale.id == here.id);
+      }
+      // TODO align up to 8-byte boundary to avoid misaligned comm perf hit
+      const byte_size = size:size_t * c_sizeof(elemType);
+      CommPrimitives.PUT(c_ptrTo(lArr[0]), loc, data, byte_size);
+    }
+
+    proc deinit() {
+      if data != c_nil {
+        const rvf_data=data;
+        on Locales[loc] {
+          localFree(rvf_data);
+        }
+        markFreed();
+      }
     }
   }
 
@@ -242,7 +321,7 @@ module CommAggregation {
     }
   }
 
-  proc getEnvInt(name: string, default: int): int {
+  private proc getEnvInt(name: string, default: int): int {
     extern proc getenv(name : c_string) : c_string;
     var strval = getenv(name.localize().c_str()): string;
     if strval.isEmpty() { return default; }
