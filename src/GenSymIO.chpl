@@ -804,7 +804,7 @@ module GenSymIO {
          * (1) the char array contains no null uint(8) characters or (2) there is
          * only one null uint(8) char at the end of the string/string segment
          *
-         * The endsWithCompleteString PrivateSpace indicates whether the chars
+         * The endsWithCompleteString PrivateSpace indicates whether the values
          * array for each locale ends with complete string, meaning that the last
          * character in the local slice is a null uint(8) char.
          */
@@ -827,7 +827,7 @@ module GenSymIO {
         coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) 
                       with (ref leadingSliceIndices, ref trailingSliceIndices, 
                             ref isSingleString, ref endsWithCompleteString) do on loc {
-            generateSliceIndices(idx,leadingSliceIndices, trailingSliceIndices, 
+            generateValuesMetadata(idx,leadingSliceIndices, trailingSliceIndices, 
                                         isSingleString, endsWithCompleteString, A);
         }
                                                        
@@ -1355,12 +1355,13 @@ module GenSymIO {
     }
 
     /*
-     * Generates the slice index for the locale Strings values array and adds it to the 
-     * indices parameter. Note: the slice index will be used to remove characters from 
-     * the current locale that correspond to the last string of the previous locale.
+     * Generates values array metadata required to partition the corresponding strings
+     * across 1..n locales via shuffle operations. The metadata includes leading and
+     * trailing slice indices as well as flags indicating whether the values array
+     * contains one string and if the values array ends with a complete string.
      */
-    private proc generateSliceIndices(idx : int, leadingSliceIndices, trailingSliceIndices, 
-                               isSingleString, endsWithCompleteString, A) {
+    private proc generateValuesMetadata(idx : int, leadingSliceIndices, 
+                       trailingSliceIndices, isSingleString, endsWithCompleteString, A) {
         /*
          * Generate the leadlingSliceIndex, which is used to (1) indicate the chars to be
          * pulled down to the previous locale to complete the last string there and (2)
@@ -1456,8 +1457,8 @@ module GenSymIO {
             }
             
             /*
-             * For the special case of this being the last locale, set the trailingSliceIndex to
-             * -1 since there is no next locale to slice chars from the current locale to complete.
+             * For the special case of this being the last locale, set the trailingSliceIndex 
+             * to -1 since there is no next locale to shuffle trailing slice to.
              */
             if isLastLocale(idx) {
                 trailingSliceIndices[idx] = -1;
