@@ -283,12 +283,16 @@ class IOTest(ArkoudaTest):
 
         self.assertTrue((strings_array.to_ndarray().sort() == \
                                            r_mixed['m_strings'].to_ndarray().sort()))
-        self.assertTrue((m_floats == r_mixed['m_floats']).all())
-        self.assertTrue((m_ints == r_mixed['m_ints']).all())
+        self.assertIsNotNone(r_mixed['m_floats'])
+        self.assertIsNotNone(r_mixed['m_ints'])
 
-        r_floats = ak.load('{}/multi-type-test'.format(IOTest.io_test_dir), 
-                           dataset='m_floats')
+        r_floats = ak.sort(ak.load('{}/multi-type-test'.format(IOTest.io_test_dir), 
+                           dataset='m_floats'))
         self.assertTrue((m_floats == r_floats).all())
+
+        r_ints = ak.sort(ak.load('{}/multi-type-test'.format(IOTest.io_test_dir), 
+                           dataset='m_ints'))
+        self.assertTrue((m_ints == r_ints).all())
         r_strings = ak.load('{}/multi-type-test'.format(IOTest.io_test_dir), 
                             dataset='m_strings')
         self.assertTrue((strings_array.to_ndarray().sort() == r_strings.to_ndarray().sort()))
@@ -316,11 +320,19 @@ class IOTest(ArkoudaTest):
                      'm_ints' : m_ints}, 
                      '{}/append-multi-type-test'.format(IOTest.io_test_dir), mode='append')
         r_mixed = ak.load_all('{}/append-multi-type-test'.format(IOTest.io_test_dir))
-      
+        
+        self.assertIsNotNone(r_mixed['m_floats'])
+        self.assertIsNotNone(r_mixed['m_ints'])
+ 
+        r_floats = ak.sort(ak.load('{}/append-multi-type-test'.format(IOTest.io_test_dir), 
+                                   dataset='m_floats'))
+        r_ints = ak.sort(ak.load('{}/append-multi-type-test'.format(IOTest.io_test_dir), 
+                                 dataset='m_ints'))
+        self.assertTrue((m_floats == r_floats).all())
+        self.assertTrue((m_ints == r_ints).all())
+        
         self.assertTrue((strings_array.to_ndarray().sort() == \
                                                 r_mixed['m_strings'].to_ndarray().sort()))   
-        self.assertTrue((m_floats == r_mixed['m_floats']).all())
-        self.assertTrue((m_ints == r_mixed['m_ints']).all())
 
     def tearDown(self):
         super(IOTest, self).tearDown()
