@@ -424,15 +424,15 @@ class Strings:
         if times < 1:
             raise ValueError("Times must be >= 1")
         msg = "segmentedEfunc {} {} {} {} {} {} {} {} {} {}".format("peel",
-                                                                    self.objtype,
-                                                                    self.offsets.name,
-                                                                    self.bytes.name,
-                                                                    "str",
-                                                                    NUMBER_FORMAT_STRINGS['int64'].format(times),
-                                                                    NUMBER_FORMAT_STRINGS['bool'].format(includeDelimiter),
-                                                                    NUMBER_FORMAT_STRINGS['bool'].format(keepPartial),
-                                                                    NUMBER_FORMAT_STRINGS['bool'].format(not fromRight),
-                                                                    json.dumps([delimiter]))
+                            self.objtype,
+                            self.offsets.name,
+                            self.bytes.name,
+                            "str",
+                            NUMBER_FORMAT_STRINGS['int64'].format(times),
+                            NUMBER_FORMAT_STRINGS['bool'].format(includeDelimiter),
+                            NUMBER_FORMAT_STRINGS['bool'].format(keepPartial),
+                            NUMBER_FORMAT_STRINGS['bool'].format(not fromRight),
+                            json.dumps([delimiter]))
         repMsg = generic_msg(msg)
         arrays = repMsg.split('+', maxsplit=3)
         leftStr = Strings(arrays[0], arrays[1])
@@ -660,7 +660,7 @@ class Strings:
     def to_ndarray(self) -> np.ndarray:
         """
         Convert the array to a np.ndarray, transferring array data from the
-        arkouda server to Python. If the array exceeds a builtin size limit,
+        arkouda server to Python. If the array exceeds a built-in size limit,
         a RuntimeError is raised.
 
         Returns
@@ -721,7 +721,7 @@ class Strings:
             The name of the Strings dataset to be written, defaults to strings_array
         mode : str {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
-            If 'append', attempt to create a new Strings dataset in existing files.
+            If 'append', create a new Strings dataset within existing files.
 
         Returns
         -------
@@ -740,9 +740,9 @@ class Strings:
         Notes
         -----
         Important implementation notes: (1) Strings state is saved as two datasets
-        within an hdf5 group, named via the dataset parameter, corresponding to 
-        the two pdarrays composing a Strings object--segments and values; (2) 
-        save logic is delegated to pdarrayIO.save_all
+        within an hdf5 group, (2) the hdf5 group is named via the dataset parameter, 
+        (3) the hdf5 group encompasses the two pdarrays composing a Strings object:
+        segments and values and (4) save logic is delegated to pdarray.save
         """       
-        arkouda.save_all(columns=[self.bytes], prefix_path=prefix_path,
-                names=['{}/values'.format(dataset)], mode=mode)
+        self.bytes.save(prefix_path=prefix_path, 
+                                    dataset='{}/values'.format(dataset), mode=mode)

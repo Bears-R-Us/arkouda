@@ -780,17 +780,12 @@ module GenSymIO {
         // Generate the filenames based upon the number of targetLocales.
         var filenames = generateFilenames(prefix, extension, A);
         
-        //Generate a list of matching filenames to test against. 
+        // Generate a list of matching filenames to test against. 
         var matchingFilenames = getMatchingFilenames(prefix, extension);
         
-        var group: string;
- 
-        if isStringsDataset(dsetName) {
-            group = getGroup(dsetName);
-            warnFlag = processFilenames(filenames, matchingFilenames, mode, A, group);
-        } else {
-            warnFlag = false;
-        }
+        // Create files with groups needed to persist values and segments pdarrays
+        var group = getGroup(dsetName);
+        warnFlag = processFilenames(filenames, matchingFilenames, mode, A, group);
         
         /*
          * The leadingSliceIndices object, which is a globally-scoped PrivateSpace 
@@ -859,8 +854,8 @@ module GenSymIO {
             /*
              * Confirm if the Strings write is in append mode. If so, the Strings dataset 
              * is going to be appended to an hdf5 file as a set of values and segments 
-             * arrays within a new group named after the dsetName parameter, so create 
-             * the group within the hdf5 file.
+             * arrays within a new group named after the dsetName. Consequently, need
+             * to create the group within the existing hdf5 file.
              */
             if mode == APPEND {
                 prepareStringsGroup(myFileID, group);
@@ -970,10 +965,11 @@ module GenSymIO {
 
                 /*
                  * Verify if the current locale (idx) contains chars shuffled to the previous 
-                 * locale (idx-1) by checking the leadingSliceIndex and number of strings in 
-                 * the current locale. If (1) the leadingSliceIndex > -1, (2) this locale 
-                 * contains 2..n strings, and (3) the previous locale does not end with a
-                 * complete string, this means that the charList contains chars that compose 
+                 * locale (idx-1) by checking the leadingSliceIndex, the number of strings in 
+                 * the current locale, and whether the preceding locale ends with a complete
+                 * string. If (1) the leadingSliceIndex > -1, (2) this locale contains 2..n 
+                 * strings, and (3) the previous locale does not end with a complete string
+                 * this means that the charList contains chars that were shuffled to complete
                  * the last string from the previous locale (idx-1) . If so, generate
                  * a new valuesList that has those values sliced out. Otherwise, set the
                  * valuesList reference to the charList
@@ -981,12 +977,11 @@ module GenSymIO {
                  if leadingSliceIndex > -1 && !isSingleString[idx] 
                                                        && !endsWithCompleteString[idx-1] {
                      /*
-                      * Confirm if the leading slice was used to complete the last string in
-                      * the previous locale (idx-1) by checking if endsWithCompleteString[idx-1] 
-                      * returns false. If so, slice those chars from the current values list
+                      * Since the leading slice was used to complete the last string in
+                      * the previous locale (idx-1), slice those chars from the charList
                       */
                      (valuesList, segmentsList) = 
-                                          adjustForLeadingSlice(leadingSliceIndex, charList);
+                                         adjustForLeadingSlice(leadingSliceIndex, charList);
                  } else {
                      valuesList = charList;
                  }
@@ -994,7 +989,7 @@ module GenSymIO {
                  /*
                   * Verify if the current locale contains chars shuffled to the next locale 
                   * (idx+1) because the next locale only has one string/string segment and
-                  * the current locale's trailingSliceIndex > -1. . If so, remove the
+                  * the current locale's trailingSliceIndex > -1. If so, remove the
                   * chars starting with the trailingSliceIndex, which will place the null 
                   * uint(8) char is at the end of the valuesList. Otherwise, manually 
                   * add the null uint(8) char to the end of the valuesList.
@@ -1109,7 +1104,7 @@ module GenSymIO {
                     }
                 }
             
-            // Close the file now that the values and segments pdarrays have been written to hdf5
+            // Close the file now that the values and segments pdarrays have been written
             C_HDF5.H5Fclose(myFileID);
         }
         return warnFlag;
@@ -1119,7 +1114,7 @@ module GenSymIO {
      * Writes the float, int, or bool pdarray out to hdf5
      */
     private proc write1DDistArray(filename: string, mode: int, dsetName: string, A, 
-                                                                 array_type: DType) throws {
+                                                                array_type: DType) throws {
         /* Output is 1 file per locale named <filename>_<loc>, and a dataset
         named <dsetName> is created in each one. If mode==1 (append) and the
         correct number of files already exists, then a new dataset named
@@ -1581,14 +1576,6 @@ module GenSymIO {
         var groupId = C_HDF5.H5Gcreate2(fileId, "/%s".format(group).c_str(),
               C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
         C_HDF5.H5Gclose(groupId);
-    }
-
-    /*
-     * Returns a boolean indicating whether the data set is a Strings 
-     * dataset corresponding to a Strings save operation.
-     */
-    private proc isStringsDataset(dataset: string) : bool {
-        return dataset.find(needle="values") > -1;
     }
     
     /*
