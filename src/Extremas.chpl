@@ -46,6 +46,17 @@ to increase the efficiency of the merge step.
     // instance, only pushes a value if
     // it is an encountered extreme
     proc push(val: (eltType, int)) {
+
+      // Accumulate/push can be called after combine/merge. This routine
+      // expects the data to be a heap and not sorted, so it would fail if we
+      // tried to insert now. The way Arkouda uses this, val will be the
+      // identity values, so we can ignore it.
+      if isSorted {
+        const identity = if isMinReduction then (max(eltType), -1) else (min(eltType), -1);
+        assert(val == identity);
+        return;
+      }
+
       const shouldAdd = if isMinReduction then val(0)<_data[0](0) else val(0)>_data[0](0);
       const shouldAddEmpty = (numEmpty>0) && if isMinReduction then
         _data[0](0)==max(eltType) else _data[0](0)==min(eltType);
