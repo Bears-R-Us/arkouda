@@ -56,6 +56,7 @@ def run_test(runMin=True, isInd=True, verbose=True):
                 npres = np.sort(aka.to_ndarray())[-K:] # last K elements from sorted array
     except RuntimeError as E:
         if verbose: print("Arkouda error: ", E)
+        return 1
 
     failures += compare_results(akres, npres)
     
