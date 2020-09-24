@@ -89,8 +89,8 @@ brew install chapel
 
 # Although not required, is is highly recommended to install Anaconda to provide a 
 # Python 3 environment and manage Python dependencies:
-wget https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh
-sh Anaconda3-2020.02-Linux-x86_64.sh
+wget https://repo.anaconda.com/archive/Anaconda3-2020.07-MacOSX-x86_64.sh
+sh Anaconda3-2020.07-MacOSX-x86_64.sh
 source ~/.bashrc
 
 # Otherwise, Python 3 can be installed with brew
@@ -122,6 +122,22 @@ make chpldoc
 # PATH either in ~/.bashrc (single user) or /etc/environment (all users):
 
 export PATH=$CHPL_HOME/bin/linux64-x86_64/:$PATH
+```
+
+While not required, it is highly recommended to [install Anaconda](https://docs.anaconda.com/anaconda/install/mac-os/) to provide a Python environment and manage Python dependencies. Otherwise, python can be installed via brew.
+
+```
+# The recommended Python install is via Anaconda:
+wget https://repo.anaconda.com/archive/Anaconda3-2020.07-MacOSX-x86_64.sh
+sh Anaconda3-2020.07-MacOSX-x86_64.sh
+source ~/.bashrc
+
+# Otherwise, Python 3 can be installed with brew
+brew install python3
+
+# these packages are nice but not a requirement (manual install required if Python installed with brew)
+pip3 install pandas
+pip3 install jupyter
 ```
 
 ### Linux Environment Installation
@@ -162,12 +178,11 @@ export PATH=$CHPL_HOME/bin/linux64-x86_64/:$PATH
 
 ```
 
-As is the case with the MacOS install, it is highly recommended to install Anaconda to provide a Python environment 
-and manage Python dependencies:
+As is the case with the MacOS install, it is highly recommended to [install Anaconda](https://docs.anaconda.com/anaconda/install/linux/) to provide a Python environment and manage Python dependencies:
 
 ```
- wget https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh
- sh Anaconda3-2020.02-Linux-x86_64.sh
+ wget https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh
+ sh Anaconda3-2020.07-Linux-x86_64.sh
  source ~/.bashrc
 ```
 
