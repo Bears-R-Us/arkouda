@@ -507,54 +507,72 @@ module GenSymIO {
         a += corrections;
     }
 
-    /* Get the class of the HDF5 datatype for the dataset. */
+    /* 
+     * Retrieves the datatype of the dataset read from HDF5 
+     */
     proc get_dtype(filename: string, dsetName: string) throws {
         const READABLE = (S_IRUSR | S_IRGRP | S_IROTH);
+
         if !exists(filename) {
             throw new owned FileNotFoundError();
         }
+
         if !(getMode(filename) & READABLE) {
             throw new owned PermissionError();
         }
-        var file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, C_HDF5.H5P_DEFAULT);
+
+        var file_id = C_HDF5.H5Fopen(filename.c_str(), 
+                                         C_HDF5.H5F_ACC_RDONLY, C_HDF5.H5P_DEFAULT);
+
         if file_id < 0 { // HF5open returns negative value on failure
+            C_HDF5.H5Fclose(file_id);
             throw new owned NotHDF5FileError();
         }
+
         if !C_HDF5.H5Lexists(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT) {
+            C_HDF5.H5Fclose(file_id);
             throw new owned DatasetNotFoundError();
         }
+
         var dataclass: C_HDF5.H5T_class_t;
         var bytesize: int;
         var isSigned: bool;
         var isSegArray: bool;
 
         try {
-            (dataclass, bytesize, isSigned) = get_dataset_info(file_id, dsetName);
-            isSegArray = false;
-        } catch e:DatasetNotFoundError {
-            var group_id = C_HDF5.H5Gopen2(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT);
-            if (group_id < 0) {
-                try! writeln("The dataset is neither at the root of the HDF5 file nor within a group");
-                throw new owned SegArrayError();
+            if isDatasetWithinGroup(file_id, dsetName) {
+                var offsetDset = dsetName + "/" + SEGARRAY_OFFSET_NAME;
+                var (offsetClass, offsetByteSize, offsetSign) = 
+                                           try get_dataset_info(file_id, offsetDset);
+                if (offsetClass != C_HDF5.H5T_INTEGER) {
+                    throw new owned SegArrayError();
+                }
+                var valueDset = dsetName + "/" + SEGARRAY_VALUE_NAME;
+                try (dataclass, bytesize, isSigned) = 
+                                           try get_dataset_info(file_id, valueDset);
+                isSegArray = true;
+            } else {
+                (dataclass, bytesize, isSigned) = get_dataset_info(file_id, dsetName);
+                isSegArray = false;
             }
-            C_HDF5.H5Gclose(group_id);
-            var offsetDset = dsetName + "/" + SEGARRAY_OFFSET_NAME;
-            var valueDset = dsetName + "/" + SEGARRAY_VALUE_NAME;
-            var (offsetClass, offsetByteSize, offsetSign) = try get_dataset_info(file_id, offsetDset);
-            if (offsetClass != C_HDF5.H5T_INTEGER) {
-                throw new owned SegArrayError();
+            defer {
+                C_HDF5.H5Fclose(file_id);
             }
-            try (dataclass, bytesize, isSigned) = get_dataset_info(file_id, valueDset);
-            isSegArray = true;
         } catch e {
+            //:TODO: recommend revisiting this catch block 
             throw e;
         }
-        C_HDF5.H5Fclose(file_id);
         return (isSegArray, dataclass, bytesize, isSigned);
     }
 
+    /*
+     * Returns a tuple containing the data type, data class, and a 
+     * boolean indicating whether the datatype is signed for the 
+     * supplied file id and dataset name.
+     */
     proc get_dataset_info(file_id, dsetName) throws {
-        var dset = C_HDF5.H5Dopen(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT);
+        var dset = C_HDF5.H5Dopen(file_id, dsetName.c_str(),
+                                                   C_HDF5.H5P_DEFAULT);
         if (dset < 0) {
             throw new owned DatasetNotFoundError();
         }
@@ -574,6 +592,24 @@ module GenSymIO {
     }
 
     /*
+     * Returns a boolean indicating whether the dataset is within an 
+     * hdf5 group. If false, the dataset is written at the root level
+     * of the hdf5 file.
+     */
+    proc isDatasetWithinGroup(file_id: int, dsetName: string): bool throws {
+        try {
+            var group_id = C_HDF5.H5Gopen2(file_id, dsetName.c_str(), 
+                              C_HDF5.H5P_DEFAULT);
+            if group_id > -1 {
+                C_HDF5.H5Gclose(group_id);
+            }
+            return group_id > -1;
+        } catch e:Error {
+            throw e;
+        }
+    }
+
+    /*
      *  Get the subdomains of the distributed array represented by each file, 
      *  as well as the total length of the array. 
      */
@@ -582,7 +618,8 @@ module GenSymIO {
 
         var lengths: [FD] int;
         for (i, filename) in zip(FD, filenames) {
-            var file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, C_HDF5.H5P_DEFAULT);
+            var file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, 
+                                           C_HDF5.H5P_DEFAULT);
             var dims: [0..#1] C_HDF5.hsize_t; // Only rank 1 for now
 //      var dsetRank: c_int;
 //      // Verify 1D array
@@ -853,7 +890,6 @@ module GenSymIO {
                    if idx < A.targetLocales().size-1 {
                        const locDom = A.localSubdomain();
                        if A.localSlice(locDom).back() != NULL_STRINGS_VALUE {
-                           writeln("LOCALE %t STRINGS ARRAY DOES NOT END WITH NULL".format(idx));
                            generateSliceIndices(idx,leadingSliceIndices,trailingSliceIndices, A);
                        }
                    }
@@ -993,9 +1029,9 @@ module GenSymIO {
                */
               var charList : list(uint(8));
               var slicesList : list(int);
+
               (charList, slicesList) = convertLocalStringsSliceToList(A, locDom);
-              writeln("LOCALE %t STRINGS VALUES CHARLIST %t DOES NOT END WITH NULL IS SIZE %t".format(idx, charList, charList.size));
-              writeln("LOCALE %t slicesList %t".format(idx, slicesList));
+
               /*
                * On the next locale do the following:
                * 
@@ -1033,7 +1069,7 @@ module GenSymIO {
                        charList.extend(sliceList);
                    } 
                }
-              writeln("LOCALE %t STRINGS VALUES CHARLIST %t AFTER ACCOUNT FOR NULL NOW SIZE %t".format(idx, charList, charList.size));
+
                /* 
                 * To prepare for writing revised values array to hdf5, do the following:
                 * 1. Add null uint(8) char to the end of the array so reads work correctly
@@ -1049,7 +1085,6 @@ module GenSymIO {
                    trailingSliceIndex = -1;
                }
 
-               writeln("THE TRAILING INDEX FOR LOCALE %t IS %t".format(idx, trailingSliceIndices[idx]));
                var valuesList: list(uint(8), parSafe=true);
 
                /*
@@ -1072,7 +1107,6 @@ module GenSymIO {
                  */
                 if trailingSliceIndex > -1 {
                     var sliceIndex = slicesList.last();
-                    writeln("THE INDEX TO CHECK TAILING FOR %t: %t".format(idx,sliceIndex));
                     (valuesList, slicesList) = adjustForTrailingSlice(sliceIndex, valuesList);                
                 } else {
                     valuesList.append(NULL_STRINGS_VALUE);            
@@ -1081,8 +1115,6 @@ module GenSymIO {
                 // Update the dimensions per the possibly re-sized valuesList
                 dims[0] = valuesList.size:uint(64);
 
-                writeln("LOCALE %t CHARS LIST AFTER TRAILING SLICE ADJUSTMENT %t NOW SIZED %t".format(idx,valuesList,valuesList.size));
-                writeln("THE SEGMENTS FOR LOCALE %t: %t".format(idx, slicesList));
                 /*
                  * Write the valuesList containing the uint(8) characters missing from the
                  * current locale slice along with retrieved from the next locale to hdf5
@@ -1147,7 +1179,7 @@ module GenSymIO {
                      
                       (charList,slicesList) = convertLocalStringsSliceToList(A, locDom);                
                       (valuesList, slicesList) = adjustForLeadingSlice(leadingSliceIndex, charList);
-                      writeln("LOCALE %t slicesList %t".format(idx, slicesList));
+
                       // Update the dimensions per the re-sized Strings values list
                       dims[0] = valuesList.size:uint(64);
 
@@ -1198,7 +1230,7 @@ module GenSymIO {
                  */
                 if idx > 0 {
                     var forwardShuffleSliceIndex = forwardShuffleSliceIndices[idx-1];
-                    writeln("LOCALE %t FORWARD SHUFFLE INDEX IS %t".format(idx, forwardShuffleSliceIndex));
+
                     if forwardShuffleSliceIndex > -1 {
                         on Locales[idx-1] {
                             const locDom = A.localSubdomain();
@@ -1206,7 +1238,6 @@ module GenSymIO {
                                                        0..A.localSlice(locDom).size-1) {
                                 if i >= forwardShuffleSliceIndex {
                                     newSegmentsList.insert(0, value:int);
-                                    writeln("LOCALE %t INSERTING FORWARD SHUFFLE SEGMENT %t".format(idx, value));
                                 }
                             }
                         }
@@ -1226,7 +1257,6 @@ module GenSymIO {
                         for (value, i) in zip(A.localSlice(locDom), 
                                                         0..A.localSlice(locDom).size-1) {
                             if value < stopIndex {
-                                writeln("APPENDING %t FOR LOCALE %t".format(value,idx));
                                 newSegmentsList.append(value:int);
                             } else {
                                 break;
@@ -1538,7 +1568,6 @@ module GenSymIO {
 
             leadingSliceIndices[here.id] = leadingSliceIndex;
             trailingSliceIndices[here.id] = trailingSliceIndex;
-            try! writeln("FOR LOCALE %t GENERATED TSI %t".format(here.id, trailingSliceIndices[here.id]));
         }
     }
 
