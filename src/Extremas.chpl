@@ -46,16 +46,31 @@ to increase the efficiency of the merge step.
     // instance, only pushes a value if
     // it is an encountered extreme
     proc push(val: (eltType, int)) {
-      const shouldAdd = if isMinReduction then val(0)<_data[0](0) else val(0)>_data[0](0);
-      const shouldAddEmpty = (numEmpty>0) && if isMinReduction then
-        _data[0](0)==max(eltType) else _data[0](0)==min(eltType);
 
-      if shouldAddEmpty {
-        _data[numEmpty+1] = val;
-        numEmpty-=1;
-      } else if shouldAdd {
-        _data[0] = val;
-        heapifyDown();
+      // Common case where _data is a heap
+      if !isSorted {
+        const shouldAdd = if isMinReduction then val(0)<_data[0](0) else val(0)>_data[0](0);
+        const shouldAddEmpty = (numEmpty>0) && if isMinReduction then
+          _data[0](0)==max(eltType) else _data[0](0)==min(eltType);
+
+        if shouldAddEmpty {
+          _data[numEmpty+1] = val;
+          numEmpty-=1;
+        } else if shouldAdd {
+          _data[0] = val;
+          heapifyDown();
+        }
+      } else {
+        // Uncommon for an accumulate to be called after combining, so does not
+        // need to be very fast/optimized.
+        if isMinReduction && val < _data[dom.high] {
+          _data[dom.high] = val;
+          sort(_data);
+        } else if !isMinReduction && val > _data[dom.low] {
+          _data[dom.low] = val;
+          sort(_data);
+        }
+        return;
       }
     }
 
