@@ -1,6 +1,7 @@
 module GenSymIO {
     use HDF5;
     use IO;
+    use CPtr;
     use Path;
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
