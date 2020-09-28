@@ -72,7 +72,7 @@ def check_correctness(dtype):
         npr = fxn(npa, npb)
         fxn = getattr(ak, op)
         akr = fxn(aka, akb)
-        np.isclose(npr, akr)
+        np.isclose(npr, akr.to_ndarray())
 
 def create_parser():
     parser = argparse.ArgumentParser(description="Run the setops benchmarks: intersect1d, union1d, setdiff1d, setxor1d")
