@@ -248,8 +248,12 @@ class IOTest(ArkoudaTest):
         strings_array.save('{}/strings-test'.format(IOTest.io_test_dir), dataset='strings')
         r_strings_array = ak.load('{}/strings-test'.format(IOTest.io_test_dir), 
                                   dataset='strings')
-        
-        self.assertTrue((strings_array.to_ndarray().sort() == r_strings_array.to_ndarray().sort()))
+
+        strings = strings_array.to_ndarray()
+        strings.sort()
+        r_strings = r_strings_array.to_ndarray()
+        r_strings.sort()
+        self.assertTrue((strings == r_strings).all())
 
         # Read a part of a saved Strings dataset from one hdf5 file
         r_strings_subset = ak.read_all(filenames='{}/strings-test_LOCALE0'.\
@@ -266,10 +270,14 @@ class IOTest(ArkoudaTest):
         strings = ak.array(['testing a longer string{} to be written, loaded and appended'.\
                                   format(num) for num in list(range(0,26))])
         strings.save('{}/strings-test'.format(IOTest.io_test_dir), dataset='strings')
-        n_strings = strings.to_ndarray().sort()
+
+        n_strings = strings.to_ndarray()
+        n_strings.sort()
         r_strings = ak.load('{}/strings-test'.format(IOTest.io_test_dir), 
-                                  dataset='strings').to_ndarray().sort()
-        self.assertTrue((n_strings == r_strings))       
+                                  dataset='strings').to_ndarray()
+        r_strings.sort()
+
+        self.assertTrue((n_strings == r_strings).all())       
 
     def testSaveMixedStringsDataset(self):
         strings_array = ak.array(['string {}'.format(num) for num in list(range(0,25))])
@@ -293,9 +301,14 @@ class IOTest(ArkoudaTest):
         r_ints = ak.sort(ak.load('{}/multi-type-test'.format(IOTest.io_test_dir), 
                            dataset='m_ints'))
         self.assertTrue((m_ints == r_ints).all())
+        
+        strings = strings_array.to_ndarray()
+        strings.sort()
         r_strings = ak.load('{}/multi-type-test'.format(IOTest.io_test_dir), 
-                            dataset='m_strings')
-        self.assertTrue((strings_array.to_ndarray().sort() == r_strings.to_ndarray().sort()))
+                            dataset='m_strings').to_ndarray()
+        r_strings.sort()
+
+        self.assertTrue((strings == r_strings).all())
 
     def testAppendStringsDataset(self):
         strings_array = ak.array(['string {}'.format(num) for num in list(range(0,25))])
@@ -331,8 +344,12 @@ class IOTest(ArkoudaTest):
         self.assertTrue((m_floats == r_floats).all())
         self.assertTrue((m_ints == r_ints).all())
         
-        self.assertTrue((strings_array.to_ndarray().sort() == \
-                                                r_mixed['m_strings'].to_ndarray().sort()))   
+        strings = strings_array.to_ndarray()
+        strings.sort()
+        r_strings = r_mixed['m_strings'].to_ndarray()
+        r_strings.sort()
+
+        self.assertTrue((strings  == r_strings).all())   
 
     def tearDown(self):
         super(IOTest, self).tearDown()
