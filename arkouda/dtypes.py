@@ -1,7 +1,10 @@
+from typing import Tuple
 import numpy as np
 import builtins
 
-__all__ = ["DTypes", "dtype", "bool", "int64", "float64", "uint8", "str_", "check_np_dtype", "translate_np_dtype", "resolve_scalar_dtype"]
+__all__ = ["DTypes", "dtype", "bool", "int64", "float64", 
+           "uint8", "str_", "check_np_dtype", "translate_np_dtype", 
+           "resolve_scalar_dtype"]
 
 # supported dtypes
 structDtypeCodes = {'int64': 'q',
@@ -21,37 +24,51 @@ uint8 = np.uint8
 str_ = np.str_
 DTypes = frozenset(["bool", "int64", "float64", "uint8", "str"])
 
-def check_np_dtype(dt):
+def check_np_dtype(dt : np.dtype) -> None:
     """
-    Assert that numpy dtype dt is one of the dtypes supported by arkouda, 
-    otherwise raise TypeError.
+    Assert that numpy dtype dt is one of the dtypes supported
+    by arkouda, otherwise raise TypeError.
+    
+    Raises
+    ------
+    TypeError
+        Raised if the dtype is not in supported dtypes
     """
     if dt.name not in DTypes:
         raise TypeError("Unsupported type: {}".format(dt))
 
-def translate_np_dtype(dt):
+def translate_np_dtype(dt : np.dtype) -> Tuple[str, int]:
     """
-    Split numpy dtype dt into its kind and byte size, raising TypeError 
-    for unsupported dtypes.
+    Split numpy dtype dt into its kind and byte size, raising
+    TypeError for unsupported dtypes.
+    
+    Raises
+    ------
+    TypeError
+        Raised if the dtype is not in supported dtypes
     """
     # Assert that dt is one of the arkouda supported dtypes
     check_np_dtype(dt)
-    trans = {'i': 'int', 'f': 'float', 'b': 'bool', 'u': 'uint', 'U' : 'str'}
+    trans = {'i': 'int', 'f': 'float', 'b': 'bool', 
+             'u': 'uint', 'U' : 'str'}
     kind = trans[dt.kind]
     return kind, dt.itemsize
 
-def resolve_scalar_dtype(val):
+def resolve_scalar_dtype(val : object) -> str:
     """
     Try to infer what dtype arkouda_server should treat val as.
     """
     # Python bool or np.bool
-    if isinstance(val, builtins.bool) or (hasattr(val, 'dtype') and val.dtype.kind == 'b'):
+    if isinstance(val, builtins.bool) or (hasattr(val, 'dtype') \
+                                and val.dtype.kind == 'b'):
         return 'bool'
     # Python int or np.int* or np.uint*
-    elif isinstance(val, int) or (hasattr(val, 'dtype') and val.dtype.kind in 'ui'):
+    elif isinstance(val, int) or (hasattr(val, 'dtype') and \
+                                  val.dtype.kind in 'ui'):
         return 'int64'
     # Python float or np.float*
-    elif isinstance(val, float) or (hasattr(val, 'dtype') and val.dtype.kind == 'f'):
+    elif isinstance(val, float) or (hasattr(val, 'dtype') and \
+                                    val.dtype.kind == 'f'):
         return 'float64'
     elif isinstance(val, str) or isinstance(val, str_):
         return 'str'

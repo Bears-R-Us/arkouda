@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Tuple
+from typing import Tuple, Union
 from arkouda.client import generic_msg
 from arkouda.dtypes import *
 from arkouda.pdarrayclass import pdarray, parse_single_value, create_pdarray
@@ -32,7 +32,7 @@ def abs(pda : pdarray) -> pdarray:
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def log(pda):
+def log(pda : pdarray) -> pdarray:
     """
     Return the element-wise natural log of the array. 
 
@@ -97,7 +97,7 @@ def exp(pda : pdarray) -> pdarray:
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def cumsum(pda):
+def cumsum(pda : pdarray) -> pdarray:
     """
     Return the cumulative sum over the array. 
 
@@ -107,6 +107,12 @@ def cumsum(pda):
     Parameters
     ----------
     pda : pdarray
+    
+    Returns
+    -------
+    pdarray
+        A pdarray containing cumulative sums for each element
+        of the original pdarray
     
     Raises
     ------
@@ -119,7 +125,7 @@ def cumsum(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def cumprod(pda):
+def cumprod(pda : pdarray) -> pdarray:
     """
     Return the cumulative product over the array. 
 
@@ -129,6 +135,12 @@ def cumprod(pda):
     Parameters
     ----------
     pda : pdarray
+    
+    Returns
+    -------
+    pdarray
+        A pdarray containing cumulative products for each element
+        of the original pdarray
 
     Raises
     ------
@@ -141,13 +153,19 @@ def cumprod(pda):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def sin(pda):
+def sin(pda : pdarray) -> pdarray:
     """
     Return the element-wise sine of the array.
 
     Parameters
     ----------
     pda : pdarray
+    
+    Returns
+    -------
+    pdarray
+        A pdarray containing sin for each element
+        of the original pdarray
     
     Raises
     ------
@@ -168,6 +186,12 @@ def cos(pda : pdarray) -> pdarray:
     ----------
     pda : pdarray
     
+    Returns
+    -------
+    pdarray
+        A pdarray containing cosine for each element
+        of the original pdarray
+    
     Raises
     ------
     TypeError
@@ -179,9 +203,11 @@ def cos(pda : pdarray) -> pdarray:
     else:
         raise TypeError("must be pdarray {}".format(pda))
     
-def where(condition : pdarray, A, B):
+def where(condition : pdarray, A : Union[Union[int,float], pdarray], 
+                        B : Union[Union[int,float], pdarray]) -> pdarray:
     """
-    Return an array with elements chosen from A and B based on a conditioning array.
+    Returns an array with elements chosen from A and B based upon a 
+    conditioning array.
     
     Parameters
     ----------

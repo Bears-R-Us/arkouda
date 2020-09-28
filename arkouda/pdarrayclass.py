@@ -1,3 +1,4 @@
+from typing import Union
 import json, struct
 import numpy as np
 from typing import Union
@@ -5,13 +6,14 @@ from arkouda.client import generic_msg, verbose, maxTransferBytes, pdarrayIterTh
 from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
 
-__all__ = ["pdarray", "info", "any", "all", "is_sorted", "sum", "prod", "min", "max",
-           "argmin", "argmax", "mean", "var", "std", "mink", "maxk", "argmink", "argmaxk"]
+__all__ = ["pdarray", "info", "any", "all", "is_sorted", "sum", "prod", 
+           "min", "max", "argmin", "argmax", "mean", "var", "std", "mink", 
+           "maxk", "argmink", "argmaxk"]
 
 def parse_single_value(msg : str):
     """
-    Attempt to convert a scalar return value from the arkouda server to a numpy
-    scalar in Python. The user should not call this function directly.
+    Attempt to convert a scalar return value from the arkouda server to a
+    numpy scalar in Python. The user should not call this function directly.      
     """
     dtname, value = msg.split(maxsplit=1)
     mydtype = dtype(dtname)
@@ -21,15 +23,15 @@ def parse_single_value(msg : str):
         elif value == "False":
             return bool(False)
         else:
-            raise ValueError(("unsupported value from server {} {}".format(mydtype.name, 
-                                                                           value)))
+            raise ValueError(("unsupported value from server {} {}".\
+                              format(mydtype.name, value)))
     try:
         if mydtype == str_:
             return mydtype.type(value.strip('"'))
         return mydtype.type(value)
     except:
-        raise ValueError(("unsupported value from server {} {}".format(mydtype.name, 
-                                                                       value)))
+        raise ValueError(("unsupported value from server {} {}".\
+                              format(mydtype.name, value)))
 
 # class for the pdarray
 class pdarray:

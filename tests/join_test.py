@@ -69,3 +69,27 @@ class JoinTest(ArkoudaTest):
         I,J = ak.join_on_eq_with_dt(self.a2,self.a1,self.t1,self.t2,dt,"pos_dt")
         self.assertEqual(0, I.size)
         self.assertEqual(0, J.size)
+        
+    def test_error_handling(self):
+        """
+        Tests error TypeError and ValueError handling
+        """
+        with self.assertRaises(TypeError):
+            ak.join_on_eq_with_dt([list(range(0,11))],
+                                  self.a1,self.t1,self.t2,8,"pos_dt")
+        with self.assertRaises(TypeError):
+            ak.join_on_eq_with_dt([self.a1, list(range(0,11))],
+                                  self.t1,self.t2,8,"pos_dt")
+        with self.assertRaises(TypeError):
+            ak.join_on_eq_with_dt([self.a1, self.a1, list(range(0,11))],
+                                  self.t2,8,"pos_dt")
+        with self.assertRaises(TypeError):
+            ak.join_on_eq_with_dt([self.a1, self.a1, self.t1,
+                                  list(range(0,11))],8,"pos_dt")
+        with self.assertRaises(TypeError):
+            ak.join_on_eq_with_dt(self.a1,
+                                  self.a1,self.t1,self.t2,'8',"pos_dt")
+        with self.assertRaises(ValueError):
+            ak.join_on_eq_with_dt(self.a1,self.a1,self.t1,self.t1*10,8,"ab_dt")
+        with self.assertRaises(ValueError):
+            ak.join_on_eq_with_dt(self.a1,self.a1,self.t1,self.t1*10,8,"abs_dt",-1)            
