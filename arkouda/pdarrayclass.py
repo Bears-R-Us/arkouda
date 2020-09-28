@@ -325,6 +325,9 @@ class pdarray:
         return self.opeq(other, "^=")
     def __ipow__(self, other):
         return self.opeq(other,"**=")
+    
+    def __iter__(self):
+        raise NotImplementedError('pdarray does not support iteration')
 
     # overload a[] to treat like list
     def __getitem__(self, key):
