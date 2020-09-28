@@ -2,11 +2,11 @@ import numpy as np
 from typing import Tuple, Union
 from arkouda.client import generic_msg
 from arkouda.dtypes import *
-from arkouda.pdarrayclass import pdarray, parse_single_value, create_pdarray
+from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraysetops import unique
 
-__all__ = ["abs", "log", "exp", "cumsum", "cumprod", "sin", "cos", "where",
-           "histogram", "value_counts"]
+__all__ = ["abs", "log", "exp", "cumsum", "cumprod", "sin", "cos", 
+           "where", "histogram", "value_counts"]
 
 def abs(pda : pdarray) -> pdarray:
     """
@@ -222,6 +222,12 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
     -------
     pdarray
         Values chosen from A and B according to condition
+        
+    Raises 
+    ------
+    TypeError
+        Raised if condition is not a pdarray or if pdarray dtypes
+        are not supportedd
 
     Notes
     -----
@@ -230,30 +236,34 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
     if not isinstance(condition, pdarray):
         raise TypeError("must be pdarray {}".format(condition))
     if isinstance(A, pdarray) and isinstance(B, pdarray):
-        repMsg = generic_msg("efunc3vv {} {} {} {}".format("where",
-                                                           condition.name,
-                                                           A.name,
-                                                           B.name))
+        repMsg = generic_msg("efunc3vv {} {} {} {}".\
+                             format("where",
+                                    condition.name,
+                                    A.name,
+                                    B.name))
     # For scalars, try to convert it to the array's dtype
     elif isinstance(A, pdarray) and np.isscalar(B):
-        repMsg = generic_msg("efunc3vs {} {} {} {} {}".format("where",
-                                                              condition.name,
-                                                              A.name,
-                                                              A.dtype.name,
-                                                              A.format_other(B)))
+        repMsg = generic_msg("efunc3vs {} {} {} {} {}".\
+                             format("where",
+                                    condition.name,
+                                    A.name,
+                                    A.dtype.name,
+                                    A.format_other(B)))
     elif isinstance(B, pdarray) and np.isscalar(A):
-        repMsg = generic_msg("efunc3sv {} {} {} {} {}".format("where",
-                                                              condition.name,
-                                                              B.dtype.name,
-                                                              B.format_other(A),
-                                                              B.name))
+        repMsg = generic_msg("efunc3sv {} {} {} {} {}".\
+                             format("where",
+                                    condition.name,
+                                    B.dtype.name,
+                                    B.format_other(A),
+                                    B.name))
     elif np.isscalar(A) and np.isscalar(B):
         # Scalars must share a common dtype (or be cast)
         dtA = resolve_scalar_dtype(A)
         dtB = resolve_scalar_dtype(B)
         # Make sure at least one of the dtypes is supported
         if not (dtA in DTypes or dtB in DTypes):
-            raise TypeError("Not implemented for scalar types {} and {}".format(dtA, dtB))
+            raise TypeError(("Not implemented for scalar types {} " +
+                            "and {}").format(dtA, dtB))
         # If the dtypes are the same, do not cast
         if dtA == dtB:
             dt = dtA
@@ -266,13 +276,15 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
             dt = dtA
         # Cannot safely cast
         else:
-            raise TypeError("Cannot cast between scalars {} and {} to supported dtype".format(A, B))
-        repMsg = generic_msg("efunc3ss {} {} {} {} {} {}".format("where",
-                                                                 condition.name,
-                                                                 dt,
-                                                                 A,
-                                                                 dt,
-                                                                 B))
+            raise TypeError(("Cannot cast between scalars {} and {} to " +
+                            "supported dtype").format(A, B))
+        repMsg = generic_msg("efunc3ss {} {} {} {} {} {}".\
+                             format("where",
+                                    condition.name,
+                                    dt,
+                                    A,
+                                    dt,
+                                    B))
     return create_pdarray(repMsg)
 
 
@@ -304,9 +316,9 @@ def histogram(pda : pdarray, bins : int=10) -> pdarray:
 
     Notes
     -----
-    The bins are evenly spaced in the interval [pda.min(), pda.max()]. Currently,
-    the user must re-compute the bin edges, e.g. with np.linspace (see below) 
-    in order to plot the histogram.
+    The bins are evenly spaced in the interval [pda.min(), pda.max()].
+    Currently, the user must re-compute the bin edges, e.g. with np.linspace 
+    (see below) in order to plot the histogram.
 
     Examples
     --------
@@ -326,7 +338,8 @@ def histogram(pda : pdarray, bins : int=10) -> pdarray:
         repMsg = generic_msg("histogram {} {}".format(pda.name, bins))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be pdarray {} and bins must be an int {}".format(pda,bins))
+        raise TypeError("must be pdarray {} and bins must be an int {}".\
+                        format(pda,bins))
 
 
 def value_counts(pda : pdarray) -> Tuple[pdarray,int]:
@@ -357,8 +370,8 @@ def value_counts(pda : pdarray) -> Tuple[pdarray,int]:
 
     Notes
     -----
-    This function differs from ``histogram()`` in that it only returns counts 
-    for values that are present, leaving out empty "bins".
+    This function differs from ``histogram()`` in that it only returns
+    counts for values that are present, leaving out empty "bins".
 
     Examples
     --------

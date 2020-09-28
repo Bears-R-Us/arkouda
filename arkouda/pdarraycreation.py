@@ -76,9 +76,9 @@ def array(a : Union[pdarray,np.ndarray]) -> Union[pdarray, Strings]:
         # Allocate and fill bytes array with string segments
         nbytes = offsets[-1] + lengths[-1]
         if nbytes > maxTransferBytes:
-            raise RuntimeError(("Creating pdarray would require transferring {} bytes, which exceeds " +
-                                "allowed transfer size. Increase ak.maxTransferBytes to force.").\
-                                format(nbytes))
+            raise RuntimeError(("Creating pdarray would require transferring {} bytes," +
+                                " which exceeds allowed transfer size. Increase " +
+                                "ak.maxTransferBytes to force.").format(nbytes))
         values = np.zeros(nbytes, dtype=np.uint8)
         for s, o in zip(a, offsets):
             for i, b in enumerate(s.encode()):
@@ -302,7 +302,8 @@ def arange(*args) -> pdarray:
         repMsg = generic_msg("arange {} {} {}".format(start, stop, stride))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("start,stop,stride must be type int {} {} {}".format(start,stop,stride))
+        raise TypeError("start,stop,stride must be type int {} {} {}".\
+                                    format(start,stop,stride))
 
 def linspace(start : int, stop : int, length : int) -> pdarray:
     """
@@ -485,11 +486,11 @@ def random_strings_uniform(minlen : int, maxlen : int, size : int,
     """
     if minlen < 0 or maxlen < minlen or size < 0:
         raise ValueError("Incompatible arguments")
-    msg = "randomStrings {} {} {} {} {}".format(NUMBER_FORMAT_STRINGS['int64'].format(size),
-                                                "uniform",
-                                                characters,
-                                                NUMBER_FORMAT_STRINGS['int64'].format(minlen),
-                                                NUMBER_FORMAT_STRINGS['int64'].format(maxlen))
+    msg = "randomStrings {} {} {} {} {}".\
+                            format(NUMBER_FORMAT_STRINGS['int64'].format(size),
+                            "uniform", characters,
+                            NUMBER_FORMAT_STRINGS['int64'].format(minlen),
+                            NUMBER_FORMAT_STRINGS['int64'].format(maxlen))
     repMsg = generic_msg(msg)
     return Strings(*(repMsg.split('+')))
 
@@ -523,16 +524,16 @@ def random_strings_lognormal(logmean : float, logstd : float,
     Notes
     -----
     The lengths of the generated strings are distributed $Lognormal(\mu, \sigma^2)$,
-    with :math:`\mu = logmean` and :math:`\sigma = logstd`. Thus, the strings will have
-    an average length of :math:`exp(\mu + 0.5*\sigma^2)`, a minimum length of zero, and
-    a heavy tail towards longer strings.
+    with :math:`\mu = logmean` and :math:`\sigma = logstd`. Thus, the strings will
+    have an average length of :math:`exp(\mu + 0.5*\sigma^2)`, a minimum length of 
+    zero, and a heavy tail towards longer strings.
     """
     if logstd <= 0 or size < 0:
         raise ValueError("Incompatible arguments")
-    msg = "randomStrings {} {} {} {} {}".format(NUMBER_FORMAT_STRINGS['int64'].format(size),
-                                                "lognormal",
-                                                characters,
-                                                NUMBER_FORMAT_STRINGS['float64'].format(logmean),
-                                                NUMBER_FORMAT_STRINGS['float64'].format(logstd))
+    msg = "randomStrings {} {} {} {} {}".\
+                             format(NUMBER_FORMAT_STRINGS['int64'].format(size),
+                             "lognormal", characters,
+                             NUMBER_FORMAT_STRINGS['float64'].format(logmean),
+                             NUMBER_FORMAT_STRINGS['float64'].format(logstd))
     repMsg = generic_msg(msg)
     return Strings(*(repMsg.split('+')))
