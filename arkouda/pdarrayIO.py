@@ -44,7 +44,10 @@ def read_hdf(dsetName : str, filenames : Union[str,List[str]]) \
 
     Raises
     ------
-        TypeError if dsetName is not a str       
+    TypeError 
+        Raised if dsetName is not a str 
+    ValueError 
+        Raised if all datasets are not present in all hdf5 files    
 
     See Also
     --------
@@ -57,7 +60,7 @@ def read_hdf(dsetName : str, filenames : Union[str,List[str]]) \
     expanded with glob to read all matching files. Use ``get_datasets`` to
     show the names of datasets in HDF5 files.
 
-    If dsetName is not present in all files, a RuntimeError is raised.
+    If dsetName is not present in all files, a TypeError is raised.
     """
     if isinstance(filenames, str):
         filenames = [filenames]
@@ -97,7 +100,8 @@ def read_all(filenames : Union[str,List[str]], datasets :
 
     Raises
     ------
-        ValueError if all datasets are not present int all hdf5 files
+    ValueError 
+        Raised if all datasets are not present in all hdf5 files
 
     See Also
     --------
@@ -168,7 +172,10 @@ def load(path_prefix : str, dataset : str='array') -> pdarray:
 
     Raises
     ------
-        TypeError if dataset is not a str    
+    TypeError 
+        Raised if dsetName is not a str 
+    ValueError 
+        Raised if all datasets are not present in all hdf5 files     
 
     See Also
     --------
@@ -213,6 +220,12 @@ def load_all(path_prefix : str) -> Mapping[str,pdarray]:
     -------
     Mapping[str,pdarray]
         Dictionary of {datsetName: pdarray} with the previously saved pdarrays
+        
+        
+    Raises
+    ------
+    ValueError 
+        Raised if all datasets are not present in all hdf5 files    
 
     See Also
     --------
@@ -246,8 +259,9 @@ def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : 
 
     Raises
     ------
-        ValueError if (1) the lengths of columns and values differ or (2)
-        the mode is not 'truncate' or 'append'
+    ValueError 
+        Raised if (1) the lengths of columns and values differ or (2) the mode 
+        is not 'truncate' or 'append'
 
     See Also
     --------

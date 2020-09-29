@@ -1,7 +1,6 @@
-from typing import Union
+from typing import Tuple, Type, Union
 import json, struct
 import numpy as np
-from typing import Union
 from arkouda.client import generic_msg, verbose, maxTransferBytes, pdarrayIterThresh
 from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
@@ -10,10 +9,19 @@ __all__ = ["pdarray", "info", "any", "all", "is_sorted", "sum", "prod",
            "min", "max", "argmin", "argmax", "mean", "var", "std", "mink", 
            "maxk", "argmink", "argmaxk"]
 
-def parse_single_value(msg : str):
+def parse_single_value(msg : str) -> object:
     """
     Attempt to convert a scalar return value from the arkouda server to a
-    numpy scalar in Python. The user should not call this function directly.      
+    numpy scalar in Python. The user should not call this function directly. 
+    
+    Parameters
+    ----------
+    msg : str
+        scalar value in string form to be converted to a numpy scalar
+
+    Returns
+    -------
+    object numpy scalar         
     """
     dtname, value = msg.split(maxsplit=1)
     mydtype = dtype(dtname)
@@ -67,7 +75,8 @@ class pdarray:
 
     __array_priority__ = 1000
 
-    def __init__(self, name, mydtype, size, ndim, shape, itemsize):
+    def __init__(self, name : str, mydtype : np.dtype, size : int, ndim : int, 
+                 shape: Tuple, itemsize : int) -> None:
         self.name = name
         self.dtype = dtype(mydtype)
         self.size = size
@@ -98,11 +107,27 @@ class pdarray:
         global pdarrayIterTresh
         return generic_msg("repr {} {}".format(self.name,pdarrayIterThresh))
 
-    def format_other(self, other : object) -> object:
+    def format_other(self, other : object) -> np.dtype:
         """
         Attempt to cast scalar other to the element dtype of this pdarray,
         and print the resulting value to a string (e.g. for sending to a
         server command). The user should not call this function directly.
+        
+        Parameters
+        ----------
+        other : object
+            The scalar to be cast to the pdarray.dtype
+            
+        Returns
+        -------
+        np.dtype corresponding to the other parameter
+        
+        Raises
+        ------
+        TypeError
+            Raised if the other parameter cannot be converted to
+            Numpy dtype
+        
         """
         try:
             other = self.dtype.type(other)
@@ -115,7 +140,32 @@ class pdarray:
         return fmt.format(other)
 
     # binary operators
-    def binop(self, other : object, op : str):
+    def binop(self, other : 'pdarray', op : str) -> 'pdarray':
+        """
+        Executes binary operation specified by the op string
+        
+        Parameters
+        ----------
+        other : pdarray
+            The pdarray upon which the binop is to be executed
+        op : str
+            The binop to be executed
+        
+        Returns
+        -------
+        pdarray
+            A pdarray encapsulating the binop result
+            
+        Raises
+        ------
+        ValueError
+            Raised if the op is not within the pdarray.BinOps set, or if the
+            pdarray sizes don't match
+        TypeError
+            Raised if other is not a pdarray or the pdarray.dtype is not
+            a supported dtype
+        
+        """
         if op not in self.BinOps:
             raise ValueError("bad operator {}".format(op))
         # pdarray binop pdarray
@@ -137,7 +187,31 @@ class pdarray:
 
     # reverse binary operators
     # pdarray binop pdarray: taken care of by binop function
-    def r_binop(self, other, op):
+    def r_binop(self, other : 'pdarray', op : str) -> 'pdarray':
+        """
+        Executes reverse binary operation specified by the op string
+        
+        Parameters
+        ----------
+        other : pdarray
+            The pdarray upon which the reverse binop is to be executed
+        op : str
+            The name of the reverse binop to be executed
+        
+        Returns
+        -------
+        pdarray
+            A pdarray encapsulating the reverse binop result
+            
+        Raises
+        ------
+        ValueError
+            Raised if the op is not within the pdarray.BinOps set
+        TypeError
+            Raised if other is not a pdarray or the pdarray.dtype is not
+            a supported dtype        
+        """
+
         if op not in self.BinOps:
             raise ValueError("bad operator {}".format(op))
         # pdarray binop scalar
@@ -396,63 +470,79 @@ class pdarray:
             raise TypeError("Unhandled key type: {} ({})".\
                             format(key, type(key)))
 
-    def fill(self, value : object) -> None:
+    def fill(self, value : 'pdarray') -> None:
         """
         Fill the array (in place) with a constant value.
         """
         generic_msg("set {} {} {}".format(self.name, 
                                         self.dtype.name, self.format_other(value)))
 
-    def any(self):
+    def any(self) -> bool:
         """
         Return True iff any element of the array evaluates to True.
         """
         return any(self)
 
-    def all(self):
+    def all(self) -> bool:
         """
         Return True iff all elements of the array evaluate to True.
         """
         return all(self)
 
-    def is_sorted(self):
+    def is_sorted(self) -> bool:
         """
         Return True iff the array is monotonically non-decreasing.
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        bool 
+            Indicates if the array is monotonically non-decreasing
+            
+        Raises
+        ------
+        TypeError
+            Raised if pda is not a pdarray instance
+        RuntimeError
+            Raised if there's a server-side error thrown
         """
         return is_sorted(self)
 
-    def sum(self):
+    def sum(self) -> float:
         """
         Return the sum of all elements in the array.
         """
         return sum(self)
 
-    def prod(self):
+    def prod(self) -> float:
         """
         Return the product of all elements in the array. Return value is
         always a float.
         """
         return prod(self)
 
-    def min(self):
+    def min(self) -> float:
         """
         Return the minimum value of the array.
         """
         return min(self)
 
-    def max(self):
+    def max(self) -> float:
         """
         Return the maximum value of the array.
         """
         return max(self)
 
-    def argmin(self):
+    def argmin(self) -> float:
         """
         Return the index of the first minimum value of the array.
         """
         return argmin(self)
 
-    def argmax(self):
+    def argmax(self) -> float:
         """
         Return the index of the first maximum value of the array.
         """
@@ -464,46 +554,143 @@ class pdarray:
         """
         return mean(self)
 
-    def var(self, ddof : int=0):
+    def var(self, ddof : int=0) -> float:
         """
         Compute the variance. See ``arkouda.var`` for details.
+        
+        Parameters
+        ----------
+        ddof : int
+            "Delta Degrees of Freedom" used in calculating var
+
+        Returns
+        -------
+        float
+            The scalar variance of the array
+
+        Raises
+        ------
+        TypeError
+            Raised if pda is not a pdarray instance
+        ValueError
+            Raised if the ddof >= pdarray size
+        RuntimeError
+            Raised if there's a server-side error thrown
+
         """
         return var(self, ddof=ddof)
 
     def std(self, ddof : int=0) -> float:
         """
         Compute the standard deviation. See ``arkouda.std`` for details.
+        
+        Parameters
+        ----------
+        ddof : int
+            "Delta Degrees of Freedom" used in calculating std
+
+        Returns
+        -------
+        float
+            The scalar standard deviation of the array
+
+        Raises
+        ------
+        TypeError
+            Raised if pda is not a pdarray instance
+        RuntimeError
+            Raised if there's a server-side error thrown
         """
         return std(self, ddof=ddof)
 
-    def mink(self, k):
+    def mink(self, k : int) -> 'pdarray':
         """
         Compute the minimum "k" values.
+        
+        Parameters
+        ----------
+        k : int
+            The desired count of maximum values to be returned by the output.
+
+        Returns
+        -------
+        pdarray, int
+            The maximum `k` values from pda
+        
+        Raises
+        ------
+        TypeError
+            Raised if pda is not a pdarray
         """
         return mink(self,k)
 
 
-    def maxk(self, k):
+    def maxk(self, k : int) -> 'pdarray':
         """
         Compute the maximum "k" values.
+        
+        Parameters
+        ----------
+        k : int
+            The desired count of maximum values to be returned by the output.
+
+        Returns
+        -------
+        pdarray, int
+            The maximum `k` values from pda
+        
+        Raises
+        ------
+        TypeError
+            Raised if pda is not a pdarray
         """
         return maxk(self,k)
 
-    def argmink(self, k):
+    def argmink(self, k : int) -> 'pdarray':
         """
         Compute the minimum "k" values.
+        
+        Parameters
+        ----------
+        k : integer
+            The desired count of maximum values to be returned by the output.
+
+        Returns
+        -------
+        pdarray, int
+            The maximum `k` values from pda
+        
+        Raises
+        ------
+        TypeError
+            Raised if pda is not a pdarray
         """
         return argmink(self,k)
 
 
-    def argmaxk(self, k):
+    def argmaxk(self, k : int) -> 'pdarray':
         """
         Compute the maximum "k" values.
+        
+        Parameters
+        ----------
+        k : int
+            The desired count of maximum values to be returned by the output.
+
+        Returns
+        -------
+        pdarray, int
+            The maximum `k` values from pda
+        
+        Raises
+        ------
+        TypeError
+            Raised if pda is not a pdarray
         """
         return argmaxk(self,k)
 
     
-    def to_ndarray(self):
+    def to_ndarray(self) -> np.array:
         """
         Convert the array to a np.ndarray, transferring array data from the
         Arkouda server to client-side Python. Note: if the pdarray size exceeds 
@@ -517,8 +704,9 @@ class pdarray:
         Raises
         ------
         RuntimeError
-            Raised if there is a server-side error thrown or if the pdarray size
-            exceeds the built-in size limit
+            Raised if there is a server-side error thrown, if the pdarray size
+            exceeds the built-in ak.maxTransferBytes size limit, or if the bytes
+            received does not match expected number of bytes
         Notes
         -----
         The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
@@ -646,6 +834,10 @@ class pdarray:
             By default, truncate (overwrite) output files, if they exist.
             If 'append', attempt to create new dataset in existing files.
 
+        Returns
+        -------
+        string message indicating result of save operation
+
         Raises
         ------
         RuntimeError
@@ -707,7 +899,7 @@ class pdarray:
 #   only after:
 #       all values have been checked by python module and...
 #       server has created pdarray already befroe this is called
-def create_pdarray(reqMsg : str) -> pdarray:
+def create_pdarray(reqMsg : str) -> 'pdarray':
     """
     Return a pdarray instance pointing to an array created by the arkouda server.
     The user should not call this function directly.
@@ -775,7 +967,7 @@ def info(pda : Union[pdarray, str]) -> str:
     else:
         raise TypeError("info: must be pdarray or string {}".format(pda))
 
-def any(pda : pdarray) -> bool:
+def any(pda : 'pdarray') -> bool:
     """
     Return True iff any element of the array evaluates to True.
     
@@ -802,7 +994,7 @@ def any(pda : pdarray) -> bool:
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def all(pda : pdarray) -> bool:
+def all(pda : 'pdarray') -> bool:
     """
     Return True iff all elements of the array evaluate to True.
 
@@ -829,7 +1021,7 @@ def all(pda : pdarray) -> bool:
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def is_sorted(pda : pdarray) -> bool:
+def is_sorted(pda : 'pdarray') -> bool:
     """
     Return True iff the array is monotonically non-decreasing.
     
@@ -856,7 +1048,7 @@ def is_sorted(pda : pdarray) -> bool:
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def sum(pda : pdarray) -> float:
+def sum(pda : 'pdarray') -> float:
     """
     Return the sum of all elements in the array.
 
@@ -883,7 +1075,7 @@ def sum(pda : pdarray) -> float:
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def prod(pda : pdarray) -> float:
+def prod(pda : 'pdarray') -> float:
     """
     Return the product of all elements in the array. Return value is
     always a float.
@@ -911,7 +1103,7 @@ def prod(pda : pdarray) -> float:
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def min(pda : pdarray) -> float:
+def min(pda : 'pdarray') -> float:
     """
     Return the minimum value of the array.
     
@@ -938,7 +1130,7 @@ def min(pda : pdarray) -> float:
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def max(pda : pdarray) -> float:
+def max(pda : 'pdarray') -> float:
     """
     Return the maximum value of the array.
     
@@ -965,7 +1157,7 @@ def max(pda : pdarray) -> float:
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def argmin(pda : pdarray) -> float:
+def argmin(pda : 'pdarray') -> float:
     """
     Return the index of the first minimum value of the array.
 
@@ -992,7 +1184,7 @@ def argmin(pda : pdarray) -> float:
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def argmax(pda : pdarray) -> float:
+def argmax(pda : 'pdarray') -> float:
     """
     Return the index of the first maximum value of the array.
     
@@ -1019,7 +1211,7 @@ def argmax(pda : pdarray) -> float:
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def mean(pda : pdarray) -> float:
+def mean(pda : 'pdarray') -> float:
     """
     Return the mean of the array.
     
@@ -1042,7 +1234,7 @@ def mean(pda : pdarray) -> float:
     """
     return pda.sum() / pda.size
 
-def var(pda : pdarray, ddof : int=0) -> float:
+def var(pda : 'pdarray', ddof : int=0) -> float:
     """
     Return the variance of values in the array.
 
@@ -1090,7 +1282,7 @@ def var(pda : pdarray, ddof : int=0) -> float:
     m = mean(pda)
     return ((pda - m)**2).sum() / (pda.size - ddof)
 
-def std(pda : pdarray, ddof : int=0) -> float:
+def std(pda : 'pdarray', ddof : int=0) -> float:
     """
     Return the standard deviation of values in the array. The standard
     deviation is implemented as the square root of the variance.
@@ -1137,7 +1329,7 @@ def std(pda : pdarray, ddof : int=0) -> float:
         raise TypeError("must be pdarray {}".format(pda))
     return np.sqrt(var(pda, ddof=ddof))
 
-def mink(pda, k):
+def mink(pda : 'pdarray', k : int) -> 'pdarray':
     """
     Find the `k` minimum values of an array.
 
@@ -1154,6 +1346,11 @@ def mink(pda, k):
     -------
     pdarray
         The minimum `k` values from pda
+        
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray
 
     Notes
     -----
@@ -1183,7 +1380,7 @@ def mink(pda, k):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def maxk(pda, k):
+def maxk(pda : 'pdarray', k : int) -> 'pdarray':
     """
     Find the `k` maximum values of an array.
 
@@ -1200,6 +1397,11 @@ def maxk(pda, k):
     -------
     pdarray, int
         The maximum `k` values from pda
+        
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray
 
     Notes
     -----
@@ -1230,7 +1432,7 @@ def maxk(pda, k):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def argmink(pda, k):
+def argmink(pda : 'pdarray', k : int) -> 'pdarray':
     """
     Find the `k` minimum values of an array.
 
@@ -1247,6 +1449,11 @@ def argmink(pda, k):
     -------
     pdarray, int
         The indcies of the minimum `k` values from pda
+        
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray
 
     Notes
     -----
@@ -1276,7 +1483,7 @@ def argmink(pda, k):
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def argmaxk(pda, k):
+def argmaxk(pda : 'pdarray', k : int) -> 'pdarray':
     """
     Find the `k` maximum values of an array.
 
@@ -1293,6 +1500,11 @@ def argmaxk(pda, k):
     -------
     pdarray, int
         The indices of the maximum `k` values from pda
+
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray
 
     Notes
     -----

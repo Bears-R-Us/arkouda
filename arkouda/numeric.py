@@ -227,7 +227,7 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
     ------
     TypeError
         Raised if condition is not a pdarray or if pdarray dtypes
-        are not supportedd
+        are not supported
 
     Notes
     -----
@@ -308,7 +308,8 @@ def histogram(pda : pdarray, bins : int=10) -> pdarray:
     Raises
     ------
     TypeError
-        Raised if the parameter is not a pdarray
+        Raised if the parameter is not a pdarray or if bins is
+        not an int.
 
     See Also
     --------
