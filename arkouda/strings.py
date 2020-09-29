@@ -32,6 +32,8 @@ class Strings:
         The rank of the array (currently only rank 1 arrays supported)
     shape : tuple
         The sizes of each dimension of the array
+    dtype : dtype
+        The dtype derived from the bytes_attrib, which is uint8
         
     Notes
     -----
@@ -89,7 +91,8 @@ class Strings:
             self.ndim = self.offsets.ndim
             self.shape = self.offsets.shape
         except Exception as e:
-            raise ValueError(e)
+            raise ValueError(e)   
+        self.dtype = self.bytes.dtype
 
     def __iter__(self):
         raise NotImplementedError('Strings does not support iteration')

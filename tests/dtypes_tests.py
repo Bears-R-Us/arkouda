@@ -62,4 +62,8 @@ class DtypesTest(ArkoudaTest):
         self.assertEqual('str', dtypes.resolve_scalar_dtype('test'))
         self.assertEqual('int64', dtypes.resolve_scalar_dtype(np.int64(1))) 
         self.assertEqual("<class 'list'>", dtypes.resolve_scalar_dtype([1]))
-      
+        
+    def test_pdarrays_datatypes(self):
+        self.assertEqual(dtypes.dtype('float64'), ak.ones(10).dtype)
+        self.assertEqual(dtypes.dtype('uint8'), 
+                         ak.array(['string {}'.format(i) for i in range(0,10)]))
