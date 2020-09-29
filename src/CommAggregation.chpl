@@ -1,5 +1,6 @@
 module CommAggregation {
   use SysCTypes;
+  use CPtr;
   use UnorderedCopy;
   private use CommPrimitives;
 

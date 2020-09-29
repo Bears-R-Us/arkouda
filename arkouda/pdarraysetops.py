@@ -1,16 +1,16 @@
+from typing import Iterable, Union
 from arkouda.client import generic_msg, verbose
 from arkouda.pdarrayclass import pdarray, create_pdarray
-from arkouda.pdarraycreation import zeros, array
+from arkouda.pdarraycreation import zeros, zeros_like, array
 from arkouda.sorting import argsort
 from arkouda.strings import Strings
-
 global verbose
 
 __all__ = ["unique", "in1d", "concatenate", "union1d", "intersect1d",
            "setdiff1d", "setxor1d"]
 global verbose
 
-def unique(pda, return_counts=False):
+def unique(pda : pdarray, return_counts : bool=False) -> Union[pdarray,Strings]:
     """
     Find the unique elements of an array.
 
@@ -33,12 +33,17 @@ def unique(pda, return_counts=False):
     unique_counts : pdarray, optional
         The number of times each of the unique values comes up in the
         original array. Only provided if `return_counts` is True.
+        
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray
 
     Notes
     -----
-    For integer arrays, this function checks to see whether `pda` is sorted and, if so,
-    whether it is already unique. This step can save considerable computation.
-    Otherwise, this function will sort `pda`. For 
+    For integer arrays, this function checks to see whether `pda` is sorted
+    and, if so, whether it is already unique. This step can save considerable 
+    computation. Otherwise, this function will sort `pda`.
 
     Examples
     --------
@@ -49,7 +54,8 @@ def unique(pda, return_counts=False):
     if hasattr(pda, 'unique'):
         return pda.unique()
     elif isinstance(pda, pdarray):
-        repMsg = generic_msg("unique {} {} {}".format(pda.objtype, pda.name, return_counts))
+        repMsg = generic_msg("unique {} {} {}".\
+                             format(pda.objtype, pda.name, return_counts))
         if return_counts:
             vc = repMsg.split("+")
             if verbose: print(vc)
@@ -58,7 +64,8 @@ def unique(pda, return_counts=False):
             return create_pdarray(repMsg)
     elif isinstance(pda, Strings):
         name = '{}+{}'.format(pda.offsets.name, pda.bytes.name)
-        repMsg = generic_msg("unique {} {} {}".format(pda.objtype, name, return_counts))
+        repMsg = generic_msg("unique {} {} {}".\
+                             format(pda.objtype, name, return_counts))
         vc = repMsg.split('+')
         if verbose: print(vc)
         if return_counts:
@@ -68,7 +75,7 @@ def unique(pda, return_counts=False):
     else:
         raise TypeError("must be pdarray or Strings {}".format(pda))
 
-def in1d(pda1, pda2, invert=False):
+def in1d(pda1 : pdarray, pda2 : pdarray, invert : bool=False) -> pdarray:
     """
     Test whether each element of a 1-D array is also present in a second array.
 
@@ -92,6 +99,11 @@ def in1d(pda1, pda2, invert=False):
     -------
     pdarray, bool
         The values `pda1[in1d]` are in `pda2`.
+        
+    Raises
+    ------
+    TypeError
+        Raised if pda1 or pda2 is not a pdarray
 
     See Also
     --------
@@ -107,21 +119,23 @@ def in1d(pda1, pda2, invert=False):
     if hasattr(pda1, 'in1d'):
         return pda1.in1d(pda2)
     elif isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
-        repMsg = generic_msg("in1d {} {} {}".format(pda1.name, pda2.name, invert))
+        repMsg = generic_msg("in1d {} {} {}".\
+                             format(pda1.name, pda2.name, invert))
         return create_pdarray(repMsg)
     elif isinstance(pda1, Strings) and isinstance(pda2, Strings):
-        repMsg = generic_msg("segmentedIn1d {} {} {} {} {} {} {}".format(pda1.objtype,
-                                                                         pda1.offsets.name,
-                                                                         pda1.bytes.name,
-                                                                         pda2.objtype,
-                                                                         pda2.offsets.name,
-                                                                         pda2.bytes.name,
-                                                                         invert))
+        repMsg = generic_msg("segmentedIn1d {} {} {} {} {} {} {}".\
+                                    format(pda1.objtype,
+                                    pda1.offsets.name,
+                                    pda1.bytes.name,
+                                    pda2.objtype,
+                                    pda2.offsets.name,
+                                    pda2.bytes.name,
+                                    invert))
         return create_pdarray(repMsg)
     else:
         raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
 
-def concatenate(arrays):
+def concatenate(arrays : Iterable[Union[pdarray,Strings]]) -> pdarray:
     """
     Concatenate an iterable of ``pdarray`` objects into one ``pdarray``.
 
@@ -134,6 +148,17 @@ def concatenate(arrays):
     -------
     pdarray
         Single array containing all values, in original order
+        
+    Raises
+    ------
+    ValueError
+        Raised if arrays is empty or if 1..n pdarrays have
+        differing dtypes
+    TypeError
+        Raised if arrays is not a pdarrays or Strings iterable
+    NotImplementedError
+        Raised if 1..n array elements are not dtypes for which
+        concatenate has not been implemented.
 
     Examples
     --------
@@ -152,7 +177,8 @@ def concatenate(arrays):
         return arrays[0].concatenate(arrays[1:])
     for a in arrays:
         if not isinstance(a, pdarray) and not isinstance(a, Strings):
-            raise ValueError("Argument must be an iterable of pdarrays or Strings")
+            raise TypeError(("arrays must be an iterable of pdarrays" 
+                             " or Strings"))
         if objtype == None:
             objtype = a.objtype
         if objtype == "pdarray":
@@ -164,26 +190,28 @@ def concatenate(arrays):
         elif objtype == "str":
             names.append('{}+{}'.format(a.offsets.name, a.bytes.name))
         else:
-            raise NotImplementedError("concatenate not implemented for object type {}".format(objtype))
+            raise NotImplementedError(("concatenate not implemented " +
+                                    "for object type {}".format(objtype)))
         size += a.size
     if size == 0:
         if objtype == "pdarray":
             return zeros_like(arrays[0])
         else:
             return arrays[0]
-    repMsg = generic_msg("concatenate {} {} {}".format(len(arrays), objtype, ' '.join(names)))
+    repMsg = generic_msg("concatenate {} {} {}".\
+                            format(len(arrays), objtype, ' '.join(names)))
     if objtype == "pdarray":
         return create_pdarray(repMsg)
     elif objtype == "str":
         return Strings(*(repMsg.split('+')))
 
 # (A1 | A2) Set Union: elements are in one or the other or both
-def union1d(pda1, pda2):
+def union1d(pda1 : pdarray, pda2 : pdarray) -> pdarray:
     """
     Find the union of two arrays.
 
-    Return the unique, sorted array of values that are in either of the two
-    input arrays.
+    Return the unique, sorted array of values that are in either 
+    of the two input arrays.
 
     Parameters
     ----------
@@ -196,6 +224,11 @@ def union1d(pda1, pda2):
     -------
     pdarray
         Unique, sorted union of the input arrays.
+        
+    Raises
+    ------
+    TypeError
+        Raised if either pda1 or pda2 is not a pdarray
 
     See Also
     --------
@@ -212,14 +245,16 @@ def union1d(pda1, pda2):
         if pda2.size == 0:
             return pda1 # union is pda1
         if pda1.dtype == int and pda2.dtype == int:
-            repMsg = generic_msg("union1d {} {}".format(pda1.name, pda2.name))
+            repMsg = generic_msg("union1d {} {}".\
+                                 format(pda1.name, pda2.name))
             return create_pdarray(repMsg)
         return unique(concatenate((unique(pda1), unique(pda2))))
     else:
         raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
 
 # (A1 & A2) Set Intersection: elements have to be in both arrays
-def intersect1d(pda1, pda2, assume_unique=False):
+def intersect1d(pda1 : pdarray, pda2 : pdarray, 
+                                   assume_unique : bool=False) -> pdarray:
     """
     Find the intersection of two arrays.
 
@@ -240,6 +275,11 @@ def intersect1d(pda1, pda2, assume_unique=False):
     pdarray
         Sorted 1D array of common and unique elements.
 
+    Raises
+    ------
+    TypeError
+        Raised if either pda1 or pda2 is not a pdarray
+
     See Also
     --------
     unique, union1d
@@ -255,7 +295,8 @@ def intersect1d(pda1, pda2, assume_unique=False):
         if pda2.size == 0:
             return pda2 # nothing in the intersection
         if pda1.dtype == int and pda2.dtype == int:
-            repMsg = generic_msg("intersect1d {} {} {}".format(pda1.name, pda2.name, assume_unique))
+            repMsg = generic_msg("intersect1d {} {} {}".\
+                                 format(pda1.name, pda2.name, assume_unique))
             return create_pdarray(repMsg)
         if not assume_unique:
             pda1 = unique(pda1)
@@ -270,7 +311,8 @@ def intersect1d(pda1, pda2, assume_unique=False):
         raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
 
 # (A1 - A2) Set Difference: elements have to be in first array but not second
-def setdiff1d(pda1, pda2, assume_unique=False):
+def setdiff1d(pda1 : pdarray, pda2 : pdarray, 
+                                assume_unique : bool=False) -> pdarray:
     """
     Find the set difference of two arrays.
 
@@ -291,6 +333,11 @@ def setdiff1d(pda1, pda2, assume_unique=False):
     pdarray
         Sorted 1D array of values in `pda1` that are not in `pda2`.
 
+    Raises
+    ------
+    TypeError
+        Raised if either pda1 or pda2 is not a pdarray
+
     See Also
     --------
     unique, setxor1d
@@ -308,7 +355,8 @@ def setdiff1d(pda1, pda2, assume_unique=False):
         if pda2.size == 0:
             return pda1 # subtracting nothing return orig pdarray
         if pda1.dtype == int and pda2.dtype == int:
-            repMsg = generic_msg("setdiff1d {} {} {}".format(pda1.name, pda2.name, assume_unique))
+            repMsg = generic_msg("setdiff1d {} {} {}".\
+                                format(pda1.name, pda2.name, assume_unique))
             return create_pdarray(repMsg)
         if not assume_unique:
             pda1 = unique(pda1)
@@ -318,7 +366,8 @@ def setdiff1d(pda1, pda2, assume_unique=False):
         raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
 
 # (A1 ^ A2) Set Symmetric Difference: elements are not in the intersection
-def setxor1d(pda1, pda2, assume_unique=False):
+def setxor1d(pda1 : pdarray, pda2 : pdarray, 
+                                    assume_unique : bool=False) -> pdarray:
     """
     Find the set exclusive-or (symmetric difference) of two arrays.
 
@@ -341,6 +390,11 @@ def setxor1d(pda1, pda2, assume_unique=False):
         Sorted 1D array of unique values that are in only one of the input
         arrays.
 
+    Raises
+    ------
+    TypeError
+        Raised if either pda1 or pda2 is not a pdarray
+
     Examples
     --------
     >>> a = ak.array([1, 2, 3, 2, 4])
@@ -354,7 +408,8 @@ def setxor1d(pda1, pda2, assume_unique=False):
         if pda2.size == 0:
             return pda1 # return other pdarray if pda2 is empty
         if pda1.dtype == int and pda2.dtype == int:
-            repMsg = generic_msg("setxor1d {} {} {}".format(pda1.name, pda2.name, assume_unique))
+            repMsg = generic_msg("setxor1d {} {} {}".\
+                                 format(pda1.name, pda2.name, assume_unique))
             return create_pdarray(repMsg)
         if not assume_unique:
             pda1 = unique(pda1)

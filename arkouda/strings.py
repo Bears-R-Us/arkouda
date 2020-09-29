@@ -92,10 +92,7 @@ class Strings:
             raise ValueError(e)
 
     def __iter__(self):
-        # to_ndarray will error if array is too large to bring back
-        a = self.to_ndarray()
-        for s in a:
-            yield s
+        raise NotImplementedError('Strings does not support iteration')
 
     def __len__(self) -> int:
         return self.shape[0]

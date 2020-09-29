@@ -1,6 +1,6 @@
 #!/usr/bin/env gnuplot
 
-load '../../chapel-settings.gpi'
+load '../chapel-settings.gpi'
 
 # title and labels
 set xlabel "Locales (x 36 cores / locale)"

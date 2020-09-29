@@ -1,6 +1,7 @@
 module SipHash {
   private use CommPrimitives;
   private use AryUtil;
+  private use CPtr;
   
   param cROUNDS = 2;
   param dROUNDS = 4;

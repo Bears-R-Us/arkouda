@@ -1,4 +1,6 @@
 module CommPrimitives {
+  use CPtr;
+
   inline proc getAddr(const ref p): c_ptr(p.type) {
     // TODO can this use c_ptrTo?
     return __primitive("_wide_get_addr", p): c_ptr(p.type);

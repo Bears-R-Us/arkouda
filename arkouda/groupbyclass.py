@@ -1,3 +1,5 @@
+from typing import List, Tuple, Union
+import numpy as np
 from arkouda.client import generic_msg, verbose
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.sorting import argsort, coargsort, local_argsort
@@ -44,7 +46,8 @@ class GroupBy:
     Reductions = frozenset(['sum', 'prod', 'mean',
                             'min', 'max', 'argmin', 'argmax',
                             'nunique', 'any', 'all'])
-    def __init__(self, keys, assume_sorted=False, hash_strings=True):
+    def __init__(self, keys : List[Union[pdarray,np.int64,Strings]], 
+                assume_sorted : bool=False, hash_strings : bool=True) -> None:
         self.assume_sorted = assume_sorted
         self.hash_strings = hash_strings
         self.per_locale = False
@@ -65,7 +68,8 @@ class GroupBy:
             if assume_sorted:
                 self.permutation = arange(self.size)
             elif self.per_locale:
-                raise ValueError("per-locale groupby not supported on Strings or Categorical")
+                raise ValueError(("per-locale groupby not supported on " +
+                                  "Strings or Categorical"))
             else:
                 self.permutation = keys.group()
         else:
@@ -82,7 +86,7 @@ class GroupBy:
         # self.permuted_keys = self.keys[self.permutation]
         self.find_segments()
             
-    def find_segments(self):
+    def find_segments(self) -> None:
         if self.per_locale:
             cmd = "findLocalSegments"
         else:
@@ -111,7 +115,8 @@ class GroupBy:
                     effectiveKeys += 1
                 else:
                     keyobjs.append(k)
-                    keynames.append('{}+{}'.format(k.offsets.name, k.bytes.name))
+                    keynames.append('{}+{}'.format(k.offsets.name, 
+                                                   k.bytes.name))
                     keytypes.append(k.objtype)
             # for Categorical
             elif hasattr(k, 'codes'):
@@ -138,7 +143,7 @@ class GroupBy:
             self.unique_keys = [k[unique_key_indices] for k in self.keys]
 
 
-    def count(self):
+    def count(self) -> Tuple[List[Union[pdarray,Strings]],pdarray]:
         '''
         Count the number of elements in each group, i.e. the number of times
         each key appears.
@@ -164,10 +169,11 @@ class GroupBy:
         if verbose: print(repMsg)
         return self.unique_keys, create_pdarray(repMsg)
         
-    def aggregate(self, values, operator, skipna=True):
+    def aggregate(self, values : pdarray, operator : str, skipna : bool=True) \
+                          -> Tuple[List[Union[pdarray,Strings]],pdarray]:
         '''
-        Using the permutation stored in the GroupBy instance, group another array 
-        of values and apply a reduction to each group's values. 
+        Using the permutation stored in the GroupBy instance, group another 
+        array of values and apply a reduction to each group's values. 
 
         Parameters
         ----------
@@ -182,14 +188,24 @@ class GroupBy:
             The unique keys, in grouped order
         aggregates : pdarray
             One aggregate value per unique key in the GroupBy instance
+            
+        Raises
+        ------
+        TypeError
+            Raised if the values array is not a pdarray object
+        ValueError
+            Raised if the key array size does not match the values size or
+            if the operator is not in the GroupBy.Reductions array
 
         '''
         if not isinstance(values, pdarray):
             raise TypeError("<values> must be a pdarray")
         if values.size != self.size:
-            raise ValueError("Attempt to group array using key array of different length")
+            raise ValueError(("Attempt to group array using key array of " +
+                             "different length"))
         if operator not in self.Reductions:
-            raise ValueError("Unsupported reduction: {}\nMust be one of {}".format(operator, self.Reductions))
+            raise ValueError(("Unsupported reduction: {}\nMust be one of {}")\
+                                  .format(operator, self.Reductions))
         if self.assume_sorted:
             permuted_values = values
         else:
@@ -206,14 +222,16 @@ class GroupBy:
         repMsg = generic_msg(reqMsg)
         if verbose: print(repMsg)
         if operator.startswith('arg'):
-            return self.unique_keys, self.permutation[create_pdarray(repMsg)]
+            return (self.unique_keys, 
+                              self.permutation[create_pdarray(repMsg)])
         else:
             return self.unique_keys, create_pdarray(repMsg)
 
-    def sum(self, values, skipna=True):
+    def sum(self, values : pdarray, skipna : bool=True) \
+                          -> Tuple[List[Union[pdarray,Strings]],pdarray]:
         """
-        Using the permutation stored in the GroupBy instance, group another array 
-        of values and sum each group's values. 
+        Using the permutation stored in the GroupBy instance, group 
+        another array of values and sum each group's values. 
 
         Parameters
         ----------
@@ -227,16 +245,26 @@ class GroupBy:
         group_sums : pdarray
             One sum per unique key in the GroupBy instance
 
+        Raises
+        ------
+        TypeError
+            Raised if the values array is not a pdarray object
+        ValueError
+            Raised if the key array size does not match the values size or
+            if the operator is not in the GroupBy.Reductions array
+
         Notes
         -----
         The grouped sum of a boolean ``pdarray`` returns integers.
         """
         return self.aggregate(values, "sum", skipna)
     
-    def prod(self, values, skipna=True):
+    def prod(self, values : pdarray, skipna : bool=True) \
+                          -> Tuple[List[Union[pdarray,Strings]],pdarray]:
         """
-        Using the permutation stored in the GroupBy instance, group another array 
-        of values and compute the product of each group's values. 
+        Using the permutation stored in the GroupBy instance, group
+        another array of values and compute the product of each group's 
+        values. 
 
         Parameters
         ----------
@@ -250,16 +278,26 @@ class GroupBy:
         group_products : pdarray, float64
             One product per unique key in the GroupBy instance
 
+        Raises
+        ------
+        TypeError
+            Raised if the values array is not a pdarray object
+        ValueError
+            Raised if the key array size does not match the values size
+            or if the operator is not in the GroupBy.Reductions array
+
         Notes
         -----
         The return dtype is always float64.
         """
         return self.aggregate(values, "prod", skipna)
     
-    def mean(self, values, skipna=True):
+    def mean(self, values : pdarray, skipna : bool=True) \
+                         -> Tuple[List[Union[pdarray,Strings]],pdarray]:
         """
-        Using the permutation stored in the GroupBy instance, group another array 
-        of values and compute the mean of each group's values. 
+        Using the permutation stored in the GroupBy instance, group 
+        another array of values and compute the mean of each group's 
+        values. 
 
         Parameters
         ----------
@@ -273,16 +311,26 @@ class GroupBy:
         group_means : pdarray, float64
             One mean value per unique key in the GroupBy instance
 
+        Raises
+        ------
+        TypeError
+            Raised if the values array is not a pdarray object
+        ValueError
+            Raised if the key array size does not match the values size
+            or if the operator is not in the GroupBy.Reductions array
+
         Notes
         -----
         The return dtype is always float64.
         """
         return self.aggregate(values, "mean", skipna)
     
-    def min(self, values, skipna=True):
+    def min(self, values : pdarray, skipna : bool=True) \
+                         -> Tuple[List[Union[pdarray,Strings]],pdarray]:
         """
-        Using the permutation stored in the GroupBy instance, group another array 
-        of values and return the minimum of each group's values. 
+        Using the permutation stored in the GroupBy instance, group 
+        another array of values and return the minimum of each group's 
+        values. 
 
         Parameters
         ----------
@@ -296,13 +344,23 @@ class GroupBy:
         group_minima : pdarray
             One minimum per unique key in the GroupBy instance
 
+        Raises
+        ------
+        TypeError
+            Raised if the values array is not a pdarray object
+        ValueError
+            Raised if the key array size does not match the values size
+            or if the operator is not in the GroupBy.Reductions array
+
         """
         return self.aggregate(values, "min", skipna)
     
-    def max(self, values, skipna=True):
+    def max(self, values : pdarray, skipna : bool=True) \
+                         -> Tuple[List[Union[pdarray,Strings]],pdarray]:
         """
-        Using the permutation stored in the GroupBy instance, group another array 
-        of values and return the maximum of each group's values. 
+        Using the permutation stored in the GroupBy instance, group
+        another array of values and return the maximum of each 
+        group's values. 
 
         Parameters
         ----------
@@ -316,13 +374,23 @@ class GroupBy:
         group_maxima : pdarray
             One maximum per unique key in the GroupBy instance
 
+        Raises
+        ------
+        TypeError
+            Raised if the values array is not a pdarray object
+        ValueError
+            Raised if the key array size does not match the values size or
+            if the operator is not in the GroupBy.Reductions array
+
         """
         return self.aggregate(values, "max", skipna)
     
-    def argmin(self, values):
+    def argmin(self, values : pdarray) \
+                            -> Tuple[List[Union[pdarray,Strings]],pdarray]:
         """
-        Using the permutation stored in the GroupBy instance, group another array 
-        of values and return the location of the first minimum of each group's values. 
+        Using the permutation stored in the GroupBy instance, group   
+        another array of values and return the location of the first 
+        minimum of each group's values. 
 
         Parameters
         ----------
@@ -336,10 +404,19 @@ class GroupBy:
         group_argminima : pdarray, int64
             One index per unique key in the GroupBy instance
 
+        Raises
+        ------
+        TypeError
+            Raised if the values array is not a pdarray object
+        ValueError
+            Raised if the key array size does not match the values
+            size or if the operator is not in the GroupBy.Reductions 
+            array
+
         Notes
         -----
-        The returned indices refer to the original values array as passed in, not
-        the permutation applied by the GroupBy instance.
+        The returned indices refer to the original values array as
+        passed in, not the permutation applied by the GroupBy instance.
 
         Examples
         --------
@@ -351,10 +428,12 @@ class GroupBy:
         """
         return self.aggregate(values, "argmin")
     
-    def argmax(self, values):
+    def argmax(self, values : pdarray)\
+                          -> Tuple[List[Union[pdarray,Strings]],pdarray]:
         """
-        Using the permutation stored in the GroupBy instance, group another array 
-        of values and return the location of the first maximum of each group's values. 
+        Using the permutation stored in the GroupBy instance, group   
+        another array of values and return the location of the first 
+        maximum of each group's values. 
 
         Parameters
         ----------
@@ -368,10 +447,18 @@ class GroupBy:
         group_argmaxima : pdarray, int64
             One index per unique key in the GroupBy instance
 
+        Raises
+        ------
+        TypeError
+            Raised if the values array is not a pdarray object
+        ValueError
+            Raised if the key array size does not match the values size or
+            if the operator is not in the GroupBy.Reductions array
+
         Notes
         -----
-        The returned indices refer to the original values array as passed in, not
-        the permutation applied by the GroupBy instance.
+        The returned indices refer to the original values array as passed in,
+        not the permutation applied by the GroupBy instance.
 
         Examples
         --------
@@ -383,10 +470,11 @@ class GroupBy:
         """
         return self.aggregate(values, "argmax")
     
-    def nunique(self, values):
+    def nunique(self, values : pdarray) \
+                               -> Tuple[List[Union[pdarray,Strings]],pdarray]:
         """
-        Using the permutation stored in the GroupBy instance, group another array 
-        of values and return the number of unique values in each group. 
+        Using the permutation stored in the GroupBy instance, group another
+        array of values and return the number of unique values in each group. 
 
         Parameters
         ----------
@@ -399,13 +487,22 @@ class GroupBy:
             The unique keys, in grouped order
         group_nunique : pdarray, int64
             Number of unique values per unique key in the GroupBy instance
+            
+        Raises
+        ------
+        TypeError
+            Raised if the values array is not a pdarray object
+        ValueError
+            Raised if the key array size does not match the values size or
+            if the operator is not in the GroupBy.Reductions array
         """
         return self.aggregate(values, "nunique")
     
-    def any(self, values):
+    def any(self, values : pdarray) \
+                               -> Tuple[List[Union[pdarray,Strings]],pdarray]:
         """
-        Using the permutation stored in the GroupBy instance, group another array 
-        of values and perform an "or" reduction on each group. 
+        Using the permutation stored in the GroupBy instance, group another 
+        array of values and perform an "or" reduction on each group. 
 
         Parameters
         ----------
@@ -418,13 +515,23 @@ class GroupBy:
             The unique keys, in grouped order
         group_any : pdarray, bool
             One bool per unique key in the GroupBy instance
+            
+        Raises
+        ------
+        TypeError
+            Raised if the values array is not a pdarray object
+        ValueError
+            Raised if the key array size does not match the values size or
+            if the operator is not in the GroupBy.Reductions array
         """
         return self.aggregate(values, "any")
     
-    def all(self, values):
+    def all(self, values : pdarray) \
+                          -> Tuple[List[Union[pdarray,Strings]],pdarray]:
         """
-        Using the permutation stored in the GroupBy instance, group another array 
-        of values and perform an "and" reduction on each group. 
+        Using the permutation stored in the GroupBy instance, group  
+        another array of values and perform an "and" reduction on 
+        each group. 
 
         Parameters
         ----------
@@ -437,10 +544,18 @@ class GroupBy:
             The unique keys, in grouped order
         group_any : pdarray, bool
             One bool per unique key in the GroupBy instance
+            
+        Raises
+        ------
+        TypeError
+            Raised if the values array is not a pdarray object
+        ValueError
+            Raised if the key array size does not match the values size or
+            if the operator is not in the GroupBy.Reductions array
         """
         return self.aggregate(values, "all")
 
-    def broadcast(self, values):
+    def broadcast(self, values : pdarray) -> pdarray:
         """
         Fill each group's segment with a constant value.
 
@@ -453,6 +568,14 @@ class GroupBy:
         -------
         pdarray
             The broadcast values
+            
+        Raises
+        ------
+        TypeError
+            Raised if value is not a pdarray object
+        ValueError
+            Raised if the values array does not have one 
+            value per segment
 
         Notes
         -----
@@ -482,7 +605,7 @@ class GroupBy:
         """
 
         if not isinstance(values, pdarray):
-            raise ValueError("Vals must be pdarray")
+            raise TypeError("Vals must be pdarray")
         if values.size != self.segments.size:
             raise ValueError("Must have one value per segment")
         temp = zeros(self.size, values.dtype)

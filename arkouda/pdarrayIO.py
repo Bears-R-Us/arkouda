@@ -9,8 +9,8 @@ __all__ = ["ls_hdf", "read_hdf", "read_all", "load", "get_datasets",
 
 def ls_hdf(filename : str) -> str:
     """
-    This function calls the h5ls utility on a filename visible to the arkouda
-    server.
+    This function calls the h5ls utility on a filename visible to the
+    arkouda server.
 
     Parameters
     ----------
@@ -62,7 +62,8 @@ def read_hdf(dsetName : str, filenames : Union[str,List[str]]) \
     if isinstance(filenames, str):
         filenames = [filenames]
     if not isinstance(dsetName, str):
-        raise TypeError("Datset name must be a str, not {}".format(type(dsetName)))
+        raise TypeError("Datset name must be a str, not {}".\
+                        format(type(dsetName)))
     # rep_msg = generic_msg("readhdf {} {:n} {}".format(dsetName, len(filenames), json.dumps(filenames)))
     # # This is a hack to detect a string return type
     # # In the future, we should put the number and type into the return message
@@ -114,8 +115,8 @@ def read_all(filenames : Union[str,List[str]], datasets :
     string.
 
     If datasets is None, infer the names of datasets from the first file
-    and read all of them. Use ``get_datasets`` to show the names of datasets in
-    HDF5 files.
+    and read all of them. Use ``get_datasets`` to show the names of datasets
+    to HDF5 files.
     """
     if isinstance(filenames, str):
         filenames = [filenames]
@@ -219,7 +220,8 @@ def load_all(path_prefix : str) -> Mapping[str,pdarray]:
     """
     prefix, extension = os.path.splitext(path_prefix)
     firstname = "{}_LOCALE0{}".format(prefix, extension)
-    return {dataset: load(path_prefix, dataset=dataset) for dataset in get_datasets(firstname)}
+    return {dataset: load(path_prefix, dataset=dataset) \
+                                       for dataset in get_datasets(firstname)}
 
 def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : str, 
              names : List[str]=None, mode : str='truncate') -> None:

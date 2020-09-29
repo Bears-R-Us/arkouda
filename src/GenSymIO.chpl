@@ -1,6 +1,7 @@
 module GenSymIO {
     use HDF5;
     use IO;
+    use CPtr;
     use Path;
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -507,54 +508,72 @@ module GenSymIO {
         a += corrections;
     }
 
-    /* Get the class of the HDF5 datatype for the dataset. */
+    /* 
+     * Retrieves the datatype of the dataset read from HDF5 
+     */
     proc get_dtype(filename: string, dsetName: string) throws {
         const READABLE = (S_IRUSR | S_IRGRP | S_IROTH);
+
         if !exists(filename) {
             throw new owned FileNotFoundError();
         }
+
         if !(getMode(filename) & READABLE) {
             throw new owned PermissionError();
         }
-        var file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, C_HDF5.H5P_DEFAULT);
+
+        var file_id = C_HDF5.H5Fopen(filename.c_str(), 
+                                         C_HDF5.H5F_ACC_RDONLY, C_HDF5.H5P_DEFAULT);
+
         if file_id < 0 { // HF5open returns negative value on failure
+            C_HDF5.H5Fclose(file_id);
             throw new owned NotHDF5FileError();
         }
+
         if !C_HDF5.H5Lexists(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT) {
+            C_HDF5.H5Fclose(file_id);
             throw new owned DatasetNotFoundError();
         }
+
         var dataclass: C_HDF5.H5T_class_t;
         var bytesize: int;
         var isSigned: bool;
         var isSegArray: bool;
 
         try {
-            (dataclass, bytesize, isSigned) = get_dataset_info(file_id, dsetName);
-            isSegArray = false;
-        } catch e:DatasetNotFoundError {
-            var group_id = C_HDF5.H5Gopen2(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT);
-            if (group_id < 0) {
-                try! writeln("The dataset is neither at the root of the HDF5 file nor within a group");
-                throw new owned SegArrayError();
+            if isDatasetWithinGroup(file_id, dsetName) {
+                var offsetDset = dsetName + "/" + SEGARRAY_OFFSET_NAME;
+                var (offsetClass, offsetByteSize, offsetSign) = 
+                                           try get_dataset_info(file_id, offsetDset);
+                if (offsetClass != C_HDF5.H5T_INTEGER) {
+                    throw new owned SegArrayError();
+                }
+                var valueDset = dsetName + "/" + SEGARRAY_VALUE_NAME;
+                try (dataclass, bytesize, isSigned) = 
+                                           try get_dataset_info(file_id, valueDset);
+                isSegArray = true;
+            } else {
+                (dataclass, bytesize, isSigned) = get_dataset_info(file_id, dsetName);
+                isSegArray = false;
             }
-            C_HDF5.H5Gclose(group_id);
-            var offsetDset = dsetName + "/" + SEGARRAY_OFFSET_NAME;
-            var valueDset = dsetName + "/" + SEGARRAY_VALUE_NAME;
-            var (offsetClass, offsetByteSize, offsetSign) = try get_dataset_info(file_id, offsetDset);
-            if (offsetClass != C_HDF5.H5T_INTEGER) {
-                throw new owned SegArrayError();
+            defer {
+                C_HDF5.H5Fclose(file_id);
             }
-            try (dataclass, bytesize, isSigned) = get_dataset_info(file_id, valueDset);
-            isSegArray = true;
         } catch e {
+            //:TODO: recommend revisiting this catch block 
             throw e;
         }
-        C_HDF5.H5Fclose(file_id);
         return (isSegArray, dataclass, bytesize, isSigned);
     }
 
+    /*
+     * Returns a tuple containing the data type, data class, and a 
+     * boolean indicating whether the datatype is signed for the 
+     * supplied file id and dataset name.
+     */
     proc get_dataset_info(file_id, dsetName) throws {
-        var dset = C_HDF5.H5Dopen(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT);
+        var dset = C_HDF5.H5Dopen(file_id, dsetName.c_str(),
+                                                   C_HDF5.H5P_DEFAULT);
         if (dset < 0) {
             throw new owned DatasetNotFoundError();
         }
@@ -574,6 +593,24 @@ module GenSymIO {
     }
 
     /*
+     * Returns a boolean indicating whether the dataset is within an 
+     * hdf5 group. If false, the dataset is written at the root level
+     * of the hdf5 file.
+     */
+    proc isDatasetWithinGroup(file_id: int, dsetName: string): bool throws {
+        try {
+            var group_id = C_HDF5.H5Gopen2(file_id, dsetName.c_str(), 
+                              C_HDF5.H5P_DEFAULT);
+            if group_id > -1 {
+                C_HDF5.H5Gclose(group_id);
+            }
+            return group_id > -1;
+        } catch e:Error {
+            throw e;
+        }
+    }
+
+    /*
      *  Get the subdomains of the distributed array represented by each file, 
      *  as well as the total length of the array. 
      */
@@ -582,7 +619,8 @@ module GenSymIO {
 
         var lengths: [FD] int;
         for (i, filename) in zip(FD, filenames) {
-            var file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, C_HDF5.H5P_DEFAULT);
+            var file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, 
+                                           C_HDF5.H5P_DEFAULT);
             var dims: [0..#1] C_HDF5.hsize_t; // Only rank 1 for now
 //      var dsetRank: c_int;
 //      // Verify 1D array

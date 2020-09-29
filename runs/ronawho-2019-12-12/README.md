@@ -1,7 +1,7 @@
 Arkouda scalability runs
 
 Benchmarks run on up to 512 nodes of a Cray-XC with Aries and 32 nodes of a
-Cray-CS With FDR InfiniBand. Per node hardware is similar. Using Arkouda master
+Cray-CS With FDR InfiniBand. Per node hardware is similar. Using Arkouda
 from 12/12/19: https://github.com/mhmerrill/arkouda/commit/da0a124
 
 Ran stream.py, argsort.py, gather.py, scatter.py, scan.py, and reduce.py. The

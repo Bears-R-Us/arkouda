@@ -67,6 +67,7 @@ module KReduce {
     }
 
     proc generate() {
+      if !v.isSorted then v.doSort();
       return v;
     }
 
