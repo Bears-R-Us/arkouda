@@ -1,4 +1,3 @@
-from typing import List
 from arkouda.strings import Strings
 from arkouda.pdarrayclass import pdarray
 from arkouda.groupbyclass import GroupBy
@@ -159,7 +158,7 @@ class Categorical:
     def __repr__(self):
         return "array({})".format(self.__str__())
 
-    def binop(self, other : 'Categorical', op : str) -> pdarray:
+    def _binop(self, other : 'Categorical', op : str) -> pdarray:
         """
         Executes the requested binop on this Categorical instance and returns 
         the results within a pdarray object.
@@ -189,7 +188,7 @@ class Categorical:
             raise NotImplementedError("Categorical: unsupported operator: {}".\
                                       format(op))
         if np.isscalar(other) and resolve_scalar_dtype(other) == "str":
-            idxresult = self.categories.binop(other, op)
+            idxresult = self.categories._binop(other, op)
             return idxresult[self.codes]
         if self.size != other.size:
             raise ValueError("Categorical {}: size mismatch {} {}".\
@@ -205,7 +204,7 @@ class Categorical:
                                 "non-Categorical not yet implemented. " +
                                 "Consider converting operands to Categorical."))
 
-    def r_binop(self, other : 'Categorical', op : str) -> pdarray:
+    def _r_binop(self, other : 'Categorical', op : str) -> pdarray:
         """
         Executes the requested reverse binop on this Categorical instance and 
         returns the results within a pdarray object.
@@ -231,13 +230,13 @@ class Categorical:
             Raised if a server-side error is thrown while executing the
             binary operation
         """
-        return self.binop(other, op)
+        return self._binop(other, op)
 
     def __eq__(self, other):
-        return self.binop(other, "==")
+        return self._binop(other, "==")
 
     def __neq__(self, other):
-        return self.binop(other, "!=")
+        return self._binop(other, "!=")
 
     def __getitem__(self, key) -> 'Categorical':
         if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':

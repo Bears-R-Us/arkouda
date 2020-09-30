@@ -109,7 +109,7 @@ class Strings:
     def __repr__(self) -> str:
         return "array({})".format(self.__str__())
 
-    def binop(self, other : 'Strings', op : str) -> pdarray:
+    def _binop(self, other : 'Strings', op : str) -> pdarray:
         """
         Executes the requested binop on this Strings instance and the
         parameter Strings object and returns the results within
@@ -164,10 +164,10 @@ class Strings:
         return create_pdarray(repMsg)
 
     def __eq__(self, other) -> bool:
-        return self.binop(other, "==")
+        return self._binop(other, "==")
 
     def __ne__(self, other : object) -> bool:
-        return self.binop(other, "!=")
+        return self._binop(other, "!=")
 
     def __getitem__(self, key):
         if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':

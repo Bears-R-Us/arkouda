@@ -1,4 +1,4 @@
-from typing import Tuple, Type, Union
+from typing import Tuple, Union
 import json, struct
 import numpy as np
 from arkouda.client import generic_msg, verbose, maxTransferBytes, pdarrayIterThresh
@@ -140,7 +140,7 @@ class pdarray:
         return fmt.format(other)
 
     # binary operators
-    def binop(self, other : 'pdarray', op : str) -> 'pdarray':
+    def _binop(self, other : 'pdarray', op : str) -> 'pdarray':
         """
         Executes binary operation specified by the op string
         
@@ -187,7 +187,7 @@ class pdarray:
 
     # reverse binary operators
     # pdarray binop pdarray: taken care of by binop function
-    def r_binop(self, other : 'pdarray', op : str) -> 'pdarray':
+    def _r_binop(self, other : 'pdarray', op : str) -> 'pdarray':
         """
         Executes reverse binary operation specified by the op string
         
@@ -227,115 +227,115 @@ class pdarray:
 
     # overload + for pdarray, other can be {pdarray, int, float}
     def __add__(self, other):
-        return self.binop(other, "+")
+        return self._binop(other, "+")
 
     def __radd__(self, other):
-        return self.r_binop(other, "+")
+        return self._r_binop(other, "+")
 
     # overload - for pdarray, other can be {pdarray, int, float}
     def __sub__(self, other):
-        return self.binop(other, "-")
+        return self._binop(other, "-")
 
     def __rsub__(self, other):
-        return self.r_binop(other, "-")
+        return self._r_binop(other, "-")
 
     # overload * for pdarray, other can be {pdarray, int, float}
     def __mul__(self, other):
-        return self.binop(other, "*")
+        return self._binop(other, "*")
 
     def __rmul__(self, other):
-        return self.r_binop(other, "*")
+        return self._r_binop(other, "*")
 
     # overload / for pdarray, other can be {pdarray, int, float}
     def __truediv__(self, other):
-        return self.binop(other, "/")
+        return self._binop(other, "/")
 
     def __rtruediv__(self, other):
-        return self.r_binop(other, "/")
+        return self._r_binop(other, "/")
 
     # overload // for pdarray, other can be {pdarray, int, float}
     def __floordiv__(self, other):
-        return self.binop(other, "//")
+        return self._binop(other, "//")
 
     def __rfloordiv__(self, other):
-        return self.r_binop(other, "//")
+        return self._r_binop(other, "//")
 
     def __mod__(self, other):
-        return self.binop(other, "%")
+        return self._binop(other, "%")
 
     def __rmod__(self, other):
-        return self.r_binop(other, "%")
+        return self._r_binop(other, "%")
 
     # overload << for pdarray, other can be {pdarray, int}
     def __lshift__(self, other):
-        return self.binop(other, "<<")
+        return self._binop(other, "<<")
 
     def __rlshift__(self, other):
-        return self.r_binop(other, "<<")
+        return self._r_binop(other, "<<")
 
     # overload >> for pdarray, other can be {pdarray, int}
     def __rshift__(self, other):
-        return self.binop(other, ">>")
+        return self._binop(other, ">>")
 
     def __rrshift__(self, other):
-        return self.r_binop(other, ">>")
+        return self._r_binop(other, ">>")
 
     # overload & for pdarray, other can be {pdarray, int}
     def __and__(self, other):
-        return self.binop(other, "&")
+        return self._binop(other, "&")
 
     def __rand__(self, other):
-        return self.r_binop(other, "&")
+        return self._r_binop(other, "&")
 
     # overload | for pdarray, other can be {pdarray, int}
     def __or__(self, other):
-        return self.binop(other, "|")
+        return self._binop(other, "|")
 
     def __ror__(self, other):
-        return self.r_binop(other, "|")
+        return self._r_binop(other, "|")
 
     # overload | for pdarray, other can be {pdarray, int}
     def __xor__(self, other):
-        return self.binop(other, "^")
+        return self._binop(other, "^")
 
     def __rxor__(self, other):
-        return self.r_binop(other, "^")
+        return self._r_binop(other, "^")
 
     def __pow__(self,other):
-        return self.binop(other,"**")
+        return self._binop(other,"**")
 
     def __rpow__(self,other):
-        return self.r_binop(other,"**")
+        return self._r_binop(other,"**")
 
     # overloaded comparison operators
     def __lt__(self, other):
-        return self.binop(other, "<")
+        return self._binop(other, "<")
 
     def __gt__(self, other):
-        return self.binop(other, ">")
+        return self._binop(other, ">")
 
     def __le__(self, other):
-        return self.binop(other, "<=")
+        return self._binop(other, "<=")
 
     def __ge__(self, other):
-        return self.binop(other, ">=")
+        return self._binop(other, ">=")
 
     def __eq__(self, other):
-        return self.binop(other, "==")
+        return self._binop(other, "==")
 
     def __ne__(self, other):
-        return self.binop(other, "!=")
+        return self._binop(other, "!=")
 
     # overload unary- for pdarray implemented as pdarray*(-1)
     def __neg__(self):
-        return self.binop(-1, "*")
+        return self._binop(-1, "*")
 
     # overload unary~ for pdarray implemented as pdarray^(~0)
     def __invert__(self):
         if self.dtype == int64:
-            return self.binop(~0, "^")
+            return self._binop(~0, "^")
         if self.dtype == bool:
-            return self.binop(True, "^")
+            return self._binop(True, "^")
         raise TypeError("Unhandled dtype: {} ({})".format(self, self.dtype))
 
     # op= operators
@@ -511,38 +511,38 @@ class pdarray:
         """
         return is_sorted(self)
 
-    def sum(self) -> float:
+    def sum(self) -> Union[np.float64,np.int64]:
         """
         Return the sum of all elements in the array.
         """
         return sum(self)
 
-    def prod(self) -> float:
+    def prod(self) -> Union[np.float64,np.int64]:
         """
         Return the product of all elements in the array. Return value is
         always a float.
         """
         return prod(self)
 
-    def min(self) -> float:
+    def min(self) -> Union[np.float64,np.int64]:
         """
         Return the minimum value of the array.
         """
         return min(self)
 
-    def max(self) -> float:
+    def max(self) -> Union[np.float64,np.int64]:
         """
         Return the maximum value of the array.
         """
         return max(self)
 
-    def argmin(self) -> float:
+    def argmin(self) -> np.int64:
         """
-        Return the index of the first minimum value of the array.
+        Return the max of the first minimum value of the array.
         """
         return argmin(self)
 
-    def argmax(self) -> float:
+    def argmax(self) -> np.int64:
         """
         Return the index of the first maximum value of the array.
         """
@@ -899,14 +899,14 @@ class pdarray:
 #   only after:
 #       all values have been checked by python module and...
 #       server has created pdarray already befroe this is called
-def create_pdarray(reqMsg : str) -> 'pdarray':
+def create_pdarray(repMsg : str) -> 'pdarray':
     """
     Return a pdarray instance pointing to an array created by the arkouda server.
     The user should not call this function directly.
 
     Parameters
     ----------
-    reqMsg : str
+    repMsg : str
         space-delimited string containing the pdarray name, datatype, size
         dimension, shape,and itemsize
 
@@ -918,14 +918,14 @@ def create_pdarray(reqMsg : str) -> 'pdarray':
     Raises
 -   -----
     ValueError
-        If there's an error in parsing the reqMsg parameter into the six 
+        If there's an error in parsing the repMsg parameter into the six 
         values needed to create the pdarray instance
     RuntimeError
         Raised if a server-side error is thrown in the process of creating
         the pdarray instance
     """
     try:
-        fields = reqMsg.split()
+        fields = repMsg.split()
         name = fields[1]
         mydtype = fields[2]
         size = int(fields[3])
@@ -1103,7 +1103,7 @@ def prod(pda : 'pdarray') -> float:
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def min(pda : 'pdarray') -> float:
+def min(pda : 'pdarray') -> Union[np.float64,np.int64]:
     """
     Return the minimum value of the array.
     
@@ -1130,7 +1130,7 @@ def min(pda : 'pdarray') -> float:
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def max(pda : 'pdarray') -> float:
+def max(pda : 'pdarray') -> Union[float64,int64]:
     """
     Return the maximum value of the array.
     
@@ -1141,7 +1141,7 @@ def max(pda : 'pdarray') -> float:
 
     Returns
     -------
-    float
+    Union[float64,int64]:
         The max calculated from the pda
        
     Raises
@@ -1157,7 +1157,7 @@ def max(pda : 'pdarray') -> float:
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def argmin(pda : 'pdarray') -> float:
+def argmin(pda : 'pdarray') -> np.int64:
     """
     Return the index of the first minimum value of the array.
 
@@ -1168,8 +1168,8 @@ def argmin(pda : 'pdarray') -> float:
 
     Returns
     -------
-    float
-        The argmin calculated from the pda
+    np.int64
+        The index of the argmin calculated from the pda
         
     Raises
     ------
@@ -1184,7 +1184,7 @@ def argmin(pda : 'pdarray') -> float:
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def argmax(pda : 'pdarray') -> float:
+def argmax(pda : 'pdarray') -> np.int64:
     """
     Return the index of the first maximum value of the array.
     
@@ -1195,8 +1195,8 @@ def argmax(pda : 'pdarray') -> float:
 
     Returns
     -------
-    float
-        The argmax calculated from the pda
+    np.int64
+        The index of the argmax calculated from the pda
 
     Raises
     ------
