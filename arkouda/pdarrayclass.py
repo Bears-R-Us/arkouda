@@ -1222,7 +1222,7 @@ def mean(pda : 'pdarray') -> np.float64:
 
     Returns
     -------
-    float
+    np.float64
         The mean calculated from the pda sum and size
 
     Raises
