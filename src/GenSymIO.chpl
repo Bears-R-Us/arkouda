@@ -598,16 +598,18 @@ module GenSymIO {
      * of the hdf5 file.
      */
     proc isDatasetWithinGroup(file_id: int, dsetName: string): bool throws {
+        var group_id: int;
         try {
-            var group_id = C_HDF5.H5Gopen2(file_id, dsetName.c_str(), 
+            group_id = C_HDF5.H5Gopen2(file_id, dsetName.c_str(), 
                               C_HDF5.H5P_DEFAULT);
-            if group_id > -1 {
+
+            if group_id > 0 {
                 C_HDF5.H5Gclose(group_id);
             }
-            return group_id > -1;
-        } catch e:Error {
-            throw e;
+        } catch e: Error {
+            //noop until code change to check for group vs dataset
         }
+        return group_id > 0;
     }
 
     /*
