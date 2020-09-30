@@ -520,7 +520,7 @@ class pdarray:
     def prod(self) -> Union[np.float64,np.int64]:
         """
         Return the product of all elements in the array. Return value is
-        always a float.
+        always a np.float64 or np.int64.
         """
         return prod(self)
 
@@ -548,13 +548,13 @@ class pdarray:
         """
         return argmax(self)
 
-    def mean(self) -> float:
+    def mean(self) -> np.float64:
         """
         Return the mean of the array.
         """
         return mean(self)
 
-    def var(self, ddof : int=0) -> float:
+    def var(self, ddof : int=0) -> np.float64:
         """
         Compute the variance. See ``arkouda.var`` for details.
         
@@ -565,7 +565,7 @@ class pdarray:
 
         Returns
         -------
-        float
+        np.float64
             The scalar variance of the array
 
         Raises
@@ -580,7 +580,7 @@ class pdarray:
         """
         return var(self, ddof=ddof)
 
-    def std(self, ddof : int=0) -> float:
+    def std(self, ddof : int=0) -> np.float64:
         """
         Compute the standard deviation. See ``arkouda.std`` for details.
         
@@ -591,7 +591,7 @@ class pdarray:
 
         Returns
         -------
-        float
+        np.float64
             The scalar standard deviation of the array
 
         Raises
@@ -1048,7 +1048,7 @@ def is_sorted(pda : 'pdarray') -> bool:
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def sum(pda : 'pdarray') -> float:
+def sum(pda : 'pdarray') -> np.float64:
     """
     Return the sum of all elements in the array.
 
@@ -1059,7 +1059,7 @@ def sum(pda : 'pdarray') -> float:
     
     Returns
     -------
-    float
+    np.float64
         The sum of all elements in the array
         
     Raises
@@ -1075,10 +1075,10 @@ def sum(pda : 'pdarray') -> float:
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def prod(pda : 'pdarray') -> float:
+def prod(pda : 'pdarray') -> Union[np.float64,np.int64]:
     """
     Return the product of all elements in the array. Return value is
-    always a float.
+    always a np.float64 or np.int64
     
     Parameters
     ----------
@@ -1087,7 +1087,7 @@ def prod(pda : 'pdarray') -> float:
 
     Returns
     -------
-    float
+    Union[np.float64,np.int64]
         The product calculated from the pda
         
     Raises
@@ -1114,7 +1114,7 @@ def min(pda : 'pdarray') -> Union[np.float64,np.int64]:
 
     Returns
     -------
-    float
+    Union[np.float64,np.int64]
         The min calculated from the pda
         
     Raises
@@ -1130,7 +1130,7 @@ def min(pda : 'pdarray') -> Union[np.float64,np.int64]:
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def max(pda : 'pdarray') -> Union[float64,int64]:
+def max(pda : 'pdarray') -> Union[np.float64,np.int64]:
     """
     Return the maximum value of the array.
     
@@ -1141,7 +1141,7 @@ def max(pda : 'pdarray') -> Union[float64,int64]:
 
     Returns
     -------
-    Union[float64,int64]:
+    Union[np.float64,np.int64]:
         The max calculated from the pda
        
     Raises
@@ -1211,7 +1211,7 @@ def argmax(pda : 'pdarray') -> np.int64:
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def mean(pda : 'pdarray') -> float:
+def mean(pda : 'pdarray') -> np.float64:
     """
     Return the mean of the array.
     
@@ -1234,7 +1234,7 @@ def mean(pda : 'pdarray') -> float:
     """
     return pda.sum() / pda.size
 
-def var(pda : 'pdarray', ddof : int=0) -> float:
+def var(pda : 'pdarray', ddof : int=0) -> np.float64:
     """
     Return the variance of values in the array.
 
@@ -1247,7 +1247,7 @@ def var(pda : 'pdarray', ddof : int=0) -> float:
 
     Returns
     -------
-    float
+    np.float64
         The scalar variance of the array
 
     Raises
@@ -1282,7 +1282,7 @@ def var(pda : 'pdarray', ddof : int=0) -> float:
     m = mean(pda)
     return ((pda - m)**2).sum() / (pda.size - ddof)
 
-def std(pda : 'pdarray', ddof : int=0) -> float:
+def std(pda : 'pdarray', ddof : int=0) -> np.float64:
     """
     Return the standard deviation of values in the array. The standard
     deviation is implemented as the square root of the variance.
@@ -1296,7 +1296,7 @@ def std(pda : 'pdarray', ddof : int=0) -> float:
 
     Returns
     -------
-    float
+    np.float64
         The scalar standard deviation of the array
 
     Raises
