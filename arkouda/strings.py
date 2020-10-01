@@ -733,7 +733,7 @@ class Strings:
 
         See Also
         --------
-        pdarrayIO.save_all
+        pdarrayIO.save
 
         Notes
         -----

@@ -517,7 +517,7 @@ class pdarray:
         """
         return sum(self)
 
-    def prod(self) -> Union[np.float64,np.int64]:
+    def prod(self) -> np.float64:
         """
         Return the product of all elements in the array. Return value is
         always a np.float64 or np.int64.
@@ -690,7 +690,7 @@ class pdarray:
         return argmaxk(self,k)
 
     
-    def to_ndarray(self) -> np.array:
+    def to_ndarray(self) -> np.ndarray:
         """
         Convert the array to a np.ndarray, transferring array data from the
         Arkouda server to client-side Python. Note: if the pdarray size exceeds 
@@ -1075,7 +1075,7 @@ def sum(pda : 'pdarray') -> np.float64:
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def prod(pda : 'pdarray') -> Union[np.float64,np.int64]:
+def prod(pda : 'pdarray') -> np.float64:
     """
     Return the product of all elements in the array. Return value is
     always a np.float64 or np.int64
