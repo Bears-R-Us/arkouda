@@ -22,6 +22,7 @@ int64 = np.int64
 float64 = np.float64
 uint8 = np.uint8
 str_ = np.str_
+str = np.str
 DTypes = frozenset(["bool", "int64", "float64", "uint8", "str"])
 
 def check_np_dtype(dt : np.dtype) -> None:

@@ -65,5 +65,5 @@ class DtypesTest(ArkoudaTest):
         
     def test_pdarrays_datatypes(self):
         self.assertEqual(dtypes.dtype('float64'), ak.ones(10).dtype)
-        self.assertEqual(dtypes.dtype('str_'), 
+        self.assertEqual(dtypes.dtype('str'), 
                          ak.array(['string {}'.format(i) for i in range(0,10)]).dtype)

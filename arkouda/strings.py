@@ -92,7 +92,7 @@ class Strings:
             self.shape = self.offsets.shape
         except Exception as e:
             raise ValueError(e)   
-        self.dtype = np.str_
+        self.dtype = np.str
 
     def __iter__(self):
         raise NotImplementedError('Strings does not support iteration')
