@@ -33,7 +33,7 @@ class Strings:
     shape : tuple
         The sizes of each dimension of the array
     dtype : dtype
-        The dtype is np.str_
+        The dtype is np.str
         
     Notes
     -----
