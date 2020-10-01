@@ -22,8 +22,7 @@ module CommAggregation {
 
   /* Creates a new source aggregator (src/rhs will be remote). */
   proc newSrcAggregator(type elemType, param useUnorderedCopy=false) {
-    // SrcAggregator is not currently optimized for ugni
-    if CHPL_COMM == "none" || CHPL_COMM =="ugni" || useUnorderedCopy {
+    if CHPL_COMM == "none" || useUnorderedCopy {
       return new SrcUnorderedAggregator(elemType);
     } else {
       return new SrcAggregator(elemType);
@@ -312,7 +311,6 @@ module CommAggregation {
         assert(lArr.domain.low == 0);
         assert(lArr.locale.id == here.id);
       }
-      // TODO align up to 8-byte boundary to avoid misaligned comm perf hit
       const byte_size = size:size_t * c_sizeof(elemType);
       CommPrimitives.PUT(c_ptrTo(lArr[0]), loc, data, byte_size);
     }
@@ -324,7 +322,6 @@ module CommAggregation {
         assert(lArr.domain.low == 0);
         assert(lArr.locale.id == here.id);
       }
-      // TODO align up to 8-byte boundary to avoid misaligned comm perf hit
       const byte_size = size:size_t * c_sizeof(elemType);
       CommPrimitives.GET(c_ptrTo(lArr[0]), loc, data, byte_size);
     }
