@@ -105,6 +105,11 @@ ifneq ($(CHPL_VERSION_OK),yes)
 	$(error Chapel 1.22.0 or newer is required)
 endif
 
+CHPL_VERSION_122 := $(shell test $(CHPL_MINOR) -eq 22 && echo yes)
+ifeq ($(CHPL_VERSION_122),yes)
+CHPL_FLAGS += --instantiate-max 512
+endif
+
 ZMQ_CHECK = $(DEP_INSTALL_DIR)/checkZMQ.chpl
 check-zmq: $(ZMQ_CHECK)
 	@echo "Checking for ZMQ"
