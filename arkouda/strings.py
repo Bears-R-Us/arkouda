@@ -33,7 +33,7 @@ class Strings:
     shape : tuple
         The sizes of each dimension of the array
     dtype : dtype
-        The dtype derived from the bytes_attrib, which is uint8
+        The dtype is np.str_
         
     Notes
     -----
@@ -92,7 +92,7 @@ class Strings:
             self.shape = self.offsets.shape
         except Exception as e:
             raise ValueError(e)   
-        self.dtype = self.bytes.dtype
+        self.dtype = np.str_
 
     def __iter__(self):
         raise NotImplementedError('Strings does not support iteration')
