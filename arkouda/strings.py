@@ -112,7 +112,7 @@ class Strings:
     def __repr__(self) -> str:
         return "array({})".format(self.__str__())
 
-    def binop(self, other : object, op : str) -> pdarray:
+    def _binop(self, other : 'Strings', op : str) -> pdarray:
         """
         Executes the requested binop on this Strings instance and the
         parameter Strings object and returns the results within
@@ -120,8 +120,8 @@ class Strings:
 
         Parameters
         ----------
-        other : Union[Strings, str]
-            the other object is either a Strings or str object
+        other : Strings
+            the other object is a Strings object
         op : str
             name of the binary operation to be performed 
       
@@ -135,7 +135,7 @@ class Strings:
         ValueError
             Raised if (1) the op is not in the self.BinOps set, or (2) if the
             sizes of this and the other instance don't match, or (3) the other
-            object is neither a Strings nor a str object
+            object is not a Strings object
         RuntimeError
             Raised if a server-side error is thrown while executing the
             binary operation
@@ -167,10 +167,10 @@ class Strings:
         return create_pdarray(repMsg)
 
     def __eq__(self, other) -> bool:
-        return self.binop(other, "==")
+        return self._binop(other, "==")
 
     def __ne__(self, other : object) -> bool:
-        return self.binop(other, "!=")
+        return self._binop(other, "!=")
 
     def __getitem__(self, key):
         if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
@@ -494,8 +494,8 @@ class Strings:
         return self.peel(delimiter, times=times, includeDelimiter=includeDelimiter, 
                          keepPartial=keepPartial, fromRight=True)
 
-    def stick(self, other : object, delimiter : str="", 
-                                        toLeft : bool=False):
+    def stick(self, other : 'Strings', delimiter : str="", 
+                                        toLeft : bool=False) -> 'Strings':
         """
         Join the strings from another array onto one end of the strings 
         of this array, optionally inserting a delimiter.
@@ -542,22 +542,23 @@ class Strings:
             delimiter = delimiter.decode()
         if not isinstance(delimiter, str):
             raise TypeError("Delimiter must be a string, not {}".format(type(delimiter)))
-        msg = "segmentedBinopvv {} {} {} {} {} {} {} {} {}".format("stick",
-                                                             self.objtype,
-                                                             self.offsets.name,
-                                                             self.bytes.name,
-                                                             other.objtype,
-                                                             other.offsets.name,
-                                                             other.bytes.name,
-                                                             NUMBER_FORMAT_STRINGS['bool'].format(toLeft),
-                                                             json.dumps([delimiter]))
+        msg = "segmentedBinopvv {} {} {} {} {} {} {} {} {}".\
+                                    format("stick",
+                                    self.objtype,
+                                    self.offsets.name,
+                                    self.bytes.name,
+                                    other.objtype,
+                                    other.offsets.name,
+                                    other.bytes.name,
+                                    NUMBER_FORMAT_STRINGS['bool'].format(toLeft),
+                                    json.dumps([delimiter]))
         repMsg = generic_msg(msg)
         return Strings(*repMsg.split('+'))
 
-    def __add__(self, other):
+    def __add__(self, other : 'Strings') -> 'Strings':
         return self.stick(other)
     
-    def lstick(self, other : object, delimiter : str=""):
+    def lstick(self, other : 'Strings', delimiter : str="") -> 'Strings':
         """
         Join the strings from another array onto the left of the strings 
         of this array, optionally inserting a delimiter.
@@ -596,7 +597,7 @@ class Strings:
         """
         return self.stick(other, delimiter=delimiter, toLeft=True)
 
-    def __radd__(self, other : object):
+    def __radd__(self, other : 'Strings') -> 'Strings':
         return self.lstick(other)
     
     def hash(self) -> Tuple[pdarray,pdarray]:
@@ -735,7 +736,7 @@ class Strings:
 
         See Also
         --------
-        pdarrayIO.save_all
+        pdarrayIO.save
 
         Notes
         -----

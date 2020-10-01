@@ -541,7 +541,7 @@ module GenSymIO {
         var isSegArray: bool;
 
         try {
-            if isDatasetWithinGroup(file_id, dsetName) {
+            if isStringsDataset(file_id, dsetName) {
                 var offsetDset = dsetName + "/" + SEGARRAY_OFFSET_NAME;
                 var (offsetClass, offsetByteSize, offsetSign) = 
                                            try get_dataset_info(file_id, offsetDset);
@@ -593,21 +593,28 @@ module GenSymIO {
     }
 
     /*
-     * Returns a boolean indicating whether the dataset is within an 
-     * hdf5 group. If false, the dataset is written at the root level
-     * of the hdf5 file.
+     * Returns a boolean indicating whether the dataset is a Strings
+     * dataset, checking if the values dataset is embedded within a 
+     * group named after the dsetName.
      */
-    proc isDatasetWithinGroup(file_id: int, dsetName: string): bool throws {
+    proc isStringsDataset(file_id: int, dsetName: string): bool throws {
+        var groupExists = -1;
+        
         try {
-            var group_id = C_HDF5.H5Gopen2(file_id, dsetName.c_str(), 
-                              C_HDF5.H5P_DEFAULT);
-            if group_id > -1 {
-                C_HDF5.H5Gclose(group_id);
-            }
-            return group_id > -1;
-        } catch e:Error {
-            throw e;
+            // Suppress HDF5 error message that's printed even with no error
+            C_HDF5.H5Eset_auto1(nil, nil);
+            groupExists = C_HDF5.H5Oexists_by_name(file_id, 
+                  "/%s/values".format(dsetName).c_str(),C_HDF5.H5P_DEFAULT);
+                
+        } catch e: Error {
+            /*
+             * If there's an actual error, print it here. :TODO: revisit this
+             * catch block after confirming the best way to handle HDF5 error
+             */
+            writeln("THE ERROR %t".format(e));
         }
+
+        return groupExists > -1;
     }
 
     /*

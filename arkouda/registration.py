@@ -28,7 +28,7 @@ def register_pda(pda : pdarray, user_defined_name : str) -> pdarray:
     Raises
     ------
     TypeError
-        Raised if pda is neither a pdarray nor a str or if
+        Raised if pda is neither a pdarray nor a str or if 
         user_defined_name is not a str
 
     See also

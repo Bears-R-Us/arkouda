@@ -1,6 +1,4 @@
 from typing import Tuple
-import numpy as np
-
 from arkouda.client import generic_msg, verbose
 from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
@@ -27,9 +25,9 @@ def join_on_eq_with_dt(a1 : pdarray, a2 : pdarray, t1 : pdarray,
         pdarray to be joined
     a2 : pdarray, int64
         pdarray to be joined
-    t1 : int
+    t1 : pdarray
         timestamps in millis corresponding to the a1 pdarray
-    t2 : int
+    t2 : pdarray, 
         timestamps in millis corresponding to the a2 pdarray
     dt : int
         time delta

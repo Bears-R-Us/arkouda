@@ -27,6 +27,15 @@ def array(a : Union[pdarray,np.ndarray]) -> Union[pdarray, Strings]:
     pdarray or Strings
         A pdarray instance stored on arkouda server or Strings instance, which
         is composed of two pdarrays stored on arkouda server
+        
+    Raises
+    ------
+    TypeError
+        Raised if a is neither a pdarray nor a np.ndarray
+    RuntimeError
+        If a is not one-dimensional, nbytes > maxTransferBytes, a.dtype is
+        not supported (not in DTypes), or if the product of a size and
+        a.itemsize > maxTransferBytes
 
     See Also
     --------
@@ -63,7 +72,7 @@ def array(a : Union[pdarray,np.ndarray]) -> Union[pdarray, Strings]:
         try:
             a = np.array(a)
         except:
-            raise TypeError("Argument must be array-like")
+            raise TypeError("Argument must be a pdarray or np.ndarray")
     # Only rank 1 arrays currently supported
     if a.ndim != 1:
         raise RuntimeError("Only rank-1 pdarrays or ndarrays supported")
@@ -91,11 +100,13 @@ def array(a : Union[pdarray,np.ndarray]) -> Union[pdarray, Strings]:
     # Do not allow arrays that are too large
     size = a.size
     if (size * a.itemsize) > maxTransferBytes:
-        raise RuntimeError("Array exceeds allowed transfer size. Increase ak.maxTransferBytes to allow")
+        raise RuntimeError(("Array exceeds allowed transfer size. Increase " +
+                            "ak.maxTransferBytes to allow"))
     # Pack binary array data into a bytes object with a command header
     # including the dtype and size
     fmt = ">{:n}{}".format(size, structDtypeCodes[a.dtype.name])
-    req_msg = "array {} {:n} ".format(a.dtype.name, size).encode() + struct.pack(fmt, *a)
+    req_msg = "array {} {:n} ".\
+                       format(a.dtype.name, size).encode() + struct.pack(fmt, *a)
     rep_msg = generic_msg(req_msg, send_bytes=True)
     return create_pdarray(rep_msg)
 
@@ -114,6 +125,11 @@ def zeros(size : int, dtype : type=np.float64) -> pdarray:
     -------
     pdarray
         Zeros of the requested size and dtype
+        
+    Raises
+    ------
+    TypeError
+        Raised if size is not an int or dtype is not supported
 
     See Also
     --------
@@ -153,6 +169,11 @@ def ones(size : int, dtype : type=float64) -> pdarray:
     -------
     pdarray
         Ones of the requested size and dtype
+        
+    Raises
+    ------
+    TypeError
+        Raised if size is not an int or dtype is not supported
 
     See Also
     --------
@@ -192,6 +213,11 @@ def zeros_like(pda : pdarray) -> pdarray:
     -------
     pdarray
         Equivalent to ak.zeros(pda.size, pda.dtype)
+        
+    Raises
+    ------
+    TypeError
+        Raised if pda is not a pdarray
 
     See Also
     --------
@@ -215,6 +241,10 @@ def ones_like(pda : pdarray) -> pdarray:
     -------
     pdarray
         Equivalent to ak.ones(pda.size, pda.dtype)
+        
+    Raises
+    ------
+        Raised if pda is not a pdarray
 
     See Also
     --------
@@ -248,6 +278,13 @@ def arange(*args) -> pdarray:
     -------
     pdarray, int64
         Integers from start (inclusive) to stop (exclusive) by stride
+        
+    Raises
+    ------
+    TypeError
+        Raised if start, stop, or stride is not an int object
+    ZeroDivisionError
+        Raised if stride == 0
 
     See Also
     --------
@@ -322,6 +359,11 @@ def linspace(start : int, stop : int, length : int) -> pdarray:
     -------
     pdarray, float64
         Array of evenly spaced points along the interval
+        
+    Raises
+    ------
+    TypeError
+        Raised if start or stop is not a scalar or if length is not int
 
     See Also
     --------
@@ -365,6 +407,14 @@ def randint(low : int, high : int, size : int, dtype=int64) -> pdarray:
     -------
     pdarray
         Values drawn uniformly from the specified range having the desired dtype
+        
+    Raises
+    ------
+    TypeError
+        Raised if dtype.name not in DTypes, size is not an int, low or if 
+        not a scalar
+    ValueError
+        Raised if size < 0 or if high < low
 
     Notes
     -----
@@ -387,7 +437,7 @@ def randint(low : int, high : int, size : int, dtype=int64) -> pdarray:
     if resolve_scalar_dtype(size) != 'int64':
         raise TypeError("size must be integer")
     if size < 0 or high < low:
-        raise ValueError("Incompatible arguments")
+        raise ValueError("Incompatible arguments: size < 0 or high < low")
     dtype = akdtype(dtype) # normalize dtype
     # check dtype for error
     if dtype.name not in DTypes:
@@ -440,6 +490,11 @@ def standard_normal(size : int) -> pdarray:
     -------
     pdarray, float64
         The array of random numbers
+        
+    Raises
+    ------
+    ValueError
+        Raised if size < 0
 
     See Also
     --------
@@ -479,13 +534,19 @@ def random_strings_uniform(minlen : int, maxlen : int, size : int,
     -------
     Strings
         The array of random strings
+        
+    Raises
+    ------
+    ValueError
+        Raised if minlen < 0, maxlen < minlen, or size < 0
 
     See Also
     --------
     random_strings_lognormal, randint
     """
     if minlen < 0 or maxlen < minlen or size < 0:
-        raise ValueError("Incompatible arguments")
+        raise ValueError(("Incompatible arguments: minlen < 0, maxlen < minlen, " +
+                          "or size < 0"))
     msg = "randomStrings {} {} {} {} {}".\
                             format(NUMBER_FORMAT_STRINGS['int64'].format(size),
                             "uniform", characters,
@@ -516,6 +577,11 @@ def random_strings_lognormal(logmean : float, logstd : float,
     -------
     Strings
         The array of random strings
+    
+    Raises
+    ------
+    ValueError
+        Raised if logstd <= 0 or size < 0
 
     See Also
     --------
@@ -529,7 +595,7 @@ def random_strings_lognormal(logmean : float, logstd : float,
     zero, and a heavy tail towards longer strings.
     """
     if logstd <= 0 or size < 0:
-        raise ValueError("Incompatible arguments")
+        raise ValueError("Incompatible arguments: logstd <= 0 or size < 0")
     msg = "randomStrings {} {} {} {} {}".\
                              format(NUMBER_FORMAT_STRINGS['int64'].format(size),
                              "lognormal", characters,
