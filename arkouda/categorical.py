@@ -1,4 +1,3 @@
-from typing import List
 from arkouda.strings import Strings
 from arkouda.pdarrayclass import pdarray
 from arkouda.groupbyclass import GroupBy
@@ -78,7 +77,7 @@ class Categorical:
 
     @classmethod
     def from_codes(cls, codes : pdarray, categories : Strings, 
-                          permutation=None, segments=None):
+                          permutation=None, segments=None) -> 'Categorical':
         """
         Make a Categorical from codes and categories arrays. If codes and 
         categories have already been pre-computed, this constructor saves 
@@ -159,12 +158,37 @@ class Categorical:
     def __repr__(self):
         return "array({})".format(self.__str__())
 
-    def binop(self, other, op):
+    def _binop(self, other : 'Categorical', op : str) -> pdarray:
+        """
+        Executes the requested binop on this Categorical instance and returns 
+        the results within a pdarray object.
+
+        Parameters
+        ----------
+        other : Categorical
+            the other object is a Categorical object
+        op : str
+            name of the binary operation to be performed 
+      
+        Returns
+        -------
+        pdarray
+            encapsulating the results of the requested binop      
+
+        Raises
+    -   -----
+        ValueError
+            Raised if (1) the op is not in the self.BinOps set, or (2) if the
+            sizes of this and the other instance don't match
+        RuntimeError
+            Raised if a server-side error is thrown while executing the
+            binary operation
+        """
         if op not in self.BinOps:
             raise NotImplementedError("Categorical: unsupported operator: {}".\
                                       format(op))
         if np.isscalar(other) and resolve_scalar_dtype(other) == "str":
-            idxresult = self.categories.binop(other, op)
+            idxresult = self.categories._binop(other, op)
             return idxresult[self.codes]
         if self.size != other.size:
             raise ValueError("Categorical {}: size mismatch {} {}".\
@@ -180,22 +204,47 @@ class Categorical:
                                 "non-Categorical not yet implemented. " +
                                 "Consider converting operands to Categorical."))
 
-    def r_binop(self, other, op):
-        return self.binop(other, op)
+    def _r_binop(self, other : 'Categorical', op : str) -> pdarray:
+        """
+        Executes the requested reverse binop on this Categorical instance and 
+        returns the results within a pdarray object.
+
+        Parameters
+        ----------
+        other : Categorical
+            the other object is a Categorical object
+        op : str
+            name of the binary operation to be performed 
+      
+        Returns
+        -------
+        pdarray
+            encapsulating the results of the requested binop      
+
+        Raises
+    -   -----
+        ValueError
+            Raised if (1) the op is not in the self.BinOps set, or (2) if the
+            sizes of this and the other instance don't match
+        RuntimeError
+            Raised if a server-side error is thrown while executing the
+            binary operation
+        """
+        return self._binop(other, op)
 
     def __eq__(self, other):
-        return self.binop(other, "==")
+        return self._binop(other, "==")
 
     def __neq__(self, other):
-        return self.binop(other, "!=")
+        return self._binop(other, "!=")
 
-    def __getitem__(self, key):
+    def __getitem__(self, key) -> 'Categorical':
         if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
             return self.categories[self.codes[key]]
         else:
             return Categorical.from_codes(self.codes[key], self.categories)
 
-    def reset_categories(self):
+    def reset_categories(self) -> 'Categorical':
         """
         Recompute the category labels, discarding any unused labels. This
         method is often useful after slicing or indexing a Categorical array, 
@@ -301,12 +350,12 @@ class Categorical:
         categoriesisin = in1d(self.categories, test)
         return categoriesisin[self.codes]
 
-    def unique(self):
+    def unique(self) -> 'Categorical':
         __doc__ = unique.__doc__
         return Categorical.from_codes(arange(self.categories.size), 
                                       self.categories)
 
-    def group(self):
+    def group(self) -> pdarray:
         """
         Return the permutation that groups the array, placing equivalent
         categories together. All instances of the same category are guaranteed 
@@ -352,14 +401,14 @@ class Categorical:
         newvals = inverse[self.codes]
         return Categorical.from_codes(newvals, self.categories[idxperm])
             
-    def merge(self, others):
+    def merge(self, others : ['Categorical']) -> 'Categorical':
         """
         Merge this Categorical with other Categorical objects in the array, 
         concatenating the arrays and synchronizing the categories.
 
         Parameters
         ----------
-        others : Categorical
+        others : [Categorical]
             The Categorical arrays to concatenate and merge with this one
 
         Returns
