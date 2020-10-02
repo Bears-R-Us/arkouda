@@ -1,4 +1,4 @@
-![Arkouda logo](pictures/arkouda_wide.png)
+![Arkouda logo](pictures/arkouda_wide_marker1.png)
 
 # Arkouda (αρκούδα): NumPy-like arrays at massive scale backed by Chapel.
 ## _NOTE_: Arkouda is under the MIT license.
