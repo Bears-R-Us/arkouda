@@ -2,11 +2,10 @@ module CommAggregation {
   use SysCTypes;
   use CPtr;
   use UnorderedCopy;
-  private use CommPrimitives;
+  use CommPrimitives;
 
-  // TODO these parameters need to be tuned and size should be user-settable at
-  // creation time. iters before yield should be based on numLocales & buffSize
-  private config const maxItersBeforeYield = 4096;
+  // TODO should tune these values at startup
+  private config const yieldFrequency = getEnvInt("ARKOUDA_SERVER_AGGREGATION_YIELD_FREQUENCY", 1024);
   private config const dstBuffSize = getEnvInt("ARKOUDA_SERVER_AGGREGATION_DST_BUFF_SIZE", 4096);
   private config const srcBuffSize = getEnvInt("ARKOUDA_SERVER_AGGREGATION_SRC_BUFF_SIZE", 4096);
 
@@ -77,7 +76,7 @@ module CommAggregation {
       // flushing their buffers.
       if bufferIdx == bufferSize {
         _flushBuffer(loc, bufferIdx, freeData=false);
-      } else if itersSinceYield % maxItersBeforeYield == 0 {
+      } else if itersSinceYield % yieldFrequency == 0 {
         chpl_task_yield();
         itersSinceYield = 0;
       }
@@ -180,7 +179,7 @@ module CommAggregation {
 
       if bufferIdx == bufferSize {
         _flushBuffer(loc, bufferIdx, freeData=false);
-      } else if itersSinceYield % maxItersBeforeYield == 0 {
+      } else if itersSinceYield % yieldFrequency == 0 {
         chpl_task_yield();
         itersSinceYield = 0;
       }
