@@ -38,7 +38,7 @@ module CommAggregation {
     type aggType = (c_ptr(elemType), elemType);
     const bufferSize = dstBuffSize;
     const myLocaleSpace = LocaleSpace;
-    var itersSinceYield: int;
+    var opsUntilYield = yieldFrequency;
     var lBuffers: [myLocaleSpace] [0..#bufferSize] aggType;
     var rBuffers: [myLocaleSpace] remoteBuffer(aggType);
     var bufferIdxs: [myLocaleSpace] int;
@@ -76,11 +76,13 @@ module CommAggregation {
       // flushing their buffers.
       if bufferIdx == bufferSize {
         _flushBuffer(loc, bufferIdx, freeData=false);
-      } else if itersSinceYield % yieldFrequency == 0 {
+        opsUntilYield = yieldFrequency;
+      } else if opsUntilYield == 0 {
         chpl_task_yield();
-        itersSinceYield = 0;
+        opsUntilYield = yieldFrequency;
+      } else {
+        opsUntilYield -= 1;
       }
-      itersSinceYield += 1;
     }
 
     proc _flushBuffer(loc: int, ref bufferIdx, freeData) {
@@ -139,7 +141,7 @@ module CommAggregation {
     type aggType = c_ptr(elemType);
     const bufferSize = srcBuffSize;
     const myLocaleSpace = LocaleSpace;
-    var itersSinceYield: int;
+    var opsUntilYield = yieldFrequency;
     var dstAddrs: [myLocaleSpace][0..#bufferSize] aggType;
     var lSrcAddrs: [myLocaleSpace][0..#bufferSize] aggType;
     var lSrcVals: [myLocaleSpace][0..#bufferSize] elemType;
@@ -179,11 +181,13 @@ module CommAggregation {
 
       if bufferIdx == bufferSize {
         _flushBuffer(loc, bufferIdx, freeData=false);
-      } else if itersSinceYield % yieldFrequency == 0 {
+        opsUntilYield = yieldFrequency;
+      } else if opsUntilYield == 0 {
         chpl_task_yield();
-        itersSinceYield = 0;
+        opsUntilYield = yieldFrequency;
+      } else {
+        opsUntilYield -= 1;
       }
-      itersSinceYield += 1;
     }
 
     proc _flushBuffer(loc: int, ref bufferIdx, freeData) {
