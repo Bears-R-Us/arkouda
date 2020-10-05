@@ -1,4 +1,4 @@
-import os, platform
+import platform
 from os.path import expanduser
 from base_test import ArkoudaTest
 from context import arkouda
