@@ -3,6 +3,7 @@ from arkouda.client import generic_msg, verbose, pdarrayIterThresh
 from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value
 from arkouda.dtypes import *
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS
+from arkouda.logger import ArkoudaLogger, LogLevel
 import arkouda
 import numpy as np
 import json
@@ -93,6 +94,10 @@ class Strings:
         except Exception as e:
             raise ValueError(e)   
         self.dtype = np.str
+        if verbose:
+            self.logger = ArkoudaLogger(name=__class__.__name__, level=LogLevel.DEBUG)
+        else:
+            self.logger = ArkoudaLogger(name=__class__.__name__, level=LogLevel.INFO)
 
     def __iter__(self):
         raise NotImplementedError('Strings does not support iteration')
@@ -192,7 +197,7 @@ class Strings:
                                  format(orig_key,self.size))
         elif isinstance(key, slice):
             (start,stop,stride) = key.indices(self.size)
-            if verbose: print(start,stop,stride)
+            if verbose: self.logger.debug('start: {}; stop: {}; stride: {}'.format(start,stop,stride))
             msg = "segmentedIndex {} {} {} {} {} {} {}".format('sliceIndex',
                                                                self.objtype,
                                                                self.offsets.name,

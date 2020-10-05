@@ -1,12 +1,14 @@
+import os
 from typing import List, Tuple, Union
 import numpy as np
-from arkouda.client import generic_msg, verbose
+from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.sorting import argsort, coargsort, local_argsort
 from arkouda.strings import Strings
 from arkouda.pdarraycreation import array, zeros, arange
 from arkouda.pdarraysetops import concatenate
 from arkouda.numeric import cumsum
+from arkouda.logger import ArkoudaLogger, LogLevel
 
 __all__ = ["GroupBy"]
 
@@ -48,6 +50,13 @@ class GroupBy:
                             'nunique', 'any', 'all'])
     def __init__(self, keys : List[Union[pdarray,np.int64,Strings]], 
                 assume_sorted : bool=False, hash_strings : bool=True) -> None:
+        if LogLevel.DEBUG == LogLevel(os.getenv('ARKOUDA_LOG_LEVEL', 
+                                                LogLevel('INFO'))):
+            self.logger = ArkoudaLogger(name=self.__class__.__name__, 
+                                    level=LogLevel.DEBUG)
+        else:
+            self.logger = ArkoudaLogger(name=self.__class__.__name__, 
+                                    level=LogLevel.INFO)   
         self.assume_sorted = assume_sorted
         self.hash_strings = hash_strings
         self.per_locale = False
@@ -84,7 +93,7 @@ class GroupBy:
                 self.permutation = coargsort(keys)
             
         # self.permuted_keys = self.keys[self.permutation]
-        self.find_segments()
+        self.find_segments()       
             
     def find_segments(self) -> None:
         if self.per_locale:
@@ -134,7 +143,7 @@ class GroupBy:
                                              ' '.join(keytypes))
         repMsg = generic_msg(reqMsg)
         segAttr, uniqAttr = repMsg.split("+")
-        if verbose: print(segAttr, uniqAttr)
+        self.logger.debug('{},{}'.format(segAttr, uniqAttr))
         self.segments = create_pdarray(segAttr)
         unique_key_indices = create_pdarray(uniqAttr)
         if self.nkeys == 1:
@@ -166,7 +175,7 @@ class GroupBy:
             cmd = "countReduction"
         reqMsg = "{} {} {}".format(cmd, self.segments.name, self.size)
         repMsg = generic_msg(reqMsg)
-        if verbose: print(repMsg)
+        self.logger.debug(repMsg)
         return self.unique_keys, create_pdarray(repMsg)
         
     def aggregate(self, values : pdarray, operator : str, skipna : bool=True) \
@@ -220,7 +229,7 @@ class GroupBy:
                                          operator,
                                          skipna)
         repMsg = generic_msg(reqMsg)
-        if verbose: print(repMsg)
+        self.logger.debug(repMsg)
         if operator.startswith('arg'):
             return (self.unique_keys, 
                               self.permutation[create_pdarray(repMsg)])

@@ -1,14 +1,19 @@
+import os
 from typing import Iterable, Union
-from arkouda.client import generic_msg, verbose
+from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros, zeros_like, array
 from arkouda.sorting import argsort
 from arkouda.strings import Strings
-global verbose
+from arkouda.logger import ArkoudaLogger, LogLevel
 
 __all__ = ["unique", "in1d", "concatenate", "union1d", "intersect1d",
            "setdiff1d", "setxor1d"]
-global verbose
+
+if LogLevel.DEBUG == LogLevel(os.getenv('ARKOUDA_LOG_LEVEL', LogLevel('INFO'))):
+    logger = ArkoudaLogger(name='pdarraysetops', level=LogLevel.DEBUG)
+else:
+    logger = ArkoudaLogger(name='pdarraysetops', level=LogLevel.INFO)
 
 def unique(pda : pdarray, return_counts : bool=False) -> Union[pdarray,Strings]:
     """
@@ -58,7 +63,7 @@ def unique(pda : pdarray, return_counts : bool=False) -> Union[pdarray,Strings]:
                              format(pda.objtype, pda.name, return_counts))
         if return_counts:
             vc = repMsg.split("+")
-            if verbose: print(vc)
+            logger.debug(vc)
             return create_pdarray(vc[0]), create_pdarray(vc[1])
         else:
             return create_pdarray(repMsg)
@@ -67,7 +72,7 @@ def unique(pda : pdarray, return_counts : bool=False) -> Union[pdarray,Strings]:
         repMsg = generic_msg("unique {} {} {}".\
                              format(pda.objtype, name, return_counts))
         vc = repMsg.split('+')
-        if verbose: print(vc)
+        logger.debug(vc)
         if return_counts:
             return Strings(vc[0], vc[1]), create_pdarray(vc[2])
         else:
