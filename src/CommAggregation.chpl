@@ -2,11 +2,10 @@ module CommAggregation {
   use SysCTypes;
   use CPtr;
   use UnorderedCopy;
-  private use CommPrimitives;
+  use CommPrimitives;
 
-  // TODO these parameters need to be tuned and size should be user-settable at
-  // creation time. iters before yield should be based on numLocales & buffSize
-  private config const maxItersBeforeYield = 4096;
+  // TODO should tune these values at startup
+  private config const yieldFrequency = getEnvInt("ARKOUDA_SERVER_AGGREGATION_YIELD_FREQUENCY", 1024);
   private config const dstBuffSize = getEnvInt("ARKOUDA_SERVER_AGGREGATION_DST_BUFF_SIZE", 4096);
   private config const srcBuffSize = getEnvInt("ARKOUDA_SERVER_AGGREGATION_SRC_BUFF_SIZE", 4096);
 
@@ -39,7 +38,7 @@ module CommAggregation {
     type aggType = (c_ptr(elemType), elemType);
     const bufferSize = dstBuffSize;
     const myLocaleSpace = LocaleSpace;
-    var itersSinceYield: int;
+    var opsUntilYield = yieldFrequency;
     var lBuffers: [myLocaleSpace] [0..#bufferSize] aggType;
     var rBuffers: [myLocaleSpace] remoteBuffer(aggType);
     var bufferIdxs: [myLocaleSpace] int;
@@ -77,11 +76,13 @@ module CommAggregation {
       // flushing their buffers.
       if bufferIdx == bufferSize {
         _flushBuffer(loc, bufferIdx, freeData=false);
-      } else if itersSinceYield % maxItersBeforeYield == 0 {
+        opsUntilYield = yieldFrequency;
+      } else if opsUntilYield == 0 {
         chpl_task_yield();
-        itersSinceYield = 0;
+        opsUntilYield = yieldFrequency;
+      } else {
+        opsUntilYield -= 1;
       }
-      itersSinceYield += 1;
     }
 
     proc _flushBuffer(loc: int, ref bufferIdx, freeData) {
@@ -140,7 +141,7 @@ module CommAggregation {
     type aggType = c_ptr(elemType);
     const bufferSize = srcBuffSize;
     const myLocaleSpace = LocaleSpace;
-    var itersSinceYield: int;
+    var opsUntilYield = yieldFrequency;
     var dstAddrs: [myLocaleSpace][0..#bufferSize] aggType;
     var lSrcAddrs: [myLocaleSpace][0..#bufferSize] aggType;
     var lSrcVals: [myLocaleSpace][0..#bufferSize] elemType;
@@ -180,11 +181,13 @@ module CommAggregation {
 
       if bufferIdx == bufferSize {
         _flushBuffer(loc, bufferIdx, freeData=false);
-      } else if itersSinceYield % maxItersBeforeYield == 0 {
+        opsUntilYield = yieldFrequency;
+      } else if opsUntilYield == 0 {
         chpl_task_yield();
-        itersSinceYield = 0;
+        opsUntilYield = yieldFrequency;
+      } else {
+        opsUntilYield -= 1;
       }
-      itersSinceYield += 1;
     }
 
     proc _flushBuffer(loc: int, ref bufferIdx, freeData) {
