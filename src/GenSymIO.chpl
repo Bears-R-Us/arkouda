@@ -13,6 +13,7 @@ module GenSymIO {
     use List;
     use Map;
     use PrivateDist;
+    use Reflection;
 
     config const GenSymIO_DEBUG = false;
     config const SEGARRAY_OFFSET_NAME = "segments";
@@ -136,9 +137,40 @@ module GenSymIO {
          */
        return arrayBytes;
     }
+    
+    /*
+     * Generates an error message that provides a fuller context to the error
+     * by including the line number, proc name, and module name from which the 
+     * Error was thrown.
+     */
+    class ErrorWithContext: Error {   
+        proc init(msg : string, lineNumber: int, routineName: string, 
+                                                         moduleName: string) {
+            try! super.init("Line %t In %s.%s: %s".format(lineNumber,
+                                                          moduleName,
+                                                          routineName,
+                                                          msg));
+        }
+        
+        proc init() {
+            super.init();
+        }
+    }
 
-    class DatasetNotFoundError: Error {proc init() {}}
-    class NotHDF5FileError: Error {proc init() {}}
+    /*
+     * The DatasetNotFoundError is thrown if there is no dataset in the file
+     * being accessed.
+     */
+    class DatasetNotFoundError: ErrorWithContext { 
+        proc init(msg : string, lineNumber: int, routineName: string, 
+                                                           moduleName: string) { 
+           super.init(msg,lineNumber,routineName,moduleName); 
+        } 
+
+        proc init(){ super.init(); }
+    }
+    
+    class NotHDF5FileError: Error{proc init() {}}
     class MismatchedAppendError: Error {proc init() {}}
     class WriteModeError: Error { proc init() {} }
     class SegArrayError: Error {proc init() {}}
@@ -256,7 +288,8 @@ module GenSymIO {
             } catch e: PermissionError {
                 return try! "Error: permission error on %s".format(fname);
             } catch e: DatasetNotFoundError {
-                return try! "Error: dataset %s not found in file %s".format(dsetName, fname);
+                try! writeln(e);
+                return try! "Error: %s".format(e.message());
             } catch e: NotHDF5FileError {
                 return try! "Error: cannot open as HDF5 file %s".format(fname);
             } catch e: SegArrayError {
@@ -401,6 +434,7 @@ module GenSymIO {
                 } catch e: PermissionError {
                     return try! "Error: permission error on %s".format(fname);
                 } catch e: DatasetNotFoundError {
+                    try! writeln(e);
                     return try! "Error: dataset %s not found in file %s".format(dsetName, fname);
                 } catch e: NotHDF5FileError {
                     return try! "Error: cannot open as HDF5 file %s".format(fname);
@@ -532,7 +566,8 @@ module GenSymIO {
 
         if !C_HDF5.H5Lexists(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT) {
             C_HDF5.H5Fclose(file_id);
-            throw new owned DatasetNotFoundError();
+            throw new owned DatasetNotFoundError(msg="The dataset %s does not exist".format(dsetName),
+                lineNumber=getLineNumber(), routineName=getRoutineName(), moduleName=getModuleName());
         }
 
         var dataclass: C_HDF5.H5T_class_t;
@@ -575,7 +610,11 @@ module GenSymIO {
         var dset = C_HDF5.H5Dopen(file_id, dsetName.c_str(),
                                                    C_HDF5.H5P_DEFAULT);
         if (dset < 0) {
-            throw new owned DatasetNotFoundError();
+            throw new owned 
+              DatasetNotFoundError(msg="dataset %s does not exist".format(dsetName), 
+                                   lineNumber=getLineNumber(),
+                                   routineName=getRoutineName(),
+                                   moduleName=getModuleName());
         }
         var datatype = C_HDF5.H5Dget_type(dset);
         var dataclass = C_HDF5.H5Tget_class(datatype);
