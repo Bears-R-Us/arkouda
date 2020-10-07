@@ -4,7 +4,8 @@ from logging import Logger, Formatter, Handler, StreamHandler, DEBUG, \
      INFO, WARN, ERROR, CRITICAL
 from enum import Enum
 
-__all__ = ['Logger', 'LogLevel', 'getArkoudaLogger', 'getArkoudaClientLogger']
+__all__ = ['ArkoudaLogger', 'LogLevel', 'getArkoudaLogger', 
+           'getArkoudaClientLogger']
 
 
 """
@@ -138,6 +139,34 @@ class ArkoudaLogger(Logger):
             for name,handler in zip(handlerNames, self.handlers):
                 if name == handler.name:
                     handler.setLevel(newLevel)
+                    
+    def enableVerbose(self) -> None:
+        """
+        Enables verbose output by setting the log level for all handlers 
+        to DEBUG
+        
+        Returns
+        -------
+        None
+        """
+        self.changeLogLevel(LogLevel.DEBUG)
+        
+    def disableVerbose(self, logLevel : Optional[LogLevel]=LogLevel.INFO) -> None:
+        """
+        Disables verbose output by setting the log level for all handlers 
+        to a level other than DEBUG, with a default of INFO
+        
+        Parameters
+        ----------
+        logLevel : Optional[LogLevel], defaults to LogLevel.INFO
+            The desired log level that will disable verbose output (logging at 
+            the DEBUG level) by resetting the log level for all handlers.
+        
+        Returns
+        -------
+        None
+        """        
+        self.changeLogLevel(logLevel)
     
     def getHandler(self, name : str) -> Handler:
         """
@@ -150,7 +179,7 @@ class ArkoudaLogger(Logger):
             
         Returns
         -------
-        Handler with Handler.name matching name parameter
+        Handler with matching Handler.name
         
         Raises
         ------

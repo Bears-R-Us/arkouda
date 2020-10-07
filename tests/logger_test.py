@@ -31,6 +31,8 @@ class LoggerTest(unittest.TestCase):
         self.assertEqual('ClientLogger', logger.name)
         logger.debug('debug message')      
         self.assertIsNotNone(logger.getHandler('console-handler'))
+        with self.assertRaises(ValueError):
+            logger.getHandler('console-handlers')
         
     def testUpdateArkoudaLoggerLogLevel(self):  
         logger = getArkoudaLogger(name='UpdateLogger')
@@ -51,4 +53,15 @@ class LoggerTest(unittest.TestCase):
         logger.changeLogLevel(level=LogLevel.WARN, handlerNames=['handler-one'])
         self.assertEqual(WARN,handlerOne.level)
         self.assertEqual(INFO, handlerTwo.level)
-        
+
+    def testVerbosityControls(self):
+        logger = ArkoudaLogger(name='VerboseLogger', logLevel=LogLevel('INFO'))
+
+        self.assertEqual(INFO, logger.getHandler('console-handler').level)
+        logger.debug('non-working debug message')     
+        logger.enableVerbose()  
+        self.assertEqual(DEBUG, logger.getHandler('console-handler').level)
+        logger.debug('working debug message')     
+        logger.disableVerbose() 
+        self.assertEqual(INFO, logger.getHandler('console-handler').level)
+        logger.debug('next non-working debug message') 
