@@ -1,4 +1,3 @@
-import os
 from typing import List, Tuple, Union
 import numpy as np
 from arkouda.client import generic_msg
@@ -8,7 +7,7 @@ from arkouda.strings import Strings
 from arkouda.pdarraycreation import array, zeros, arange
 from arkouda.pdarraysetops import concatenate
 from arkouda.numeric import cumsum
-from arkouda.logger import ArkoudaLogger, LogLevel
+from arkouda.logger import getArkoudaLogger
 
 __all__ = ["GroupBy"]
 
@@ -23,6 +22,8 @@ class GroupBy:
         The array to group by value, or if list, the column arrays to group by row
     assume_sorted : bool
         If True, assume keys is already sorted (Default: False)
+    logger : ArkoudaLogger
+        Used for all logging operations
 
     Attributes
     ----------
@@ -50,13 +51,7 @@ class GroupBy:
                             'nunique', 'any', 'all'])
     def __init__(self, keys : List[Union[pdarray,np.int64,Strings]], 
                 assume_sorted : bool=False, hash_strings : bool=True) -> None:
-        if LogLevel.DEBUG == LogLevel(os.getenv('ARKOUDA_LOG_LEVEL', 
-                                                LogLevel('INFO'))):
-            self.logger = ArkoudaLogger(name=self.__class__.__name__, 
-                                    level=LogLevel.DEBUG)
-        else:
-            self.logger = ArkoudaLogger(name=self.__class__.__name__, 
-                                    level=LogLevel.INFO)   
+        self.logger = getArkoudaLogger(name=self.__class__.__name__)
         self.assume_sorted = assume_sorted
         self.hash_strings = hash_strings
         self.per_locale = False

@@ -2,7 +2,7 @@ import zmq, json, os
 from typing import Mapping, Optional, Tuple, Union
 import warnings, pkg_resources
 from arkouda import security, io_util
-from arkouda.logger import ArkoudaLogger, LogLevel
+from arkouda.logger import getArkoudaLogger
 
 __all__ = ["verbose", "pdarrayIterThresh", "maxTransferBytes",
            "AllSymbols", "set_defaults", "connect", "disconnect",
@@ -38,10 +38,7 @@ maxTransferBytesDefVal = 2**30
 maxTransferBytes = maxTransferBytesDefVal
 AllSymbols = "__AllSymbols__"
 
-if LogLevel.DEBUG == LogLevel(os.getenv('ARKOUDA_LOG_LEVEL', LogLevel('INFO'))):
-    logger = ArkoudaLogger(name='Arkouda Client', level=LogLevel.DEBUG)
-else:
-    logger = ArkoudaLogger(name='Arkouda Client', level=LogLevel.INFO)    
+logger = getArkoudaLogger(name='Arkouda Client')    
 
 # reset settings to default values
 def set_defaults() -> None:

@@ -4,16 +4,13 @@ import numpy as np
 from arkouda.client import generic_msg, verbose, maxTransferBytes, pdarrayIterThresh
 from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
-from arkouda.logger import ArkoudaLogger, LogLevel
+from arkouda.logger import getArkoudaLogger
 
 __all__ = ["pdarray", "info", "any", "all", "is_sorted", "sum", "prod", 
            "min", "max", "argmin", "argmax", "mean", "var", "std", "mink", 
            "maxk", "argmink", "argmaxk"]
 
-if LogLevel.DEBUG == LogLevel(os.getenv('ARKOUDA_LOG_LEVEL', LogLevel('INFO'))):
-    logger = ArkoudaLogger(name='pdarray', level=LogLevel.DEBUG)
-else:
-    logger = ArkoudaLogger(name='pdarray', level=LogLevel.INFO)    
+logger = getArkoudaLogger(name='pdarray')    
 
 def parse_single_value(msg : str) -> object:
     """

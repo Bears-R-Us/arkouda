@@ -5,15 +5,12 @@ from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros, zeros_like, array
 from arkouda.sorting import argsort
 from arkouda.strings import Strings
-from arkouda.logger import ArkoudaLogger, LogLevel
+from arkouda.logger import getArkoudaLogger
 
 __all__ = ["unique", "in1d", "concatenate", "union1d", "intersect1d",
            "setdiff1d", "setxor1d"]
 
-if LogLevel.DEBUG == LogLevel(os.getenv('ARKOUDA_LOG_LEVEL', LogLevel('INFO'))):
-    logger = ArkoudaLogger(name='pdarraysetops', level=LogLevel.DEBUG)
-else:
-    logger = ArkoudaLogger(name='pdarraysetops', level=LogLevel.INFO)
+logger = getArkoudaLogger(name='pdarraysetops')
 
 def unique(pda : pdarray, return_counts : bool=False) -> Union[pdarray,Strings]:
     """
