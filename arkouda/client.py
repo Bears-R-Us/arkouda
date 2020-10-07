@@ -2,6 +2,7 @@ import zmq, json, os
 from typing import Mapping, Optional, Tuple, Union
 import warnings, pkg_resources
 from arkouda import security, io_util
+from arkouda.logger import getArkoudaLogger
 
 __all__ = ["verbose", "pdarrayIterThresh", "maxTransferBytes",
            "AllSymbols", "set_defaults", "connect", "disconnect",
@@ -36,6 +37,8 @@ pdarrayIterThresh  = pdarrayIterThreshDefVal
 maxTransferBytesDefVal = 2**30
 maxTransferBytes = maxTransferBytesDefVal
 AllSymbols = "__AllSymbols__"
+
+logger = getArkoudaLogger(name='Arkouda Client')    
 
 # reset settings to default values
 def set_defaults() -> None:
@@ -94,7 +97,7 @@ def connect(server : str="localhost", port : int=5555, timeout : int=0,
     """
     global context, socket, pspStr, connected, verbose, username, token
 
-    if verbose: print("ZMQ version: {}".format(zmq.zmq_version()))
+    logger.debug("ZMQ version: {}".format(zmq.zmq_version()))
 
     if connect_url:
         url_values = _parse_url(connect_url)
@@ -111,7 +114,7 @@ def connect(server : str="localhost", port : int=5555, timeout : int=0,
     if tunnel_server:
         (pspStr, _) = _start_tunnel(addr=pspStr, tunnel_server=tunnel_server)
     
-    if verbose: print("psp = ",pspStr);
+    logger.debug("psp = {}".format(pspStr))
 
     # create and configure socket for connections to arkouda server
     socket = context.socket(zmq.REQ) # request end of the zmq connection
@@ -133,12 +136,12 @@ def connect(server : str="localhost", port : int=5555, timeout : int=0,
 
     # send the connect message
     message = "connect"
-    if verbose: print("[Python] Sending request: %s" % message)
+    logger.debug("[Python] Sending request: {}".format(message))
 
     # send connect request to server and get the response confirming if
     # the connect request succeeded and, if not not, the error message
     message = _send_string_message(message)
-    if verbose: print("[Python] Received response: %s" % message)
+    logger.debug("[Python] Received response: {}".format(message))
     connected = True
 
     conf = get_config()
@@ -398,16 +401,16 @@ def disconnect() -> None:
     if socket is not None:
         # send disconnect message to server
         message = "disconnect"
-        if verbose: print("[Python] Sending request: %s" % message)
+        logger.debug("[Python] Sending request: {}".format(message))
         message = _send_string_message(message)
-        if verbose: print("[Python] Received response: %s" % message)
+        logger.debug("[Python] Received response: {}".format(message))
         try:
             socket.disconnect(pspStr)
         except Exception as e:
             raise ConnectionError(e)
         connected = False
     else:
-        print("not connected; cannot disconnect")
+        logger.error("not connected; cannot disconnect")
 
 def shutdown() -> None:
     """
@@ -435,9 +438,9 @@ def shutdown() -> None:
     # send shutdown message to server
     message = "shutdown"
 
-    if verbose: print("[Python] Sending request: %s" % message)
+    logger.debug("[Python] Sending request: {}".format(message))
     return_message = _send_string_message(message)
-    if verbose: print("[Python] Received response: {}".format(return_message))
+    logger.debug("[Python] Received response: {}".format(return_message))
 
     try:
         socket.disconnect(pspStr)
@@ -484,7 +487,7 @@ def generic_msg(message : Union[str,bytes], send_bytes : bool=False,
             return _send_binary_message(message=message, 
                                             recv_bytes=recv_bytes)
         else:
-            if verbose: print("[Python] Sending request: %s" % message)
+            logger.debug("[Python] Sending request: {}".format(message))
             return _send_string_message(message=message, 
                                             recv_bytes=recv_bytes)
     except KeyboardInterrupt as e:

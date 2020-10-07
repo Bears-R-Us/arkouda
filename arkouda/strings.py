@@ -1,9 +1,9 @@
 from typing import Tuple, Union
-from arkouda.client import generic_msg, verbose, pdarrayIterThresh
+from arkouda.client import generic_msg, pdarrayIterThresh
 from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value
 from arkouda.dtypes import *
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS
-import arkouda
+from arkouda.logger import getArkoudaLogger
 import numpy as np
 import json
 
@@ -34,6 +34,8 @@ class Strings:
         The sizes of each dimension of the array
     dtype : dtype
         The dtype is np.str
+    logger : ArkoudaLogger
+        Used for all logging operations
         
     Notes
     -----
@@ -93,6 +95,7 @@ class Strings:
         except Exception as e:
             raise ValueError(e)   
         self.dtype = np.str
+        self.logger = getArkoudaLogger(name=__class__.__name__)
 
     def __iter__(self):
         raise NotImplementedError('Strings does not support iteration')
@@ -192,7 +195,7 @@ class Strings:
                                  format(orig_key,self.size))
         elif isinstance(key, slice):
             (start,stop,stride) = key.indices(self.size)
-            if verbose: print(start,stop,stride)
+            self.logger.debug('start: {}; stop: {}; stride: {}'.format(start,stop,stride))
             msg = "segmentedIndex {} {} {} {} {} {} {}".format('sliceIndex',
                                                                self.objtype,
                                                                self.offsets.name,

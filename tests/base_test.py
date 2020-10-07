@@ -19,7 +19,7 @@ class ArkoudaTest(unittest.TestCase):
     server = os.getenv('ARKOUDA_SERVER_HOST', 'localhost')
     full_stack_mode = True if os.getenv('ARKOUDA_FULL_STACK_TEST') == 'True' else False
     timeout = int(os.getenv('ARKOUDA_CLIENT_TIMEOUT', 5))
-    
+
     @classmethod
     def setUpClass(cls):
         '''
