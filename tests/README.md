@@ -42,7 +42,7 @@ env =
     D:ARKOUDA_NUMLOCALES=2
     D:ARKOUDA_VERBOSE=True
     D:ARKOUDA_CLIENT_TIMEOUT=0
-
+    D:ARKOUDA_LOG_LEVEL=INFO
 ```
 * testpaths: shows the paths to all test files. For the time-being, the arkouda unit tests to be executed are 
 specified on a per-file basis, but pytest can also support directory-level configuration.
@@ -61,6 +61,7 @@ specified on a per-file basis, but pytest can also support directory-level confi
 * ARKOUDA\_NUMLOCALES: sets number of locales if arkouda\_server is built with multilocale support
 * ARKOUDA\_VERBOSE: if True, logging is set to DEBUG. Defaults to False
 * ARKOUDA\_CLIENT\_TIMEOUT: the connection timeout for arkouda client. Defaults to 10 seconds
+* ARKOUDA\_LOG\_LEVEL: the ArkoudaLogger level, can be DEBUG, INFO, WARNING, ERROR, or CRITICAL, defaults to INFO
 
 NOTE: the Arkouda pytest env variables can be set within the pytest.ini file as above or in .bashrc or .bash_profile
 

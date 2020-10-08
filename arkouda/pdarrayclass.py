@@ -1,13 +1,16 @@
 from typing import Tuple, Union
-import json, struct
+import json, os, struct
 import numpy as np
 from arkouda.client import generic_msg, verbose, maxTransferBytes, pdarrayIterThresh
 from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
+from arkouda.logger import getArkoudaLogger
 
 __all__ = ["pdarray", "info", "any", "all", "is_sorted", "sum", "prod", 
            "min", "max", "argmin", "argmax", "mean", "var", "std", "mink", 
            "maxk", "argmink", "argmaxk"]
+
+logger = getArkoudaLogger(name='pdarray')    
 
 def parse_single_value(msg : str) -> object:
     """
@@ -421,7 +424,7 @@ class pdarray:
                 raise IndexError("[int] {} is out of bounds with size {}".format(orig_key,self.size))
         if isinstance(key, slice):
             (start,stop,stride) = key.indices(self.size)
-            if verbose: print(start,stop,stride)
+            logger.debug(start,stop,stride)
             repMsg = generic_msg("[slice] {} {} {} {}".format(self.name, start, stop, stride))
             return create_pdarray(repMsg);
         if isinstance(key, pdarray):
@@ -458,7 +461,7 @@ class pdarray:
                                    self.format_other(value)))
         elif isinstance(key, slice):
             (start,stop,stride) = key.indices(self.size)
-            if verbose: print(start,stop,stride)
+            logger.debug(start,stop,stride)
             if isinstance(value, pdarray):
                 generic_msg("[slice]=pdarray {} {} {} {} {}".\
                             format(self.name,start,stop,stride,value.name))
@@ -934,8 +937,8 @@ def create_pdarray(repMsg : str) -> 'pdarray':
         itemsize = int(fields[6])
     except Exception as e:
         raise ValueError(e)
-    if verbose: print("{} {} {} {} {} {}".\
-                      format(name,mydtype,size,ndim,shape,itemsize))
+    logger.debug("{} {} {} {} {} {}".format(name, mydtype, size, 
+                                    ndim, shape, itemsize))
     return pdarray(name, mydtype, size, ndim, shape, itemsize)
 
 def info(pda : Union[pdarray, str]) -> str:
