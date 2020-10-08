@@ -1,8 +1,10 @@
-import unittest
+import os, unittest
 from context import arkouda
-from arkouda.logger import *
+import arkouda as ak
+from arkouda.logger import LogLevel, getArkoudaLogger, getArkoudaClientLogger
 from logging import StreamHandler, DEBUG, INFO, WARN, \
-     ERROR, CRITICAL, FileHandler
+     FileHandler
+
 '''
 Tests Arkouda logging functionality
 '''
@@ -45,7 +47,7 @@ class LoggerTest(unittest.TestCase):
         handlerOne = StreamHandler()
         handlerOne.name = 'handler-one'
         handlerOne.setLevel(DEBUG)
-        handlerTwo = FileHandler(filename='/tmp/output.txt')
+        handlerTwo = FileHandler(filename='output.txt')
         handlerTwo.name = 'handler-two'
         handlerTwo.setLevel(INFO)
         logger = getArkoudaLogger(name='UpdateLogger', 
@@ -55,7 +57,7 @@ class LoggerTest(unittest.TestCase):
         self.assertEqual(INFO, handlerTwo.level)
 
     def testVerbosityControls(self):
-        logger = ArkoudaLogger(name='VerboseLogger', logLevel=LogLevel('INFO'))
+        logger = getArkoudaLogger(name='VerboseLogger', logLevel=LogLevel('INFO'))
 
         self.assertEqual(INFO, logger.getHandler('console-handler').level)
         logger.debug('non-working debug message')     
@@ -65,3 +67,20 @@ class LoggerTest(unittest.TestCase):
         logger.disableVerbose() 
         self.assertEqual(INFO, logger.getHandler('console-handler').level)
         logger.debug('next non-working debug message') 
+        
+    def testEnableDisableVerbose(self):  
+        loggerOne = getArkoudaLogger(name='loggerOne',logLevel=LogLevel.INFO)
+        loggerTwo = getArkoudaLogger('loggerTwo', logLevel=LogLevel.INFO)
+        
+        loggerOne.debug('loggerOne before enableVerbose')
+        loggerTwo.debug('loggerTwo before enableVerbose')
+        ak.enableVerbose()
+        loggerOne.debug('loggerOne after enableVerbose')
+        loggerTwo.debug('loggerTwo after enableVerbose')     
+        ak.disableVerbose()
+        loggerOne.debug('loggerOne after disableVerbose')
+        loggerTwo.debug('loggerTwo after disableVerbose')  
+    
+    @classmethod
+    def tearDownClass(cls):
+        os.remove('output.txt')            

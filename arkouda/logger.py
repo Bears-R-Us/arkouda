@@ -4,9 +4,9 @@ from logging import Logger, Formatter, Handler, StreamHandler, DEBUG, \
      INFO, WARN, ERROR, CRITICAL
 from enum import Enum
 
-__all__ = ['ArkoudaLogger', 'LogLevel', 'getArkoudaLogger', 
-           'getArkoudaClientLogger']
+__all__ = ['enableVerbose', 'disableVerbose']
 
+loggers = {}
 
 """
 The LogLevel enum class defines the log levels for the ArkoudaLogger, the
@@ -38,6 +38,10 @@ at varying levels including debug, info, critical, warn, and error
         messages, defaults to list containing a single StreamHandler object
 """  
 class ArkoudaLogger(Logger):
+    
+    DEFAULT_LOG_FORMAT = '[%(name)s] Line %(lineno)d %(levelname)s: %(message)s'
+    
+    CLIENT_LOG_FORMAT = ''
     
     levelMappings = {
         LogLevel.DEBUG: DEBUG,
@@ -194,8 +198,8 @@ class ArkoudaLogger(Logger):
 
         
 def getArkoudaLogger(name : str, handlers : Optional[List[Handler]]=None, 
-                                logFormat : Optional[str]= \
-        '[%(name)s] Line %(lineno)d %(levelname)s: %(message)s') -> ArkoudaLogger:
+                     logFormat : Optional[str]= ArkoudaLogger.DEFAULT_LOG_FORMAT,
+                     logLevel : LogLevel=None) -> ArkoudaLogger:
     """
     A convenience method for instantiating an ArkoudaLogger that retrieves the 
     logging level from the ARKOUDA_LOG_LEVEL env variable
@@ -222,8 +226,13 @@ def getArkoudaLogger(name : str, handlers : Optional[List[Handler]]=None,
     object as follows: handler.name = <desired name>, which will enable retrieval
     and updates for the specified handler.
     """
-    return ArkoudaLogger(name=name, handlers=handlers, logFormat=logFormat, 
-                logLevel=LogLevel(os.getenv('ARKOUDA_LOG_LEVEL', LogLevel('INFO'))))
+    if not logLevel:
+        logLevel = LogLevel(os.getenv('ARKOUDA_LOG_LEVEL', LogLevel('INFO')))
+    
+    logger = ArkoudaLogger(name=name, handlers=handlers, logFormat=logFormat, 
+                logLevel=logLevel)
+    loggers[logger.name] = logger
+    return logger
     
 def getArkoudaClientLogger(name : str) -> ArkoudaLogger:
     """
@@ -246,4 +255,24 @@ def getArkoudaClientLogger(name : str) -> ArkoudaLogger:
     stdout, making it suitable for logging messages users will see such as 
     confirmation of successful login or pdarray creation
     """
-    return getArkoudaLogger(name=name, logFormat='')
+    return getArkoudaLogger(name=name, logFormat=ArkoudaLogger.CLIENT_LOG_FORMAT)
+
+def enableVerbose() -> None:
+    """
+    Enables verbose logging (DEBUG log level) for all ArkoudaLoggers
+    """
+    for logger in loggers.values():
+        logger.enableVerbose()
+        
+def disableVerbose(logLevel : LogLevel=LogLevel.INFO) -> None:
+    """
+    Disables verbose logging (DEBUG log level) for all ArkoudaLoggers, setting
+    the log level for each to the logLevel parameter
+    
+    Parameters
+    ----------
+    logLevel : LogLevel
+        The new log level, defaultts to LogLevel.INFO
+    """
+    for logger in loggers.values():
+        logger.disableVerbose(logLevel)
