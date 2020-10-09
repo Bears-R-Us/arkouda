@@ -1,0 +1,22 @@
+# Build Chapel
+git clone --depth=1 git@github.com:chapel-lang/chapel.git --branch release/1.22 chapel-1.22
+cd chapel-1.22 && source util/setchplenv.bash && make -j && cd ../
+
+git clone --depth=1 git@github.com:chapel-lang/chapel.git --branch release/1.23 chapel-1.23
+cd chapel-1.23 && source util/setchplenv.bash && make -j && cd ../
+
+
+# Build Arkouda
+cd chapel-1.22 && source util/setchplenv.bash && cd ../
+git clone git@github.com:mhmerrill/arkouda.git 1.22-old-arkouda && cd 1.22-old-arkouda && git checkout f8a7422 && make && cd ../
+
+cd chapel-1.22 && source util/setchplenv.bash && cd ../
+git clone git@github.com:mhmerrill/arkouda.git 1.22-cur-arkouda && cd 1.22-cur-arkouda && git checkout bc06135 && make && cd ../
+
+cd chapel-1.23 && source util/setchplenv.bash && cd ../
+git clone git@github.com:mhmerrill/arkouda.git 1.23-cur-arkouda && cd 1.23-cur-arkouda && git checkout bc06135 && make && cd ../
+
+
+# Install Arkouda 
+export PYTHONUSERBASE=$PWD/python-deps
+python3 -m pip install -e .[dev] --user
