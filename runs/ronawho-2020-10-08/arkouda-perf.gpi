@@ -1,0 +1,101 @@
+#!/usr/bin/env gnuplot
+
+# Performance for Chapel 1.23 and 10/06/20 Arkouda across systems
+
+load 'chapel-settings.gpi'
+
+set ylabel "GiB/s"
+
+set key Left
+set key inside left width -2
+set key invert
+
+set xlabel "Locales"
+set xtics (1,2,4,8,16,32)
+
+set title "Arkouda Gather Performance\n{/*0.7 8 GiB arrays}"
+set output "ak-gather-perf-lg.pdf"
+plot \
+      'cray-xc/data/1.23-cur-arkouda/lg-gather.dat' every ::0::5 using 1:3 title " Cray XC (Aries)"   with linespoints linestyle 2,  \
+  'cray-cs-fdr/data/1.23-cur-arkouda/lg-gather.dat' every ::0::5 using 1:3 title " Cray CS (FDR IB)"  with linespoints linestyle 3,  \
+  'cray-cs-hdr/data/1.23-cur-arkouda/lg-gather.dat' every ::0::5 using 1:3 title " Cray CS (HDR IB)"  with linespoints linestyle 4,  \
+
+set title "Arkouda Scatter Performance\n{/*0.7 8 GiB arrays}"
+set output "ak-scatter-perf-lg.pdf"
+plot \
+      'cray-xc/data/1.23-cur-arkouda/lg-scatter.dat' every ::0::5 using 1:3 title " Cray XC (Aries)"   with linespoints linestyle 2,  \
+  'cray-cs-fdr/data/1.23-cur-arkouda/lg-scatter.dat' every ::0::5 using 1:3 title " Cray CS (FDR IB)"  with linespoints linestyle 3,  \
+  'cray-cs-hdr/data/1.23-cur-arkouda/lg-scatter.dat' every ::0::5 using 1:3 title " Cray CS (HDR IB)"  with linespoints linestyle 4,  \
+
+set title "Arkouda Argsort Performance\n{/*0.7 8 GiB arrays}"
+set output "ak-argsort-perf-lg.pdf"
+plot \
+      'cray-xc/data/1.23-cur-arkouda/lg-argsort.dat' every ::0::5 using 1:3 title " Cray XC (Aries)"   with linespoints linestyle 2,  \
+  'cray-cs-fdr/data/1.23-cur-arkouda/lg-argsort.dat' every ::0::5 using 1:3 title " Cray CS (FDR IB)"  with linespoints linestyle 3,  \
+  'cray-cs-hdr/data/1.23-cur-arkouda/lg-argsort.dat' every ::0::5 using 1:3 title " Cray CS (HDR IB)"  with linespoints linestyle 4,  \
+
+set title "Arkouda Stream Performance\n{/*0.7 8 GiB arrays}"
+set output "ak-stream-perf-lg.pdf"
+plot \
+      'cray-xc/data/1.23-cur-arkouda/lg-stream.dat' every ::0::5 using 1:3 title " Cray XC (Aries)"   with linespoints linestyle 2,  \
+  'cray-cs-fdr/data/1.23-cur-arkouda/lg-stream.dat' every ::0::5 using 1:3 title " Cray CS (FDR IB)"  with linespoints linestyle 3,  \
+  'cray-cs-hdr/data/1.23-cur-arkouda/lg-stream.dat' every ::0::5 using 1:3 title " Cray CS (HDR IB)"  with linespoints linestyle 4,  \
+
+set title "Arkouda Scan Performance\n{/*0.7 8 GiB arrays}"
+set output "ak-scan-perf-lg.pdf"
+plot \
+      'cray-xc/data/1.23-cur-arkouda/lg-scan.dat' every ::0::5 using 1:3 title " Cray XC (Aries)"   with linespoints linestyle 2,  \
+  'cray-cs-fdr/data/1.23-cur-arkouda/lg-scan.dat' every ::0::5 using 1:3 title " Cray CS (FDR IB)"  with linespoints linestyle 3,  \
+  'cray-cs-hdr/data/1.23-cur-arkouda/lg-scan.dat' every ::0::5 using 1:3 title " Cray CS (HDR IB)"  with linespoints linestyle 4,  \
+
+set title "Arkouda Reduce Performance\n{/*0.7 8 GiB arrays}"
+set output "ak-reduce-perf-lg.pdf"
+plot \
+      'cray-xc/data/1.23-cur-arkouda/lg-reduce.dat' every ::0::5 using 1:3 title " Cray XC (Aries)"   with linespoints linestyle 2,  \
+  'cray-cs-fdr/data/1.23-cur-arkouda/lg-reduce.dat' every ::0::5 using 1:3 title " Cray CS (FDR IB)"  with linespoints linestyle 3,  \
+  'cray-cs-hdr/data/1.23-cur-arkouda/lg-reduce.dat' every ::0::5 using 1:3 title " Cray CS (HDR IB)"  with linespoints linestyle 4,  \
+
+###
+
+set title "Arkouda Gather Performance\n{/*0.7 3/4 GiB arrays}"
+set output "ak-gather-perf-sm.pdf"
+plot \
+      'cray-xc/data/1.23-cur-arkouda/gather.dat' every ::0::5 using 1:3 title " Cray XC (Aries)"   with linespoints linestyle 2,  \
+  'cray-cs-fdr/data/1.23-cur-arkouda/gather.dat' every ::0::5 using 1:3 title " Cray CS (FDR IB)"  with linespoints linestyle 3,  \
+  'cray-cs-hdr/data/1.23-cur-arkouda/gather.dat' every ::0::5 using 1:3 title " Cray CS (HDR IB)"  with linespoints linestyle 4,  \
+
+set title "Arkouda Scatter Performance\n{/*0.7 3/4 GiB arrays}"
+set output "ak-scatter-perf-sm.pdf"
+plot \
+      'cray-xc/data/1.23-cur-arkouda/scatter.dat' every ::0::5 using 1:3 title " Cray XC (Aries)"   with linespoints linestyle 2,  \
+  'cray-cs-fdr/data/1.23-cur-arkouda/scatter.dat' every ::0::5 using 1:3 title " Cray CS (FDR IB)"  with linespoints linestyle 3,  \
+  'cray-cs-hdr/data/1.23-cur-arkouda/scatter.dat' every ::0::5 using 1:3 title " Cray CS (HDR IB)"  with linespoints linestyle 4,  \
+
+set title "Arkouda Argsort Performance\n{/*0.7 3/4 GiB arrays}"
+set output "ak-argsort-perf-sm.pdf"
+plot \
+      'cray-xc/data/1.23-cur-arkouda/argsort.dat' every ::0::5 using 1:3 title " Cray XC (Aries)"   with linespoints linestyle 2,  \
+  'cray-cs-fdr/data/1.23-cur-arkouda/argsort.dat' every ::0::5 using 1:3 title " Cray CS (FDR IB)"  with linespoints linestyle 3,  \
+  'cray-cs-hdr/data/1.23-cur-arkouda/argsort.dat' every ::0::5 using 1:3 title " Cray CS (HDR IB)"  with linespoints linestyle 4,  \
+
+set title "Arkouda Stream Performance\n{/*0.7 3/4 GiB arrays}"
+set output "ak-stream-perf-sm.pdf"
+plot \
+      'cray-xc/data/1.23-cur-arkouda/stream.dat' every ::0::5 using 1:3 title " Cray XC (Aries)"   with linespoints linestyle 2,  \
+  'cray-cs-fdr/data/1.23-cur-arkouda/stream.dat' every ::0::5 using 1:3 title " Cray CS (FDR IB)"  with linespoints linestyle 3,  \
+  'cray-cs-hdr/data/1.23-cur-arkouda/stream.dat' every ::0::5 using 1:3 title " Cray CS (HDR IB)"  with linespoints linestyle 4,  \
+
+set title "Arkouda Scan Performance\n{/*0.7 3/4 GiB arrays}"
+set output "ak-scan-perf-sm.pdf"
+plot \
+      'cray-xc/data/1.23-cur-arkouda/scan.dat' every ::0::5 using 1:3 title " Cray XC (Aries)"   with linespoints linestyle 2,  \
+  'cray-cs-fdr/data/1.23-cur-arkouda/scan.dat' every ::0::5 using 1:3 title " Cray CS (FDR IB)"  with linespoints linestyle 3,  \
+  'cray-cs-hdr/data/1.23-cur-arkouda/scan.dat' every ::0::5 using 1:3 title " Cray CS (HDR IB)"  with linespoints linestyle 4,  \
+
+set title "Arkouda Reduce Performance\n{/*0.7 3/4 GiB arrays}"
+set output "ak-reduce-perf-sm.pdf"
+plot \
+      'cray-xc/data/1.23-cur-arkouda/reduce.dat' every ::0::5 using 1:3 title " Cray XC (Aries)"   with linespoints linestyle 2,  \
+  'cray-cs-fdr/data/1.23-cur-arkouda/reduce.dat' every ::0::5 using 1:3 title " Cray CS (FDR IB)"  with linespoints linestyle 3,  \
+  'cray-cs-hdr/data/1.23-cur-arkouda/reduce.dat' every ::0::5 using 1:3 title " Cray CS (HDR IB)"  with linespoints linestyle 4,  \
+
