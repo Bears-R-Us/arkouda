@@ -464,6 +464,7 @@ module GenSymIO {
                     if GenSymIO_DEBUG {
                         writeln("Initialized int entry for dataset ", dsetName); try! stdout.flush();
                     }
+                    //Need function to get dsetname here
                     read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
                     var rname = st.nextName();
                     st.addEntry(rname, entryInt);
@@ -552,6 +553,10 @@ module GenSymIO {
                 try (dataclass, bytesize, isSigned) = 
                                            try get_dataset_info(file_id, valueDset);
                 isSegArray = true;
+            } else if isBooleanDataset(file_id, dsetName) {
+                var booleanDset = dsetName + "/" + "booleans";
+                (dataclass, bytesize, isSigned) = get_dataset_info(file_id, dsetName);
+                isSegArray = false;            
             } else {
                 (dataclass, bytesize, isSigned) = get_dataset_info(file_id, dsetName);
                 isSegArray = false;
@@ -605,6 +610,31 @@ module GenSymIO {
             C_HDF5.H5Eset_auto1(nil, nil);
             groupExists = C_HDF5.H5Oexists_by_name(file_id, 
                   "/%s/values".format(dsetName).c_str(),C_HDF5.H5P_DEFAULT);
+                
+        } catch e: Error {
+            /*
+             * If there's an actual error, print it here. :TODO: revisit this
+             * catch block after confirming the best way to handle HDF5 error
+             */
+            writeln("THE ERROR %t".format(e));
+        }
+
+        return groupExists > -1;
+    }
+
+    /*
+     * Returns a boolean indicating whether the dataset is a boolean
+     * dataset, checking if the booleans dataset is embedded within a 
+     * group named after the dsetName.
+     */
+    proc isBooleanDataset(file_id: int, dsetName: string): bool throws {
+        var groupExists = -1;
+        
+        try {
+            // Suppress HDF5 error message that's printed even with no error
+            C_HDF5.H5Eset_auto1(nil, nil);
+            groupExists = C_HDF5.H5Oexists_by_name(file_id, 
+                  "/%s/booleans".format(dsetName).c_str(),C_HDF5.H5P_DEFAULT);
                 
         } catch e: Error {
             /*
@@ -1198,16 +1228,28 @@ module GenSymIO {
 
             use C_HDF5.HDF5_WAR;
 
+            var dType : C_HDF5.hid_t = getDataType(A);
+ 
             /*
              * Write the local slice out to the top-level group of the hdf5 file.
-             */
+             */           
             H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
-                                      getHDF5Type(A.eltType), c_ptrTo(A.localSlice(locDom)));
+                                      dType, c_ptrTo(A.localSlice(locDom)));
 
             // Close the file now that the 1..n pdarrays have been written
             C_HDF5.H5Fclose(myFileID);
         }
         return warnFlag;
+    }
+    
+    proc getDataType(A) {
+        var dType : C_HDF5.hid_t;
+            
+        if A.eltType == bool {
+            return C_HDF5.H5T_NATIVE_HBOOL;
+        } else {
+            return getHDF5Type(A.eltType);
+        }    
     }
 
     /*
