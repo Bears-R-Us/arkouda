@@ -322,6 +322,9 @@ module GenSymIO {
                 if GenSymIO_DEBUG {
                     writeln("Initialized int entry"); try! stdout.flush();
                 }
+                
+                
+                
                 read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
                 var rname = st.nextName();
                 st.addEntry(rname, entryInt);
@@ -465,6 +468,7 @@ module GenSymIO {
                         writeln("Initialized int entry for dataset ", dsetName); try! stdout.flush();
                     }
                     //Need function to get dsetname here
+                    try! writeln("GETTING DSETNAME %t".format(dsetName));
                     read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
                     var rname = st.nextName();
                     st.addEntry(rname, entryInt);
@@ -933,7 +937,7 @@ module GenSymIO {
              * to create the group within the existing hdf5 file.
              */
             if mode == APPEND {
-                prepareStringsGroup(myFileID, group);
+                prepareGroup(myFileID, group);
             }
 
             /*
@@ -1224,14 +1228,24 @@ module GenSymIO {
             const locDom = A.localSubdomain();
             var dims: [0..#1] C_HDF5.hsize_t;
             dims[0] = locDom.size: C_HDF5.hsize_t;
-            var myDsetName = "/" + dsetName;
 
             use C_HDF5.HDF5_WAR;
 
-            var dType : C_HDF5.hid_t = getDataType(A);
- 
+            var dType: C_HDF5.hid_t = getDataType(A);
+
             /*
-             * Write the local slice out to the top-level group of the hdf5 file.
+             * Prepare the HDF5 group if the datatype requires the array to be written 
+             * out to a group other than the top-level HDF5 group.
+             */
+            if isGroupedDataType(dType) {
+                prepareGroup(fileId=myFileID, dsetName);
+            }
+            
+            var myDsetName = getWriteDsetName(dType=dType, dsetName=dsetName);
+
+            /*
+             * Depending upon the datatype, write the local slice out to the top-level
+             * or nested, named group within the hdf5 file corresponding to the locale.
              */           
             H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
                                       dType, c_ptrTo(A.localSlice(locDom)));
@@ -1242,7 +1256,18 @@ module GenSymIO {
         return warnFlag;
     }
     
-    proc getDataType(A) {
+    /*
+     * Returns a boolean indicating if the data type is written to an HDF5
+     * group, which currently is C_HDF5.H5T_NATIVE_HBOOL.
+     */
+    proc isGroupedDataType(dType: C_HDF5.hid_t) : bool {
+        return dType  == C_HDF5.H5T_NATIVE_HBOOL;
+    }
+    
+    /*
+     * Returns the HDF5 data type corresponding to the dataset.
+     */
+    proc getDataType(A) : C_HDF5.hid_t {
         var dType : C_HDF5.hid_t;
             
         if A.eltType == bool {
@@ -1250,6 +1275,18 @@ module GenSymIO {
         } else {
             return getHDF5Type(A.eltType);
         }    
+    }
+    
+    /*
+     * Retrieves the full dataset name including the group name, if applicable,
+     * for the dataset to be written to HDF5.
+     */
+    proc getWriteDsetName(dType: C_HDF5.hid_t, dsetName: string) : string throws {
+        if dType == C_HDF5.H5T_NATIVE_HBOOL {
+            return "/%s/booleans".format(dsetName);
+        } else {
+            return "/" + dsetName;
+        }
     }
 
     /*
@@ -1358,7 +1395,7 @@ module GenSymIO {
               file_id = C_HDF5.H5Fcreate(filenames[loc].c_str(), C_HDF5.H5F_ACC_TRUNC,
                                                         C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
               
-              prepareStringsGroup(file_id, group);
+              prepareGroup(file_id, group);
 
               if file_id < 0 { // Negative file_id means error
                   throw new owned FileNotFoundError();
@@ -1647,20 +1684,20 @@ module GenSymIO {
     private proc getGroup(dsetName : string) : string throws {
         var values = dsetName.split('/');
         if values.size < 1 {
-            throw new IllegalArgumentError('The Strings dataset must be in form {dset}/values');
+            throw new IllegalArgumentError('The Strings or Booleans dataset must be in form {dset}/values');
         } else {
             return values[0];
         }
     }
 
     /*
-     * Creates an HDF5 Group named via the group parameter to store a String
-     * object's segments and values pdarrays.
+     * Creates an HDF5 Group named via the group parameter to store a grouped
+     * object's data and metadata.
      * 
      * Note: The file corresponding to the fileId must be open prior to 
      * attempting the group create.
      */
-    private proc prepareStringsGroup(fileId: int, group: string) throws {
+    private proc prepareGroup(fileId: int, group: string) throws {
         var groupId = C_HDF5.H5Gcreate2(fileId, "/%s".format(group).c_str(),
               C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
         C_HDF5.H5Gclose(groupId);
