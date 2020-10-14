@@ -1,0 +1,7 @@
+Locales 	cumsum Average time =	cumsum Average rate =	cumprod Average time =	cumprod Average rate =
+1	1.0018	15.97	1.2028	13.30
+2	1.0595	30.20	1.1746	27.24
+4	1.1921	53.69	1.2430	51.49
+8	1.5398	83.13	1.2433	102.95
+16	2.1489	119.13	1.8262	140.18
+32	1.6777	305.18	1.5593	328.34
