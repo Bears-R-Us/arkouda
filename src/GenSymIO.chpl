@@ -460,7 +460,6 @@ module GenSymIO {
                     rnames = rnames + "created " + st.attrib(segName) + " +created " + st.attrib(valName) + " , ";
                 }
                 when (false, C_HDF5.H5T_INTEGER) {
-                    
                     var entryInt = new shared SymEntry(len, int);
                     if GenSymIO_DEBUG {
                         writeln("Initialized int entry for dataset ", dsetName); try! stdout.flush();
@@ -468,12 +467,19 @@ module GenSymIO {
                     read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
                     var rname = st.nextName();
                     
+                    /*
+                     * Since boolean pdarrays are saved to and read from HDF5 as ints, confirm whether this
+                     * is actually a boolean dataset. If so, (1) convert the SymEntry pdarray to a boolean 
+                     * pdarray, (2) create a new SymEntry of type bool, (3) set the SymEntry pdarray 
+                     * reference to the bool pdarray, and (4) add the entry to the SymTable
+                     */
                     if isBooleanDataset(filenames[0],dsetName) {
                         var a_bool = entryInt.a:bool;
                         var entryBool = new shared SymEntry(len, bool);
                         entryBool.a = a_bool;
                         st.addEntry(rname, entryBool);
                     } else {
+                        // Not a boolean dataset, so add original SymEntry to SymTable
                         st.addEntry(rname, entryInt);
                     }
                     rnames = rnames + "created " + st.attrib(rname) + " , ";
