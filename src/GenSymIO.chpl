@@ -257,7 +257,7 @@ module GenSymIO {
             } catch e: PermissionError {
                 return try! "Error: permission error on %s".format(fname);
             } catch e: DatasetNotFoundError {
-                try! writeln(e.message());
+                try! writeln("THE ERROR %s".format(e.message()));
                 return try! "Error: %s".format(e.message());
             } catch e: NotHDF5FileError {
                 return try! "Error: cannot open as HDF5 file %s".format(fname);
@@ -518,7 +518,9 @@ module GenSymIO {
         const READABLE = (S_IRUSR | S_IRGRP | S_IROTH);
 
         if !exists(filename) {
-            throw new owned FileNotFoundError();
+            throw getErrorWithContext(msg="The file %s does not exist".format(filename),
+                lineNumber=getLineNumber(), routineName=getRoutineName(), 
+                moduleName=getModuleName(), errorClass="FileNotFoundError");
         }
 
         if !(getMode(filename) & READABLE) {
@@ -804,6 +806,7 @@ module GenSymIO {
                 }
             }
         } catch e: FileNotFoundError {
+              try! writeln(e.message());
               return try! "Error: unable to open file for writing: %s".format(filename);
         } catch e: MismatchedAppendError {
               return "Error: appending to existing files must be done with the same number" +
@@ -1328,7 +1331,9 @@ module GenSymIO {
               prepareStringsGroup(file_id, group);
 
               if file_id < 0 { // Negative file_id means error
-                  throw new owned FileNotFoundError();
+                  throw getErrorWithContext(msg="The file %s does not exist".format(filenames[loc]),
+                                    lineNumber=getLineNumber(), routineName=getRoutineName(), 
+                                    moduleName=getModuleName(), errorClass='FileNotFoundError');
               }
 
               /*
@@ -1384,7 +1389,9 @@ module GenSymIO {
                                                       C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
 
               if file_id < 0 { // Negative file_id means error
-                  throw new owned FileNotFoundError();
+                  throw getErrorWithContext(msg="The file %s does not exist".format(filenames[loc]),
+                                    lineNumber=getLineNumber(), routineName=getRoutineName(), 
+                                    moduleName=getModuleName(), errorClass='FileNotFoundError');
               }
 
               /*
