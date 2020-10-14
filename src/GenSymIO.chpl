@@ -321,10 +321,7 @@ module GenSymIO {
                 var entryInt = new shared SymEntry(len, int);
                 if GenSymIO_DEBUG {
                     writeln("Initialized int entry"); try! stdout.flush();
-                }
-                
-                
-                
+                }                
                 read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
                 var rname = st.nextName();
                 st.addEntry(rname, entryInt);
@@ -463,15 +460,22 @@ module GenSymIO {
                     rnames = rnames + "created " + st.attrib(segName) + " +created " + st.attrib(valName) + " , ";
                 }
                 when (false, C_HDF5.H5T_INTEGER) {
+                    
                     var entryInt = new shared SymEntry(len, int);
                     if GenSymIO_DEBUG {
                         writeln("Initialized int entry for dataset ", dsetName); try! stdout.flush();
                     }
-                    //Need function to get dsetname here
-                    try! writeln("GETTING DSETNAME %t".format(dsetName));
                     read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
                     var rname = st.nextName();
-                    st.addEntry(rname, entryInt);
+                    
+                    if isBooleanDataset(filenames[0],dsetName) {
+                        var a_bool = entryInt.a:bool;
+                        var entryBool = new shared SymEntry(len, bool);
+                        entryBool.a = a_bool;
+                        st.addEntry(rname, entryBool);
+                    } else {
+                        st.addEntry(rname, entryInt);
+                    }
                     rnames = rnames + "created " + st.attrib(rname) + " , ";
                 }
                 when (false, C_HDF5.H5T_FLOAT) {
@@ -535,7 +539,9 @@ module GenSymIO {
             throw new owned NotHDF5FileError();
         }
 
-        if !C_HDF5.H5Lexists(file_id, dsetName.c_str(), C_HDF5.H5P_DEFAULT) {
+        var dName = getReadDsetName(file_id, dsetName);
+
+        if !C_HDF5.H5Lexists(file_id, dName.c_str(), C_HDF5.H5P_DEFAULT) {
             C_HDF5.H5Fclose(file_id);
             throw new owned DatasetNotFoundError();
         }
@@ -559,7 +565,7 @@ module GenSymIO {
                 isSegArray = true;
             } else if isBooleanDataset(file_id, dsetName) {
                 var booleanDset = dsetName + "/" + "booleans";
-                (dataclass, bytesize, isSigned) = get_dataset_info(file_id, dsetName);
+                (dataclass, bytesize, isSigned) = get_dataset_info(file_id, booleanDset);
                 isSegArray = false;            
             } else {
                 (dataclass, bytesize, isSigned) = get_dataset_info(file_id, dsetName);
@@ -620,7 +626,7 @@ module GenSymIO {
              * If there's an actual error, print it here. :TODO: revisit this
              * catch block after confirming the best way to handle HDF5 error
              */
-            writeln("THE ERROR %t".format(e));
+            writeln("Error in isStringsDataset: %t".format(e));
         }
 
         return groupExists > -1;
@@ -631,7 +637,7 @@ module GenSymIO {
      * dataset, checking if the booleans dataset is embedded within a 
      * group named after the dsetName.
      */
-    proc isBooleanDataset(file_id: int, dsetName: string): bool throws {
+    proc isBooleanDataset(file_id: int, dsetName: string): bool {
         var groupExists = -1;
         
         try {
@@ -645,10 +651,40 @@ module GenSymIO {
              * If there's an actual error, print it here. :TODO: revisit this
              * catch block after confirming the best way to handle HDF5 error
              */
-            writeln("THE ERROR %t".format(e));
+            try! writeln("Error in isBooleanDataset with file id %t".format(e));  
         }
 
         return groupExists > -1;
+    }
+
+    /*
+     * Overloaded method returns a boolean indicating whether the dataset is a
+     * boolean dataset, checking if the booleans dataset is embedded within a 
+     * group named after the dsetName. This implementation retrieves the file id
+     * for a file name and invokes isBooleanDataset with file id.
+     */
+    proc isBooleanDataset(fileName: string, dsetName: string): bool {
+        var fileId = C_HDF5.H5Fopen(fileName.c_str(), C_HDF5.H5F_ACC_RDONLY, 
+                                           C_HDF5.H5P_DEFAULT);                  
+        var boolDataset: bool;
+
+        try {
+            boolDataset = isBooleanDataset(fileId, dsetName);
+            /*
+             * Put close function call in defer block to ensure it's invoked, 
+             * which prevents accumulation of open file descriptors
+             */
+            defer {
+                C_HDF5.H5Fclose(fileId);
+            }
+        } catch e: Error {
+            /*
+             * If there's an actual error, print it here. :TODO: revisit this
+             * catch block after confirming the best way to handle HDF5 error
+             */
+            try! writeln("Error in isBooleanDataset with file name %t".format(e));        
+        }
+        return boolDataset;
     }
 
     /*
@@ -660,21 +696,26 @@ module GenSymIO {
 
         var lengths: [FD] int;
         for (i, filename) in zip(FD, filenames) {
-            var file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, 
+            try {
+                var file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, 
                                            C_HDF5.H5P_DEFAULT);
-            var dims: [0..#1] C_HDF5.hsize_t; // Only rank 1 for now
-//      var dsetRank: c_int;
-//      // Verify 1D array
-//      C_HDF5.H5LTget_dataset_ndims(file_id, dsetName.c_str(), dsetRank);
-//      if dsetRank != 1 {
-//        // TODO: change this to a throw
-//        // halt("Expected 1D array, got rank " + dsetRank);
-//        throw new owned HDF5RankError(dsetRank, filename, dsetName);
-//      }
-            // Read array length into dims[0]
-            C_HDF5.HDF5_WAR.H5LTget_dataset_info_WAR(file_id, dsetName.c_str(), c_ptrTo(dims), nil, nil);
-            C_HDF5.H5Fclose(file_id);
-            lengths[i] = dims[0]: int;
+                var dims: [0..#1] C_HDF5.hsize_t; // Only rank 1 for now
+                var dName = try! getReadDsetName(file_id, dsetName);
+
+                // Read array length into dims[0]
+                C_HDF5.HDF5_WAR.H5LTget_dataset_info_WAR(file_id, dName.c_str(), 
+                                           c_ptrTo(dims), nil, nil);
+                defer {
+                    /*
+                     * Put close function call in defer block to ensure it's invoked, 
+                     * which prevents accumulation of open file descriptors
+                     */
+                    C_HDF5.H5Fclose(file_id);
+                }
+                lengths[i] = dims[0]: int;
+            } catch e: Error {
+                throw new Error("Error in getting dataset info %s".format(e.message()));
+            }
         }
         // Compute subdomain of master array contained in each file
         var subdoms: [FD] domain(1);
@@ -694,11 +735,11 @@ module GenSymIO {
                 writeln("entry.a.targetLocales() = ", A.targetLocales()); try! stdout.flush();
                 writeln("Filedomains: ", filedomains); try! stdout.flush();
             }
+
             coforall loc in A.targetLocales() do on loc {
                 // Create local copies of args
                 var locFiles = filenames;
                 var locFiledoms = filedomains;
-                var locDset = dsetName;
                 /* On this locale, find all files containing data that belongs in
                  this locale's chunk of A */
                 for (filedom, filename) in zip(locFiledoms, locFiles) {
@@ -712,8 +753,9 @@ module GenSymIO {
                             // Only open the file once, even if it intersects with many local subdomains
                             if !isopen {
                                 file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, 
-                                                                                        C_HDF5.H5P_DEFAULT);
-                                dataset = C_HDF5.H5Dopen(file_id, locDset.c_str(), C_HDF5.H5P_DEFAULT);
+                                                                                        C_HDF5.H5P_DEFAULT);  
+                                var locDsetName = try! getReadDsetName(file_id,dsetName);                                                                                                      
+                                try! dataset = C_HDF5.H5Dopen(file_id, locDsetName.c_str(), C_HDF5.H5P_DEFAULT);
                                 isopen = true;
                             }
                             // do A[intersection] = file[intersection - offset]
@@ -773,7 +815,9 @@ module GenSymIO {
                 // TODO: use select_hyperslab to read directly into a strided slice of A
                 // Read file into a temporary array and copy into the correct chunk of A
                 var AA: [1..filedom.size] A.eltType;
-                readHDF5Dataset(file_id, dsetName, AA);
+                
+                // Retrieve the dsetName that accounts for enclosing group, if applicable
+                try! readHDF5Dataset(file_id, getReadDsetName(file_id, dsetName), AA);
                 A[filedom] = AA;
                 C_HDF5.H5Fclose(file_id);
            }
@@ -1265,7 +1309,10 @@ module GenSymIO {
     }
     
     /*
-     * Returns the HDF5 data type corresponding to the dataset.
+     * Returns the HDF5 data type corresponding to the dataset, which delegates
+     * to getHDF5Type for all datatypes supported by Chapel. For datatypes that
+     * are not supported by Chapel, getDataType encapsulates logic to retrieve
+     * the HDF5 data type.
      */
     proc getDataType(A) : C_HDF5.hid_t {
         var dType : C_HDF5.hid_t;
@@ -1281,7 +1328,8 @@ module GenSymIO {
      * Retrieves the full dataset name including the group name, if applicable,
      * for the dataset to be written to HDF5.
      */
-    proc getWriteDsetName(dType: C_HDF5.hid_t, dsetName: string) : string throws {
+    proc getWriteDsetName(dType: C_HDF5.hid_t, 
+                                    dsetName: string) : string throws {
         if dType == C_HDF5.H5T_NATIVE_HBOOL {
             return "/%s/booleans".format(dsetName);
         } else {
@@ -1290,8 +1338,20 @@ module GenSymIO {
     }
 
     /*
-     * Returns a tuple composed of a file prefix and extension to be used to generate
-     * locale-specific filenames to be written to.
+     * Retrieves the full dataset name including the group name, if applicable,
+     * for the dataset to be read from HDF5.
+     */
+    proc getReadDsetName(file_id: int, dsetName: string) : string throws {
+        if isBooleanDataset(file_id, dsetName) {
+            return "%s/booleans".format(dsetName);
+        } else {
+            return dsetName;
+        }
+    }
+
+    /*
+     * Returns a tuple composed of a file prefix and extension to be used to
+     * generate locale-specific filenames to be written to.
      */
     proc getFileMetadata(filename : string) {
         const fields = filename.split(".");

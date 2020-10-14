@@ -6,7 +6,7 @@ from context import arkouda as ak
 from arkouda import io_util
 
 '''
-Tests writting Arkouda pdarrays to and from files
+Tests writing Arkouda pdarrays to and reading from files
 '''
 class IOTest(ArkoudaTest):
 
@@ -18,23 +18,27 @@ class IOTest(ArkoudaTest):
 
     def setUp(self):
         ArkoudaTest.setUp(self)
-        self.int_tens_pdarray = ak.array(np.random.randint(-100,100,1000))
-        self.int_tens_pdarray_dupe = ak.array(np.random.randint(-100,100,1000))
-        self.int_hundreds_pdarray = ak.array(np.random.randint(-1000,1000,1000))
-        self.int_hundreds_pdarray_dupe = ak.array(np.random.randint(-1000,1000,1000))
+        self.int_tens_pdarray = ak.randint(-100,100,1000)
+        self.int_tens_pdarray_dupe = ak.randint(-100,100,1000)
+        self.int_hundreds_pdarray = ak.randint(-1000,1000,1000)
+        self.int_hundreds_pdarray_dupe = ak.randint(-1000,1000,1000)
         self.float_pdarray = ak.array(np.random.uniform(-100,100,1000))  
         self.float_pdarray_dupe = ak.array(np.random.uniform(-100,100,1000))   
-        
+        self.bool_pdarray = ak.randint(0, 1, 1000, dtype=ak.bool)
+        self.bool_pdarray_dupe = ak.randint(0, 1, 1000, dtype=ak.bool)     
+   
         self.dict_columns =  {
            'int_tens_pdarray' : self.int_tens_pdarray,
            'int_hundreds_pdarray' : self.int_hundreds_pdarray,
-           'float_pdarray' : self.float_pdarray
+           'float_pdarray' : self.float_pdarray,
+           'bool_pdarray' : self.bool_pdarray
         }
         
         self.dict_columns_dupe =  {
            'int_tens_pdarray' : self.int_tens_pdarray_dupe,
            'int_hundreds_pdarray' : self.int_hundreds_pdarray_dupe,
-           'float_pdarray' : self.float_pdarray_dupe
+           'float_pdarray' : self.float_pdarray_dupe,
+           'bool_pdarray' : self.bool_pdarray_dupe
         }
         
         self.dict_single_column = {
@@ -44,13 +48,15 @@ class IOTest(ArkoudaTest):
         self.list_columns = [
           self.int_tens_pdarray,
           self.int_hundreds_pdarray,
-          self.float_pdarray
+          self.float_pdarray,
+          self.bool_pdarray
         ]
         
         self.names =  [
           'int_tens_pdarray',
           'int_hundreds_pdarray',
-          'float_pdarray'
+          'float_pdarray',
+          'bool_pdarray'
         ]
 
     def _create_file(self, prefix_path : str, columns : Union[Mapping[str,ak.array]], 
@@ -83,14 +89,16 @@ class IOTest(ArkoudaTest):
         self._create_file(columns=self.dict_columns, prefix_path='{}/iotest_dict'.format(IOTest.io_test_dir))
         retrieved_columns = ak.load_all('{}/iotest_dict'.format(IOTest.io_test_dir))
 
-        self.assertEqual(3, len(retrieved_columns))
+        self.assertEqual(4, len(retrieved_columns))
         self.assertEqual(self.dict_columns['int_tens_pdarray'].all(), 
                          retrieved_columns['int_tens_pdarray'].all())
         self.assertEqual(self.dict_columns['int_hundreds_pdarray'].all(), 
                          retrieved_columns['int_hundreds_pdarray'].all())
         self.assertEqual(self.dict_columns['float_pdarray'].all(), 
-                         retrieved_columns['float_pdarray'].all())      
-        self.assertEqual(3, len(ak.get_datasets('{}/iotest_dict_LOCALE0'.format(IOTest.io_test_dir))))
+                         retrieved_columns['float_pdarray'].all())    
+        self.assertEqual(self.dict_columns['bool_pdarray'].all(), 
+                         retrieved_columns['bool_pdarray'].all())    
+        self.assertEqual(4, len(ak.get_datasets('{}/iotest_dict_LOCALE0'.format(IOTest.io_test_dir))))
         
     def testSaveAllLoadAllWithList(self):
         '''
@@ -105,14 +113,16 @@ class IOTest(ArkoudaTest):
                           names=self.names)
         retrieved_columns = ak.load_all(path_prefix='{}/iotest_list'.format(IOTest.io_test_dir))
 
-        self.assertEqual(3, len(retrieved_columns))
+        self.assertEqual(4, len(retrieved_columns))
         self.assertEqual(self.list_columns[0].all(), 
                          retrieved_columns['int_tens_pdarray'].all())
         self.assertEqual(self.list_columns[1].all(), 
                          retrieved_columns['int_hundreds_pdarray'].all())
         self.assertEqual(self.list_columns[2].all(), 
                          retrieved_columns['float_pdarray'].all())      
-        self.assertEqual(3, len(ak.get_datasets('{}/iotest_list_LOCALE0'.format(IOTest.io_test_dir))))
+        self.assertEqual(self.list_columns[3].all(), 
+                         retrieved_columns['bool_pdarray'].all())    
+        self.assertEqual(4, len(ak.get_datasets('{}/iotest_list_LOCALE0'.format(IOTest.io_test_dir))))
     
     def testLsHdf(self):
         '''
@@ -180,7 +190,7 @@ class IOTest(ArkoudaTest):
                           prefix_path='{}/iotest_dict_columns'.format(IOTest.io_test_dir))
         
         dataset = ak.read_all(filenames=['{}/iotest_dict_columns_LOCALE0'.format(IOTest.io_test_dir)])
-        self.assertEqual(3, len(list(dataset.keys())))     
+        self.assertEqual(4, len(list(dataset.keys())))     
         
     def testReadAllWithGlob(self):
         '''
@@ -199,10 +209,11 @@ class IOTest(ArkoudaTest):
         
         dataset = ak.read_all(filenames='{}/iotest_dict_columns*'.format(IOTest.io_test_dir))
 
-        self.assertEqual(3, len(list(dataset.keys())))  
+        self.assertEqual(4, len(list(dataset.keys())))  
         self.assertEqual(self.int_tens_pdarray.all(), dataset['int_tens_pdarray'].all())
         self.assertEqual(self.int_hundreds_pdarray.all(), dataset['int_hundreds_pdarray'].all())
         self.assertEqual(self.float_pdarray.all(), dataset['float_pdarray'].all())
+        self.assertEqual(self.bool_pdarray.all(), dataset['bool_pdarray'].all())
 
     def testLoad(self):
         '''
@@ -221,10 +232,13 @@ class IOTest(ArkoudaTest):
                                         dataset='int_hundreds_pdarray')
         result_array_float = ak.load(path_prefix='{}/iotest_dict_columns'.format(IOTest.io_test_dir), 
                                      dataset='float_pdarray')
+        result_array_bool = ak.load(path_prefix='{}/iotest_dict_columns'.format(IOTest.io_test_dir), 
+                                     dataset='bool_pdarray')
 
         self.assertEqual(self.int_tens_pdarray.all(), result_array_tens.all())
         self.assertEqual(self.int_hundreds_pdarray.all(), result_array_hundreds.all())
         self.assertEqual(self.float_pdarray.all(), result_array_float.all())
+        self.assertEqual(self.bool_pdarray.all(), result_array_bool.all())
         
     def testGetDataSets(self):
         '''
@@ -238,7 +252,7 @@ class IOTest(ArkoudaTest):
                           prefix_path='{}/iotest_dict_columns'.format(IOTest.io_test_dir))     
         datasets = ak.get_datasets('{}/iotest_dict_columns_LOCALE0'.format(IOTest.io_test_dir))
 
-        self.assertEqual(3, len(datasets)) 
+        self.assertEqual(4, len(datasets)) 
         for dataset in datasets:
             self.assertIn(dataset, self.names)
 
