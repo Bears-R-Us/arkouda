@@ -146,6 +146,14 @@ module MultiTypeSymbolTable
                 if (v) {writeln("deleteEntry: unkown symbol ",name);try! stdout.flush();}
             }
         }
+
+        /*
+        Clears all unregistered entries from the symTable
+        */
+        proc clear() {
+            for n in tab { deleteEntry(n); }
+        }
+
         
         /*
         Returns the sym entry associated with the provided name, if the sym entry exists

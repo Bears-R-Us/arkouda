@@ -83,6 +83,25 @@ module MsgProcessing
     }
 
     /* 
+    Clear all unregistered symbols and associated data from sym table
+    
+    :arg reqMsg: request containing (cmd)
+    :type reqMsg: string 
+
+    :arg st: SymTab to act on
+    :type st: borrowed SymTab 
+
+    :returns: (string)
+     */
+    proc clearMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+        var repMsg: string; // response message
+        var (_) = payload.decode().splitMsgToTuple(1); // split request into fields
+        if v {try! writeln("%s".format(cmd));try! stdout.flush();}
+        st.clear();
+        return "success";
+    }
+
+    /* 
     Takes the name of data referenced in a msg and searches for the name in the provided sym table.
     Returns a string of info for the sym entry that is mapped to the provided name.
 
