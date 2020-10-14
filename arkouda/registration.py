@@ -4,7 +4,7 @@ from arkouda.pdarrayclass import pdarray, create_pdarray
 
 global verbose
 
-__all__ = ["register_pda","attach_pda","unregister_pda"]
+__all__ = ["register_pda", "attach_pda", "unregister_pda"]
 
 def register_pda(pda : pdarray, user_defined_name : str) -> pdarray:
     """
