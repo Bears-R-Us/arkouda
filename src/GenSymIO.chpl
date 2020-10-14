@@ -474,9 +474,9 @@ module GenSymIO {
                      * reference to the bool pdarray, and (4) add the entry to the SymTable
                      */
                     if isBooleanDataset(filenames[0],dsetName) {
-                        var a_bool = entryInt.a:bool;
+                        //var a_bool = entryInt.a:bool;
                         var entryBool = new shared SymEntry(len, bool);
-                        entryBool.a = a_bool;
+                        entryBool.a = entryInt.a:bool;
                         st.addEntry(rname, entryBool);
                     } else {
                         // Not a boolean dataset, so add original SymEntry to SymTable
