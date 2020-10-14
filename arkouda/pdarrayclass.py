@@ -6,7 +6,7 @@ from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
 from arkouda.logger import getArkoudaLogger
 
-__all__ = ["pdarray", "info", "any", "all", "is_sorted", "sum", "prod", 
+__all__ = ["pdarray", "info", "clear", "any", "all", "is_sorted", "sum", "prod", 
            "min", "max", "argmin", "argmax", "mean", "var", "std", "mink", 
            "maxk", "argmink", "argmaxk"]
 
@@ -969,6 +969,21 @@ def info(pda : Union[pdarray, str]) -> str:
         return generic_msg("info {}".format(pda))
     else:
         raise TypeError("info: must be pdarray or string {}".format(pda))
+
+def clear() -> None:
+    """
+    Send a no-op message just to gather round trip time
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------  
+    RuntimeError
+        Raised if there is a server-side error in executing clear request
+    """
+    generic_msg("clear")
 
 def any(pda : 'pdarray') -> bool:
     """

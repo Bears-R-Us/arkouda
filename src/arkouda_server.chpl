@@ -261,6 +261,7 @@ proc main() {
                 when "register"          {repMsg = registerMsg(cmd, payload, st);}
                 when "attach"            {repMsg = attachMsg(cmd, payload, st);}
                 when "unregister"        {repMsg = unregisterMsg(cmd, payload, st);}
+                when "clear"             {repMsg = clearMsg(cmd, payload, st);}
                 when "connect" {
                     if authenticate {
                         repMsg = "connected to arkouda server tcp://*:%t as user %s with token %s".format(ServerPort,user,token);
