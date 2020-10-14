@@ -972,7 +972,7 @@ def info(pda : Union[pdarray, str]) -> str:
 
 def clear() -> None:
     """
-    Send a no-op message just to gather round trip time
+    Send a clear message to clear all unregistered data from the server symbol table
 
     Returns
     -------
