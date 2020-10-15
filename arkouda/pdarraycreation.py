@@ -450,7 +450,7 @@ def randint(low : int, high : int, size : int, dtype=int64) -> pdarray:
     return create_pdarray(repMsg)
 
 
-def uniform(size : int, low : float=0.0, high : float=1.0):
+def uniform(size : int, low : float=0.0, high : float=1.0) -> pdarray:
     """
     Generate a pdarray with uniformly distributed random values 
     in a specified range.
@@ -474,7 +474,7 @@ def uniform(size : int, low : float=0.0, high : float=1.0):
     >>> ak.uniform(3)
     array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])
     """
-    return randint(size, low=low, high=high, dtype='float64')
+    return randint(low=low, high=high, size=size, dtype='float64')
     
 
 def standard_normal(size : int) -> pdarray:
