@@ -34,4 +34,4 @@ Cray-CS Configuration:
 ---
  - 128-core (256 HT), 256 GB RAM
    - dual 64-core (128 HT) "Rome" 2.0 GHz processors
- - 200 Gb FDR InfiniBand network
+ - 200 Gb HDR InfiniBand network
