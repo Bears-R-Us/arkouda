@@ -133,7 +133,7 @@ module MultiTypeSymbolTable
         }
 
         /*
-        Removes an entry from the symTable
+        Removes an unregistered entry from the symTable
 
         :arg name: name of the array
         :type name: string
@@ -151,7 +151,7 @@ module MultiTypeSymbolTable
         Clears all unregistered entries from the symTable
         */
         proc clear() {
-            for n in tab { deleteEntry(n); }
+            for n in tab.keysToArray() { deleteEntry(n); }
         }
 
         
