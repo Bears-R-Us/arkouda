@@ -344,7 +344,16 @@ module GenSymIO {
                 return try! "created " + st.attrib(rname);
             }
             otherwise {
-                return try! "Error: detected unhandled datatype: segmented? %t, class %i, size %i, signed? %t".format(isSegArray, dataclass, bytesize, isSigned);
+                var errorMsg = try! "Error: detected unhandled datatype: segmented? " +
+                               "%t, class %i, size %i, signed? %t".format(isSegArray, 
+                               dataclass, bytesize, isSigned);
+                try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="IllegalArgumentError"));
+                return "Error: %s".format(errorMsg);
             }
         }
     }
@@ -511,7 +520,15 @@ module GenSymIO {
                     rnames = rnames + "created " + st.attrib(rname) + " , ";
                 }
                 otherwise {
-                    return try! "Error: detected unhandled datatype: segmented? %t, class %i, size %i, signed? %t".format(isSegArray, dataclass, bytesize, isSigned);
+                    var errorMsg = try! "detected unhandled datatype: segmented? %t, class %i, size %i, " +
+                                   "signed? %t".format(isSegArray, dataclass, bytesize, isSigned);
+                    try! writeln(generateErrorContext(
+                                msg=errorMsg, 
+                                lineNumber=getLineNumber(), 
+                                moduleName=getModuleName(), 
+                                routineName=getRoutineName(), 
+                                errorClass="UnrecognizedTypeError")); 
+                    return try! "Error: %".format(errorMsg);
                 }
             }
         }
@@ -586,8 +603,7 @@ module GenSymIO {
                  lineNumber=getLineNumber(), 
                  routineName=getRoutineName(), 
                  moduleName=getModuleName(), 
-                 errorClass='DatasetNotFoundError'
-            );
+                 errorClass='DatasetNotFoundError');
         }
 
         var dataclass: C_HDF5.H5T_class_t;
@@ -626,8 +642,12 @@ module GenSymIO {
             }
         } catch e : Error {
             //:TODO: recommend revisiting this catch block 
-            try! writeln(e.message());
-            throw e;
+            throw getErrorWithContext( 
+                msg="in getting_dataset_info %s".format(e.message()), 
+                lineNumber=getLineNumber(),
+                routineName=getRoutineName(),
+                moduleName=getModuleName(),
+                errorClass='Error');
         }
         return (isSegArray, dataclass, bytesize, isSigned);
     }
@@ -947,7 +967,14 @@ module GenSymIO {
                     var e = toSymEntry(entry, uint(8));
                     warnFlag = write1DDistStrings(filename, mode, dsetName, e.a, DType.UInt8);
                 } otherwise {
-                    return unrecognizedTypeError("tohdf", dtype2str(entry.dtype));
+                    var errorMsg = unrecognizedTypeError("tohdf", dtype2str(entry.dtype));
+                    try! writeln(generateErrorContext(
+                                msg=errorMsg, 
+                                lineNumber=getLineNumber(), 
+                                moduleName=getModuleName(), 
+                                routineName=getRoutineName(), 
+                                errorClass="UnrecognizedTypeError"));                   
+                    return errorMsg;
                 }
             }
         } catch e: FileNotFoundError {
@@ -960,7 +987,14 @@ module GenSymIO {
               try! writeln(e.message());
               return e.publish();
         } catch e: Error {
-              return "Error: problem writing to file %s".format(e);
+              var errorMsg = "problem writing to file %s".format(e);
+              try! writeln(generateErrorContext(
+                            msg=errorMsg, 
+                            lineNumber=getLineNumber(), 
+                            moduleName=getModuleName(), 
+                            routineName=getRoutineName(), 
+                            errorClass="UnrecognizedTypeError"));  
+              return "Error: %s".format(errorMsg);
         }
         if warnFlag {
             return "Warning: possibly overwriting existing files matching filename pattern";
@@ -1552,9 +1586,12 @@ module GenSymIO {
               prepareGroup(file_id, group);
 
               if file_id < 0 { // Negative file_id means error
-                  throw getErrorWithContext(msg="The file %s does not exist".format(filenames[loc]),
-                                    lineNumber=getLineNumber(), routineName=getRoutineName(), 
-                                    moduleName=getModuleName(), errorClass='FileNotFoundError');
+                  throw getErrorWithContext(
+                                    msg="The file %s does not exist".format(filenames[loc]),
+                                    lineNumber=getLineNumber(), 
+                                    routineName=getRoutineName(), 
+                                    moduleName=getModuleName(), 
+                                    errorClass='FileNotFoundError');
               }
 
               /*
@@ -1564,9 +1601,12 @@ module GenSymIO {
               C_HDF5.H5Fclose(file_id);
            }
         } else {
-            throw getErrorWithContext(msg="The mode %t is invalid".format(mode),
-                                    lineNumber=getLineNumber(), routineName=getRoutineName(), 
-                                    moduleName=getModuleName(), errorClass='IllegalArgumentError');
+            throw getErrorWithContext(
+                                    msg="The mode %t is invalid".format(mode),
+                                    lineNumber=getLineNumber(), 
+                                    routineName=getRoutineName(), 
+                                    moduleName=getModuleName(), 
+                                    errorClass='IllegalArgumentError');
         }    
         return warnFlag;
     }
@@ -1600,8 +1640,10 @@ module GenSymIO {
           if !anyexist {
               throw getErrorWithContext(
                  msg="Cannot append a non-existent file, please save without mode='append'",
-                 lineNumber=getLineNumber(), routineName=getRoutineName(), 
-                 moduleName=getModuleName(), errorClass='WriteModeError'
+                 lineNumber=getLineNumber(), 
+                 routineName=getRoutineName(), 
+                 moduleName=getModuleName(), 
+                 errorClass='WriteModeError'
               );
           }
 
@@ -1615,8 +1657,10 @@ module GenSymIO {
               throw getErrorWithContext(
                  msg="appending to existing files must be done with the same number " +
                       "of locales. Try saving with a different directory or filename prefix?",
-                 lineNumber=getLineNumber(), routineName=getRoutineName(), 
-                 moduleName=getModuleName(), errorClass='MismatchedAppendError'
+                 lineNumber=getLineNumber(), 
+                 routineName=getRoutineName(), 
+                 moduleName=getModuleName(), 
+                 errorClass='MismatchedAppendError'
               );
           }
       } else if mode == TRUNCATE { // if truncating, create new file per locale
@@ -1658,11 +1702,11 @@ module GenSymIO {
            }
         } else {
             throw getErrorWithContext(
-                                msg="The mode %t is invalid".format(mode),
-                                lineNumber=getLineNumber(), 
-                                routineName=getRoutineName(), 
-                                moduleName=getModuleName(), 
-                                errorClass='IllegalArgumentError');            
+                                     msg="The mode %t is invalid".format(mode),
+                                     lineNumber=getLineNumber(), 
+                                     routineName=getRoutineName(), 
+                                     moduleName=getModuleName(), 
+                                     errorClass='IllegalArgumentError');            
         }    
         return warnFlag;
     }
@@ -1887,7 +1931,8 @@ module GenSymIO {
                lineNumber=getLineNumber(), 
                routineName=getRoutineName(), 
                moduleName=getModuleName(), 
-               errorClass='IllegalArgumentError');            
+               errorClass='IllegalArgumentError'
+            );            
         } else {
             return values[0];
         }
