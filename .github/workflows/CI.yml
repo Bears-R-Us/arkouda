@@ -17,7 +17,7 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     container:
-      image: chapel/chapel:1.22.0
+      image: chapel/chapel:1.23.0
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
@@ -34,7 +34,7 @@ jobs:
       matrix:
         image: [chapel, chapel-gasnet-smp]
     container:
-      image: chapel/${{matrix.image}}:1.22.0
+      image: chapel/${{matrix.image}}:1.23.0
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
@@ -63,9 +63,9 @@ jobs:
     - name: Install dependencies
       run: |
         brew install hdf5 zeromq
-        # brew install chapel@1.22.0 (except that isn't actually supported, so use sha with 1.22.0)
+        # brew install chapel@1.23.0 (except that isn't actually supported, so use sha with 1.23.0)
         CHAPEL_FORMULA=$(mktemp -d)/chapel.rb
-        curl -fsSL https://raw.githubusercontent.com/Homebrew/homebrew-core/f305658fa8/Formula/chapel.rb -o $CHAPEL_FORMULA
+        curl -fsSL https://raw.githubusercontent.com/Homebrew/homebrew-core/8a5d08fe5b/Formula/chapel.rb -o $CHAPEL_FORMULA
         brew install $CHAPEL_FORMULA
     - name: Build/Install Arkouda
       run: |
@@ -87,7 +87,7 @@ jobs:
       matrix:
         image: [chapel, chapel-gasnet-smp]
     container:
-      image: chapel/${{matrix.image}}:1.22.0
+      image: chapel/${{matrix.image}}:1.23.0
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
