@@ -13,6 +13,8 @@ module GenSymIO {
     use List;
     use Map;
     use PrivateDist;
+    use Reflection;
+    use Errors;
 
     config const GenSymIO_DEBUG = false;
     config const SEGARRAY_OFFSET_NAME = "segments";
@@ -137,12 +139,6 @@ module GenSymIO {
        return arrayBytes;
     }
 
-    class DatasetNotFoundError: Error {proc init() {}}
-    class NotHDF5FileError: Error {proc init() {}}
-    class MismatchedAppendError: Error {proc init() {}}
-    class WriteModeError: Error { proc init() {} }
-    class SegArrayError: Error {proc init() {}}
-
     /*
      * Converts the JSON array to a pdarray
      */
@@ -252,18 +248,28 @@ module GenSymIO {
             try {
                 (segArrayFlags[i], dclasses[i], bytesizes[i], signFlags[i]) = get_dtype(fname, dsetName);
             } catch e: FileNotFoundError {
-                return try! "Error: file not found: %s".format(fname);
+                try! writeln(e.message());
+                return try! "Error: unable to open file for writing: %s".format(fname);
             } catch e: PermissionError {
+                try! writeln(e.message());
                 return try! "Error: permission error on %s".format(fname);
             } catch e: DatasetNotFoundError {
-                return try! "Error: dataset %s not found in file %s".format(dsetName, fname);
+                try! writeln(e.message());
+                return e.publish();
             } catch e: NotHDF5FileError {
-                return try! "Error: cannot open as HDF5 file %s".format(fname);
+                try! writeln(e.message());
+                return e.publish();
             } catch e: SegArrayError {
-                return try! "Error: expected segmented array but could not find sub-datasets '%s' and '%s'".
-                                                                   format(SEGARRAY_OFFSET_NAME, SEGARRAY_VALUE_NAME);
-            } catch {
+                try! writeln(e.message());
+                return e.publish();
+            } catch e: Error {
                 // Need a catch-all for non-throwing function
+                try! writeln(generateErrorContext(
+                                msg=e.message(), 
+                                lineNumber=getLineNumber(), 
+                                moduleName=getModuleName(), 
+                                routineName=getRoutineName(), 
+                                errorClass="Error"));
                 return try! "Error: unknown cause";
             }
         }
@@ -338,7 +344,16 @@ module GenSymIO {
                 return try! "created " + st.attrib(rname);
             }
             otherwise {
-                return try! "Error: detected unhandled datatype: segmented? %t, class %i, size %i, signed? %t".format(isSegArray, dataclass, bytesize, isSigned);
+                var errorMsg = try! "Error: detected unhandled datatype: segmented? " +
+                               "%t, class %i, size %i, signed? %t".format(isSegArray, 
+                               dataclass, bytesize, isSigned);
+                try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="IllegalArgumentError"));
+                return "Error: %s".format(errorMsg);
             }
         }
     }
@@ -397,18 +412,28 @@ module GenSymIO {
                 try {
                     (segArrayFlags[i], dclasses[i], bytesizes[i], signFlags[i]) = get_dtype(fname, dsetName);
                 } catch e: FileNotFoundError {
+                    try! writeln(e.message());
                     return try! "Error: file not found: %s".format(fname);
                 } catch e: PermissionError {
+                    try! writeln(e.message());
                     return try! "Error: permission error on %s".format(fname);
                 } catch e: DatasetNotFoundError {
-                    return try! "Error: dataset %s not found in file %s".format(dsetName, fname);
+                    try! writeln(e.message());
+                    return try! e.publish();
                 } catch e: NotHDF5FileError {
-                    return try! "Error: cannot open as HDF5 file %s".format(fname);
+                    try! writeln(e.message());
+                    return e.publish();
                 } catch e: SegArrayError {
-                    return try! "Error: expected segmented array but could not find sub-datasets '%s' and '%s'".
-                                          format(SEGARRAY_OFFSET_NAME, SEGARRAY_VALUE_NAME);
-                } catch {
+                    try! writeln(e.message());
+                    return e.publish();
+                } catch e : Error {
                     // Need a catch-all for non-throwing function
+                    try! writeln(generateErrorContext(
+                                     msg=e.message(), 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="Error"));
                     return try! "Error: unknown cause";
                 }
             }
@@ -495,7 +520,15 @@ module GenSymIO {
                     rnames = rnames + "created " + st.attrib(rname) + " , ";
                 }
                 otherwise {
-                    return try! "Error: detected unhandled datatype: segmented? %t, class %i, size %i, signed? %t".format(isSegArray, dataclass, bytesize, isSigned);
+                    var errorMsg = try! "detected unhandled datatype: segmented? %t, class %i, size %i, " +
+                                   "signed? %t".format(isSegArray, dataclass, bytesize, isSigned);
+                    try! writeln(generateErrorContext(
+                                msg=errorMsg, 
+                                lineNumber=getLineNumber(), 
+                                moduleName=getModuleName(), 
+                                routineName=getRoutineName(), 
+                                errorClass="UnrecognizedTypeError")); 
+                    return try! "Error: %".format(errorMsg);
                 }
             }
         }
@@ -530,11 +563,21 @@ module GenSymIO {
         const READABLE = (S_IRUSR | S_IRGRP | S_IROTH);
 
         if !exists(filename) {
-            throw new owned FileNotFoundError();
+            throw getErrorWithContext(
+                           msg="The file %s does not exist".format(filename),
+                           lineNumber=getLineNumber(),
+                           routineName=getRoutineName(), 
+                           moduleName=getModuleName(),
+                           errorClass="FileNotFoundError");
         }
 
         if !(getMode(filename) & READABLE) {
-            throw new owned PermissionError();
+            throw getErrorWithContext(
+                           msg="permission error on %s".format(filename),
+                           lineNumber=getLineNumber(),
+                           routineName=getRoutineName(), 
+                           moduleName=getModuleName(),
+                           errorClass="PermissionError");
         }
 
         var file_id = C_HDF5.H5Fopen(filename.c_str(), 
@@ -542,14 +585,25 @@ module GenSymIO {
 
         if file_id < 0 { // HF5open returns negative value on failure
             C_HDF5.H5Fclose(file_id);
-            throw new owned NotHDF5FileError();
+            throw getErrorWithContext(
+                           msg="cannot open as HDF5 file %s".format(filename),
+                           lineNumber=getLineNumber(), 
+                           routineName=getRoutineName(), 
+                           moduleName=getModuleName(), 
+                           errorClass="NotHDF5FileError");            
         }
 
         var dName = getReadDsetName(file_id, dsetName);
 
         if !C_HDF5.H5Lexists(file_id, dName.c_str(), C_HDF5.H5P_DEFAULT) {
             C_HDF5.H5Fclose(file_id);
-            throw new owned DatasetNotFoundError();
+            throw getErrorWithContext(
+                 msg="The dataset %s does not exist in the file %s".format(dsetName, 
+                                                filename),
+                 lineNumber=getLineNumber(), 
+                 routineName=getRoutineName(), 
+                 moduleName=getModuleName(), 
+                 errorClass='DatasetNotFoundError');
         }
 
         var dataclass: C_HDF5.H5T_class_t;
@@ -563,7 +617,13 @@ module GenSymIO {
                 var (offsetClass, offsetByteSize, offsetSign) = 
                                            try get_dataset_info(file_id, offsetDset);
                 if (offsetClass != C_HDF5.H5T_INTEGER) {
-                    throw new owned SegArrayError();
+                    throw getErrorWithContext(
+                       msg="dataset %s has incorrect one or more sub-datasets" +
+                       " %s %s".format(dsetName,SEGARRAY_OFFSET_NAME,SEGARRAY_VALUE_NAME), 
+                       lineNumber=getLineNumber(),
+                       routineName=getRoutineName(),
+                       moduleName=getModuleName(),
+                       errorClass='SegArrayError');                    
                 }
                 var valueDset = dsetName + "/" + SEGARRAY_VALUE_NAME;
                 try (dataclass, bytesize, isSigned) = 
@@ -580,9 +640,14 @@ module GenSymIO {
             defer {
                 C_HDF5.H5Fclose(file_id);
             }
-        } catch e {
+        } catch e : Error {
             //:TODO: recommend revisiting this catch block 
-            throw e;
+            throw getErrorWithContext( 
+                msg="in getting_dataset_info %s".format(e.message()), 
+                lineNumber=getLineNumber(),
+                routineName=getRoutineName(),
+                moduleName=getModuleName(),
+                errorClass='Error');
         }
         return (isSegArray, dataclass, bytesize, isSigned);
     }
@@ -596,7 +661,12 @@ module GenSymIO {
         var dset = C_HDF5.H5Dopen(file_id, dsetName.c_str(),
                                                    C_HDF5.H5P_DEFAULT);
         if (dset < 0) {
-            throw new owned DatasetNotFoundError();
+            throw getErrorWithContext( 
+                msg="dataset %s does not exist".format(dsetName), 
+                lineNumber=getLineNumber(),
+                routineName=getRoutineName(),
+                moduleName=getModuleName(),
+                errorClass='DatasetNotFoundError');
         }
         var datatype = C_HDF5.H5Dget_type(dset);
         var dataclass = C_HDF5.H5Tget_class(datatype);
@@ -632,7 +702,12 @@ module GenSymIO {
              * If there's an actual error, print it here. :TODO: revisit this
              * catch block after confirming the best way to handle HDF5 error
              */
-            writeln("Error in isStringsDataset: %t".format(e));
+            writeln(generateErrorContext(
+                        msg="checking if isStringsDataset %t".format(e.message()), 
+                        lineNumber=getLineNumber(), 
+                        moduleName=getModuleName(), 
+                        routineName=getRoutineName(), 
+                        errorClass="Error"));
         }
 
         return groupExists > -1;
@@ -657,7 +732,12 @@ module GenSymIO {
              * If there's an actual error, print it here. :TODO: revisit this
              * catch block after confirming the best way to handle HDF5 error
              */
-            try! writeln("Error in isBooleanDataset with file id %t".format(e));  
+            try! writeln(generateErrorContext(
+                        msg="checking if isBooleanDataset %t".format(e.message()), 
+                        lineNumber=getLineNumber(), 
+                        moduleName=getModuleName(), 
+                        routineName=getRoutineName(), 
+                        errorClass="Error"));
         }
 
         return groupExists > -1;
@@ -688,7 +768,13 @@ module GenSymIO {
              * If there's an actual error, print it here. :TODO: revisit this
              * catch block after confirming the best way to handle HDF5 error
              */
-            try! writeln("Error in isBooleanDataset with file name %t".format(e));        
+            try! writeln(generateErrorContext(
+                msg="checking if isBooleanDataset %t with file %s".format(e.message(), 
+                                 fileName), 
+                lineNumber=getLineNumber(), 
+                moduleName=getModuleName(), 
+                routineName=getRoutineName(), 
+                errorClass="Error"));       
         }
         return boolDataset;
     }
@@ -720,7 +806,13 @@ module GenSymIO {
                 }
                 lengths[i] = dims[0]: int;
             } catch e: Error {
-                throw new Error("Error in getting dataset info %s".format(e.message()));
+                throw getErrorWithContext(
+                             msg="in getting dataset info %s".format(e.message()),
+                             lineNumber=getLineNumber(), 
+                             routineName=getRoutineName(), 
+                             moduleName=getModuleName(), 
+                             errorClass='WriteModeError'
+                );
             }
         }
         // Compute subdomain of master array contained in each file
@@ -875,18 +967,34 @@ module GenSymIO {
                     var e = toSymEntry(entry, uint(8));
                     warnFlag = write1DDistStrings(filename, mode, dsetName, e.a, DType.UInt8);
                 } otherwise {
-                    return unrecognizedTypeError("tohdf", dtype2str(entry.dtype));
+                    var errorMsg = unrecognizedTypeError("tohdf", dtype2str(entry.dtype));
+                    try! writeln(generateErrorContext(
+                                msg=errorMsg, 
+                                lineNumber=getLineNumber(), 
+                                moduleName=getModuleName(), 
+                                routineName=getRoutineName(), 
+                                errorClass="UnrecognizedTypeError"));                   
+                    return errorMsg;
                 }
             }
         } catch e: FileNotFoundError {
+              try! writeln(e.message());
               return try! "Error: unable to open file for writing: %s".format(filename);
         } catch e: MismatchedAppendError {
-              return "Error: appending to existing files must be done with the same number" +
-                      "of locales. Try saving with a different directory or filename prefix?";
+              try! writeln(e.message());
+              return e.publish();
         } catch e: WriteModeError {
-              return "Error: cannot append the non-existent file %s. Please save the file in standard truncate mode".format(filename);
+              try! writeln(e.message());
+              return e.publish();
         } catch e: Error {
-              return "Error: problem writing to file %s".format(e);
+              var errorMsg = "problem writing to file %s".format(e);
+              try! writeln(generateErrorContext(
+                            msg=errorMsg, 
+                            lineNumber=getLineNumber(), 
+                            moduleName=getModuleName(), 
+                            routineName=getRoutineName(), 
+                            errorClass="UnrecognizedTypeError"));  
+              return "Error: %s".format(errorMsg);
         }
         if warnFlag {
             return "Warning: possibly overwriting existing files matching filename pattern";
@@ -1327,7 +1435,7 @@ module GenSymIO {
             return C_HDF5.H5T_NATIVE_HBOOL;
         } else {
             return getHDF5Type(A.eltType);
-        }    
+        }
     }
     
     /*
@@ -1415,6 +1523,7 @@ module GenSymIO {
           for f in filenames {
               var result =  try! exists(f);
               allexist &= result;
+              writeln("RESULT %t".format(result));
               if result {
                   anyexist = true;
               }
@@ -1426,17 +1535,30 @@ module GenSymIO {
            * the dataset must be saved in TRUNCATE mode.
            */
           if !anyexist {
-              throw new owned WriteModeError();
+              throw getErrorWithContext(
+                 msg="Cannot append a non-existent file, please save without mode='append'",
+                 lineNumber=getLineNumber(), 
+                 routineName=getRoutineName(), 
+                 moduleName=getModuleName(), 
+                 errorClass='WriteModeError'
+              );
           }
 
           /*
-           * There is a mismatch between the number of files to be appended to and the 
-           * number of files actually on the file system. This typically happens when 
+           * Check if there is a mismatch between the number of files to be appended to and
+           * the number of files actually on the file system. This typically happens when 
            * a file append is attempted where the number of locales between the file 
            * creates and updates changes.
            */
           if !allexist || (matchingFilenames.size != filenames.size) {
-              throw new owned MismatchedAppendError();
+              throw getErrorWithContext(
+                   msg="appending to existing files must be done with the same number " +
+                      "of locales. Try saving with a different directory or filename prefix?",
+                   lineNumber=getLineNumber(), 
+                   routineName=getRoutineName(), 
+                   moduleName=getModuleName(), 
+                   errorClass='MismatchedAppendError'
+              );
           }
 
       } else if mode == TRUNCATE { // if truncating, create new file per locale
@@ -1464,7 +1586,12 @@ module GenSymIO {
               prepareGroup(file_id, group);
 
               if file_id < 0 { // Negative file_id means error
-                  throw new owned FileNotFoundError();
+                  throw getErrorWithContext(
+                                    msg="The file %s does not exist".format(filenames[loc]),
+                                    lineNumber=getLineNumber(), 
+                                    routineName=getRoutineName(), 
+                                    moduleName=getModuleName(), 
+                                    errorClass='FileNotFoundError');
               }
 
               /*
@@ -1474,7 +1601,12 @@ module GenSymIO {
               C_HDF5.H5Fclose(file_id);
            }
         } else {
-            throw new IllegalArgumentError("The mode %t is invalid".format(mode));
+            throw getErrorWithContext(
+                                    msg="The mode %t is invalid".format(mode),
+                                    lineNumber=getLineNumber(), 
+                                    routineName=getRoutineName(), 
+                                    moduleName=getModuleName(), 
+                                    errorClass='IllegalArgumentError');
         }    
         return warnFlag;
     }
@@ -1490,12 +1622,46 @@ module GenSymIO {
       var warnFlag: bool;
       if (mode == APPEND) {
           var allexist = true;
+          var anyexist = false;
+          
           for f in filenames {
-            allexist &= try! exists(f);
+              var result =  try! exists(f);
+              allexist &= result;
+              if result {
+                  anyexist = true;
+              }
           }
 
+          /*
+           * Check to see if any exist. If not, this means the user is attempting to append
+           * to 1..n files that don't exist. In this situation, the user is alerted that
+           * the dataset must be saved in TRUNCATE mode.
+           */
+          if !anyexist {
+              throw getErrorWithContext(
+                 msg="Cannot append a non-existent file, please save without mode='append'",
+                 lineNumber=getLineNumber(), 
+                 routineName=getRoutineName(), 
+                 moduleName=getModuleName(), 
+                 errorClass='WriteModeError'
+              );
+          }
+
+          /*
+           * Check if there is a mismatch between the number of files to be appended to and
+           * the number of files actually on the file system. This typically happens when 
+           * a file append is attempted where the number of locales between the file 
+           * creates and updates changes.
+           */         
           if !allexist || (matchingFilenames.size != filenames.size) {
-              throw new owned MismatchedAppendError();
+              throw getErrorWithContext(
+                 msg="appending to existing files must be done with the same number " +
+                      "of locales. Try saving with a different directory or filename prefix?",
+                 lineNumber=getLineNumber(), 
+                 routineName=getRoutineName(), 
+                 moduleName=getModuleName(), 
+                 errorClass='MismatchedAppendError'
+              );
           }
       } else if mode == TRUNCATE { // if truncating, create new file per locale
           if matchingFilenames.size > 0 {
@@ -1520,7 +1686,12 @@ module GenSymIO {
                                                       C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
 
               if file_id < 0 { // Negative file_id means error
-                  throw new owned FileNotFoundError();
+                  throw getErrorWithContext(
+                                     msg="The file %s does not exist".format(filenames[loc]),
+                                     lineNumber=getLineNumber(), 
+                                     routineName=getRoutineName(), 
+                                     moduleName=getModuleName(), 
+                                     errorClass='FileNotFoundError');
               }
 
               /*
@@ -1530,7 +1701,12 @@ module GenSymIO {
               C_HDF5.H5Fclose(file_id);
            }
         } else {
-            throw new IllegalArgumentError("The mode %t is invalid".format(mode));
+            throw getErrorWithContext(
+                                     msg="The mode %t is invalid".format(mode),
+                                     lineNumber=getLineNumber(), 
+                                     routineName=getRoutineName(), 
+                                     moduleName=getModuleName(), 
+                                     errorClass='IllegalArgumentError');            
         }    
         return warnFlag;
     }
@@ -1750,7 +1926,13 @@ module GenSymIO {
     private proc getGroup(dsetName : string) : string throws {
         var values = dsetName.split('/');
         if values.size < 1 {
-            throw new IllegalArgumentError('The Strings or Booleans dataset must be in form {dset}/values');
+            throw getErrorWithContext(
+               msg="Strings dataset format must be {dset}/values, Booleans {dset}/booleans",
+               lineNumber=getLineNumber(), 
+               routineName=getRoutineName(), 
+               moduleName=getModuleName(), 
+               errorClass='IllegalArgumentError'
+            );            
         } else {
             return values[0];
         }
