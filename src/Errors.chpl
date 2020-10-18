@@ -1,5 +1,7 @@
 module Errors {
 
+    use SysError;
+
     /*
      * Generates an error message that provides a fuller context to the error
      * by including the line number, proc name, and module name from which the 
