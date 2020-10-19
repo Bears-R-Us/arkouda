@@ -2,7 +2,8 @@ module HistogramMsg
 {
     use ServerConfig;
 
-    use Reflection only;
+    use Reflection;
+    use Errors;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -55,7 +56,15 @@ module HistogramMsg
         select (gEnt.dtype) {
             when (DType.Int64)   {histogramHelper(int);}
             when (DType.Float64) {histogramHelper(real);}
-            otherwise {return notImplementedError(pn,gEnt.dtype);}
+            otherwise {
+                var errorMsg = notImplementedError(pn,gEnt.dtype);
+                try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));                 
+            }
         }
         
         return try! "created " + st.attrib(rname);

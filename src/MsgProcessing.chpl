@@ -5,7 +5,8 @@ module MsgProcessing
 
     use Time only;
     use Math only;
-    use Reflection only;
+    use Reflection;
+    use Errors;
     use Memory;
     
     use MultiTypeSymbolTable;
@@ -374,7 +375,16 @@ module MsgProcessing
                 e.a = val;
                 repMsg = try! "set %s to %t".format(name, val);
             }
-            otherwise {return unrecognizedTypeError(pn,dtypestr);}
+            otherwise {
+                var errorMsg = unrecognizedTypeError(pn,dtypestr);
+                try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="UnrecognizedTypeError")); 
+                return errorMsg;                
+            }
         }
         return repMsg;
     }

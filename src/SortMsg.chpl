@@ -5,7 +5,8 @@ module SortMsg
     use Time only;
     use Math only;
     use Sort only;
-    use Reflection only;
+    use Reflection;
+    use Errors;
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
@@ -42,17 +43,26 @@ module SortMsg
       // Sort the input pda and create a new symbol entry for
       // the sorted pda.
       select (gEnt.dtype) {
-        when (DType.Int64) {
-          var e = toSymEntry(gEnt, int);
-          var sorted = sort(e.a);
-          st.addEntry(sortedName, new shared SymEntry(sorted));
-        }// end when(DType.Int64)
-        when (DType.Float64) {
-          var e = toSymEntry(gEnt, real);
-          var sorted = sort(e.a);
-          st.addEntry(sortedName, new shared SymEntry(sorted));
-        }// end when(DType.Float64)
-        otherwise {return notImplementedError(pn,gEnt.dtype);}
+          when (DType.Int64) {
+              var e = toSymEntry(gEnt, int);
+              var sorted = sort(e.a);
+              st.addEntry(sortedName, new shared SymEntry(sorted));
+          }// end when(DType.Int64)
+          when (DType.Float64) {
+              var e = toSymEntry(gEnt, real);
+              var sorted = sort(e.a);
+              st.addEntry(sortedName, new shared SymEntry(sorted));
+          }// end when(DType.Float64)
+          otherwise {
+              var errorMsg = notImplementedError(pn,gEnt.dtype);
+              try! writeln(generateErrorContext(
+                              msg=errorMsg, 
+                              lineNumber=getLineNumber(), 
+                              moduleName=getModuleName(), 
+                              routineName=getRoutineName(), 
+                              errorClass="NotImplementedError")); 
+              return errorMsg;
+          }            
       }// end select(gEnt.dtype)
         
       return try! "created " + st.attrib(sortedName);

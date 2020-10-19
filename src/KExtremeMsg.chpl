@@ -8,7 +8,8 @@ module KExtremeMsg
 
     use Time only;
     use Math only;
-    use Reflection only;
+    use Reflection;
+    use Errors;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -77,7 +78,14 @@ module KExtremeMsg
             }
            }
            otherwise {
-             return notImplementedError("mink",gEnt.dtype);
+               var errorMsg = notImplementedError("mink",gEnt.dtype);
+               try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError")); 
+               return errorMsg;               
            }
         }
     }
@@ -140,7 +148,14 @@ module KExtremeMsg
            }
 
            otherwise {
-             return notImplementedError("maxk",gEnt.dtype);
+               var errorMsg = notImplementedError("maxk",gEnt.dtype);
+               try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError")); 
+               return errorMsg;
            }
         }
     }

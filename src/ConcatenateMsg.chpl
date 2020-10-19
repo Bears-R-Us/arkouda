@@ -4,7 +4,8 @@ module ConcatenateMsg
     
     use Time only;
     use Math only;
-    use Reflection only;
+    use Reflection;
+    use Errors;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -25,7 +26,17 @@ module ConcatenateMsg
         const low = fields.domain.low;
         var names = fields[low..];
         // Check that fields contains the stated number of arrays
-        if (n != names.size) { return try! incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(n, names.size)); }
+        if (n != names.size) { 
+            var errorMsg = try! incompatibleArgumentsError(pn, 
+                             "Expected %i arrays but got %i".format(n, names.size)); 
+            try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="IncompatibleArgumentsError"));                                 
+            return errorMsg;
+        }
         /* var arrays: [0..#n] borrowed GenSymEntry; */
         var size: int = 0;
         var nbytes: int = 0;          
@@ -44,13 +55,31 @@ module ConcatenateMsg
                 when "pdarray" {
                     name = rawName;
                 }
-                otherwise { return notImplementedError(pn, objtype); }
+                otherwise { 
+                    var errorMsg = notImplementedError(pn, objtype); 
+                    try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));    
+                    return errorMsg;                    
+                }
             }
             var g: borrowed GenSymEntry = st.lookup(name);
             if (i == 1) {dtype = g.dtype;}
             else {
                 if (dtype != g.dtype) {
-                    return try! incompatibleArgumentsError(pn, "Expected %s dtype but got %s dtype".format(dtype2str(dtype), dtype2str(g.dtype)));
+                    var errorMsg = try! incompatibleArgumentsError(pn, 
+                             "Expected %s dtype but got %s dtype".format(dtype2str(dtype), 
+                                    dtype2str(g.dtype)));
+                    try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="IncompatibleArgumentsError"));    
+                    return errorMsg;
                 }
             }
             // accumulate size from each array size
@@ -139,12 +168,30 @@ module ConcatenateMsg
                             start += o.size;
                         }
                     }
-                    otherwise {return notImplementedError("concatenate",dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError("concatenate",dtype);
+                        try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));   
+                        return errorMsg;                         
+                    }
                 }
 
                 return try! "created " + st.attrib(rname);
             }
-            otherwise { return notImplementedError(pn, objtype); }
+            otherwise { 
+                var errorMsg = try! notImplementedError(pn, objtype); 
+                try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));    
+                return errorMsg;
+            }
         }
     }
     

@@ -4,7 +4,8 @@ module RegistrationMsg
 
     use Time only;
     use Math only;
-    use Reflection only;
+    use Reflection;
+    use Errors;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;

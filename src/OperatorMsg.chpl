@@ -5,7 +5,8 @@ module OperatorMsg
 
     use Time;
     use Math;
-    use Reflection only;
+    use Reflection;
+    use Errors;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -128,12 +129,28 @@ module OperatorMsg
                     when "**" { 
                         if || reduce (r.a<0){
                             //instead of error, could we paste the below code but of type float?
-                            return "Error: Attempt to exponentiate base of type Int64 to negative exponent";
+                            var errorMsg = "Error: Attempt to exponentiate base of type Int64 to negative exponent";
+                            try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="IncompatibleArgumentsError"));  
+                            return errorMsg;                               
                         }
                         var e = st.addEntry(rname, l.size, int);
                         e.a= l.a**r.a;
                     }     
-                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));                             
+                        return errorMsg;
+                    }
                 }
             }
             when (DType.Int64, DType.Float64) {
@@ -192,7 +209,16 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, real);
                         e.a= l.a**r.a;
                     }    
-                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError")); 
+                        return errorMsg;                            
+                    }
                 }
             }
             when (DType.Float64, DType.Int64) {
@@ -251,7 +277,16 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, real);
                         e.a= l.a**r.a;
                     }      
-                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));    
+                        return errorMsg;                         
+                    }
                 }
             }
             when (DType.Float64, DType.Float64) {
@@ -310,7 +345,16 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, real);
                         e.a= l.a**r.a;
                     }     
-                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));     
+                        return errorMsg;
+                    }
                 }
             }
             when (DType.Bool, DType.Bool) {
@@ -337,7 +381,16 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, bool);
                         e.a = l.a != r.a;
                     }
-                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));    
+                        return errorMsg;                         
+                    }
                 }
             }
             when (DType.Bool, DType.Int64) {
@@ -356,7 +409,16 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, int);
                         e.a = l.a:int * r.a;
                     }
-                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError")); 
+                        return errorMsg;                            
+                    }
                 }
             }
             when (DType.Int64, DType.Bool) {
@@ -375,7 +437,16 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, int);
                         e.a = l.a * r.a:int;
                     }
-                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));   
+                        return errorMsg;  
+                    }
                 }
             }
             when (DType.Bool, DType.Float64) {
@@ -394,7 +465,16 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, real);
                         e.a = l.a:real * r.a;
                     }
-                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));
+                        return errorMsg;                               
+                    }
                 }
             }
             when (DType.Float64, DType.Bool) {
@@ -413,11 +493,29 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, real);
                         e.a = l.a * r.a:real;
                     }
-                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));
+                        return errorMsg;       
+                    }
                 }
             }
-            otherwise {return unrecognizedTypeError(pn,
-                                                    "("+dtype2str(left.dtype)+","+dtype2str(right.dtype)+")");}
+            otherwise {
+                var errorMsg = unrecognizedTypeError(pn,
+                                  "("+dtype2str(left.dtype)+","+dtype2str(right.dtype)+")");
+                try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="UnrecognizedTypeError"));
+                return errorMsg;                                         
+            }
         }
         return try! "created " + st.attrib(rname);
     }
@@ -525,12 +623,28 @@ module OperatorMsg
                     }
                     when "**" { 
                         if (val<0){
-                            return "Error: Attempt to exponentiate base of type Int64 to negative exponent";
+                            var errorMsg = "Error: Attempt to exponentiate base of type Int64 to negative exponent";
+                            try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="IncompatibleArgumentsError"));                                                             
+                            return errorMsg;
                         }
                         var e = st.addEntry(rname, l.size, int);
                         e.a= l.a**val;
                     }
-                    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));       
+                        return errorMsg;                        
+                    }
                 }
             }
             when (DType.Int64, DType.Float64) {
@@ -588,7 +702,16 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, real);
                         e.a= l.a**val;
                     }
-                    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));                               
+                        return errorMsg; 
+                    }
                 }
             }
             when (DType.Float64, DType.Int64) {
@@ -646,7 +769,16 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, real);
                         e.a= l.a**val;
                     }
-                    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));       
+                        return errorMsg;                        
+                    }
                 }
             }
             when (DType.Float64, DType.Float64) {
@@ -704,7 +836,16 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, real);
                         e.a= l.a**val;
                     }
-                    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));   
+                        return errorMsg;                            
+                    }
                 }
             }
             when (DType.Bool, DType.Bool) {
@@ -723,7 +864,16 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, bool);
                         e.a = l.a ^ val;
                     }
-                    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));   
+                        return errorMsg;                           
+                    }
                 }
             }
             when (DType.Bool, DType.Int64) {
@@ -1433,8 +1583,17 @@ module OperatorMsg
                     otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
                 }
             }
-            otherwise {return unrecognizedTypeError(pn,
-                                                    "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");}
+            otherwise {
+                var errorMsg = unrecognizedTypeError(pn,
+                                   "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");
+                try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="UnrecognizedTypeError"));                                          
+                return errorMsg;               
+            }
         }
         return "opeqvs success";
     }

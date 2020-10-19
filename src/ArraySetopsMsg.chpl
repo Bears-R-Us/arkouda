@@ -20,6 +20,8 @@ module ArraySetopsMsg
     use ArraySetops;
     use Indexing;
     use RadixSortLSD;
+    use Reflection;
+    use Errors;
     
     /*
     Parse, execute, and respond to a intersect1d message
@@ -48,7 +50,16 @@ module ArraySetopsMsg
 
         select(gEnt.dtype) {
           when (DType.Int64) {
-             if(gEnt.dtype != gEnt2.dtype) then return notImplementedError("newIntersect1d",gEnt2.dtype);
+             if (gEnt.dtype != gEnt2.dtype) {
+                 var errorMsg = notImplementedError("newIntersect1d",gEnt2.dtype);
+                 try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));                            
+                 return errorMsg;
+             }
              var e = toSymEntry(gEnt,int);
              var f = toSymEntry(gEnt2, int);
              
@@ -59,7 +70,15 @@ module ArraySetopsMsg
              return s;
            }
            otherwise {
-             return notImplementedError("newIntersect1d",gEnt.dtype);
+               var errorMsg = notImplementedError("newIntersect1d",gEnt.dtype);
+               try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));                   
+             
+               return errorMsg;
            }
         }
     }
@@ -91,7 +110,16 @@ module ArraySetopsMsg
 
         select(gEnt.dtype) {
           when (DType.Int64) {
-             if(gEnt.dtype != gEnt2.dtype) then return notImplementedError("setxor1d",gEnt2.dtype);
+             if(gEnt.dtype != gEnt2.dtype) {
+                 var errorMsg = notImplementedError("setxor1d",gEnt2.dtype);
+                 try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));                  
+                 return errorMsg;
+             }
              var e = toSymEntry(gEnt,int);
              var f = toSymEntry(gEnt2, int);
              
@@ -102,7 +130,14 @@ module ArraySetopsMsg
              return s;
            }
            otherwise {
-             return notImplementedError("setxor1d",gEnt.dtype);
+               var errorMsg = notImplementedError("setxor1d",gEnt.dtype);
+               try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));                  
+               return errorMsg;
            }
         }
     }
@@ -134,7 +169,16 @@ module ArraySetopsMsg
 
         select(gEnt.dtype) {
           when (DType.Int64) {
-             if(gEnt.dtype != gEnt2.dtype) then return notImplementedError("setdiff1d",gEnt2.dtype);
+             if (gEnt.dtype != gEnt2.dtype) {
+                 var errorMsg = notImplementedError("setdiff1d",gEnt2.dtype);
+                 try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));                  
+                 return errorMsg;             
+             }
              var e = toSymEntry(gEnt,int);
              var f = toSymEntry(gEnt2, int);
              
@@ -145,7 +189,14 @@ module ArraySetopsMsg
              return s;
            }
            otherwise {
-             return notImplementedError("setdiff1d",gEnt.dtype);
+               var errorMsg = notImplementedError("setdiff1d",gEnt.dtype);
+               try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));                  
+               return errorMsg;             
            }
         }
     }
@@ -176,7 +227,16 @@ module ArraySetopsMsg
 
       select(gEnt.dtype) {
         when (DType.Int64) {
-           if(gEnt.dtype != gEnt2.dtype) then return notImplementedError("newUnion1d",gEnt2.dtype);
+           if (gEnt.dtype != gEnt2.dtype) {
+               var errorMsg = notImplementedError("newUnion1d",gEnt2.dtype);
+               try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));                  
+               return errorMsg;              
+           }
            var e = toSymEntry(gEnt,int);
            var f = toSymEntry(gEnt2, int);
 
@@ -187,14 +247,26 @@ module ArraySetopsMsg
            return s;
          }
          otherwise {
-           return notImplementedError("newUnion1d",gEnt.dtype);
+             var errorMsg = notImplementedError("newUnion1d",gEnt.dtype);
+             try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));                  
+             return errorMsg;              
          }
       }
     }
 
     proc stringtobool(str: string): bool throws {
-      if str == "True" then return true;
-      else if str == "False" then return false;
-      throw new owned ErrorWithMsg("message: assume_unique must be of type bool");
+        if str == "True" then return true;
+        else if str == "False" then return false;
+        throw getErrorWithContext(
+            msg="message: assume_unique must be of type bool",
+            lineNumber=getLineNumber(),
+            routineName=getRoutineName(),
+            moduleName=getModuleName(),
+            errorClass="ErrorWithContext");
     }
 }

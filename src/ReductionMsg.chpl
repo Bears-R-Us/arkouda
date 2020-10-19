@@ -10,6 +10,8 @@ module ReductionMsg
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
+    use Reflection;
+    use Errors;
     use PerLocaleHelper;
 
     use AryUtil;
@@ -98,7 +100,16 @@ module ReductionMsg
                       if (& reduce locSorted) {val = "True";} else {val = "False";}
                       return try! "bool %s".format(val);
                     }
-                    otherwise {return notImplementedError(pn,reductionop,gEnt.dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
+                        try! writeln(generateErrorContext(
+                                           msg=errorMsg, 
+                                           lineNumber=getLineNumber(), 
+                                           moduleName=getModuleName(), 
+                                           routineName=getRoutineName(), 
+                                           errorClass="NotImplementedError"));   
+                        return errorMsg;                      
+                    }
                 }
             }
             when (DType.Float64) {
@@ -147,7 +158,16 @@ module ReductionMsg
                         if sorted {val = "True";} else {val = "False";}
                         return try! "bool %s".format(val);
                     }
-                    otherwise {return notImplementedError(pn,reductionop,gEnt.dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
+                        try! writeln(generateErrorContext(
+                            msg=errorMsg, 
+                            lineNumber=getLineNumber(), 
+                            moduleName=getModuleName(), 
+                            routineName=getRoutineName(), 
+                            errorClass="NotImplementedError"));    
+                        return errorMsg;                    
+                    }
                 }
             }
             when (DType.Bool) {
@@ -184,10 +204,28 @@ module ReductionMsg
                         if (| reduce e.a) { val = "True"; } else { val = "False"; }
                         return try! "bool %s".format(val);
                     }
-                    otherwise {return notImplementedError(pn,reductionop,gEnt.dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
+                        try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="IncompatibleArgumentsError"));  
+                        return errorMsg;                       
+                    }
                 }
             }
-            otherwise {return unrecognizedTypeError(pn, dtype2str(gEnt.dtype));}
+            otherwise {
+                var errorMsg = unrecognizedTypeError(pn, dtype2str(gEnt.dtype));
+                try! writeln(generateErrorContext(
+                     msg=errorMsg, 
+                     lineNumber=getLineNumber(), 
+                     moduleName=getModuleName(), 
+                     routineName=getRoutineName(), 
+                     errorClass="UnrecognizedTypeError"));          
+                return errorMsg;       
+            }
         }
     }
 
@@ -236,7 +274,16 @@ module ReductionMsg
 
       var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
       var segments = toSymEntry(gSeg, int);
-      if (segments == nil) {return "Error: array of segment offsets must be int dtype";}
+      if (segments == nil) {
+          var errorMsg = "Error: array of segment offsets must be int dtype";
+          try! writeln(generateErrorContext(
+                       msg=errorMsg, 
+                       lineNumber=getLineNumber(), 
+                       moduleName=getModuleName(), 
+                       routineName=getRoutineName(), 
+                       errorClass="IncompatibleArgumentsError"));           
+          return errorMsg;          
+      }
       var counts = perLocCount(segments.a, size);
       st.addEntry(rname, new shared SymEntry(counts));
       return try! "created " + st.attrib(rname);
@@ -260,117 +307,162 @@ module ReductionMsg
 
     proc segmentedReductionMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
-      // reqMsg: segmentedReduction values segments operator
-      // 'values_name' is the segmented array of values to be reduced
-      // 'segments_name' is the sement offsets
-      // 'operator' is the reduction operator
-      var (values_name, segments_name, operator, skip_nan) = payload.decode().splitMsgToTuple(4);
-      var skipNan = stringtobool(skip_nan);
+        // reqMsg: segmentedReduction values segments operator
+        // 'values_name' is the segmented array of values to be reduced
+        // 'segments_name' is the sement offsets
+        // 'operator' is the reduction operator
+        var (values_name, segments_name, operator, skip_nan) = payload.decode().splitMsgToTuple(4);
+        var skipNan = stringtobool(skip_nan);
       
-      var rname = st.nextName();
-      if v {try! writeln("%s %s %s %s %s".format(cmd,values_name,segments_name,operator,skipNan));try! stdout.flush();}
-      var gVal: borrowed GenSymEntry = st.lookup(values_name);
-      var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
-      var segments = toSymEntry(gSeg, int);
-      if (segments == nil) {return "Error: array of segment offsets must be int dtype";}
-      select (gVal.dtype) {
-      when (DType.Int64) {
-        var values = toSymEntry(gVal, int);
-        select operator {
-          when "sum" {
-            var res = segSum(values.a, segments.a);
-            st.addEntry(rname, new shared SymEntry(res));
-          }
-          when "prod" {
-            var res = segProduct(values.a, segments.a);
-            st.addEntry(rname, new shared SymEntry(res));
-          }
-          when "mean" {
-            var res = segMean(values.a, segments.a);
-            st.addEntry(rname, new shared SymEntry(res));
-          }
-          when "min" {
-            var res = segMin(values.a, segments.a);
-            st.addEntry(rname, new shared SymEntry(res));
-          }
-          when "max" {
-            var res = segMax(values.a, segments.a);
-            st.addEntry(rname, new shared SymEntry(res));
-          }
-          when "argmin" {
-            var (vals, locs) = segArgmin(values.a, segments.a);
-            st.addEntry(rname, new shared SymEntry(locs));
-          }
-          when "argmax" {
-            var (vals, locs) = segArgmax(values.a, segments.a);
-            st.addEntry(rname, new shared SymEntry(locs));
-          }
-          when "nunique" {
-            var res = segNumUnique(values.a, segments.a);
-            st.addEntry(rname, new shared SymEntry(res));
-          }
-          otherwise {return notImplementedError(pn,operator,gVal.dtype);}
-          }
-      }
-      when (DType.Float64) {
-        var values = toSymEntry(gVal, real);
-        select operator {
-          when "sum" {
-            var res = segSum(values.a, segments.a, skipNan);
-            st.addEntry(rname, new shared SymEntry(res));
-          }
-          when "prod" {
-            var res = segProduct(values.a, segments.a, skipNan);
-            st.addEntry(rname, new shared SymEntry(res));
-          }
-          when "mean" {
-            var res = segMean(values.a, segments.a, skipNan);
-            st.addEntry(rname, new shared SymEntry(res));
-          }
-          when "min" {
-            var res = segMin(values.a, segments.a, skipNan);
-            st.addEntry(rname, new shared SymEntry(res));
-          }
-          when "max" {
-            var res = segMax(values.a, segments.a, skipNan);
-            st.addEntry(rname, new shared SymEntry(res));
-          }
-          when "argmin" {
-            var (vals, locs) = segArgmin(values.a, segments.a);
-            st.addEntry(rname, new shared SymEntry(locs));
-          }
-          when "argmax" {
-            var (vals, locs) = segArgmax(values.a, segments.a);
-            st.addEntry(rname, new shared SymEntry(locs));
-          }
-          otherwise {return notImplementedError(pn,operator,gVal.dtype);}
-          }
-      }
-      when (DType.Bool) {
-        var values = toSymEntry(gVal, bool);
-        select operator {
-          when "sum" {
-            var res = segSum(values.a, segments.a);
-            st.addEntry(rname, new shared SymEntry(res));
-          }
-          when "any" {
-            var res = segAny(values.a, segments.a);
-            st.addEntry(rname, new shared SymEntry(res));
-          }
-          when "all" {
-            var res = segAll(values.a, segments.a);
-            st.addEntry(rname, new shared SymEntry(res));
-          }
-          when "mean" {
-            var res = segMean(values.a, segments.a);
-            st.addEntry(rname, new shared SymEntry(res));
-          }
-          otherwise {return notImplementedError(pn,operator,gVal.dtype);}
-          }
-      }
-      otherwise {return unrecognizedTypeError(pn, dtype2str(gVal.dtype));}
-      }
-      return try! "created " + st.attrib(rname);
+        var rname = st.nextName();
+        if v {try! writeln("%s %s %s %s %s".format(cmd,values_name,segments_name,operator,skipNan));try! stdout.flush();}
+        var gVal: borrowed GenSymEntry = st.lookup(values_name);
+        var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
+        var segments = toSymEntry(gSeg, int);
+        if (segments == nil) {
+            var errorMsg = "Error: array of segment offsets must be int dtype";
+            try! writeln(generateErrorContext(
+                     msg=errorMsg, 
+                     lineNumber=getLineNumber(), 
+                     moduleName=getModuleName(), 
+                     routineName=getRoutineName(), 
+                     errorClass="IncompatibleArgumentsError"));   
+            return errorMsg;        
+        }
+        select (gVal.dtype) {
+            when (DType.Int64) {
+                var values = toSymEntry(gVal, int);
+                select operator {
+                    when "sum" {
+                        var res = segSum(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    } 
+                    when "prod" {
+                        var res = segProduct(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "mean" {
+                        var res = segMean(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "min" {
+                        var res = segMin(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "max" {
+                        var res = segMax(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "argmin" {
+                        var (vals, locs) = segArgmin(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(locs));
+                    }
+                    when "argmax" {
+                        var (vals, locs) = segArgmax(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(locs));
+                    }
+                    when "nunique" {
+                        var res = segNumUnique(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,operator,gVal.dtype);
+                        try! writeln(generateErrorContext(
+                                  msg=errorMsg, 
+                                  lineNumber=getLineNumber(), 
+                                  moduleName=getModuleName(), 
+                                  routineName=getRoutineName(), 
+                                  errorClass="NotImplementedError"));  
+                        return errorMsg;  
+                    }                       
+                }    
+            }
+            when (DType.Float64) {
+                var values = toSymEntry(gVal, real);
+                select operator {
+                    when "sum" {
+                        var res = segSum(values.a, segments.a, skipNan);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "prod" {
+                        var res = segProduct(values.a, segments.a, skipNan);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    } 
+                    when "mean" {
+                        var res = segMean(values.a, segments.a, skipNan);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "min" {
+                        var res = segMin(values.a, segments.a, skipNan);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "max" {
+                        var res = segMax(values.a, segments.a, skipNan);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "argmin" {
+                        var (vals, locs) = segArgmin(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(locs));
+                    }
+                    when "argmax" {
+                        var (vals, locs) = segArgmax(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(locs));
+                    }
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,operator,gVal.dtype);
+                        try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));               
+                        return errorMsg;
+                    }
+               }
+           }
+           when (DType.Bool) {
+               var values = toSymEntry(gVal, bool);
+               select operator {
+                   when "sum" {
+                      var res = segSum(values.a, segments.a);
+                      st.addEntry(rname, new shared SymEntry(res));
+                   }
+                   when "any" {
+                      var res = segAny(values.a, segments.a);
+                      st.addEntry(rname, new shared SymEntry(res));
+                   }
+                   when "all" {
+                      var res = segAll(values.a, segments.a);
+                      st.addEntry(rname, new shared SymEntry(res));
+                   }
+                   when "mean" {
+                      var res = segMean(values.a, segments.a);
+                      st.addEntry(rname, new shared SymEntry(res));
+                   }
+                   otherwise {
+                       var errorMsg = notImplementedError(pn,operator,gVal.dtype);
+                       try! writeln(generateErrorContext(
+                                 msg=errorMsg, 
+                                 lineNumber=getLineNumber(), 
+                                 moduleName=getModuleName(), 
+                                 routineName=getRoutineName(), 
+                                 errorClass="NotImplementedError")); 
+                       return errorMsg;                 
+                   }
+               }
+           }
+           otherwise {
+               var errorMsg = unrecognizedTypeError(pn, dtype2str(gVal.dtype));
+               try! writeln(generateErrorContext(
+                     msg=errorMsg, 
+                     lineNumber=getLineNumber(), 
+                     moduleName=getModuleName(), 
+                     routineName=getRoutineName(), 
+                     errorClass="UnrecognizedTypeError"));          
+               return errorMsg;
+           }
+       }
+       return try! "created " + st.attrib(rname);
     }
 
     proc segmentedLocalRdxMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
@@ -426,7 +518,16 @@ module ReductionMsg
             var res = perLocNumUnique(values.a, segments.a);
             st.addEntry(rname, new shared SymEntry(res));
           }
-          otherwise {return notImplementedError(pn,operator,gVal.dtype);}
+          otherwise {
+               var errorMsg = notImplementedError(pn,operator,gVal.dtype);
+                try! writeln(generateErrorContext(
+                     msg=errorMsg, 
+                     lineNumber=getLineNumber(), 
+                     moduleName=getModuleName(), 
+                     routineName=getRoutineName(), 
+                     errorClass="IncompatibleArgumentsError")); 
+                return errorMsg;         
+             }
           }
       }
       when (DType.Float64) {

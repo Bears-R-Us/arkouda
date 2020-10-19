@@ -26,6 +26,8 @@ module ArgSortMsg
 
     use RadixSortLSD;
     use SegmentedArray;
+    use Reflection;
+    use Errors;
     
     // thresholds for different sized sorts
     var lgSmall = 10;
@@ -368,28 +370,35 @@ module ArgSortMsg
       var deltaIV: [aD] int;
       // Discover the dtype of the entry holding the keys array
       select g.dtype {
-        when DType.Int64 {
-          var e = toSymEntry(g, int);
-          // Permute the keys array with the initial iv
-          var newa: [e.aD] int;
-          ref olda = e.a;
-          // Effectively: newa = olda[iv]
-          forall (newai, idx) in zip(newa, iv) with (var agg = newSrcAggregator(int)) {
-            agg.copy(newai, olda[idx]);
+          when DType.Int64 {
+              var e = toSymEntry(g, int);
+              // Permute the keys array with the initial iv
+              var newa: [e.aD] int;
+              ref olda = e.a;
+              // Effectively: newa = olda[iv]
+              forall (newai, idx) in zip(newa, iv) with (var agg = newSrcAggregator(int)) {
+                  agg.copy(newai, olda[idx]);
+              }
+              // Generate the next incremental permutation
+              deltaIV = radixSortLSD_ranks(newa);
           }
-          // Generate the next incremental permutation
-          deltaIV = radixSortLSD_ranks(newa);
-        }
-        when DType.Float64 {
-          var e = toSymEntry(g, real);
-          var newa: [e.aD] real;
-          ref olda = e.a;
-          forall (newai, idx) in zip(newa, iv) with (var agg = newSrcAggregator(real)) {
-            agg.copy(newai, olda[idx]);
+          when DType.Float64 {
+              var e = toSymEntry(g, real);
+              var newa: [e.aD] real;
+              ref olda = e.a;
+              forall (newai, idx) in zip(newa, iv) with (var agg = newSrcAggregator(real)) {
+                  agg.copy(newai, olda[idx]);
+              }
+              deltaIV = radixSortLSD_ranks(newa);
           }
-          deltaIV = radixSortLSD_ranks(newa);
-        }
-        otherwise { throw new owned ErrorWithMsg(dtype2str(g.dtype)); }
+          otherwise { throw getErrorWithContext(
+                                msg="Unsupported DataType: %t".format(dtype2str(g.dtype)),
+                                lineNumber=getLineNumber(),
+                                routineName=getRoutineName(),
+                                moduleName=getModuleName(),
+                                errorClass="IllegalArgumentError"
+                                ); 
+          }
       }
       // The output permutation is the composition of the initial and incremental permutations
       var newIV: [aD] int;
@@ -440,7 +449,17 @@ module ArgSortMsg
       var n = nstr:int; // number of arrays to sort
       var fields = rest.split();
       // Check that fields contains the stated number of arrays
-      if (fields.size != 2*n) { return try! incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(n, fields.size/2 - 1)); }
+      if (fields.size != 2*n) { 
+          var errorMsg = try! incompatibleArgumentsError(pn, 
+                        "Expected %i arrays but got %i".format(n, fields.size/2 - 1));
+          try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="IncompatibleArgumentsError"));
+          return errorMsg;
+      }
       const low = fields.domain.low;
       var names = fields[low..#n];
       var types = fields[low+n..#n];
@@ -462,13 +481,32 @@ module ArgSortMsg
             thisSize = g.size;
             hasStr = true;
           }
-          otherwise {return unrecognizedTypeError(pn, objtype);}
+          otherwise {return unrecognizedTypeError(pn, objtype);
+              var errorMsg = unrecognizedTypeError(pn, objtype);
+              try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="UnrecognizedTypeError"));         
+              return errorMsg;
+          }
         }
         
         if (i == 1) {
-          size = thisSize;
+            size = thisSize;
         } else {
-          if (thisSize != size) { return incompatibleArgumentsError(pn, "Arrays must all be same size"); }
+            if (thisSize != size) { 
+                var errorMsg = incompatibleArgumentsError(pn, 
+                                               "Arrays must all be same size");
+                try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="IncompatibleArgumentsError")); 
+                return errorMsg;
+            }
         }
         
       }
@@ -493,9 +531,17 @@ module ArgSortMsg
           // TODO checkSorted and exclude array if already sorted?
           var g: borrowed GenSymEntry = st.lookup(name);
           select g.dtype {
-            when DType.Int64   { (bitWidth, neg) = getBitWidth(toSymEntry(g, int ).a); }
-            when DType.Float64 { (bitWidth, neg) = getBitWidth(toSymEntry(g, real).a); }
-            otherwise          { throw new owned ErrorWithMsg(dtype2str(g.dtype)); }
+              when DType.Int64   { (bitWidth, neg) = getBitWidth(toSymEntry(g, int ).a); }
+              when DType.Float64 { (bitWidth, neg) = getBitWidth(toSymEntry(g, real).a); }
+              otherwise          { 
+                                     throw getErrorWithContext(
+                                         msg=dtype2str(g.dtype),
+                                         lineNumber=getLineNumber(),
+                                         routineName=getRoutineName(),
+                                         moduleName=getModuleName(),
+                                         errorClass="ErrorWithContext"
+                                     );
+                                 }
           }
           totalDigits += (bitWidth + (bitsPerDigit-1)) / bitsPerDigit;
         }
@@ -528,7 +574,16 @@ module ArgSortMsg
               select g.dtype {
                 when DType.Int64   { mergeArray(int); }
                 when DType.Float64 { mergeArray(real); }
-                otherwise          { throw new owned ErrorWithMsg(dtype2str(g.dtype)); }
+                otherwise          { 
+                                       throw getErrorWithContext(
+                                                msg=dtype2str(g.dtype),
+                                                lineNumber=getLineNumber(),
+                                                routineName=getRoutineName(),
+                                                moduleName=getModuleName(),
+                                                errorClass="IllegalArgumentError"
+                                       ); 
+                                     
+                                   }
               }
           }
 
@@ -598,17 +653,26 @@ module ArgSortMsg
                          + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
         
             select (gEnt.dtype) {
-            when (DType.Int64) {
-              var e = toSymEntry(gEnt,int);
-              var iv = argsortDefault(e.a);
-              st.addEntry(ivname, new shared SymEntry(iv));
-            }
-            when (DType.Float64) {
-              var e = toSymEntry(gEnt, real);
-              var iv = argsortDefault(e.a);
-              st.addEntry(ivname, new shared SymEntry(iv));
-            }
-            otherwise {return notImplementedError(pn,gEnt.dtype);}
+                when (DType.Int64) {
+                    var e = toSymEntry(gEnt,int);
+                    var iv = argsortDefault(e.a);
+                    st.addEntry(ivname, new shared SymEntry(iv));
+                }
+                when (DType.Float64) {
+                    var e = toSymEntry(gEnt, real);
+                    var iv = argsortDefault(e.a);
+                    st.addEntry(ivname, new shared SymEntry(iv));
+                }
+                otherwise {
+                    var errorMsg = notImplementedError(pn,gEnt.dtype);
+                    try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));                    
+                    return errorMsg;
+                }
             }
           }
           when "str" {
@@ -620,7 +684,16 @@ module ArgSortMsg
             var iv = strings.argsort();
             st.addEntry(ivname, new shared SymEntry(iv));
           }
-          otherwise {return notImplementedError(pn, objtype);}
+          otherwise {
+              var errorMsg = notImplementedError(pn, objtype);
+              try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));                    
+              return errorMsg;
+          }
         }
             
         return try! "created " + st.attrib(ivname);
@@ -645,7 +718,16 @@ module ArgSortMsg
                 var iv = perLocaleArgSort(e.a);
                 st.addEntry(ivname, new shared SymEntry(iv));
             }
-            otherwise {return notImplementedError(pn,gEnt.dtype);}
+            otherwise {
+                var errorMsg = notImplementedError(pn,gEnt.dtype);
+                try! writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));                    
+                return errorMsg;                 
+            }
         }
         return try! "created " + st.attrib(ivname);
     }

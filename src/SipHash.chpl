@@ -2,6 +2,7 @@ module SipHash {
   private use CommPrimitives;
   private use AryUtil;
   private use CPtr;
+  use Errors;
   
   param cROUNDS = 2;
   param dROUNDS = 4;
@@ -9,8 +10,6 @@ module SipHash {
   private config param DEBUG = false;
 
   const defaultSipHashKey: [0..#16] uint(8) = for i in 0..#16 do i: uint(8);
-  
-  class ArgumentError: Error {}
 
   inline proc ROTL(x, b) {
     return (((x) << (b)) | ((x) >> (64 - (b))));
