@@ -38,6 +38,9 @@ class PdarrayCreationTest(ArkoudaTest):
 
         with self.assertRaises(TypeError):            
             ak.randint()
+
+        with self.assertRaises(ValueError):
+            ak.randint(low=0, high=1, size=-1, dtype=ak.float64)
     
     def testUniform(self):
         test_array = ak.uniform(3)

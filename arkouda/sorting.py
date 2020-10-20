@@ -196,8 +196,6 @@ def sort(pda : pdarray) -> pdarray:
     >>> a
     array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
     """
-    if hasattr(pda, "sort"):
-        return pda.sort()
     if isinstance(pda, pdarray):
         if pda.size == 0:
             return zeros(0, dtype=int64)

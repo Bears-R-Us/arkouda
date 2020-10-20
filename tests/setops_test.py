@@ -73,3 +73,14 @@ class SetOpsTest(ArkoudaTest):
         :raise: AssertionError if there are any errors encountered in run_test for set operations
         '''
         self.assertEqual(0, run_test())
+        
+    def test_error_handling(self):
+        with self.assertRaises(RuntimeError) as cm:
+            ak.concatenate([ak.ones(100),ak.array([True])])
+
+        self.assertEqual('Error: concatenateMsg: Incompatible arguments: ' +
+                         'Expected float64 dtype but got bool dtype', 
+                         cm.exception.args[0])       
+         
+        with self.assertRaises(TypeError):
+            ak.union1d([-1, 0, 1], [-2, 0, 2])
