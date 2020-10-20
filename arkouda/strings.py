@@ -363,6 +363,7 @@ class Strings:
         """
         Peel off one or more delimited fields from each string (similar 
         to string.partition), returning two new arrays of strings.
+        *Warning*: This function is experimental and not guaranteed to work.
 
         Parameters
         ----------
@@ -447,6 +448,7 @@ class Strings:
         """
         Peel off one or more delimited fields from the end of each string 
         (similar to string.rpartition), returning two new arrays of strings.
+        *Warning*: This function is experimental and not guaranteed to work.
 
         Parameters
         ----------
@@ -502,6 +504,7 @@ class Strings:
         """
         Join the strings from another array onto one end of the strings 
         of this array, optionally inserting a delimiter.
+        *Warning*: This function is experimental and not guaranteed to work.
 
         Parameters
         ----------
@@ -565,6 +568,7 @@ class Strings:
         """
         Join the strings from another array onto the left of the strings 
         of this array, optionally inserting a delimiter.
+        *Warning*: This function is experimental and not guaranteed to work.
 
         Parameters
         ----------
