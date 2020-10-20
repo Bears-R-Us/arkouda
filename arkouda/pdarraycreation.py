@@ -78,8 +78,9 @@ def array(a : Union[pdarray,np.ndarray]) -> Union[pdarray, Strings]:
         raise RuntimeError("Only rank-1 pdarrays or ndarrays supported")
     # Check if array of strings
     if a.dtype.kind == 'U':
+        encoded = np.array([elem.encode() for elem in a])
         # Length of each string, plus null byte terminator
-        lengths = np.array([len(elem) for elem in a]) + 1
+        lengths = np.array([len(elem) for elem in encoded]) + 1
         # Compute zero-up segment offsets
         offsets = np.cumsum(lengths) - lengths
         # Allocate and fill bytes array with string segments
@@ -89,8 +90,8 @@ def array(a : Union[pdarray,np.ndarray]) -> Union[pdarray, Strings]:
                                 " which exceeds allowed transfer size. Increase " +
                                 "ak.maxTransferBytes to force.").format(nbytes))
         values = np.zeros(nbytes, dtype=np.uint8)
-        for s, o in zip(a, offsets):
-            for i, b in enumerate(s.encode()):
+        for s, o in zip(encoded, offsets):
+            for i, b in enumerate(s):
                 values[o+i] = b
         # Recurse to create pdarrays for offsets and values, then return Strings object
         return Strings(array(offsets), array(values))

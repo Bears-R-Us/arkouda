@@ -20,7 +20,7 @@ errors = False
 def run_test_argsort(strings, test_strings, cat):
     akperm = ak.argsort(strings)
     aksorted = strings[akperm].to_ndarray()
-    npsorted = np.sort(strings)
+    npsorted = np.sort(test_strings)
     assert((aksorted == npsorted).all())
     catperm = ak.argsort(cat)
     catsorted = cat[catperm].to_ndarray()
@@ -268,7 +268,7 @@ class StringTest(ArkoudaTest):
         self.strings = self.base_words[choices]
         self.test_strings = self.strings.to_ndarray()
         self.cat = ak.Categorical(self.strings)
-        x, w = tuple(zip(*Counter(''.join(self.base_words)).items()))
+        x, w = tuple(zip(*Counter(''.join(self.base_words.to_ndarray())).items()))
         self.delim =  np.random.choice(x, p=(np.array(w)/sum(w)))
 
     def test_compare_strings(self):
