@@ -218,9 +218,9 @@ module SegmentedArray {
         t1 = getCurrentTime();
       }
       var gatheredVals = makeDistArray(retBytes, uint(8));
-      // For comm layer with poor small-message performance, use aggregation
-      // at the expense of memory. Otherwise, unorderedCopy is faster and smaller.
-      if !(CHPL_COMM == 'none' || CHPL_COMM == 'ugni') {
+      // Multi-locale requires some extra localization work that is not needed
+      // in CHPL_COMM=none
+      if CHPL_COMM != 'none' {
         // Compute the src index for each byte in gatheredVals
         /* For performance, we will do this with a scan, so first we need an array
            with the difference in index between the current and previous byte. For
@@ -228,7 +228,6 @@ module SegmentedArray {
            it is the difference between the src offset of the current segment ("left")
            and the src index of the last byte in the previous segment (right - 1).
         */
-        if DEBUG { writeln("Using aggregation at the expense of memory"); stdout.flush(); }
         var srcIdx = makeDistArray(retBytes, int);
         srcIdx = 1;
         var diffs: [D] int;
@@ -245,13 +244,11 @@ module SegmentedArray {
           agg.copy(v, va[si]);
         }
       } else {
-        if DEBUG { writeln("Using unorderedCopy"); stdout.flush(); }
         ref va = values.a;
         // Copy string data to gathered result
         forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, iv) {
           for pos in 0..#gl {
-            // Note: do not replace this unorderedCopy with aggregation
-            unorderedCopy(gatheredVals[go+pos], va[oa[idx]+pos]);
+            gatheredVals[go+pos] = va[oa[idx]+pos];
           }
         }
       }
