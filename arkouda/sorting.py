@@ -147,6 +147,8 @@ def local_argsort(pda : pdarray) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+    RuntimeError
+        Raised if sort attempted on a pdarray with an unsupported dtype
 
     See Also
     --------
@@ -179,6 +181,8 @@ def sort(pda : pdarray) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+    RuntimeError
+        Raised if sort attempted on a pdarray with an unsupported dtype
 
     See Also
     --------

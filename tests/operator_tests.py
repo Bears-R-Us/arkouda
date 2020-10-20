@@ -242,6 +242,11 @@ class OperatorsTest(ArkoudaTest):
         # Test ak,histogram against unsupported dtype
         with self.assertRaises(ValueError):
             ak.histogram((ak.randint(0, 1, 100, dtype=ak.bool)))
+            
+        with self.assertRaises(RuntimeError) as cm:
+            ak.concatenate([ak.array([True]),ak.array([True])]).is_sorted()
+        self.assertEqual('Error: reductionMsg: is_sorted bool not implemented', 
+                         cm.exception.args[0])
         
 if __name__ == '__main__':
     '''
