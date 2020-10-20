@@ -69,36 +69,46 @@ module SegmentedMsg {
   proc segmentedEfuncMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
+    var (subcmd, objtype, segName, valName, valtype, valStr) = payload.decode().splitMsgToTuple(6);
+    var json = jsonToPdArray(valStr, 1);
+    var val = json[json.domain.low];
+    var rname = st.nextName();
+    select (objtype, valtype) {
+    when ("str", "str") {
+      var strings = new owned SegString(segName, valName, st);
+      select subcmd {
+        when "contains" {
+          var truth = st.addEntry(rname, strings.size, bool);
+          truth.a = strings.substringSearch(val, SearchMode.contains);
+          repMsg = "created "+st.attrib(rname);
+        }
+        when "startswith" {
+          var truth = st.addEntry(rname, strings.size, bool);
+          truth.a = strings.substringSearch(val, SearchMode.startsWith);
+          repMsg = "created "+st.attrib(rname);
+        }
+        when "endswith" {
+          var truth = st.addEntry(rname, strings.size, bool);
+          truth.a = strings.substringSearch(val, SearchMode.endsWith);
+          repMsg = "created "+st.attrib(rname);
+        }
+        otherwise {return notImplementedError(pn, "subcmd: %s, (%s, %s)".format(subcmd, objtype, valtype));}
+      }
+    }
+    otherwise {return notImplementedError(pn, "(%s, %s)".format(objtype, valtype));}
+    }
+    return repMsg;
+  }
+
+proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    var pn = Reflection.getRoutineName();
+    var repMsg: string;
     var (subcmd, objtype, segName, valName, valtype, valStr,
          idStr, kpStr, lStr, jsonStr) = payload.decode().splitMsgToTuple(10);
     select (objtype, valtype) {
     when ("str", "str") {
       var strings = new owned SegString(segName, valName, st);
       select subcmd {
-        when "contains" {
-          var json = jsonToPdArray(valStr, 1);
-          var val = json[json.domain.low];
-          var rname = st.nextName();
-          var truth = st.addEntry(rname, strings.size, bool);
-          truth.a = strings.substringSearch(val, SearchMode.contains);
-          repMsg = "created "+st.attrib(rname);
-        }
-        when "startswith" {
-          var json = jsonToPdArray(valStr, 1);
-          var val = json[json.domain.low];
-          var rname = st.nextName();
-          var truth = st.addEntry(rname, strings.size, bool);
-          truth.a = strings.substringSearch(val, SearchMode.startsWith);
-          repMsg = "created "+st.attrib(rname);
-        }
-        when "endswith" {
-          var json = jsonToPdArray(valStr, 1);
-          var val = json[json.domain.low];
-          var rname = st.nextName();
-          var truth = st.addEntry(rname, strings.size, bool);
-          truth.a = strings.substringSearch(val, SearchMode.endsWith);
-          repMsg = "created "+st.attrib(rname);
-        }
         when "peel" {
           var times = valStr:int;
           var includeDelimiter = (idStr.toLower() == "true");

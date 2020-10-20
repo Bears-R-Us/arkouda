@@ -426,7 +426,7 @@ class Strings:
             raise TypeError("Times must be integer, not {}".format(type(times)))
         if times < 1:
             raise ValueError("Times must be >= 1")
-        msg = "segmentedEfunc {} {} {} {} {} {} {} {} {} {}".format("peel",
+        msg = "segmentedPeel {} {} {} {} {} {} {} {} {} {}".format("peel",
                             self.objtype,
                             self.offsets.name,
                             self.bytes.name,
