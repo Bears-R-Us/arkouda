@@ -84,3 +84,8 @@ class SetOpsTest(ArkoudaTest):
          
         with self.assertRaises(TypeError):
             ak.union1d([-1, 0, 1], [-2, 0, 2])
+        
+        with self.assertRaises(RuntimeError) as cm:
+            ak.cos(ak.randint(0, 1, 100, dtype=ak.bool))
+        self.assertEqual('Error: efuncMsg: cos bool not implemented', 
+                         cm.exception.args[0])

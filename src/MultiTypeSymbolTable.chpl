@@ -140,7 +140,15 @@ module MultiTypeSymbolTable
                 when DType.Int64 { return addEntry(name, len, int); }
                 when DType.Float64 { return addEntry(name, len, real); }
                 when DType.Bool { return addEntry(name, len, bool); }
-                otherwise { halt("unimplemented"); }
+                otherwise { 
+                    var errorMsg = "addEntry not implemented for %t".format(dtype); 
+                    throw getErrorWithContext(
+                                   msg=errorMsg,
+                                   lineNumber=getLineNumber(),
+                                   routineName=getRoutineName(),
+                                   moduleName=getModuleName(),
+                                   errorClass="ErrorWithContext");
+                }
             }
         }
 
