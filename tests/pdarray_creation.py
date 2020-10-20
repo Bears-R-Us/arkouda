@@ -93,4 +93,10 @@ class PdarrayCreationTest(ArkoudaTest):
             
         with self.assertRaises(TypeError):
             ak.ones(5, dtype=str)       
-        
+    
+    def testMulitdimensionalArrayCreation(self):
+        with self.assertRaises(RuntimeError) as cm:
+            ak.array([[0,0],[0,1],[1,1]])
+            
+        self.assertEqual('Only rank-1 pdarrays or ndarrays supported', 
+                         cm.exception.args[0])

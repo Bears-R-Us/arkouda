@@ -239,6 +239,10 @@ class OperatorsTest(ArkoudaTest):
         with self.assertRaises(NotImplementedError):
             iter(ak.array(['String {}'.format(i) for i in range(0,10)]))
         
+        # Test ak,histogram against unsupported dtype
+        with self.assertRaises(ValueError):
+            ak.histogram((ak.randint(0, 1, 100, dtype=ak.bool)))
+        
 if __name__ == '__main__':
     '''
     Enables invocation of operator tests outside of pytest test harness

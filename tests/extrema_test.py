@@ -1,4 +1,3 @@
-from context import arkouda as ak
 import numpy as np
 from context import arkouda as ak
 from base_test import ArkoudaTest
