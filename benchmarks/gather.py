@@ -4,7 +4,7 @@ import time, argparse
 import numpy as np
 import arkouda as ak
 
-TYPES = ('int64', 'float64', 'bool')
+TYPES = ('int64', 'float64', 'bool', 'str')
 
 def time_ak_gather(isize, vsize, trials, dtype, random):
     print(">>> arkouda gather")
@@ -19,8 +19,13 @@ def time_ak_gather(isize, vsize, trials, dtype, random):
             v = ak.randint(0, 2**32, Nv)
         elif dtype == 'float64':
             v = ak.randint(0, 1, Nv, dtype=ak.float64)
+        elif dtype == 'str':
+            v = ak.random_strings_uniform(1, 16, Nv)
     else:   
-        v = ak.ones(Nv, dtype=dtype)
+        if dtype == 'str':
+            v = ak.random_strings_uniform(1, 16, Nv)
+        else:
+            v = ak.ones(Nv, dtype=dtype)
     
     timings = []
     for _ in range(trials):
@@ -31,7 +36,12 @@ def time_ak_gather(isize, vsize, trials, dtype, random):
     tavg = sum(timings) / trials
 
     print("Average time = {:.4f} sec".format(tavg))
-    bytes_per_sec = (c.size * c.itemsize * 3) / tavg
+    if dtype == 'str':
+        offsets_transferred = 3 * c.offsets.size * c.offsets.itemsize
+        bytes_transferred = (c.offsets.size * c.offsets.itemsize) + (2 * c.bytes.size)
+        bytes_per_sec = (offsets_transferred + bytes_transferred) / tavg
+    else:
+        bytes_per_sec = (c.size * c.itemsize * 3) / tavg
     print("Average rate = {:.2f} GiB/sec".format(bytes_per_sec/2**30))
 
 def time_np_gather(Ni, Nv, trials, dtype, random):
@@ -69,12 +79,17 @@ def check_correctness(dtype, random):
             npv = np.random.randint(0, 2**32, Nv)
         elif dtype == 'float64':
             npv = np.random.random(Nv)
+        elif dtype == 'str':
+            npv = np.array([np.str(x) for x in np.random.randint(0, 2**32, Nv)])
     else:   
         npv = np.ones(Nv, dtype=dtype)
     akv = ak.array(npv)
     npc = npv[npi]
     akc = akv[aki]
-    assert np.allclose(npc, akc.to_ndarray())
+    if dtype == 'str':
+        assert (npc == akc.to_ndarray()).all()
+    else:
+        assert np.allclose(npc, akc.to_ndarray())
 
 def create_parser():
     parser = argparse.ArgumentParser(description="Measure the performance of random gather: C = V[I]")
