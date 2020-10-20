@@ -1169,7 +1169,7 @@ module GenSymIO {
                 if leadingSliceIndices[idx+1] > -1 || isLastLocale(idx+1) {
                     on Locales[idx+1] {
                         const locDom = A.localSubdomain();
-                        var sliceList: list(uint(8), parSafe=true);
+                        var sliceList: list(uint(8), parSafe=false);
 
                         /*
                          * Iterate through the local slice values for the next locale and add
@@ -1198,7 +1198,7 @@ module GenSymIO {
                 var leadingSliceIndex = leadingSliceIndices[idx]:int;
                 var trailingSliceIndex = trailingSliceIndices[idx]:int;
 
-                var valuesList: list(uint(8), parSafe=true);
+                var valuesList: list(uint(8), parSafe=false);
 
                 /*
                  * Verify if the current locale (idx) contains chars shuffled to the previous 
@@ -1838,8 +1838,8 @@ module GenSymIO {
      * a segments list representing starting indices for each string in the values list.
      */
     private proc sliceToValuesAndSegments(rawChars) {
-        var charList: list(uint(8), parSafe=true);
-        var indices: list(int, parSafe=true);
+        var charList: list(uint(8), parSafe=false);
+        var indices: list(int, parSafe=false);
 
         //initialize segments with index to first char in values
         indices.append(0);
@@ -1870,7 +1870,7 @@ module GenSymIO {
      */
     private proc adjustForLeadingSlice(sliceIndex : int,
                                    charList : list(uint(8))) {
-        var valuesList: list(uint(8), parSafe=true);
+        var valuesList: list(uint(8), parSafe=false);
         var indices: list(int);
         var i: int = 0;
         indices.append(0);
@@ -1904,7 +1904,7 @@ module GenSymIO {
      */
     private proc adjustForTrailingSlice(sliceIndex : int,
                                    charList : list(uint(8))) {
-        var valuesList: list(uint(8), parSafe=true);
+        var valuesList: list(uint(8), parSafe=false);
         var indices: list(int);
         var i: int = 0;
         indices.append(0);
