@@ -29,7 +29,7 @@ module GenSymIO {
      */
     proc arrayMsg(cmd: string, payload: bytes, st: borrowed SymTab): string {
         var repMsg: string;
-        var (dtypeBytes, sizeBytes, data) = payload.splitMsgToTuple(3);
+        var (dtypeBytes, sizeBytes, data) = payload.splitMsgToTuple(b" ", 3);
         var dtype = str2dtype(try! dtypeBytes.decode());
         var size = try! sizeBytes:int;
         var tmpf:file;

@@ -456,7 +456,10 @@ module SegmentedArray {
       forall i in offsets.aD {
         // First, check whether string contains enough instances of delimiter to peel
         var hasEnough: bool;
-        if i == high {
+        if oa[i] > D.high {
+          // When the last string(s) is/are shorter than the substr
+          hasEnough = false;
+        } else if i == high {
           hasEnough = ((+ reduce truth) - numHits[oa[i]]) >= times;
         } else {
           hasEnough = (numHits[oa[i+1]] - numHits[oa[i]]) >= times;
