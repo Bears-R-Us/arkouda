@@ -36,8 +36,8 @@ module UniqueMsg
         if returnCountsStr == "True" {returnCounts = true;}
         else if returnCountsStr == "False" {returnCounts = false;}
         else {
-            var errorMsg = try! "Error: %s: %s".format(pn,returnCountsStr);
-            try! writeln(generateErrorContext(
+            var errorMsg = "Error: %s: %s".format(pn,returnCountsStr);
+            writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -51,7 +51,7 @@ module UniqueMsg
                 var vname = st.nextName();
                 // get next symbol anme for counts
                 var cname = st.nextName();
-                if v {try! writeln("%s %s %t: %s %s".format(cmd, name, returnCounts, 
+                if v {writeln("%s %s %t: %s %s".format(cmd, name, returnCounts, 
                           vname, cname)); try! stdout.flush();}
         
                 var gEnt: borrowed GenSymEntry = st.lookup(name);
@@ -69,7 +69,7 @@ module UniqueMsg
                 
                     /* // how many bins in histogram */
                     /* var bins = eMax-eMin+1; */
-                    /* if v {try! writeln("bins = %t".format(bins));try! stdout.flush();} */
+                    /* if v {writeln("bins = %t".format(bins));try! stdout.flush();} */
 
                     /* if (bins <= mBins) { */
                     /*     if v {try! writeln("bins <= %t".format(mBins));try! stdout.flush();} */
@@ -91,7 +91,7 @@ module UniqueMsg
                 }
                 otherwise {
                     var errorMsg = notImplementedError("unique",gEnt.dtype);
-                    try! writeln(generateErrorContext(
+                    writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -131,7 +131,7 @@ module UniqueMsg
           }
           otherwise { 
               var errorMsg = notImplementedError(Reflection.getRoutineName(), objtype);
-              try! writeln(generateErrorContext(
+              writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -152,7 +152,7 @@ module UniqueMsg
         // get next symbol name
         var vname = st.nextName();
         var cname = st.nextName();
-        if v {try! writeln("%s %s : %s %s".format(cmd, name, vname, cname));try! stdout.flush();}
+        if v {writeln("%s %s : %s %s".format(cmd, name, vname, cname));try! stdout.flush();}
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
@@ -164,7 +164,7 @@ module UniqueMsg
 
                 /* // how many bins in histogram */
                 /* var bins = eMax-eMin+1; */
-                /* if v {try! writeln("bins = %t".format(bins));try! stdout.flush();} */
+                /* if v {writeln("bins = %t".format(bins));try! stdout.flush();} */
 
                 /* if (bins <= mBins) { */
                 /*     if v {try! writeln("bins <= %t".format(mBins));try! stdout.flush();} */
@@ -191,7 +191,7 @@ module UniqueMsg
             }
             otherwise {
                 var errorMsg = notImplementedError(pn,gEnt.dtype);
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 

@@ -48,7 +48,7 @@ module SegmentedMsg {
           }
           otherwise { 
               repMsg = notImplementedError(pn, dist);       
-              try! writeln(generateErrorContext(
+              writeln(generateErrorContext(
                                      msg=repMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -73,7 +73,7 @@ module SegmentedMsg {
       }
       otherwise {
           var errorMsg = notImplementedError(pn, "%s".format(objtype));
-          try! writeln(generateErrorContext(
+          writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -181,7 +181,7 @@ module SegmentedMsg {
           } otherwise {
               var errorMsg = notImplementedError(pn, 
                                "subcmd: %s, (%s, %s)".format(subcmd, objtype, valtype));
-              try! writeln(generateErrorContext(
+              writeln(generateErrorContext(
                                      msg=repMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -198,7 +198,7 @@ module SegmentedMsg {
         otherwise {
             var errorMsg = notImplementedError(pn, 
                               "subcmd: %s, (%s, %s)".format(subcmd, objtype, valtype));
-            try! writeln(generateErrorContext(
+            writeln(generateErrorContext(
                                      msg=repMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -210,7 +210,7 @@ module SegmentedMsg {
     }
     otherwise {
         var errorMsg = notImplementedError(pn, "(%s, %s)".format(objtype, valtype));
-        try! writeln(generateErrorContext(
+        writeln(generateErrorContext(
                                      msg=repMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -241,7 +241,7 @@ module SegmentedMsg {
         }
         otherwise {
             var errorMsg = notImplementedError(pn, objtype);
-            try! writeln(generateErrorContext(
+            writeln(generateErrorContext(
                                      msg=repMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -284,8 +284,8 @@ module SegmentedMsg {
                 return segPdarrayIndex(objtype, args, st);
             }
             otherwise {
-                var errorMsg = try! "Error: in %s, nknown subcommand %s".format(pn, subcmd);
-                try! writeln(generateErrorContext(
+                var errorMsg = "Error: in %s, nknown subcommand %s".format(pn, subcmd);
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -295,8 +295,8 @@ module SegmentedMsg {
             }
         }
     } catch e: OutOfBoundsError {
-        var errorMsg = try! "Error: index out of bounds";
-        try! writeln(generateErrorContext(
+        var errorMsg = "Error: index out of bounds";
+        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -305,7 +305,7 @@ module SegmentedMsg {
         return errorMsg;
     } catch {
         var errorMsg = "Error: unknown cause";
-        try! writeln(generateErrorContext(
+        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -334,7 +334,7 @@ module SegmentedMsg {
           }
           otherwise { 
               var errorMsg = notImplementedError(pn, objtype); 
-              try! writeln(generateErrorContext(
+              writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -369,7 +369,7 @@ module SegmentedMsg {
         // Only stride-1 slices are allowed for now
         if (stride != 1) { 
             var errorMsg = notImplementedError(pn, "stride != 1"); 
-            try! writeln(generateErrorContext(
+            writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -392,7 +392,7 @@ module SegmentedMsg {
       }
       otherwise {
           var errorMsg = notImplementedError(pn, objtype);
-          try! writeln(generateErrorContext(
+          writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -554,7 +554,7 @@ module SegmentedMsg {
     }
     otherwise {
         var errorMsg = unrecognizedTypeError(pn, "("+mainObjtype+", "+testObjtype+")");
-        try! writeln(generateErrorContext(
+        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -578,7 +578,7 @@ module SegmentedMsg {
           }
           otherwise {
               var errorMsg = notImplementedError(pn, "("+objtype+")");
-              try! writeln(generateErrorContext(
+              writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 

@@ -108,7 +108,7 @@ module RandArray {
   proc newRandStringsUniformLength(const n: int, const minLen: int, 
                            const maxLen: int, characters:charSet = charSet.Uppercase) throws {
     if (n < 0) || (minLen < 0) || (maxLen < minLen) {  
-        try! writeln(generateErrorContext(
+        writeln(generateErrorContext(
                  msg="Incompatible arguments: n and minLen must be > 0 and maxLen < minLen", 
                  lineNumber=getLineNumber(), 
                  moduleName=getModuleName(), 
@@ -131,7 +131,7 @@ module RandArray {
   proc newRandStringsLogNormalLength(const n: int, const logMean: numeric, 
                        const logStd: numeric, characters:charSet = charSet.Uppercase) throws {
     if (n < 0) || (logStd <= 0) {
-        try! writeln(generateErrorContext(
+        writeln(generateErrorContext(
                      msg="Incompatible arguments: n must be > 0 and logStd <= 0", 
                      lineNumber=getLineNumber(), 
                      moduleName=getModuleName(), 

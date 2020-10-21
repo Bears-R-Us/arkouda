@@ -30,7 +30,7 @@ module RandMsg
         var rname = st.nextName();
         
         // if verbose print action
-        if v {try! writeln("%s %i %s %s %s: %s".format(cmd,len,dtype2str(dtype),
+        if v {writeln("%s %i %s %s %s: %s".format(cmd,len,dtype2str(dtype),
                                          rname,aMinStr,aMaxStr)); try! stdout.flush();}
         select (dtype) {
             when (DType.Int64) {
@@ -77,7 +77,7 @@ module RandMsg
             }            
             otherwise {
                 var errorMsg = notImplementedError(pn,dtype);
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                      msg=errorMsg, 
                      lineNumber=getLineNumber(), 
                      moduleName=getModuleName(), 

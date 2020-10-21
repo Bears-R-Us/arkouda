@@ -28,7 +28,7 @@ module RegistrationMsg
         var (name, userDefinedName) = payload.decode().splitMsgToTuple(2);
 
         // if verbose print action
-        if v {try! writeln("%s %s %s".format(cmd,name,userDefinedName)); try! stdout.flush();}
+        if v {writeln("%s %s %s".format(cmd,name,userDefinedName)); try! stdout.flush();}
 
         // register new user_defined_name for name
         st.regName(name, userDefinedName);
@@ -54,7 +54,7 @@ module RegistrationMsg
         var (name) = payload.decode().splitMsgToTuple(1);
 
         // if verbose print action
-        if v {try! writeln("%s %s".format(cmd,name)); try! stdout.flush();}
+        if v {writeln("%s %s".format(cmd,name)); try! stdout.flush();}
 
         // lookup name in symbol table to get attributes
         var attrib = st.attrib(name);
@@ -80,7 +80,7 @@ module RegistrationMsg
         var (name) = payload.decode().splitMsgToTuple(1);
 
         // if verbose print action
-        if v {try! writeln("%s %s".format(cmd,name)); try! stdout.flush();}
+        if v {writeln("%s %s".format(cmd,name)); try! stdout.flush();}
 
         // take name out of the registry and delete entry in symbol table
         st.unregName(name);

@@ -450,9 +450,9 @@ module ArgSortMsg
       var fields = rest.split();
       // Check that fields contains the stated number of arrays
       if (fields.size != 2*n) { 
-          var errorMsg = try! incompatibleArgumentsError(pn, 
+          var errorMsg = incompatibleArgumentsError(pn, 
                         "Expected %i arrays but got %i".format(n, fields.size/2 - 1));
-          try! writeln(generateErrorContext(
+          writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -483,7 +483,7 @@ module ArgSortMsg
           }
           otherwise {return unrecognizedTypeError(pn, objtype);
               var errorMsg = unrecognizedTypeError(pn, objtype);
-              try! writeln(generateErrorContext(
+              writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -499,7 +499,7 @@ module ArgSortMsg
             if (thisSize != size) { 
                 var errorMsg = incompatibleArgumentsError(pn, 
                                                "Arrays must all be same size");
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -643,7 +643,7 @@ module ArgSortMsg
 
         // get next symbol name
         var ivname = st.nextName();
-        if v {try! writeln("%s %s : %s %s".format(cmd, name, ivname));try! stdout.flush();}
+        if v {writeln("%s %s : %s %s".format(cmd, name, ivname));try! stdout.flush();}
 
         select objtype {
           when "pdarray" {
@@ -665,7 +665,7 @@ module ArgSortMsg
                 }
                 otherwise {
                     var errorMsg = notImplementedError(pn,gEnt.dtype);
-                    try! writeln(generateErrorContext(
+                    writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -686,7 +686,7 @@ module ArgSortMsg
           }
           otherwise {
               var errorMsg = notImplementedError(pn, objtype);
-              try! writeln(generateErrorContext(
+              writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -708,7 +708,7 @@ module ArgSortMsg
 
         // get next symbol name
         var ivname = st.nextName();
-        if v {try! writeln("%s %s : %s %s".format(cmd, name, ivname));try! stdout.flush();}
+        if v {writeln("%s %s : %s %s".format(cmd, name, ivname));try! stdout.flush();}
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
@@ -720,7 +720,7 @@ module ArgSortMsg
             }
             otherwise {
                 var errorMsg = notImplementedError(pn,gEnt.dtype);
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 

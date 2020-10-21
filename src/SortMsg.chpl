@@ -30,8 +30,8 @@ module SortMsg
       // get next symbol name
       var sortedName = st.nextName();
       if v {
-          try! writeln("%s %s : %s %s".format(cmd, name, sortedName));
-          try! stdout.flush();
+          writeln("%s %s : %s %s".format(cmd, name, sortedName));
+          stdout.flush();
       }
 
       var gEnt: borrowed GenSymEntry = st.lookup(name);
@@ -55,7 +55,7 @@ module SortMsg
           }// end when(DType.Float64)
           otherwise {
               var errorMsg = notImplementedError(pn,gEnt.dtype);
-              try! writeln(generateErrorContext(
+              writeln(generateErrorContext(
                               msg=errorMsg, 
                               lineNumber=getLineNumber(), 
                               moduleName=getModuleName(), 

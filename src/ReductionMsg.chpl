@@ -102,7 +102,7 @@ module ReductionMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                            msg=errorMsg, 
                                            lineNumber=getLineNumber(), 
                                            moduleName=getModuleName(), 
@@ -160,7 +160,7 @@ module ReductionMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                             msg=errorMsg, 
                             lineNumber=getLineNumber(), 
                             moduleName=getModuleName(), 
@@ -206,7 +206,7 @@ module ReductionMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -218,7 +218,7 @@ module ReductionMsg
             }
             otherwise {
                 var errorMsg = unrecognizedTypeError(pn, dtype2str(gEnt.dtype));
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                      msg=errorMsg, 
                      lineNumber=getLineNumber(), 
                      moduleName=getModuleName(), 
@@ -236,7 +236,7 @@ module ReductionMsg
       var (segments_name, sizeStr) = payload.decode().splitMsgToTuple(2);
       var size = try! sizeStr:int;
       var rname = st.nextName();
-      if v {try! writeln("%s %s %s".format(cmd,segments_name, size));try! stdout.flush();}
+      if v {writeln("%s %s %s".format(cmd,segments_name, size));try! stdout.flush();}
 
       var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
       var segments = toSymEntry(gSeg, int);
@@ -270,13 +270,13 @@ module ReductionMsg
       var (segments_name, sizeStr) = payload.decode().splitMsgToTuple(2);
       var size = try! sizeStr:int; // size of original keys array
       var rname = st.nextName();
-      if v {try! writeln("%s %s %s".format(cmd,segments_name, size));try! stdout.flush();}
+      if v {writeln("%s %s %s".format(cmd,segments_name, size));try! stdout.flush();}
 
       var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
       var segments = toSymEntry(gSeg, int);
       if (segments == nil) {
           var errorMsg = "Error: array of segment offsets must be int dtype";
-          try! writeln(generateErrorContext(
+          writeln(generateErrorContext(
                        msg=errorMsg, 
                        lineNumber=getLineNumber(), 
                        moduleName=getModuleName(), 
@@ -315,13 +315,13 @@ module ReductionMsg
         var skipNan = stringtobool(skip_nan);
       
         var rname = st.nextName();
-        if v {try! writeln("%s %s %s %s %s".format(cmd,values_name,segments_name,operator,skipNan));try! stdout.flush();}
+        if v {writeln("%s %s %s %s %s".format(cmd,values_name,segments_name,operator,skipNan));try! stdout.flush();}
         var gVal: borrowed GenSymEntry = st.lookup(values_name);
         var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
         var segments = toSymEntry(gSeg, int);
         if (segments == nil) {
             var errorMsg = "Error: array of segment offsets must be int dtype";
-            try! writeln(generateErrorContext(
+            writeln(generateErrorContext(
                      msg=errorMsg, 
                      lineNumber=getLineNumber(), 
                      moduleName=getModuleName(), 
@@ -367,7 +367,7 @@ module ReductionMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,operator,gVal.dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                   msg=errorMsg, 
                                   lineNumber=getLineNumber(), 
                                   moduleName=getModuleName(), 
@@ -410,7 +410,7 @@ module ReductionMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,operator,gVal.dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -441,7 +441,7 @@ module ReductionMsg
                    }
                    otherwise {
                        var errorMsg = notImplementedError(pn,operator,gVal.dtype);
-                       try! writeln(generateErrorContext(
+                       writeln(generateErrorContext(
                                  msg=errorMsg, 
                                  lineNumber=getLineNumber(), 
                                  moduleName=getModuleName(), 
@@ -453,7 +453,7 @@ module ReductionMsg
            }
            otherwise {
                var errorMsg = unrecognizedTypeError(pn, dtype2str(gVal.dtype));
-               try! writeln(generateErrorContext(
+               writeln(generateErrorContext(
                      msg=errorMsg, 
                      lineNumber=getLineNumber(), 
                      moduleName=getModuleName(), 
@@ -473,7 +473,7 @@ module ReductionMsg
       // 'operator' is the reduction operator
       var (keys_name, values_name, segments_name, operator) = payload.decode().splitMsgToTuple(4);
       var rname = st.nextName();
-      if v {try! writeln("%s %s %s %s %s".format(cmd,keys_name,values_name,segments_name,operator));try! stdout.flush();}
+      if v {writeln("%s %s %s %s %s".format(cmd,keys_name,values_name,segments_name,operator));try! stdout.flush();}
 
       var gKey: borrowed GenSymEntry = st.lookup(keys_name);
       if (gKey.dtype != DType.Int64) {return unrecognizedTypeError(pn, dtype2str(gKey.dtype));}
@@ -520,7 +520,7 @@ module ReductionMsg
           }
           otherwise {
                var errorMsg = notImplementedError(pn,operator,gVal.dtype);
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                      msg=errorMsg, 
                      lineNumber=getLineNumber(), 
                      moduleName=getModuleName(), 

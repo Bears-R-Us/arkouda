@@ -18,7 +18,7 @@ module IndexingMsg
         // split request into fields
         var (name, idxStr) = payload.decode().splitMsgToTuple(2);
         var idx = try! idxStr:int;
-        if v {try! writeln("%s %s %i".format(cmd, name, idx));try! stdout.flush();}
+        if v {writeln("%s %s %i".format(cmd, name, idx));try! stdout.flush();}
 
          var gEnt: borrowed GenSymEntry = st.lookup(name);
          
@@ -40,7 +40,7 @@ module IndexingMsg
              }
              otherwise {
                  var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
-                 try! writeln(generateErrorContext(
+                 writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -73,7 +73,7 @@ module IndexingMsg
         // get next symbol name
         var rname = st.nextName();
 
-        if v {try! writeln("%s %s %i %i %i : %t , %s".format(cmd, name, start, stop, stride, slice, rname));try! stdout.flush();}
+        if v {writeln("%s %s %i %i %i : %t , %s".format(cmd, name, start, stop, stride, slice, rname));try! stdout.flush();}
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
@@ -100,7 +100,7 @@ module IndexingMsg
             }
             otherwise {
                 var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -121,7 +121,7 @@ module IndexingMsg
         // get next symbol name
         var rname = st.nextName();
 
-        if v {try! writeln("%s %s %s : %s".format(cmd, name, iname, rname));try! stdout.flush();}
+        if v {writeln("%s %s %s : %s".format(cmd, name, iname, rname));try! stdout.flush();}
 
         var gX: borrowed GenSymEntry = st.lookup(name);
         var gIV: borrowed GenSymEntry = st.lookup(iname);
@@ -137,8 +137,8 @@ module IndexingMsg
             var ivMin = min reduce iv.a;
             var ivMax = max reduce iv.a;
             if ivMin < 0 {
-                var errorMsg = try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);
-                try! writeln(generateErrorContext(
+                var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -147,8 +147,8 @@ module IndexingMsg
                 return errorMsg;                
             }
             if ivMax >= e.size {
-                var errorMsg = try! "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);
-                try! writeln(generateErrorContext(
+                var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -215,7 +215,7 @@ module IndexingMsg
             otherwise {
                 var errorMsg = notImplementedError(pn,
                                        "("+dtype2str(gX.dtype)+","+dtype2str(gIV.dtype)+")");
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -234,7 +234,7 @@ module IndexingMsg
         var (name, idxStr, dtypeStr, value) = payload.decode().splitMsgToTuple(4);
         var idx = try! idxStr:int;
         var dtype = str2dtype(dtypeStr);
-        if v {try! writeln("%s %s %i %s %s".format(cmd, name, idx, dtype2str(dtype), value));try! stdout.flush();}
+        if v {writeln("%s %s %i %s %s".format(cmd, name, idx, dtype2str(dtype), value));try! stdout.flush();}
 
          var gEnt: borrowed GenSymEntry = st.lookup(name);
 
@@ -295,7 +295,7 @@ module IndexingMsg
              otherwise {
                  var errorMsg = notImplementedError(pn,
                                                    "("+dtype2str(gEnt.dtype)+","+dtype2str(dtype)+")");
-                 try! writeln(generateErrorContext(
+                 writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -315,20 +315,20 @@ module IndexingMsg
         var (name, iname, dtypeStr, value) = payload.decode().splitMsgToTuple(4);
         var dtype = str2dtype(dtypeStr);
 
-        if v {try! writeln("%s %s %s %s %s".format(cmd, name, iname, dtype2str(dtype), value));try! stdout.flush();}
+        if v {writeln("%s %s %s %s %s".format(cmd, name, iname, dtype2str(dtype), value));try! stdout.flush();}
 
         var gX: borrowed GenSymEntry = st.lookup(name);
         var gIV: borrowed GenSymEntry = st.lookup(iname);
 
         // scatter indexing by integer index vector
-        proc ivInt64Helper(type Xtype, type dtype): string {
+        proc ivInt64Helper(type Xtype, type dtype): string throws {
             var e = toSymEntry(gX,Xtype);
             var iv = toSymEntry(gIV,int);
             var ivMin = min reduce iv.a;
             var ivMax = max reduce iv.a;
             if ivMin < 0 {
-                var errorMsg = try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);
-                try! writeln(generateErrorContext(
+                var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -337,8 +337,8 @@ module IndexingMsg
                 return errorMsg;
             }
             if ivMax >= e.size {
-                var errorMsg = try! "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
-                try! writeln(generateErrorContext(
+                var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -365,9 +365,9 @@ module IndexingMsg
             var e = toSymEntry(gX,Xtype);
             var truth = toSymEntry(gIV,bool);
             if (e.size != truth.size) {
-                var errorMsg = try! "Error: %s: bool iv must be same size %i != %i".format(pn,e.size,
+                var errorMsg = "Error: %s: bool iv must be same size %i != %i".format(pn,e.size,
                                                                                     truth.size);
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -413,7 +413,7 @@ module IndexingMsg
             otherwise {
                 var errorMsg = notImplementedError(pn,
                       "("+dtype2str(gX.dtype)+","+dtype2str(gIV.dtype)+","+dtype2str(dtype)+")");
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -431,7 +431,7 @@ module IndexingMsg
         // split request into fields
         var (name, iname, yname) = payload.decode().splitMsgToTuple(3);
 
-        if v {try! writeln("%s %s %s %s".format(cmd, name, iname, yname));try! stdout.flush();}
+        if v {writeln("%s %s %s %s".format(cmd, name, iname, yname));try! stdout.flush();}
 
         var gX: borrowed GenSymEntry = st.lookup(name);
         var gIV: borrowed GenSymEntry = st.lookup(iname);
@@ -440,11 +440,11 @@ module IndexingMsg
         // add check for IV to be dtype of int64 or bool
 
         // scatter indexing by an integer index vector
-        proc ivInt64Helper(type t) {
+        proc ivInt64Helper(type t) throws {
             // add check to make syre IV and Y are same size
             if (gIV.size != gY.size) {
-                var errorMsg = try! "Error: %s: size mismatch %i %i".format(pn,gIV.size,gY.size);
-                try! writeln(generateErrorContext(
+                var errorMsg = "Error: %s: size mismatch %i %i".format(pn,gIV.size,gY.size);
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -458,8 +458,8 @@ module IndexingMsg
             var ivMax = max reduce iv.a;
             var y = toSymEntry(gY,t);
             if ivMin < 0 {
-                var errorMsg = try! "Error: %s: OOBindex %i < 0".format(pn,ivMin);
-                try! writeln(generateErrorContext(
+                var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -468,8 +468,8 @@ module IndexingMsg
                 return errorMsg;  
             }
             if ivMax >= e.size {
-                var errorMsg = try! "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
-                try! writeln(generateErrorContext(
+                var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -488,11 +488,11 @@ module IndexingMsg
         }
 
         // expansion indexing by a bool index vector
-        proc ivBoolHelper(type t) {
+        proc ivBoolHelper(type t) throws {
             // add check to make syre IV and Y are same size
             if (gIV.size != gX.size) {
-                var errorMsg = try! "Error: %s: size mismatch %i %i".format(pn,gIV.size,gX.size);
-                try! writeln(generateErrorContext(
+                var errorMsg = "Error: %s: size mismatch %i %i".format(pn,gIV.size,gX.size);
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -507,8 +507,8 @@ module IndexingMsg
             if v {writeln("pop = ",pop,"last-scan = ",iv[iv.size-1]);try! stdout.flush();}
             var y = toSymEntry(gY,t);
             if (y.size != pop) {
-                var errorMsg = try! "Error: %s: pop size mismatch %i %i".format(pn,pop,y.size);
-                try! writeln(generateErrorContext(
+                var errorMsg = "Error: %s: pop size mismatch %i %i".format(pn,pop,y.size);
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -550,7 +550,7 @@ module IndexingMsg
             otherwise {
                 var errorMsg = notImplementedError(pn,
                      "("+dtype2str(gX.dtype)+","+dtype2str(gIV.dtype)+","+dtype2str(gY.dtype)+")");
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -581,7 +581,7 @@ module IndexingMsg
         // BAD FORM start < stop and stride is negative
         else {slice = 1..0;}
 
-        if v {try! writeln("%s %s %i %i %i %s %s".format(cmd, name, start, stop, 
+        if v {writeln("%s %s %i %i %i %s %s".format(cmd, name, start, stop, 
                                         stride, dtype2str(dtype), value));try! stdout.flush();}
         
         var gEnt: borrowed GenSymEntry = st.lookup(name);
@@ -643,7 +643,7 @@ module IndexingMsg
             otherwise {
                 var errorMsg = notImplementedError(pn,
                                         "("+dtype2str(gEnt.dtype)+","+dtype2str(dtype)+")");
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -674,7 +674,7 @@ module IndexingMsg
         // BAD FORM start < stop and stride is negative
         else {slice = 1..0;}
 
-        if v {try! writeln("%s %s %i %i %i %s".format(cmd, name, start, stop, 
+        if v {writeln("%s %s %i %i %i %s".format(cmd, name, start, stop, 
                                                       stride, yname)); try! stdout.flush();}
 
         var gX: borrowed GenSymEntry = st.lookup(name);
@@ -682,8 +682,8 @@ module IndexingMsg
 
         // add check to make syre IV and Y are same size
         if (slice.size != gY.size) {      
-            var errorMsg = try! "Error: %s: size mismatch %i %i".format(pn,slice.size, gY.size);
-            try! writeln(generateErrorContext(
+            var errorMsg = "Error: %s: size mismatch %i %i".format(pn,slice.size, gY.size);
+            writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -741,7 +741,7 @@ module IndexingMsg
             otherwise {
                 var errorMsg = notImplementedError(pn,
                                      "("+dtype2str(gX.dtype)+","+dtype2str(gY.dtype)+")");
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 

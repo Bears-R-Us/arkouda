@@ -31,7 +31,7 @@ module OperatorMsg
         // split request into fields
         var (op, aname, bname) = payload.decode().splitMsgToTuple(3);
         var rname = st.nextName();
-        if v {try! writeln("%s %s %s %s : %s".format(cmd,op,aname,bname,rname));try! stdout.flush();}
+        if v {writeln("%s %s %s %s : %s".format(cmd,op,aname,bname,rname));try! stdout.flush();}
 
         var left: borrowed GenSymEntry = st.lookup(aname);
         var right: borrowed GenSymEntry = st.lookup(bname);
@@ -130,7 +130,7 @@ module OperatorMsg
                         if || reduce (r.a<0){
                             //instead of error, could we paste the below code but of type float?
                             var errorMsg = "Error: Attempt to exponentiate base of type Int64 to negative exponent";
-                            try! writeln(generateErrorContext(
+                            writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -143,7 +143,7 @@ module OperatorMsg
                     }     
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -211,7 +211,7 @@ module OperatorMsg
                     }    
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -279,7 +279,7 @@ module OperatorMsg
                     }      
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -347,7 +347,7 @@ module OperatorMsg
                     }     
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -383,7 +383,7 @@ module OperatorMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -411,7 +411,7 @@ module OperatorMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -439,7 +439,7 @@ module OperatorMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -467,7 +467,7 @@ module OperatorMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -495,7 +495,7 @@ module OperatorMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -508,7 +508,7 @@ module OperatorMsg
             otherwise {
                 var errorMsg = unrecognizedTypeError(pn,
                                   "("+dtype2str(left.dtype)+","+dtype2str(right.dtype)+")");
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -539,7 +539,7 @@ module OperatorMsg
         var (op, aname, dtypeStr, value) = payload.decode().splitMsgToTuple(4);
         var dtype = str2dtype(dtypeStr);
         var rname = st.nextName();
-        if v {try! writeln("%s %s %s %s %s : %s".format(cmd,op,aname,dtype2str(dtype),value,rname));try! stdout.flush();}
+        if v {writeln("%s %s %s %s %s : %s".format(cmd,op,aname,dtype2str(dtype),value,rname));try! stdout.flush();}
 
         var left: borrowed GenSymEntry = st.lookup(aname);
 
@@ -624,7 +624,7 @@ module OperatorMsg
                     when "**" { 
                         if (val<0){
                             var errorMsg = "Error: Attempt to exponentiate base of type Int64 to negative exponent";
-                            try! writeln(generateErrorContext(
+                            writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -637,7 +637,7 @@ module OperatorMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -704,7 +704,7 @@ module OperatorMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -771,7 +771,7 @@ module OperatorMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -838,7 +838,7 @@ module OperatorMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -866,7 +866,7 @@ module OperatorMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -978,7 +978,7 @@ module OperatorMsg
         var (op, dtypeStr, value, aname) = payload.decode().splitMsgToTuple(4);
         var dtype = str2dtype(dtypeStr);
         var rname = st.nextName();
-        if v {try! writeln("%s %s %s %s %s : %s".format(cmd,op,dtype2str(dtype),value,aname,rname));try! stdout.flush();}
+        if v {writeln("%s %s %s %s %s : %s".format(cmd,op,dtype2str(dtype),value,aname,rname));try! stdout.flush();}
 
         var right: borrowed GenSymEntry = st.lookup(aname);
 
@@ -1363,7 +1363,7 @@ module OperatorMsg
         var repMsg: string; // response message
         // split request into fields
         var (op, aname, bname) = payload.decode().splitMsgToTuple(3);
-        if v {try! writeln("%s %s %s %s".format(cmd,op,aname,bname));try! stdout.flush();}
+        if v {writeln("%s %s %s %s".format(cmd,op,aname,bname));try! stdout.flush();}
         
         var left: borrowed GenSymEntry = st.lookup(aname);
         var right: borrowed GenSymEntry = st.lookup(bname);
@@ -1497,7 +1497,7 @@ module OperatorMsg
         // split request into fields
         var (op, aname, dtypeStr, value) = payload.decode().splitMsgToTuple(4);
         var dtype = str2dtype(dtypeStr);
-        if v {try! writeln("%s %s %s %s %s".format(cmd,op,aname,dtype2str(dtype),value));try! stdout.flush();}
+        if v {writeln("%s %s %s %s %s".format(cmd,op,aname,dtype2str(dtype),value));try! stdout.flush();}
 
         var left: borrowed GenSymEntry = st.lookup(aname);
 
@@ -1586,7 +1586,7 @@ module OperatorMsg
             otherwise {
                 var errorMsg = unrecognizedTypeError(pn,
                                    "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
