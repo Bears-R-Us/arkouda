@@ -202,7 +202,7 @@ module MultiTypeSymbolTable
         /*
         Prints the SymTable in a pretty format (name,SymTable[name])
         */
-        proc pretty(){
+        proc pretty() throws {
             for n in tab {
                 writeln("%10s = ".format(n), tab.getValue(n));try! stdout.flush();
             }
@@ -223,7 +223,7 @@ module MultiTypeSymbolTable
         :arg name: name of entry to be processed
         :type name: string
         */
-        proc dump(name:string): string {
+        proc dump(name:string): string throws {
             if name == "__AllSymbols__" {return try! "%jt".format(this);}
             else if (tab.contains(name)) {return try! "%jt %jt".format(name, tab.getReference(name));}
             else {
