@@ -26,6 +26,18 @@ def parse_single_value(msg : str) -> object:
     -------
     object numpy scalar         
     """
+    def unescape(s):
+        escaping = False
+        res = ''
+        for c in s:
+            if escaping:
+                res += c
+                escaping = False
+            elif c == '\\':
+                escaping = True
+            else:
+                res += c
+        return res
     dtname, value = msg.split(maxsplit=1)
     mydtype = dtype(dtname)
     if mydtype == bool:
@@ -38,7 +50,7 @@ def parse_single_value(msg : str) -> object:
                               format(mydtype.name, value)))
     try:
         if mydtype == str_:
-            return mydtype.type(value.strip('"'))
+            return mydtype.type(unescape(value.strip('"')))
         return mydtype.type(value)
     except:
         raise ValueError(("unsupported value from server {} {}".\
