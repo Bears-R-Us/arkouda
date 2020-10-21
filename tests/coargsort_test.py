@@ -130,6 +130,16 @@ class CoargsortTest(ArkoudaTest):
 
     def test_large(self):
         check_large(10**3)
+        
+    def test_error_handling(self):
+        ones = ak.ones(100)
+        short_ones = ak.ones(10)
+        
+        with self.assertRaises(ValueError):
+            ak.coargsort([ones, short_ones])
+            
+        with self.assertRaises(ValueError):
+            ak.coargsort([list(range(0,10)), [0]])       
 
 def create_parser():
     parser = argparse.ArgumentParser(description="Check coargsort correctness.")

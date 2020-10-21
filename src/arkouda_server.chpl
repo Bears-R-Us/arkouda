@@ -201,6 +201,7 @@ proc main() {
                 when "segmentLengths"    {repMsg = segmentLengthsMsg(cmd, payload, st);}
                 when "segmentedHash"     {repMsg = segmentedHashMsg(cmd, payload, st);}
                 when "segmentedEfunc"    {repMsg = segmentedEfuncMsg(cmd, payload, st);}
+                when "segmentedPeel"     {repMsg = segmentedPeelMsg(cmd, payload, st);}
                 when "segmentedIndex"    {repMsg = segmentedIndexMsg(cmd, payload, st);}
                 when "segmentedBinopvv"  {repMsg = segBinopvvMsg(cmd, payload, st);}
                 when "segmentedBinopvs"  {repMsg = segBinopvsMsg(cmd, payload, st);}

@@ -12,6 +12,8 @@ __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", "arange",
            "linspace", "randint", "uniform", "standard_normal",
            "random_strings_uniform", "random_strings_lognormal"]
 
+numericDTypes = frozenset(["bool", "int64", "float64"]) 
+
 def array(a : Union[pdarray,np.ndarray]) -> Union[pdarray, Strings]:
     """
     Convert an iterable to a pdarray or Strings object, sending the corresponding
@@ -78,8 +80,9 @@ def array(a : Union[pdarray,np.ndarray]) -> Union[pdarray, Strings]:
         raise RuntimeError("Only rank-1 pdarrays or ndarrays supported")
     # Check if array of strings
     if a.dtype.kind == 'U':
+        encoded = np.array([elem.encode() for elem in a])
         # Length of each string, plus null byte terminator
-        lengths = np.array([len(elem) for elem in a]) + 1
+        lengths = np.array([len(elem) for elem in encoded]) + 1
         # Compute zero-up segment offsets
         offsets = np.cumsum(lengths) - lengths
         # Allocate and fill bytes array with string segments
@@ -89,8 +92,8 @@ def array(a : Union[pdarray,np.ndarray]) -> Union[pdarray, Strings]:
                                 " which exceeds allowed transfer size. Increase " +
                                 "ak.maxTransferBytes to force.").format(nbytes))
         values = np.zeros(nbytes, dtype=np.uint8)
-        for s, o in zip(a, offsets):
-            for i, b in enumerate(s.encode()):
+        for s, o in zip(encoded, offsets):
+            for i, b in enumerate(s):
                 values[o+i] = b
         # Recurse to create pdarrays for offsets and values, then return Strings object
         return Strings(array(offsets), array(values))
@@ -129,7 +132,8 @@ def zeros(size : int, dtype : type=np.float64) -> pdarray:
     Raises
     ------
     TypeError
-        Raised if size is not an int or dtype is not supported
+        Raised if the supplied dtype is not supported or if the size
+         parameter is neither an int nor a str that is parseable to an int.
 
     See Also
     --------
@@ -148,7 +152,7 @@ def zeros(size : int, dtype : type=np.float64) -> pdarray:
         raise TypeError("size must be a scalar, not {}".format(type(size)))
     dtype = akdtype(dtype) # normalize dtype
     # check dtype for error
-    if dtype.name not in DTypes:
+    if dtype.name not in numericDTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
     kind, itemsize = translate_np_dtype(dtype)
     repMsg = generic_msg("create {} {}".format(dtype.name, size))
@@ -173,7 +177,8 @@ def ones(size : int, dtype : type=float64) -> pdarray:
     Raises
     ------
     TypeError
-        Raised if size is not an int or dtype is not supported
+        Raised if the supplied dtype is not supported or if the size
+         parameter is neither an int nor a str that is parseable to an int.
 
     See Also
     --------
@@ -192,7 +197,7 @@ def ones(size : int, dtype : type=float64) -> pdarray:
         raise TypeError("size must be a scalar, not {}".format(type(size)))
     dtype = akdtype(dtype) # normalize dtype
     # check dtype for error
-    if dtype.name not in DTypes:
+    if dtype.name not in numericDTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
     kind, itemsize = translate_np_dtype(dtype)
     repMsg = generic_msg("create {} {}".format(dtype.name, size))

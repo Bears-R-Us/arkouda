@@ -29,7 +29,7 @@ module GenSymIO {
      */
     proc arrayMsg(cmd: string, payload: bytes, st: borrowed SymTab): string {
         var repMsg: string;
-        var (dtypeBytes, sizeBytes, data) = payload.splitMsgToTuple(3);
+        var (dtypeBytes, sizeBytes, data) = payload.splitMsgToTuple(b" ", 3);
         var dtype = str2dtype(try! dtypeBytes.decode());
         var size = try! sizeBytes:int;
         var tmpf:file;
@@ -248,23 +248,23 @@ module GenSymIO {
             try {
                 (segArrayFlags[i], dclasses[i], bytesizes[i], signFlags[i]) = get_dtype(fname, dsetName);
             } catch e: FileNotFoundError {
-                try! writeln(e.message());
+                writeln(e.message());
                 return try! "Error: unable to open file for writing: %s".format(fname);
             } catch e: PermissionError {
-                try! writeln(e.message());
+                writeln(e.message());
                 return try! "Error: permission error on %s".format(fname);
             } catch e: DatasetNotFoundError {
-                try! writeln(e.message());
+                writeln(e.message());
                 return e.publish();
             } catch e: NotHDF5FileError {
-                try! writeln(e.message());
+                writeln(e.message());
                 return e.publish();
             } catch e: SegArrayError {
-                try! writeln(e.message());
+                writeln(e.message());
                 return e.publish();
             } catch e: Error {
                 // Need a catch-all for non-throwing function
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                 msg=e.message(), 
                                 lineNumber=getLineNumber(), 
                                 moduleName=getModuleName(), 
@@ -344,10 +344,10 @@ module GenSymIO {
                 return try! "created " + st.attrib(rname);
             }
             otherwise {
-                var errorMsg = try! "Error: detected unhandled datatype: segmented? " +
+                var errorMsg = "Error: detected unhandled datatype: segmented? " +
                                "%t, class %i, size %i, signed? %t".format(isSegArray, 
                                dataclass, bytesize, isSigned);
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -412,23 +412,23 @@ module GenSymIO {
                 try {
                     (segArrayFlags[i], dclasses[i], bytesizes[i], signFlags[i]) = get_dtype(fname, dsetName);
                 } catch e: FileNotFoundError {
-                    try! writeln(e.message());
+                    writeln(e.message());
                     return try! "Error: file not found: %s".format(fname);
                 } catch e: PermissionError {
-                    try! writeln(e.message());
+                    writeln(e.message());
                     return try! "Error: permission error on %s".format(fname);
                 } catch e: DatasetNotFoundError {
-                    try! writeln(e.message());
+                    writeln(e.message());
                     return try! e.publish();
                 } catch e: NotHDF5FileError {
-                    try! writeln(e.message());
+                    writeln(e.message());
                     return e.publish();
                 } catch e: SegArrayError {
-                    try! writeln(e.message());
+                    writeln(e.message());
                     return e.publish();
                 } catch e : Error {
                     // Need a catch-all for non-throwing function
-                    try! writeln(generateErrorContext(
+                    writeln(generateErrorContext(
                                      msg=e.message(), 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -520,9 +520,9 @@ module GenSymIO {
                     rnames = rnames + "created " + st.attrib(rname) + " , ";
                 }
                 otherwise {
-                    var errorMsg = try! "detected unhandled datatype: segmented? %t, class %i, size %i, " +
+                    var errorMsg = "detected unhandled datatype: segmented? %t, class %i, size %i, " +
                                    "signed? %t".format(isSegArray, dataclass, bytesize, isSigned);
-                    try! writeln(generateErrorContext(
+                    writeln(generateErrorContext(
                                 msg=errorMsg, 
                                 lineNumber=getLineNumber(), 
                                 moduleName=getModuleName(), 
@@ -718,7 +718,7 @@ module GenSymIO {
      * dataset, checking if the booleans dataset is embedded within a 
      * group named after the dsetName.
      */
-    proc isBooleanDataset(file_id: int, dsetName: string): bool {
+    proc isBooleanDataset(file_id: int, dsetName: string): bool throws {
         var groupExists = -1;
         
         try {
@@ -732,7 +732,7 @@ module GenSymIO {
              * If there's an actual error, print it here. :TODO: revisit this
              * catch block after confirming the best way to handle HDF5 error
              */
-            try! writeln(generateErrorContext(
+            writeln(generateErrorContext(
                         msg="checking if isBooleanDataset %t".format(e.message()), 
                         lineNumber=getLineNumber(), 
                         moduleName=getModuleName(), 
@@ -749,7 +749,7 @@ module GenSymIO {
      * group named after the dsetName. This implementation retrieves the file id
      * for a file name and invokes isBooleanDataset with file id.
      */
-    proc isBooleanDataset(fileName: string, dsetName: string): bool {
+    proc isBooleanDataset(fileName: string, dsetName: string): bool throws {
         var fileId = C_HDF5.H5Fopen(fileName.c_str(), C_HDF5.H5F_ACC_RDONLY, 
                                            C_HDF5.H5P_DEFAULT);                  
         var boolDataset: bool;
@@ -768,7 +768,7 @@ module GenSymIO {
              * If there's an actual error, print it here. :TODO: revisit this
              * catch block after confirming the best way to handle HDF5 error
              */
-            try! writeln(generateErrorContext(
+            writeln(generateErrorContext(
                 msg="checking if isBooleanDataset %t with file %s".format(e.message(), 
                                  fileName), 
                 lineNumber=getLineNumber(), 
@@ -968,7 +968,7 @@ module GenSymIO {
                     warnFlag = write1DDistStrings(filename, mode, dsetName, e.a, DType.UInt8);
                 } otherwise {
                     var errorMsg = unrecognizedTypeError("tohdf", dtype2str(entry.dtype));
-                    try! writeln(generateErrorContext(
+                    writeln(generateErrorContext(
                                 msg=errorMsg, 
                                 lineNumber=getLineNumber(), 
                                 moduleName=getModuleName(), 
@@ -978,17 +978,17 @@ module GenSymIO {
                 }
             }
         } catch e: FileNotFoundError {
-              try! writeln(e.message());
+              writeln(e.message());
               return try! "Error: unable to open file for writing: %s".format(filename);
         } catch e: MismatchedAppendError {
-              try! writeln(e.message());
+              writeln(e.message());
               return e.publish();
         } catch e: WriteModeError {
-              try! writeln(e.message());
+              writeln(e.message());
               return e.publish();
         } catch e: Error {
               var errorMsg = "problem writing to file %s".format(e);
-              try! writeln(generateErrorContext(
+              writeln(generateErrorContext(
                             msg=errorMsg, 
                             lineNumber=getLineNumber(), 
                             moduleName=getModuleName(), 

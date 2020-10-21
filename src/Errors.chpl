@@ -116,6 +116,20 @@ module Errors {
 
         proc init(){ super.init(); }
     }
+    
+    /*
+     * The ArgumentError is thrown if there is a problem with 1.n arguments passed
+     * into a function.
+     */
+    class ArgumentError: ErrorWithContext { 
+
+        proc init(msg : string, lineNumber: int, routineName: string, 
+                                                           moduleName: string) { 
+           super.init(msg,lineNumber,routineName,moduleName,errorClass='ArgumentError'); 
+        } 
+
+        proc init(){ super.init(); }
+    }
 
     /*
      * This function is used to generate a detailed, context-rich error message for errors such as
@@ -133,6 +147,11 @@ module Errors {
     proc getErrorWithContext(lineNumber: int, moduleName: string, 
                                    routineName: string, msg: string, errorClass: string): Error throws {
         select errorClass {
+            when "ErrorWithContext"             { return new owned 
+                                                          ErrorWithContext(msg=msg,
+                                                          lineNumber=lineNumber,
+                                                          routineName=routineName,
+                                                          moduleName=moduleName); }
             when "DatasetNotFoundError"          { return new owned 
                                                           DatasetNotFoundError(msg=msg,
                                                           lineNumber=lineNumber,
@@ -150,6 +169,11 @@ module Errors {
                                                           moduleName=moduleName); }
             when "MismatchedAppendError"         { return new owned 
                                                           MismatchedAppendError(msg=msg,
+                                                          lineNumber=lineNumber,
+                                                          routineName=routineName,
+                                                          moduleName=moduleName); }
+            when "ArgumentError"                 { return new owned 
+                                                          ArgumentError(msg=msg,
                                                           lineNumber=lineNumber,
                                                           routineName=routineName,
                                                           moduleName=moduleName); }
@@ -173,7 +197,7 @@ module Errors {
                                                           lineNumber=lineNumber,
                                                           routineName=routineName,
                                                           moduleName=moduleName, 
-                                                          errorClass=errorClass)); }                                                                                   
+                                                          errorClass=errorClass)); }                                                                                                                               
             otherwise                            { return new owned 
                                                           Error(generateErrorContext(
                                                           msg=msg,

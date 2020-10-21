@@ -1,4 +1,6 @@
 module RandArray {
+  use Reflection;
+  use Errors;
   use Random;
   use SegmentedArray;
   use ServerErrorStrings;
@@ -103,9 +105,16 @@ module RandArray {
   charBounds[charSet.Printable] = (32, 127);
   charBounds[charSet.Binary] = (0, 0);
 
-  proc newRandStringsUniformLength(const n: int, const minLen: int, const maxLen: int, characters:charSet = charSet.Uppercase) throws {
-    if (n < 0) || (minLen < 0) || (maxLen < minLen) {
-      throw new owned ArgumentError();
+  proc newRandStringsUniformLength(const n: int, const minLen: int, 
+                           const maxLen: int, characters:charSet = charSet.Uppercase) throws {
+    if (n < 0) || (minLen < 0) || (maxLen < minLen) {  
+        writeln(generateErrorContext(
+                 msg="Incompatible arguments: n and minLen must be > 0 and maxLen < minLen", 
+                 lineNumber=getLineNumber(), 
+                 moduleName=getModuleName(), 
+                 routineName=getRoutineName(), 
+                 errorClass="ArgumentError"));  
+        throw new owned ArgumentError();                     
     }
     var lengths = makeDistArray(n, int);
     fillInt(lengths, minLen+1, maxLen+1);
@@ -119,9 +128,16 @@ module RandArray {
     return (segs, vals);
   }
 
-  proc newRandStringsLogNormalLength(const n: int, const logMean: numeric, const logStd: numeric, characters:charSet = charSet.Uppercase) throws {
+  proc newRandStringsLogNormalLength(const n: int, const logMean: numeric, 
+                       const logStd: numeric, characters:charSet = charSet.Uppercase) throws {
     if (n < 0) || (logStd <= 0) {
-      throw new owned ArgumentError();
+        writeln(generateErrorContext(
+                     msg="Incompatible arguments: n must be > 0 and logStd <= 0", 
+                     lineNumber=getLineNumber(), 
+                     moduleName=getModuleName(), 
+                     routineName=getRoutineName(), 
+                     errorClass="ArgumentError")); 
+        throw new owned ArgumentError();
     }
     var ltemp = makeDistArray(n, real);
     fillNormal(ltemp);

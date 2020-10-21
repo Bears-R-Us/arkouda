@@ -11,6 +11,8 @@ module ServerConfig
     private use SysCTypes;
 
     use ServerErrorStrings;
+    use Reflection;
+    use Errors;
 
     /*
     Logging flag
@@ -145,8 +147,13 @@ module ServerConfig
                 }
             }
             if total > getMemLimit() {
-                throw new owned ErrorWithMsg("Error: Operation would exceed memory limit ("
-                                             +total:string+","+getMemLimit():string+")");
+                throw getErrorWithContext(
+                          msg = "Error: Operation would exceed memory limit ("
+                                             +total:string+","+getMemLimit():string+")",
+                          lineNumber = getLineNumber(),
+                          routineName = getRoutineName(),
+                          moduleName = getModuleName(),
+                          errorClass="ErrorWithContext");                                        
             }
         }
     }
@@ -193,6 +200,24 @@ module ServerConfig
 
       // fill in the initial tuple elements defined by split()
       for s in this.split(numChunks-1) {
+        tup(count) = s;
+        count += 1;
+      }
+      // if split() had fewer items than the tuple, fill in the rest
+      if (count < numChunks) {
+        for i in count..numChunks-1 {
+          tup(i) = b"";
+        }
+      }
+      return tup;
+    }
+
+    proc bytes.splitMsgToTuple(sep: bytes, param numChunks: int) {
+      var tup: numChunks*bytes;
+      var count = tup.indices.low;
+
+      // fill in the initial tuple elements defined by split()
+      for s in this.split(sep, numChunks-1) {
         tup(count) = s;
         count += 1;
       }

@@ -2,7 +2,8 @@ module HistogramMsg
 {
     use ServerConfig;
 
-    use Reflection only;
+    use Reflection;
+    use Errors;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -23,7 +24,7 @@ module HistogramMsg
         
         // get next symbol name
         var rname = st.nextName();
-        if v {try! writeln("%s %s %i : %s".format(cmd, name, bins, rname));try! stdout.flush();}
+        if v {writeln("%s %s %i : %s".format(cmd, name, bins, rname));try! stdout.flush();}
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
@@ -33,20 +34,20 @@ module HistogramMsg
           var aMin = min reduce e.a;
           var aMax = max reduce e.a;
           var binWidth:real = (aMax - aMin):real / bins:real;
-          if v {try! writeln("binWidth %r".format(binWidth)); try! stdout.flush();}
+          if v {writeln("binWidth %r".format(binWidth)); try! stdout.flush();}
 
           if (bins <= sBound) {
-              if v {try! writeln("%t <= %t".format(bins,sBound)); try! stdout.flush();}
+              if v {writeln("%t <= %t".format(bins,sBound)); try! stdout.flush();}
               var hist = histogramReduceIntent(e.a, aMin, aMax, bins, binWidth);
               st.addEntry(rname, new shared SymEntry(hist));
           }
           else if (bins <= mBound) {
-              if v {try! writeln("%t <= %t".format(bins,mBound)); try! stdout.flush();}
+              if v {writeln("%t <= %t".format(bins,mBound)); try! stdout.flush();}
               var hist = histogramLocalAtomic(e.a, aMin, aMax, bins, binWidth);
               st.addEntry(rname, new shared SymEntry(hist));
           }
           else {
-              if v {try! writeln("%t > %t".format(bins,mBound)); try! stdout.flush();}
+              if v {writeln("%t > %t".format(bins,mBound)); try! stdout.flush();}
               var hist = histogramGlobalAtomic(e.a, aMin, aMax, bins, binWidth);
               st.addEntry(rname, new shared SymEntry(hist));
           }
@@ -55,7 +56,15 @@ module HistogramMsg
         select (gEnt.dtype) {
             when (DType.Int64)   {histogramHelper(int);}
             when (DType.Float64) {histogramHelper(real);}
-            otherwise {return notImplementedError(pn,gEnt.dtype);}
+            otherwise {
+                var errorMsg = notImplementedError(pn,gEnt.dtype);
+                writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));                 
+            }
         }
         
         return try! "created " + st.attrib(rname);
