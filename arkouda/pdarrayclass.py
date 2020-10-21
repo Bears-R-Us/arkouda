@@ -1320,7 +1320,9 @@ def std(pda : 'pdarray', ddof : int=0) -> np.float64:
     Raises
     ------
     TypeError
-        Raised if pda is not a pdarray instance
+        Raised if pda is not a pdarray instance or ddof is not an integer
+    ValueError
+        Raised if ddof is an integer < 0
     RuntimeError
         Raised if there's a server-side error thrown
 
@@ -1343,6 +1345,10 @@ def std(pda : 'pdarray', ddof : int=0) -> np.float64:
     the estimated variance, so even with ``ddof=1``, it will not be an
     unbiased estimate of the standard deviation per se.
     """
+    if not isinstance(ddof):
+        raise TypeError('ddof must be an integer 0 or greater')
+    if ddof < 0:
+        raise ValueError("ddof must be an integer 0 or greater")
     if not isinstance(pda, pdarray):
         raise TypeError("must be pdarray {}".format(pda))
     return np.sqrt(var(pda, ddof=ddof))
@@ -1369,6 +1375,8 @@ def mink(pda : 'pdarray', k : int) -> 'pdarray':
     ------
     TypeError
         Raised if pda is not a pdarray
+    ValueError
+        Raised if the pda is empty or k < 1
 
     Notes
     -----
@@ -1388,15 +1396,18 @@ def mink(pda : 'pdarray', k : int) -> 'pdarray':
     >>> ak.mink(A, 3)
     array([0, 1, 2])
     """
+    if not isinstance(k, int):
+        raise TypeError('k must be an integer with a value of 1 or greater')
+    if k < 1:
+        raise ValueError('k must be 1 or greater')
+
     if isinstance(pda, pdarray):
-        if k == 0:
-            return []
         if pda.size == 0:
-            raise TypeError("must be a non-empty pdarray {} of type int or float".format(pda))
+            raise ValueError("must be a non-empty pdarray {} of type int or float".format(pda))
         repMsg = generic_msg("mink {} {} {}".format(pda.name, k, False))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be pdarray, not a {}".format(type(pda)))
 
 def maxk(pda : 'pdarray', k : int) -> 'pdarray':
     """
@@ -1419,7 +1430,9 @@ def maxk(pda : 'pdarray', k : int) -> 'pdarray':
     Raises
     ------
     TypeError
-        Raised if pda is not a pdarray
+        Raised if pda is not a pdarray or k is not an integer
+    ValueError
+        Raised if the pda is empty or k < 1
 
     Notes
     -----
@@ -1440,15 +1453,18 @@ def maxk(pda : 'pdarray', k : int) -> 'pdarray':
     >>> ak.maxk(A, 3)
     array([7, 9, 10])
     """
+    if not isinstance(k, int):
+        raise TypeError('k must be an integer with a value of 1 or greater')
+    if k < 1:
+        raise ValueError('k must be 1 or greater')
+
     if isinstance(pda, pdarray):
-        if k == 0:
-            return []
         if pda.size == 0:
-            raise TypeError("must be a non-empty pdarray {} of type int or float".format(pda))
+            raise ValueError("must be a non-empty pdarray {} of type int or float".format(pda))
         repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, False))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be pdarray, not {}".format(type(pda)))
 
 def argmink(pda : 'pdarray', k : int) -> 'pdarray':
     """
@@ -1471,7 +1487,9 @@ def argmink(pda : 'pdarray', k : int) -> 'pdarray':
     Raises
     ------
     TypeError
-        Raised if pda is not a pdarray
+        Raised if pda is not a pdarray or k is not an integer
+    ValueError
+        Raised if the pda is empty or k < 1
 
     Notes
     -----
@@ -1491,15 +1509,18 @@ def argmink(pda : 'pdarray', k : int) -> 'pdarray':
     >>> ak.argmink(A, 3)
     array([7, 2, 5])
     """
+    if not isinstance(k, int):
+        raise TypeError('k must be an integer with a value of 1 or greater')
+    if k < 1:
+        raise ValueError('k must be 1 or greater')
+
     if isinstance(pda, pdarray):
-        if k == 0:
-            return []
         if pda.size == 0:
-            raise TypeError("must be a non-empty pdarray {} of type int or float".format(pda))
+            raise ValueError("must be a non-empty pdarray {} of type int or float".format(pda))
         repMsg = generic_msg("mink {} {} {}".format(pda.name, k, True))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be pdarray, not {}".format(type(pda)))
 
 def argmaxk(pda : 'pdarray', k : int) -> 'pdarray':
     """
@@ -1519,10 +1540,10 @@ def argmaxk(pda : 'pdarray', k : int) -> 'pdarray':
     pdarray, int
         The indices of the maximum `k` values from pda
 
-    Raises
-    ------
     TypeError
-        Raised if pda is not a pdarray
+        Raised if pda is not a pdarray or k is not an integer
+    ValueError
+        Raised if the pda is empty or k < 1
 
     Notes
     -----
@@ -1534,7 +1555,7 @@ def argmaxk(pda : 'pdarray', k : int) -> 'pdarray':
 
     This reduction will see a significant drop in performance as `k` grows
     beyond a certain value. This value is system dependent, but generally
-    about a `k` of 5 million is where performance degredation has been observed.
+    about a `k` of 5 million is where performance degradation has been observed.
 
 
     Examples
@@ -1543,12 +1564,15 @@ def argmaxk(pda : 'pdarray', k : int) -> 'pdarray':
     >>> ak.argmaxk(A, 3)
     array([4, 6, 0])
     """
+    if not isinstance(k, int):
+        raise TypeError('k must be an integer with a value of 1 or greater')
+    if k < 1:
+        raise ValueError('k must be 1 or greater')
+
     if isinstance(pda, pdarray):
-        if k == 0:
-            return []
         if pda.size == 0:
-            raise TypeError("must be a non-empty pdarray {} of type int or float".format(pda))
+            raise ValueError("must be a non-empty pdarray {} of type int or float".format(pda))
         repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, True))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be pdarray, not {}".format(type(pda)))
