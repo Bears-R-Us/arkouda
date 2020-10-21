@@ -750,3 +750,16 @@ class Strings:
         """       
         self.bytes.save(prefix_path=prefix_path, 
                                     dataset='{}/values'.format(dataset), mode=mode)
+
+    def register(self, user_defined_name : str) -> 'Strings':
+        return Strings(self.offsets.register(user_defined_name+'_offsets'),
+                       self.bytes.register(user_defined_name+'_bytes'))
+
+    def unregister(self) -> None:
+        self.offsets.unregister()
+        self.bytes.unregister()
+
+    def attach(user_defined_name : str) -> 'Strings':
+        return Strings(pdarray.attach(user_defined_name+'_offsets'),
+                       pdarray.attach(user_defined_name+'_bytes'))
+

@@ -618,3 +618,5 @@ class GroupBy:
         diffs = concatenate((array([values[0]]), values[1:] - values[:-1]))
         temp[self.segments] = diffs
         return cumsum(temp)
+
+   
