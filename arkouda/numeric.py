@@ -302,7 +302,7 @@ def histogram(pda : pdarray, bins : int=10) -> pdarray:
 
     Returns
     -------
-    pdarray
+    pdarray, int64 or float64
         The number of values present in each bin
         
     Raises
@@ -310,6 +310,8 @@ def histogram(pda : pdarray, bins : int=10) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray or if bins is
         not an int.
+    NotImplementedError
+        Raised if pdarray dtype is bool or uint8
 
     See Also
     --------

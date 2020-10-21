@@ -3,7 +3,8 @@ module In1dMsg
 {
     use ServerConfig;
 
-    use Reflection only;
+    use Reflection;
+    use Errors;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -35,7 +36,16 @@ module In1dMsg
         var invert: bool;
         if flag == "True" {invert = true;}
         else if flag == "False" {invert = false;}
-        else {return try! "Error: %s: %s".format(pn,flag);}
+        else {
+            var errorMsg = "Error: %s: %s".format(pn,flag);
+            writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="IllegalArgumentError"));    
+            return errorMsg;         
+        }
 
         // get next symbol name
         var rname = st.nextName();
@@ -80,11 +90,18 @@ module In1dMsg
                 }
                 
             }
-            otherwise {return notImplementedError(pn,gAr1.dtype,"in",gAr2.dtype);}
+            otherwise {
+                var errorMsg = notImplementedError(pn,gAr1.dtype,"in",gAr2.dtype);
+                writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError")); 
+                return errorMsg;
+            }
         }
         
         return try! "created " + st.attrib(rname);
-    }
-
-    
+    }   
 }

@@ -14,7 +14,8 @@ module UniqueMsg
     
     use Time only;
     use Math only;
-    use Reflection only;
+    use Reflection;
+    use Errors;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -34,51 +35,70 @@ module UniqueMsg
         var returnCounts: bool;
         if returnCountsStr == "True" {returnCounts = true;}
         else if returnCountsStr == "False" {returnCounts = false;}
-        else {return try! "Error: %s: %s".format(pn,returnCountsStr);}
+        else {
+            var errorMsg = "Error: %s: %s".format(pn,returnCountsStr);
+            writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="ReturnCountsError"));                
+            return errorMsg;
+        }
         select objtype {
-          when "pdarray" {
-            // get next symbol name for unique
-            var vname = st.nextName();
-            // get next symbol anme for counts
-            var cname = st.nextName();
-            if v {try! writeln("%s %s %t: %s %s".format(cmd, name, returnCounts, vname, cname));try! stdout.flush();}
+            when "pdarray" {
+                // get next symbol name for unique
+                var vname = st.nextName();
+                // get next symbol anme for counts
+                var cname = st.nextName();
+                if v {writeln("%s %s %t: %s %s".format(cmd, name, returnCounts, 
+                          vname, cname)); try! stdout.flush();}
         
-            var gEnt: borrowed GenSymEntry = st.lookup(name);
-            // the upper limit here is the same as argsort/radixSortLSD_keys
-            // check and throw if over memory limit
-            overMemLimit(((4 + 1) * gEnt.size * gEnt.itemsize)
+                var gEnt: borrowed GenSymEntry = st.lookup(name);
+                // the upper limit here is the same as argsort/radixSortLSD_keys
+                // check and throw if over memory limit
+                overMemLimit(((4 + 1) * gEnt.size * gEnt.itemsize)
                          + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
         
-            select (gEnt.dtype) {
-            when (DType.Int64) {
-              var e = toSymEntry(gEnt,int);
+                select (gEnt.dtype) {
+                    when (DType.Int64) {
+                    var e = toSymEntry(gEnt,int);
                 
-              /* var eMin:int = min reduce e.a; */
-              /* var eMax:int = max reduce e.a; */
+                    /* var eMin:int = min reduce e.a; */
+                    /* var eMax:int = max reduce e.a; */
                 
-              /* // how many bins in histogram */
-              /* var bins = eMax-eMin+1; */
-              /* if v {try! writeln("bins = %t".format(bins));try! stdout.flush();} */
+                    /* // how many bins in histogram */
+                    /* var bins = eMax-eMin+1; */
+                    /* if v {writeln("bins = %t".format(bins));try! stdout.flush();} */
 
-              /* if (bins <= mBins) { */
-              /*     if v {try! writeln("bins <= %t".format(mBins));try! stdout.flush();} */
-              /*     var (aV,aC) = uniquePerLocHistGlobHist(e.a, eMin, eMax); */
-              /*     st.addEntry(vname, new shared SymEntry(aV)); */
-              /*     if returnCounts {st.addEntry(cname, new shared SymEntry(aC));} */
-              /* } */
-              /* else { */
-              /*     if v {try! writeln("bins = %t".format(bins));try! stdout.flush();} */
-              /*     var (aV,aC) = uniquePerLocAssocParUnsafeGlobAssocParUnsafe(e.a, eMin, eMax); */
-              /*     st.addEntry(vname, new shared SymEntry(aV)); */
-              /*     if returnCounts {st.addEntry(cname, new shared SymEntry(aC));} */
-              /* } */
+                    /* if (bins <= mBins) { */
+                    /*     if v {try! writeln("bins <= %t".format(mBins));try! stdout.flush();} */
+                    /*     var (aV,aC) = uniquePerLocHistGlobHist(e.a, eMin, eMax); */
+                    /*     st.addEntry(vname, new shared SymEntry(aV)); */
+                    /*     if returnCounts {st.addEntry(cname, new shared SymEntry(aC));} */
+                    /* } */
+                    /* else { */
+                    /*     if v {try! writeln("bins = %t".format(bins));try! stdout.flush();} */
+                    /*     var (aV,aC) = uniquePerLocAssocParUnsafeGlobAssocParUnsafe(e.a, eMin, eMax); */
+                    /*     st.addEntry(vname, new shared SymEntry(aV)); */
+                    /*     if returnCounts {st.addEntry(cname, new shared SymEntry(aC));} */
+                    /* } */
 
-              var (aV,aC) = uniqueSort(e.a);
-              st.addEntry(vname, new shared SymEntry(aV));
-              if returnCounts {st.addEntry(cname, new shared SymEntry(aC));}
+                    var (aV,aC) = uniqueSort(e.a);
+                    st.addEntry(vname, new shared SymEntry(aV));
+                    if returnCounts {st.addEntry(cname, new shared SymEntry(aC));}
                     
-            }
-            otherwise {return notImplementedError("unique",gEnt.dtype);}
+                }
+                otherwise {
+                    var errorMsg = notImplementedError("unique",gEnt.dtype);
+                    writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));                   
+                    return errorMsg;
+                }
             }
         
             var s = try! "created " + st.attrib(vname);
@@ -87,26 +107,38 @@ module UniqueMsg
             return s;
           }
           when "str" {
-            var offsetName = st.nextName();
-            var valueName = st.nextName();
-            var (names1,names2) = name.splitMsgToTuple('+', 2);
-            var str = new owned SegString(names1, names2, st);
-            // the upper limit here is the similar to argsort/radixSortLSD_keys, but with a few more scratch arrays
-            // check and throw if over memory limit
-            overMemLimit((8 * str.size * 8)
+              var offsetName = st.nextName();
+              var valueName = st.nextName();
+              var (names1,names2) = name.splitMsgToTuple('+', 2);
+              var str = new owned SegString(names1, names2, st);
+
+              /*
+               * The upper limit here is the similar to argsort/radixSortLSD_keys, but with 
+               * a few more scratch arrays check and throw if over memory limit.
+               */
+              overMemLimit((8 * str.size * 8)
                          + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
-            var (uo, uv, c, inv) = uniqueGroup(str);
-            st.addEntry(offsetName, new shared SymEntry(uo));
-            st.addEntry(valueName, new shared SymEntry(uv));
-            var s = try! "created " + st.attrib(offsetName) + " +created " + st.attrib(valueName);
-            if returnCounts {
-              var countName = st.nextName();
-              st.addEntry(countName, new shared SymEntry(c));
-              s += " +created " + st.attrib(countName);
-            }
-            return s;
+              var (uo, uv, c, inv) = uniqueGroup(str);
+              st.addEntry(offsetName, new shared SymEntry(uo));
+              st.addEntry(valueName, new shared SymEntry(uv));
+              var s = try! "created " + st.attrib(offsetName) + " +created " + st.attrib(valueName);
+              if returnCounts {
+                  var countName = st.nextName();
+                  st.addEntry(countName, new shared SymEntry(c));
+                  s += " +created " + st.attrib(countName);
+              }
+              return s;
           }
-          otherwise { return notImplementedError(Reflection.getRoutineName(), objtype); }
+          otherwise { 
+              var errorMsg = notImplementedError(Reflection.getRoutineName(), objtype);
+              writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));   
+             return errorMsg;              
+           }
         }
     }
     
@@ -120,7 +152,7 @@ module UniqueMsg
         // get next symbol name
         var vname = st.nextName();
         var cname = st.nextName();
-        if v {try! writeln("%s %s : %s %s".format(cmd, name, vname, cname));try! stdout.flush();}
+        if v {writeln("%s %s : %s %s".format(cmd, name, vname, cname));try! stdout.flush();}
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
@@ -132,7 +164,7 @@ module UniqueMsg
 
                 /* // how many bins in histogram */
                 /* var bins = eMax-eMin+1; */
-                /* if v {try! writeln("bins = %t".format(bins));try! stdout.flush();} */
+                /* if v {writeln("bins = %t".format(bins));try! stdout.flush();} */
 
                 /* if (bins <= mBins) { */
                 /*     if v {try! writeln("bins <= %t".format(mBins));try! stdout.flush();} */
@@ -157,11 +189,18 @@ module UniqueMsg
                 st.addEntry(vname, new shared SymEntry(aV));
                 st.addEntry(cname, new shared SymEntry(aC));
             }
-            otherwise {return notImplementedError(pn,gEnt.dtype);}
+            otherwise {
+                var errorMsg = notImplementedError(pn,gEnt.dtype);
+                writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));   
+                return errorMsg;                 
+            }
         }
         
         return try! "created " + st.attrib(vname) + " +created " + st.attrib(cname);
     }
-
 }
-

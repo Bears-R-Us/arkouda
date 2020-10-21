@@ -13,6 +13,8 @@ module SegmentedArray {
   use ServerConfig;
   use Unique;
   use Time only Timer, getCurrentTime;
+  use Reflection;
+  use Errors;
 
   private config const DEBUG = false;
   private config param useHash = true;
@@ -558,9 +560,14 @@ module SegmentedArray {
     }
 
     proc stick(other: SegString, delim: string, param right: bool) throws {
-      if (offsets.aD != other.offsets.aD) {
-        throw new owned ArgumentError();
-      }
+        if (offsets.aD != other.offsets.aD) {
+            throw getErrorWithContext(
+                           msg="The SegString offsets to not match",
+                           lineNumber = getLineNumber(),
+                           routineName = getRoutineName(),
+                           moduleName = getModuleName(),
+                           errorClass="ArgumentError");
+        }
       // Combine lengths and compute new offsets
       var leftLen = getLengths() - 1;
       var rightLen = other.getLengths() - 1;
@@ -692,7 +699,12 @@ module SegmentedArray {
   private proc compare(lss:SegString, rss:SegString, param polarity: bool) throws {
     // String arrays must be same size
     if (lss.size != rss.size) {
-      throw new owned ArgumentError();
+        throw getErrorWithContext(
+                           msg="The String arrays must be the same size",
+                           lineNumber = getLineNumber(),
+                           routineName = getRoutineName(),
+                           moduleName = getModuleName(),
+                           errorClass="ArgumentError");
     }
     ref oD = lss.offsets.aD;
     // Start by assuming all elements differ, then correct for those that are equal

@@ -5,7 +5,8 @@ module JoinEqWithDTMsg
     use Time only;
     use Math only;
     use Sort only;
-    use Reflection only;
+    use Reflection;
+    use Errors;
     use PrivateDist;
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -27,7 +28,8 @@ module JoinEqWithDTMsg
     /*
       Stole this code from Bill's Merge.chpl until we merge the PR's
       This version does not throw exceptions
-      Given a *sorted*, zero-up array, use binary search to find the index of the first element that is greater than or equal to a target.
+      Given a *sorted*, zero-up array, use binary search to find the index of the first element 
+      that is greater than or equal to a target.
      */
     proc binarySearch(a: [?D] int, x: int): int {
         var l = 0;
@@ -219,11 +221,10 @@ module JoinEqWithDTMsg
         var resJ_name = st.nextName();
         
         if v {
-            try! writeln("%s %s %s %s %s %s %s %t %t %t : %s %s".format(cmd, a1_name,
-                                                                        g2Seg_name, g2Ukeys_name, g2Perm_name,
-                                                                        t1_name, t2_name,
-                                                                        dt, pred, resLimit,
-                                                                        resI_name, resJ_name));
+            try! writeln("%s %s %s %s %s %s %s %t %t %t : %s %s".format(
+                                            cmd, a1_name, g2Seg_name, g2Ukeys_name, 
+                                            g2Perm_name, t1_name, t2_name, dt, 
+                                            pred, resLimit, resI_name, resJ_name));
             try! stdout.flush();
         }
         
@@ -235,51 +236,108 @@ module JoinEqWithDTMsg
         // !!!!! check matching length on some arguments !!!!!
         var a1Ent: borrowed GenSymEntry = st.lookup(a1_name);
         if (a1Ent.dtype != DType.Int64) {
-            throw new owned ErrorWithMsg(incompatibleArgumentsError(pn, dtype2str(a1Ent.dtype)));
+            throw getErrorWithContext(
+                        msg=incompatibleArgumentsError(pn, dtype2str(a1Ent.dtype)),
+                        lineNumber = getLineNumber(),
+                        routineName = getRoutineName(),
+                        moduleName = getModuleName(),
+                        errorClass="ErrorWithContext");
         }
         var a1 = toSymEntry(a1Ent, int);
         
         var g2SegEnt: borrowed GenSymEntry = st.lookup(g2Seg_name);
         if (g2SegEnt.dtype != DType.Int64) {
-            throw new owned ErrorWithMsg(incompatibleArgumentsError(pn, dtype2str(g2SegEnt.dtype)));
+            throw getErrorWithContext(
+                        msg=incompatibleArgumentsError(pn, dtype2str(g2SegEnt.dtype)),
+                        lineNumber=getLineNumber(),
+                        routineName=getRoutineName(),
+                        moduleName=getModuleName(),
+                        errorClass="ErrorWithContext");
         }
         var g2Seg = toSymEntry(g2SegEnt, int);
         
         var g2UkeysEnt: borrowed GenSymEntry = st.lookup(g2Ukeys_name);
         if (g2UkeysEnt.dtype != DType.Int64) {
-            throw new owned ErrorWithMsg(incompatibleArgumentsError(pn, dtype2str(g2UkeysEnt.dtype)));
+            throw getErrorWithContext(
+                        msg=incompatibleArgumentsError(pn, dtype2str(g2UkeysEnt.dtype)),
+                        lineNumber=getLineNumber(),
+                        routineName=getRoutineName(),
+                        moduleName=getModuleName(),
+                        errorClass="ErrorWithContext");
         }
         else if (g2UkeysEnt.size != g2SegEnt.size) {
-            throw new owned ErrorWithMsg(incompatibleArgumentsError(pn, "ukeys and seg must be same size"));
+            throw getErrorWithContext(
+                        msg=incompatibleArgumentsError(pn, "ukeys and seg must be same size"),
+                        lineNumber=getLineNumber(),
+                        routineName=getRoutineName(),
+                        moduleName=getModuleName(),
+                        errorClass="ErrorWithContext"
+                        );
         }
         var g2Ukeys = toSymEntry(g2UkeysEnt, int);
         
         var g2PermEnt: borrowed GenSymEntry = st.lookup(g2Perm_name);
         if (g2PermEnt.dtype != DType.Int64) {
-            throw new owned ErrorWithMsg(incompatibleArgumentsError(pn, dtype2str(g2PermEnt.dtype)));
+            throw getErrorWithContext(
+                        msg=incompatibleArgumentsError(pn, dtype2str(g2PermEnt.dtype)),
+                        lineNumber=getLineNumber(),
+                        routineName=getRoutineName(),
+                        moduleName=getModuleName(),
+                        errorClass="ErrorWithContext"
+                        );
         }
         var g2Perm = toSymEntry(g2PermEnt, int);
         
         var t1Ent: borrowed GenSymEntry = st.lookup(t1_name);
         if (t1Ent.dtype != DType.Int64) {
-            throw new owned ErrorWithMsg(incompatibleArgumentsError(pn, dtype2str(t1Ent.dtype)));
+            throw getErrorWithContext(
+                        msg=incompatibleArgumentsError(pn, dtype2str(t1Ent.dtype)),
+                        lineNumber=getLineNumber(),
+                        routineName=getRoutineName(),
+                        moduleName=getModuleName(),
+                        errorClass="ErrorWithContext"
+                        );
         }
         else if (t1Ent.size != a1Ent.size) {
-            throw new owned ErrorWithMsg(incompatibleArgumentsError(pn, "a1 and t1 must be same size"));
+            throw getErrorWithContext(
+                        msg=incompatibleArgumentsError(pn, "a1 and t1 must be same size"),
+                        lineNumber=getLineNumber(),
+                        routineName=getRoutineName(),
+                        moduleName=getModuleName(),
+                        errorClass="ErrorWithContext"
+                        );
         }
         var t1 = toSymEntry(t1Ent, int);
         
         var t2Ent: borrowed GenSymEntry = st.lookup(t2_name);
         if (t2Ent.dtype != DType.Int64) {
-            throw new owned ErrorWithMsg(incompatibleArgumentsError(pn, dtype2str(t2Ent.dtype)));
+            throw getErrorWithContext(
+                        msg=incompatibleArgumentsError(pn, dtype2str(t2Ent.dtype)),
+                        lineNumber=getLineNumber(),
+                        routineName=getRoutineName(),
+                        moduleName=getModuleName(),
+                        errorClass="ErrorWithContext"
+                        );
         }
         else if (t2Ent.size != g2PermEnt.size) {
-            throw new owned ErrorWithMsg(incompatibleArgumentsError(pn, "a2 and t2 must be same size"));
+            throw getErrorWithContext(
+                        msg=incompatibleArgumentsError(pn, "a2 and t2 must be same size"),
+                        lineNumber=getLineNumber(),
+                        routineName=getRoutineName(),
+                        moduleName=getModuleName(),
+                        errorClass="ErrorWithContext"
+                        );
         }
         var t2 = toSymEntry(t2Ent, int);
 
         if (pred < 0) || (pred > 2) {
-            throw new owned ErrorWithMsg(incompatibleArgumentsError(pn, "bad predicate number"));
+            throw getErrorWithContext(
+                        msg=incompatibleArgumentsError(pn, "bad predicate number"),
+                        lineNumber=getLineNumber(),
+                        routineName=getRoutineName(),
+                        moduleName=getModuleName(),
+                        errorClass="ErrorWithContext"
+                        );
         }
 
         var resLimitPerLocale: int = resLimit / numLocales;

@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 from context import arkouda as ak
 from base_test import ArkoudaTest
-import unittest
 
 SIZE = 10000
 GROUPS = 64

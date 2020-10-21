@@ -4,7 +4,8 @@ module FindSegmentsMsg
     
     use Time only;
     use Math only;
-    use Reflection only;
+    use Reflection;
+    use Errors;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -34,40 +35,87 @@ module FindSegmentsMsg
         var (pname, nkeysStr, rest) = payload.decode().splitMsgToTuple(3);
         var nkeys = nkeysStr:int; // number of key arrays
         var fields = rest.split(); // split request into fields
-        if (fields.size != 2*nkeys) { return incompatibleArgumentsError(pn, "Expected %i arrays but got %i".format(nkeys, (fields.size - 3)/2));}
+        if (fields.size != 2*nkeys) { 
+             var errorMsg = incompatibleArgumentsError(pn, 
+                       "Expected %i arrays but got %i".format(nkeys, (fields.size - 3)/2));
+             writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="IncompatibleArgumentsError")); 
+             return errorMsg;                       
+        }
         var low = fields.domain.low;
         var knames = fields[low..#nkeys]; // key arrays
         var ktypes = fields[low+nkeys..#nkeys]; // objtypes
         var size: int;
         // Check all the argument arrays before doing anything
         var gPerm = st.lookup(pname);
-        if (gPerm.dtype != DType.Int64) { return notImplementedError(pn,"(permutation dtype "+dtype2str(gPerm.dtype)+")"); }        
+        if (gPerm.dtype != DType.Int64) { 
+            var errorMsg = notImplementedError(pn,"(permutation dtype "+dtype2str(gPerm.dtype)+")"); 
+            writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError")); 
+            return errorMsg;
+        }        
         // var keyEntries: [0..#nkeys] borrowed GenSymEntry;
         for (name, objtype, i) in zip(knames, ktypes, 1..) {
       // var g: borrowed GenSymEntry;
       var thisSize: int;
       var thisType: DType;
       select objtype {
-        when "pdarray" {
-          var g = st.lookup(name);
-          thisSize = g.size;
-          thisType = g.dtype;
-        }
-        when "str" {
-          var (myNames,_) = name.splitMsgToTuple('+', 2);
-          var g = st.lookup(myNames);
-          thisSize = g.size;
-          thisType = g.dtype;
-        }
-        otherwise {return unrecognizedTypeError(pn, objtype);}
+          when "pdarray" {
+              var g = st.lookup(name);
+              thisSize = g.size;
+              thisType = g.dtype;
+          }
+          when "str" {
+              var (myNames,_) = name.splitMsgToTuple('+', 2);
+              var g = st.lookup(myNames);
+              thisSize = g.size;
+              thisType = g.dtype;
+          }
+          otherwise {
+              var errorMsg = unrecognizedTypeError(pn, objtype);
+              writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="UnrecognizedTypeError"));   
+              return errorMsg;          
+          }
       }
       if (i == 1) {
         size = thisSize;
       } else {
-        if (thisSize != size) { return try! incompatibleArgumentsError(pn, "Expected array of size %i, got size %i".format(size, thisSize)); }
+          if (thisSize != size) { 
+              var errorMsg = incompatibleArgumentsError(pn, 
+                                "Expected array of size %i, got size %i".format(size, thisSize)); 
+              writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));  
+              return errorMsg;                        
+          }
       }
-          if (thisType != DType.Int64) { return notImplementedError(pn,"(key array dtype "+dtype2str(thisType)+")");}
-        }
+          if (thisType != DType.Int64) { 
+              var errorMsg = notImplementedError(pn,"(key array dtype "+dtype2str(thisType)+")");
+              writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError")); 
+              return errorMsg;
+          }
+      }
         
         // At this point, all arg arrays exist, have the same size, and are int64 or string dtype
         if (size == 0) {
@@ -102,7 +150,7 @@ module FindSegmentsMsg
         }
         when "str" {
           var (myNames1,myNames2) = name.splitMsgToTuple('+', 2);
-          try! writeln("findSegmentsMessage myNames1: {} myNames2: {}".format(myNames1,myNames2));
+          writeln("findSegmentsMessage myNames1: {} myNames2: {}".format(myNames1,myNames2));
           var str = new owned SegString(myNames1, myNames2, st);
           var (permOffsets, permVals) = str[pa];
           const ref D = permOffsets.domain;
@@ -185,7 +233,16 @@ module FindSegmentsMsg
                 st.addEntry(sname, new shared SymEntry(segs));
                 st.addEntry(uname, new shared SymEntry(ukeys));
             }
-            otherwise {return notImplementedError(pn,"("+dtype2str(kEnt.dtype)+")");}
+            otherwise {
+                var errorMsg = notImplementedError(pn,"("+dtype2str(kEnt.dtype)+")");
+                writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));                 
+                return errorMsg;   
+            }
         }
         
         return try! "created " + st.attrib(sname) + " +created " + st.attrib(uname);

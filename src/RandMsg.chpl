@@ -4,7 +4,8 @@ module RandMsg
     
     use Time only;
     use Math only;
-    use Reflection only;
+    use Reflection;
+    use Errors;
     use RandArray;
     
     use MultiTypeSymbolTable;
@@ -29,7 +30,8 @@ module RandMsg
         var rname = st.nextName();
         
         // if verbose print action
-        if v {try! writeln("%s %i %s %s %s: %s".format(cmd,len,dtype2str(dtype),rname,aMinStr,aMaxStr)); try! stdout.flush();}
+        if v {writeln("%s %i %s %s %s: %s".format(cmd,len,dtype2str(dtype),
+                                         rname,aMinStr,aMaxStr)); try! stdout.flush();}
         select (dtype) {
             when (DType.Int64) {
                 var aMin = aMinStr:int;
@@ -73,7 +75,16 @@ module RandMsg
                 fillBool(e.a);
                 if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
             }            
-            otherwise {return notImplementedError(pn,dtype);}
+            otherwise {
+                var errorMsg = notImplementedError(pn,dtype);
+                writeln(generateErrorContext(
+                     msg=errorMsg, 
+                     lineNumber=getLineNumber(), 
+                     moduleName=getModuleName(), 
+                     routineName=getRoutineName(), 
+                     errorClass="IncompatibleArgumentsError")); 
+                return errorMsg;
+            }
         }
         // response message
         return try! "created " + st.attrib(rname);

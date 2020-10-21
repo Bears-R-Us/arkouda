@@ -11,6 +11,8 @@ module ServerConfig
     private use SysCTypes;
 
     use ServerErrorStrings;
+    use Reflection;
+    use Errors;
 
     /*
     Logging flag
@@ -145,8 +147,13 @@ module ServerConfig
                 }
             }
             if total > getMemLimit() {
-                throw new owned ErrorWithMsg("Error: Operation would exceed memory limit ("
-                                             +total:string+","+getMemLimit():string+")");
+                throw getErrorWithContext(
+                          msg = "Error: Operation would exceed memory limit ("
+                                             +total:string+","+getMemLimit():string+")",
+                          lineNumber = getLineNumber(),
+                          routineName = getRoutineName(),
+                          moduleName = getModuleName(),
+                          errorClass="ErrorWithContext");                                        
             }
         }
     }

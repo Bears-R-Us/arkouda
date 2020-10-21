@@ -1,5 +1,6 @@
 module SegmentedMsg {
   use Reflection;
+  use Errors;
   use SegmentedArray;
   use ServerErrorStrings;
   use ServerConfig;
@@ -12,45 +13,54 @@ module SegmentedMsg {
   private config const DEBUG = false;
 
   proc randomStringsMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
-    var pn = Reflection.getRoutineName();
-    var (lenStr, dist, charsetStr, arg1str, arg2str)
+      var pn = Reflection.getRoutineName();
+      var (lenStr, dist, charsetStr, arg1str, arg2str)
           = payload.decode().splitMsgToTuple(5);
-    var len = lenStr: int;
-    var charset = str2CharSet(charsetStr);
-    var segName = st.nextName();
-    var valName = st.nextName();
-    var repMsg: string;
-    select dist.toLower() {
-      when "uniform" {
-        var minLen = arg1str:int;
-        var maxLen = arg2str:int;
-        // Lengths + 2*segs + 2*vals (copied to SymTab)
-        overMemLimit(8*len + 16*len + (maxLen + minLen)*len);
-        var (segs, vals) = newRandStringsUniformLength(len, minLen, maxLen, charset);
-        var segEntry = new shared SymEntry(segs);
-        var valEntry = new shared SymEntry(vals);
-        st.addEntry(segName, segEntry);
-        st.addEntry(valName, valEntry);
-        repMsg = 'created ' + st.attrib(segName) + '+created ' + st.attrib(valName);
+      var len = lenStr: int;
+      var charset = str2CharSet(charsetStr);
+      var segName = st.nextName();
+      var valName = st.nextName();
+      var repMsg: string;
+      select dist.toLower() {
+          when "uniform" {
+              var minLen = arg1str:int;
+              var maxLen = arg2str:int;
+              // Lengths + 2*segs + 2*vals (copied to SymTab)
+              overMemLimit(8*len + 16*len + (maxLen + minLen)*len);
+              var (segs, vals) = newRandStringsUniformLength(len, minLen, maxLen, charset);
+              var segEntry = new shared SymEntry(segs);
+              var valEntry = new shared SymEntry(vals);
+              st.addEntry(segName, segEntry);
+              st.addEntry(valName, valEntry);
+              repMsg = 'created ' + st.attrib(segName) + '+created ' + st.attrib(valName);
+          }
+          when "lognormal" {
+              var logMean = arg1str:real;
+              var logStd = arg2str:real;
+              // Lengths + 2*segs + 2*vals (copied to SymTab)
+              overMemLimit(8*len + 16*len + exp(logMean + (logStd**2)/2):int*len);
+              var (segs, vals) = newRandStringsLogNormalLength(len, logMean, logStd, charset);
+              var segEntry = new shared SymEntry(segs);
+              var valEntry = new shared SymEntry(vals);
+              st.addEntry(segName, segEntry);
+              st.addEntry(valName, valEntry);
+              repMsg = 'created ' + st.attrib(segName) + '+created ' + st.attrib(valName);
+          }
+          otherwise { 
+              repMsg = notImplementedError(pn, dist);       
+              writeln(generateErrorContext(
+                                     msg=repMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));          
+          }
       }
-      when "lognormal" {
-        var logMean = arg1str:real;
-        var logStd = arg2str:real;
-        // Lengths + 2*segs + 2*vals (copied to SymTab)
-        overMemLimit(8*len + 16*len + exp(logMean + (logStd**2)/2):int*len);
-        var (segs, vals) = newRandStringsLogNormalLength(len, logMean, logStd, charset);
-        var segEntry = new shared SymEntry(segs);
-        var valEntry = new shared SymEntry(vals);
-        st.addEntry(segName, segEntry);
-        st.addEntry(valName, valEntry);
-        repMsg = 'created ' + st.attrib(segName) + '+created ' + st.attrib(valName);
-      }
-      otherwise { repMsg = notImplementedError(pn, dist); }
-    }
-    return repMsg;
+      return repMsg;
   }
 
-  proc segmentLengthsMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+  proc segmentLengthsMsg(cmd: string, payload: bytes, 
+                                          st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     var (objtype, segName, valName) = payload.decode().splitMsgToTuple(3);
     var rname = st.nextName();
@@ -61,7 +71,16 @@ module SegmentedMsg {
         // Do not include the null terminator in the length
         lengths.a = strings.getLengths() - 1;
       }
-      otherwise {return notImplementedError(pn, "%s".format(objtype));}
+      otherwise {
+          var errorMsg = notImplementedError(pn, "%s".format(objtype));
+          writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));                   
+          return errorMsg;
+      }
     }
     return "created "+st.attrib(rname);
   }
@@ -169,17 +188,46 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
             st.addEntry(lvname, new shared SymEntry(lv));
             st.addEntry(roname, new shared SymEntry(ro));
             st.addEntry(rvname, new shared SymEntry(rv));
-          } otherwise {return notImplementedError(pn, "subcmd: %s, (%s, %s)".format(subcmd, objtype, valtype));}
+          } otherwise {
+              var errorMsg = notImplementedError(pn, 
+                               "subcmd: %s, (%s, %s)".format(subcmd, objtype, valtype));
+              writeln(generateErrorContext(
+                                     msg=repMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));   
+              return errorMsg;                            
+              }
           }
           repMsg = "created %s+created %s+created %s+created %s".format(st.attrib(loname),
                                                                         st.attrib(lvname),
                                                                         st.attrib(roname),
                                                                         st.attrib(rvname));
         }
-        otherwise {return notImplementedError(pn, "subcmd: %s, (%s, %s)".format(subcmd, objtype, valtype));}
+        otherwise {
+            var errorMsg = notImplementedError(pn, 
+                              "subcmd: %s, (%s, %s)".format(subcmd, objtype, valtype));
+            writeln(generateErrorContext(
+                                     msg=repMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));    
+            return errorMsg;                                          
+        }
       }
     }
-    otherwise {return notImplementedError(pn, "(%s, %s)".format(objtype, valtype));}
+    otherwise {
+        var errorMsg = notImplementedError(pn, "(%s, %s)".format(objtype, valtype));
+        writeln(generateErrorContext(
+                                     msg=repMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError"));  
+        return errorMsg;       
+      }
     }
     return repMsg;
   }
@@ -189,19 +237,28 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
     var repMsg: string;
     var (objtype, segName, valName) = payload.decode().splitMsgToTuple(3);
     select objtype {
-    when "str" {
-      var strings = new owned SegString(segName, valName, st);
-      var hashes = strings.hash();
-      var name1 = st.nextName();
-      var hash1 = st.addEntry(name1, hashes.size, int);
-      var name2 = st.nextName();
-      var hash2 = st.addEntry(name2, hashes.size, int);
-      forall (h, h1, h2) in zip(hashes, hash1.a, hash2.a) {
-        (h1,h2) = h:(int,int);
-      }
-      return "created " + st.attrib(name1) + "+created " + st.attrib(name2);
-    }
-    otherwise {return notImplementedError(pn, objtype);}
+        when "str" {
+            var strings = new owned SegString(segName, valName, st);
+            var hashes = strings.hash();
+            var name1 = st.nextName();
+            var hash1 = st.addEntry(name1, hashes.size, int);
+            var name2 = st.nextName();
+            var hash2 = st.addEntry(name2, hashes.size, int);
+            forall (h, h1, h2) in zip(hashes, hash1.a, hash2.a) {
+                (h1,h2) = h:(int,int);
+            }
+            return "created " + st.attrib(name1) + "+created " + st.attrib(name2);
+        }
+        otherwise {
+            var errorMsg = notImplementedError(pn, objtype);
+            writeln(generateErrorContext(
+                                     msg=repMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError")); 
+            return errorMsg;
+        }
     }
   }
 
@@ -226,44 +283,75 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
     var args: [1..#fields.size] string = fields; // parsed by subroutines
     writeln("subcmd: %s objtype: %s rest: %s".format(subcmd,objtype,rest));
     try {
-      select subcmd {
-        when "intIndex" {
-          return segIntIndex(objtype, args, st);
-        }
-        when "sliceIndex" {
-          return segSliceIndex(objtype, args, st);
-        }
-        when "pdarrayIndex" {
-          return segPdarrayIndex(objtype, args, st);
-        }
-        otherwise {
-          return "Error: in %s, unknown subcommand %s".format(pn, subcmd);
-        }
+        select subcmd {
+            when "intIndex" {
+                return segIntIndex(objtype, args, st);
+            }
+            when "sliceIndex" {
+                return segSliceIndex(objtype, args, st);
+            }
+            when "pdarrayIndex" {
+                return segPdarrayIndex(objtype, args, st);
+            }
+            otherwise {
+                var errorMsg = "Error: in %s, nknown subcommand %s".format(pn, subcmd);
+                writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="UknownSubcommandError")); 
+               return errorMsg;
+            }
         }
     } catch e: OutOfBoundsError {
-      return "Error: index out of bounds";
+        var errorMsg = "Error: index out of bounds";
+        writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="OutOfBoundsError")); 
+        return errorMsg;
     } catch {
-      return "Error: unknown cause";
+        var errorMsg = "Error: unknown cause";
+        writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="UnknownError")); 
+        return errorMsg;
     }
   }
  
   /*
   Returns the object corresponding to the index
   */ 
-  proc segIntIndex(objtype: string, args: [] string, st: borrowed SymTab): string throws {
-    var pn = Reflection.getRoutineName();
-    select objtype {
-      when "str" {
-        // Make a temporary strings array
-        var strings = new owned SegString(args[1], args[2], st);
-        // Parse the index
-        var idx = args[3]:int;
-        // TO DO: in the future, we will force the client to handle this
-        idx = convertPythonIndexToChapel(idx, strings.size);
-        var s = strings[idx];
-        return "item %s %jt".format("str", s);
-      }
-      otherwise { return notImplementedError(pn, objtype); }
+  proc segIntIndex(objtype: string, args: [] string, 
+                                         st: borrowed SymTab): string throws {
+      var pn = Reflection.getRoutineName();
+      select objtype {
+          when "str" {
+              // Make a temporary strings array
+              var strings = new owned SegString(args[1], args[2], st);
+              // Parse the index
+              var idx = args[3]:int;
+              // TO DO: in the future, we will force the client to handle this
+              idx = convertPythonIndexToChapel(idx, strings.size);
+              var s = strings[idx];
+              return "item %s %jt".format("str", s);
+          }
+          otherwise { 
+              var errorMsg = notImplementedError(pn, objtype); 
+              writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError")); 
+             return errorMsg;                          
+          }
       }
   }
 
@@ -289,7 +377,16 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
         var stop = args[4]:int;
         var stride = args[5]:int;
         // Only stride-1 slices are allowed for now
-        if (stride != 1) { return notImplementedError(pn, "stride != 1"); }
+        if (stride != 1) { 
+            var errorMsg = notImplementedError(pn, "stride != 1"); 
+            writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError")); 
+            return errorMsg;
+        }
         // TO DO: in the future, we will force the client to handle this
         var slice: range(stridable=true) = convertPythonSliceToChapel(start, stop, stride);
         var newSegName = st.nextName();
@@ -303,7 +400,16 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
         st.addEntry(newValName, newValsEntry);
         return "created " + st.attrib(newSegName) + " +created " + st.attrib(newValName);
       }
-      otherwise {return notImplementedError(pn, objtype);}
+      otherwise {
+          var errorMsg = notImplementedError(pn, objtype);
+          writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError")); 
+          return errorMsg;          
+        }
       }
   }
 
@@ -456,23 +562,41 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
         e.a = in1d(mainStr, testStr);
       }
     }
-    otherwise {return unrecognizedTypeError(pn, "("+mainObjtype+", "+testObjtype+")");}
+    otherwise {
+        var errorMsg = unrecognizedTypeError(pn, "("+mainObjtype+", "+testObjtype+")");
+        writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError")); 
+        return errorMsg;            
+      }
     }
     return "created " + st.attrib(rname);
   }
 
   proc segGroupMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
-    var pn = Reflection.getRoutineName();
-    var (objtype, segName, valName) = payload.decode().splitMsgToTuple(3);
-    var rname = st.nextName();
-    select (objtype) {
-    when "str" {
-      var strings = new owned SegString(segName, valName, st);
-      var iv = st.addEntry(rname, strings.size, int);
-      iv.a = strings.argGroup();
-    }
-    otherwise {return notImplementedError(pn, "("+objtype+")");}
-    }
-    return "created " + st.attrib(rname);
+      var pn = Reflection.getRoutineName();
+      var (objtype, segName, valName) = payload.decode().splitMsgToTuple(3);
+      var rname = st.nextName();
+      select (objtype) {
+          when "str" {
+              var strings = new owned SegString(segName, valName, st);
+              var iv = st.addEntry(rname, strings.size, int);
+              iv.a = strings.argGroup();
+          }
+          otherwise {
+              var errorMsg = notImplementedError(pn, "("+objtype+")");
+              writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError")); 
+              return errorMsg;            
+          }
+      }
+      return "created " + st.attrib(rname);
   }
 }
