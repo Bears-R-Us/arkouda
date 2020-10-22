@@ -91,7 +91,7 @@ class MinKTest(ArkoudaTest):
         
         with self.assertRaises(ValueError) as cm:
             ak.mink(ak.array([]), 1)
-        self.assertEqual("must be a non-empty pdarray [] of type int or float", 
+        self.assertEqual("must be a non-empty pdarray of type int or float", 
                          cm.exception.args[0])   
 
 class MaxKTest(ArkoudaTest):
@@ -124,7 +124,7 @@ class MaxKTest(ArkoudaTest):
         
         with self.assertRaises(ValueError) as cm:
             ak.maxk(ak.array([]), 1)
-        self.assertEqual("must be a non-empty pdarray [] of type int or float", 
+        self.assertEqual("must be a non-empty pdarray of type int or float", 
                          cm.exception.args[0])   
 
 class ArgMinKTest(ArkoudaTest):
@@ -157,7 +157,7 @@ class ArgMinKTest(ArkoudaTest):
         
         with self.assertRaises(ValueError) as cm:
             ak.argmink(ak.array([]), 1)
-        self.assertEqual("must be a non-empty pdarray [] of type int or float", 
+        self.assertEqual("must be a non-empty pdarray of type int or float", 
                          cm.exception.args[0])   
 
 class ArgMaxKTest(ArkoudaTest):
@@ -190,5 +190,5 @@ class ArgMaxKTest(ArkoudaTest):
         
         with self.assertRaises(ValueError) as cm:
             ak.argmaxk(ak.array([]), 1)
-        self.assertEqual("must be a non-empty pdarray [] of type int or float", 
+        self.assertEqual("must be a non-empty pdarray of type int or float", 
                          cm.exception.args[0])           

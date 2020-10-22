@@ -51,6 +51,20 @@ class NumericTest(ArkoudaTest):
         self.assertEqual('must be a pdarray, not a list', 
                         cm.exception.args[0])  
         
+    def testAbs(self):
+        pda = ak.linspace(1,10,10)
+        result = ak.abs(pda) 
+
+        self.assertIsInstance(result, ak.pdarray)
+        self.assertEqual(10, len(result))
+        self.assertEqual(float, result.dtype)
+        
+        with self.assertRaises(TypeError) as cm:
+            ak.abs([range(0,10)])
+        self.assertEqual('must be a pdarray, not a list', 
+                        cm.exception.args[0])  
+        
+        
     def testCumSum(self):
         pda = ak.linspace(1,10,10)
         result = ak.cumsum(pda) 
