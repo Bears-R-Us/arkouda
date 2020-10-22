@@ -30,7 +30,7 @@ def abs(pda : pdarray) -> pdarray:
         repMsg = generic_msg("efunc {} {}".format("abs", pda.name))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be pdarray {}, not {}".\
+        raise TypeError("must be pdarray, not {}".\
                                    format(pda.__class__.__name__))
 
 def log(pda : pdarray) -> pdarray:
