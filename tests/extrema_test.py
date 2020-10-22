@@ -76,7 +76,7 @@ class MinKTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             ak.mink(list(range(0,10)), 1)
-        self.assertEqual("must be pdarray, not a <class 'list'>", 
+        self.assertEqual("must be a pdarray, not a list", 
                          cm.exception.args[0])  
 
         with self.assertRaises(TypeError) as cm:
@@ -109,7 +109,7 @@ class MaxKTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             ak.maxk(list(range(0,10)), 1)
-        self.assertEqual("must be pdarray, not <class 'list'>", 
+        self.assertEqual("must be a pdarray, not a list", 
                          cm.exception.args[0])  
 
         with self.assertRaises(TypeError) as cm:
@@ -142,7 +142,7 @@ class ArgMinKTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             ak.argmink(list(range(0,10)), 1)
-        self.assertEqual("must be pdarray, not <class 'list'>", 
+        self.assertEqual("must be a pdarray, not a list", 
                          cm.exception.args[0])  
 
         with self.assertRaises(TypeError) as cm:
@@ -175,7 +175,7 @@ class ArgMaxKTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             ak.argmaxk(list(range(0,10)), 1)
-        self.assertEqual("must be pdarray, not <class 'list'>", 
+        self.assertEqual("must be a pdarray, not a list", 
                          cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:

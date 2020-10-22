@@ -980,7 +980,7 @@ def info(pda : Union[pdarray, str]) -> str:
     elif isinstance(pda, str):
         return generic_msg("info {}".format(pda))
     else:
-        raise TypeError("info: must be pdarray or string {}".format(pda))
+        raise TypeError("info: must be pdarray or string".format(pda))
 
 def clear() -> None:
     """
@@ -1022,7 +1022,8 @@ def any(pda : 'pdarray') -> bool:
         repMsg = generic_msg("reduction {} {}".format("any", pda.name))
         return parse_single_value(repMsg)
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be a pdarray, not a {}".\
+                                        format(pda.__class__.__name__))
 
 def all(pda : 'pdarray') -> bool:
     """
@@ -1049,7 +1050,8 @@ def all(pda : 'pdarray') -> bool:
         repMsg = generic_msg("reduction {} {}".format("all", pda.name))
         return parse_single_value(repMsg)
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be a pdarray, not a {}".\
+                                        format(pda.__class__.__name__))
 
 def is_sorted(pda : 'pdarray') -> bool:
     """
@@ -1076,7 +1078,8 @@ def is_sorted(pda : 'pdarray') -> bool:
         repMsg = generic_msg("reduction {} {}".format("is_sorted", pda.name))
         return parse_single_value(repMsg)
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be a pdarray, not a {}".\
+                                        format(pda.__class__.__name__))
 
 def sum(pda : 'pdarray') -> np.float64:
     """
@@ -1103,7 +1106,8 @@ def sum(pda : 'pdarray') -> np.float64:
         repMsg = generic_msg("reduction {} {}".format("sum", pda.name))
         return parse_single_value(repMsg)
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be a pdarray, not a {}".\
+                                        format(pda.__class__.__name__))
 
 def prod(pda : 'pdarray') -> np.float64:
     """
@@ -1131,7 +1135,8 @@ def prod(pda : 'pdarray') -> np.float64:
         repMsg = generic_msg("reduction {} {}".format("prod", pda.name))
         return parse_single_value(repMsg)
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be a pdarray, not a {}".\
+                                        format(pda.__class__.__name__))
 
 def min(pda : 'pdarray') -> Union[np.float64,np.int64]:
     """
@@ -1158,7 +1163,8 @@ def min(pda : 'pdarray') -> Union[np.float64,np.int64]:
         repMsg = generic_msg("reduction {} {}".format("min", pda.name))
         return parse_single_value(repMsg)
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be a pdarray, not a {}".\
+                                        format(pda.__class__.__name__))
 
 def max(pda : 'pdarray') -> Union[np.float64,np.int64]:
     """
@@ -1185,7 +1191,8 @@ def max(pda : 'pdarray') -> Union[np.float64,np.int64]:
         repMsg = generic_msg("reduction {} {}".format("max", pda.name))
         return parse_single_value(repMsg)
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be a pdarray, not a {}".\
+                                        format(pda.__class__.__name__))
 
 def argmin(pda : 'pdarray') -> np.int64:
     """
@@ -1212,7 +1219,8 @@ def argmin(pda : 'pdarray') -> np.int64:
         repMsg = generic_msg("reduction {} {}".format("argmin", pda.name))
         return parse_single_value(repMsg)
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be a pdarray, not a {}".\
+                                        format(pda.__class__.__name__))
 
 def argmax(pda : 'pdarray') -> np.int64:
     """
@@ -1239,7 +1247,8 @@ def argmax(pda : 'pdarray') -> np.int64:
         repMsg = generic_msg("reduction {} {}".format("argmax", pda.name))
         return parse_single_value(repMsg)
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be a pdarray, not a {}".\
+                                            format(pda.__class__.__name__))
 
 def mean(pda : 'pdarray') -> np.float64:
     """
@@ -1357,12 +1366,13 @@ def std(pda : 'pdarray', ddof : int=0) -> np.float64:
     the estimated variance, so even with ``ddof=1``, it will not be an
     unbiased estimate of the standard deviation per se.
     """
-    if not isinstance(ddof):
+    if not isinstance(ddof, int):
         raise TypeError('ddof must be an integer 0 or greater')
     if ddof < 0:
         raise ValueError("ddof must be an integer 0 or greater")
     if not isinstance(pda, pdarray):
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be pdarray, not a {}".\
+                                     format(pda.__class__.__name__))
     return np.sqrt(var(pda, ddof=ddof))
 
 def mink(pda : 'pdarray', k : int) -> 'pdarray':
@@ -1419,7 +1429,8 @@ def mink(pda : 'pdarray', k : int) -> 'pdarray':
         repMsg = generic_msg("mink {} {} {}".format(pda.name, k, False))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be pdarray, not a {}".format(type(pda)))
+        raise TypeError("must be a pdarray, not a {}".\
+                                        format(pda.__class__.__name__))
 
 def maxk(pda : 'pdarray', k : int) -> 'pdarray':
     """
@@ -1476,7 +1487,8 @@ def maxk(pda : 'pdarray', k : int) -> 'pdarray':
         repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, False))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be pdarray, not {}".format(type(pda)))
+        raise TypeError("must be a pdarray, not a {}".\
+                                        format(pda.__class__.__name__))
 
 def argmink(pda : 'pdarray', k : int) -> 'pdarray':
     """
@@ -1532,7 +1544,8 @@ def argmink(pda : 'pdarray', k : int) -> 'pdarray':
         repMsg = generic_msg("mink {} {} {}".format(pda.name, k, True))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be pdarray, not {}".format(type(pda)))
+        raise TypeError("must be a pdarray, not a {}".\
+                                        format(pda.__class__.__name__))
 
 def argmaxk(pda : 'pdarray', k : int) -> 'pdarray':
     """
@@ -1587,4 +1600,5 @@ def argmaxk(pda : 'pdarray', k : int) -> 'pdarray':
         repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, True))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be pdarray, not {}".format(type(pda)))
+        raise TypeError("must be a pdarray, not a {}".\
+                                        format(pda.__class__.__name__))

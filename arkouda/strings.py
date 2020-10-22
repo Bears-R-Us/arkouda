@@ -165,7 +165,7 @@ class Strings:
                                                               json.dumps([other]))
         else:
             raise ValueError("Strings: {} not supported between Strings and {}"\
-                             .format(op, type(other)))
+                             .format(op, other.__class__.__name__))
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
@@ -221,7 +221,7 @@ class Strings:
             offsets, values = repMsg.split('+')
             return Strings(offsets, values)
         else:
-            raise TypeError("unsupported pdarray index type {}".format(type(key)))
+            raise TypeError("unsupported pdarray index type {}".format(key.__class__.__name__))
 
     def get_lengths(self) -> pdarray:
         """

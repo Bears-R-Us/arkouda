@@ -1,8 +1,10 @@
 from context import arkouda as ak
 from base_test import ArkoudaTest
-from arkouda.dtypes import dtype
 
-
+"""
+Encapsulates unit tests for the numeric module with the exception
+of the where method, which is in the where_test module
+"""
 class NumericTest(ArkoudaTest):
     
     def testHistogram(self):
@@ -15,7 +17,7 @@ class NumericTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.histogram([range(0,10)], bins=1)
-        self.assertEqual('pda must be a pdarray, not a list', 
+        self.assertEqual('must be a pdarray, not a list', 
                         cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:
@@ -33,7 +35,7 @@ class NumericTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.histogram([range(0,10)], bins=1)
-        self.assertEqual('pda must be a pdarray, not a list', 
+        self.assertEqual('must be a pdarray, not a list', 
                         cm.exception.args[0])  
         
     def testExp(self):
@@ -46,7 +48,7 @@ class NumericTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.histogram([range(0,10)], bins=1)
-        self.assertEqual('pda must be a pdarray, not a list', 
+        self.assertEqual('must be a pdarray, not a list', 
                         cm.exception.args[0])  
         
     def testCumSum(self):
@@ -59,7 +61,7 @@ class NumericTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.histogram([range(0,10)], bins=1)
-        self.assertEqual('pda must be a pdarray, not a list', 
+        self.assertEqual('must be a pdarray, not a list', 
                         cm.exception.args[0])  
         
     def testCumProd(self):
@@ -72,7 +74,7 @@ class NumericTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.histogram([range(0,10)], bins=1)
-        self.assertEqual('pda must be a pdarray, not a list', 
+        self.assertEqual('must be a pdarray, not a list', 
                         cm.exception.args[0])  
         
     def testSin(self):
@@ -85,7 +87,7 @@ class NumericTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.histogram([range(0,10)], bins=1)
-        self.assertEqual('pda must be a pdarray, not a list', 
+        self.assertEqual('must be a pdarray, not a list', 
                         cm.exception.args[0]) 
         
     def testCos(self):
@@ -98,7 +100,7 @@ class NumericTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.histogram([range(0,10)], bins=1)
-        self.assertEqual('pda must be a pdarray, not a list', 
+        self.assertEqual('must be a pdarray, not a list', 
                         cm.exception.args[0])   
         
     def testValueCounts(self):

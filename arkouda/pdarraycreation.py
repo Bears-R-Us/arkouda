@@ -152,7 +152,8 @@ def zeros(size : int, dtype : type=np.float64) -> pdarray:
     array([False, False, False, False, False])
     """
     if not np.isscalar(size):
-        raise TypeError("size must be a scalar, not {}".format(type(size)))
+        raise TypeError("size must be a scalar, not {}".\
+                                     format(size.__class__.__name__))
     dtype = akdtype(dtype) # normalize dtype
     # check dtype for error
     if dtype.name not in numericDTypes:
@@ -197,7 +198,8 @@ def ones(size : int, dtype : type=float64) -> pdarray:
     array([True, True, True, True, True])
     """
     if not np.isscalar(size):
-        raise TypeError("size must be a scalar, not {}".format(type(size)))
+        raise TypeError("size must be a scalar, not {}".\
+                                            format(size.__class__.__name__))
     dtype = akdtype(dtype) # normalize dtype
     # check dtype for error
     if dtype.name not in numericDTypes:

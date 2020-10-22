@@ -241,7 +241,8 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
     A and B must have the same dtype.
     """
     if not isinstance(condition, pdarray):
-        raise TypeError("condition must be a pdarray, not {}".format(condition.__class__.__name__))
+        raise TypeError("condition must be a pdarray, not {}".
+                                    format(condition.__class__.__name__))
     if isinstance(A, pdarray) and isinstance(B, pdarray):
         repMsg = generic_msg("efunc3vv {} {} {} {}".\
                              format("where",
@@ -350,12 +351,12 @@ def histogram(pda : pdarray, bins : int=10) -> pdarray:
         raise TypeError('bins must be an int > 0')
     if bins < 1:
         raise ValueError('bins must be 1 or greater')
-    if isinstance(pda, pdarray) and isinstance(bins, int):
+    if isinstance(pda, pdarray):
         repMsg = generic_msg("histogram {} {}".format(pda.name, bins))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("pda must be a pdarray, not a {}".\
-                                  format(pda.__class__.__name__,bins))
+        raise TypeError("must be a pdarray, not a {}".\
+                                        format(pda.__class__.__name__))
 
 
 def value_counts(pda : pdarray) -> Tuple[pdarray,int]:
@@ -399,4 +400,4 @@ def value_counts(pda : pdarray) -> Tuple[pdarray,int]:
         return unique(pda, return_counts=True)
     else:
         raise TypeError("must be a pdarray, not {}".\
-                                    format(pda.__class__.__name__))
+                                        format(pda.__class__.__name__))
