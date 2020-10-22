@@ -37,8 +37,8 @@ module In1dMsg
         if flag == "True" {invert = true;}
         else if flag == "False" {invert = false;}
         else {
-            var errorMsg = try! "Error: %s: %s".format(pn,flag);
-            try! writeln(generateErrorContext(
+            var errorMsg = "Error: %s: %s".format(pn,flag);
+            writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -92,7 +92,7 @@ module In1dMsg
             }
             otherwise {
                 var errorMsg = notImplementedError(pn,gAr1.dtype,"in",gAr2.dtype);
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 

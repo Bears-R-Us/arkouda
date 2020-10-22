@@ -202,9 +202,9 @@ module MultiTypeSymbolTable
         /*
         Prints the SymTable in a pretty format (name,SymTable[name])
         */
-        proc pretty(){
+        proc pretty() throws {
             for n in tab {
-                try! writeln("%10s = ".format(n), tab.getValue(n));try! stdout.flush();
+                writeln("%10s = ".format(n), tab.getValue(n));try! stdout.flush();
             }
         }
 
@@ -223,12 +223,12 @@ module MultiTypeSymbolTable
         :arg name: name of entry to be processed
         :type name: string
         */
-        proc dump(name:string): string {
+        proc dump(name:string): string throws {
             if name == "__AllSymbols__" {return try! "%jt".format(this);}
             else if (tab.contains(name)) {return try! "%jt %jt".format(name, tab.getReference(name));}
             else {
-                var errorMsg = try! "Error: dump: undefined name: %s".format(name);
-                try! writeln(generateErrorContext(
+                var errorMsg = "Error: dump: undefined name: %s".format(name);
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -269,7 +269,7 @@ module MultiTypeSymbolTable
                 }
                 else {
                     s = unknownSymbolError("info",name);
-                    try! writeln(generateErrorContext(
+                    writeln(generateErrorContext(
                                      msg=s, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -298,7 +298,7 @@ module MultiTypeSymbolTable
             }
             else {
                 s = unknownSymbolError("attrib",name);
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                      msg=s, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -380,7 +380,7 @@ module MultiTypeSymbolTable
                     }
                     otherwise {
                         s = unrecognizedTypeError("datastr",dtype2str(u.dtype));
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=s, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -391,7 +391,7 @@ module MultiTypeSymbolTable
             }
             else {
                 s = unknownSymbolError("datastr",name);
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                      msg=s, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -473,7 +473,7 @@ module MultiTypeSymbolTable
                     }
                     otherwise {
                         s = unrecognizedTypeError("datarepr",dtype2str(u.dtype));
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=s, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -484,7 +484,7 @@ module MultiTypeSymbolTable
             }
             else {
                 s = unknownSymbolError("datarepr",name);
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                      msg=s, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 

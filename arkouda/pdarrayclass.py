@@ -1,5 +1,5 @@
 from typing import Tuple, Union
-import json, os, struct
+import json, struct
 import numpy as np
 from arkouda.client import generic_msg, verbose, maxTransferBytes, pdarrayIterThresh
 from arkouda.dtypes import *

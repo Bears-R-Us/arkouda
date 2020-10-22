@@ -27,9 +27,9 @@ module ConcatenateMsg
         var names = fields[low..];
         // Check that fields contains the stated number of arrays
         if (n != names.size) { 
-            var errorMsg = try! incompatibleArgumentsError(pn, 
+            var errorMsg = incompatibleArgumentsError(pn, 
                              "Expected %i arrays but got %i".format(n, names.size)); 
-            try! writeln(generateErrorContext(
+            writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -57,7 +57,7 @@ module ConcatenateMsg
                 }
                 otherwise { 
                     var errorMsg = notImplementedError(pn, objtype); 
-                    try! writeln(generateErrorContext(
+                    writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -70,10 +70,10 @@ module ConcatenateMsg
             if (i == 1) {dtype = g.dtype;}
             else {
                 if (dtype != g.dtype) {
-                    var errorMsg = try! incompatibleArgumentsError(pn, 
+                    var errorMsg = incompatibleArgumentsError(pn, 
                              "Expected %s dtype but got %s dtype".format(dtype2str(dtype), 
                                     dtype2str(g.dtype)));
-                    try! writeln(generateErrorContext(
+                    writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -170,7 +170,7 @@ module ConcatenateMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError("concatenate",dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -183,8 +183,8 @@ module ConcatenateMsg
                 return try! "created " + st.attrib(rname);
             }
             otherwise { 
-                var errorMsg = try! notImplementedError(pn, objtype); 
-                try! writeln(generateErrorContext(
+                var errorMsg = notImplementedError(pn, objtype); 
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 

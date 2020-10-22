@@ -36,7 +36,7 @@ module EfuncMsg
         // split request into fields
         var (efunc, name) = payload.decode().splitMsgToTuple(2);
         var rname = st.nextName();
-        if v {try! writeln("%s %s %s : %s".format(cmd,efunc,name,rname));try! stdout.flush();}
+        if v {writeln("%s %s %s : %s".format(cmd,efunc,name,rname));try! stdout.flush();}
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
        
@@ -76,7 +76,7 @@ module EfuncMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -120,7 +120,7 @@ module EfuncMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -146,7 +146,7 @@ module EfuncMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -158,7 +158,7 @@ module EfuncMsg
             }
             otherwise {
                 var errorMsg = unrecognizedTypeError(pn, dtype2str(gEnt.dtype));
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -189,7 +189,7 @@ module EfuncMsg
         // split request into fields
         var (efunc, name1, name2, name3) = payload.decode().splitMsgToTuple(4);
         var rname = st.nextName();
-        if v {try! writeln("%s %s %s %s %s %s : %s".format(cmd,efunc,name1,
+        if v {writeln("%s %s %s %s %s %s : %s".format(cmd,efunc,name1,
                                              name2,name3,rname));try! stdout.flush();}
 
         var g1: borrowed GenSymEntry = st.lookup(name1);
@@ -197,7 +197,7 @@ module EfuncMsg
         var g3: borrowed GenSymEntry = st.lookup(name3);
         if !((g1.size == g2.size) && (g2.size == g3.size)) {
             var errorMsg = "Error: size mismatch in arguments to "+pn;
-            try! writeln(generateErrorContext(
+            writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -218,7 +218,7 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                            g2.dtype,g3.dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -240,7 +240,7 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                        g2.dtype,g3.dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -262,7 +262,7 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                        g2.dtype,g3.dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -274,7 +274,7 @@ module EfuncMsg
             }
             otherwise {
                var errorMsg = notImplementedError(pn,efunc,g1.dtype,g2.dtype,g3.dtype);
-               try! writeln(generateErrorContext(
+               writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -305,14 +305,14 @@ module EfuncMsg
               = payload.decode().splitMsgToTuple(5); // split request into fields
         var dtype = str2dtype(dtypestr);
         var rname = st.nextName();
-        if v {try! writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,
+        if v {writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,
                                      name2,dtype,value,rname));try! stdout.flush();}
 
         var g1: borrowed GenSymEntry = st.lookup(name1);
         var g2: borrowed GenSymEntry = st.lookup(name2);
         if !(g1.size == g2.size) {
-            var errorMsg = try! "Error: size mismatch in arguments to "+pn;
-            try! writeln(generateErrorContext(
+            var errorMsg = "Error: size mismatch in arguments to "+pn;
+            writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -333,7 +333,7 @@ module EfuncMsg
                   otherwise {
                       var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                          g2.dtype,dtype);
-                      try! writeln(generateErrorContext(
+                      writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -355,7 +355,7 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                           g2.dtype,dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -377,7 +377,7 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                            g2.dtype,dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -390,7 +390,7 @@ module EfuncMsg
             otherwise {
                 var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                    g2.dtype,dtype);
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -421,14 +421,14 @@ module EfuncMsg
               = payload.decode().splitMsgToTuple(5); // split request into fields
         var dtype = str2dtype(dtypestr);
         var rname = st.nextName();
-        if v {try! writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,dtype,value,
+        if v {writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,dtype,value,
                                                         name2,rname));try! stdout.flush();}
 
         var g1: borrowed GenSymEntry = st.lookup(name1);
         var g2: borrowed GenSymEntry = st.lookup(name2);
         if !(g1.size == g2.size) {
             var errorMsg = "Error: size mismatch in arguments to "+pn;
-            try! writeln(generateErrorContext(
+            writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -449,7 +449,7 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                            dtype,g2.dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -471,7 +471,7 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                            dtype,g2.dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -493,7 +493,7 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                            dtype,g2.dtype);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -506,7 +506,7 @@ module EfuncMsg
             otherwise {
                 var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                    dtype,g2.dtype);
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -538,7 +538,7 @@ module EfuncMsg
         var dtype1 = str2dtype(dtype1str);
         var dtype2 = str2dtype(dtype2str);
         var rname = st.nextName();
-        if v {try! writeln("%s %s %s %s %s %s %s %s : %s".format(cmd,efunc,
+        if v {writeln("%s %s %s %s %s %s %s %s : %s".format(cmd,efunc,
                         name1,dtype1,value1,dtype2,value2,rname));try! stdout.flush();}
 
         var g1: borrowed GenSymEntry = st.lookup(name1);
@@ -555,7 +555,7 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                       dtype1,dtype2);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -577,7 +577,7 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                         dtype1,dtype2);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -599,7 +599,7 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                        dtype1,dtype2);
-                        try! writeln(generateErrorContext(
+                        writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -612,7 +612,7 @@ module EfuncMsg
             otherwise {
                 var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                dtype1,dtype2);
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 

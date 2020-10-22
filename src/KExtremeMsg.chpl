@@ -79,7 +79,7 @@ module KExtremeMsg
            }
            otherwise {
                var errorMsg = notImplementedError("mink",gEnt.dtype);
-               try! writeln(generateErrorContext(
+               writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -149,7 +149,7 @@ module KExtremeMsg
 
            otherwise {
                var errorMsg = notImplementedError("maxk",gEnt.dtype);
-               try! writeln(generateErrorContext(
+               writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 

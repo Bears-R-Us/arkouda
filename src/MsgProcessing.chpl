@@ -377,7 +377,7 @@ module MsgProcessing
             }
             otherwise {
                 var errorMsg = unrecognizedTypeError(pn,dtypestr);
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 

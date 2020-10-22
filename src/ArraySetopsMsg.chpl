@@ -52,7 +52,7 @@ module ArraySetopsMsg
           when (DType.Int64) {
              if (gEnt.dtype != gEnt2.dtype) {
                  var errorMsg = notImplementedError("newIntersect1d",gEnt2.dtype);
-                 try! writeln(generateErrorContext(
+                 writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -71,7 +71,7 @@ module ArraySetopsMsg
            }
            otherwise {
                var errorMsg = notImplementedError("newIntersect1d",gEnt.dtype);
-               try! writeln(generateErrorContext(
+               writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -112,7 +112,7 @@ module ArraySetopsMsg
           when (DType.Int64) {
              if(gEnt.dtype != gEnt2.dtype) {
                  var errorMsg = notImplementedError("setxor1d",gEnt2.dtype);
-                 try! writeln(generateErrorContext(
+                 writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -131,7 +131,7 @@ module ArraySetopsMsg
            }
            otherwise {
                var errorMsg = notImplementedError("setxor1d",gEnt.dtype);
-               try! writeln(generateErrorContext(
+               writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -171,7 +171,7 @@ module ArraySetopsMsg
           when (DType.Int64) {
              if (gEnt.dtype != gEnt2.dtype) {
                  var errorMsg = notImplementedError("setdiff1d",gEnt2.dtype);
-                 try! writeln(generateErrorContext(
+                 writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -190,7 +190,7 @@ module ArraySetopsMsg
            }
            otherwise {
                var errorMsg = notImplementedError("setdiff1d",gEnt.dtype);
-               try! writeln(generateErrorContext(
+               writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -229,7 +229,7 @@ module ArraySetopsMsg
         when (DType.Int64) {
            if (gEnt.dtype != gEnt2.dtype) {
                var errorMsg = notImplementedError("newUnion1d",gEnt2.dtype);
-               try! writeln(generateErrorContext(
+               writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -248,7 +248,7 @@ module ArraySetopsMsg
          }
          otherwise {
              var errorMsg = notImplementedError("newUnion1d",gEnt.dtype);
-             try! writeln(generateErrorContext(
+             writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 

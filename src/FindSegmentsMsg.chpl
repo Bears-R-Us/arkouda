@@ -38,7 +38,7 @@ module FindSegmentsMsg
         if (fields.size != 2*nkeys) { 
              var errorMsg = incompatibleArgumentsError(pn, 
                        "Expected %i arrays but got %i".format(nkeys, (fields.size - 3)/2));
-             try! writeln(generateErrorContext(
+             writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -54,7 +54,7 @@ module FindSegmentsMsg
         var gPerm = st.lookup(pname);
         if (gPerm.dtype != DType.Int64) { 
             var errorMsg = notImplementedError(pn,"(permutation dtype "+dtype2str(gPerm.dtype)+")"); 
-            try! writeln(generateErrorContext(
+            writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -81,7 +81,7 @@ module FindSegmentsMsg
           }
           otherwise {
               var errorMsg = unrecognizedTypeError(pn, objtype);
-              try! writeln(generateErrorContext(
+              writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -94,9 +94,9 @@ module FindSegmentsMsg
         size = thisSize;
       } else {
           if (thisSize != size) { 
-              var errorMsg = try! incompatibleArgumentsError(pn, 
+              var errorMsg = incompatibleArgumentsError(pn, 
                                 "Expected array of size %i, got size %i".format(size, thisSize)); 
-              try! writeln(generateErrorContext(
+              writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -107,7 +107,7 @@ module FindSegmentsMsg
       }
           if (thisType != DType.Int64) { 
               var errorMsg = notImplementedError(pn,"(key array dtype "+dtype2str(thisType)+")");
-              try! writeln(generateErrorContext(
+              writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
@@ -150,7 +150,7 @@ module FindSegmentsMsg
         }
         when "str" {
           var (myNames1,myNames2) = name.splitMsgToTuple('+', 2);
-          try! writeln("findSegmentsMessage myNames1: {} myNames2: {}".format(myNames1,myNames2));
+          writeln("findSegmentsMessage myNames1: {} myNames2: {}".format(myNames1,myNames2));
           var str = new owned SegString(myNames1, myNames2, st);
           var (permOffsets, permVals) = str[pa];
           const ref D = permOffsets.domain;
@@ -235,7 +235,7 @@ module FindSegmentsMsg
             }
             otherwise {
                 var errorMsg = notImplementedError(pn,"("+dtype2str(kEnt.dtype)+")");
-                try! writeln(generateErrorContext(
+                writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
                                      moduleName=getModuleName(), 
