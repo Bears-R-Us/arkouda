@@ -46,7 +46,7 @@ class WhereTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.where([0], ak.linspace(1,10,10), ak.linspace(1,10,10))
-        self.assertEqual('condition must be a pdarray, not list', 
+        self.assertEqual('condition must be a pdarray, not a list', 
                         cm.exception.args[0]) 
         
         

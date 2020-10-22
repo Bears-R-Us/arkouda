@@ -22,7 +22,7 @@ class NumericTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.histogram(pda, bins='1')
-        self.assertEqual('bins must be an int > 0', 
+        self.assertEqual('bins must be an int >= 1', 
                         cm.exception.args[0])  
     
     def testLog(self):

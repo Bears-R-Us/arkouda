@@ -241,7 +241,7 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
     A and B must have the same dtype.
     """
     if not isinstance(condition, pdarray):
-        raise TypeError("condition must be a pdarray, not {}".
+        raise TypeError("condition must be a pdarray, not a {}".
                                     format(condition.__class__.__name__))
     if isinstance(A, pdarray) and isinstance(B, pdarray):
         repMsg = generic_msg("efunc3vv {} {} {} {}".\
@@ -348,7 +348,7 @@ def histogram(pda : pdarray, bins : int=10) -> pdarray:
     >>> plt.plot(binEdges[:-1], h.to_ndarray())
     """
     if not isinstance(bins, int):
-        raise TypeError('bins must be an int > 0')
+        raise TypeError('bins must be an int >= 1')
     if bins < 1:
         raise ValueError('bins must be 1 or greater')
     if isinstance(pda, pdarray):
