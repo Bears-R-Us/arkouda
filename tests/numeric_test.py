@@ -24,7 +24,7 @@ class NumericTest(ArkoudaTest):
             ak.histogram(pda, bins='1')
         self.assertEqual('bins must be an int > 0', 
                         cm.exception.args[0])  
-        
+    
     def testLog(self):
         pda = ak.linspace(1,10,10)
         result = ak.log(pda) 
@@ -34,7 +34,7 @@ class NumericTest(ArkoudaTest):
         self.assertEqual(float, result.dtype)
         
         with self.assertRaises(TypeError) as cm:
-            ak.histogram([range(0,10)], bins=1)
+            ak.log([range(0,10)])
         self.assertEqual('must be a pdarray, not a list', 
                         cm.exception.args[0])  
         
@@ -47,7 +47,7 @@ class NumericTest(ArkoudaTest):
         self.assertEqual(float, result.dtype)
         
         with self.assertRaises(TypeError) as cm:
-            ak.histogram([range(0,10)], bins=1)
+            ak.exp([range(0,10)])
         self.assertEqual('must be a pdarray, not a list', 
                         cm.exception.args[0])  
         
@@ -60,7 +60,7 @@ class NumericTest(ArkoudaTest):
         self.assertEqual(float, result.dtype)
         
         with self.assertRaises(TypeError) as cm:
-            ak.histogram([range(0,10)], bins=1)
+            ak.cumsum([range(0,10)])
         self.assertEqual('must be a pdarray, not a list', 
                         cm.exception.args[0])  
         
@@ -73,7 +73,7 @@ class NumericTest(ArkoudaTest):
         self.assertEqual(float, result.dtype)
         
         with self.assertRaises(TypeError) as cm:
-            ak.histogram([range(0,10)], bins=1)
+            ak.cumprod([range(0,10)])
         self.assertEqual('must be a pdarray, not a list', 
                         cm.exception.args[0])  
         
@@ -86,7 +86,7 @@ class NumericTest(ArkoudaTest):
         self.assertEqual(float, result.dtype)
         
         with self.assertRaises(TypeError) as cm:
-            ak.histogram([range(0,10)], bins=1)
+            ak.sin([range(0,10)])
         self.assertEqual('must be a pdarray, not a list', 
                         cm.exception.args[0]) 
         
@@ -99,7 +99,7 @@ class NumericTest(ArkoudaTest):
         self.assertEqual(float, result.dtype)
         
         with self.assertRaises(TypeError) as cm:
-            ak.histogram([range(0,10)], bins=1)
+            ak.cos([range(0,10)])
         self.assertEqual('must be a pdarray, not a list', 
                         cm.exception.args[0])   
         
@@ -117,7 +117,7 @@ class NumericTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.value_counts([0]) 
-        self.assertEqual('must be a pdarray, not list', 
+        self.assertEqual('must be a pdarray, not a list', 
                         cm.exception.args[0])   
         
             

@@ -30,7 +30,7 @@ def abs(pda : pdarray) -> pdarray:
         repMsg = generic_msg("efunc {} {}".format("abs", pda.name))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be pdarray, not {}".\
+        raise TypeError("must be a pdarray, not {}".\
                                    format(pda.__class__.__name__))
 
 def log(pda : pdarray) -> pdarray:
@@ -71,7 +71,7 @@ def log(pda : pdarray) -> pdarray:
         repMsg = generic_msg("efunc {} {}".format("log", pda.name))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be a pdarray, not {}".\
+        raise TypeError("must be a pdarray, not a {}".\
                                     format(pda.__class__.__name__))
 
 def exp(pda : pdarray) -> pdarray:
@@ -97,7 +97,7 @@ def exp(pda : pdarray) -> pdarray:
         repMsg = generic_msg("efunc {} {}".format("exp", pda.name))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be a pdarray, not {}".\
+        raise TypeError("must be a pdarray, not a {}".\
                                     format(pda.__class__.__name__))
 
 def cumsum(pda : pdarray) -> pdarray:
@@ -126,7 +126,7 @@ def cumsum(pda : pdarray) -> pdarray:
         repMsg = generic_msg("efunc {} {}".format("cumsum", pda.name))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be a pdarray, not {}".\
+        raise TypeError("must be a pdarray, not a {}".\
                                     format(pda.__class__.__name__))
 
 def cumprod(pda : pdarray) -> pdarray:
@@ -155,7 +155,7 @@ def cumprod(pda : pdarray) -> pdarray:
         repMsg = generic_msg("efunc {} {}".format("cumprod", pda.name))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be a pdarray, not {}".\
+        raise TypeError("must be a pdarray, not a {}".\
                                     format(pda.__class__.__name__))
 
 def sin(pda : pdarray) -> pdarray:
@@ -181,7 +181,7 @@ def sin(pda : pdarray) -> pdarray:
         repMsg = generic_msg("efunc {} {}".format("sin",pda.name))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be a pdarray, not {}".\
+        raise TypeError("must be a pdarray, not a {}".\
                                     format(pda.__class__.__name__))
 
 def cos(pda : pdarray) -> pdarray:
@@ -207,7 +207,7 @@ def cos(pda : pdarray) -> pdarray:
         repMsg = generic_msg("efunc {} {}".format("cos",pda.name))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be a pdarray, not {}".\
+        raise TypeError("must be a pdarray, not a {}".\
                                     format(pda.__class__.__name__))
     
 def where(condition : pdarray, A : Union[Union[int,float], pdarray], 
@@ -399,5 +399,5 @@ def value_counts(pda : pdarray) -> Tuple[pdarray,int]:
     if isinstance(pda, pdarray):
         return unique(pda, return_counts=True)
     else:
-        raise TypeError("must be a pdarray, not {}".\
+        raise TypeError("must be a pdarray, not a {}".\
                                         format(pda.__class__.__name__))
