@@ -6,7 +6,7 @@ from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraysetops import unique
 
 __all__ = ["abs", "log", "exp", "cumsum", "cumprod", "sin", "cos", 
-           "where", "histogram", "value_counts"]
+           "where", "histogram", "value_counts"]    
 
 def abs(pda : pdarray) -> pdarray:
     """
@@ -30,7 +30,8 @@ def abs(pda : pdarray) -> pdarray:
         repMsg = generic_msg("efunc {} {}".format("abs", pda.name))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be a pdarray, not a {}".\
+                                   format(pda.__class__.__name__))
 
 def log(pda : pdarray) -> pdarray:
     """
@@ -70,7 +71,8 @@ def log(pda : pdarray) -> pdarray:
         repMsg = generic_msg("efunc {} {}".format("log", pda.name))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be a pdarray, not a {}".\
+                                    format(pda.__class__.__name__))
 
 def exp(pda : pdarray) -> pdarray:
     """
@@ -95,7 +97,8 @@ def exp(pda : pdarray) -> pdarray:
         repMsg = generic_msg("efunc {} {}".format("exp", pda.name))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be a pdarray, not a {}".\
+                                    format(pda.__class__.__name__))
 
 def cumsum(pda : pdarray) -> pdarray:
     """
@@ -123,7 +126,8 @@ def cumsum(pda : pdarray) -> pdarray:
         repMsg = generic_msg("efunc {} {}".format("cumsum", pda.name))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be a pdarray, not a {}".\
+                                    format(pda.__class__.__name__))
 
 def cumprod(pda : pdarray) -> pdarray:
     """
@@ -151,7 +155,8 @@ def cumprod(pda : pdarray) -> pdarray:
         repMsg = generic_msg("efunc {} {}".format("cumprod", pda.name))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be a pdarray, not a {}".\
+                                    format(pda.__class__.__name__))
 
 def sin(pda : pdarray) -> pdarray:
     """
@@ -176,7 +181,8 @@ def sin(pda : pdarray) -> pdarray:
         repMsg = generic_msg("efunc {} {}".format("sin",pda.name))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be a pdarray, not a {}".\
+                                    format(pda.__class__.__name__))
 
 def cos(pda : pdarray) -> pdarray:
     """
@@ -201,7 +207,8 @@ def cos(pda : pdarray) -> pdarray:
         repMsg = generic_msg("efunc {} {}".format("cos",pda.name))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be a pdarray, not a {}".\
+                                    format(pda.__class__.__name__))
     
 def where(condition : pdarray, A : Union[Union[int,float], pdarray], 
                         B : Union[Union[int,float], pdarray]) -> pdarray:
@@ -234,7 +241,8 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
     A and B must have the same dtype.
     """
     if not isinstance(condition, pdarray):
-        raise TypeError("must be pdarray {}".format(condition))
+        raise TypeError("condition must be a pdarray, not a {}".
+                                    format(condition.__class__.__name__))
     if isinstance(A, pdarray) and isinstance(B, pdarray):
         repMsg = generic_msg("efunc3vv {} {} {} {}".\
                              format("where",
@@ -310,6 +318,8 @@ def histogram(pda : pdarray, bins : int=10) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray or if bins is
         not an int.
+    ValueError
+        Raised if bins < 1
     NotImplementedError
         Raised if pdarray dtype is bool or uint8
 
@@ -337,12 +347,16 @@ def histogram(pda : pdarray, bins : int=10) -> pdarray:
     # To plot, use only the left edges, and export the histogram to NumPy
     >>> plt.plot(binEdges[:-1], h.to_ndarray())
     """
-    if isinstance(pda, pdarray) and isinstance(bins, int):
+    if not isinstance(bins, int):
+        raise TypeError('bins must be an int >= 1')
+    if bins < 1:
+        raise ValueError('bins must be 1 or greater')
+    if isinstance(pda, pdarray):
         repMsg = generic_msg("histogram {} {}".format(pda.name, bins))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be pdarray {} and bins must be an int {}".\
-                        format(pda,bins))
+        raise TypeError("must be a pdarray, not a {}".\
+                                        format(pda.__class__.__name__))
 
 
 def value_counts(pda : pdarray) -> Tuple[pdarray,int]:
@@ -385,4 +399,5 @@ def value_counts(pda : pdarray) -> Tuple[pdarray,int]:
     if isinstance(pda, pdarray):
         return unique(pda, return_counts=True)
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        raise TypeError("must be a pdarray, not a {}".\
+                                        format(pda.__class__.__name__))

@@ -1,8 +1,7 @@
-import os
 from typing import Iterable, Union
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
-from arkouda.pdarraycreation import zeros, zeros_like, array
+from arkouda.pdarraycreation import zeros_like, array
 from arkouda.sorting import argsort
 from arkouda.strings import Strings
 from arkouda.logger import getArkoudaLogger
@@ -39,7 +38,9 @@ def unique(pda : pdarray, return_counts : bool=False) -> Union[pdarray,Strings]:
     Raises
     ------
     TypeError
-        Raised if pda is not a pdarray
+        Raised if pda is not a pdarray or Strings object
+    RuntimeError
+        Raised if the pdarray or Strings dtype is unsupported
 
     Notes
     -----

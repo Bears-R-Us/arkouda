@@ -111,7 +111,7 @@ def run_test_starts_with(strings, test_strings, delim):
     npfound = np.array([s.startswith(delim) for s in test_strings])
     assert((found == npfound).all())
 
-@pytest.mark.skip(reason="awaiting bug fix.")    
+@pytest.mark.skip(reason="awaiting bug fix.")
 def run_test_ends_with(strings, test_strings, delim):
     found = strings.endswith(delim).to_ndarray()
     npfound = np.array([s.endswith(delim) for s in test_strings])
@@ -323,6 +323,47 @@ class StringTest(ArkoudaTest):
 
     def test_ends_with(self):
         run_test_ends_with(self.strings, self.test_strings, self.delim)
+        
+    def test_error_handling(self):
+        stringsOne = ak.random_strings_uniform(1, 10, UNIQUE, 
+                                            characters='printable')
+        stringsTwo = ak.random_strings_uniform(1, 10, UNIQUE, 
+                                            characters='printable')
+
+        with self.assertRaises(TypeError) as cm:
+            stringsOne.lstick(stringsTwo, delimiter=1)
+        self.assertEqual('Delimiter must be a string, not int', 
+                         cm.exception.args[0])
+        
+        with self.assertRaises(TypeError) as cm:
+            stringsOne.lstick([1], 1)
+        self.assertEqual('stick: not supported between String and list', 
+                         cm.exception.args[0])  
+        
+        with self.assertRaises(TypeError) as cm:
+            stringsOne.startswith(1)
+        self.assertEqual('Substring must be a string, not int', 
+                         cm.exception.args[0])    
+        
+        with self.assertRaises(TypeError) as cm:
+            stringsOne.endswith(1)
+        self.assertEqual('Substring must be a string, not int', 
+                         cm.exception.args[0])   
+        
+        with self.assertRaises(TypeError) as cm:
+            stringsOne.contains(1)
+        self.assertEqual('Substring must be a string, not int', 
+                         cm.exception.args[0])  
+        
+        with self.assertRaises(TypeError) as cm:
+            stringsOne.peel(1)
+        self.assertEqual('Delimiter must be a string, not int', 
+                         cm.exception.args[0])  
+
+        with self.assertRaises(ValueError) as cm:
+            stringsOne.peel("",-5)
+        self.assertEqual('Times must be >= 1', 
+                         cm.exception.args[0])  
 
     @pytest.mark.skip(reason="awaiting bug fix.")
     def test_peel(self):

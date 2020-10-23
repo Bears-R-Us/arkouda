@@ -165,7 +165,7 @@ class Strings:
                                                               json.dumps([other]))
         else:
             raise ValueError("Strings: {} not supported between Strings and {}"\
-                             .format(op, type(other)))
+                             .format(op, other.__class__.__name__))
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
@@ -221,7 +221,7 @@ class Strings:
             offsets, values = repMsg.split('+')
             return Strings(offsets, values)
         else:
-            raise TypeError("unsupported pdarray index type {}".format(type(key)))
+            raise TypeError("unsupported pdarray index type {}".format(key.__class__.__name__))
 
     def get_lengths(self) -> pdarray:
         """
@@ -271,7 +271,7 @@ class Strings:
             substr = substr.decode()
         if not isinstance(substr, str):
             raise TypeError("Substring must be a string, not {}".\
-                            format(type(substr)))
+                            format(substr.__class__.__name__))
         msg = "segmentedEfunc {} {} {} {} {} {}".format("contains",
                                                         self.objtype,
                                                         self.offsets.name,
@@ -309,7 +309,8 @@ class Strings:
         if isinstance(substr, bytes):
             substr = substr.decode()
         if not isinstance(substr, str):
-            raise TypeError("Substring must be a string, not {}".format(type(substr)))
+            raise TypeError("Substring must be a string, not {}".\
+                            format(substr.__class__.__name__))
         msg = "segmentedEfunc {} {} {} {} {} {}".format("startswith",
                                                         self.objtype,
                                                         self.offsets.name,
@@ -348,7 +349,7 @@ class Strings:
             substr = substr.decode()
         if not isinstance(substr, str):
             raise TypeError("Substring must be a string, not {}".\
-                            format(type(substr)))
+                            format(substr.__class__.__name__))
         msg = "segmentedEfunc {} {} {} {} {} {}".format("endswith",
                                                         self.objtype,
                                                         self.offsets.name,
@@ -422,9 +423,11 @@ class Strings:
         if isinstance(delimiter, bytes):
             delimiter = delimiter.decode()
         if not isinstance(delimiter, str):
-            raise TypeError("Delimiter must be a string, not {}".format(type(delimiter)))
+            raise TypeError("Delimiter must be a string, not {}".\
+                            format(delimiter.__class__.__name__))
         if not np.isscalar(times) or resolve_scalar_dtype(times) != 'int64':
-            raise TypeError("Times must be integer, not {}".format(type(times)))
+            raise TypeError("Times must be integer, not {}".\
+                            format(times.__class__.__name__))
         if times < 1:
             raise ValueError("Times must be >= 1")
         msg = "segmentedPeel {} {} {} {} {} {} {} {} {} {}".format("peel",
@@ -543,21 +546,23 @@ class Strings:
         array(['a.b', 'c.d', 'e.f'])
         """
         if not isinstance(other, Strings):
-            raise TypeError("stick: not supported between Strings and {}".format(type(other)))
+            raise TypeError("stick: not supported between String and {}".\
+                             format(other.__class__.__name__))
         if isinstance(delimiter, bytes):
             delimiter = delimiter.decode()
         if not isinstance(delimiter, str):
-            raise TypeError("Delimiter must be a string, not {}".format(type(delimiter)))
+            raise TypeError("Delimiter must be a string, not {}".\
+                            format(delimiter.__class__.__name__))
         msg = "segmentedBinopvv {} {} {} {} {} {} {} {} {}".\
-                                    format("stick",
-                                    self.objtype,
-                                    self.offsets.name,
-                                    self.bytes.name,
-                                    other.objtype,
-                                    other.offsets.name,
-                                    other.bytes.name,
-                                    NUMBER_FORMAT_STRINGS['bool'].format(toLeft),
-                                    json.dumps([delimiter]))
+                            format("stick",
+                            self.objtype,
+                            self.offsets.name,
+                            self.bytes.name,
+                            other.objtype,
+                            other.offsets.name,
+                            other.bytes.name,
+                            NUMBER_FORMAT_STRINGS['bool'].format(toLeft),
+                            json.dumps([delimiter]))
         repMsg = generic_msg(msg)
         return Strings(*repMsg.split('+'))
 
@@ -585,8 +590,8 @@ class Strings:
         Raises
         ------
         TypeError
-            Raised if the delmiter parameter is neither bytes nor a str or if
-            the other parameter is not a Strings instance
+            Raised if the delimiter parameter is neither bytes nor a str
+            or if the other parameter is not a Strings instance
 
         RuntimeError
             Raised if there is a server-side error thrown

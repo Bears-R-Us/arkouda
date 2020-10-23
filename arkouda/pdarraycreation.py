@@ -1,6 +1,6 @@
 import numpy as np
 import struct
-from typing import Union
+from typing import Iterable, Union
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
@@ -14,7 +14,9 @@ __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", "arange",
 
 numericDTypes = frozenset(["bool", "int64", "float64"]) 
 
-def array(a : Union[pdarray,np.ndarray]) -> Union[pdarray, Strings]:
+RANDINT_TYPES = {'int64','float64'}
+
+def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     """
     Convert an iterable to a pdarray or Strings object, sending the corresponding
     data to the arkouda server. 
@@ -33,7 +35,8 @@ def array(a : Union[pdarray,np.ndarray]) -> Union[pdarray, Strings]:
     Raises
     ------
     TypeError
-        Raised if a is neither a pdarray nor a np.ndarray
+        Raised if a is not a pdarray, np.ndarray, or Python Iterable such as a
+        list, array, tuple, or deque
     RuntimeError
         If a is not one-dimensional, nbytes > maxTransferBytes, a.dtype is
         not supported (not in DTypes), or if the product of a size and
@@ -149,7 +152,8 @@ def zeros(size : int, dtype : type=np.float64) -> pdarray:
     array([False, False, False, False, False])
     """
     if not np.isscalar(size):
-        raise TypeError("size must be a scalar, not {}".format(type(size)))
+        raise TypeError("size must be a scalar, not {}".\
+                                     format(size.__class__.__name__))
     dtype = akdtype(dtype) # normalize dtype
     # check dtype for error
     if dtype.name not in numericDTypes:
@@ -194,7 +198,8 @@ def ones(size : int, dtype : type=float64) -> pdarray:
     array([True, True, True, True, True])
     """
     if not np.isscalar(size):
-        raise TypeError("size must be a scalar, not {}".format(type(size)))
+        raise TypeError("size must be a scalar, not {}".\
+                                            format(size.__class__.__name__))
     dtype = akdtype(dtype) # normalize dtype
     # check dtype for error
     if dtype.name not in numericDTypes:
@@ -381,27 +386,45 @@ def linspace(start : int, stop : int, length : int) -> pdarray:
     """
     if not all((np.isscalar(start), np.isscalar(stop), np.isscalar(length))):
         raise TypeError("all arguments must be scalars")
+
     starttype = resolve_scalar_dtype(start)
-    startstr = NUMBER_FORMAT_STRINGS[starttype].format(start)
+
+    try: 
+        startstr = NUMBER_FORMAT_STRINGS[starttype].format(start)
+    except KeyError as ke:
+        raise TypeError(('The start parameter must be an int or a scalar that'  +
+                        ' can be parsed to an int, but is a {}'.format(ke)))
     stoptype = resolve_scalar_dtype(stop)
-    stopstr = NUMBER_FORMAT_STRINGS[stoptype].format(stop)
+
+    try: 
+        stopstr = NUMBER_FORMAT_STRINGS[stoptype].format(stop)
+    except KeyError as ke:
+        raise TypeError(('The stop parameter must be an int or a scalar that'  +
+                        ' can be parsed to an int, but is a {}'.format(ke)))
+
     lentype = resolve_scalar_dtype(length)
     if lentype != 'int64':
-        raise TypeError("Length must be int64")
-    lenstr = NUMBER_FORMAT_STRINGS[lentype].format(length)
+        raise TypeError("The length parameter must be an int64")
+
+    try: 
+        lenstr = NUMBER_FORMAT_STRINGS[lentype].format(length)
+    except KeyError as ke:
+        raise TypeError(('The length parameter must be an int or a scalar that'  +
+                        ' can be parsed to an int, but is a {}'.format(ke)))
+
     repMsg = generic_msg("linspace {} {} {}".format(startstr, stopstr, lenstr))
     return create_pdarray(repMsg)
 
 
-def randint(low : int, high : int, size : int, dtype=int64) -> pdarray:
+def randint(low : Union[int,float], high : Union[int,float], size : int, dtype=int64) -> pdarray:
     """
     Generate a pdarray with random values in a specified range.
 
     Parameters
     ----------
-    low : int
+    low : Union[int,float]
         The low value (inclusive) of the range
-    high : int
+    high : Union[int,float]
         The high value (exclusive for int, inclusive for float) of the range
     size : int
         The length of the returned array
@@ -440,9 +463,13 @@ def randint(low : int, high : int, size : int, dtype=int64) -> pdarray:
     if not all((np.isscalar(low), np.isscalar(high), np.isscalar(size))):
         raise TypeError("all arguments must be scalars")
     if resolve_scalar_dtype(size) != 'int64':
-        raise TypeError("size must be integer")
+        raise TypeError("The size parameter must be an integer")
+    if resolve_scalar_dtype(low) not in RANDINT_TYPES:
+        raise TypeError("The low parameter must be an integer or float")
+    if resolve_scalar_dtype(high) not in RANDINT_TYPES:
+        raise TypeError("The high parameter must be an integer or float")
     if size < 0 or high < low:
-        raise ValueError("Incompatible arguments: size < 0 or high < low")
+        raise ValueError("size must be > 0 and high > low")
     dtype = akdtype(dtype) # normalize dtype
     # check dtype for error
     if dtype.name not in DTypes:
@@ -474,11 +501,21 @@ def uniform(size : int, low : float=0.0, high : float=1.0) -> pdarray:
     pdarray, float64
         Values drawn uniformly from the specified range
 
+    Raises
+    ------
+    TypeError
+        Raised if dtype.name not in DTypes, size is not an int, or if
+        either low or high is not an int or float
+    ValueError
+        Raised if size < 0 or if high < low
+
     Examples
     --------
     >>> ak.uniform(3)
     array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])
     """
+    if not isinstance(low, float) or not isinstance(high, float):
+        raise TypeError('Both the low and high parameters must be ints or floats')
     return randint(low=low, high=high, size=size, dtype='float64')
     
 
@@ -498,6 +535,8 @@ def standard_normal(size : int) -> pdarray:
         
     Raises
     ------
+    TypeError
+        Raised if size is not an int
     ValueError
         Raised if size < 0
 
@@ -511,8 +550,10 @@ def standard_normal(size : int) -> pdarray:
 
     ``(sigma * standard_normal(size)) + mu``
     """
+    if not isinstance(size, int):
+        raise TypeError('The size parameter must be an integer')
     if size < 0:
-        raise ValueError("Invalid size: {}".format(size))
+        raise ValueError("The size parameter must be > 0")
     msg = "randomNormal {}".format(NUMBER_FORMAT_STRINGS['int64'].format(size))
     repMsg = generic_msg(msg)
     return create_pdarray(repMsg)
@@ -549,6 +590,9 @@ def random_strings_uniform(minlen : int, maxlen : int, size : int,
     --------
     random_strings_lognormal, randint
     """
+    if not isinstance(minlen, int) or not isinstance(maxlen, int) \
+                                                  or not isinstance(size, int):
+        raise TypeError('minlen, maxlen, and size all must be integers')
     if minlen < 0 or maxlen < minlen or size < 0:
         raise ValueError(("Incompatible arguments: minlen < 0, maxlen < minlen, " +
                           "or size < 0"))
@@ -561,7 +605,7 @@ def random_strings_uniform(minlen : int, maxlen : int, size : int,
     return Strings(*(repMsg.split('+')))
 
 
-def random_strings_lognormal(logmean : float, logstd : float, 
+def random_strings_lognormal(logmean : Union[float, int], logstd : float, 
                              size : int, characters : str='uppercase') -> Strings:
     """
     Generate random strings with log-normally distributed lengths and 
@@ -569,7 +613,7 @@ def random_strings_lognormal(logmean : float, logstd : float,
 
     Parameters
     ----------
-    logmean : float
+    logmean : Union[float, int]
         The log-mean of the length distribution
     logstd : float
         The log-standard-deviation of the length distribution
@@ -585,6 +629,9 @@ def random_strings_lognormal(logmean : float, logstd : float,
     
     Raises
     ------
+    TypeError
+        Raised if logmean is not a float or int, logstd is not a float, 
+        size is not an int, or if characters is not a str
     ValueError
         Raised if logstd <= 0 or size < 0
 
@@ -599,6 +646,14 @@ def random_strings_lognormal(logmean : float, logstd : float,
     have an average length of :math:`exp(\mu + 0.5*\sigma^2)`, a minimum length of 
     zero, and a heavy tail towards longer strings.
     """
+    if not isinstance(logmean, float) and not isinstance(logmean, int):
+        raise TypeError("The logmean must be a float or int")
+    if not isinstance(logstd, float):
+        raise TypeError("The logstd must be a float")
+    if not isinstance(size, int):
+        raise TypeError("The size must be an integer")
+    if not isinstance(characters, str):
+        raise TypeError("characters must be a str")
     if logstd <= 0 or size < 0:
         raise ValueError("Incompatible arguments: logstd <= 0 or size < 0")
     msg = "randomStrings {} {} {} {} {}".\
