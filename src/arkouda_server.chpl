@@ -173,6 +173,19 @@ proc main() {
                 authenticateUser(token);
             }
 
+            if (logging) {
+              try {
+                if (cmd != "array") {
+                  writeln(">>> %s %s".format(cmd, payload.decode(decodePolicy.replace)));
+                } else {
+                  writeln(">>> %s [binary data]".format(cmd));
+                }
+                stdout.flush();
+              } catch {
+                // No action on error
+              }
+            }
+
             // If cmd is shutdown, don't bother generating a repMsg
             if cmd == "shutdown" {
                 shutdown();
