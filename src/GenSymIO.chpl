@@ -15,6 +15,7 @@ module GenSymIO {
     use PrivateDist;
     use Reflection;
     use Errors;
+    use ServerConfig;
 
     config const GenSymIO_DEBUG = false;
     config const SEGARRAY_OFFSET_NAME = "segments";
@@ -27,12 +28,13 @@ module GenSymIO {
      * Creates a pdarray server-side and returns the SymTab name used to
      * retrieve the pdarray from the SymTab.
      */
-    proc arrayMsg(cmd: string, payload: bytes, st: borrowed SymTab): string {
+    proc arrayMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string;
         var (dtypeBytes, sizeBytes, data) = payload.splitMsgToTuple(b" ", 3);
         var dtype = str2dtype(try! dtypeBytes.decode());
         var size = try! sizeBytes:int;
         var tmpf:file;
+        overMemLimit(2*8*size);
 
         // Write the data payload composing the pdarray to a memory buffer
         try {
@@ -99,6 +101,7 @@ module GenSymIO {
         var arrayBytes: bytes;
         var entryStr = payload.decode();
         var entry = st.lookup(entryStr);
+        overMemLimit(2*entry.size*entry.itemsize);
         var tmpf: file;
         try {
             tmpf = openmem();
