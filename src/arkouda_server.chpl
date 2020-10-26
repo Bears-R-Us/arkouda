@@ -251,7 +251,6 @@ proc main() {
                 when "argsort"           {repMsg = argsortMsg(cmd, payload, st);}
                 when "coargsort"         {repMsg = coargsortMsg(cmd, payload, st);}
                 when "concatenate"       {repMsg = concatenateMsg(cmd, payload, st);}
-                when "localArgsort"      {repMsg = localArgsortMsg(cmd, payload, st);}
                 when "sort"              {repMsg = sortMsg(cmd, payload, st);}
                 when "joinEqWithDT"      {repMsg = joinEqWithDTMsg(cmd, payload, st);}
                 when "getconfig"         {repMsg = getconfigMsg(cmd, payload, st);}
