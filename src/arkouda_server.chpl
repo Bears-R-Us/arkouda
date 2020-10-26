@@ -225,11 +225,8 @@ proc main() {
                 when "efunc3ss"          {repMsg = efunc3ssMsg(cmd, payload, st);}
                 when "reduction"         {repMsg = reductionMsg(cmd, payload, st);}
                 when "countReduction"    {repMsg = countReductionMsg(cmd, payload, st);}
-                when "countLocalRdx"     {repMsg = countLocalRdxMsg(cmd, payload, st);}
                 when "findSegments"      {repMsg = findSegmentsMsg(cmd, payload, st);}
-                when "findLocalSegments" {repMsg = findLocalSegmentsMsg(cmd, payload, st);}
                 when "segmentedReduction"{repMsg = segmentedReductionMsg(cmd, payload, st);}
-                when "segmentedLocalRdx" {repMsg = segmentedLocalRdxMsg(cmd, payload, st);}
                 when "arange"            {repMsg = arangeMsg(cmd, payload, st);}
                 when "linspace"          {repMsg = linspaceMsg(cmd, payload, st);}
                 when "randint"           {repMsg = randintMsg(cmd, payload, st);}

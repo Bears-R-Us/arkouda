@@ -18,7 +18,6 @@ module ArgSortMsg
     use CommAggregation;
 
     use AryUtil;
-    use PerLocaleHelper;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -697,111 +696,5 @@ module ArgSortMsg
         }
             
         return try! "created " + st.attrib(ivname);
-    }
-
-    /* localArgsort takes a pdarray and returns an index vector which sorts the array on a per-locale basis */
-    proc localArgsortMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
-        param pn = Reflection.getRoutineName();
-        var repMsg: string; // response message
-        // split request into fields
-        var (name) = payload.decode().splitMsgToTuple(1);
-
-        // get next symbol name
-        var ivname = st.nextName();
-        if v {writeln("%s %s : %s %s".format(cmd, name, ivname));try! stdout.flush();}
-
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
-
-        select (gEnt.dtype) {
-            when (DType.Int64) {
-                var e = toSymEntry(gEnt,int);
-                var iv = perLocaleArgSort(e.a);
-                st.addEntry(ivname, new shared SymEntry(iv));
-            }
-            otherwise {
-                var errorMsg = notImplementedError(pn,gEnt.dtype);
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                    
-                return errorMsg;                 
-            }
-        }
-        return try! "created " + st.attrib(ivname);
-    }
-    
-    proc perLocaleArgSort(a:[?aD] int):[aD] int {
-      var iv: [aD] int;
-      coforall loc in Locales {
-          on loc {
-              var toSort = [(v, i) in zip(a.localSlice[a.localSubdomain()], a.localSubdomain())] (v, i);
-              Sort.sort(toSort);
-              iv.localSlice[iv.localSubdomain()] = [(v, i) in toSort] i;
-          }
-      }
-      return iv;
-    }
-
-    proc perLocaleArgCountSort(a:[?aD] int):[aD] int {
-      var iv: [aD] int;
-      coforall loc in Locales {
-        on loc {
-          //ref myIV = iv[iv.localSubdomain()];
-          var myIV: [0..#iv.localSubdomain().size] int;
-          ref myA = a.localSlice[a.localSubdomain()];
-          // Calculate number of histogram bins
-          var locMin = min reduce myA;
-          var locMax = max reduce myA;
-          var bins = locMax - locMin + 1;
-          if (bins <= mBins) {
-            if (v && here.id==0) {try! writeln("bins %i <= %i; using localHistArgSort".format(bins, mBins));}
-            localHistArgSort(myIV, myA, locMin, bins);
-          } else {
-            if (v && here.id==0) {try! writeln("bins %i > %i; using localAssocArgSort".format(bins, mBins));}
-            localAssocArgSort(myIV, myA);
-          }
-          iv.localSlice[iv.localSubdomain()] = myIV;
-        }
-      }
-      return iv;
-    }
-
-    proc localAssocArgSort(iv:[] int, a:[?D] int) {
-      use Sort only;
-      // a is sparse, so use an associative domain
-      var binDom: domain(int);
-      // Make counts for each value in a
-      var hist: [binDom] atomic int;
-      forall val in a with (ref hist, ref binDom) {
-        if !binDom.contains(val) {
-          binDom += val;
-        }
-        hist[val].add(1);
-      }
-      // Need the bins in sorted order as a dense array
-      var sortedBins: [0..#binDom.size] int;
-      for (s, b) in zip(sortedBins, binDom) {
-        s = b;
-      }
-      Sort.sort(sortedBins);
-      // Make an associative array that translates from value to dense, sorted bin index
-      var val2bin: [binDom] int;
-      forall (i, v) in zip(sortedBins.domain, sortedBins) {
-        val2bin[v] = i;
-      }
-      // Get segment offsets in correct order
-      var counts = [b in sortedBins] hist[b].read();
-      var offsets = (+ scan counts) - counts;
-      // Now insert the a_index into iv
-      var binpos: [sortedBins.domain] atomic int;
-      forall (aidx, val) in zip(D, a) with (ref binpos, ref iv) {
-        // Use val's bin to determine where in iv to put a_index
-        var bin = val2bin[val];
-        // ividx is the offset of val's bin plus a running counter
-        var ividx = offsets[bin] + binpos[bin].fetchAdd(1);
-        iv[ividx] = aidx;
-      }
     }
 }
