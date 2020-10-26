@@ -5,11 +5,13 @@ from arkouda.dtypes import *
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraysetops import unique
 from arkouda.decorators import checkforpdarray
+from typeguard import typechecked
+import typeguard
 
 __all__ = ["abs", "log", "exp", "cumsum", "cumprod", "sin", "cos", 
            "where", "histogram", "value_counts"]    
 
-@checkforpdarray
+@typechecked
 def abs(pda : pdarray) -> pdarray:
     """
     Return the element-wise absolute value of the array.
@@ -31,7 +33,7 @@ def abs(pda : pdarray) -> pdarray:
     repMsg = generic_msg("efunc {} {}".format("abs", pda.name))
     return create_pdarray(repMsg)
 
-@checkforpdarray
+@typechecked
 def log(pda : pdarray) -> pdarray:
     """
     Return the element-wise natural log of the array. 
@@ -69,7 +71,7 @@ def log(pda : pdarray) -> pdarray:
     repMsg = generic_msg("efunc {} {}".format("log", pda.name))
     return create_pdarray(repMsg)
 
-@checkforpdarray
+@typechecked
 def exp(pda : pdarray) -> pdarray:
     """
     Return the element-wise exponential of the array.
@@ -92,7 +94,7 @@ def exp(pda : pdarray) -> pdarray:
     repMsg = generic_msg("efunc {} {}".format("exp", pda.name))
     return create_pdarray(repMsg)
 
-@checkforpdarray
+@typechecked
 def cumsum(pda : pdarray) -> pdarray:
     """
     Return the cumulative sum over the array. 
@@ -118,7 +120,7 @@ def cumsum(pda : pdarray) -> pdarray:
     repMsg = generic_msg("efunc {} {}".format("cumsum", pda.name))
     return create_pdarray(repMsg)
 
-@checkforpdarray
+@typechecked
 def cumprod(pda : pdarray) -> pdarray:
     """
     Return the cumulative product over the array. 
@@ -144,7 +146,7 @@ def cumprod(pda : pdarray) -> pdarray:
     repMsg = generic_msg("efunc {} {}".format("cumprod", pda.name))
     return create_pdarray(repMsg)
 
-@checkforpdarray
+@typechecked
 def sin(pda : pdarray) -> pdarray:
     """
     Return the element-wise sine of the array.
@@ -167,7 +169,7 @@ def sin(pda : pdarray) -> pdarray:
     repMsg = generic_msg("efunc {} {}".format("sin",pda.name))
     return create_pdarray(repMsg)
 
-@checkforpdarray
+@typechecked
 def cos(pda : pdarray) -> pdarray:
     """
     Return the element-wise cosine of the array.
@@ -190,6 +192,7 @@ def cos(pda : pdarray) -> pdarray:
     repMsg = generic_msg("efunc {} {}".format("cos",pda.name))
     return create_pdarray(repMsg)
 
+@typechecked
 def where(condition : pdarray, A : Union[Union[int,float], pdarray], 
                         B : Union[Union[int,float], pdarray]) -> pdarray:
     """
@@ -220,9 +223,6 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
     -----
     A and B must have the same dtype.
     """
-    if not isinstance(condition, pdarray):
-        raise TypeError("condition must be a pdarray, not a {}".
-                                    format(condition.__class__.__name__))
     if isinstance(A, pdarray) and isinstance(B, pdarray):
         repMsg = generic_msg("efunc3vv {} {} {} {}".\
                              format("where",
@@ -275,6 +275,7 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
                                     B))
     return create_pdarray(repMsg)
 
+@typechecked
 def histogram(pda : pdarray, bins : int=10) -> pdarray:
     """
     Compute a histogram of evenly spaced bins over the range of an array.
@@ -326,16 +327,10 @@ def histogram(pda : pdarray, bins : int=10) -> pdarray:
     # To plot, use only the left edges, and export the histogram to NumPy
     >>> plt.plot(binEdges[:-1], h.to_ndarray())
     """
-    if not isinstance(bins, int):
-        raise TypeError('bins must be an int >= 1')
     if bins < 1:
         raise ValueError('bins must be 1 or greater')
-    if isinstance(pda, pdarray):
-        repMsg = generic_msg("histogram {} {}".format(pda.name, bins))
-        return create_pdarray(repMsg)
-    else:
-        raise TypeError("must be a pdarray, not a {}".\
-                                        format(pda.__class__.__name__))
+    repMsg = generic_msg("histogram {} {}".format(pda.name, bins))
+    return create_pdarray(repMsg)
 
 
 @checkforpdarray
