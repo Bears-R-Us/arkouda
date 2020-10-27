@@ -41,7 +41,7 @@ def run_test_unique(strings, test_strings, cat):
     assert(akset == npset)
     return akset
 
-@pytest.mark.skip(reason="awaiting bug fix.") 
+@pytest.mark.skip(reason="awaiting bug fix.")
 def run_test_index(strings, test_strings, cat):
     # int index
     assert(strings[N//3] == test_strings[N//3])
@@ -321,7 +321,7 @@ class StringTest(ArkoudaTest):
         run_test_starts_with(self.strings, self.test_strings, self.delim)
 
     @pytest.mark.skip(reason="awaiting bug fix.")
-    test_ends_with(self):
+    def test_ends_with(self):
         run_test_ends_with(self.strings, self.test_strings, self.delim)
         
     def test_error_handling(self):
