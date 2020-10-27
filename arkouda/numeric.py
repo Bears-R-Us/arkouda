@@ -4,9 +4,52 @@ from arkouda.client import generic_msg
 from arkouda.dtypes import *
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraysetops import unique
+from arkouda.strings import Strings
 
-__all__ = ["abs", "log", "exp", "cumsum", "cumprod", "sin", "cos", 
+__all__ = ["cast", "abs", "log", "exp", "cumsum", "cumprod", "sin", "cos", 
            "where", "histogram", "value_counts"]    
+
+def cast(pda : Union[pdarray, Strings], dt: dtype) -> Union[pdarray, Strings]:
+    """
+    Cast an array to another dtype.
+
+    Parameters
+    ----------
+    pda : pdarray or Strings
+        The array of values to cast
+    dtype : np.dtype or str
+        The target dtype to cast values to
+
+    Returns
+    -------
+    pdarray or Strings
+        Array of values cast to desired dtype
+
+    Notes
+    -----
+    The cast is performed according to Chapel's casting rules and is NOT safe 
+    from overflows or underflows. The user must ensure that the target dtype 
+    has the precision and capacity to hold the desired result.
+    """
+
+    if isinstance(pda, pdarray):
+        name = pda.name
+        objtype = "pdarray"
+    elif isinstance(pda, Strings):
+        name = '+'.join((pda.offsets.name, pda.bytes.name))
+        objtype = "str"
+    else:
+        raise TypeError("Input must be pdarray or Strings")
+
+    check_np_dtype(dt)
+    dtname = translate_np_dtype(dt)
+    opt = ""
+    msg = "cast {} {} {} {}".format(name, objtype, dtname, opt)
+    repMsg = generic_msg(msg)
+    if dtname.startswith("str"):
+        return Strings(*(repMsg.split("+")))
+    else:
+        return pdarray(repMsg)
 
 def abs(pda : pdarray) -> pdarray:
     """
