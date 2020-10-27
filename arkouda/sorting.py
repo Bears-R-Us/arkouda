@@ -5,7 +5,7 @@ from arkouda.pdarraycreation import zeros
 from arkouda.strings import Strings
 from arkouda.dtypes import *
 
-__all__ = ["argsort", "coargsort", "local_argsort", "sort"]
+__all__ = ["argsort", "coargsort", "sort"]
 
 def argsort(pda : Union[pdarray,Strings]) -> pdarray:
     """
@@ -127,40 +127,6 @@ def coargsort(arrays : Iterable[Union[Strings,pdarray]]) -> pdarray:
                                     ' '.join(atypes))
     repMsg = generic_msg(reqMsg)
     return create_pdarray(repMsg)
-
-def local_argsort(pda : pdarray) -> pdarray:
-    """
-    local_argsort takes a pdarray and returns an index vector which sorts 
-    the array on a per-locale basis.
-    
-    Parameters
-    ----------
-    pda : pdarray or Categorical
-        The array to sort (int64 or float64)
-
-    Returns
-    -------
-    pdarray, int64 or float64
-        The sorted copy of pda
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-    RuntimeError
-        Raised if sort attempted on a pdarray with an unsupported dtype
-
-    See Also
-    --------
-    argsort
-    """
-    if isinstance(pda, pdarray):
-        if pda.size == 0:
-            return zeros(0, dtype=int64)
-        repMsg = generic_msg("localArgsort {}".format(pda.name))
-        return create_pdarray(repMsg)
-    else:
-        raise TypeError("must be pdarray {}".format(pda))
 
 def sort(pda : pdarray) -> pdarray:
     """
