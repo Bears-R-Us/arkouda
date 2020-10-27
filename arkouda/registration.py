@@ -1,4 +1,4 @@
-from typing import Union
+from typing import  cast, Union
 from arkouda.client import generic_msg, verbose
 from arkouda.pdarrayclass import pdarray, create_pdarray
 
@@ -56,11 +56,11 @@ def register_pda(pda : pdarray, user_defined_name : str) -> pdarray:
     if isinstance(pda, pdarray):
         repMsg = generic_msg("register {} {}".\
                              format(pda.name, user_defined_name))
-        ret = create_pdarray(repMsg)
+        ret = create_pdarray(cast(str,repMsg))
     elif isinstance(pda, str):
         repMsg = generic_msg("register {} {}".\
                              format(pda, user_defined_name))        
-        ret = create_pdarray(repMsg)
+        ret = create_pdarray(cast(str,repMsg))
     else:
         raise TypeError("pda must be pdarray or str")
     
@@ -109,7 +109,7 @@ def attach_pda(user_defined_name : str) -> pdarray:
         raise TypeError("user_defined_name must be a str")
 
     repMsg = generic_msg("attach {}".format(user_defined_name))
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))
 
 
 def unregister_pda(pda : Union[str,pdarray]) -> None:

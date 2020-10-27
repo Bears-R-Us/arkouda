@@ -1,5 +1,5 @@
 import json, os
-from typing import List, Mapping, Optional, Union
+from typing import cast, Dict, List, Mapping, Optional, Union
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.strings import Strings
@@ -22,10 +22,9 @@ def ls_hdf(filename : str) -> str:
     str
         The string output of `h5ls <filename>` from the server
     """
-    return generic_msg("lshdf {}".format(json.dumps([filename])))
+    return cast(str,generic_msg("lshdf {}".format(json.dumps([filename]))))
 
-def read_hdf(dsetName : str, filenames : Union[str,List[str]]) \
-          -> Union[pdarray, Strings]:
+def read_hdf(dsetName : str, filenames : Union[str,List[str]]) -> Union[pdarray, Strings]:
     """
     Read a single dataset from multiple HDF5 files into an Arkouda
     pdarray or Strings object.
@@ -141,20 +140,20 @@ def read_all(filenames : Union[str,List[str]], datasets :
                 format(len(datasets), len(filenames), json.dumps(datasets), 
                        json.dumps(filenames)))
         if ',' in rep_msg:
-            rep_msgs = rep_msg.split(' , ')
-            d = dict()
+            rep_msgs = cast(str,rep_msg).split(' , ')
+            d : Dict[str,Union[pdarray,Strings]] = dict()
             for dset, rm in zip(datasets, rep_msgs):
-                    if('+' in rm): #String
-                        d[dset]=Strings(*rm.split('+'))
-                    else:
-                        d[dset]=create_pdarray(rm)
+                if('+' in cast(str,rm)): #String
+                    d[dset]=Strings(*cast(str,rm).split('+'))
+                else:
+                    d[dset]=create_pdarray(cast(str,rm))
             return d
         elif '+' in rep_msg:
-            return Strings(*rep_msg.split('+'))
+            return Strings(*cast(str,rep_msg).split('+'))
         else:
-            return create_pdarray(rep_msg)
+            return create_pdarray(cast(str,rep_msg))
 
-def load(path_prefix : str, dataset : str='array') -> pdarray:
+def load(path_prefix : str, dataset : str='array') -> Union[pdarray, Strings]:
     """
     Load a pdarray previously saved with ``pdarray.save()``.
 
@@ -167,8 +166,8 @@ def load(path_prefix : str, dataset : str='array') -> pdarray:
 
     Returns
     -------
-    pdarray
-        The pdarray that was previously saved
+    Union[pdarray, Strings]
+        The pdarray or Strings that was previously saved
 
     Raises
     ------
@@ -207,7 +206,7 @@ def get_datasets(filename : str) -> List[str]:
     datasets = [line.split()[0] for line in rep_msg.splitlines()]
     return datasets
 
-def load_all(path_prefix : str) -> Mapping[str,pdarray]:
+def load_all(path_prefix : str) -> Mapping[str,Union[pdarray,Strings]]:
     """
     Load multiple pdarray previously saved with ``save_all()``.
 
@@ -290,7 +289,7 @@ def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : 
     if (mode.lower() not in 'append') and (mode.lower() not in 'truncate'):
         raise ValueError("Allowed modes are 'truncate' and 'append'")
     first_iter = True
-    for arr, name in zip(pdarrays, names):
+    for arr, name in zip(pdarrays, cast(List[str],names)):
         # Append all pdarrays to existing files as new datasets EXCEPT the first one, and only if user requests truncation
         if mode.lower() not in 'append' and first_iter:
             arr.save(prefix_path=prefix_path, dataset=name, mode='truncate')

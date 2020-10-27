@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import cast, Tuple
 from arkouda.client import generic_msg
 from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
@@ -101,14 +101,14 @@ def join_on_eq_with_dt(a1 : pdarray, a2 : pdarray, t1 : pdarray,
     # pass result into server joinEqWithDT operation
     repMsg = generic_msg("joinEqWithDT {} {} {} {} {} {} {} {} {}".\
                          format(a1.name,
-                                g2.segments.name,
-                                g2.unique_keys.name,
+                                cast(pdarray, g2.segments).name,
+                                cast(pdarray, g2.unique_keys).name,
                                 g2.permutation.name,
                                 t1.name,
                                 t2.name,
                                 dtstr, predstr, result_limitstr))
     # create pdarrays for results
-    resIAttr, resJAttr = repMsg.split("+")
+    resIAttr, resJAttr = cast(str,repMsg).split("+")
     resI = create_pdarray(resIAttr)
     resJ = create_pdarray(resJAttr)
     return (resI, resJ)

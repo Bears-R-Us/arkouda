@@ -1,6 +1,6 @@
-import numpy as np
+import numpy as np # type: ignore
 import struct
-from typing import Iterable, Union
+from typing import cast, Iterable, Union
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
@@ -113,8 +113,8 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     fmt = ">{:n}{}".format(size, structDtypeCodes[a.dtype.name])
     req_msg = "array {} {:n} ".\
                        format(a.dtype.name, size).encode() + struct.pack(fmt, *a)
-    rep_msg = generic_msg(req_msg, send_bytes=True)
-    return create_pdarray(rep_msg)
+    repMsg = generic_msg(req_msg, send_bytes=True)
+    return create_pdarray(cast(str,repMsg))
 
 def zeros(size : int, dtype : type=np.float64) -> pdarray:
     """
@@ -156,11 +156,11 @@ def zeros(size : int, dtype : type=np.float64) -> pdarray:
                                      format(size.__class__.__name__))
     dtype = akdtype(dtype) # normalize dtype
     # check dtype for error
-    if dtype.name not in numericDTypes:
+    if cast(np.dtype,dtype).name not in numericDTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
     kind, itemsize = translate_np_dtype(dtype)
-    repMsg = generic_msg("create {} {}".format(dtype.name, size))
-    return create_pdarray(repMsg)
+    repMsg = generic_msg("create {} {}".format(cast(np.dtype,dtype).name, size))
+    return create_pdarray(cast(str, repMsg))
 
 def ones(size : int, dtype : type=float64) -> pdarray:
     """
@@ -202,11 +202,11 @@ def ones(size : int, dtype : type=float64) -> pdarray:
                                             format(size.__class__.__name__))
     dtype = akdtype(dtype) # normalize dtype
     # check dtype for error
-    if dtype.name not in numericDTypes:
+    if cast(np.dtype,dtype).name not in numericDTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
     kind, itemsize = translate_np_dtype(dtype)
-    repMsg = generic_msg("create {} {}".format(dtype.name, size))
-    a = create_pdarray(repMsg)
+    repMsg = generic_msg("create {} {}".format(cast(np.dtype,dtype).name, size))
+    a = create_pdarray(cast(str,repMsg))
     a.fill(1)
     return a
 
@@ -347,7 +347,7 @@ def arange(*args) -> pdarray:
         if stride < 0:
             stop = stop + 2
         repMsg = generic_msg("arange {} {} {}".format(start, stop, stride))
-        return create_pdarray(repMsg)
+        return create_pdarray(cast(str,repMsg))
     else:
         raise TypeError("start,stop,stride must be type int {} {} {}".\
                                     format(start,stop,stride))
@@ -413,7 +413,7 @@ def linspace(start : int, stop : int, length : int) -> pdarray:
                         ' can be parsed to an int, but is a {}'.format(ke)))
 
     repMsg = generic_msg("linspace {} {} {}".format(startstr, stopstr, lenstr))
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))
 
 
 def randint(low : Union[int,float], high : Union[int,float], size : int, dtype=int64) -> pdarray:
@@ -479,7 +479,7 @@ def randint(low : Union[int,float], high : Union[int,float], size : int, dtype=i
     sizestr = NUMBER_FORMAT_STRINGS['int64'].format(size)
     repMsg = generic_msg("randint {} {} {} {}".\
                          format(sizestr, dtype.name, lowstr, highstr))
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))
 
 
 def uniform(size : int, low : float=0.0, high : float=1.0) -> pdarray:
@@ -556,7 +556,7 @@ def standard_normal(size : int) -> pdarray:
         raise ValueError("The size parameter must be > 0")
     msg = "randomNormal {}".format(NUMBER_FORMAT_STRINGS['int64'].format(size))
     repMsg = generic_msg(msg)
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))
 
 
 def random_strings_uniform(minlen : int, maxlen : int, size : int, 
@@ -602,7 +602,7 @@ def random_strings_uniform(minlen : int, maxlen : int, size : int,
                             NUMBER_FORMAT_STRINGS['int64'].format(minlen),
                             NUMBER_FORMAT_STRINGS['int64'].format(maxlen))
     repMsg = generic_msg(msg)
-    return Strings(*(repMsg.split('+')))
+    return Strings(*(cast(str,repMsg).split('+')))
 
 
 def random_strings_lognormal(logmean : Union[float, int], logstd : float, 
@@ -662,4 +662,4 @@ def random_strings_lognormal(logmean : Union[float, int], logstd : float,
                              NUMBER_FORMAT_STRINGS['float64'].format(logmean),
                              NUMBER_FORMAT_STRINGS['float64'].format(logstd))
     repMsg = generic_msg(msg)
-    return Strings(*(repMsg.split('+')))
+    return Strings(*(cast(str,repMsg).split('+')))

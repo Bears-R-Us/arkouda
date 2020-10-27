@@ -1,6 +1,7 @@
-import zmq, json, os
-from typing import Mapping, Optional, Tuple, Union
+import json, os
+from typing import cast, Mapping, Optional, Tuple, Union
 import warnings, pkg_resources
+import zmq # type: ignore
 from arkouda import security, io_util
 from arkouda.logger import getArkoudaLogger
 
@@ -21,13 +22,13 @@ else:
     __version__ = pkg_resources.require(__package__)[0].version
 
 # stuff for zmq connection
-pspStr = None
+pspStr = ''
 context = zmq.Context()
-socket = None
+socket = context.socket(zmq.REQ)
 connected = False
 # username and token for when basic authentication is enabled
-username = None
-token = None
+username = ''
+token = ''
 # verbose flag for arkouda module
 verboseDefVal = False
 verbose = verboseDefVal
@@ -140,8 +141,8 @@ def connect(server : str="localhost", port : int=5555, timeout : int=0,
 
     # send connect request to server and get the response confirming if
     # the connect request succeeded and, if not not, the error message
-    message = _send_string_message(message)
-    logger.debug("[Python] Received response: {}".format(message))
+    return_message = _send_string_message(message)
+    logger.debug("[Python] Received response: {}".format(str(return_message)))
     connected = True
 
     conf = get_config()
@@ -196,17 +197,14 @@ def _parse_url(url : str) -> Tuple[str,int,Optional[str]]:
    
         if '?token=' in port_stub:
             port_token_stub = port_stub.split('?token=')
-            port = int(port_token_stub[0])
-            param_token = port_token_stub[1]
+            return (host, int(port_token_stub[0]), port_token_stub[1])
         else:
-            port = int(port_stub)
-            param_token = None
-        return (host, port, param_token)
+            return (host, int(port_stub), None)
     except Exception as e:
         raise ValueError(e)
 
 def _set_access_token(access_token : Optional[str], 
-                                connect_string : Optional[str]) -> Optional[str]:
+                                connect_string : str='localhost:5555') -> Optional[str]:
     """
     Sets the access_token for the connect request by doing the following:
 
@@ -221,12 +219,11 @@ def _set_access_token(access_token : Optional[str],
     ----------
     username : str
         The username retrieved from the user's home directory    
-    access_token : str, optional
+    access_token : str
         The access_token supplied by the user, which is required if authentication
         is enabled, defaults to None
-    connect_string : str, optional
-        The arkouda_server host:port connect string, defaults to None. If None, then
-        the connect_string is localhost:5555
+    connect_string : str
+        The arkouda_server host:port connect string, defaults to localhost:5555
     
     Returns
     -------
@@ -245,10 +242,10 @@ def _set_access_token(access_token : Optional[str],
     except Exception as e:
         raise IOError(e)
 
-    if access_token and access_token not in {'','None'}:
+    if cast(str,access_token) and cast(str,access_token) not in {'','None'}:
         saved_token = tokens.get(connect_string)
         if saved_token is None or saved_token != access_token:
-            tokens[connect_string] = access_token
+            tokens[connect_string] = cast(str,access_token)
             try:
                 io_util.dict_to_delimited_file(values=tokens, path=path, 
                                                delimiter=',')
@@ -370,13 +367,14 @@ def _send_binary_message(message : bytes,
     socket.send('{}:{}:'.format(username,token,).encode() + message)
 
     if recv_bytes:
-        return_message = socket.recv()
+        binary_return_message = cast(bytes, socket.recv())
         # raise errors or warnings sent back from the server
-        if return_message.startswith(b"Error:"): \
-                                   raise RuntimeError(return_message.decode())
-        elif return_message.startswith(b"Warning:"): warnings.warn(return_message)
+        if binary_return_message.startswith(b"Error:"): \
+                                   raise RuntimeError(binary_return_message.decode())
+        elif binary_return_message.startswith(b"Warning:"): \
+                                        warnings.warn(binary_return_message.decode())
     else:
-        return_message = socket.recv_string()
+        return_message = cast(str, socket.recv_string())
         # raise errors or warnings sent back from the server
         if return_message.startswith("Error:"): raise RuntimeError(return_message)
         elif return_message.startswith("Warning:"): warnings.warn(return_message)
@@ -402,8 +400,8 @@ def disconnect() -> None:
         # send disconnect message to server
         message = "disconnect"
         logger.debug("[Python] Sending request: {}".format(message))
-        message = _send_string_message(message)
-        logger.debug("[Python] Received response: {}".format(message))
+        return_message = cast(str,_send_string_message(message))
+        logger.debug("[Python] Received response: {}".format(return_message))
         try:
             socket.disconnect(pspStr)
         except Exception as e:
@@ -439,7 +437,7 @@ def shutdown() -> None:
     message = "shutdown"
 
     logger.debug("[Python] Sending request: {}".format(message))
-    return_message = _send_string_message(message)
+    return_message = cast(str,_send_string_message(message))
     logger.debug("[Python] Received response: {}".format(return_message))
 
     try:
@@ -484,12 +482,21 @@ def generic_msg(message : Union[str,bytes], send_bytes : bool=False,
 
     try:
         if send_bytes:
-            return _send_binary_message(message=message, 
-                                            recv_bytes=recv_bytes)
+            if recv_bytes:
+                return cast(bytes, _send_binary_message(message=cast(bytes,message), 
+                                            recv_bytes=recv_bytes))
+            else: 
+                return cast(str, _send_binary_message(message=cast(bytes,message), 
+                                            recv_bytes=recv_bytes))                
         else:
-            logger.debug("[Python] Sending request: {}".format(message))
-            return _send_string_message(message=message, 
-                                            recv_bytes=recv_bytes)
+            logger.debug("[Python] Sending request: {}".format(cast(str,message)))
+            if recv_bytes:
+                return cast(bytes, _send_string_message(message=cast(str,message), 
+                                            recv_bytes=recv_bytes))
+            else:
+                return cast(str, _send_string_message(message=cast(str,message), 
+                                            recv_bytes=recv_bytes))
+                
     except KeyboardInterrupt as e:
         # if the user interrupts during command execution, the socket gets out 
         # of sync reset the socket before raising the interrupt exception
@@ -542,7 +549,7 @@ def get_mem_used() -> int:
     ValueError
         Raised if the returned value is not an int-formatted string
     """
-    mem_used_message = generic_msg("getmemused")
+    mem_used_message = cast(str,generic_msg("getmemused"))
     return int(mem_used_message)
 
 def _no_op() -> str:
@@ -559,7 +566,7 @@ def _no_op() -> str:
     RuntimeError
         Raised if there is a server-side error in executing noop request
     """
-    return generic_msg("noop")
+    return cast(str,generic_msg("noop"))
   
 def ruok() -> str:
     """
@@ -578,7 +585,7 @@ def ruok() -> str:
         both of the latter cases
     """
     try:
-        res = generic_msg('ruok')
+        res = cast(str,generic_msg('ruok'))
         if res == 'imok':
             return 'imok'
         else:

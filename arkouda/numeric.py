@@ -1,12 +1,12 @@
-import numpy as np
-from typing import Tuple, Union
+import numpy as np # type: ignore
+from typing import cast, Optional, Tuple, Union
 from arkouda.client import generic_msg
 from arkouda.dtypes import *
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraysetops import unique
 from arkouda.decorators import checkforpdarray
 from typeguard import typechecked
-import typeguard
+from arkouda.strings import Strings
 
 __all__ = ["abs", "log", "exp", "cumsum", "cumprod", "sin", "cos", 
            "where", "histogram", "value_counts"]    
@@ -31,7 +31,7 @@ def abs(pda : pdarray) -> pdarray:
         Raised if the parameter is not a pdarray
     """
     repMsg = generic_msg("efunc {} {}".format("abs", pda.name))
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))
 
 @typechecked
 def log(pda : pdarray) -> pdarray:
@@ -69,7 +69,7 @@ def log(pda : pdarray) -> pdarray:
     array([0, 3.3219280948873626, 6.6438561897747253])
     """
     repMsg = generic_msg("efunc {} {}".format("log", pda.name))
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))
 
 @typechecked
 def exp(pda : pdarray) -> pdarray:
@@ -92,7 +92,7 @@ def exp(pda : pdarray) -> pdarray:
         Raised if the parameter is not a pdarray
     """
     repMsg = generic_msg("efunc {} {}".format("exp", pda.name))
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))
 
 @typechecked
 def cumsum(pda : pdarray) -> pdarray:
@@ -118,7 +118,7 @@ def cumsum(pda : pdarray) -> pdarray:
         Raised if the parameter is not a pdarray
     """
     repMsg = generic_msg("efunc {} {}".format("cumsum", pda.name))
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))
 
 @typechecked
 def cumprod(pda : pdarray) -> pdarray:
@@ -144,7 +144,7 @@ def cumprod(pda : pdarray) -> pdarray:
         Raised if the parameter is not a pdarray
     """
     repMsg = generic_msg("efunc {} {}".format("cumprod", pda.name))
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))
 
 @typechecked
 def sin(pda : pdarray) -> pdarray:
@@ -167,7 +167,7 @@ def sin(pda : pdarray) -> pdarray:
         Raised if the parameter is not a pdarray
     """
     repMsg = generic_msg("efunc {} {}".format("sin",pda.name))
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))
 
 @typechecked
 def cos(pda : pdarray) -> pdarray:
@@ -189,8 +189,8 @@ def cos(pda : pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    repMsg = generic_msg("efunc {} {}".format("cos",pda.name))
-    return create_pdarray(repMsg)
+    repMsg = cast(str, generic_msg("efunc {} {}".format("cos",pda.name)))
+    return create_pdarray(cast(str,repMsg))
 
 @typechecked
 def where(condition : pdarray, A : Union[Union[int,float], pdarray], 
@@ -246,8 +246,8 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
                                     B.name))
     elif np.isscalar(A) and np.isscalar(B):
         # Scalars must share a common dtype (or be cast)
-        dtA = resolve_scalar_dtype(A)
-        dtB = resolve_scalar_dtype(B)
+        dtA : str = resolve_scalar_dtype(A)
+        dtB : str = resolve_scalar_dtype(B)
         # Make sure at least one of the dtypes is supported
         if not (dtA in DTypes or dtB in DTypes):
             raise TypeError(("Not implemented for scalar types {} " +
@@ -273,7 +273,7 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
                                     A,
                                     dt,
                                     B))
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))
 
 @typechecked
 def histogram(pda : pdarray, bins : int=10) -> pdarray:
@@ -330,11 +330,11 @@ def histogram(pda : pdarray, bins : int=10) -> pdarray:
     if bins < 1:
         raise ValueError('bins must be 1 or greater')
     repMsg = generic_msg("histogram {} {}".format(pda.name, bins))
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))
 
 
 @checkforpdarray
-def value_counts(pda : pdarray) -> Tuple[pdarray,int]:
+def value_counts(pda : pdarray) -> Tuple[Union[pdarray, Strings], Optional[pdarray]]:
     """
     Count the occurrences of the unique values of an array.
 

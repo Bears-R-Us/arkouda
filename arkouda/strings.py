@@ -1,10 +1,10 @@
-from typing import Tuple, Union
+from typing import cast, Tuple, Union
 from arkouda.client import generic_msg, pdarrayIterThresh
 from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value
 from arkouda.dtypes import *
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS
 from arkouda.logger import getArkoudaLogger
-import numpy as np
+import numpy as np # type: ignore
 import json
 
 global verbose
@@ -95,7 +95,7 @@ class Strings:
         except Exception as e:
             raise ValueError(e)   
         self.dtype = np.str
-        self.logger = getArkoudaLogger(name=__class__.__name__)
+        self.logger = getArkoudaLogger(name=__class__.__name__) # type: ignore
 
     def __iter__(self):
         raise NotImplementedError('Strings does not support iteration')
@@ -167,13 +167,13 @@ class Strings:
             raise ValueError("Strings: {} not supported between Strings and {}"\
                              .format(op, other.__class__.__name__))
         repMsg = generic_msg(msg)
-        return create_pdarray(repMsg)
+        return create_pdarray(cast(str,repMsg))
 
     def __eq__(self, other) -> bool:
         return self._binop(other, "==")
 
-    def __ne__(self, other : object) -> bool:
-        return self._binop(other, "!=")
+    def __ne__(self, other) -> bool:
+        return self._binop(cast(Strings, other), "!=")
 
     def __getitem__(self, key):
         if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
@@ -240,7 +240,7 @@ class Strings:
         msg = "segmentLengths {} {} {}".\
                         format(self.objtype, self.offsets.name, self.bytes.name)
         repMsg = generic_msg(msg)
-        return create_pdarray(repMsg)
+        return create_pdarray(cast(str,repMsg))
 
     def contains(self, substr : Union[str, bytes]) -> pdarray:
         """
@@ -279,7 +279,7 @@ class Strings:
                                                         "str",
                                                         json.dumps([substr]))
         repMsg = generic_msg(msg)
-        return create_pdarray(repMsg)
+        return create_pdarray(cast(str,repMsg))
 
     def startswith(self, substr : Union[str, bytes]) -> pdarray:
         """
@@ -318,7 +318,7 @@ class Strings:
                                                         "str",
                                                         json.dumps([substr]))
         repMsg = generic_msg(msg)
-        return create_pdarray(repMsg)
+        return create_pdarray(cast(str,repMsg))
 
     def endswith(self, substr : str) -> pdarray:
         """
@@ -357,7 +357,7 @@ class Strings:
                                                         "str",
                                                         json.dumps([substr]))
         repMsg = generic_msg(msg)
-        return create_pdarray(repMsg)
+        return create_pdarray(cast(str,repMsg))
 
     def peel(self, delimiter : str, times : int=1, includeDelimiter : bool=False, 
              keepPartial : bool=False, fromRight : bool=False) -> Tuple:
@@ -441,7 +441,7 @@ class Strings:
                             NUMBER_FORMAT_STRINGS['bool'].format(not fromRight),
                             json.dumps([delimiter]))
         repMsg = generic_msg(msg)
-        arrays = repMsg.split('+', maxsplit=3)
+        arrays = cast(str,repMsg).split('+', maxsplit=3)
         leftStr = Strings(arrays[0], arrays[1])
         rightStr = Strings(arrays[2], arrays[3])
         return leftStr, rightStr
@@ -564,7 +564,7 @@ class Strings:
                             NUMBER_FORMAT_STRINGS['bool'].format(toLeft),
                             json.dumps([delimiter]))
         repMsg = generic_msg(msg)
-        return Strings(*repMsg.split('+'))
+        return Strings(*cast(str,repMsg).split('+'))
 
     def __add__(self, other : 'Strings') -> 'Strings':
         return self.stick(other)
@@ -632,8 +632,8 @@ class Strings:
         msg = "segmentedHash {} {} {}".format(self.objtype, self.offsets.name, 
                                               self.bytes.name)
         repMsg = generic_msg(msg)
-        h1, h2 = repMsg.split('+')
-        return create_pdarray(h1), create_pdarray(h2)
+        h1, h2 = cast(str,repMsg).split('+')
+        return create_pdarray(cast(str,h1)), create_pdarray(cast(str,h2))
 
     def group(self) -> pdarray:
         """
@@ -668,7 +668,7 @@ class Strings:
         msg = "segmentedGroup {} {} {}".\
                            format(self.objtype, self.offsets.name, self.bytes.name)
         repMsg = generic_msg(msg)
-        return create_pdarray(repMsg)
+        return create_pdarray(cast(str,repMsg))
 
     def to_ndarray(self) -> np.ndarray:
         """

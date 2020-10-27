@@ -1,5 +1,5 @@
-from typing import Tuple
-import numpy as np
+from typing import cast, Tuple, Type, Union
+import numpy as np # type: ignore
 import builtins
 
 __all__ = ["DTypes", "dtype", "bool", "int64", "float64", 
@@ -38,7 +38,7 @@ def check_np_dtype(dt : np.dtype) -> None:
     if dt.name not in DTypes:
         raise TypeError("Unsupported type: {}".format(dt))
 
-def translate_np_dtype(dt : np.dtype) -> Tuple[str, int]:
+def translate_np_dtype(dt : Type[np.dtype]) -> Tuple[str, int]:
     """
     Split numpy dtype dt into its kind and byte size, raising
     TypeError for unsupported dtypes.
@@ -55,13 +55,13 @@ def translate_np_dtype(dt : np.dtype) -> Tuple[str, int]:
     kind = trans[dt.kind]
     return kind, dt.itemsize
 
-def resolve_scalar_dtype(val : object) -> str:
+def resolve_scalar_dtype(val : Union[bool,float64,int,np.int,np.uint8]) -> str:
     """
     Try to infer what dtype arkouda_server should treat val as.
     """
     # Python bool or np.bool
     if isinstance(val, builtins.bool) or (hasattr(val, 'dtype') \
-                                and val.dtype.kind == 'b'):
+                                and cast(np,val).dtype.kind == 'b'):
         return 'bool'
     # Python int or np.int* or np.uint*
     elif isinstance(val, int) or (hasattr(val, 'dtype') and \

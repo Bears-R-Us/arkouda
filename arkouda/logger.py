@@ -1,5 +1,5 @@
 import os
-from typing import List, Optional
+from typing import cast, List, Optional
 from logging import Logger, Formatter, Handler, StreamHandler, DEBUG, \
      INFO, WARN, ERROR, CRITICAL
 from enum import Enum
@@ -51,7 +51,7 @@ class ArkoudaLogger(Logger):
         LogLevel.CRITICAL: CRITICAL
     }
     
-    def __init__(self, name : str, logLevel : Optional[LogLevel]=LogLevel.INFO, 
+    def __init__(self, name : str, logLevel : LogLevel=LogLevel.INFO, 
                       handlers : Optional[List[Handler]]=None, 
                       logFormat : Optional[str] \
              ='[%(name)s] Line %(lineno)d %(levelname)s: %(message)s') -> None:
@@ -155,14 +155,14 @@ class ArkoudaLogger(Logger):
         """
         self.changeLogLevel(LogLevel.DEBUG)
         
-    def disableVerbose(self, logLevel : Optional[LogLevel]=LogLevel.INFO) -> None:
+    def disableVerbose(self, logLevel : LogLevel=LogLevel.INFO) -> None:
         """
         Disables verbose output by setting the log level for all handlers 
         to a level other than DEBUG, with a default of INFO
         
         Parameters
         ----------
-        logLevel : Optional[LogLevel], defaults to LogLevel.INFO
+        logLevel : LogLevel, defaults to LogLevel.INFO
             The desired log level that will disable verbose output (logging at 
             the DEBUG level) by resetting the log level for all handlers.
         

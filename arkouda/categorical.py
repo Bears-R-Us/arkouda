@@ -1,3 +1,5 @@
+from typing import cast
+import numpy as np # type: ignore
 from arkouda.strings import Strings
 from arkouda.pdarrayclass import pdarray
 from arkouda.groupbyclass import GroupBy
@@ -6,7 +8,6 @@ from arkouda.dtypes import int64, resolve_scalar_dtype
 from arkouda.sorting import argsort
 from arkouda.client import pdarrayIterThresh
 from arkouda.pdarraysetops import unique, concatenate, in1d
-import numpy as np
 
 __all__ = ['Categorical']
 
@@ -54,7 +55,7 @@ class Categorical:
             self.codes = kwargs['codes']
             self.categories = kwargs['categories']            
             if 'permutation' in kwargs:
-                self.permutation = kwargs['permutation']
+                self.permutation = cast(pdarray, kwargs['permutation'])
             if 'segments' in kwargs:
                 self.segments = kwargs['segments']
         else:
@@ -65,9 +66,9 @@ class Categorical:
             g = GroupBy(values)
             self.categories = g.unique_keys
             self.codes = zeros(values.size, dtype=int64)
-            self.codes[g.permutation] = \
+            self.codes[cast(pdarray, g.permutation)] = \
                                 g.broadcast(arange(self.categories.size))
-            self.permutation = g.permutation
+            self.permutation = cast(pdarray, g.permutation)
             self.segments = g.segments
         # Always set these values
         self.size = self.codes.size
@@ -434,14 +435,14 @@ class Categorical:
             if not isinstance(c, Categorical):
                 raise TypeError(("Categorical: can only merge/concatenate " +
                                 "with other Categoricals"))
-            if (self.categories.size != other.categories.size) or not \
-                                    (self.categories == other.categories).all():
+            if (self.categories.size != c.categories.size) or not \
+                                    (self.categories == c.categories).all():
                 samecategories = False
         if samecategories:
-            newvals = concatenate([self.codes] + [o.codes for o in others])
+            newvals = cast(pdarray, concatenate([self.codes] + [o.codes for o in others]))
             return Categorical.from_codes(newvals, self.categories)
         else:
-            g = ak.GroupBy(concatenate([self.categories] + \
+            g = GroupBy(concatenate([self.categories] + \
                                        [o.categories for o in others]))
             newidx = g.unique_keys
             wherediditgo = zeros(newidx.size, dtype=int64)

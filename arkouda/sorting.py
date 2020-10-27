@@ -1,4 +1,4 @@
-from typing import Iterable, Union
+from typing import cast, Sequence, Union
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros
@@ -42,8 +42,9 @@ def argsort(pda : Union[pdarray,Strings]) -> pdarray:
     >>> a[perm]
     array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
     """
+    from arkouda.categorical import Categorical
     if hasattr(pda, "argsort"):
-        return pda.argsort()
+        return cast(Categorical,pda).argsort()
     if isinstance(pda, pdarray) or isinstance(pda, Strings):
         if pda.size == 0:
             return zeros(0, dtype=int64)
@@ -52,11 +53,11 @@ def argsort(pda : Union[pdarray,Strings]) -> pdarray:
         else:
             name = pda.name
         repMsg = generic_msg("argsort {} {}".format(pda.objtype, name))
-        return create_pdarray(repMsg)
+        return create_pdarray(cast(str,repMsg))
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
-def coargsort(arrays : Iterable[Union[Strings,pdarray]]) -> pdarray:
+def coargsort(arrays : Sequence[Union[Strings,pdarray]]) -> pdarray:
     """
     Return the permutation that groups the rows (left-to-right), if the
     input arrays are treated as columns. The permutation sorts numeric
@@ -64,7 +65,7 @@ def coargsort(arrays : Iterable[Union[Strings,pdarray]]) -> pdarray:
     
     Parameters
     ----------
-    arrays : iterable of pdarray or Strings
+    arrays : Sequence[Union[Strings,pdarray]]
         The columns (int64, float64, or Strings) to sort by row
 
     Returns
@@ -126,7 +127,7 @@ def coargsort(arrays : Iterable[Union[Strings,pdarray]]) -> pdarray:
                                     ' '.join(anames),
                                     ' '.join(atypes))
     repMsg = generic_msg(reqMsg)
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))
 
 def local_argsort(pda : pdarray) -> pdarray:
     """
@@ -158,7 +159,7 @@ def local_argsort(pda : pdarray) -> pdarray:
         if pda.size == 0:
             return zeros(0, dtype=int64)
         repMsg = generic_msg("localArgsort {}".format(pda.name))
-        return create_pdarray(repMsg)
+        return create_pdarray(cast(str,repMsg))
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
@@ -204,6 +205,6 @@ def sort(pda : pdarray) -> pdarray:
         if pda.size == 0:
             return zeros(0, dtype=int64)
         repMsg = generic_msg("sort {}".format(pda.name))
-        return create_pdarray(repMsg)
+        return create_pdarray(cast(str,repMsg))
     else:
         raise TypeError("must be pdarray {}".format(pda))
