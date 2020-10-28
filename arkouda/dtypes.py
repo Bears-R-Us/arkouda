@@ -17,12 +17,12 @@ NUMBER_FORMAT_STRINGS = {'bool': '{}',
                          'uint8': '{:n}'}
 
 dtype = np.dtype
-bool = np.bool
-int64 = np.int64
-float64 = np.float64
-uint8 = np.uint8
-str_ = np.str_
-str = np.str
+bool : np.bool = np.bool
+int64 : np.int64 = np.int64
+float64 : np.float64 = np.float64
+uint8 : np.uint8 = np.uint8
+str_ : np.str_ = np.str_
+str : np.str = np.str
 DTypes = frozenset(["bool", "int64", "float64", "uint8", "str"])
 
 def check_np_dtype(dt : np.dtype) -> None:

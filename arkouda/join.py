@@ -101,8 +101,8 @@ def join_on_eq_with_dt(a1 : pdarray, a2 : pdarray, t1 : pdarray,
     # pass result into server joinEqWithDT operation
     repMsg = generic_msg("joinEqWithDT {} {} {} {} {} {} {} {} {}".\
                          format(a1.name,
-                                cast(pdarray, g2.segments).name,
-                                cast(pdarray, g2.unique_keys).name,
+                                cast(pdarray, g2.segments).name,  # type: ignore
+                                cast(pdarray, g2.unique_keys).name,  # type: ignore
                                 g2.permutation.name,
                                 t1.name,
                                 t2.name,

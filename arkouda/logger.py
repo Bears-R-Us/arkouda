@@ -100,7 +100,7 @@ class ArkoudaLogger(Logger):
         '''
         Logger.__init__(self, name=name, level=DEBUG)
         if handlers is None:
-            handler = StreamHandler()
+            handler = cast(Handler,StreamHandler())
             handler.name = 'console-handler'
             handler.setLevel(logLevel.value)
             handlers = [handler]

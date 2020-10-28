@@ -760,7 +760,7 @@ class pdarray:
         # Use struct to interpret bytes as a big-endian numeric array
         fmt = '>{:n}{}'.format(self.size, structDtypeCodes[self.dtype.name])
         # Return a numpy ndarray
-        return np.array(struct.unpack(fmt, rep_msg))
+        return np.array(struct.unpack(fmt, rep_msg)) # type: ignore
 
     def to_cuda(self):
         """

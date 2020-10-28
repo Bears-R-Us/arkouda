@@ -127,7 +127,8 @@ def connect(server : str="localhost", port : int=5555, timeout : int=0,
     
     # set token and username global variables
     username = security.get_username()
-    token = _set_access_token(access_token=access_token, connect_string=pspStr)
+    token = cast(str, _set_access_token(access_token=access_token, 
+                                        connect_string=pspStr))
 
     # connect to arkouda server
     try:
@@ -228,7 +229,8 @@ def _set_access_token(access_token : Optional[str],
     Returns
     -------
     str
-        The access token configured for the host:port
+        The access token configured for the host:port, None if there is no
+        token configured for the host:port
     
     Raises
     ------
@@ -259,7 +261,7 @@ def _set_access_token(access_token : Optional[str],
             raise IOError(e)
         return tokens.get(connect_string)
 
-def _start_tunnel(addr : str, tunnel_server : str) -> str:
+def _start_tunnel(addr : str, tunnel_server : str) -> Tuple[str,object]:
     """
     Starts ssh tunnel
 
@@ -272,6 +274,8 @@ def _start_tunnel(addr : str, tunnel_server : str) -> str:
     -------
     str
         The new tunneled-version of connect string
+    object
+        The ssh tunnel object
 
     Raises
     ------

@@ -1,4 +1,4 @@
-from typing import cast
+from typing import cast, List
 import numpy as np # type: ignore
 from arkouda.strings import Strings
 from arkouda.pdarrayclass import pdarray
@@ -57,7 +57,7 @@ class Categorical:
             if 'permutation' in kwargs:
                 self.permutation = cast(pdarray, kwargs['permutation'])
             if 'segments' in kwargs:
-                self.segments = kwargs['segments']
+                self.segments = cast(pdarray,kwargs['segments'])
         else:
             # Typical initialization, called with values
             if not isinstance(values, Strings):
@@ -402,14 +402,14 @@ class Categorical:
         newvals = inverse[self.codes]
         return Categorical.from_codes(newvals, self.categories[idxperm])
             
-    def merge(self, others : ['Categorical']) -> 'Categorical':
+    def merge(self, others : List['Categorical']) -> 'Categorical': # :type ignore
         """
         Merge this Categorical with other Categorical objects in the array, 
         concatenating the arrays and synchronizing the categories.
 
         Parameters
         ----------
-        others : [Categorical]
+        others : List[Categorical]
             The Categorical arrays to concatenate and merge with this one
 
         Returns
@@ -454,23 +454,3 @@ class Categorical:
                                     + [o.codes for o in others], idxoffsets)])
             newvals = wherediditgo[oldvals]
             return Categorical.from_codes(newvals, newidx)
-    #     msg = "segmentedMerge {} {} {} {} {} {}".\
-    #                                 format(self.categories.objtype,
-    #                                 self.categories.offsets.name,
-    #                                 self.categories.bytes.name,
-    #                                 other.categories.objtype,
-    #                                 other.categories.offsets.name,
-    #                                 other.categories.bytes.name)
-    #     repMsg = generic_msg(msg)
-    #     perm_attrib, seg_attrib, val_attrib = repMsg.split('+')
-    #     perm = create_pdarray(perm_attrib)
-    #     categories = Strings(seg_attrib, val_attrib)
-    # #     return create_pdarray(repMsg)
-        
-    # # def merge(self, other):
-    # #     perm = self.argmerge(other)
-    # #     categories = concatenate((self.categories, other.categories))[perm]
-    #     codes = zeros(self.size + other.size, int64)
-    #     codes[:self.size] = perm[self.codes]
-    #     codes[self.size:] = perm[other.codes + self.categories.size]
-    #     return Categorical(codes, categories)

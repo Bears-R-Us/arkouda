@@ -73,7 +73,7 @@ def read_hdf(dsetName : str, filenames : Union[str,List[str]]) -> Union[pdarray,
     #     return Strings(*rep_msg.split('+'))
     # else:
     #     return create_pdarray(rep_msg)
-    return read_all(filenames, datasets=dsetName)
+    return cast(Union[pdarray, Strings], read_all(filenames, datasets=dsetName))
 
 def read_all(filenames : Union[str,List[str]], datasets : 
              Optional[Union[str,List[str]]]=None, iterative : bool=False) \
@@ -276,20 +276,23 @@ def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : 
     <columns> as new datasets to existing files. If the wrong number of files
     is present or dataset names already exist, a RuntimeError is raised.
     """
-    if names is not None and len(names) != len(columns):
-        raise ValueError("Number of names does not match number of columns")
+    if names is not None:
+        if len(names) != len(columns):
+            raise ValueError("Number of names does not match number of columns")
+        else:
+            datasetNames = names
     if isinstance(columns, dict):
-        pdarrays = columns.values()
+        pdarrays = list(columns.values())
         if names is None:
-            names = columns.keys()
+            datasetNames = list(columns.keys())
     elif isinstance(columns, list):
-        pdarrays = columns
+        pdarrays = cast(List[pdarray],columns)
         if names is None:
-            names = range(len(columns))
+            datasetNames = [str(column) for column in range(len(columns))]
     if (mode.lower() not in 'append') and (mode.lower() not in 'truncate'):
         raise ValueError("Allowed modes are 'truncate' and 'append'")
     first_iter = True
-    for arr, name in zip(pdarrays, cast(List[str],names)):
+    for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
         # Append all pdarrays to existing files as new datasets EXCEPT the first one, and only if user requests truncation
         if mode.lower() not in 'append' and first_iter:
             arr.save(prefix_path=prefix_path, dataset=name, mode='truncate')

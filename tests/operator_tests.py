@@ -227,6 +227,14 @@ class OperatorsTest(ArkoudaTest):
         self.assertIsInstance(dArray, ak.pdarrayclass.pdarray)
         self.assertEqual(np.float64(5), dArray[0])
         
+    def testPdArrayConcatenation(self):
+        onesOne = ak.randint(0, 100, 100)
+        onesTwo = ak.randint(0, 100, 100)
+        
+        result = ak.concatenate([onesOne,onesTwo])
+        self.assertEqual(200, len(result))
+        self.assertEqual(np.int64,result.dtype)
+        
     def testAllOperators(self):
         run_tests(verbose)
         

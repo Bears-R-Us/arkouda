@@ -1,5 +1,7 @@
 import numpy as np # type: ignore
-from typing import cast, Optional, Tuple, Union
+from typing import cast, Optional, Tuple, Union, TYPE_CHECKING
+if TYPE_CHECKING:
+    from arkouda.categorical import Categorical
 from arkouda.client import generic_msg
 from arkouda.dtypes import *
 from arkouda.pdarrayclass import pdarray, create_pdarray
@@ -334,7 +336,8 @@ def histogram(pda : pdarray, bins : int=10) -> pdarray:
 
 
 @checkforpdarray
-def value_counts(pda : pdarray) -> Tuple[Union[pdarray, Strings], Optional[pdarray]]:
+def value_counts(pda : pdarray) -> Union['Categorical',
+                                            Tuple[Union[pdarray,Strings],Optional[pdarray]]]:
     """
     Count the occurrences of the unique values of an array.
 

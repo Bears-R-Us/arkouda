@@ -11,8 +11,8 @@ __all__ = ["unique", "in1d", "concatenate", "union1d", "intersect1d",
 
 logger = getArkoudaLogger(name='pdarraysetops')
 
-def unique(pda : pdarray, return_counts : bool=False) -> Union['Categorical',
-                                            Tuple[Union[pdarray,Strings],Optional[pdarray]]]:
+def unique(pda : pdarray, return_counts : bool=False) -> Union['Categorical', # type: ignore
+                                    Tuple[Union[pdarray,Strings],Optional[pdarray]]]:
     """
     Find the unique elements of an array.
 
@@ -147,13 +147,15 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings]]) -> Union[pdarray,Stri
 
     Parameters
     ----------
-    arrays : Sequence[Union[``pdarray``,Strings,Categorical]]
-        The arrays to concatenate. Must all have same dtype.
+    arrays : Sequence[Union[pdarray,Strings]]
+        The arrays or Strings to concatenate. For pdarrays, all must have same 
+        dtype.
 
     Returns
     -------
     Union[pdarray,Strings]
-        Single pdarray or Strings object containing all values, in original order
+        Single pdarray or Strings object containing all values, returned in
+        the original order
         
     Raises
     ------
@@ -178,9 +180,8 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings]]) -> Union[pdarray,Stri
     if len(arrays) < 1:
         raise ValueError("concatenate called on empty iterable")
     if len(arrays) == 1:
+        # there are no arrays to concatenate, so just return arrays param
         return arrays[0]
-    if hasattr(arrays[0], 'concatenate'):
-        return arrays[0].concatenate(arrays[1:])
     for a in arrays:
         if not isinstance(a, pdarray) and not isinstance(a, Strings):
             raise TypeError(("arrays must be an iterable of pdarrays" 
@@ -194,7 +195,8 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings]]) -> Union[pdarray,Stri
                 raise ValueError("All pdarrays must have same dtype")
             names.append(cast(pdarray,a).name)
         elif objtype == "str":
-            names.append('{}+{}'.format(cast(Strings,a).offsets.name, cast(Strings,a).bytes.name))
+            names.append('{}+{}'.format(cast(Strings,a).offsets.name, 
+                                                   cast(Strings,a).bytes.name))
         else:
             raise NotImplementedError(("concatenate not implemented " +
                                     "for object type {}".format(objtype)))
@@ -256,7 +258,9 @@ def union1d(pda1 : pdarray, pda2 : pdarray) -> pdarray:
             repMsg = generic_msg("union1d {} {}".\
                                  format(pda1.name, pda2.name))
             return cast(pdarray,create_pdarray(cast(str,repMsg)))
-        return unique(cast(pdarray,concatenate((unique(cast(pdarray,pda1)), unique(cast(pdarray,pda2))))))
+        return cast(pdarray, 
+                    unique(cast(pdarray, concatenate((unique(cast(pdarray,pda1)), # type: ignore
+                                                     unique(cast(pdarray,pda2)))))))
     else:
         raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
 

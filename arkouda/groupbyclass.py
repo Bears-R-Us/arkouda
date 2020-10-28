@@ -1,4 +1,6 @@
-from typing import cast, List, Sequence, Tuple, Union
+from typing import cast, List, Sequence, Tuple, Union, TYPE_CHECKING
+if TYPE_CHECKING:
+    from arkouda.categorical import Categorical
 import numpy as np # type: ignore
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
@@ -55,11 +57,12 @@ class GroupBy:
         self.logger = getArkoudaLogger(name=self.__class__.__name__)
         self.assume_sorted = assume_sorted
         self.hash_strings = hash_strings
+        self.keys : Union[pdarray,Strings,Categorical]
 
         if isinstance(keys, pdarray):
             self.keys = cast(pdarray, keys)
             self.nkeys = 1
-            self.size = keys.size
+            self.size = cast(int, keys.size)
             if assume_sorted:
                 self.permutation = cast(pdarray, arange(self.size))
             else:
@@ -67,15 +70,15 @@ class GroupBy:
         elif hasattr(keys, "group"): # for Strings or Categorical
             self.nkeys = 1
             self.keys = cast(Union[Strings,Categorical],keys)
-            self.size = self.keys.size
+            self.size = cast(int, self.keys.size) # type: ignore
             if assume_sorted:
                 self.permutation = cast(pdarray,arange(self.size))
             else:
                 self.permutation = cast(Union[Strings, Categorical],keys).group()
         else:
-            self.keys = keys
+            self.keys = cast(Union[pdarray, Strings, Categorical],keys)
             self.nkeys = len(keys)
-            self.size = cast(int,keys[0].size)
+            self.size = cast(int,keys[0].size) # type: ignore
             for k in keys:
                 if k.size != self.size:
                     raise ValueError("Key arrays must all be same size")
@@ -100,8 +103,8 @@ class GroupBy:
             else:
                 mykeys = [self.keys]            
         else:
-            mykeys = cast(List[pdarray], self.keys)
-        keyobjs = [] # needed to maintain obj refs esp for h1 and h2 in the strings case
+            mykeys = cast(List[pdarray], self.keys) # type: ignore
+        keyobjs : List[Union[pdarray,Strings,'Categorical']] = [] # needed to maintain obj refs esp for h1 and h2 in the strings case
         keynames = []
         keytypes = []
         effectiveKeys = self.nkeys
@@ -135,12 +138,12 @@ class GroupBy:
         repMsg = generic_msg(message=cast(str,reqMsg))
         segAttr, uniqAttr = cast(str,repMsg).split("+")
         self.logger.debug('{},{}'.format(segAttr, uniqAttr))
-        self.segments = create_pdarray(repMsg=cast(str,segAttr))
+        self.segments = cast(pdarray, create_pdarray(repMsg=cast(str,segAttr)))
         unique_key_indices = create_pdarray(repMsg=cast(str,uniqAttr))
         if self.nkeys == 1:
-            self.unique_keys = self.keys[unique_key_indices]
+            self.unique_keys = cast(List[Union[pdarray,Strings]], self.keys[unique_key_indices])
         else:
-            self.unique_keys = [k[unique_key_indices] for k in self.keys]
+            self.unique_keys = cast(List[Union[pdarray,Strings]], [k[unique_key_indices] for k in self.keys])
 
 
     def count(self) -> Tuple[List[Union[pdarray,Strings]],pdarray]:
