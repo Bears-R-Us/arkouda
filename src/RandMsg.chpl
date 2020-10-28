@@ -34,6 +34,7 @@ module RandMsg
                                          rname,aMinStr,aMaxStr)); try! stdout.flush();}
         select (dtype) {
             when (DType.Int64) {
+                overMemLimit(8*len);
                 var aMin = aMinStr:int;
                 var aMax = aMaxStr:int;
                 var t1 = Time.getCurrentTime();
@@ -45,6 +46,7 @@ module RandMsg
                 if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
             }
             when (DType.UInt8) {
+                overMemLimit(len);
                 var aMin = aMinStr:int;
                 var aMax = aMaxStr:int;
                 var t1 = Time.getCurrentTime();
@@ -56,6 +58,7 @@ module RandMsg
                 if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
             }
             when (DType.Float64) {
+                overMemLimit(8*len);
                 var aMin = aMinStr:real;
                 var aMax = aMaxStr:real;
                 var t1 = Time.getCurrentTime();
@@ -67,6 +70,7 @@ module RandMsg
                 if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
             }
             when (DType.Bool) {
+                overMemLimit(len);
                 var t1 = Time.getCurrentTime();
                 var e = st.addEntry(rname, len, bool);
                 if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}

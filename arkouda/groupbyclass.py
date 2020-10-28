@@ -2,7 +2,7 @@ from typing import cast, List, Sequence, Tuple, Union
 import numpy as np # type: ignore
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
-from arkouda.sorting import argsort, coargsort, local_argsort
+from arkouda.sorting import argsort, coargsort
 from arkouda.strings import Strings
 from arkouda.pdarraycreation import array, zeros, arange
 from arkouda.pdarraysetops import concatenate
@@ -55,7 +55,6 @@ class GroupBy:
         self.logger = getArkoudaLogger(name=self.__class__.__name__)
         self.assume_sorted = assume_sorted
         self.hash_strings = hash_strings
-        self.per_locale = False
 
         if isinstance(keys, pdarray):
             self.keys = cast(pdarray, keys)
@@ -63,8 +62,6 @@ class GroupBy:
             self.size = keys.size
             if assume_sorted:
                 self.permutation = cast(pdarray, arange(self.size))
-            elif self.per_locale:
-                self.permutation = cast(pdarray, local_argsort(keys))
             else:
                 self.permutation = cast(pdarray, argsort(keys))
         elif hasattr(keys, "group"): # for Strings or Categorical
@@ -73,9 +70,6 @@ class GroupBy:
             self.size = self.keys.size
             if assume_sorted:
                 self.permutation = cast(pdarray,arange(self.size))
-            elif self.per_locale:
-                raise ValueError(("per-locale groupby not supported on " +
-                                  "Strings or Categorical"))
             else:
                 self.permutation = cast(Union[Strings, Categorical],keys).group()
         else:
@@ -95,10 +89,8 @@ class GroupBy:
             
     def find_segments(self) -> None:
         from arkouda.categorical import Categorical
-        if self.per_locale:
-            cmd = "findLocalSegments"
-        else:
-            cmd = "findSegments"
+        cmd = "findSegments"
+
         if self.nkeys == 1:
             # for Categorical
             if hasattr(self.keys, 'segments') and cast(Categorical, self.keys).segments is not None:
@@ -168,10 +160,7 @@ class GroupBy:
             The number of times each unique key appears
         
         '''
-        if self.per_locale:
-            cmd = "countLocalRdx"
-        else:
-            cmd = "countReduction"
+        cmd = "countReduction"
         reqMsg = "{} {} {}".format(cmd, cast(pdarray, self.segments).name, self.size)
         repMsg = cast(str, generic_msg(reqMsg))
         self.logger.debug(repMsg)
@@ -218,10 +207,8 @@ class GroupBy:
             permuted_values = values
         else:
             permuted_values = values[cast(pdarray, self.permutation)]
-        if self.per_locale:
-            cmd = "segmentedLocalRdx"
-        else:
-            cmd = "segmentedReduction"
+        cmd = "segmentedReduction"
+
         reqMsg = "{} {} {} {} {}".format(cmd,
                                          permuted_values.name,
                                          self.segments.name,

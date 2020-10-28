@@ -10,7 +10,6 @@ module FindSegmentsMsg
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
-    use PerLocaleHelper;
     use SegmentedArray;
 
     use PrivateDist;
@@ -210,116 +209,5 @@ module FindSegmentsMsg
         }
         // Return entry names of segments and unique key indices
         return try! "created " + st.attrib(sname) + " +created " + st.attrib(uname);
-    }
-
-    proc findLocalSegmentsMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
-        param pn = Reflection.getRoutineName();
-        var repMsg: string; // response message
-        // split request into fields
-        var (kname) = payload.decode().splitMsgToTuple(1);
-
-        // get next symbol name
-        var sname = st.nextName(); // segments
-        var uname = st.nextName(); // unique keys
-
-        var kEnt: borrowed GenSymEntry = st.lookup(kname);
-
-        select (kEnt.dtype) {
-            when (DType.Int64) {
-                var k = toSymEntry(kEnt,int); // key array
-                var minKey = min reduce k.a;
-                var keyRange = (max reduce k.a) - minKey + 1;
-                var (segs, ukeys) = perLocFindSegsAndUkeys(k.a, minKey, keyRange);
-                st.addEntry(sname, new shared SymEntry(segs));
-                st.addEntry(uname, new shared SymEntry(ukeys));
-            }
-            otherwise {
-                var errorMsg = notImplementedError(pn,"("+dtype2str(kEnt.dtype)+")");
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                 
-                return errorMsg;   
-            }
-        }
-        
-        return try! "created " + st.attrib(sname) + " +created " + st.attrib(uname);
-    }
-
-    proc perLocFindSegsAndUkeys(perLocSorted:[?D] int, minKey:int, keyRange:int) {
-      var timer = new Time.Timer();
-      if v {writeln("finding local segments and keys..."); try! stdout.flush(); timer.start();}
-      var keyDom = makeDistDom(keyRange);
-      var globalRelKeys:[keyDom] bool;
-      var localSegments: [PrivateSpace] Segments;
-      coforall loc in Locales {
-        on loc {
-          var (locSegs, locUkeys) = segsAndUkeysFromSortedArray(perLocSorted.localSlice[perLocSorted.localSubdomain()]);
-          localSegments[here.id] = new Segments(locUkeys, locSegs);
-          forall k in locUkeys with (ref globalRelKeys, var agg = newDstAggregator(bool)) {
-            // This does not need to be atomic, because race conditions will result in the correct answer
-            agg.copy(globalRelKeys[k - minKey], true);
-          }
-        }
-      }
-      if v {timer.stop(); writeln("time = ", timer.elapsed(), " sec"); try! stdout.flush(); timer.clear();}
-
-      if v {writeln("aggregating globally unique keys..."); try! stdout.flush(); timer.start();}
-      var relKey2ind = (+ scan globalRelKeys) - 1;
-      var numKeys = relKey2ind[keyDom.high] + 1;
-      if v {writeln("Global unique keys: ", numKeys); try! stdout.flush();}
-      var globalUkeys = makeDistArray(numKeys, int);
-      forall (relKey, present, ind) in zip(keyDom, globalRelKeys, relKey2ind) 
-        with (var agg = newDstAggregator(int)) {
-        if present {
-          // globalUkeys guaranteed to be sorted because ind and relKey monotonically increasing
-          agg.copy(globalUkeys[ind], relKey + minKey);
-        }
-      }
-      if v {timer.stop(); writeln("time = ", timer.elapsed(), " sec"); try! stdout.flush(); timer.clear();}
-
-      if v {writeln("creating global segment array..."); try! stdout.flush(); timer.start();}
-      var globalSegments = makeDistArray(numKeys*numLocales, int);
-      globalSegments = -1;
-      coforall loc in Locales {
-        on loc {
-          ref mySeg = localSegments[here.id].s;
-          ref myKey = localSegments[here.id].k;
-          forall (offset, key) in zip(mySeg, myKey) {
-            var segInd = globalSegments.localSubdomain().low + relKey2ind[key - minKey];
-            globalSegments[segInd] = offset;
-          }
-          var last = D.localSubdomain().high + 1;
-          for i in globalSegments.localSubdomain() by -1 {
-            if globalSegments[i] == -1 {
-              globalSegments[i] = last;
-            } else {
-              last = globalSegments[i];
-            }
-          }
-        }
-      }
-      if v {timer.stop(); writeln("time = ", timer.elapsed(), " sec"); try! stdout.flush(); timer.clear();}
-      return (globalSegments, globalUkeys);
-    }
-
-    record Segments {
-      var n:int;
-      var dom = {0..#n};
-      var k:[dom] int;
-      var s:[dom] int;
-
-      proc init() {
-        n = 0;
-      }
-
-      proc init(keys:[?D] int, segs:[D] int) {
-        n = D.size;
-        dom = D;
-        k = keys;
-        s = segs;
-      }
     }
 }
