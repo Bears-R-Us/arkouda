@@ -2,7 +2,7 @@ from typing import List, Tuple, Union
 import numpy as np
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
-from arkouda.sorting import argsort, coargsort, local_argsort
+from arkouda.sorting import argsort, coargsort
 from arkouda.strings import Strings
 from arkouda.pdarraycreation import array, zeros, arange
 from arkouda.pdarraysetops import concatenate
@@ -54,15 +54,12 @@ class GroupBy:
         self.logger = getArkoudaLogger(name=self.__class__.__name__)
         self.assume_sorted = assume_sorted
         self.hash_strings = hash_strings
-        self.per_locale = False
         self.keys = keys
         if isinstance(keys, pdarray):
             self.nkeys = 1
             self.size = keys.size
             if assume_sorted:
                 self.permutation = arange(self.size)
-            elif self.per_locale:
-                self.permutation = local_argsort(keys)
             else:
                 self.permutation = argsort(keys)
         # for Strings or Categorical
@@ -71,9 +68,6 @@ class GroupBy:
             self.size = keys.size
             if assume_sorted:
                 self.permutation = arange(self.size)
-            elif self.per_locale:
-                raise ValueError(("per-locale groupby not supported on " +
-                                  "Strings or Categorical"))
             else:
                 self.permutation = keys.group()
         else:
@@ -91,10 +85,7 @@ class GroupBy:
         self.find_segments()       
             
     def find_segments(self) -> None:
-        if self.per_locale:
-            cmd = "findLocalSegments"
-        else:
-            cmd = "findSegments"
+        cmd = "findSegments"
         if self.nkeys == 1:
             # for Categorical
             if hasattr(self.keys, 'segments') and self.keys.segments is not None:
@@ -164,10 +155,7 @@ class GroupBy:
             The number of times each unique key appears
         
         '''
-        if self.per_locale:
-            cmd = "countLocalRdx"
-        else:
-            cmd = "countReduction"
+        cmd = "countReduction"
         reqMsg = "{} {} {}".format(cmd, self.segments.name, self.size)
         repMsg = generic_msg(reqMsg)
         self.logger.debug(repMsg)
@@ -214,10 +202,7 @@ class GroupBy:
             permuted_values = values
         else:
             permuted_values = values[self.permutation]
-        if self.per_locale:
-            cmd = "segmentedLocalRdx"
-        else:
-            cmd = "segmentedReduction"
+        cmd = "segmentedReduction"
         reqMsg = "{} {} {} {} {}".format(cmd,
                                          permuted_values.name,
                                          self.segments.name,

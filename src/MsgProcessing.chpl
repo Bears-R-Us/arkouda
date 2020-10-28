@@ -50,7 +50,11 @@ module MsgProcessing
         var (dtypestr, sizestr) = payload.decode().splitMsgToTuple(2);
         var dtype = str2dtype(dtypestr);
         var size = try! sizestr:int;
-
+        if (dtype == DType.UInt8) || (dtype == DType.Bool) {
+          overMemLimit(size);
+        } else {
+          overMemLimit(8*size);
+        }
         // get next symbol name
         var rname = st.nextName();
         
@@ -225,6 +229,7 @@ module MsgProcessing
         var stride = try! stridestr:int;
         // compute length
         var len = (stop - start + stride - 1) / stride;
+        overMemLimit(8*len);
         // get next symbol name
         var rname = st.nextName();
         if v {try! writeln("%s %i %i %i : %i , %s".format(cmd, start, stop, stride, len, rname));try! stdout.flush();}
@@ -264,6 +269,7 @@ module MsgProcessing
         var len = try! lenstr:int;
         // compute stride
         var stride = (stop - start) / (len-1);
+        overMemLimit(8*len);
         // get next symbol name
         var rname = st.nextName();
         if v {try! writeln("%s %r %r %i : %r , %s".format(cmd, start, stop, len, stride, rname));try! stdout.flush();}
