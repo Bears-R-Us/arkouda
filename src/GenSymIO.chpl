@@ -1055,7 +1055,6 @@ module GenSymIO {
                 }
             }
         } catch e: FileNotFoundError {
-              writeln("HELLO");
               writeln(e.message());
               return try! "Error: unable to open file for writing: %s".format(filename);
         } catch e: MismatchedAppendError {
@@ -1601,7 +1600,6 @@ module GenSymIO {
           for f in filenames {
               var result =  try! exists(f);
               allexist &= result;
-              writeln("RESULT %t".format(result));
               if result {
                   anyexist = true;
               }
