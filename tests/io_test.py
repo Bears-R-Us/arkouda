@@ -190,7 +190,20 @@ class IOTest(ArkoudaTest):
                     filenames=['{}/iotest_single_column_LOCALE0'.format(IOTest.io_test_dir),
                                '{}/iotest_single_column_dupe_LOCALE0'.format(IOTest.io_test_dir)])
         self.assertIsNotNone(dataset)
+
+        with self.assertRaises(RuntimeError) as cm:
+            ak.read_hdf(dsetName='in_tens_pdarray', 
+                    filenames=['{}/iotest_single_column_LOCALE0'.format(IOTest.io_test_dir),
+                               '{}/iotest_single_column_dupe_LOCALE0'.format(IOTest.io_test_dir)])       
+        self.assertTrue('Error: The dataset in_tens_pdarray does not exist in the file' in  
+                         cm.exception.args[0])
         
+        with self.assertRaises(RuntimeError) as cm:
+            ak.read_hdf(dsetName='int_tens_pdarray', 
+                    filenames=['{}/iotest_single_colum_LOCALE0'.format(IOTest.io_test_dir),
+                               '{}/iotest_single_colum_dupe_LOCALE0'.format(IOTest.io_test_dir)])       
+        self.assertTrue('iotest_single_colum_LOCALE0 not found' in  cm.exception.args[0])
+
     def testReadHdfWithGlob(self):
         '''
         Creates 2..n files depending upon the number of arkouda_server locales with two
@@ -416,7 +429,8 @@ class IOTest(ArkoudaTest):
         r_strings = r_mixed['m_strings'].to_ndarray()
         r_strings.sort()
 
-        self.assertTrue((strings  == r_strings).all())   
+        self.assertTrue((strings  == r_strings).all())
+
 
     def tearDown(self):
         super(IOTest, self).tearDown()
