@@ -136,7 +136,7 @@ class NumericTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.value_counts([0]) 
-        self.assertEqual('must be a pdarray, not a list', 
+        self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
                         cm.exception.args[0])   
         
             

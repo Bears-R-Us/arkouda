@@ -1,12 +1,11 @@
 import numpy as np
+from typeguard import typechecked
 from typing import Tuple, Union
 from arkouda.client import generic_msg
 from arkouda.dtypes import *
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraysetops import unique
-from arkouda.decorators import checkforpdarray
-from typeguard import typechecked
-import typeguard
+from arkouda.strings import Strings
 
 __all__ = ["abs", "log", "exp", "cumsum", "cumprod", "sin", "cos", 
            "where", "histogram", "value_counts"]    
@@ -332,9 +331,8 @@ def histogram(pda : pdarray, bins : int=10) -> pdarray:
     repMsg = generic_msg("histogram {} {}".format(pda.name, bins))
     return create_pdarray(repMsg)
 
-
-@checkforpdarray
-def value_counts(pda : pdarray) -> Tuple[pdarray,int]:
+@typechecked
+def value_counts(pda : pdarray) -> Tuple[Union[pdarray,Strings],pdarray]:
     """
     Count the occurrences of the unique values of an array.
 
@@ -345,7 +343,7 @@ def value_counts(pda : pdarray) -> Tuple[pdarray,int]:
 
     Returns
     -------
-    unique_values : pdarray, int64
+    unique_values : pdarray, int64 or Strings
         The unique values, sorted in ascending order
 
     counts : pdarray, int64
