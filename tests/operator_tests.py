@@ -256,6 +256,14 @@ class OperatorsTest(ArkoudaTest):
         self.assertEqual('Error: reductionMsg: is_sorted bool not implemented', 
                          cm.exception.args[0])
         
+        with self.assertRaises(TypeError):
+            ak.ones(100).any([0])
+            
+        with self.assertRaises(TypeError) as cm:
+            ak.unique(list(range(0,10)))
+        self.assertEqual('must be pdarray, Strings, or Categorical {}', 
+                         cm.exception.args[0])
+        
 if __name__ == '__main__':
     '''
     Enables invocation of operator tests outside of pytest test harness

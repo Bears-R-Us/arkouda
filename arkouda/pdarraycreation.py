@@ -1,6 +1,7 @@
 import numpy as np # type: ignore
 import struct
 from typing import cast, Iterable, Union
+from typeguard import typechecked
 from arkouda.client import generic_msg, maxTransferBytes
 from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
@@ -210,6 +211,7 @@ def ones(size : int, dtype : type=float64) -> pdarray:
     a.fill(1)
     return a
 
+@typechecked
 def zeros_like(pda : pdarray) -> pdarray:
     """
     Create a zero-filled pdarray of the same size and dtype as an existing pdarray.
@@ -238,6 +240,7 @@ def zeros_like(pda : pdarray) -> pdarray:
     else:
         raise TypeError("must be pdarray {}".format(pda))
 
+@typechecked
 def ones_like(pda : pdarray) -> pdarray:
     """
     Create a one-filled pdarray of the same size and dtype as an existing pdarray.
@@ -517,8 +520,9 @@ def uniform(size : int, low : float=0.0, high : float=1.0) -> pdarray:
     if not isinstance(low, float) or not isinstance(high, float):
         raise TypeError('Both the low and high parameters must be ints or floats')
     return randint(low=low, high=high, size=size, dtype='float64')
-    
 
+    
+@typechecked
 def standard_normal(size : int) -> pdarray:
     """
     Draw real numbers from the standard normal distribution.
@@ -550,15 +554,13 @@ def standard_normal(size : int) -> pdarray:
 
     ``(sigma * standard_normal(size)) + mu``
     """
-    if not isinstance(size, int):
-        raise TypeError('The size parameter must be an integer')
     if size < 0:
         raise ValueError("The size parameter must be > 0")
     msg = "randomNormal {}".format(NUMBER_FORMAT_STRINGS['int64'].format(size))
     repMsg = generic_msg(msg)
     return create_pdarray(cast(str,repMsg))
 
-
+@typechecked
 def random_strings_uniform(minlen : int, maxlen : int, size : int, 
                            characters : str='uppercase') -> Strings:
     """
@@ -590,9 +592,6 @@ def random_strings_uniform(minlen : int, maxlen : int, size : int,
     --------
     random_strings_lognormal, randint
     """
-    if not isinstance(minlen, int) or not isinstance(maxlen, int) \
-                                                  or not isinstance(size, int):
-        raise TypeError('minlen, maxlen, and size all must be integers')
     if minlen < 0 or maxlen < minlen or size < 0:
         raise ValueError(("Incompatible arguments: minlen < 0, maxlen < minlen, " +
                           "or size < 0"))

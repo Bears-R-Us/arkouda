@@ -138,7 +138,7 @@ class CoargsortTest(ArkoudaTest):
         with self.assertRaises(ValueError):
             ak.coargsort([ones, short_ones])
             
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             ak.coargsort([list(range(0,10)), [0]])       
 
 def create_parser():

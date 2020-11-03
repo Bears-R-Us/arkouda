@@ -1,14 +1,13 @@
 import numpy as np # type: ignore
-from typing import cast, Optional, Tuple, Union, TYPE_CHECKING
-if TYPE_CHECKING:
-    from arkouda.categorical import Categorical
+from typeguard import typechecked
+from typing import cast, Optional, Tuple, Union, ForwardRef
 from arkouda.client import generic_msg
 from arkouda.dtypes import *
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraysetops import unique
-from arkouda.decorators import checkforpdarray
-from typeguard import typechecked
 from arkouda.strings import Strings
+
+Categorical = ForwardRef('Categorical')
 
 __all__ = ["abs", "log", "exp", "cumsum", "cumprod", "sin", "cos", 
            "where", "histogram", "value_counts"]    
@@ -334,10 +333,9 @@ def histogram(pda : pdarray, bins : int=10) -> pdarray:
     repMsg = generic_msg("histogram {} {}".format(pda.name, bins))
     return create_pdarray(cast(str,repMsg))
 
-
-@checkforpdarray
-def value_counts(pda : pdarray) -> Union['Categorical',
-                                            Tuple[Union[pdarray,Strings],Optional[pdarray]]]:
+@typechecked
+def value_counts(pda : pdarray) -> Union[Categorical, # type: ignore
+                        Tuple[Union[pdarray,Strings],Optional[pdarray]]]:
     """
     Count the occurrences of the unique values of an array.
 
@@ -348,7 +346,7 @@ def value_counts(pda : pdarray) -> Union['Categorical',
 
     Returns
     -------
-    unique_values : pdarray, int64
+    unique_values : pdarray, int64 or Strings
         The unique values, sorted in ascending order
 
     counts : pdarray, int64

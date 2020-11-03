@@ -1,3 +1,4 @@
+from typeguard import typechecked
 import json, os
 from typing import cast, Dict, List, Mapping, Optional, Union
 from arkouda.client import generic_msg
@@ -7,6 +8,7 @@ from arkouda.strings import Strings
 __all__ = ["ls_hdf", "read_hdf", "read_all", "load", "get_datasets",
            "load_all", "save_all"]
 
+@typechecked
 def ls_hdf(filename : str) -> str:
     """
     This function calls the h5ls utility on a filename visible to the
@@ -24,6 +26,7 @@ def ls_hdf(filename : str) -> str:
     """
     return cast(str,generic_msg("lshdf {}".format(json.dumps([filename]))))
 
+@typechecked
 def read_hdf(dsetName : str, filenames : Union[str,List[str]]) -> Union[pdarray, Strings]:
     """
     Read a single dataset from multiple HDF5 files into an Arkouda
@@ -44,7 +47,8 @@ def read_hdf(dsetName : str, filenames : Union[str,List[str]]) -> Union[pdarray,
     Raises
     ------
     TypeError 
-        Raised if dsetName is not a str 
+        Raised if dsetName is not a str or if filenames is neither a string
+        nor a list of strings
     ValueError 
         Raised if all datasets are not present in all hdf5 files    
 
@@ -63,9 +67,6 @@ def read_hdf(dsetName : str, filenames : Union[str,List[str]]) -> Union[pdarray,
     """
     if isinstance(filenames, str):
         filenames = [filenames]
-    if not isinstance(dsetName, str):
-        raise TypeError("Datset name must be a str, not {}".\
-                        format(type(dsetName)))
     # rep_msg = generic_msg("readhdf {} {:n} {}".format(dsetName, len(filenames), json.dumps(filenames)))
     # # This is a hack to detect a string return type
     # # In the future, we should put the number and type into the return message
@@ -153,7 +154,8 @@ def read_all(filenames : Union[str,List[str]], datasets :
         else:
             return create_pdarray(cast(str,rep_msg))
 
-def load(path_prefix : str, dataset : str='array') -> Union[pdarray, Strings]:
+@typechecked
+def load(path_prefix : str, dataset : str='array') -> Union[pdarray,Strings]:
     """
     Load a pdarray previously saved with ``pdarray.save()``.
 
@@ -172,7 +174,7 @@ def load(path_prefix : str, dataset : str='array') -> Union[pdarray, Strings]:
     Raises
     ------
     TypeError 
-        Raised if dsetName is not a str 
+        Raised if dataset is not a str 
     ValueError 
         Raised if all datasets are not present in all hdf5 files     
 
@@ -206,9 +208,10 @@ def get_datasets(filename : str) -> List[str]:
     datasets = [line.split()[0] for line in rep_msg.splitlines()]
     return datasets
 
+@typechecked
 def load_all(path_prefix : str) -> Mapping[str,Union[pdarray,Strings]]:
     """
-    Load multiple pdarray previously saved with ``save_all()``.
+    Load multiple pdarrays or Strings previously saved with ``save_all()``.
 
     Parameters
     ----------

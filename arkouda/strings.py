@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import cast, Tuple, Union
 from arkouda.client import generic_msg, pdarrayIterThresh
 from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value
@@ -115,7 +116,7 @@ class Strings:
     def __repr__(self) -> str:
         return "array({})".format(self.__str__())
 
-    def _binop(self, other : 'Strings', op : str) -> pdarray:
+    def _binop(self, other : Strings, op : str) -> pdarray:
         """
         Executes the requested binop on this Strings instance and the
         parameter Strings object and returns the results within
@@ -502,8 +503,8 @@ class Strings:
         return self.peel(delimiter, times=times, includeDelimiter=includeDelimiter, 
                          keepPartial=keepPartial, fromRight=True)
 
-    def stick(self, other : 'Strings', delimiter : str="", 
-                                        toLeft : bool=False) -> 'Strings':
+    def stick(self, other : Strings, delimiter : str="", 
+                                        toLeft : bool=False) -> Strings:
         """
         Join the strings from another array onto one end of the strings 
         of this array, optionally inserting a delimiter.
@@ -566,10 +567,10 @@ class Strings:
         repMsg = generic_msg(msg)
         return Strings(*cast(str,repMsg).split('+'))
 
-    def __add__(self, other : 'Strings') -> 'Strings':
+    def __add__(self, other : Strings) -> Strings:
         return self.stick(other)
     
-    def lstick(self, other : 'Strings', delimiter : str="") -> 'Strings':
+    def lstick(self, other : Strings, delimiter : str="") -> Strings:
         """
         Join the strings from another array onto the left of the strings 
         of this array, optionally inserting a delimiter.
@@ -609,7 +610,7 @@ class Strings:
         """
         return self.stick(other, delimiter=delimiter, toLeft=True)
 
-    def __radd__(self, other : 'Strings') -> 'Strings':
+    def __radd__(self, other : Strings) -> Strings:
         return self.lstick(other)
     
     def hash(self) -> Tuple[pdarray,pdarray]:

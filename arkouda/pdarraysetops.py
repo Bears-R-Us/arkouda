@@ -1,4 +1,6 @@
-from typing import cast, Optional, Sequence, Tuple, Union
+from __future__ import annotations
+from typing import cast, Iterable, Optional, Sequence, Tuple, Union, ForwardRef
+from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros_like, array
@@ -6,13 +8,17 @@ from arkouda.sorting import argsort
 from arkouda.strings import Strings
 from arkouda.logger import getArkoudaLogger
 
+Categorical = ForwardRef('Categorical')
+
 __all__ = ["unique", "in1d", "concatenate", "union1d", "intersect1d",
            "setdiff1d", "setxor1d"]
 
 logger = getArkoudaLogger(name='pdarraysetops')
 
-def unique(pda : pdarray, return_counts : bool=False) -> Union['Categorical', # type: ignore
-                                    Tuple[Union[pdarray,Strings],Optional[pdarray]]]:
+@typechecked
+def unique(pda : Union[pdarray,Strings,'Categorical'], # type: ignore
+           return_counts : bool=False) -> Union[Union[pdarray,Strings,'Categorical'], # type: ignore
+                  Tuple[Union[pdarray,Strings,'Categorical'], Optional[pdarray]]]: #type: ignore
     """
     Find the unique elements of an array.
 
@@ -55,9 +61,9 @@ def unique(pda : pdarray, return_counts : bool=False) -> Union['Categorical', # 
     >>> ak.unique(A)
     array([1, 2, 3])
     """
-    from arkouda.categorical import Categorical
+    from arkouda.categorical import Categorical as Categorical_
     if hasattr(pda, 'unique'):
-        return cast(Categorical,pda).unique()
+        return cast(Categorical_,pda).unique()
     elif isinstance(pda, pdarray):
         repMsg = generic_msg("unique {} {} {}".\
                              format(pda.objtype, pda.name, return_counts))
@@ -69,8 +75,8 @@ def unique(pda : pdarray, return_counts : bool=False) -> Union['Categorical', # 
             return create_pdarray(cast(str,repMsg))
     elif isinstance(pda, Strings):
         name = '{}+{}'.format(pda.offsets.name, pda.bytes.name)
-        repMsg = generic_msg("unique {} {} {}".\
-                             format(pda.objtype, name, return_counts))
+        repMsg = cast(str,generic_msg("unique {} {} {}".\
+                             format(pda.objtype, name, return_counts)))
         vc = repMsg.split('+')
         logger.debug(vc)
         if return_counts:
@@ -78,9 +84,10 @@ def unique(pda : pdarray, return_counts : bool=False) -> Union['Categorical', # 
         else:
             return Strings(vc[0], vc[1])
     else:
-        raise TypeError("must be pdarray or Strings {}".format(pda))
+        raise TypeError("must be pdarray, Strings, or Categorical {}")
 
-def in1d(pda1 : pdarray, pda2 : pdarray, invert : bool=False) -> pdarray:
+def in1d(pda1 : Union[pdarray,Strings,'Categorical'], pda2 : Union[pdarray,Strings,'Categorical'], #type: ignore
+                         invert : bool=False) -> pdarray: #type: ignore
     """
     Test whether each element of a 1-D array is also present in a second array.
 
@@ -121,9 +128,9 @@ def in1d(pda1 : pdarray, pda2 : pdarray, invert : bool=False) -> pdarray:
     equivalent to ``ak.array([item in b for item in a])``, but is much
     faster and scales to arbitrarily large ``a``.
     """
-    from arkouda.categorical import Categorical
+    from arkouda.categorical import Categorical as Categorical_
     if hasattr(pda1, 'in1d'):
-        return cast(Categorical,pda1).in1d(pda2)
+        return cast(Categorical_,pda1).in1d(pda2)
     elif isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         repMsg = generic_msg("in1d {} {} {}".\
                              format(pda1.name, pda2.name, invert))
@@ -141,6 +148,7 @@ def in1d(pda1 : pdarray, pda2 : pdarray, invert : bool=False) -> pdarray:
     else:
         raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
 
+@typechecked
 def concatenate(arrays : Sequence[Union[pdarray,Strings]]) -> Union[pdarray,Strings]:
     """
     Concatenate an iterable of ``pdarray`` objects into one ``pdarray``.
@@ -177,11 +185,11 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings]]) -> Union[pdarray,Stri
     objtype = None
     dtype = None
     names = []
-    if len(arrays) < 1:
+    if len(cast(list,arrays)) < 1:
         raise ValueError("concatenate called on empty iterable")
-    if len(arrays) == 1:
+    if len(cast(list,arrays)) == 1:
         # there are no arrays to concatenate, so just return arrays param
-        return arrays[0]
+        return cast(Union[pdarray,Strings],arrays[0])
     for a in arrays:
         if not isinstance(a, pdarray) and not isinstance(a, Strings):
             raise TypeError(("arrays must be an iterable of pdarrays" 
@@ -207,7 +215,7 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings]]) -> Union[pdarray,Stri
         else:
             return arrays[0]
     repMsg = generic_msg("concatenate {} {} {}".\
-                            format(len(arrays), objtype, ' '.join(names)))
+                            format(len(cast(list,arrays)), objtype, ' '.join(names)))
     if objtype == "pdarray":
         return create_pdarray(cast(str,repMsg))
     elif objtype == "str":
@@ -216,6 +224,7 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings]]) -> Union[pdarray,Stri
         raise TypeError('arrays must be an array of pdarray or Strings objects')
 
 # (A1 | A2) Set Union: elements are in one or the other or both
+@typechecked
 def union1d(pda1 : pdarray, pda2 : pdarray) -> pdarray:
     """
     Find the union of two arrays.
@@ -249,22 +258,20 @@ def union1d(pda1 : pdarray, pda2 : pdarray) -> pdarray:
     >>> ak.union1d([-1, 0, 1], [-2, 0, 2])
     array([-2, -1,  0,  1,  2])
     """
-    if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
-        if pda1.size == 0:
-            return cast(pdarray,pda2) # union is pda2
-        if pda2.size == 0:
-            return cast(pdarray,pda1) # union is pda1
-        if pda1.dtype == int and pda2.dtype == int:
-            repMsg = generic_msg("union1d {} {}".\
-                                 format(pda1.name, pda2.name))
-            return cast(pdarray,create_pdarray(cast(str,repMsg)))
-        return cast(pdarray, 
+    if pda1.size == 0:
+        return pda2 # union is pda2
+    if pda2.size == 0:
+        return pda1 # union is pda1
+    if pda1.dtype == int and pda2.dtype == int:
+        repMsg = generic_msg("union1d {} {}".\
+                             format(pda1.name, pda2.name))
+        return cast(pdarray,create_pdarray(cast(str,repMsg)))
+    return cast(pdarray, 
                     unique(cast(pdarray, concatenate((unique(cast(pdarray,pda1)), # type: ignore
                                                      unique(cast(pdarray,pda2)))))))
-    else:
-        raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
 
 # (A1 & A2) Set Intersection: elements have to be in both arrays
+@typechecked
 def intersect1d(pda1 : pdarray, pda2 : pdarray, 
                                    assume_unique : bool=False) -> pdarray:
     """
@@ -301,28 +308,26 @@ def intersect1d(pda1 : pdarray, pda2 : pdarray,
     >>> ak.intersect1d([1, 3, 4, 3], [3, 1, 2, 1])
     array([1, 3])
     """
-    if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
-        if pda1.size == 0:
-            return pda1 # nothing in the intersection
-        if pda2.size == 0:
-            return pda2 # nothing in the intersection
-        if pda1.dtype == int and pda2.dtype == int:
-            repMsg = generic_msg("intersect1d {} {} {}".\
-                                 format(pda1.name, pda2.name, assume_unique))
-            return create_pdarray(cast(str,repMsg))
-        if not assume_unique:
-            pda1 = cast(pdarray, unique(pda1))
-            pda2 = cast(pdarray, unique(pda2))
-        aux = concatenate((pda1, pda2))
-        aux_sort_indices = argsort(aux)
-        aux = aux[aux_sort_indices]
-        mask = aux[1:] == aux[:-1]
-        int1d = aux[:-1][mask]
-        return int1d
-    else:
-        raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
+    if pda1.size == 0:
+        return pda1 # nothing in the intersection
+    if pda2.size == 0:
+        return pda2 # nothing in the intersection
+    if pda1.dtype == int and pda2.dtype == int:
+        repMsg = generic_msg("intersect1d {} {} {}".\
+                             format(pda1.name, pda2.name, assume_unique))
+        return create_pdarray(cast(str,repMsg))
+    if not assume_unique:
+        pda1 = unique(pda1)
+        pda2 = unique(pda2)
+    aux = concatenate((pda1, pda2))
+    aux_sort_indices = argsort(aux)
+    aux = aux[aux_sort_indices]
+    mask = aux[1:] == aux[:-1]
+    int1d = aux[:-1][mask]
+    return int1d
 
 # (A1 - A2) Set Difference: elements have to be in first array but not second
+@typechecked
 def setdiff1d(pda1 : pdarray, pda2 : pdarray, 
                                 assume_unique : bool=False) -> pdarray:
     """
@@ -361,23 +366,21 @@ def setdiff1d(pda1 : pdarray, pda2 : pdarray,
     >>> ak.setdiff1d(a, b)
     array([1, 2])
     """
-    if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
-        if pda1.size == 0:
-            return pda1 # return a zero length pdarray
-        if pda2.size == 0:
-            return pda1 # subtracting nothing return orig pdarray
-        if pda1.dtype == int and pda2.dtype == int:
-            repMsg = generic_msg("setdiff1d {} {} {}".\
-                                format(pda1.name, pda2.name, assume_unique))
-            return create_pdarray(cast(str,repMsg))
-        if not assume_unique:
-            pda1 = cast(pdarray, unique(pda1))
-            pda2 = cast(pdarray, unique(pda2))
-        return pda1[in1d(pda1, pda2, invert=True)]
-    else:
-        raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
+    if pda1.size == 0:
+        return pda1 # return a zero length pdarray
+    if pda2.size == 0:
+        return pda1 # subtracting nothing return orig pdarray
+    if pda1.dtype == int and pda2.dtype == int:
+        repMsg = generic_msg("setdiff1d {} {} {}".\
+                            format(pda1.name, pda2.name, assume_unique))
+        return create_pdarray(cast(str,repMsg))
+    if not assume_unique:
+        pda1 = cast(pdarray, unique(pda1))
+        pda2 = cast(pdarray, unique(pda2))
+    return pda1[in1d(pda1, pda2, invert=True)]
 
 # (A1 ^ A2) Set Symmetric Difference: elements are not in the intersection
+@typechecked
 def setxor1d(pda1 : pdarray, pda2 : pdarray, 
                                     assume_unique : bool=False) -> pdarray:
     """
@@ -414,22 +417,19 @@ def setxor1d(pda1 : pdarray, pda2 : pdarray,
     >>> ak.setxor1d(a,b)
     array([1, 4, 5, 7])
     """
-    if isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
-        if pda1.size == 0:
-            return pda2 # return other pdarray if pda1 is empty
-        if pda2.size == 0:
-            return pda1 # return other pdarray if pda2 is empty
-        if pda1.dtype == int and pda2.dtype == int:
-            repMsg = generic_msg("setxor1d {} {} {}".\
-                                 format(pda1.name, pda2.name, assume_unique))
-            return create_pdarray(cast(str,repMsg))
-        if not assume_unique:
-            pda1 = cast(pdarray, unique(pda1))
-            pda2 = cast(pdarray, unique(pda2))
-        aux = concatenate((pda1, pda2))
-        aux_sort_indices = argsort(aux)
-        aux = aux[aux_sort_indices]
-        flag = concatenate((array([True]), aux[1:] != aux[:-1], array([True])))
-        return aux[flag[1:] & flag[:-1]]
-    else:
-        raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
+    if pda1.size == 0:
+        return pda2 # return other pdarray if pda1 is empty
+    if pda2.size == 0:
+        return pda1 # return other pdarray if pda2 is empty
+    if pda1.dtype == int and pda2.dtype == int:
+        repMsg = generic_msg("setxor1d {} {} {}".\
+                             format(pda1.name, pda2.name, assume_unique))
+        return create_pdarray(cast(str,repMsg))
+    if not assume_unique:
+        pda1 = cast(pdarray, unique(pda1))
+        pda2 = cast(pdarray, unique(pda2))
+    aux = concatenate((pda1, pda2))
+    aux_sort_indices = argsort(aux)
+    aux = aux[aux_sort_indices]
+    flag = concatenate((array([True]), aux[1:] != aux[:-1], array([True])))
+    return aux[flag[1:] & flag[:-1]]

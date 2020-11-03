@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import cast, List, Sequence, Tuple, Union, TYPE_CHECKING
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
