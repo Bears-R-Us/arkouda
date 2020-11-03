@@ -1,4 +1,6 @@
+from __future__ import annotations
 from typing import Tuple, Union
+from typeguard import typechecked
 import json, struct
 import numpy as np
 from arkouda.client import generic_msg, verbose, maxTransferBytes, pdarrayIterThresh
@@ -12,6 +14,7 @@ __all__ = ["pdarray", "info", "clear", "any", "all", "is_sorted", "sum", "prod",
 
 logger = getArkoudaLogger(name='pdarray')    
 
+@typechecked
 def parse_single_value(msg : str) -> object:
     """
     Attempt to convert a scalar return value from the arkouda server to a
@@ -155,7 +158,7 @@ class pdarray:
         return fmt.format(other)
 
     # binary operators
-    def _binop(self, other : 'pdarray', op : str) -> 'pdarray':
+    def _binop(self, other : pdarray, op : str) -> pdarray:
         """
         Executes binary operation specified by the op string
         
@@ -202,7 +205,7 @@ class pdarray:
 
     # reverse binary operators
     # pdarray binop pdarray: taken care of by binop function
-    def _r_binop(self, other : 'pdarray', op : str) -> 'pdarray':
+    def _r_binop(self, other : pdarray, op : str) -> pdarray:
         """
         Executes reverse binary operation specified by the op string
         
@@ -485,9 +488,19 @@ class pdarray:
             raise TypeError("Unhandled key type: {} ({})".\
                             format(key, type(key)))
 
-    def fill(self, value : 'pdarray') -> None:
+    @typechecked
+    def fill(self, value : Union[int,float,str]) -> None:
         """
         Fill the array (in place) with a constant value.
+        
+        Parameters
+        ----------
+        value : Union[int,float,str]
+        
+        Raises
+        -------
+        TypeError
+            Raised if value is not an int, float, or str         
         """
         generic_msg("set {} {} {}".format(self.name, 
                                         self.dtype.name, self.format_other(value)))
@@ -618,7 +631,7 @@ class pdarray:
         """
         return std(self, ddof=ddof)
 
-    def mink(self, k : int) -> 'pdarray':
+    def mink(self, k : int) -> pdarray:
         """
         Compute the minimum "k" values.
         
@@ -639,8 +652,8 @@ class pdarray:
         """
         return mink(self,k)
 
-
-    def maxk(self, k : int) -> 'pdarray':
+    @typechecked
+    def maxk(self, k : int) -> pdarray:
         """
         Compute the maximum "k" values.
         
@@ -661,7 +674,7 @@ class pdarray:
         """
         return maxk(self,k)
 
-    def argmink(self, k : int) -> 'pdarray':
+    def argmink(self, k : int) -> pdarray:
         """
         Compute the minimum "k" values.
         
@@ -682,8 +695,7 @@ class pdarray:
         """
         return argmink(self,k)
 
-
-    def argmaxk(self, k : int) -> 'pdarray':
+    def argmaxk(self, k : int) -> pdarray:
         """
         Compute the maximum "k" values.
         
@@ -908,13 +920,11 @@ class pdarray:
         return generic_msg("tohdf {} {} {} {} {}".\
                            format(self.name, dataset, m, json_array, self.dtype))
 
-
-
 # creates pdarray object
 #   only after:
 #       all values have been checked by python module and...
 #       server has created pdarray already befroe this is called
-def create_pdarray(repMsg : str) -> 'pdarray':
+def create_pdarray(repMsg : str) -> pdarray:
     """
     Return a pdarray instance pointing to an array created by the arkouda server.
     The user should not call this function directly.
@@ -953,6 +963,7 @@ def create_pdarray(repMsg : str) -> 'pdarray':
                                     ndim, shape, itemsize))
     return pdarray(name, mydtype, size, ndim, shape, itemsize)
 
+@typechecked
 def info(pda : Union[pdarray, str]) -> str:
     """
     Returns information about the pdarray instance
@@ -979,8 +990,6 @@ def info(pda : Union[pdarray, str]) -> str:
         return generic_msg("info {}".format(pda.name))
     elif isinstance(pda, str):
         return generic_msg("info {}".format(pda))
-    else:
-        raise TypeError("info: must be pdarray or string".format(pda))
 
 def clear() -> None:
     """
@@ -997,7 +1006,8 @@ def clear() -> None:
     """
     generic_msg("clear")
 
-def any(pda : 'pdarray') -> bool:
+@typechecked
+def any(pda : pdarray) -> bool:
     """
     Return True iff any element of the array evaluates to True.
     
@@ -1018,14 +1028,11 @@ def any(pda : 'pdarray') -> bool:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    if isinstance(pda, pdarray):
-        repMsg = generic_msg("reduction {} {}".format("any", pda.name))
-        return parse_single_value(repMsg)
-    else:
-        raise TypeError("must be a pdarray, not a {}".\
-                                        format(pda.__class__.__name__))
+    repMsg = generic_msg("reduction {} {}".format("any", pda.name))
+    return parse_single_value(repMsg)
 
-def all(pda : 'pdarray') -> bool:
+@typechecked
+def all(pda : pdarray) -> bool:
     """
     Return True iff all elements of the array evaluate to True.
 
@@ -1046,14 +1053,11 @@ def all(pda : 'pdarray') -> bool:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    if isinstance(pda, pdarray):
-        repMsg = generic_msg("reduction {} {}".format("all", pda.name))
-        return parse_single_value(repMsg)
-    else:
-        raise TypeError("must be a pdarray, not a {}".\
-                                        format(pda.__class__.__name__))
+    repMsg = generic_msg("reduction {} {}".format("all", pda.name))
+    return parse_single_value(repMsg)
 
-def is_sorted(pda : 'pdarray') -> bool:
+@typechecked
+def is_sorted(pda : pdarray) -> bool:
     """
     Return True iff the array is monotonically non-decreasing.
     
@@ -1074,14 +1078,11 @@ def is_sorted(pda : 'pdarray') -> bool:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    if isinstance(pda, pdarray):
-        repMsg = generic_msg("reduction {} {}".format("is_sorted", pda.name))
-        return parse_single_value(repMsg)
-    else:
-        raise TypeError("must be a pdarray, not a {}".\
-                                        format(pda.__class__.__name__))
+    repMsg = generic_msg("reduction {} {}".format("is_sorted", pda.name))
+    return parse_single_value(repMsg)
 
-def sum(pda : 'pdarray') -> np.float64:
+@typechecked
+def sum(pda : pdarray) -> np.float64:
     """
     Return the sum of all elements in the array.
 
@@ -1102,14 +1103,11 @@ def sum(pda : 'pdarray') -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    if isinstance(pda, pdarray):
-        repMsg = generic_msg("reduction {} {}".format("sum", pda.name))
-        return parse_single_value(repMsg)
-    else:
-        raise TypeError("must be a pdarray, not a {}".\
-                                        format(pda.__class__.__name__))
+    repMsg = generic_msg("reduction {} {}".format("sum", pda.name))
+    return parse_single_value(repMsg)
 
-def prod(pda : 'pdarray') -> np.float64:
+@typechecked
+def prod(pda : pdarray) -> np.float64:
     """
     Return the product of all elements in the array. Return value is
     always a np.float64 or np.int64
@@ -1131,14 +1129,10 @@ def prod(pda : 'pdarray') -> np.float64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    if isinstance(pda, pdarray):
-        repMsg = generic_msg("reduction {} {}".format("prod", pda.name))
-        return parse_single_value(repMsg)
-    else:
-        raise TypeError("must be a pdarray, not a {}".\
-                                        format(pda.__class__.__name__))
+    repMsg = generic_msg("reduction {} {}".format("prod", pda.name))
+    return parse_single_value(repMsg)
 
-def min(pda : 'pdarray') -> Union[np.float64,np.int64]:
+def min(pda : pdarray) -> Union[np.float64,np.int64]:
     """
     Return the minimum value of the array.
     
@@ -1159,14 +1153,11 @@ def min(pda : 'pdarray') -> Union[np.float64,np.int64]:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    if isinstance(pda, pdarray):
-        repMsg = generic_msg("reduction {} {}".format("min", pda.name))
-        return parse_single_value(repMsg)
-    else:
-        raise TypeError("must be a pdarray, not a {}".\
-                                        format(pda.__class__.__name__))
+    repMsg = generic_msg("reduction {} {}".format("min", pda.name))
+    return parse_single_value(repMsg)
 
-def max(pda : 'pdarray') -> Union[np.float64,np.int64]:
+@typechecked
+def max(pda : pdarray) -> Union[np.float64,np.int64]:
     """
     Return the maximum value of the array.
     
@@ -1187,14 +1178,11 @@ def max(pda : 'pdarray') -> Union[np.float64,np.int64]:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    if isinstance(pda, pdarray):
-        repMsg = generic_msg("reduction {} {}".format("max", pda.name))
-        return parse_single_value(repMsg)
-    else:
-        raise TypeError("must be a pdarray, not a {}".\
-                                        format(pda.__class__.__name__))
+    repMsg = generic_msg("reduction {} {}".format("max", pda.name))
+    return parse_single_value(repMsg)
 
-def argmin(pda : 'pdarray') -> np.int64:
+@typechecked
+def argmin(pda : pdarray) -> np.int64:
     """
     Return the index of the first minimum value of the array.
 
@@ -1215,14 +1203,11 @@ def argmin(pda : 'pdarray') -> np.int64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    if isinstance(pda, pdarray):
-        repMsg = generic_msg("reduction {} {}".format("argmin", pda.name))
-        return parse_single_value(repMsg)
-    else:
-        raise TypeError("must be a pdarray, not a {}".\
-                                        format(pda.__class__.__name__))
+    repMsg = generic_msg("reduction {} {}".format("argmin", pda.name))
+    return parse_single_value(repMsg)
 
-def argmax(pda : 'pdarray') -> np.int64:
+@typechecked
+def argmax(pda : pdarray) -> np.int64:
     """
     Return the index of the first maximum value of the array.
     
@@ -1243,14 +1228,12 @@ def argmax(pda : 'pdarray') -> np.int64:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    if isinstance(pda, pdarray):
-        repMsg = generic_msg("reduction {} {}".format("argmax", pda.name))
-        return parse_single_value(repMsg)
-    else:
-        raise TypeError("must be a pdarray, not a {}".\
-                                            format(pda.__class__.__name__))
+    repMsg = generic_msg("reduction {} {}".format("argmax", pda.name))
+    return parse_single_value(repMsg)
 
-def mean(pda : 'pdarray') -> np.float64:
+
+@typechecked
+def mean(pda : pdarray) -> np.float64:
     """
     Return the mean of the array.
     
@@ -1273,7 +1256,8 @@ def mean(pda : 'pdarray') -> np.float64:
     """
     return pda.sum() / pda.size
 
-def var(pda : 'pdarray', ddof : int=0) -> np.float64:
+@typechecked
+def var(pda : pdarray, ddof : int=0) -> np.float64:
     """
     Return the variance of values in the array.
 
@@ -1314,14 +1298,13 @@ def var(pda : 'pdarray', ddof : int=0) -> np.float64:
     ``ddof=0`` provides a maximum likelihood estimate of the variance for
     normally distributed variables.
     """
-    if not isinstance(pda, pdarray):
-        raise TypeError("must be pdarray {}".format(pda))
     if ddof >= pda.size:
         raise ValueError("var: ddof must be less than number of values")
     m = mean(pda)
     return ((pda - m)**2).sum() / (pda.size - ddof)
 
-def std(pda : 'pdarray', ddof : int=0) -> np.float64:
+@typechecked
+def std(pda : pdarray, ddof : int=0) -> np.float64:
     """
     Return the standard deviation of values in the array. The standard
     deviation is implemented as the square root of the variance.
@@ -1366,16 +1349,13 @@ def std(pda : 'pdarray', ddof : int=0) -> np.float64:
     the estimated variance, so even with ``ddof=1``, it will not be an
     unbiased estimate of the standard deviation per se.
     """
-    if not isinstance(ddof, int):
-        raise TypeError('ddof must be an integer 0 or greater')
     if ddof < 0:
         raise ValueError("ddof must be an integer 0 or greater")
-    if not isinstance(pda, pdarray):
-        raise TypeError("must be pdarray, not a {}".\
-                                     format(pda.__class__.__name__))
+
     return np.sqrt(var(pda, ddof=ddof))
 
-def mink(pda : 'pdarray', k : int) -> 'pdarray':
+@typechecked
+def mink(pda : pdarray, k : int) -> pdarray:
     """
     Find the `k` minimum values of an array.
 
@@ -1418,21 +1398,16 @@ def mink(pda : 'pdarray', k : int) -> 'pdarray':
     >>> ak.mink(A, 3)
     array([0, 1, 2])
     """
-    if not isinstance(k, int):
-        raise TypeError('k must be an integer with a value of 1 or greater')
     if k < 1:
         raise ValueError('k must be 1 or greater')
+    if pda.size == 0:
+        raise ValueError("must be a non-empty pdarray of type int or float")
 
-    if isinstance(pda, pdarray):
-        if pda.size == 0:
-            raise ValueError("must be a non-empty pdarray of type int or float")
-        repMsg = generic_msg("mink {} {} {}".format(pda.name, k, False))
-        return create_pdarray(repMsg)
-    else:
-        raise TypeError("must be a pdarray, not a {}".\
-                                        format(pda.__class__.__name__))
+    repMsg = generic_msg("mink {} {} {}".format(pda.name, k, False))
+    return create_pdarray(repMsg)
 
-def maxk(pda : 'pdarray', k : int) -> 'pdarray':
+@typechecked
+def maxk(pda : pdarray, k : int) -> pdarray:
     """
     Find the `k` maximum values of an array.
 
@@ -1476,21 +1451,16 @@ def maxk(pda : 'pdarray', k : int) -> 'pdarray':
     >>> ak.maxk(A, 3)
     array([7, 9, 10])
     """
-    if not isinstance(k, int):
-        raise TypeError('k must be an integer with a value of 1 or greater')
     if k < 1:
         raise ValueError('k must be 1 or greater')
+    if pda.size == 0:
+        raise ValueError("must be a non-empty pdarray of type int or float")
 
-    if isinstance(pda, pdarray):
-        if pda.size == 0:
-            raise ValueError("must be a non-empty pdarray of type int or float")
-        repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, False))
-        return create_pdarray(repMsg)
-    else:
-        raise TypeError("must be a pdarray, not a {}".\
-                                        format(pda.__class__.__name__))
+    repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, False))
+    return create_pdarray(repMsg)
 
-def argmink(pda : 'pdarray', k : int) -> 'pdarray':
+@typechecked
+def argmink(pda : pdarray, k : int) -> pdarray:
     """
     Find the `k` minimum values of an array.
 
@@ -1533,21 +1503,16 @@ def argmink(pda : 'pdarray', k : int) -> 'pdarray':
     >>> ak.argmink(A, 3)
     array([7, 2, 5])
     """
-    if not isinstance(k, int):
-        raise TypeError('k must be an integer with a value of 1 or greater')
     if k < 1:
         raise ValueError('k must be 1 or greater')
+    if pda.size == 0:
+        raise ValueError("must be a non-empty pdarray of type int or float")
 
-    if isinstance(pda, pdarray):
-        if pda.size == 0:
-            raise ValueError("must be a non-empty pdarray of type int or float")
-        repMsg = generic_msg("mink {} {} {}".format(pda.name, k, True))
-        return create_pdarray(repMsg)
-    else:
-        raise TypeError("must be a pdarray, not a {}".\
-                                        format(pda.__class__.__name__))
+    repMsg = generic_msg("mink {} {} {}".format(pda.name, k, True))
+    return create_pdarray(repMsg)
 
-def argmaxk(pda : 'pdarray', k : int) -> 'pdarray':
+@typechecked
+def argmaxk(pda : pdarray, k : int) -> pdarray:
     """
     Find the `k` maximum values of an array.
 
@@ -1564,7 +1529,6 @@ def argmaxk(pda : 'pdarray', k : int) -> 'pdarray':
     -------
     pdarray, int
         The indices of the maximum `k` values from pda
-
     TypeError
         Raised if pda is not a pdarray or k is not an integer
     ValueError
@@ -1589,16 +1553,10 @@ def argmaxk(pda : 'pdarray', k : int) -> 'pdarray':
     >>> ak.argmaxk(A, 3)
     array([4, 6, 0])
     """
-    if not isinstance(k, int):
-        raise TypeError('k must be an integer with a value of 1 or greater')
     if k < 1:
         raise ValueError('k must be 1 or greater')
+    if pda.size == 0:
+        raise ValueError("must be a non-empty pdarray of type int or float")
 
-    if isinstance(pda, pdarray):
-        if pda.size == 0:
-            raise ValueError("must be a non-empty pdarray of type int or float")
-        repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, True))
-        return create_pdarray(repMsg)
-    else:
-        raise TypeError("must be a pdarray, not a {}".\
-                                        format(pda.__class__.__name__))
+    repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, True))
+    return create_pdarray(repMsg)

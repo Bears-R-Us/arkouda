@@ -1,3 +1,4 @@
+from __future__ import annotations
 from arkouda.strings import Strings
 from arkouda.pdarrayclass import pdarray
 from arkouda.groupbyclass import GroupBy
@@ -77,7 +78,7 @@ class Categorical:
 
     @classmethod
     def from_codes(cls, codes : pdarray, categories : Strings, 
-                          permutation=None, segments=None) -> 'Categorical':
+                          permutation=None, segments=None) -> Categorical:
         """
         Make a Categorical from codes and categories arrays. If codes and 
         categories have already been pre-computed, this constructor saves 
@@ -158,7 +159,7 @@ class Categorical:
     def __repr__(self):
         return "array({})".format(self.__str__())
 
-    def _binop(self, other : 'Categorical', op : str) -> pdarray:
+    def _binop(self, other : Categorical, op : str) -> pdarray:
         """
         Executes the requested binop on this Categorical instance and returns 
         the results within a pdarray object.
@@ -204,7 +205,7 @@ class Categorical:
                                 "non-Categorical not yet implemented. " +
                                 "Consider converting operands to Categorical."))
 
-    def _r_binop(self, other : 'Categorical', op : str) -> pdarray:
+    def _r_binop(self, other : Categorical, op : str) -> pdarray:
         """
         Executes the requested reverse binop on this Categorical instance and 
         returns the results within a pdarray object.
@@ -238,13 +239,13 @@ class Categorical:
     def __neq__(self, other):
         return self._binop(other, "!=")
 
-    def __getitem__(self, key) -> 'Categorical':
+    def __getitem__(self, key) -> Categorical:
         if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
             return self.categories[self.codes[key]]
         else:
             return Categorical.from_codes(self.codes[key], self.categories)
 
-    def reset_categories(self) -> 'Categorical':
+    def reset_categories(self) -> Categorical:
         """
         Recompute the category labels, discarding any unused labels. This
         method is often useful after slicing or indexing a Categorical array, 
@@ -350,7 +351,7 @@ class Categorical:
         categoriesisin = in1d(self.categories, test)
         return categoriesisin[self.codes]
 
-    def unique(self) -> 'Categorical':
+    def unique(self) -> Categorical:
         __doc__ = unique.__doc__
         return Categorical.from_codes(arange(self.categories.size), 
                                       self.categories)
@@ -401,7 +402,7 @@ class Categorical:
         newvals = inverse[self.codes]
         return Categorical.from_codes(newvals, self.categories[idxperm])
             
-    def merge(self, others : ['Categorical']) -> 'Categorical':
+    def merge(self, others : [Categorical]) -> Categorical:
         """
         Merge this Categorical with other Categorical objects in the array, 
         concatenating the arrays and synchronizing the categories.

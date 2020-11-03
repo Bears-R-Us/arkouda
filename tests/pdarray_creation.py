@@ -201,12 +201,12 @@ class PdarrayCreationTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:          
             ak.standard_normal('100')          
-        self.assertEqual("The size parameter must be an integer", 
+        self.assertEqual('type of argument "size" must be int; got str instead', 
                          cm.exception.args[0]) 
    
         with self.assertRaises(TypeError) as cm:          
             ak.standard_normal(100.0)          
-        self.assertEqual("The size parameter must be an integer", 
+        self.assertEqual('type of argument "size" must be int; got float instead', 
                          cm.exception.args[0])   
     
         with self.assertRaises(ValueError) as cm:          
@@ -232,17 +232,17 @@ class PdarrayCreationTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:          
             ak.random_strings_uniform(minlen='1', maxlen=5, size=10)          
-        self.assertEqual("minlen, maxlen, and size all must be integers", 
+        self.assertEqual('type of argument "minlen" must be int; got str instead', 
                          cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:          
             ak.random_strings_uniform(minlen=1, maxlen='5', size=10)          
-        self.assertEqual("minlen, maxlen, and size all must be integers", 
+        self.assertEqual('type of argument "maxlen" must be int; got str instead', 
                          cm.exception.args[0])     
         
         with self.assertRaises(TypeError) as cm:          
             ak.random_strings_uniform(minlen=1, maxlen=5, size='10')          
-        self.assertEqual("minlen, maxlen, and size all must be integers", 
+        self.assertEqual('type of argument "size" must be int; got str instead', 
                          cm.exception.args[0])              
 
     def test_random_strings_lognormal(self):
