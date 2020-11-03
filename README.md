@@ -367,7 +367,7 @@ tokens.txt file.
 The client connects to the arkouda\_server either by supplying a host and port or by providing a url connect string:
 
 ```bash
-arkouda.connect(host='localhost', port=5555)
+arkouda.connect(server='localhost', port=5555)
 arkouda.connect(url='tcp://localhost:5555')
 ```
 
@@ -375,7 +375,7 @@ When arkouda_server is launched in authentication-enabled mode, clients connect 
 parameter or by adding the token to the end of the url connect string:
 
 ```bash
-arkouda.connect(host='localhost', port=5555, access_token='dcxCQntDQllquOsBNjBp99Pu7r3wDJn')
+arkouda.connect(server='localhost', port=5555, access_token='dcxCQntDQllquOsBNjBp99Pu7r3wDJn')
 arkouda.connect(url='tcp://localhost:5555?token=dcxCQntDQllquOsBNjBp99Pu7r3wDJn')
 ```
 
