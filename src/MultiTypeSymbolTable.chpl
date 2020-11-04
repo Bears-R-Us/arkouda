@@ -66,7 +66,7 @@ module MultiTypeSymbolTable
                                    moduleName=getModuleName(),
                                    errorClass="ErrorWithContext");
             }
-            tab.remove(name); // clear out entry for name
+            //tab.remove(name); // clear out entry for name
             registry -= name; // take name out of registry
         }
         

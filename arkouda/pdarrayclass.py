@@ -10,7 +10,8 @@ from arkouda.logger import getArkoudaLogger
 
 __all__ = ["pdarray", "info", "clear", "any", "all", "is_sorted", "sum", "prod", 
            "min", "max", "argmin", "argmax", "mean", "var", "std", "mink", 
-           "maxk", "argmink", "argmaxk"]
+           "maxk", "argmink", "argmaxk",
+           "register_pdarray", "attach_pdarray", "unregister_pdarray"]
 
 logger = getArkoudaLogger(name='pdarray')    
 
@@ -920,10 +921,139 @@ class pdarray:
         return generic_msg("tohdf {} {} {} {} {}".\
                            format(self.name, dataset, m, json_array, self.dtype))
 
+
+    def register(self, user_defined_name : str) -> pdarray:
+        """
+        Return a pdarray with a user defined name in the arkouda server 
+        so it can be attached to later using pdarray.attach()
+        
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name array is to be registered under
+        
+        Returns
+        -------
+        pdarray
+            pdarray which points to original input pdarray but is also 
+            registered with user defined name in the arkouda server
+        
+        Raises
+        ------
+        TypeError
+            Raised if pda is neither a pdarray nor a str or if 
+            user_defined_name is not a str
+        
+        See also
+        --------
+        attach, unregister
+        
+        Notes
+        -----
+        Registered names/pdarrays in the server are immune to deletion 
+        until they are unregistered.
+        
+        Examples
+        --------
+        >>> a = zeros(100)
+        >>> r_pda = a.register("my_zeros")
+        >>> # potentially disconnect from server and reconnect to server
+        >>> b = ak.pdarray.attach("my_zeros")
+        >>> # ...other work...
+        >>> b.unregister()
+        """
+        return register_pdarray(self, user_defined_name)
+
+    def unregister(self) -> None:
+        """
+        Unregister a pdarray in the arkouda server which was previously 
+        registered using register() and/or attahced to using attach()
+        
+        Parameters
+        ----------
+        user_defined_name : str
+            which array was registered under
+        
+        Returns
+        -------
+        None
+        
+        Raises 
+        ------
+        TypeError
+            Raised if pda is neither a pdarray nor a str
+        
+        See also
+        --------
+        register, unregister
+        
+        Notes
+        -----
+        Registered names/pdarrays in the server are immune to deletion until 
+        they are unregistered.
+        
+        Examples
+        --------
+        >>> a = zeros(100)
+        >>> r_pda = a.register("my_zeros")
+        >>> # potentially disconnect from server and reconnect to server
+        >>> b = ak.pdarray.attach("my_zeros")
+        >>> # ...other work...
+        >>> b.unregister()
+        """
+        unregister_pdarray(self)
+        
+    # class method self is not passed in
+    # invoke with ak.pdarray.attach('user_defined_name')
+    @staticmethod
+    def attach(user_defined_name : str) -> pdarray:
+        """
+        class method to return a pdarray attached to the a registered name in the arkouda 
+        server which was registered using register()
+        
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name which array was registered under
+        
+        Returns
+        -------
+        pdarray
+            pdarray which points to pdarray registered with user defined
+            name in the arkouda server
+        
+        Raises
+        ------
+        TypeError
+            Raised if user_defined_name is not a str
+        
+        See also
+        --------
+        register, unregister
+        
+        Notes
+        -----
+        Registered names/pdarrays in the server are immune to deletion 
+        until they are unregistered.
+        
+        Examples
+        --------
+        >>> a = zeros(100)
+        >>> r_pda = a.register("my_zeros")
+        >>> # potentially disconnect from server and reconnect to server
+        >>> b = ak.pdarray.attach("my_zeros")
+        >>> # ...other work...
+        >>> b.unregister()
+        """
+        return attach_pdarray(user_defined_name)
+
+#end pdarray class def
+    
 # creates pdarray object
 #   only after:
 #       all values have been checked by python module and...
 #       server has created pdarray already befroe this is called
+@typechecked
 def create_pdarray(repMsg : str) -> pdarray:
     """
     Return a pdarray instance pointing to an array created by the arkouda server.
@@ -1560,3 +1690,147 @@ def argmaxk(pda : pdarray, k : int) -> pdarray:
 
     repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, True))
     return create_pdarray(repMsg)
+
+@typechecked
+def register_pdarray(pda : Union[str,pdarray], user_defined_name : str) -> pdarray:
+    """
+    Return a pdarray with a user defined name in the arkouda server 
+    so it can be attached to later using attach_pdarray()
+    
+    Parameters
+    ----------
+    pda : str or pdarray
+        the array to register
+    user_defined_name : str
+        user defined name array is to be registered under
+
+    Returns
+    -------
+    pdarray
+        pdarray which points to original input pdarray but is also 
+        registered with user defined name in the arkouda server
+
+
+    Raises
+    ------
+    TypeError
+        Raised if pda is neither a pdarray nor a str or if 
+        user_defined_name is not a str
+
+    See also
+    --------
+    attach_pdarray, unregister_pdarray
+
+    Notes
+    -----
+    Registered names/pdarrays in the server are immune to deletion 
+    until they are unregistered.
+
+    Examples
+    --------
+    >>> a = zeros(100)
+    >>> r_pda = ak.register_pda(a, "my_zeros")
+    >>> # potentially disconnect from server and reconnect to server
+    >>> b = ak.attach_pda("my_zeros")
+    >>> # ...other work...
+    >>> ak.unregister_pda(b)
+    """
+
+    if isinstance(pda, pdarray):
+        repMsg = generic_msg("register {} {}".\
+                             format(pda.name, user_defined_name))
+        return create_pdarray(repMsg)
+
+    if isinstance(pda, str):
+        repMsg = generic_msg("register {} {}".\
+                             format(pda, user_defined_name))        
+        return create_pdarray(repMsg)
+
+
+@typechecked
+def attach_pdarray(user_defined_name : str) -> pdarray:
+    """
+    Return a pdarray attached to the a registered name in the arkouda 
+    server which was registered using register_pdarray()
+    
+    Parameters
+    ----------
+    user_defined_name : str
+        user defined name which array was registered under
+
+    Returns
+    -------
+    pdarray
+        pdarray which points to pdarray registered with user defined
+        name in the arkouda server
+        
+    Raises
+    ------
+    TypeError
+        Raised if user_defined_name is not a str
+
+    See also
+    --------
+    register_pdarray, unregister_pdarray
+
+    Notes
+    -----
+    Registered names/pdarrays in the server are immune to deletion 
+    until they are unregistered.
+
+    Examples
+    --------
+    >>> a = zeros(100)
+    >>> r_pda = ak.register_pdarray(a, "my_zeros")
+    >>> # potentially disconnect from server and reconnect to server
+    >>> b = ak.attach_pdarray("my_zeros")
+    >>> # ...other work...
+    >>> ak.unregister_pdarray(b)
+    """
+    repMsg = generic_msg("attach {}".format(user_defined_name))
+    return create_pdarray(repMsg)
+
+
+@typechecked
+def unregister_pdarray(pda : Union[str,pdarray]) -> None:
+    """
+    Unregister a pdarray in the arkouda server which was previously 
+    registered using register_pdarray() and/or attahced to using attach_pdarray()
+    
+    Parameters
+    ----------
+    pda : str or pdarray
+        user define name which array was registered under
+
+    Returns
+    -------
+    None
+
+    Raises 
+    ------
+    TypeError
+        Raised if pda is neither a pdarray nor a str
+
+    See also
+    --------
+    register_pdarray, unregister_pdarray
+
+    Notes
+    -----
+    Registered names/pdarrays in the server are immune to deletion until 
+    they are unregistered.
+
+    Examples
+    --------
+    >>> a = zeros(100)
+    >>> r_pda = ak.register_pdarray(a, "my_zeros")
+    >>> # potentially disconnect from server and reconnect to server
+    >>> b = ak.attach_pdarray("my_zeros")
+    >>> # ...other work...
+    >>> ak.unregister_pdarray(b)
+    """
+    if isinstance(pda, pdarray):
+        repMsg = generic_msg("unregister {}".format(pda.name))
+
+    if isinstance(pda, str):
+        repMsg = generic_msg("unregister {}".format(pda))

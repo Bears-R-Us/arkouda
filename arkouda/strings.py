@@ -760,3 +760,21 @@ class Strings:
         """       
         self.bytes.save(prefix_path=prefix_path, 
                                     dataset='{}/values'.format(dataset), mode=mode)
+
+    @classmethod
+    def register_helper(cls, offsets, bytes):
+        return cls(offsets, bytes)
+
+    def register(self, user_defined_name : str) -> 'Strings':
+        return self.register_helper(self.offsets.register(user_defined_name+'_offsets'),
+                               self.bytes.register(user_defined_name+'_bytes'))
+
+    def unregister(self) -> None:
+        self.offsets.unregister()
+        self.bytes.unregister()
+
+    @staticmethod
+    def attach(user_defined_name : str) -> 'Strings':
+        return Strings(pdarray.attach(user_defined_name+'_offsets'),
+                       pdarray.attach(user_defined_name+'_bytes'))
+
