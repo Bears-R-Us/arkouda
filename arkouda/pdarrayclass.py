@@ -1836,5 +1836,3 @@ def unregister_pdarray(pda : Union[str,pdarray]) -> None:
 
     if isinstance(pda, str):
         repMsg = generic_msg("unregister {}".format(pda))
-
-    raise RuntimeError("pda is unchecked type!")
