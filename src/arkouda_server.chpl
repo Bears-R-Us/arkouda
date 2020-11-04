@@ -173,6 +173,19 @@ proc main() {
                 authenticateUser(token);
             }
 
+            if (logging) {
+              try {
+                if (cmd != "array") {
+                  writeln(">>> %s %s".format(cmd, payload.decode(decodePolicy.replace)));
+                } else {
+                  writeln(">>> %s [binary data]".format(cmd));
+                }
+                stdout.flush();
+              } catch {
+                // No action on error
+              }
+            }
+
             // If cmd is shutdown, don't bother generating a repMsg
             if cmd == "shutdown" {
                 shutdown();
@@ -225,11 +238,8 @@ proc main() {
                 when "efunc3ss"          {repMsg = efunc3ssMsg(cmd, payload, st);}
                 when "reduction"         {repMsg = reductionMsg(cmd, payload, st);}
                 when "countReduction"    {repMsg = countReductionMsg(cmd, payload, st);}
-                when "countLocalRdx"     {repMsg = countLocalRdxMsg(cmd, payload, st);}
                 when "findSegments"      {repMsg = findSegmentsMsg(cmd, payload, st);}
-                when "findLocalSegments" {repMsg = findLocalSegmentsMsg(cmd, payload, st);}
                 when "segmentedReduction"{repMsg = segmentedReductionMsg(cmd, payload, st);}
-                when "segmentedLocalRdx" {repMsg = segmentedLocalRdxMsg(cmd, payload, st);}
                 when "arange"            {repMsg = arangeMsg(cmd, payload, st);}
                 when "linspace"          {repMsg = linspaceMsg(cmd, payload, st);}
                 when "randint"           {repMsg = randintMsg(cmd, payload, st);}
@@ -254,7 +264,6 @@ proc main() {
                 when "argsort"           {repMsg = argsortMsg(cmd, payload, st);}
                 when "coargsort"         {repMsg = coargsortMsg(cmd, payload, st);}
                 when "concatenate"       {repMsg = concatenateMsg(cmd, payload, st);}
-                when "localArgsort"      {repMsg = localArgsortMsg(cmd, payload, st);}
                 when "sort"              {repMsg = sortMsg(cmd, payload, st);}
                 when "joinEqWithDT"      {repMsg = joinEqWithDTMsg(cmd, payload, st);}
                 when "getconfig"         {repMsg = getconfigMsg(cmd, payload, st);}

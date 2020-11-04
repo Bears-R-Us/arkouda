@@ -82,8 +82,9 @@ This yielded a >20TB dataframe in Arkouda.
  * requires chapel 1.23.0
  * requires zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * requires hdf5 
- * requires python 3.6 or greater
+ * requires python 3.7 or greater
  * requires numpy
+ * requires typeguard for runtime type checking
  * requires pytest, pytest-env, and h5py to execute the Python test harness
  * requires sphinx, sphinx-argparse, and sphinx-autoapi to generate docs
 
@@ -261,7 +262,7 @@ The Chapel unit tests can be executed as follows:
 make test-chapel
 ```
 
-Both the Python and Chapel unit tests are execuuted as follows:
+Both the Python and Chapel unit tests are executed as follows:
 
 ```bash
 make test-all
@@ -367,7 +368,7 @@ tokens.txt file.
 The client connects to the arkouda\_server either by supplying a host and port or by providing a url connect string:
 
 ```bash
-arkouda.connect(host='localhost', port=5555)
+arkouda.connect(server='localhost', port=5555)
 arkouda.connect(url='tcp://localhost:5555')
 ```
 
@@ -375,7 +376,7 @@ When arkouda_server is launched in authentication-enabled mode, clients connect 
 parameter or by adding the token to the end of the url connect string:
 
 ```bash
-arkouda.connect(host='localhost', port=5555, access_token='dcxCQntDQllquOsBNjBp99Pu7r3wDJn')
+arkouda.connect(server='localhost', port=5555, access_token='dcxCQntDQllquOsBNjBp99Pu7r3wDJn')
 arkouda.connect(url='tcp://localhost:5555?token=dcxCQntDQllquOsBNjBp99Pu7r3wDJn')
 ```
 
