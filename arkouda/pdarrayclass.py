@@ -1692,7 +1692,7 @@ def argmaxk(pda : pdarray, k : int) -> pdarray:
     return create_pdarray(repMsg)
 
 @typechecked
-def register_pdarray(pda : pdarray, user_defined_name : str) -> pdarray:
+def register_pdarray(pda : Union[str,pdarray], user_defined_name : str) -> pdarray:
     """
     Return a pdarray with a user defined name in the arkouda server 
     so it can be attached to later using attach_pdarray()
@@ -1735,22 +1735,19 @@ def register_pdarray(pda : pdarray, user_defined_name : str) -> pdarray:
     >>> # ...other work...
     >>> ak.unregister_pda(b)
     """
-    if not isinstance(user_defined_name, str):
-        raise TypeError("user_defined_name must be a str")
 
-    ret = None
     if isinstance(pda, pdarray):
         repMsg = generic_msg("register {} {}".\
                              format(pda.name, user_defined_name))
-        ret = create_pdarray(repMsg)
-    elif isinstance(pda, str):
+        return create_pdarray(repMsg)
+
+    if isinstance(pda, str):
         repMsg = generic_msg("register {} {}".\
                              format(pda, user_defined_name))        
-        ret = create_pdarray(repMsg)
-    else:
-        raise TypeError("pda must be pdarray or str")
+        return create_pdarray(repMsg)
     
-    return ret
+    raise RuntimeError("pda is unchecked type!")
+
 
 @typechecked
 def attach_pdarray(user_defined_name : str) -> pdarray:
@@ -1792,9 +1789,6 @@ def attach_pdarray(user_defined_name : str) -> pdarray:
     >>> # ...other work...
     >>> ak.unregister_pdarray(b)
     """
-    if not isinstance(user_defined_name, str):
-        raise TypeError("user_defined_name must be a str")
-
     repMsg = generic_msg("attach {}".format(user_defined_name))
     return create_pdarray(repMsg)
 
@@ -1839,7 +1833,8 @@ def unregister_pdarray(pda : Union[str,pdarray]) -> None:
     """
     if isinstance(pda, pdarray):
         repMsg = generic_msg("unregister {}".format(pda.name))
-    elif isinstance(pda, str):
+
+    if isinstance(pda, str):
         repMsg = generic_msg("unregister {}".format(pda))
-    else:
-        raise TypeError("pda must be pdarray or str")
+
+    raise RuntimeError("pda is unchecked type!")
