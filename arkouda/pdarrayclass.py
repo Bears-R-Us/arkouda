@@ -1005,6 +1005,7 @@ class pdarray:
         
     # class method self is not passed in
     # invoke with ak.pdarray.attach('user_defined_name')
+    @staticmethod
     def attach(user_defined_name : str) -> 'pdarray':
         """
         class method to return a pdarray attached to the a registered name in the arkouda 
@@ -1052,6 +1053,7 @@ class pdarray:
 #   only after:
 #       all values have been checked by python module and...
 #       server has created pdarray already befroe this is called
+@typechecked
 def create_pdarray(repMsg : str) -> pdarray:
     """
     Return a pdarray instance pointing to an array created by the arkouda server.
