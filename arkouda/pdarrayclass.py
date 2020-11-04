@@ -921,7 +921,7 @@ class pdarray:
         return generic_msg("tohdf {} {} {} {} {}".\
                            format(self.name, dataset, m, json_array, self.dtype))
 
-<<<<<<< HEAD
+
     def register(self, user_defined_name : str) -> 'pdarray':
         """
         Return a pdarray with a user defined name in the arkouda server 
@@ -1048,8 +1048,6 @@ class pdarray:
 
 #end pdarray class def
     
-=======
->>>>>>> c8b8aee632bbb8bf7c48fc5eb654abeace28a52c
 # creates pdarray object
 #   only after:
 #       all values have been checked by python module and...
