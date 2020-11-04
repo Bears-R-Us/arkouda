@@ -194,15 +194,9 @@ module GenSymIO {
                 remove(tmpfile);
             }
             var cmd = try! "h5ls \"%s\" > \"%s\"".format(filename, tmpfile);
-            var sub = spawnshell(command=cmd,stderr=PIPE,stdout=PIPE);
+            var sub = spawnshell(cmd);
 
-            sub.wait(buffer=true);
-
-            //If there is an error, read off pipe into string variable
-            var line: string;
-            while sub.stderr.readline(line) {
-                errMsg += line.strip('\n');
-            }
+            sub.wait();
 
             exitCode = sub.exit_status;
             
@@ -223,6 +217,7 @@ module GenSymIO {
         }
 
         if exitCode != 0 {
+            var errMsg = "error opening %s, check file permissions".format(filename);
             writeln(generateErrorContext(
                                 msg=errMsg, 
                                 lineNumber=getLineNumber(), 

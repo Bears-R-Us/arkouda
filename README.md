@@ -82,9 +82,10 @@ This yielded a >20TB dataframe in Arkouda.
  * requires chapel 1.23.0
  * requires zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * requires hdf5 
- * requires python 3.6 or greater
+ * requires python 3.7 or greater
  * requires numpy
- * requires panda for testing and conversion utils
+ * requires typeguard for runtime type checking
+ * requires pandas for testing and conversion utils
  * requires pytest, pytest-env, and h5py to execute the Python test harness
  * requires sphinx, sphinx-argparse, and sphinx-autoapi to generate docs
 
@@ -262,7 +263,7 @@ The Chapel unit tests can be executed as follows:
 make test-chapel
 ```
 
-Both the Python and Chapel unit tests are execuuted as follows:
+Both the Python and Chapel unit tests are executed as follows:
 
 ```bash
 make test-all
