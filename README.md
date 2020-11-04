@@ -85,6 +85,7 @@ This yielded a >20TB dataframe in Arkouda.
  * requires python 3.7 or greater
  * requires numpy
  * requires typeguard for runtime type checking
+ * requires pandas for testing and conversion utils
  * requires pytest, pytest-env, and h5py to execute the Python test harness
  * requires sphinx, sphinx-argparse, and sphinx-autoapi to generate docs
 
