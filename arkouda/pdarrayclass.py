@@ -1745,8 +1745,6 @@ def register_pdarray(pda : Union[str,pdarray], user_defined_name : str) -> pdarr
         repMsg = generic_msg("register {} {}".\
                              format(pda, user_defined_name))        
         return create_pdarray(repMsg)
-    
-    raise RuntimeError("pda is unchecked type!")
 
 
 @typechecked
