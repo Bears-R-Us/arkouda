@@ -922,7 +922,7 @@ class pdarray:
                            format(self.name, dataset, m, json_array, self.dtype))
 
 
-    def register(self, user_defined_name : str) -> 'pdarray':
+    def register(self, user_defined_name : str) -> pdarray:
         """
         Return a pdarray with a user defined name in the arkouda server 
         so it can be attached to later using pdarray.attach()
@@ -1006,7 +1006,7 @@ class pdarray:
     # class method self is not passed in
     # invoke with ak.pdarray.attach('user_defined_name')
     @staticmethod
-    def attach(user_defined_name : str) -> 'pdarray':
+    def attach(user_defined_name : str) -> pdarray:
         """
         class method to return a pdarray attached to the a registered name in the arkouda 
         server which was registered using register()
