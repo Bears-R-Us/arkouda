@@ -200,6 +200,22 @@ module MultiTypeSymbolTable
         }
 
         /*
+        checks to see if a symbol is defined if it is not it throws an exception 
+        */
+        proc check(name: string) throws { 
+            if (!tab.contains(name)) 
+            { 
+                if (v) {writeln("undefined symbol ",name);try! stdout.flush();} 
+                throw getErrorWithContext(
+                    msg=unknownSymbolError("", name),
+                    lineNumber=getLineNumber(),
+                    routineName=getRoutineName(),
+                    moduleName=getModuleName(),
+                    errorClass="ErrorWithContext");
+            } 
+        }
+        
+        /*
         Prints the SymTable in a pretty format (name,SymTable[name])
         */
         proc pretty() throws {
