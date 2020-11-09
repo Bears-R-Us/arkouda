@@ -3,7 +3,7 @@ from typing import Tuple, Union
 from typeguard import typechecked
 import json, struct
 import numpy as np
-from arkouda.client import generic_msg, verbose, maxTransferBytes, pdarrayIterThresh
+from arkouda.client import generic_msg, verbose
 from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
 from arkouda.logger import getArkoudaLogger
@@ -119,11 +119,11 @@ class pdarray:
         return self.shape[0]
 
     def __str__(self):
-        global pdarrayIterThresh
+        from arkouda.client import pdarrayIterThresh
         return generic_msg("str {} {}".format(self.name,pdarrayIterThresh))
 
     def __repr__(self):
-        global pdarrayIterTresh
+        from arkouda.client import pdarrayIterThresh
         return generic_msg("repr {} {}".format(self.name,pdarrayIterThresh))
 
     def format_other(self, other : object) -> np.dtype:
@@ -758,6 +758,7 @@ class pdarray:
         >>> type(a.to_ndarray())
         numpy.ndarray
         """
+        from arkouda.client import maxTransferBytes
         # Total number of bytes in the array data
         arraybytes = self.size * self.dtype.itemsize
         # Guard against overflowing client memory
@@ -830,6 +831,8 @@ class pdarray:
 
         # Total number of bytes in the array data
         arraybytes = self.size * self.dtype.itemsize
+        
+        from arkouda.client import maxTransferBytes
         # Guard against overflowing client memory
         if arraybytes > maxTransferBytes:
             raise RuntimeError(("Array exceeds allowed size for transfer. " +

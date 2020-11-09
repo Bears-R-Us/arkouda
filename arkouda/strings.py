@@ -8,9 +8,6 @@ from arkouda.logger import getArkoudaLogger
 import numpy as np
 import json
 
-global verbose
-global pdarrayIterThresh
-
 __all__ = ['Strings']
 
 class Strings:
