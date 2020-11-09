@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Tuple, Union
-from arkouda.client import generic_msg, pdarrayIterThresh
+from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value
 from arkouda.dtypes import *
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS
@@ -102,6 +102,7 @@ class Strings:
         return self.shape[0]
 
     def __str__(self) -> str:
+        from arkouda.client import pdarrayIterThresh
         if self.size <= pdarrayIterThresh:
             vals = ["'{}'".format(self[i]) for i in range(self.size)]
         else:
