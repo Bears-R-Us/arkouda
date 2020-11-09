@@ -248,7 +248,7 @@ pip3 install -e .[dev]
 
 There are two unit test suites for Arkouda, one for Python and one for Chapel. As mentioned above, the Arkouda  
 Python test harness leverages multiple libraries such as [pytest](https://docs.pytest.org/en/latest/) and 
-[pytest-env](https://pypi.org/project/pytest-env/) that must be installed via `pip3 install -e .[test]`, 
+[pytest-env](https://pypi.org/project/pytest-env/) that must be installed via `pip3 install -e .[dev]`, 
 whereas the Chapel test harness does not require any external librares.
 
 The default Arkouda test executes the Python test harness and is invoked as follows:
@@ -303,9 +303,9 @@ arkouda/docs/server # Chapel backend server documentation
 To view the Arkouda documentation locally, type the following url into the browser of choice:
  `file:///path/to/arkouda/docs/index.html`, substituting the appropriate path for the Arkouda directory configuration.
 
-The Arkouda documentation is hosted on [Github Pages](https://pages.github.com/) and forks of Arkouda can also host
-documentation on Github Pages. The make doc target detailed above prepares the Arkouda Python and Chapel docs for
-hosting both locally and on Github Pages.
+The Arkouda documentation is hosted on [Read-the-Docs](https://arkouda.readthedocs.io/en/latest/). The `make doc` target
+detailed above prepares the Arkouda Python and Chapel docs for
+hosting both locally and on Read-the-Docs.
 
 There are three easy steps to hosting Arkouda docs on Github Pages. First, the Arkouda docs generated via `make doc` 
 are pushed to the Arkouda or Arkouda fork _master branch_. Next, navigate to the Github project home and click the 
