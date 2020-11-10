@@ -95,7 +95,7 @@ def in1d(pda1 : Union[pdarray,Strings,Categorical], pda2 : Union[pdarray,Strings
     ----------
     pda1 : pdarray or Strings or Categorical
         Input array.
-    pda2 : pdarray or Strings
+    pda2 : pdarray or Strings or Categorical
         The values against which to test each value of `pda1`. Must be the 
         same type as `pda1`.
     invert : bool, optional
@@ -112,7 +112,8 @@ def in1d(pda1 : Union[pdarray,Strings,Categorical], pda2 : Union[pdarray,Strings
     Raises
     ------
     TypeError
-        Raised if pda1 or pda2 is not a pdarray
+        Raised if either pda1 or pda2 is not a pdarray, Strings, or 
+        Categorical object or if invert is not a bool
 
     See Also
     --------
@@ -142,7 +143,7 @@ def in1d(pda1 : Union[pdarray,Strings,Categorical], pda2 : Union[pdarray,Strings
                                     invert))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
+        raise TypeError('Both pda1 and pda2 must be pdarray, Strings, or Categorical')
 
 @typechecked
 def concatenate(arrays : Iterable[Union[pdarray,Strings]]) \

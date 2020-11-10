@@ -1,6 +1,7 @@
 import os, platform, secrets, json
 from os.path import expanduser
 from collections import defaultdict 
+from typeguard import typechecked
 from arkouda import io_util
 
 username_tokenizer = defaultdict(lambda x : x.split('/'))
@@ -8,6 +9,7 @@ username_tokenizer['Windows'] = lambda x : x.split('\\')
 username_tokenizer['Linux'] = lambda x : x.split('/')
 username_tokenizer['Darwin'] = lambda x : x.split('/')
 
+@typechecked
 def generate_token(length : int=32) -> str:
     """
     Uses the secrets.token_hex() method to generate a
@@ -97,6 +99,7 @@ def get_username() -> str:
         return EnvironmentError('Unsupported OS: {}'.format(ke))
     return u_tokens[-1]
 
+@typechecked
 def generate_username_token_json(token : str) -> str:
     """
     Generates a JSON object encapsulating the user's username
