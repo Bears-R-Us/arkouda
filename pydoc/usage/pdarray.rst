@@ -9,7 +9,7 @@ Just as the backbone of NumPy is the ``ndarray``, the backbone of arkouda is an 
 Data Type
 ============
 
-Currently, ``pdarray`` supports three user-facing data types (strings are exposed via a separate class, see :ref:`strings-label <../strings.rst>`):
+Currently, ``pdarray`` supports three user-facing data types (strings are exposed via a separate class, see :ref:`Strings in Arkouda <../strings.rst>`):
 
 * ``int64``: 64-bit signed integer
 * ``float64``: IEEE 64-bit floating point number
