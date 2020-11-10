@@ -82,8 +82,10 @@ This yielded a >20TB dataframe in Arkouda.
  * requires chapel 1.23.0
  * requires zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * requires hdf5 
- * requires python 3.6 or greater
+ * requires python 3.7 or greater
  * requires numpy
+ * requires typeguard for runtime type checking
+ * requires pandas for testing and conversion utils
  * requires pytest, pytest-env, and h5py to execute the Python test harness
  * requires sphinx, sphinx-argparse, and sphinx-autoapi to generate docs
 
@@ -246,7 +248,7 @@ pip3 install -e .[dev]
 
 There are two unit test suites for Arkouda, one for Python and one for Chapel. As mentioned above, the Arkouda  
 Python test harness leverages multiple libraries such as [pytest](https://docs.pytest.org/en/latest/) and 
-[pytest-env](https://pypi.org/project/pytest-env/) that must be installed via `pip3 install -e .[test]`, 
+[pytest-env](https://pypi.org/project/pytest-env/) that must be installed via `pip3 install -e .[dev]`, 
 whereas the Chapel test harness does not require any external librares.
 
 The default Arkouda test executes the Python test harness and is invoked as follows:
@@ -261,7 +263,7 @@ The Chapel unit tests can be executed as follows:
 make test-chapel
 ```
 
-Both the Python and Chapel unit tests are execuuted as follows:
+Both the Python and Chapel unit tests are executed as follows:
 
 ```bash
 make test-all
@@ -301,9 +303,9 @@ arkouda/docs/server # Chapel backend server documentation
 To view the Arkouda documentation locally, type the following url into the browser of choice:
  `file:///path/to/arkouda/docs/index.html`, substituting the appropriate path for the Arkouda directory configuration.
 
-The Arkouda documentation is hosted on [Github Pages](https://pages.github.com/) and forks of Arkouda can also host
-documentation on Github Pages. The make doc target detailed above prepares the Arkouda Python and Chapel docs for
-hosting both locally and on Github Pages.
+The Arkouda documentation is hosted on [Read-the-Docs](https://arkouda.readthedocs.io/en/latest/). The `make doc` target
+detailed above prepares the Arkouda Python and Chapel docs for
+hosting both locally and on Read-the-Docs.
 
 There are three easy steps to hosting Arkouda docs on Github Pages. First, the Arkouda docs generated via `make doc` 
 are pushed to the Arkouda or Arkouda fork _master branch_. Next, navigate to the Github project home and click the 
@@ -367,7 +369,7 @@ tokens.txt file.
 The client connects to the arkouda\_server either by supplying a host and port or by providing a url connect string:
 
 ```bash
-arkouda.connect(host='localhost', port=5555)
+arkouda.connect(server='localhost', port=5555)
 arkouda.connect(url='tcp://localhost:5555')
 ```
 
@@ -375,7 +377,7 @@ When arkouda_server is launched in authentication-enabled mode, clients connect 
 parameter or by adding the token to the end of the url connect string:
 
 ```bash
-arkouda.connect(host='localhost', port=5555, access_token='dcxCQntDQllquOsBNjBp99Pu7r3wDJn')
+arkouda.connect(server='localhost', port=5555, access_token='dcxCQntDQllquOsBNjBp99Pu7r3wDJn')
 arkouda.connect(url='tcp://localhost:5555?token=dcxCQntDQllquOsBNjBp99Pu7r3wDJn')
 ```
 

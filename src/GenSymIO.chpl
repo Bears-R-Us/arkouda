@@ -15,6 +15,7 @@ module GenSymIO {
     use PrivateDist;
     use Reflection;
     use Errors;
+    use ServerConfig;
 
     config const GenSymIO_DEBUG = false;
     config const SEGARRAY_OFFSET_NAME = "segments";
@@ -27,12 +28,13 @@ module GenSymIO {
      * Creates a pdarray server-side and returns the SymTab name used to
      * retrieve the pdarray from the SymTab.
      */
-    proc arrayMsg(cmd: string, payload: bytes, st: borrowed SymTab): string {
+    proc arrayMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string;
         var (dtypeBytes, sizeBytes, data) = payload.splitMsgToTuple(b" ", 3);
         var dtype = str2dtype(try! dtypeBytes.decode());
         var size = try! sizeBytes:int;
         var tmpf:file;
+        overMemLimit(2*8*size);
 
         // Write the data payload composing the pdarray to a memory buffer
         try {
@@ -99,6 +101,7 @@ module GenSymIO {
         var arrayBytes: bytes;
         var entryStr = payload.decode();
         var entry = st.lookup(entryStr);
+        overMemLimit(2*entry.size*entry.itemsize);
         var tmpf: file;
         try {
             tmpf = openmem();
@@ -184,27 +187,44 @@ module GenSymIO {
         }
         filename = tmp[tmp.domain.first];
         var exitCode: int;
+        var errMsg: string;
+
         try {
             if exists(tmpfile) {
                 remove(tmpfile);
             }
             var cmd = try! "h5ls \"%s\" > \"%s\"".format(filename, tmpfile);
             var sub = spawnshell(cmd);
-            // sub.stdout.readstring(repMsg);
+
             sub.wait();
+
             exitCode = sub.exit_status;
+            
             var f = open(tmpfile, iomode.r);
             var r = f.reader(start=0);
             r.readstring(repMsg);
             r.close();
             f.close();
             remove(tmpfile);
-        } catch {
-            return "Error: failed to spawn process and read output";
+        } catch e : Error {
+            writeln(generateErrorContext(
+                                msg=e.message(), 
+                                lineNumber=getLineNumber(), 
+                                moduleName=getModuleName(), 
+                                routineName=getRoutineName(), 
+                                errorClass="ProcessSpawnError"));
+            return "Error: failed to spawn process and read output %t".format(e);
         }
 
         if exitCode != 0 {
-            return try! "Error: %s".format(repMsg);
+            var errMsg = "error opening %s, check file permissions".format(filename);
+            writeln(generateErrorContext(
+                                msg=errMsg, 
+                                lineNumber=getLineNumber(), 
+                                moduleName=getModuleName(), 
+                                routineName=getRoutineName(), 
+                                errorClass="FileAccessError"));
+            return try! "Error: %s".format(errMsg);
         } else {
             return repMsg;
         }
@@ -230,7 +250,14 @@ module GenSymIO {
                 writeln(try! "glob expanded %s to %i files".format(filelist[0], tmp.size));
             }
             if tmp.size == 0 {
-                return try! "Error: no files matching %s".format(filelist[0]);
+                var errMsg = "Error: no files matching %s".format(filelist[0]);
+                writeln(generateErrorContext(
+                                msg=errMsg, 
+                                lineNumber=getLineNumber(), 
+                                moduleName=getModuleName(), 
+                                routineName=getRoutineName(), 
+                                errorClass="FileAccessError"));
+                return try! errMsg;
             }
             // Glob returns filenames in weird order. Sort for consistency
             // sort(tmp);
@@ -249,16 +276,19 @@ module GenSymIO {
                 (segArrayFlags[i], dclasses[i], bytesizes[i], signFlags[i]) = get_dtype(fname, dsetName);
             } catch e: FileNotFoundError {
                 writeln(e.message());
-                return try! "Error: unable to open file for writing: %s".format(fname);
+                return try! "Error: file named %s not found".format(fname);
             } catch e: PermissionError {
                 writeln(e.message());
-                return try! "Error: permission error on %s".format(fname);
+                return try! "Error: permission error opening %s".format(fname);
             } catch e: DatasetNotFoundError {
                 writeln(e.message());
                 return e.publish();
             } catch e: NotHDF5FileError {
                 writeln(e.message());
                 return e.publish();
+            } catch e: HDF5FileFormatError {
+                writeln(e.message());
+                return e.publish();             
             } catch e: SegArrayError {
                 writeln(e.message());
                 return e.publish();
@@ -270,7 +300,7 @@ module GenSymIO {
                                 moduleName=getModuleName(), 
                                 routineName=getRoutineName(), 
                                 errorClass="Error"));
-                return try! "Error: unknown cause";
+                return try! "Error: unknown cause %t".format(e);
             }
         }
         const isSegArray = segArrayFlags[filedom.first];
@@ -297,9 +327,21 @@ module GenSymIO {
                 (subdoms, len) = get_subdoms(filenames, dsetName);
             }
         } catch e: HDF5RankError {
+            writeln(generateErrorContext(
+                                msg=e.message(), 
+                                lineNumber=getLineNumber(), 
+                                moduleName=getModuleName(), 
+                                routineName=getRoutineName(), 
+                                errorClass="FileAccessError"));
             return notImplementedError("readhdf", try! "Rank %i arrays".format(e.rank));
-        } catch {
-            return try! "Error: unknown cause";
+        } catch e: Error {
+            writeln(generateErrorContext(
+                                msg=e.message(), 
+                                lineNumber=getLineNumber(), 
+                                moduleName=getModuleName(), 
+                                routineName=getRoutineName(), 
+                                errorClass="FileAccessError"));
+            return try! "Error: unknown cause: %t".format(e);
         }
         if GenSymIO_DEBUG {
             writeln("Got subdomains and total length");
@@ -413,10 +455,10 @@ module GenSymIO {
                     (segArrayFlags[i], dclasses[i], bytesizes[i], signFlags[i]) = get_dtype(fname, dsetName);
                 } catch e: FileNotFoundError {
                     writeln(e.message());
-                    return try! "Error: file not found: %s".format(fname);
+                    return try! "Error: file named %s not found".format(fname);
                 } catch e: PermissionError {
                     writeln(e.message());
-                    return try! "Error: permission error on %s".format(fname);
+                    return try! "Error: permission error opening %s".format(fname);
                 } catch e: DatasetNotFoundError {
                     writeln(e.message());
                     return try! e.publish();
@@ -570,27 +612,32 @@ module GenSymIO {
                            moduleName=getModuleName(),
                            errorClass="FileNotFoundError");
         }
-
-        if !(getMode(filename) & READABLE) {
+        
+        /*
+         * Checks to see if the file is indeed an HDF5 file. If there is a error
+         * in opening file to check format, it is highly likely it is due to 
+         * a permissions issue, so a PermissionError is thrown.
+         */             
+        if !isHdf5File(filename) {
             throw getErrorWithContext(
-                           msg="permission error on %s".format(filename),
+                           msg="%s is not an HDF5 file".format(filename),
                            lineNumber=getLineNumber(),
                            routineName=getRoutineName(), 
                            moduleName=getModuleName(),
-                           errorClass="PermissionError");
+                           errorClass="NotHDF5FileError");        
         }
-
+        
         var file_id = C_HDF5.H5Fopen(filename.c_str(), 
                                          C_HDF5.H5F_ACC_RDONLY, C_HDF5.H5P_DEFAULT);
-
+                                         
         if file_id < 0 { // HF5open returns negative value on failure
             C_HDF5.H5Fclose(file_id);
             throw getErrorWithContext(
-                           msg="cannot open as HDF5 file %s".format(filename),
+                           msg="in accessing %s HDF5 file content".format(filename),
                            lineNumber=getLineNumber(), 
                            routineName=getRoutineName(), 
                            moduleName=getModuleName(), 
-                           errorClass="NotHDF5FileError");            
+                           errorClass="HDF5FileFormatError");            
         }
 
         var dName = getReadDsetName(file_id, dsetName);
@@ -650,6 +697,31 @@ module GenSymIO {
                 errorClass='Error');
         }
         return (isSegArray, dataclass, bytesize, isSigned);
+    }
+
+
+    /*
+     * Returns boolean indicating whether the file is a valid HDF5 file.
+     * Note: if the file cannot be opened due to permissions, throws
+     * a PermissionError
+     */
+    proc isHdf5File(filename : string) : int throws {
+        var isHdf5 = C_HDF5.H5Fis_hdf5(filename.c_str());
+        
+        if isHdf5 == 1 {
+            return true;
+        } else if isHdf5 == 0 {
+            return false;
+        }
+
+        var errorMsg="%s cannot be opened to check if hdf5, \
+                           check file permissions".format(filename);
+        throw getErrorWithContext(
+                       msg=errorMsg,
+                       lineNumber=getLineNumber(),
+                       routineName=getRoutineName(), 
+                       moduleName=getModuleName(),
+                       errorClass="PermissionError");      
     }
 
     /*
@@ -1523,7 +1595,6 @@ module GenSymIO {
           for f in filenames {
               var result =  try! exists(f);
               allexist &= result;
-              writeln("RESULT %t".format(result));
               if result {
                   anyexist = true;
               }

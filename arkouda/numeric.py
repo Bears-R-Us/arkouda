@@ -1,4 +1,5 @@
 import numpy as np
+from typeguard import typechecked
 from typing import Tuple, Union
 from arkouda.client import generic_msg
 from arkouda.dtypes import *
@@ -9,6 +10,7 @@ from arkouda.strings import Strings
 __all__ = ["cast", "abs", "log", "exp", "cumsum", "cumprod", "sin", "cos", 
            "where", "histogram", "value_counts"]    
 
+@typechecked
 def cast(pda : Union[pdarray, Strings], dt: dtype) -> Union[pdarray, Strings]:
     """
     Cast an array to another dtype.
@@ -51,6 +53,7 @@ def cast(pda : Union[pdarray, Strings], dt: dtype) -> Union[pdarray, Strings]:
     else:
         return pdarray(repMsg)
 
+@typechecked
 def abs(pda : pdarray) -> pdarray:
     """
     Return the element-wise absolute value of the array.
@@ -69,13 +72,10 @@ def abs(pda : pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    if isinstance(pda, pdarray):
-        repMsg = generic_msg("efunc {} {}".format("abs", pda.name))
-        return create_pdarray(repMsg)
-    else:
-        raise TypeError("must be a pdarray, not a {}".\
-                                   format(pda.__class__.__name__))
+    repMsg = generic_msg("efunc {} {}".format("abs", pda.name))
+    return create_pdarray(repMsg)
 
+@typechecked
 def log(pda : pdarray) -> pdarray:
     """
     Return the element-wise natural log of the array. 
@@ -110,13 +110,10 @@ def log(pda : pdarray) -> pdarray:
     >>> ak.log(A) / np.log(2)
     array([0, 3.3219280948873626, 6.6438561897747253])
     """
-    if isinstance(pda, pdarray):
-        repMsg = generic_msg("efunc {} {}".format("log", pda.name))
-        return create_pdarray(repMsg)
-    else:
-        raise TypeError("must be a pdarray, not a {}".\
-                                    format(pda.__class__.__name__))
+    repMsg = generic_msg("efunc {} {}".format("log", pda.name))
+    return create_pdarray(repMsg)
 
+@typechecked
 def exp(pda : pdarray) -> pdarray:
     """
     Return the element-wise exponential of the array.
@@ -136,13 +133,10 @@ def exp(pda : pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    if isinstance(pda, pdarray):
-        repMsg = generic_msg("efunc {} {}".format("exp", pda.name))
-        return create_pdarray(repMsg)
-    else:
-        raise TypeError("must be a pdarray, not a {}".\
-                                    format(pda.__class__.__name__))
+    repMsg = generic_msg("efunc {} {}".format("exp", pda.name))
+    return create_pdarray(repMsg)
 
+@typechecked
 def cumsum(pda : pdarray) -> pdarray:
     """
     Return the cumulative sum over the array. 
@@ -165,13 +159,10 @@ def cumsum(pda : pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    if isinstance(pda, pdarray):
-        repMsg = generic_msg("efunc {} {}".format("cumsum", pda.name))
-        return create_pdarray(repMsg)
-    else:
-        raise TypeError("must be a pdarray, not a {}".\
-                                    format(pda.__class__.__name__))
+    repMsg = generic_msg("efunc {} {}".format("cumsum", pda.name))
+    return create_pdarray(repMsg)
 
+@typechecked
 def cumprod(pda : pdarray) -> pdarray:
     """
     Return the cumulative product over the array. 
@@ -194,13 +185,10 @@ def cumprod(pda : pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    if isinstance(pda, pdarray):
-        repMsg = generic_msg("efunc {} {}".format("cumprod", pda.name))
-        return create_pdarray(repMsg)
-    else:
-        raise TypeError("must be a pdarray, not a {}".\
-                                    format(pda.__class__.__name__))
+    repMsg = generic_msg("efunc {} {}".format("cumprod", pda.name))
+    return create_pdarray(repMsg)
 
+@typechecked
 def sin(pda : pdarray) -> pdarray:
     """
     Return the element-wise sine of the array.
@@ -220,13 +208,10 @@ def sin(pda : pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    if isinstance(pda,pdarray):
-        repMsg = generic_msg("efunc {} {}".format("sin",pda.name))
-        return create_pdarray(repMsg)
-    else:
-        raise TypeError("must be a pdarray, not a {}".\
-                                    format(pda.__class__.__name__))
+    repMsg = generic_msg("efunc {} {}".format("sin",pda.name))
+    return create_pdarray(repMsg)
 
+@typechecked
 def cos(pda : pdarray) -> pdarray:
     """
     Return the element-wise cosine of the array.
@@ -246,13 +231,10 @@ def cos(pda : pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    if isinstance(pda,pdarray):
-        repMsg = generic_msg("efunc {} {}".format("cos",pda.name))
-        return create_pdarray(repMsg)
-    else:
-        raise TypeError("must be a pdarray, not a {}".\
-                                    format(pda.__class__.__name__))
-    
+    repMsg = generic_msg("efunc {} {}".format("cos",pda.name))
+    return create_pdarray(repMsg)
+
+@typechecked
 def where(condition : pdarray, A : Union[Union[int,float], pdarray], 
                         B : Union[Union[int,float], pdarray]) -> pdarray:
     """
@@ -283,9 +265,6 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
     -----
     A and B must have the same dtype.
     """
-    if not isinstance(condition, pdarray):
-        raise TypeError("condition must be a pdarray, not a {}".
-                                    format(condition.__class__.__name__))
     if isinstance(A, pdarray) and isinstance(B, pdarray):
         repMsg = generic_msg("efunc3vv {} {} {} {}".\
                              format("where",
@@ -338,7 +317,7 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
                                     B))
     return create_pdarray(repMsg)
 
-
+@typechecked
 def histogram(pda : pdarray, bins : int=10) -> pdarray:
     """
     Compute a histogram of evenly spaced bins over the range of an array.
@@ -390,19 +369,13 @@ def histogram(pda : pdarray, bins : int=10) -> pdarray:
     # To plot, use only the left edges, and export the histogram to NumPy
     >>> plt.plot(binEdges[:-1], h.to_ndarray())
     """
-    if not isinstance(bins, int):
-        raise TypeError('bins must be an int >= 1')
     if bins < 1:
         raise ValueError('bins must be 1 or greater')
-    if isinstance(pda, pdarray):
-        repMsg = generic_msg("histogram {} {}".format(pda.name, bins))
-        return create_pdarray(repMsg)
-    else:
-        raise TypeError("must be a pdarray, not a {}".\
-                                        format(pda.__class__.__name__))
+    repMsg = generic_msg("histogram {} {}".format(pda.name, bins))
+    return create_pdarray(repMsg)
 
-
-def value_counts(pda : pdarray) -> Tuple[pdarray,int]:
+@typechecked
+def value_counts(pda : pdarray) -> Tuple[Union[pdarray,Strings],pdarray]:
     """
     Count the occurrences of the unique values of an array.
 
@@ -413,7 +386,7 @@ def value_counts(pda : pdarray) -> Tuple[pdarray,int]:
 
     Returns
     -------
-    unique_values : pdarray, int64
+    unique_values : pdarray, int64 or Strings
         The unique values, sorted in ascending order
 
     counts : pdarray, int64
@@ -439,8 +412,4 @@ def value_counts(pda : pdarray) -> Tuple[pdarray,int]:
     >>> ak.value_counts(A)
     (array([0, 2, 4]), array([3, 2, 1]))
     """
-    if isinstance(pda, pdarray):
-        return unique(pda, return_counts=True)
-    else:
-        raise TypeError("must be a pdarray, not a {}".\
-                                        format(pda.__class__.__name__))
+    return unique(pda, return_counts=True)

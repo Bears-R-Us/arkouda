@@ -6,8 +6,8 @@ SIZE = 10
 def run_test() -> int:
     a = ak.ones(SIZE,dtype=ak.float64)
     b = ak.ones(SIZE,dtype=ak.int64)
-    d = ak.register_pda(a,'test_float64')
-    e = ak.register_pda(b,'test_int64')
+    d = a.register('test_float64')
+    e = b.register('test_int64')
     ak.clear()
 
     # will get decremented to 0 if test is successful
@@ -24,8 +24,8 @@ def run_test() -> int:
     except:
         result = 100
 
-    ak.unregister_pda(d)
-    ak.unregister_pda(e)
+    d.unregister()
+    e.unregister()
     return result
 
 class ClearTest(ArkoudaTest):

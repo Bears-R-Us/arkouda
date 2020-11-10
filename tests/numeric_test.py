@@ -17,12 +17,17 @@ class NumericTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.histogram([range(0,10)], bins=1)
-        self.assertEqual('must be a pdarray, not a list', 
+        self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
                         cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:
             ak.histogram(pda, bins='1')
-        self.assertEqual('bins must be an int >= 1', 
+        self.assertEqual('type of argument "bins" must be int; got str instead', 
+                        cm.exception.args[0])  
+        
+        with self.assertRaises(TypeError) as cm:
+            ak.histogram([range(0,10)], bins='1')
+        self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
                         cm.exception.args[0])  
     
     def testLog(self):
@@ -35,7 +40,7 @@ class NumericTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.log([range(0,10)])
-        self.assertEqual('must be a pdarray, not a list', 
+        self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
                         cm.exception.args[0])  
         
     def testExp(self):
@@ -48,7 +53,7 @@ class NumericTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.exp([range(0,10)])
-        self.assertEqual('must be a pdarray, not a list', 
+        self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
                         cm.exception.args[0])  
         
     def testAbs(self):
@@ -61,7 +66,7 @@ class NumericTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.abs([range(0,10)])
-        self.assertEqual('must be a pdarray, not a list', 
+        self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
                         cm.exception.args[0])  
         
         
@@ -75,7 +80,7 @@ class NumericTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.cumsum([range(0,10)])
-        self.assertEqual('must be a pdarray, not a list', 
+        self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
                         cm.exception.args[0])  
         
     def testCumProd(self):
@@ -88,7 +93,7 @@ class NumericTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.cumprod([range(0,10)])
-        self.assertEqual('must be a pdarray, not a list', 
+        self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
                         cm.exception.args[0])  
         
     def testSin(self):
@@ -101,7 +106,7 @@ class NumericTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.sin([range(0,10)])
-        self.assertEqual('must be a pdarray, not a list', 
+        self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
                         cm.exception.args[0]) 
         
     def testCos(self):
@@ -114,7 +119,7 @@ class NumericTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.cos([range(0,10)])
-        self.assertEqual('must be a pdarray, not a list', 
+        self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
                         cm.exception.args[0])   
         
     def testValueCounts(self):
@@ -131,7 +136,7 @@ class NumericTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.value_counts([0]) 
-        self.assertEqual('must be a pdarray, not a list', 
+        self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
                         cm.exception.args[0])   
         
             

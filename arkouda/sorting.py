@@ -1,19 +1,21 @@
+from __future__ import annotations
 from typing import Iterable, Union
+from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros
 from arkouda.strings import Strings
 from arkouda.dtypes import *
 
-__all__ = ["argsort", "coargsort", "local_argsort", "sort"]
+__all__ = ["argsort", "coargsort", "sort"]
 
-def argsort(pda : Union[pdarray,Strings]) -> pdarray:
+def argsort(pda : Union[pdarray,Strings,'Categorical']) -> pdarray:
     """
     Return the permutation that sorts the array.
     
     Parameters
     ----------
-    pda : pdarray or Strings
+    pda : pdarray or Strings or Categorical
         The array to sort (int64 or float64)
 
     Returns
@@ -44,18 +46,16 @@ def argsort(pda : Union[pdarray,Strings]) -> pdarray:
     """
     if hasattr(pda, "argsort"):
         return pda.argsort()
-    if isinstance(pda, pdarray) or isinstance(pda, Strings):
-        if pda.size == 0:
-            return zeros(0, dtype=int64)
-        if isinstance(pda, Strings):
-            name = '{}+{}'.format(pda.offsets.name, pda.bytes.name)
-        else:
-            name = pda.name
-        repMsg = generic_msg("argsort {} {}".format(pda.objtype, name))
-        return create_pdarray(repMsg)
+    if pda.size == 0:
+        return zeros(0, dtype=int64)
+    if isinstance(pda, Strings):
+        name = '{}+{}'.format(pda.offsets.name, pda.bytes.name)
     else:
-        raise TypeError("must be pdarray {}".format(pda))
+        name = pda.name
+    repMsg = generic_msg("argsort {} {}".format(pda.objtype, name))
+    return create_pdarray(repMsg)
 
+@typechecked
 def coargsort(arrays : Iterable[Union[Strings,pdarray]]) -> pdarray:
     """
     Return the permutation that groups the rows (left-to-right), if the
@@ -128,40 +128,7 @@ def coargsort(arrays : Iterable[Union[Strings,pdarray]]) -> pdarray:
     repMsg = generic_msg(reqMsg)
     return create_pdarray(repMsg)
 
-def local_argsort(pda : pdarray) -> pdarray:
-    """
-    local_argsort takes a pdarray and returns an index vector which sorts 
-    the array on a per-locale basis.
-    
-    Parameters
-    ----------
-    pda : pdarray or Categorical
-        The array to sort (int64 or float64)
-
-    Returns
-    -------
-    pdarray, int64 or float64
-        The sorted copy of pda
-
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is not a pdarray
-    RuntimeError
-        Raised if sort attempted on a pdarray with an unsupported dtype
-
-    See Also
-    --------
-    argsort
-    """
-    if isinstance(pda, pdarray):
-        if pda.size == 0:
-            return zeros(0, dtype=int64)
-        repMsg = generic_msg("localArgsort {}".format(pda.name))
-        return create_pdarray(repMsg)
-    else:
-        raise TypeError("must be pdarray {}".format(pda))
-
+@typechecked
 def sort(pda : pdarray) -> pdarray:
     """
     Return a sorted copy of the array. Only sorts numeric arrays; 
@@ -200,10 +167,7 @@ def sort(pda : pdarray) -> pdarray:
     >>> a
     array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
     """
-    if isinstance(pda, pdarray):
-        if pda.size == 0:
-            return zeros(0, dtype=int64)
-        repMsg = generic_msg("sort {}".format(pda.name))
-        return create_pdarray(repMsg)
-    else:
-        raise TypeError("must be pdarray {}".format(pda))
+    if pda.size == 0:
+        return zeros(0, dtype=int64)
+    repMsg = generic_msg("sort {}".format(pda.name))
+    return create_pdarray(repMsg)

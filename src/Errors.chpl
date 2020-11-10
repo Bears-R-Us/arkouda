@@ -75,10 +75,22 @@ module Errors {
     }
  
     /*
-     * The NotHDF5FileError is thrown if a HDF5 file open operation fails due to the file
-     * format indicating the file is not a valid HDF5 file.
+     * The NotHDF5FileError is thrown if it is determined a file is not HDFF file.
      */
     class NotHDF5FileError: ErrorWithContext { 
+
+        proc init(msg : string, lineNumber: int, routineName: string, 
+                                                           moduleName: string) { 
+           super.init(msg,lineNumber,routineName,moduleName,errorClass='NotHDF5FileError'); 
+        } 
+
+        proc init(){ super.init(); }
+    }
+
+    /*
+     * The HDF5FileFormatError is thrown if there is an error in parsing the HDF5 file.
+     */
+    class HDF5FileFormatError: ErrorWithContext { 
 
         proc init(msg : string, lineNumber: int, routineName: string, 
                                                            moduleName: string) { 
@@ -142,10 +154,12 @@ module Errors {
     }
  
     /*
-     *
+     * Factory method for generating ErrorWithContext objects that include an error
+     * message as well as the line number, routine name, and module name where the 
+     * error was thrown.
      */
     proc getErrorWithContext(lineNumber: int, moduleName: string, 
-                                   routineName: string, msg: string, errorClass: string): Error throws {
+                    routineName: string, msg: string, errorClass: string): Error throws {
         select errorClass {
             when "ErrorWithContext"             { return new owned 
                                                           ErrorWithContext(msg=msg,
@@ -159,6 +173,11 @@ module Errors {
                                                           moduleName=moduleName); }
             when "NotHDF5FileError"              { return new owned 
                                                           NotHDF5FileError(msg=msg,
+                                                          lineNumber=lineNumber,
+                                                          routineName=routineName,
+                                                          moduleName=moduleName); }
+            when "HDF5FileFormatError"           { return new owned 
+                                                          HDF5FileFormatError(msg=msg,
                                                           lineNumber=lineNumber,
                                                           routineName=routineName,
                                                           moduleName=moduleName); }
