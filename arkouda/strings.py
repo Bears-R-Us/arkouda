@@ -5,6 +5,7 @@ from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value
 from arkouda.dtypes import *
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS
 from arkouda.logger import getArkoudaLogger
+from arkouda.dtypes import str as akstr
 import numpy as np
 import json
 
@@ -34,7 +35,7 @@ class Strings:
     shape : tuple
         The sizes of each dimension of the array
     dtype : dtype
-        The dtype is np.str
+        The dtype is ak.str
     logger : ArkoudaLogger
         Used for all logging operations
         
@@ -95,7 +96,7 @@ class Strings:
             self.shape = self.offsets.shape
         except Exception as e:
             raise ValueError(e)   
-        self.dtype = np.str
+        self.dtype = akstr
         self.logger = getArkoudaLogger(name=__class__.__name__)
 
     def __iter__(self):

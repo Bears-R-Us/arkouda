@@ -7,6 +7,7 @@ from arkouda.client import generic_msg, verbose, maxTransferBytes, pdarrayIterTh
 from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
 from arkouda.logger import getArkoudaLogger
+import builtins
 
 __all__ = ["pdarray", "info", "clear", "any", "all", "is_sorted", "sum", "prod", 
            "min", "max", "argmin", "argmax", "mean", "var", "std", "mink", 
@@ -46,9 +47,9 @@ def parse_single_value(msg : str) -> object:
     mydtype = dtype(dtname)
     if mydtype == bool:
         if value == "True":
-            return bool(True)
+            return mydtype.type(True)
         elif value == "False":
-            return bool(False)
+            return mydtype.type(False)
         else:
             raise ValueError(("unsupported value from server {} {}".\
                               format(mydtype.name, value)))
@@ -109,11 +110,11 @@ class pdarray:
         except:
             pass
 
-    def __bool__(self) -> bool:
+    def __bool__(self) -> builtins.bool:
         if self.size != 1:
             raise ValueError(('The truth value of an array with more than one ' +
                               'element is ambiguous. Use a.any() or a.all()'))
-        return bool(self[0])
+        return builtins.bool(self[0])
 
     def __len__(self):
         return self.shape[0]
@@ -506,19 +507,19 @@ class pdarray:
         generic_msg("set {} {} {}".format(self.name, 
                                         self.dtype.name, self.format_other(value)))
 
-    def any(self) -> bool:
+    def any(self) -> bool.type:
         """
         Return True iff any element of the array evaluates to True.
         """
         return any(self)
 
-    def all(self) -> bool:
+    def all(self) -> bool.type:
         """
         Return True iff all elements of the array evaluate to True.
         """
         return all(self)
 
-    def is_sorted(self) -> bool:
+    def is_sorted(self) -> bool.type:
         """
         Return True iff the array is monotonically non-decreasing.
         
@@ -1137,7 +1138,7 @@ def clear() -> None:
     generic_msg("clear")
 
 @typechecked
-def any(pda : pdarray) -> bool:
+def any(pda : pdarray) -> bool.type:
     """
     Return True iff any element of the array evaluates to True.
     
@@ -1162,7 +1163,7 @@ def any(pda : pdarray) -> bool:
     return parse_single_value(repMsg)
 
 @typechecked
-def all(pda : pdarray) -> bool:
+def all(pda : pdarray) -> bool.type:
     """
     Return True iff all elements of the array evaluate to True.
 
@@ -1187,7 +1188,7 @@ def all(pda : pdarray) -> bool:
     return parse_single_value(repMsg)
 
 @typechecked
-def is_sorted(pda : pdarray) -> bool:
+def is_sorted(pda : pdarray) -> bool.type:
     """
     Return True iff the array is monotonically non-decreasing.
     
