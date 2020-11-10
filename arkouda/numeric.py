@@ -3,6 +3,7 @@ from typeguard import typechecked
 from typing import Tuple, Union
 from arkouda.client import generic_msg
 from arkouda.dtypes import *
+from arkouda.dtypes import _as_dtype
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraysetops import unique
 from arkouda.strings import Strings
@@ -11,7 +12,7 @@ __all__ = ["cast", "abs", "log", "exp", "cumsum", "cumprod", "sin", "cos",
            "where", "histogram", "value_counts"]    
 
 @typechecked
-def cast(pda : Union[pdarray, Strings], dt: dtype) -> Union[pdarray, Strings]:
+def cast(pda : Union[pdarray, Strings], dt) -> Union[pdarray, Strings]:
     """
     Cast an array to another dtype.
 
@@ -43,15 +44,14 @@ def cast(pda : Union[pdarray, Strings], dt: dtype) -> Union[pdarray, Strings]:
     else:
         raise TypeError("Input must be pdarray or Strings")
 
-    check_np_dtype(dt)
-    dtname = translate_np_dtype(dt)
+    dt = _as_dtype(dt)
     opt = ""
-    msg = "cast {} {} {} {}".format(name, objtype, dtname, opt)
+    msg = "cast {} {} {}".format(name, objtype, dt.name, opt)
     repMsg = generic_msg(msg)
-    if dtname.startswith("str"):
+    if dt.name.startswith("str"):
         return Strings(*(repMsg.split("+")))
     else:
-        return pdarray(repMsg)
+        return create_pdarray(repMsg)
 
 @typechecked
 def abs(pda : pdarray) -> pdarray:

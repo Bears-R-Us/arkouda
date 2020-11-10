@@ -4,6 +4,7 @@ module CastMsg {
   use Reflection;
   use SegmentedArray;
   use Errors;
+  use SysError;
   use ServerErrorStrings;
   use CommAggregation;
 
@@ -75,7 +76,7 @@ module CastMsg {
           return castGenSymEntryToString(gse, st, bool);
         }
         otherwise {
-          var errorMsg = notImplementedError(pn,gse.dtype,":",str2dtype(targetDtype));
+          var errorMsg = notImplementedError(pn,gse.dtype:string,":",targetDtype);
                         writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
@@ -127,7 +128,7 @@ module CastMsg {
       }
   }
 
-  proc castGenSymEntry(gse: borrowed GenSymEntry, st: borrowed SymTab, type fromType, type toType): string {
+  proc castGenSymEntry(gse: borrowed GenSymEntry, st: borrowed SymTab, type fromType, type toType): string throws {
     const before = toSymEntry(gse, fromType);
     const name = st.nextName();
     var after = st.addEntry(name, before.size, toType);
@@ -145,21 +146,37 @@ module CastMsg {
     return "created " + st.attrib(name);
   }
 
-  proc castGenSymEntryToString(gse: borrowed GenSymEntry, st: borrowed SymTab, type fromType): string {
+  proc castGenSymEntryToString(gse: borrowed GenSymEntry, st: borrowed SymTab, type fromType): string throws {
     const before = toSymEntry(gse, fromType);
     const oname = st.nextName();
     var segments = st.addEntry(oname, before.size, int);
     var strings: [before.aD] string;
-    try {
-      strings = before.a : string;
-    } catch e: IllegalArgumentError {
-      var errorMsg = "bad value in cast from %s to string".format(fromType:string);
-      writeln(generateErrorContext(msg=errorMsg, 
-                                   lineNumber=getLineNumber(), 
-                                   moduleName=getModuleName(), 
-                                   routineName=getRoutineName(), 
-                                   errorClass="IllegalArgumentError"));
-      return "Error: %s".format(errorMsg);
+    if fromType == real {
+      try {
+        forall (s, v) in zip(strings, before.a) {
+          s = "%.17r".format(v);
+        }
+      } catch e {
+        var errorMsg = "could not convert float64 value to decimal representation";
+        writeln(generateErrorContext(msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="InvalidArgumentError"));
+        return "Error: %s".format(errorMsg);
+      }
+    } else {
+      try {
+        strings = [s in before.a] s : string;
+      } catch e: IllegalArgumentError {
+        var errorMsg = "bad value in cast from %s to string".format(fromType:string);
+        writeln(generateErrorContext(msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="IllegalArgumentError"));
+        return "Error: %s".format(errorMsg);
+      }
     }
     const byteLengths = [s in strings] s.numBytes + 1;
     segments.a = (+ scan byteLengths) - byteLengths;
@@ -175,7 +192,7 @@ module CastMsg {
     return "created " + st.attrib(oname) + "+created " + st.attrib(vname);
   }
 
-  proc castStringToSymEntry(s: SegString, st: borrowed SymTab, type toType): string {
+  proc castStringToSymEntry(s: SegString, st: borrowed SymTab, type toType): string throws {
     ref oa = s.offsets.a;
     ref va = s.values.a;
     const name = st.nextName();
