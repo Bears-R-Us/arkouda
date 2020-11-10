@@ -3,7 +3,7 @@ from typing import Tuple, Union
 from typeguard import typechecked
 import json, struct
 import numpy as np
-from arkouda.client import generic_msg, verbose, maxTransferBytes, pdarrayIterThresh
+from arkouda.client import generic_msg
 from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
 from arkouda.logger import getArkoudaLogger
@@ -120,11 +120,11 @@ class pdarray:
         return self.shape[0]
 
     def __str__(self):
-        global pdarrayIterThresh
+        from arkouda.client import pdarrayIterThresh
         return generic_msg("str {} {}".format(self.name,pdarrayIterThresh))
 
     def __repr__(self):
-        global pdarrayIterTresh
+        from arkouda.client import pdarrayIterThresh
         return generic_msg("repr {} {}".format(self.name,pdarrayIterThresh))
 
     def format_other(self, other : object) -> np.dtype:
@@ -723,7 +723,7 @@ class pdarray:
         """
         Convert the array to a np.ndarray, transferring array data from the
         Arkouda server to client-side Python. Note: if the pdarray size exceeds 
-        arkouda.maxTransferBytes, a RuntimeError is raised.
+        client.maxTransferBytes, a RuntimeError is raised.
 
         Returns
         -------
@@ -734,16 +734,16 @@ class pdarray:
         ------
         RuntimeError
             Raised if there is a server-side error thrown, if the pdarray size
-            exceeds the built-in ak.maxTransferBytes size limit, or if the bytes
+            exceeds the built-in client.maxTransferBytes size limit, or if the bytes
             received does not match expected number of bytes
         Notes
         -----
-        The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
+        The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
         otherwise a ``RuntimeError`` will be raised. This is to protect the user
         from overflowing the memory of the system on which the Python client
         is running, under the assumption that the server is running on a
         distributed system with much more memory than the client. The user
-        may override this limit by setting ak.maxTransferBytes to a larger
+        may override this limit by setting client.maxTransferBytes to a larger
         value, but proceed with caution.
 
         See Also
@@ -759,12 +759,13 @@ class pdarray:
         >>> type(a.to_ndarray())
         numpy.ndarray
         """
+        from arkouda.client import maxTransferBytes
         # Total number of bytes in the array data
         arraybytes = self.size * self.dtype.itemsize
         # Guard against overflowing client memory
         if arraybytes > maxTransferBytes:
             raise RuntimeError(('Array exceeds allowed size for transfer. Increase ' +
-                               'ak.maxTransferBytes to allow'))
+                               'client.maxTransferBytes to allow'))
         # The reply from the server will be a bytes object
         rep_msg = generic_msg("tondarray {}".format(self.name), recv_bytes=True)
         # Make sure the received data has the expected length
@@ -799,12 +800,12 @@ class pdarray:
 
         Notes
         -----
-        The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
+        The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
         otherwise a ``RuntimeError`` will be raised. This is to protect the user
         from overflowing the memory of the system on which the Python client
         is running, under the assumption that the server is running on a
         distributed system with much more memory than the client. The user
-        may override this limit by setting ak.maxTransferBytes to a larger
+        may override this limit by setting client.maxTransferBytes to a larger
         value, but proceed with caution.
 
         See Also
@@ -831,10 +832,12 @@ class pdarray:
 
         # Total number of bytes in the array data
         arraybytes = self.size * self.dtype.itemsize
+        
+        from arkouda.client import maxTransferBytes
         # Guard against overflowing client memory
         if arraybytes > maxTransferBytes:
             raise RuntimeError(("Array exceeds allowed size for transfer. " +
-                               "Increase ak.maxTransferBytes to allow"))
+                               "Increase client.maxTransferBytes to allow"))
         # The reply from the server will be a bytes object
         rep_msg = generic_msg("tondarray {}".format(self.name), recv_bytes=True)
         # Make sure the received data has the expected length
