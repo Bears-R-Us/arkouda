@@ -112,18 +112,18 @@ class PdarrayCreationTest(ArkoudaTest):
             ak.uniform(low=5)
     
         with self.assertRaises(TypeError) as cm:
-            ak.randint(low='0', high=5, size=100)
-        self.assertEqual("The low parameter must be an integer or float", 
+            ak.uniform(low='0', high=5, size=100)
+        self.assertEqual('type of argument "low" must be either float or int; got str instead', 
                          cm.exception.args[0])   
             
         with self.assertRaises(TypeError) as cm:
-            ak.randint(low=0, high='5', size=100)
-        self.assertEqual("The high parameter must be an integer or float", 
+            ak.uniform(low=0, high='5', size=100)
+        self.assertEqual('type of argument "high" must be either float or int; got str instead', 
                          cm.exception.args[0])   
         
         with self.assertRaises(TypeError) as cm:
-            ak.randint(low=0, high=5, size='100')
-        self.assertEqual("The size parameter must be an integer", 
+            ak.uniform(low=0, high=5, size='100')
+        self.assertEqual('type of argument "size" must be int; got str instead', 
                          cm.exception.args[0])  
  
     def testZeros(self):
@@ -253,7 +253,7 @@ class PdarrayCreationTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:          
             ak.random_strings_lognormal('2', 0.25, 100)          
-        self.assertEqual("The logmean must be a float or int", 
+        self.assertEqual('type of argument "logmean" must be one of (float, int); got str instead', 
                          cm.exception.args[0])   
         
         with self.assertRaises(TypeError) as cm:          
@@ -263,12 +263,12 @@ class PdarrayCreationTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:          
             ak.random_strings_lognormal(2, 0.25, '100')          
-        self.assertEqual("The size must be an integer", 
+        self.assertEqual('type of argument "size" must be int; got str instead', 
                          cm.exception.args[0])       
         
         with self.assertRaises(TypeError) as cm:          
             ak.random_strings_lognormal(2, 0.25, 100, 1000000)          
-        self.assertEqual("characters must be a str", 
+        self.assertEqual('type of argument "characters" must be str; got int instead', 
                          cm.exception.args[0])         
     
     def testMulitdimensionalArrayCreation(self):
