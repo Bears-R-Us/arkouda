@@ -2,7 +2,7 @@ import numpy as np
 import struct
 from typing import Iterable, Union
 from typeguard import typechecked
-from arkouda.client import generic_msg, maxTransferBytes
+from arkouda.client import generic_msg
 from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
 from arkouda.dtypes import dtype as akdtype
@@ -73,6 +73,7 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     # If a is already a pdarray, do nothing
     if isinstance(a, pdarray):
         return a
+    from arkouda.client import maxTransferBytes
     # If a is not already a numpy.ndarray, convert it
     if not isinstance(a, np.ndarray):
         try:

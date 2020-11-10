@@ -4,10 +4,8 @@ import warnings, pkg_resources
 from arkouda import security, io_util
 from arkouda.logger import getArkoudaLogger
 
-__all__ = ["verbose", "pdarrayIterThresh", "maxTransferBytes",
-           "AllSymbols", "set_defaults", "connect", "disconnect",
-           "shutdown", "get_config", "get_mem_used", "__version__",
-           "ruok"]
+__all__ = ["AllSymbols", "connect", "disconnect", "shutdown", "get_config", 
+           "get_mem_used", "__version__", "ruok"]
 
 # Try to read the version from the file located at ../VERSION
 VERSIONFILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "VERSION")
@@ -43,13 +41,14 @@ logger = getArkoudaLogger(name='Arkouda Client')
 # reset settings to default values
 def set_defaults() -> None:
     """
-    Sets global variables to defaults
+    Sets client variables including verbose, maxTransferBytes and 
+    pdarrayIterThresh to default values.
     
     Returns
     -------
     None
     """
-    global verbose, verboseDefVal, pdarrayIterThresh, pdarrayIterThreshDefVal
+    global verbose, maxTransferBytes, pdarrayIterThresh
     verbose = verboseDefVal
     pdarrayIterThresh  = pdarrayIterThreshDefVal
     maxTransferBytes = maxTransferBytesDefVal
