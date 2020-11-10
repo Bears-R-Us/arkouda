@@ -79,11 +79,11 @@ def resolve_scalar_dtype(val : object) -> str:
     elif isinstance(val, float) or (hasattr(val, 'dtype') and \
                                     val.dtype.kind == 'f'):
         return 'float64'
-    elif isinstance(val, str) or isinstance(val, str_):
+    elif isinstance(val, builtins.str) or isinstance(val, np.str):
         return 'str'
     # Other numpy dtype
     elif hasattr(val, 'dtype'):
         return val.dtype.name
     # Other python type
     else:
-        return str(type(val))
+        return builtins.str(type(val))
