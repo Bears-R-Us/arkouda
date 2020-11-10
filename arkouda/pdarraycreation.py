@@ -2,7 +2,7 @@ import numpy as np
 import struct
 from typing import Iterable, Union
 from typeguard import typechecked
-from arkouda.client import generic_msg, maxTransferBytes
+from arkouda.client import generic_msg
 from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
 from arkouda.dtypes import dtype as akdtype
@@ -73,12 +73,14 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     # If a is already a pdarray, do nothing
     if isinstance(a, pdarray):
         return a
+    from arkouda.client import maxTransferBytes
     # If a is not already a numpy.ndarray, convert it
     if not isinstance(a, np.ndarray):
         try:
             a = np.array(a)
         except:
-            raise TypeError("Argument must be a pdarray or np.ndarray")
+            raise TypeError(('a must be a pdarray, np.ndarray, or convertible to' +
+                            ' a numpy array'))
     # Only rank 1 arrays currently supported
     if a.ndim != 1:
         raise RuntimeError("Only rank-1 pdarrays or ndarrays supported")
@@ -235,10 +237,7 @@ def zeros_like(pda : pdarray) -> pdarray:
     --------
     zeros, ones_like
     """
-    if isinstance(pda, pdarray):
-        return zeros(pda.size, pda.dtype)
-    else:
-        raise TypeError("must be pdarray {}".format(pda))
+    return zeros(pda.size, pda.dtype)
 
 @typechecked
 def ones_like(pda : pdarray) -> pdarray:
@@ -263,10 +262,7 @@ def ones_like(pda : pdarray) -> pdarray:
     --------
     ones, zeros_like
     """
-    if isinstance(pda, pdarray):
-        return ones(pda.size, pda.dtype)
-    else:
-        raise TypeError("must be pdarray {}".format(pda))
+    return ones(pda.size, pda.dtype)
 
 def arange(*args) -> pdarray:
     """

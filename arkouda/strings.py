@@ -9,9 +9,6 @@ from arkouda.logger import getArkoudaLogger
 import numpy as np
 import json
 
-global verbose
-global pdarrayIterThresh
-
 __all__ = ['Strings']
 
 class Strings:
@@ -106,6 +103,7 @@ class Strings:
         return self.shape[0]
 
     def __str__(self) -> str:
+        from arkouda.client import pdarrayIterThresh
         if self.size <= pdarrayIterThresh:
             vals = ["'{}'".format(self[i]) for i in range(self.size)]
         else:

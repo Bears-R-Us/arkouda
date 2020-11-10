@@ -7,8 +7,6 @@ from arkouda.dtypes import dtype as akdtype
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.groupbyclass import GroupBy
 
-global verbose
-
 __all__ = ["join_on_eq_with_dt"]
 
 predicates = {"true_dt":0, "abs_dt":1, "pos_dt":2}

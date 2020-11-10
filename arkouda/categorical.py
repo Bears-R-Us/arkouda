@@ -78,6 +78,7 @@ class Categorical:
         self.shape = self.codes.shape
 
     @classmethod
+    @typechecked
     def from_codes(cls, codes : pdarray, categories : Strings, 
                           permutation=None, segments=None) -> Categorical:
         """
@@ -105,13 +106,11 @@ class Categorical:
         Raises
         ------
         TypeError
-            Raised if codes is not a pdarray of int64 objects ot if
+            Raised if codes is not a pdarray of int64 objects or if
             categories is not a Strings object
         """
-        if not isinstance(codes, pdarray) or codes.dtype != int64:
+        if codes.dtype != int64:
             raise TypeError("Codes must be pdarray of int64")
-        if not isinstance(categories, Strings):
-            raise TypeError("Categories must be Strings")
         return cls(None, codes=codes, categories=categories, 
                             permutation=permutation, segments=segments)
 
