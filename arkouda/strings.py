@@ -3,10 +3,10 @@ from typing import Tuple, Union
 from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value
-from arkouda.dtypes import *
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS
 from arkouda.logger import getArkoudaLogger
 from arkouda.dtypes import str as akstr
+from arkouda.dtypes import resolve_scalar_dtype, translate_np_dtype
 import numpy as np
 import json
 
@@ -493,6 +493,7 @@ class Strings:
         """
         return self.peel(delimiter, times=times, includeDelimiter=includeDelimiter, 
                          keepPartial=keepPartial, fromRight=True)
+
     @typechecked
     def stick(self, other : Strings, delimiter : str="", 
                                         toLeft : bool=False) -> Strings:
@@ -554,7 +555,7 @@ class Strings:
 
     def __add__(self, other : Strings) -> Strings:
         return self.stick(other)
-    
+
     def lstick(self, other : Strings, delimiter : str="") -> Strings:
         """
         Join the strings from another array onto the left of the strings 
