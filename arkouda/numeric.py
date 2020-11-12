@@ -3,12 +3,54 @@ from typeguard import typechecked
 from typing import Tuple, Union
 from arkouda.client import generic_msg
 from arkouda.dtypes import *
+from arkouda.dtypes import _as_dtype
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraysetops import unique
 from arkouda.strings import Strings
 
-__all__ = ["abs", "log", "exp", "cumsum", "cumprod", "sin", "cos", 
+__all__ = ["cast", "abs", "log", "exp", "cumsum", "cumprod", "sin", "cos", 
            "where", "histogram", "value_counts"]    
+
+@typechecked
+def cast(pda : Union[pdarray, Strings], dt) -> Union[pdarray, Strings]:
+    """
+    Cast an array to another dtype.
+
+    Parameters
+    ----------
+    pda : pdarray or Strings
+        The array of values to cast
+    dtype : np.dtype or str
+        The target dtype to cast values to
+
+    Returns
+    -------
+    pdarray or Strings
+        Array of values cast to desired dtype
+
+    Notes
+    -----
+    The cast is performed according to Chapel's casting rules and is NOT safe 
+    from overflows or underflows. The user must ensure that the target dtype 
+    has the precision and capacity to hold the desired result.
+    """
+
+    if isinstance(pda, pdarray):
+        name = pda.name
+        objtype = "pdarray"
+    elif isinstance(pda, Strings):
+        name = '+'.join((pda.offsets.name, pda.bytes.name))
+        objtype = "str"    
+    # typechecked decorator guarantees no other case
+
+    dt = _as_dtype(dt)
+    opt = ""
+    msg = "cast {} {} {} {}".format(name, objtype, dt.name, opt)
+    repMsg = generic_msg(msg)
+    if dt.name.startswith("str"):
+        return Strings(*(repMsg.split("+")))
+    else:
+        return create_pdarray(repMsg)
 
 @typechecked
 def abs(pda : pdarray) -> pdarray:

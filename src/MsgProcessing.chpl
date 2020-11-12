@@ -32,6 +32,7 @@ module MsgProcessing
     public use RegistrationMsg;
     public use ArraySetopsMsg;
     public use KExtremeMsg;
+    public use CastMsg;
     
     /* 
     Parse, execute, and respond to a create message 

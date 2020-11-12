@@ -95,13 +95,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.dtype not in TYPES:
         raise ValueError("Dtype must be {}, not {}".format('/'.join(TYPES), args.dtype))
-    args.alpha = getattr(ak, args.dtype)()
+    args.alpha = getattr(ak, args.dtype).type(args.alpha)
     ak.verbose = False
     ak.connect(server=args.hostname, port=args.port)
 
     if args.correctness_only:
         for dtype in TYPES:
-            alpha = getattr(ak, dtype)()
+            alpha = getattr(ak, dtype).type(args.alpha)
             check_correctness(alpha, dtype, args.randomize)
         sys.exit(0)
     
