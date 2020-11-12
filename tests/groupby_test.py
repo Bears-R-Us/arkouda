@@ -140,3 +140,13 @@ class GroupByTest(ArkoudaTest):
         '''
         self.assertEqual(0, run_test(2, verbose))
 
+    def test_error_handling(self):
+        d = make_arrays()
+        df = pd.DataFrame(d)
+        akdf = {k:ak.array(v) for k, v in d.items()}        
+        gb = ak.GroupBy([akdf['keys'], akdf['keys2']])
+
+        with self.assertRaises(TypeError) as cm:
+            gb.broadcast([])
+        self.assertEqual('type of argument "values" must be arkouda.pdarrayclass.pdarray; got list instead', 
+                         cm.exception.args[0])  

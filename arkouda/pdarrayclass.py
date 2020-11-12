@@ -848,7 +848,8 @@ class pdarray:
         # Return a numba devicendarray
         return cuda.to_device(struct.unpack(fmt, rep_msg))
 
-    def save(self, prefix_path, dataset='array', mode='truncate') -> str:
+    @typechecked
+    def save(self, prefix_path : str, dataset : str='array', mode : str='truncate') -> str:
         """
         Save the pdarray to HDF5. The result is a collection of HDF5 files,
         one file per locale of the arkouda server, where each filename starts
@@ -861,7 +862,7 @@ class pdarray:
             Directory and filename prefix that all output files share
         dataset : str
             Name of the dataset to create in HDF5 files (must not already exist)
-        mode : {'truncate' | 'append'}
+        mode : str {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', attempt to create new dataset in existing files.
 
@@ -877,6 +878,9 @@ class pdarray:
             Raised if there is an error in parsing the prefix path pointing to
             file write location or if the mode parameter is neither truncate
             nor append
+        TypeError
+            Raised if any one of the prefix_path, dataset, or mode parameters
+            is not a string
 
         See Also
         --------

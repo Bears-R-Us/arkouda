@@ -8,6 +8,7 @@ from arkouda.sorting import argsort
 from arkouda.client import pdarrayIterThresh
 from arkouda.pdarraysetops import unique, concatenate, in1d
 import numpy as np
+from typeguard import typechecked
 
 __all__ = ['Categorical']
 
@@ -77,6 +78,7 @@ class Categorical:
         self.shape = self.codes.shape
 
     @classmethod
+    @typechecked
     def from_codes(cls, codes : pdarray, categories : Strings, 
                           permutation=None, segments=None) -> Categorical:
         """
@@ -104,13 +106,11 @@ class Categorical:
         Raises
         ------
         TypeError
-            Raised if codes is not a pdarray of int64 objects ot if
+            Raised if codes is not a pdarray of int64 objects or if
             categories is not a Strings object
         """
-        if not isinstance(codes, pdarray) or codes.dtype != int64:
+        if codes.dtype != int64:
             raise TypeError("Codes must be pdarray of int64")
-        if not isinstance(categories, Strings):
-            raise TypeError("Categories must be Strings")
         return cls(None, codes=codes, categories=categories, 
                             permutation=permutation, segments=segments)
 
@@ -159,6 +159,7 @@ class Categorical:
     def __repr__(self):
         return "array({})".format(self.__str__())
 
+    @typechecked
     def _binop(self, other : Categorical, op : str) -> pdarray:
         """
         Executes the requested binop on this Categorical instance and returns 
@@ -205,6 +206,7 @@ class Categorical:
                                 "non-Categorical not yet implemented. " +
                                 "Consider converting operands to Categorical."))
 
+    @typechecked
     def _r_binop(self, other : Categorical, op : str) -> pdarray:
         """
         Executes the requested reverse binop on this Categorical instance and 
@@ -265,6 +267,7 @@ class Categorical:
         return Categorical.from_codes(newvals, idx, permutation=g.permutation, 
                                       segments=g.segments)
 
+    @typechecked
     def contains(self, substr : str) -> pdarray:
         """
         Check whether each element contains the given substring.
@@ -278,6 +281,11 @@ class Categorical:
         -------
         pdarray, bool
             True for elements that contain substr, False otherwise
+            
+        Raises
+        ------
+        TypeError
+            Raised if substr is not a str
 
         Notes
         -----
@@ -292,6 +300,7 @@ class Categorical:
         categoriescontains = self.categories.contains(substr)
         return categoriescontains[self.codes]
 
+    @typechecked
     def startswith(self, substr : str) -> pdarray:
         """
         Check whether each element starts with the given substring.
@@ -300,6 +309,11 @@ class Categorical:
         ----------
         substr : str
             The substring to search for
+            
+        Raises
+        ------
+        TypeError
+            Raised if substr is not a str
 
         Returns
         -------
@@ -319,6 +333,7 @@ class Categorical:
         categoriesstartswith = self.categories.startswith(substr)
         return categoriesstartswith[self.codes]
 
+    @typechecked
     def endswith(self, substr : str) -> pdarray:
         """
         Check whether each element ends with the given substring.
@@ -327,6 +342,11 @@ class Categorical:
         ----------
         substr : str
             The substring to search for
+            
+        Raises
+        ------
+        TypeError
+            Raised if substr is not a str
 
         Returns
         -------
@@ -401,7 +421,8 @@ class Categorical:
         inverse[idxperm] = arange(idxperm.size)
         newvals = inverse[self.codes]
         return Categorical.from_codes(newvals, self.categories[idxperm])
-            
+    
+    @typechecked
     def merge(self, others : [Categorical]) -> Categorical:
         """
         Merge this Categorical with other Categorical objects in the array, 
