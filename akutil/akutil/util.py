@@ -1,12 +1,6 @@
 import akutil as aku
 import arkouda as ak
 
-"""
-Author: N. Schwartz
-Date: January 2020
-
-"""
-
 def expand(size, segs, vals):
     """ Expand an array with values placed into the indicated segments.
 
