@@ -79,7 +79,8 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
         try:
             a = np.array(a)
         except:
-            raise TypeError("Argument must be a pdarray or np.ndarray")
+            raise TypeError(('a must be a pdarray, np.ndarray, or convertible to' +
+                            ' a numpy array'))
     # Only rank 1 arrays currently supported
     if a.ndim != 1:
         raise RuntimeError("Only rank-1 pdarrays or ndarrays supported")
@@ -236,10 +237,7 @@ def zeros_like(pda : pdarray) -> pdarray:
     --------
     zeros, ones_like
     """
-    if isinstance(pda, pdarray):
-        return zeros(pda.size, pda.dtype)
-    else:
-        raise TypeError("must be pdarray {}".format(pda))
+    return zeros(pda.size, pda.dtype)
 
 @typechecked
 def ones_like(pda : pdarray) -> pdarray:
@@ -264,10 +262,7 @@ def ones_like(pda : pdarray) -> pdarray:
     --------
     ones, zeros_like
     """
-    if isinstance(pda, pdarray):
-        return ones(pda.size, pda.dtype)
-    else:
-        raise TypeError("must be pdarray {}".format(pda))
+    return ones(pda.size, pda.dtype)
 
 def arange(*args) -> pdarray:
     """
@@ -419,7 +414,6 @@ def linspace(start : int, stop : int, length : int) -> pdarray:
     repMsg = generic_msg("linspace {} {} {}".format(startstr, stopstr, lenstr))
     return create_pdarray(repMsg)
 
-
 def randint(low : Union[int,float], high : Union[int,float], size : int, dtype=int64) -> pdarray:
     """
     Generate a pdarray with random values in a specified range.
@@ -485,7 +479,7 @@ def randint(low : Union[int,float], high : Union[int,float], size : int, dtype=i
                          format(sizestr, dtype.name, lowstr, highstr))
     return create_pdarray(repMsg)
 
-
+@typechecked
 def uniform(size : int, low : float=0.0, high : float=1.0) -> pdarray:
     """
     Generate a pdarray with uniformly distributed random values 
@@ -518,8 +512,6 @@ def uniform(size : int, low : float=0.0, high : float=1.0) -> pdarray:
     >>> ak.uniform(3)
     array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])
     """
-    if not isinstance(low, float) or not isinstance(high, float):
-        raise TypeError('Both the low and high parameters must be ints or floats')
     return randint(low=low, high=high, size=size, dtype='float64')
 
     
@@ -604,7 +596,7 @@ def random_strings_uniform(minlen : int, maxlen : int, size : int,
     repMsg = generic_msg(msg)
     return Strings(*(repMsg.split('+')))
 
-
+@typechecked
 def random_strings_lognormal(logmean : Union[float, int], logstd : float, 
                              size : int, characters : str='uppercase') -> Strings:
     """

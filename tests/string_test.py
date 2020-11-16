@@ -332,37 +332,37 @@ class StringTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             stringsOne.lstick(stringsTwo, delimiter=1)
-        self.assertEqual('Delimiter must be a string, not int', 
+        self.assertEqual('type of argument "delimiter" must be str; got int instead', 
                          cm.exception.args[0])
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.lstick([1], 1)
-        self.assertEqual('stick: not supported between String and list', 
+        self.assertEqual('type of argument "other" must be arkouda.strings.Strings; got list instead', 
                          cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.startswith(1)
-        self.assertEqual('Substring must be a string, not int', 
+        self.assertEqual('type of argument "substr" must be one of (str, bytes); got int instead', 
                          cm.exception.args[0])    
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.endswith(1)
-        self.assertEqual('Substring must be a string, not int', 
+        self.assertEqual('type of argument "substr" must be one of (str, bytes); got int instead', 
                          cm.exception.args[0])   
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.contains(1)
-        self.assertEqual('Substring must be a string, not int', 
+        self.assertEqual('type of argument "substr" must be one of (str, bytes); got int instead', 
                          cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.peel(1)
-        self.assertEqual('Delimiter must be a string, not int', 
+        self.assertEqual('type of argument "delimiter" must be str; got int instead', 
                          cm.exception.args[0])  
 
         with self.assertRaises(ValueError) as cm:
             stringsOne.peel("",-5)
-        self.assertEqual('Times must be >= 1', 
+        self.assertEqual('times must be >= 1', 
                          cm.exception.args[0])  
 
     @pytest.mark.skip(reason="awaiting bug fix.")

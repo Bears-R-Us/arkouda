@@ -7,6 +7,30 @@ of the where method, which is in the where_test module
 """
 class NumericTest(ArkoudaTest):
     
+    def testCast(self):
+        N = 100
+        arrays = {ak.int64: ak.randint(-(2**48), 2**48, N),
+                  ak.float64: ak.randint(0, 1, N, dtype=ak.float64),
+                  ak.bool: ak.randint(0, 2, N, dtype=ak.bool)}
+        roundtripable = set(((ak.bool, ak.bool),
+                         (ak.int64, ak.int64),
+                         (ak.int64, ak.float64),
+                         (ak.int64, ak.str),
+                         (ak.float64, ak.float64),
+                         (ak.float64, ak.str),
+                         (ak.uint8, ak.int64),
+                         (ak.uint8, ak.float64),
+                         (ak.uint8, ak.str)))
+        for t1, orig in arrays.items():
+            for t2 in ak.DTypes:
+                t2 = ak.dtype(t2)
+                other = ak.cast(orig, t2)
+                self.assertEqual(orig.size, other.size)
+                if (t1, t2) in roundtripable:
+                    roundtrip = ak.cast(other, t1)
+                    self.assertTrue((orig == roundtrip).all(), f"{t1}: {orig[:5]}, {t2}: {roundtrip[:5]}")
+            
+    
     def testHistogram(self):
         pda = ak.randint(10,30,40)
         result = ak.histogram(pda, bins=20)  
