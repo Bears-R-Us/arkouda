@@ -85,3 +85,19 @@ class ClientTest(ArkoudaTest):
         '''   
         noop = ak.client._no_op()
         self.assertEqual('noop', noop)
+        
+    def test_client_configuration(self):
+        '''
+        Tests the ak.client.set_defaults() method as well as set/get
+        parrayIterThresh, maxTransferBytes, and verbose config params.
+        '''
+        ak.client.pdarrayIterThresh = 50
+        ak.client.maxTransferBytes = 1048576000
+        ak.client.verbose = True
+        self.assertEqual(50, ak.client.pdarrayIterThresh)
+        self.assertEqual(1048576000, ak.client.maxTransferBytes)
+        self.assertTrue(ak.client.verbose)
+        ak.client.set_defaults()
+        self.assertEqual(100, ak.client.pdarrayIterThresh)
+        self.assertEqual(1073741824, ak.client.maxTransferBytes)
+        self.assertFalse(ak.client.verbose)        

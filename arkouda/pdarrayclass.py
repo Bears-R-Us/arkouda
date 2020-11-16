@@ -3,14 +3,19 @@ from typing import cast, Sequence, Tuple, Union
 from typeguard import typechecked
 import json, struct
 import numpy as np # type: ignore
-from arkouda.client import generic_msg, verbose, maxTransferBytes, pdarrayIterThresh
-from arkouda.dtypes import *
-from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
+from arkouda.client import generic_msg
+from arkouda.dtypes import dtype, DTypes, resolve_scalar_dtype, structDtypeCodes, \
+     translate_np_dtype, NUMBER_FORMAT_STRINGS
+from arkouda.dtypes import int64 as akint64
+from arkouda.dtypes import str_ as akstr_
+from arkouda.dtypes import bool as akbool
 from arkouda.logger import getArkoudaLogger
+import builtins
 
 __all__ = ["pdarray", "info", "clear", "any", "all", "is_sorted", "sum", "prod", 
            "min", "max", "argmin", "argmax", "mean", "var", "std", "mink", 
-           "maxk", "argmink", "argmaxk"]
+           "maxk", "argmink", "argmaxk", "register_pdarray", "attach_pdarray", 
+           "unregister_pdarray"]
 
 logger = getArkoudaLogger(name='pdarray')    
 
@@ -43,16 +48,16 @@ def parse_single_value(msg : str) -> object:
         return res
     dtname, value = msg.split(maxsplit=1)
     mydtype = dtype(dtname)
-    if mydtype == bool:
+    if mydtype == akbool:
         if value == "True":
-            return bool(True)
+            return mydtype.type(True)
         elif value == "False":
-            return bool(False)
+            return mydtype.type(False)
         else:
             raise ValueError(("unsupported value from server {} {}".\
                               format(mydtype.name, value)))
     try:
-        if mydtype == str_:
+        if mydtype == akstr_:
             return mydtype.type(unescape(value.strip('"')))
         return mydtype.type(value)
     except:
@@ -108,21 +113,21 @@ class pdarray:
         except:
             pass
 
-    def __bool__(self) -> bool:
+    def __bool__(self) -> builtins.bool:
         if self.size != 1:
             raise ValueError(('The truth value of an array with more than one ' +
                               'element is ambiguous. Use a.any() or a.all()'))
-        return bool(self[0])
+        return builtins.bool(self[0])
 
     def __len__(self):
         return self.shape[0]
 
     def __str__(self):
-        global pdarrayIterThresh
+        from arkouda.client import pdarrayIterThresh
         return generic_msg("str {} {}".format(self.name,pdarrayIterThresh))
 
     def __repr__(self):
-        global pdarrayIterTresh
+        from arkouda.client import pdarrayIterThresh
         return generic_msg("repr {} {}".format(self.name,pdarrayIterThresh))
 
     def format_other(self, other : object) -> np.dtype:
@@ -350,7 +355,7 @@ class pdarray:
 
     # overload unary~ for pdarray implemented as pdarray^(~0)
     def __invert__(self):
-        if self.dtype == int64:
+        if self.dtype == akint64:
             return self._binop(~0, "^")
         if self.dtype == bool:
             return self._binop(True, "^")
@@ -505,19 +510,19 @@ class pdarray:
         generic_msg("set {} {} {}".format(self.name, 
                                         self.dtype.name, self.format_other(value)))
 
-    def any(self) -> bool:
+    def any(self) -> akbool:
         """
         Return True iff any element of the array evaluates to True.
         """
         return any(self)
 
-    def all(self) -> bool:
+    def all(self) -> np.bool_:
         """
         Return True iff all elements of the array evaluate to True.
         """
         return all(self)
 
-    def is_sorted(self) -> bool:
+    def is_sorted(self) -> akbool:
         """
         Return True iff the array is monotonically non-decreasing.
         
@@ -721,7 +726,7 @@ class pdarray:
         """
         Convert the array to a np.ndarray, transferring array data from the
         Arkouda server to client-side Python. Note: if the pdarray size exceeds 
-        arkouda.maxTransferBytes, a RuntimeError is raised.
+        client.maxTransferBytes, a RuntimeError is raised.
 
         Returns
         -------
@@ -732,16 +737,16 @@ class pdarray:
         ------
         RuntimeError
             Raised if there is a server-side error thrown, if the pdarray size
-            exceeds the built-in ak.maxTransferBytes size limit, or if the bytes
+            exceeds the built-in client.maxTransferBytes size limit, or if the bytes
             received does not match expected number of bytes
         Notes
         -----
-        The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
+        The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
         otherwise a ``RuntimeError`` will be raised. This is to protect the user
         from overflowing the memory of the system on which the Python client
         is running, under the assumption that the server is running on a
         distributed system with much more memory than the client. The user
-        may override this limit by setting ak.maxTransferBytes to a larger
+        may override this limit by setting client.maxTransferBytes to a larger
         value, but proceed with caution.
 
         See Also
@@ -757,12 +762,13 @@ class pdarray:
         >>> type(a.to_ndarray())
         numpy.ndarray
         """
+        from arkouda.client import maxTransferBytes
         # Total number of bytes in the array data
         arraybytes = self.size * self.dtype.itemsize
         # Guard against overflowing client memory
         if arraybytes > maxTransferBytes:
             raise RuntimeError(('Array exceeds allowed size for transfer. Increase ' +
-                               'ak.maxTransferBytes to allow'))
+                               'client.maxTransferBytes to allow'))
         # The reply from the server will be a bytes object
         rep_msg = generic_msg("tondarray {}".format(self.name), recv_bytes=True)
         # Make sure the received data has the expected length
@@ -797,12 +803,12 @@ class pdarray:
 
         Notes
         -----
-        The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
+        The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
         otherwise a ``RuntimeError`` will be raised. This is to protect the user
         from overflowing the memory of the system on which the Python client
         is running, under the assumption that the server is running on a
         distributed system with much more memory than the client. The user
-        may override this limit by setting ak.maxTransferBytes to a larger
+        may override this limit by setting client.maxTransferBytes to a larger
         value, but proceed with caution.
 
         See Also
@@ -829,10 +835,12 @@ class pdarray:
 
         # Total number of bytes in the array data
         arraybytes = self.size * self.dtype.itemsize
+        
+        from arkouda.client import maxTransferBytes
         # Guard against overflowing client memory
         if arraybytes > maxTransferBytes:
             raise RuntimeError(("Array exceeds allowed size for transfer. " +
-                               "Increase ak.maxTransferBytes to allow"))
+                               "Increase client.maxTransferBytes to allow"))
         # The reply from the server will be a bytes object
         rep_msg = generic_msg("tondarray {}".format(self.name), recv_bytes=True)
         # Make sure the received data has the expected length
@@ -844,7 +852,8 @@ class pdarray:
         # Return a numba devicendarray
         return cuda.to_device(struct.unpack(fmt, rep_msg))
 
-    def save(self, prefix_path, dataset='array', mode='truncate') -> str:
+    @typechecked
+    def save(self, prefix_path : str, dataset : str='array', mode : str='truncate') -> str:
         """
         Save the pdarray to HDF5. The result is a collection of HDF5 files,
         one file per locale of the arkouda server, where each filename starts
@@ -857,7 +866,7 @@ class pdarray:
             Directory and filename prefix that all output files share
         dataset : str
             Name of the dataset to create in HDF5 files (must not already exist)
-        mode : {'truncate' | 'append'}
+        mode : str {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', attempt to create new dataset in existing files.
 
@@ -873,6 +882,9 @@ class pdarray:
             Raised if there is an error in parsing the prefix path pointing to
             file write location or if the mode parameter is neither truncate
             nor append
+        TypeError
+            Raised if any one of the prefix_path, dataset, or mode parameters
+            is not a string
 
         See Also
         --------
@@ -920,11 +932,140 @@ class pdarray:
         return cast(str, generic_msg("tohdf {} {} {} {} {}".\
                            format(self.name, dataset, m, json_array, self.dtype)))
 
+
+    def register(self, user_defined_name : str) -> pdarray:
+        """
+        Return a pdarray with a user defined name in the arkouda server 
+        so it can be attached to later using pdarray.attach()
+        
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name array is to be registered under
+        
+        Returns
+        -------
+        pdarray
+            pdarray which points to original input pdarray but is also 
+            registered with user defined name in the arkouda server
+        
+        Raises
+        ------
+        TypeError
+            Raised if pda is neither a pdarray nor a str or if 
+            user_defined_name is not a str
+        
+        See also
+        --------
+        attach, unregister
+        
+        Notes
+        -----
+        Registered names/pdarrays in the server are immune to deletion 
+        until they are unregistered.
+        
+        Examples
+        --------
+        >>> a = zeros(100)
+        >>> r_pda = a.register("my_zeros")
+        >>> # potentially disconnect from server and reconnect to server
+        >>> b = ak.pdarray.attach("my_zeros")
+        >>> # ...other work...
+        >>> b.unregister()
+        """
+        return register_pdarray(self, user_defined_name)
+
+    def unregister(self) -> None:
+        """
+        Unregister a pdarray in the arkouda server which was previously 
+        registered using register() and/or attahced to using attach()
+        
+        Parameters
+        ----------
+        user_defined_name : str
+            which array was registered under
+        
+        Returns
+        -------
+        None
+        
+        Raises 
+        ------
+        TypeError
+            Raised if pda is neither a pdarray nor a str
+        
+        See also
+        --------
+        register, unregister
+        
+        Notes
+        -----
+        Registered names/pdarrays in the server are immune to deletion until 
+        they are unregistered.
+        
+        Examples
+        --------
+        >>> a = zeros(100)
+        >>> r_pda = a.register("my_zeros")
+        >>> # potentially disconnect from server and reconnect to server
+        >>> b = ak.pdarray.attach("my_zeros")
+        >>> # ...other work...
+        >>> b.unregister()
+        """
+        unregister_pdarray(self)
+        
+    # class method self is not passed in
+    # invoke with ak.pdarray.attach('user_defined_name')
+    @staticmethod
+    def attach(user_defined_name : str) -> pdarray:
+        """
+        class method to return a pdarray attached to the a registered name in the arkouda 
+        server which was registered using register()
+        
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name which array was registered under
+        
+        Returns
+        -------
+        pdarray
+            pdarray which points to pdarray registered with user defined
+            name in the arkouda server
+        
+        Raises
+        ------
+        TypeError
+            Raised if user_defined_name is not a str
+        
+        See also
+        --------
+        register, unregister
+        
+        Notes
+        -----
+        Registered names/pdarrays in the server are immune to deletion 
+        until they are unregistered.
+        
+        Examples
+        --------
+        >>> a = zeros(100)
+        >>> r_pda = a.register("my_zeros")
+        >>> # potentially disconnect from server and reconnect to server
+        >>> b = ak.pdarray.attach("my_zeros")
+        >>> # ...other work...
+        >>> b.unregister()
+        """
+        return attach_pdarray(user_defined_name)
+
+#end pdarray class def
+    
 # creates pdarray object
 #   only after:
 #       all values have been checked by python module and...
 #       server has created pdarray already before this is called
 #       server has created pdarray already befroe this is called
+@typechecked
 def create_pdarray(repMsg : str) -> pdarray:
     """
     Return a pdarray instance pointing to an array created by the arkouda server.
@@ -1011,7 +1152,7 @@ def clear() -> None:
     generic_msg("clear")
 
 @typechecked
-def any(pda : pdarray) -> bool:
+def any(pda : pdarray) -> akbool:
     """
     Return True iff any element of the array evaluates to True.
     
@@ -1036,7 +1177,7 @@ def any(pda : pdarray) -> bool:
     return parse_single_value(cast(str,repMsg))
 
 @typechecked
-def all(pda : pdarray) -> bool:
+def all(pda : pdarray) -> np.bool_:
     """
     Return True iff all elements of the array evaluate to True.
 
@@ -1061,7 +1202,7 @@ def all(pda : pdarray) -> bool:
     return parse_single_value(cast(str,repMsg))
 
 @typechecked
-def is_sorted(pda : pdarray) -> bool:
+def is_sorted(pda : pdarray) -> np.bool_:
     """
     Return True iff the array is monotonically non-decreasing.
     
@@ -1563,3 +1704,148 @@ def argmaxk(pda : pdarray, k : int) -> pdarray:
 
     repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, True))
     return create_pdarray(cast(str,repMsg))
+
+
+@typechecked
+def register_pdarray(pda : Union[str,pdarray], user_defined_name : str) -> pdarray:
+    """
+    Return a pdarray with a user defined name in the arkouda server 
+    so it can be attached to later using attach_pdarray()
+    
+    Parameters
+    ----------
+    pda : str or pdarray
+        the array to register
+    user_defined_name : str
+        user defined name array is to be registered under
+
+    Returns
+    -------
+    pdarray
+        pdarray which points to original input pdarray but is also 
+        registered with user defined name in the arkouda server
+
+
+    Raises
+    ------
+    TypeError
+        Raised if pda is neither a pdarray nor a str or if 
+        user_defined_name is not a str
+
+    See also
+    --------
+    attach_pdarray, unregister_pdarray
+
+    Notes
+    -----
+    Registered names/pdarrays in the server are immune to deletion 
+    until they are unregistered.
+
+    Examples
+    --------
+    >>> a = zeros(100)
+    >>> r_pda = ak.register_pda(a, "my_zeros")
+    >>> # potentially disconnect from server and reconnect to server
+    >>> b = ak.attach_pda("my_zeros")
+    >>> # ...other work...
+    >>> ak.unregister_pda(b)
+    """
+
+    if isinstance(pda, pdarray):
+        repMsg = generic_msg("register {} {}".\
+                             format(pda.name, user_defined_name))
+        return create_pdarray(cast(str,repMsg))
+
+    if isinstance(pda, str):
+        repMsg = generic_msg("register {} {}".\
+                             format(pda, user_defined_name))        
+        return create_pdarray(cast(str,repMsg))
+
+
+@typechecked
+def attach_pdarray(user_defined_name : str) -> pdarray:
+    """
+    Return a pdarray attached to the a registered name in the arkouda 
+    server which was registered using register_pdarray()
+    
+    Parameters
+    ----------
+    user_defined_name : str
+        user defined name which array was registered under
+
+    Returns
+    -------
+    pdarray
+        pdarray which points to pdarray registered with user defined
+        name in the arkouda server
+        
+    Raises
+    ------
+    TypeError
+        Raised if user_defined_name is not a str
+
+    See also
+    --------
+    register_pdarray, unregister_pdarray
+
+    Notes
+    -----
+    Registered names/pdarrays in the server are immune to deletion 
+    until they are unregistered.
+
+    Examples
+    --------
+    >>> a = zeros(100)
+    >>> r_pda = ak.register_pdarray(a, "my_zeros")
+    >>> # potentially disconnect from server and reconnect to server
+    >>> b = ak.attach_pdarray("my_zeros")
+    >>> # ...other work...
+    >>> ak.unregister_pdarray(b)
+    """
+    repMsg = generic_msg("attach {}".format(user_defined_name))
+    return create_pdarray(cast(str,repMsg))
+
+
+@typechecked
+def unregister_pdarray(pda : Union[str,pdarray]) -> None:
+    """
+    Unregister a pdarray in the arkouda server which was previously 
+    registered using register_pdarray() and/or attahced to using attach_pdarray()
+    
+    Parameters
+    ----------
+    pda : str or pdarray
+        user define name which array was registered under
+
+    Returns
+    -------
+    None
+
+    Raises 
+    ------
+    TypeError
+        Raised if pda is neither a pdarray nor a str
+
+    See also
+    --------
+    register_pdarray, unregister_pdarray
+
+    Notes
+    -----
+    Registered names/pdarrays in the server are immune to deletion until 
+    they are unregistered.
+
+    Examples
+    --------
+    >>> a = zeros(100)
+    >>> r_pda = ak.register_pdarray(a, "my_zeros")
+    >>> # potentially disconnect from server and reconnect to server
+    >>> b = ak.attach_pdarray("my_zeros")
+    >>> # ...other work...
+    >>> ak.unregister_pdarray(b)
+    """
+    if isinstance(pda, pdarray):
+        repMsg = generic_msg("unregister {}".format(pda.name))
+
+    if isinstance(pda, str):
+        repMsg = generic_msg("unregister {}".format(pda))

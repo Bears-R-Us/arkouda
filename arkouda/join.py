@@ -1,17 +1,17 @@
 from typing import cast, Tuple
+from typeguard import typechecked
 from arkouda.client import generic_msg
-from arkouda.dtypes import *
-from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
-from arkouda.dtypes import dtype as akdtype
+from arkouda.dtypes import int64 as akint64
+#from arkouda.dtypes import dtype as akdtype
+from arkouda.dtypes import resolve_scalar_dtype, NUMBER_FORMAT_STRINGS
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.groupbyclass import GroupBy
-
-global verbose
 
 __all__ = ["join_on_eq_with_dt"]
 
 predicates = {"true_dt":0, "abs_dt":1, "pos_dt":2}
 
+@typechecked
 def join_on_eq_with_dt(a1 : pdarray, a2 : pdarray, t1 : pdarray, 
                        t2 : pdarray, dt : int, pred : str, 
                        result_limit : int=1000) -> Tuple[pdarray,pdarray]:
@@ -52,41 +52,23 @@ def join_on_eq_with_dt(a1 : pdarray, a2 : pdarray, t1 : pdarray,
         if a1, a2, t1, or t2 dtype is not int64, pred is not 
         'true_dt', 'abs_dt', or 'pos_dt', or result_limit is < 0    
     """
-    if not isinstance(a1, pdarray):
-        raise TypeError("a1 must be pdarray")
-    else:
-        if not (a1.dtype == int64):
-            raise ValueError("a1 must be int64 dtype")
+    if not (a1.dtype == akint64):
+        raise ValueError("a1 must be int64 dtype")
+
+    if not (a2.dtype == akint64):
+        raise ValueError("a2 must be int64 dtype")
+
+    if not (t1.dtype == akint64):
+        raise ValueError("t1 must be int64 dtype")
         
-    if not isinstance(a2, pdarray):
-        raise TypeError("a2 must be pdarray")
-    else:
-        if not (a2.dtype == int64):
-            raise ValueError("a2 must be int64 dtype")
-        
-    if not isinstance(t1, pdarray):
-        raise TypeError("t1 must be pdarray")
-    else:
-        if not (t1.dtype == int64):
-            raise ValueError("t1 must be int64 dtype")
-        
-    if not isinstance(t2, pdarray):
-        raise TypeError("t2 must be pdarray")
-    else:
-        if not (t2.dtype == int64):
-            raise ValueError("t2 must be int64 dtype")
-        
-    if not isinstance(dt, int):
-        raise TypeError("dt must be an an int")
+    if not (t2.dtype == akint64):
+        raise ValueError("t2 must be int64 dtype")
     
     if not (pred in predicates.keys()):
         raise ValueError("pred must be one of ", predicates.keys())
     
-    if not isinstance(result_limit, int):
-        raise TypeError("result_limit must be a scalar")
-    else:
-        if result_limit < 0:
-            raise ValueError('the result_limit must 0 or greater')
+    if result_limit < 0:
+        raise ValueError('the result_limit must 0 or greater')
 
     # format numbers for request message
     dttype = resolve_scalar_dtype(dt)

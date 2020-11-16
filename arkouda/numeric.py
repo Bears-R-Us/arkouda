@@ -1,16 +1,59 @@
 import numpy as np # type: ignore
 from typeguard import typechecked
-from typing import cast, Optional, Tuple, Union, ForwardRef
+from typing import cast as type_cast
+from typing import Optional, Tuple, Union, ForwardRef
 from arkouda.client import generic_msg
 from arkouda.dtypes import *
+from arkouda.dtypes import _as_dtype
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraysetops import unique
 from arkouda.strings import Strings
 
 Categorical = ForwardRef('Categorical')
 
-__all__ = ["abs", "log", "exp", "cumsum", "cumprod", "sin", "cos", 
+__all__ = ["cast", "abs", "log", "exp", "cumsum", "cumprod", "sin", "cos", 
            "where", "histogram", "value_counts"]    
+
+@typechecked
+def cast(pda : Union[pdarray, Strings], dt) -> Union[pdarray, Strings]:
+    """
+    Cast an array to another dtype.
+
+    Parameters
+    ----------
+    pda : pdarray or Strings
+        The array of values to cast
+    dtype : np.dtype or str
+        The target dtype to cast values to
+
+    Returns
+    -------
+    pdarray or Strings
+        Array of values cast to desired dtype
+
+    Notes
+    -----
+    The cast is performed according to Chapel's casting rules and is NOT safe 
+    from overflows or underflows. The user must ensure that the target dtype 
+    has the precision and capacity to hold the desired result.
+    """
+
+    if isinstance(pda, pdarray):
+        name = pda.name
+        objtype = "pdarray"
+    elif isinstance(pda, Strings):
+        name = '+'.join((pda.offsets.name, pda.bytes.name))
+        objtype = "str"    
+    # typechecked decorator guarantees no other case
+
+    dt = _as_dtype(dt)
+    opt = ""
+    msg = "cast {} {} {} {}".format(name, objtype, dt.name, opt)
+    repMsg = generic_msg(msg)
+    if dt.name.startswith("str"):
+        return Strings(*(type_cast(str,repMsg).split("+")))
+    else:
+        return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
 def abs(pda : pdarray) -> pdarray:
@@ -32,7 +75,7 @@ def abs(pda : pdarray) -> pdarray:
         Raised if the parameter is not a pdarray
     """
     repMsg = generic_msg("efunc {} {}".format("abs", pda.name))
-    return create_pdarray(cast(str,repMsg))
+    return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
 def log(pda : pdarray) -> pdarray:
@@ -70,7 +113,7 @@ def log(pda : pdarray) -> pdarray:
     array([0, 3.3219280948873626, 6.6438561897747253])
     """
     repMsg = generic_msg("efunc {} {}".format("log", pda.name))
-    return create_pdarray(cast(str,repMsg))
+    return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
 def exp(pda : pdarray) -> pdarray:
@@ -93,7 +136,7 @@ def exp(pda : pdarray) -> pdarray:
         Raised if the parameter is not a pdarray
     """
     repMsg = generic_msg("efunc {} {}".format("exp", pda.name))
-    return create_pdarray(cast(str,repMsg))
+    return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
 def cumsum(pda : pdarray) -> pdarray:
@@ -119,7 +162,7 @@ def cumsum(pda : pdarray) -> pdarray:
         Raised if the parameter is not a pdarray
     """
     repMsg = generic_msg("efunc {} {}".format("cumsum", pda.name))
-    return create_pdarray(cast(str,repMsg))
+    return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
 def cumprod(pda : pdarray) -> pdarray:
@@ -145,7 +188,7 @@ def cumprod(pda : pdarray) -> pdarray:
         Raised if the parameter is not a pdarray
     """
     repMsg = generic_msg("efunc {} {}".format("cumprod", pda.name))
-    return create_pdarray(cast(str,repMsg))
+    return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
 def sin(pda : pdarray) -> pdarray:
@@ -168,7 +211,7 @@ def sin(pda : pdarray) -> pdarray:
         Raised if the parameter is not a pdarray
     """
     repMsg = generic_msg("efunc {} {}".format("sin",pda.name))
-    return create_pdarray(cast(str,repMsg))
+    return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
 def cos(pda : pdarray) -> pdarray:
@@ -190,8 +233,8 @@ def cos(pda : pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    repMsg = cast(str, generic_msg("efunc {} {}".format("cos",pda.name)))
-    return create_pdarray(cast(str,repMsg))
+    repMsg = type_cast(str, generic_msg("efunc {} {}".format("cos",pda.name)))
+    return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
 def where(condition : pdarray, A : Union[Union[int,float], pdarray], 
@@ -247,14 +290,14 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
                                     B.name))
     elif np.isscalar(A) and np.isscalar(B):
         # Scalars must share a common dtype (or be cast)
-        dtA : str = resolve_scalar_dtype(A)
-        dtB : str = resolve_scalar_dtype(B)
+        dtA = resolve_scalar_dtype(A)
+        dtB = resolve_scalar_dtype(B)
         # Make sure at least one of the dtypes is supported
         if not (dtA in DTypes or dtB in DTypes):
             raise TypeError(("Not implemented for scalar types {} " +
                             "and {}").format(dtA, dtB))
         # If the dtypes are the same, do not cast
-        if dtA == dtB:
+        if dtA == dtB: # type: ignore
             dt = dtA
         # If the dtypes are different, try casting one direction then the other
         elif dtB in DTypes and np.can_cast(A, dtB):
@@ -274,7 +317,7 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
                                     A,
                                     dt,
                                     B))
-    return create_pdarray(cast(str,repMsg))
+    return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
 def histogram(pda : pdarray, bins : int=10) -> pdarray:
@@ -331,7 +374,7 @@ def histogram(pda : pdarray, bins : int=10) -> pdarray:
     if bins < 1:
         raise ValueError('bins must be 1 or greater')
     repMsg = generic_msg("histogram {} {}".format(pda.name, bins))
-    return create_pdarray(cast(str,repMsg))
+    return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
 def value_counts(pda : pdarray) -> Union[Categorical, # type: ignore

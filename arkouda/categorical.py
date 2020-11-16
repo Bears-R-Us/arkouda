@@ -1,13 +1,14 @@
 from __future__ import annotations
 from typing import cast, List
 import numpy as np # type: ignore
+from typeguard import typechecked
 from arkouda.strings import Strings
 from arkouda.pdarrayclass import pdarray
 from arkouda.groupbyclass import GroupBy
 from arkouda.pdarraycreation import zeros, zeros_like, arange
-from arkouda.dtypes import int64, resolve_scalar_dtype
+from arkouda.dtypes import resolve_scalar_dtype
+from arkouda.dtypes import int64 as akint64
 from arkouda.sorting import argsort
-from arkouda.client import pdarrayIterThresh
 from arkouda.pdarraysetops import unique, concatenate, in1d
 
 __all__ = ['Categorical']
@@ -66,7 +67,7 @@ class Categorical:
                                  "Strings not yet supported"))
             g = GroupBy(values)
             self.categories = g.unique_keys
-            self.codes = zeros(values.size, dtype=int64)
+            self.codes = zeros(values.size, dtype=np.int64)
             self.codes[cast(pdarray, g.permutation)] = \
                                 g.broadcast(arange(self.categories.size))
             self.permutation = cast(pdarray, g.permutation)
@@ -78,6 +79,7 @@ class Categorical:
         self.shape = self.codes.shape
 
     @classmethod
+    @typechecked
     def from_codes(cls, codes : pdarray, categories : Strings, 
                           permutation=None, segments=None) -> Categorical:
         """
@@ -105,13 +107,11 @@ class Categorical:
         Raises
         ------
         TypeError
-            Raised if codes is not a pdarray of int64 objects ot if
+            Raised if codes is not a pdarray of int64 objects or if
             categories is not a Strings object
         """
-        if not isinstance(codes, pdarray) or codes.dtype != int64:
+        if codes.dtype != akint64:
             raise TypeError("Codes must be pdarray of int64")
-        if not isinstance(categories, Strings):
-            raise TypeError("Categories must be Strings")
         return cls(None, codes=codes, categories=categories, 
                             permutation=permutation, segments=segments)
 
@@ -149,6 +149,7 @@ class Categorical:
         return self.shape[0]
 
     def __str__(self):
+        from arkouda.client import pdarrayIterThresh
         if self.size <= pdarrayIterThresh:
             vals = ["'{}'".format(self[i]) for i in range(self.size)]
         else:
@@ -160,6 +161,7 @@ class Categorical:
     def __repr__(self):
         return "array({})".format(self.__str__())
 
+    @typechecked
     def _binop(self, other : Categorical, op : str) -> pdarray:
         """
         Executes the requested binop on this Categorical instance and returns 
@@ -206,6 +208,7 @@ class Categorical:
                                 "non-Categorical not yet implemented. " +
                                 "Consider converting operands to Categorical."))
 
+    @typechecked
     def _r_binop(self, other : Categorical, op : str) -> pdarray:
         """
         Executes the requested reverse binop on this Categorical instance and 
@@ -261,11 +264,12 @@ class Categorical:
         """
         g = GroupBy(self.codes)
         idx = self.categories[g.unique_keys]
-        newvals = zeros(self.codes.size, int64)
+        newvals = zeros(self.codes.size, akint64)
         newvals[g.permutation] = g.broadcast(arange(idx.size))
         return Categorical.from_codes(newvals, idx, permutation=g.permutation, 
                                       segments=g.segments)
 
+    @typechecked
     def contains(self, substr : str) -> pdarray:
         """
         Check whether each element contains the given substring.
@@ -279,6 +283,11 @@ class Categorical:
         -------
         pdarray, bool
             True for elements that contain substr, False otherwise
+            
+        Raises
+        ------
+        TypeError
+            Raised if substr is not a str
 
         Notes
         -----
@@ -293,6 +302,7 @@ class Categorical:
         categoriescontains = self.categories.contains(substr)
         return categoriescontains[self.codes]
 
+    @typechecked
     def startswith(self, substr : str) -> pdarray:
         """
         Check whether each element starts with the given substring.
@@ -301,6 +311,11 @@ class Categorical:
         ----------
         substr : str
             The substring to search for
+            
+        Raises
+        ------
+        TypeError
+            Raised if substr is not a str
 
         Returns
         -------
@@ -320,6 +335,7 @@ class Categorical:
         categoriesstartswith = self.categories.startswith(substr)
         return categoriesstartswith[self.codes]
 
+    @typechecked
     def endswith(self, substr : str) -> pdarray:
         """
         Check whether each element ends with the given substring.
@@ -328,6 +344,11 @@ class Categorical:
         ----------
         substr : str
             The substring to search for
+            
+        Raises
+        ------
+        TypeError
+            Raised if substr is not a str
 
         Returns
         -------
@@ -348,12 +369,12 @@ class Categorical:
         return categoriesendswith[self.codes]
 
     def in1d(self, test):
-        __doc__ = in1d.__doc__
+        #__doc__ = in1d.__doc__
         categoriesisin = in1d(self.categories, test)
         return categoriesisin[self.codes]
 
     def unique(self) -> Categorical:
-        __doc__ = unique.__doc__
+        #__doc__ = unique.__doc__
         return Categorical.from_codes(arange(self.categories.size), 
                                       self.categories)
 
@@ -388,7 +409,7 @@ class Categorical:
             return self.permutation
 
     def argsort(self):
-        __doc__ = argsort.__doc__
+        #__doc__ = argsort.__doc__
         idxperm = argsort(self.categories)
         inverse = zeros_like(idxperm)
         inverse[idxperm] = arange(idxperm.size)
@@ -396,13 +417,14 @@ class Categorical:
         return argsort(newvals)
 
     def sort(self):
-        __doc__ = sort.__doc__
+        #__doc__ = sort.__doc__
         idxperm = argsort(self.categories)
         inverse = zeros_like(idxperm)
         inverse[idxperm] = arange(idxperm.size)
         newvals = inverse[self.codes]
         return Categorical.from_codes(newvals, self.categories[idxperm])
-
+    
+    @typechecked
     def merge(self, others : List[Categorical]) -> Categorical:
         """
         Merge this Categorical with other Categorical objects in the array, 
@@ -446,7 +468,7 @@ class Categorical:
             g = GroupBy(concatenate([self.categories] + \
                                        [o.categories for o in others]))
             newidx = g.unique_keys
-            wherediditgo = zeros(newidx.size, dtype=int64)
+            wherediditgo = zeros(newidx.size, dtype=akint64)
             wherediditgo[g.permutation] = arange(newidx.size)
             idxsizes = np.array([self.categories.size] + \
                                 [o.categories.size for o in others])

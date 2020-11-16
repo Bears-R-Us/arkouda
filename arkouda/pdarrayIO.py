@@ -186,6 +186,7 @@ def load(path_prefix : str, dataset : str='array') -> Union[pdarray,Strings]:
     globstr = "{}_LOCALE*{}".format(prefix, extension)
     return read_hdf(dataset, globstr)
 
+@typechecked
 def get_datasets(filename : str) -> List[str]:
     """
     Get the names of datasets in an HDF5 file.
@@ -199,6 +200,11 @@ def get_datasets(filename : str) -> List[str]:
     -------
     List[str]
         Names of the datasets in the file
+        
+    Raises
+    ------
+    TypeError
+        Raised if filename is not a str
 
     See Also
     --------
