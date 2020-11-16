@@ -5,7 +5,6 @@ from arkouda.groupbyclass import GroupBy
 from arkouda.pdarraycreation import zeros, zeros_like, arange
 from arkouda.dtypes import int64, resolve_scalar_dtype
 from arkouda.sorting import argsort
-from arkouda.client import pdarrayIterThresh
 from arkouda.pdarraysetops import unique, concatenate, in1d
 import numpy as np
 from typeguard import typechecked
@@ -148,6 +147,7 @@ class Categorical:
         return self.shape[0]
 
     def __str__(self):
+        from arkouda.client import pdarrayIterThresh
         if self.size <= pdarrayIterThresh:
             vals = ["'{}'".format(self[i]) for i in range(self.size)]
         else:
