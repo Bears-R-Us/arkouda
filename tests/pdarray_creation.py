@@ -18,7 +18,6 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertIsInstance(pda, ak.pdarray)
         self.assertEqual(100, len(pda))
         self.assertEqual(int, pda.dtype)        
-        pda
 
         pda =  ak.array((range(5)))
         self.assertIsInstance(pda, ak.pdarray)
@@ -32,6 +31,11 @@ class PdarrayCreationTest(ArkoudaTest):
 
         with self.assertRaises(RuntimeError) as cm:          
             ak.array({range(0,100)})         
+        self.assertEqual("Only rank-1 pdarrays or ndarrays supported", 
+                         cm.exception.args[0])  
+        
+        with self.assertRaises(RuntimeError) as cm:          
+            ak.array(np.array([[0,1],[0,1]]))         
         self.assertEqual("Only rank-1 pdarrays or ndarrays supported", 
                          cm.exception.args[0])  
 
@@ -168,13 +172,34 @@ class PdarrayCreationTest(ArkoudaTest):
         with self.assertRaises(TypeError) as cm:
             ak.ones(5, dtype=str)
         self.assertEqual('unsupported dtype <U0', 
-                         cm.exception.args[0])           
+                         cm.exception.args[0])     
+        
+    def testOnesLike(self):      
+        intOnes = ak.ones(5, dtype=ak.int64)
+        intOnesLike = ak.ones_like(intOnes)
+
+        self.assertIsInstance(intOnesLike, ak.pdarray)
+        self.assertEqual(ak.int64,intOnesLike.dtype)
+        
+        floatOnes = ak.ones(5, dtype=ak.float64)
+        floatOnesLike = ak.ones_like(floatOnes)
+        
+        self.assertEqual(ak.float64,floatOnesLike.dtype)
+        
+        boolOnes = ak.ones(5, dtype=ak.bool)
+        boolOnesLike = ak.ones_like(boolOnes)
+        
+        self.assertEqual(ak.bool,boolOnesLike.dtype)        
 
     def testLinspace(self):
         pda = ak.linspace(0, 100, 1000)  
         self.assertEqual(1000, len(pda))
         self.assertEqual(float, pda.dtype)
         self.assertIsInstance(pda, ak.pdarray)
+        
+        pda = ak.linspace(start=5, stop=0, length=6)
+        self.assertEqual(5.0000, pda[0])
+        self.assertEqual(0.0000, pda[5])
         
         with self.assertRaises(TypeError) as cm:        
             ak.linspace(0,'100', 1000)
@@ -258,7 +283,7 @@ class PdarrayCreationTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:          
             ak.random_strings_lognormal(2, 25, 100)          
-        self.assertEqual("The logstd must be a float", 
+        self.assertEqual('type of argument "logstd" must be a float; got int instead', 
                          cm.exception.args[0])     
         
         with self.assertRaises(TypeError) as cm:          

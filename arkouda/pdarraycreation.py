@@ -115,7 +115,7 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     # including the dtype and size
     fmt = ">{:n}{}".format(size, structDtypeCodes[a.dtype.name])
     req_msg = "array {} {:n} ".\
-                       format(a.dtype.name, size).encode() + struct.pack(fmt, *a)
+                    format(a.dtype.name, size).encode() + struct.pack(fmt, *a)
     rep_msg = generic_msg(req_msg, send_bytes=True)
     return create_pdarray(rep_msg)
 
@@ -139,7 +139,7 @@ def zeros(size : int, dtype : type=np.float64) -> pdarray:
     ------
     TypeError
         Raised if the supplied dtype is not supported or if the size
-         parameter is neither an int nor a str that is parseable to an int.
+        parameter is neither an int nor a str that is parseable to an int.
 
     See Also
     --------
@@ -149,8 +149,10 @@ def zeros(size : int, dtype : type=np.float64) -> pdarray:
     --------
     >>> ak.zeros(5, dtype=ak.int64)
     array([0, 0, 0, 0, 0])
+
     >>> ak.zeros(5, dtype=ak.float64)
     array([0, 0, 0, 0, 0])
+
     >>> ak.zeros(5, dtype=ak.bool)
     array([False, False, False, False, False])
     """
@@ -185,7 +187,7 @@ def ones(size : int, dtype : type=float64) -> pdarray:
     ------
     TypeError
         Raised if the supplied dtype is not supported or if the size
-         parameter is neither an int nor a str that is parseable to an int.
+        parameter is neither an int nor a str that is parseable to an int.
 
     See Also
     --------
@@ -195,8 +197,10 @@ def ones(size : int, dtype : type=float64) -> pdarray:
     --------
     >>> ak.ones(5, dtype=ak.int64)
     array([1, 1, 1, 1, 1])
+
     >>> ak.ones(5, dtype=ak.float64)
     array([1, 1, 1, 1, 1])
+
     >>> ak.ones(5, dtype=ak.bool)
     array([True, True, True, True, True])
     """
@@ -216,7 +220,8 @@ def ones(size : int, dtype : type=float64) -> pdarray:
 @typechecked
 def zeros_like(pda : pdarray) -> pdarray:
     """
-    Create a zero-filled pdarray of the same size and dtype as an existing pdarray.
+    Create a zero-filled pdarray of the same size and dtype as an existing 
+    pdarray.
 
     Parameters
     ----------
@@ -231,18 +236,33 @@ def zeros_like(pda : pdarray) -> pdarray:
     Raises
     ------
     TypeError
-        Raised if pda is not a pdarray
+        Raised if the pda parameter is not a pdarray.
 
     See Also
     --------
     zeros, ones_like
+
+    Examples
+    --------
+    >>> zeros = ak.zeros(5, dtype=ak.int64)
+    >>> ak.zeros_like(zeros)
+    array([0, 0, 0, 0, 0])
+
+    >>> zeros = ak.zeros(5, dtype=ak.float64)
+    >>> ak.zeros_like(zeros)
+    array([0, 0, 0, 0, 0])
+
+    >>> zeros = ak.zeros(5, dtype=ak.bool)
+    >>> ak.zeros_like(zeros)
+    array([False, False, False, False, False])
     """
     return zeros(pda.size, pda.dtype)
 
 @typechecked
 def ones_like(pda : pdarray) -> pdarray:
     """
-    Create a one-filled pdarray of the same size and dtype as an existing pdarray.
+    Create a one-filled pdarray of the same size and dtype as an existing 
+    pdarray.
 
     Parameters
     ----------
@@ -256,11 +276,31 @@ def ones_like(pda : pdarray) -> pdarray:
         
     Raises
     ------
-        Raised if pda is not a pdarray
+    TypeError
+        Raised if the pda parameter is not a pdarray.
 
     See Also
     --------
     ones, zeros_like
+    
+    Notes
+    -----
+    Logic for generating the pdarray is delegated to the ak.ones method.
+    Accordingly, the supported dtypes match are defined by the ak.ones method.
+    
+    Examples
+    --------
+    >>> ones = ak.ones(5, dtype=ak.int64)
+     >>> ak.ones_like(ones)
+    array([1, 1, 1, 1, 1])
+
+    >>> ones = ak.ones(5, dtype=ak.float64)
+    >>> ak.ones_like(ones)
+    array([1, 1, 1, 1, 1])
+
+    >>> ones = ak.ones(5, dtype=ak.bool)
+    >>> ak.ones_like(ones)
+    array([True, True, True, True, True])
     """
     return ones(pda.size, pda.dtype)
 
@@ -281,7 +321,7 @@ def arange(*args) -> pdarray:
         Stopping value (exclusive)
     stride : int, optional
         The difference between consecutive elements, the default stride is 1,
-        if stride is specified then start must also be specified
+        if stride is specified then start must also be specified. 
 
     Returns
     -------
@@ -353,7 +393,7 @@ def arange(*args) -> pdarray:
 
 def linspace(start : int, stop : int, length : int) -> pdarray:
     """
-    Create a pdarray of linearly spaced points in a closed interval.
+    Create a pdarray of linearly-spaced floats in a closed interval.
 
     Parameters
     ----------
@@ -367,7 +407,7 @@ def linspace(start : int, stop : int, length : int) -> pdarray:
     Returns
     -------
     pdarray, float64
-        Array of evenly spaced points along the interval
+        Array of evenly spaced float values along the interval
         
     Raises
     ------
@@ -377,11 +417,22 @@ def linspace(start : int, stop : int, length : int) -> pdarray:
     See Also
     --------
     arange
+    
+    Notes
+    -----
+    If that start is greater than stop, the pdarray values are generated in 
+    descending order.
 
     Examples
     --------
     >>> ak.linspace(0, 1, 5)
     array([0, 0.25, 0.5, 0.75, 1])
+
+    >>> ak.linspace(start=1, stop=0, length=5)
+    array([1, 0.75, 0.5, 0.25, 0])
+
+    >>> ak.linspace(start=-5, stop=0, length=5)
+    array([-5, -3.75, -2.5, -1.25, 0])
     """
     if not all((np.isscalar(start), np.isscalar(stop), np.isscalar(length))):
         raise TypeError("all arguments must be scalars")
@@ -416,7 +467,7 @@ def linspace(start : int, stop : int, length : int) -> pdarray:
 
 def randint(low : Union[int,float], high : Union[int,float], size : int, dtype=int64) -> pdarray:
     """
-    Generate a pdarray with random values in a specified range.
+    Generate a pdarray of randomized int, float, or bool values in a specified range.
 
     Parameters
     ----------
@@ -617,12 +668,12 @@ def random_strings_lognormal(logmean : Union[float, int], logstd : float,
     Returns
     -------
     Strings
-        The array of random strings
+        The Strings object encapsulating a pdarray of random strings
     
     Raises
     ------
     TypeError
-        Raised if logmean is not a float or int, logstd is not a float, 
+        Raised if logmean is neither a float nor a int, logstd is not a float, 
         size is not an int, or if characters is not a str
     ValueError
         Raised if logstd <= 0 or size < 0
@@ -638,14 +689,9 @@ def random_strings_lognormal(logmean : Union[float, int], logstd : float,
     have an average length of :math:`exp(\mu + 0.5*\sigma^2)`, a minimum length of 
     zero, and a heavy tail towards longer strings.
     """
-    if not isinstance(logmean, float) and not isinstance(logmean, int):
-        raise TypeError("The logmean must be a float or int")
+    # needed because per https://www.python.org/dev/peps/pep-0484/#id27 any int is a float
     if not isinstance(logstd, float):
-        raise TypeError("The logstd must be a float")
-    if not isinstance(size, int):
-        raise TypeError("The size must be an integer")
-    if not isinstance(characters, str):
-        raise TypeError("characters must be a str")
+        raise TypeError('type of argument "logstd" must be a float; got int instead')
     if logstd <= 0 or size < 0:
         raise ValueError("Incompatible arguments: logstd <= 0 or size < 0")
     msg = "randomStrings {} {} {} {} {}".\

@@ -1,6 +1,4 @@
-from context import arkouda as ak
 import numpy as np
-import pandas as pd
 from context import arkouda as ak
 from base_test import ArkoudaTest
 
@@ -74,18 +72,76 @@ class SetOpsTest(ArkoudaTest):
         '''
         self.assertEqual(0, run_test())
         
-    def test_error_handling(self):
-        with self.assertRaises(RuntimeError) as cm:
-            ak.concatenate([ak.ones(100),ak.array([True])])
-
-        self.assertEqual('Error: concatenateMsg: Incompatible arguments: ' +
-                         'Expected float64 dtype but got bool dtype', 
-                         cm.exception.args[0])       
-         
-        with self.assertRaises(TypeError):
-            ak.union1d([-1, 0, 1], [-2, 0, 2])
+    def testSetxor1d(self):
+        pdaOne = ak.array([1, 2, 3, 2, 4])
+        pdaTwo = ak.array([2, 3, 5, 7, 5])
+        expected = ak.array([1, 4, 5, 7])
+        
+        self.assertTrue((expected == ak.setxor1d(pdaOne,pdaTwo)).all())
         
         with self.assertRaises(RuntimeError) as cm:
-            ak.cos(ak.randint(0, 1, 100, dtype=ak.bool))
-        self.assertEqual('Error: efuncMsg: cos bool not implemented', 
-                         cm.exception.args[0])
+            ak.setxor1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
+        self.assertEqual('Error: unique: float64 not implemented', 
+                         cm.exception.args[0])  
+        
+        with self.assertRaises(RuntimeError) as cm:
+            ak.setxor1d(ak.array([True, False, True]), ak.array([True, True]))
+        self.assertEqual('Error: unique: bool not implemented', 
+                         cm.exception.args[0]) 
+        with self.assertRaises(TypeError):
+            ak.setxor1d([-1, 0, 1], [-2, 0, 2])     
+        
+    def testSetdiff1d(self):
+        pdaOne = ak.array([1, 2, 3, 2, 4, 1])
+        pdaTwo = ak.array([3, 4, 5, 6])
+        expected = ak.array([1,2])
+        
+        self.assertTrue((expected == ak.setdiff1d(pdaOne,pdaTwo)).all())
+        
+        with self.assertRaises(RuntimeError) as cm:
+            ak.setdiff1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
+        self.assertEqual('Error: unique: float64 not implemented', 
+                         cm.exception.args[0])  
+        
+        with self.assertRaises(RuntimeError) as cm:
+            ak.setdiff1d(ak.array([True, False, True]), ak.array([True, True]))
+        self.assertEqual('Error: unique: bool not implemented', 
+                         cm.exception.args[0]) 
+        with self.assertRaises(TypeError):
+            ak.setdiff1d([-1, 0, 1], [-2, 0, 2])     
+        
+    def testIntersectId(self):
+        pdaOne = ak.array([1, 3, 4, 3])
+        pdaTwo = ak.array([3, 1, 2, 1])
+        expected = ak.array([1,3])
+        self.assertTrue((expected == ak.intersect1d(pdaOne,pdaTwo)).all())
+        
+        with self.assertRaises(RuntimeError) as cm:
+            ak.intersect1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
+        self.assertEqual('Error: unique: float64 not implemented', 
+                         cm.exception.args[0])  
+        
+        with self.assertRaises(RuntimeError) as cm:
+            ak.intersect1d(ak.array([True, False, True]), ak.array([True, True]))
+        self.assertEqual('Error: unique: bool not implemented', 
+                         cm.exception.args[0]) 
+        with self.assertRaises(TypeError):
+            ak.intersect1d([-1, 0, 1], [-2, 0, 2])     
+        
+    def testUnion1d(self):
+        pdaOne = ak.array([-1, 0, 1])
+        pdaTwo = ak.array([-2, 0, 2])
+        expected = ak.array([-2, -1,  0,  1,  2])
+        self.assertTrue((expected == ak.union1d(pdaOne,pdaTwo)).all())
+        
+        with self.assertRaises(RuntimeError) as cm:
+            ak.union1d(ak.array([-1.0, 0.0, 1.0]), ak.array([-2.0, 0.0, 2.0]))
+        self.assertEqual('Error: unique: float64 not implemented', 
+                         cm.exception.args[0])  
+        
+        with self.assertRaises(RuntimeError) as cm:
+            ak.union1d(ak.array([True, True, True]), ak.array([True,False,True]))
+        self.assertEqual('Error: unique: bool not implemented', 
+                         cm.exception.args[0])          
+        with self.assertRaises(TypeError):
+            ak.union1d([-1, 0, 1], [-2, 0, 2])     
