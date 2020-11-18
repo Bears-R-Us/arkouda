@@ -341,10 +341,16 @@ class pdarray:
         return self._binop(other, ">=")
 
     def __eq__(self, other):
-        return self._binop(other, "==")
+        if (self.dtype == bool) and (isinstance(other, pdarray) and (other.dtype == bool)):
+            return ~(self ^ other)
+        else:
+            return self._binop(other, "==")
 
     def __ne__(self, other):
-        return self._binop(other, "!=")
+        if (self.dtype == bool) and (isinstance(other, pdarray) and (other.dtype == bool)):
+            return (self ^ other)
+        else:
+            return self._binop(other, "!=")
 
     # overload unary- for pdarray implemented as pdarray*(-1)
     def __neg__(self):
