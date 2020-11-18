@@ -276,10 +276,6 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertEqual(100, len(pda))
         self.assertEqual(str, pda.dtype)
         
-        for string in pda.to_ndarray():
-            self.assertTrue(len(string) <= 100)
-            self.assertTrue(len(string) >= 3)
-        
         with self.assertRaises(TypeError) as cm:          
             ak.random_strings_lognormal('2', 0.25, 100)          
         self.assertEqual('type of argument "logmean" must be one of (float, int); got str instead', 
