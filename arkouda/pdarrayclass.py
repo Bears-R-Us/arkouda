@@ -55,7 +55,8 @@ def parse_single_value(msg : str) -> object:
                               format(mydtype.name, value)))
     try:
         if mydtype == str_:
-            return mydtype.type(unescape(value.strip('"')))
+            # String value will always be surrounded with double quotes, so remove them
+            return mydtype.type(unescape(value[1:-1]))
         return mydtype.type(value)
     except:
         raise ValueError(("unsupported value from server {} {}".\

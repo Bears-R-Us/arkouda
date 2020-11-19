@@ -41,10 +41,13 @@ def run_test_unique(strings, test_strings, cat):
     assert(akset == npset)
     return akset
 
-def run_test_index(strings, test_strings, cat):
+def run_test_index(strings, test_strings, cat, specificInds):
     # int index
     assert(strings[N//3] == test_strings[N//3])
     assert(cat[N//3] == test_strings[N//3])
+    for i in specificInds:
+        assert(strings[i] == test_strings[i])
+        assert(cat[i] == test_strings[i])
     print("int index passed")
     
 def run_test_slice(strings, test_strings, cat):
@@ -57,6 +60,20 @@ def run_test_pdarray_index(strings, test_strings, cat):
     inds = ak.arange(0, strings.size, 10)
     assert(compare_strings(strings[inds].to_ndarray(), test_strings[inds.to_ndarray()]))
     assert(compare_strings(cat[inds].to_ndarray(), test_strings[inds.to_ndarray()]))
+    logical = ak.zeros(strings.size, dtype=ak.bool)
+    logical[inds] = True
+    assert(compare_strings(strings[logical].to_ndarray(), test_strings[logical.to_ndarray()]))
+    # Indexing with a one-element pdarray (int) should return Strings array, not string scalar
+    singleton = ak.array([strings.size//2])
+    assert(isinstance(strings[singleton], ak.Strings))
+    # Logical indexing with all-False array should return empty Strings array
+    logicalSingleton = ak.zeros(strings.size, dtype=ak.bool)
+    result = strings[logicalSingleton]
+    assert(isinstance(result, ak.Strings) and (result.size == 0))
+    # Logical indexing with a single True should return one-element Strings array, not string scalar
+    logicalSingleton[strings.size//2] = True
+    result = strings[logicalSingleton]
+    assert(isinstance(result, ak.Strings) and (result.size == 1))
 
 def run_comparison_test(strings, test_strings, cat):
     akinds = (strings == test_strings[N//4])
@@ -200,7 +217,7 @@ if __name__ == '__main__':
 
     base_words1 = ak.random_strings_uniform(1, 10, UNIQUE, characters='printable')
     base_words2 = ak.random_strings_lognormal(2, 0.25, UNIQUE, characters='printable')
-    gremlins = ak.array([' ', ''])
+    gremlins = ak.array(['"', ' ', ''])
     base_words = ak.concatenate((base_words1, base_words2, gremlins))
     np_base_words = np.hstack((base_words1.to_ndarray(), base_words2.to_ndarray()))
     assert(compare_strings(base_words.to_ndarray(), np_base_words))
@@ -213,7 +230,7 @@ if __name__ == '__main__':
     print("Generation and concatenate passed")
   
     # int index
-    run_test_index(strings, test_strings, cat)
+    run_test_index(strings, test_strings, cat, range(-len(gremlins), 0))
     print("int index passed")
   
     # slice
@@ -278,7 +295,8 @@ class StringTest(ArkoudaTest):
         ArkoudaTest.setUp(self)
         base_words1 = ak.random_strings_uniform(1, 10, UNIQUE, characters='printable')
         base_words2 = ak.random_strings_lognormal(2, 0.25, UNIQUE, characters='printable')
-        gremlins = ak.array([' ', ''])
+        gremlins = ak.array(['"', ' ', ''])
+        self.gremlins = gremlins
         self.base_words = ak.concatenate((base_words1, base_words2, gremlins))
         self.np_base_words = np.hstack((base_words1.to_ndarray(), base_words2.to_ndarray()))
         choices = ak.randint(0, self.base_words.size, N)
@@ -304,9 +322,9 @@ class StringTest(ArkoudaTest):
     def test_groupby(self):
         run_test_groupby(self.strings, self.cat, self.akset)
     
-    @pytest.mark.skip(reason="awaiting bug fix.")
+    #@pytest.mark.skip(reason="awaiting bug fix.")
     def test_index(self):
-        run_test_index(self.strings, self.test_strings, self.cat)
+        run_test_index(self.strings, self.test_strings, self.cat, range(-len(self.gremlins), 0))
         
     def test_slice(self):
         run_test_slice(self.strings, self.test_strings, self.cat)
