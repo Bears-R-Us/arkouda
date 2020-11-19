@@ -6,6 +6,5 @@ pandas
 pexpect
 pytest 
 pytest-env
-typeguard
 numpy
 zmq
