@@ -9,6 +9,7 @@ module CastMsg {
   use CommAggregation;
 
   proc castMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    use ServerConfig; // for string.splitMsgToTuple
     param pn = Reflection.getRoutineName();
     var (name, objtype, targetDtype, opt) = payload.decode().splitMsgToTuple(4);
     select objtype {
