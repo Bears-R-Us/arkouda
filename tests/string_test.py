@@ -64,17 +64,21 @@ def run_test_pdarray_index(strings, test_strings, cat):
     logical[inds] = True
     assert(compare_strings(strings[logical].to_ndarray(), test_strings[logical.to_ndarray()]))
     # Indexing with a one-element pdarray (int) should return Strings array, not string scalar
-    singleton = ak.array([strings.size//2])
-    assert(isinstance(strings[singleton], ak.Strings))
+    i = N//2
+    singleton = ak.array([i])
+    result = strings[singleton]
+    assert(isinstance(result, ak.Strings) and (result.size == 1))
+    assert(result[0] == strings[i])
     # Logical indexing with all-False array should return empty Strings array
     logicalSingleton = ak.zeros(strings.size, dtype=ak.bool)
     result = strings[logicalSingleton]
     assert(isinstance(result, ak.Strings) and (result.size == 0))
     # Logical indexing with a single True should return one-element Strings array, not string scalar
-    logicalSingleton[strings.size//2] = True
+    logicalSingleton[i] = True
     result = strings[logicalSingleton]
     assert(isinstance(result, ak.Strings) and (result.size == 1))
-
+    assert(result[0] == strings[i])
+    
 def run_comparison_test(strings, test_strings, cat):
     akinds = (strings == test_strings[N//4])
     catinds = (cat == test_strings[N//4])
