@@ -1,6 +1,7 @@
 module Errors {
 
     use SysError;
+    private use IO; // for string.format
 
     /*
      * Generates an error message that provides a fuller context to the error

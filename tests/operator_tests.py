@@ -227,6 +227,33 @@ class OperatorsTest(ArkoudaTest):
         self.assertIsInstance(dArray, ak.pdarrayclass.pdarray)
         self.assertEqual(np.float64(5), dArray[0])
         
+    def testConcatenate(self):
+        pdaOne = ak.arange(1,4)
+        pdaTwo = ak.arange(4,7)  
+        
+        self.assertTrue((ak.array([1,2,3,4,5,6])
+                              == ak.concatenate([pdaOne,pdaTwo])).all())
+        self.assertTrue((ak.array([4,5,6,1,2,3])
+                              == ak.concatenate([pdaTwo,pdaOne])).all())
+        
+        pdaOne = ak.linspace(start=1,stop=3,length=3)
+        pdaTwo = ak.linspace(start=4,stop=6,length=3)        
+        
+        self.assertTrue((ak.array([1,2,3,4,5,6])
+                              == ak.concatenate([pdaOne,pdaTwo])).all())
+        self.assertTrue((ak.array([4,5,6,1,2,3])
+                              == ak.concatenate([pdaTwo,pdaOne])).all())
+
+        pdaOne = ak.array([True,False,True])
+        pdaTwo = ak.array([False,True,True])
+        
+        # bool test written this way because bool == bool not implemented
+        results = ak.concatenate([pdaOne,pdaTwo]).to_ndarray()
+        expected = ak.array([True, False, True, False, True, True]).to_ndarray()
+        
+        for result in enumerate(results):
+            self.assertEqual(expected[result[0]],result[1])
+        
     def testAllOperators(self):
         run_tests(verbose)
         
@@ -250,6 +277,13 @@ class OperatorsTest(ArkoudaTest):
         
         with self.assertRaises(TypeError):
             ak.ones(100).any([0])
+        
+        with self.assertRaises(RuntimeError) as cm:
+            ak.concatenate([ak.ones(100),ak.array([True])])
+
+        self.assertEqual('Error: concatenateMsg: Incompatible arguments: ' +
+                         'Expected float64 dtype but got bool dtype', 
+                         cm.exception.args[0])     
         
 if __name__ == '__main__':
     '''
