@@ -1573,17 +1573,7 @@ module GenSymIO {
      * the user along with a file index and extension.
      */
     proc generateFilename(prefix : string, extension : string, idx : int) : string throws {
-        var suffix: string;
-
-        if idx < 10 {
-            suffix = '000%i'.format(idx);
-        } else if 10 <= idx  && idx < 100 {
-            suffix = '00%i'.format(idx);
-        } else if 100 <= idx && idx < 1000 {
-            suffix = '0%i'.format(idx);
-        } else {
-            suffix = '%i'.format(idx);
-        }    
+        var suffix = '%04i'.format(idx);
         return "%s_LOCALE%s%s".format(prefix, suffix, extension);
     }    
 
