@@ -119,7 +119,7 @@ class IOTest(ArkoudaTest):
         self.assertEqual(len(self.dict_columns['bool_pdarray']),  
                          len(retrieved_columns['bool_pdarray']))    
         self.assertEqual(4, 
-                         len(ak.get_datasets('{}/iotest_dict_LOCALE0'.format(IOTest.io_test_dir))))
+                         len(ak.get_datasets('{}/iotest_dict_LOCALE0000'.format(IOTest.io_test_dir))))
         
     def testSaveAllLoadAllWithList(self):
         '''
@@ -155,7 +155,7 @@ class IOTest(ArkoudaTest):
         self.assertEqual(len(self.list_columns[3]), 
                          len(retrieved_columns['bool_pdarray']))    
         self.assertEqual(4, 
-                      len(ak.get_datasets('{}/iotest_list_LOCALE0'.format(IOTest.io_test_dir))))
+                      len(ak.get_datasets('{}/iotest_list_LOCALE0000'.format(IOTest.io_test_dir))))
     
     def testLsHdf(self):
         '''
@@ -168,7 +168,7 @@ class IOTest(ArkoudaTest):
         '''
         self._create_file(columns=self.dict_single_column, 
                           prefix_path='{}/iotest_single_column'.format(IOTest.io_test_dir))
-        message = ak.ls_hdf('{}/iotest_single_column_LOCALE0'.format(IOTest.io_test_dir))
+        message = ak.ls_hdf('{}/iotest_single_column_LOCALE0000'.format(IOTest.io_test_dir))
         self.assertIn('int_tens_pdarray         Dataset', message)
 
     def testReadHdf(self):
@@ -187,22 +187,22 @@ class IOTest(ArkoudaTest):
                           prefix_path='{}/iotest_single_column_dupe'.format(IOTest.io_test_dir))
         
         dataset = ak.read_hdf(dsetName='int_tens_pdarray', 
-                    filenames=['{}/iotest_single_column_LOCALE0'.format(IOTest.io_test_dir),
-                               '{}/iotest_single_column_dupe_LOCALE0'.format(IOTest.io_test_dir)])
+                    filenames=['{}/iotest_single_column_LOCALE0000'.format(IOTest.io_test_dir),
+                               '{}/iotest_single_column_dupe_LOCALE0000'.format(IOTest.io_test_dir)])
         self.assertIsNotNone(dataset)
 
         with self.assertRaises(RuntimeError) as cm:
             ak.read_hdf(dsetName='in_tens_pdarray', 
-                    filenames=['{}/iotest_single_column_LOCALE0'.format(IOTest.io_test_dir),
-                               '{}/iotest_single_column_dupe_LOCALE0'.format(IOTest.io_test_dir)])       
+                    filenames=['{}/iotest_single_column_LOCALE0000'.format(IOTest.io_test_dir),
+                               '{}/iotest_single_column_dupe_LOCALE0000'.format(IOTest.io_test_dir)])       
         self.assertTrue('Error: The dataset in_tens_pdarray does not exist in the file' in  
                          cm.exception.args[0])
         
         with self.assertRaises(RuntimeError) as cm:
             ak.read_hdf(dsetName='int_tens_pdarray', 
-                    filenames=['{}/iotest_single_colum_LOCALE0'.format(IOTest.io_test_dir),
-                               '{}/iotest_single_colum_dupe_LOCALE0'.format(IOTest.io_test_dir)])       
-        self.assertTrue('iotest_single_colum_LOCALE0 not found' in  cm.exception.args[0])
+                    filenames=['{}/iotest_single_colum_LOCALE0000'.format(IOTest.io_test_dir),
+                               '{}/iotest_single_colum_dupe_LOCALE0000'.format(IOTest.io_test_dir)])       
+        self.assertTrue('iotest_single_colum_LOCALE0000 not found' in  cm.exception.args[0])
 
     def testReadHdfWithGlob(self):
         '''
@@ -235,7 +235,7 @@ class IOTest(ArkoudaTest):
         self._create_file(columns=self.dict_columns, 
                           prefix_path='{}/iotest_dict_columns'.format(IOTest.io_test_dir))
         
-        dataset = ak.read_all(filenames=['{}/iotest_dict_columns_LOCALE0'.format(IOTest.io_test_dir)])
+        dataset = ak.read_all(filenames=['{}/iotest_dict_columns_LOCALE0000'.format(IOTest.io_test_dir)])
         self.assertEqual(4, len(list(dataset.keys())))     
         
     def testReadAllWithGlob(self):
@@ -316,7 +316,7 @@ class IOTest(ArkoudaTest):
         '''
         self._create_file(columns=self.dict_columns, 
                           prefix_path='{}/iotest_dict_columns'.format(IOTest.io_test_dir))     
-        datasets = ak.get_datasets('{}/iotest_dict_columns_LOCALE0'.format(IOTest.io_test_dir))
+        datasets = ak.get_datasets('{}/iotest_dict_columns_LOCALE0000'.format(IOTest.io_test_dir))
 
         self.assertEqual(4, len(datasets)) 
         for dataset in datasets:
@@ -336,13 +336,13 @@ class IOTest(ArkoudaTest):
         self.assertTrue((strings == r_strings).all())
 
         # Read a part of a saved Strings dataset from one hdf5 file
-        r_strings_subset = ak.read_all(filenames='{}/strings-test_LOCALE0'.\
+        r_strings_subset = ak.read_all(filenames='{}/strings-test_LOCALE0000'.\
                                     format(IOTest.io_test_dir))
         self.assertIsNotNone(r_strings_subset)
         self.assertTrue(isinstance(r_strings_subset[0], str))    
-        self.assertIsNotNone(ak.read_hdf(filenames='{}/strings-test_LOCALE0'.\
+        self.assertIsNotNone(ak.read_hdf(filenames='{}/strings-test_LOCALE0000'.\
                             format(IOTest.io_test_dir), dsetName='strings/values'))
-        self.assertIsNotNone(ak.read_hdf(filenames='{}/strings-test_LOCALE0'.\
+        self.assertIsNotNone(ak.read_hdf(filenames='{}/strings-test_LOCALE0000'.\
                             format(IOTest.io_test_dir), dsetName='strings/segments'))
      
     def testSaveLongStringsDataset(self):

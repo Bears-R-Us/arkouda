@@ -241,7 +241,7 @@ def load_all(path_prefix : str) -> Mapping[str,Union[pdarray,Strings]]:
     save_all, load, read_hdf, read_all
     """
     prefix, extension = os.path.splitext(path_prefix)
-    firstname = "{}_LOCALE0{}".format(prefix, extension)
+    firstname = "{}_LOCALE0000{}".format(prefix, extension)
     return {dataset: load(path_prefix, dataset=dataset) \
                                        for dataset in get_datasets(firstname)}
 
