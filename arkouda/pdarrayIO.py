@@ -242,7 +242,13 @@ def load_all(path_prefix : str) -> Mapping[str,Union[pdarray,Strings]]:
     """
     prefix, extension = os.path.splitext(path_prefix)
     firstname = "{}_LOCALE0000{}".format(prefix, extension)
-    return {dataset: load(path_prefix, dataset=dataset) \
+    try:
+        return {dataset: load(path_prefix, dataset=dataset) \
+                                       for dataset in get_datasets(firstname)}
+    except RuntimeError:
+        # enables backwards compatibility with previous naming convention
+        firstname = "{}_LOCALE0{}".format(prefix, extension)
+        return {dataset: load(path_prefix, dataset=dataset) \
                                        for dataset in get_datasets(firstname)}
 
 def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : str, 
