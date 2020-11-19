@@ -60,6 +60,37 @@ def parse_single_value(msg : str) -> object:
         raise ValueError(("unsupported value from server {} {}".\
                               format(mydtype.name, value)))
 
+
+
+
+@typechecked
+def parse_single_int_array_value(msg : str) -> object:
+    """
+    Attempt to convert a scalar return value from the arkouda server to a
+    numpy string in Python. The user should not call this function directly. 
+    
+    Parameters
+    ----------
+    msg : str
+        scalar value in string form to be converted to a numpy string
+
+    Returns
+    -------
+    object numpy scalar         
+    """
+    fields = msg.split(" ",1)
+    dtname=fields[0]
+    mydtype = dtype(dtname)
+    if mydtype == bool:
+        if value == "True":
+            return bool(True)
+        elif value == "False":
+            return bool(False)
+        else:
+            raise ValueError(("unsupported value from server {} {}".\
+                              format(mydtype.name, value)))
+    return fields[1]
+
 # class for the pdarray
 class pdarray:
     """

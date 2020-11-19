@@ -8,10 +8,11 @@ from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
 from arkouda.dtypes import dtype as akdtype
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.strings import Strings
+from arkouda.strings import Pdarrays
 
 __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", "arange",
            "linspace", "randint", "uniform", "standard_normal",
-           "random_strings_uniform", "random_strings_lognormal"]
+           "random_strings_uniform", "random_strings_lognormal" ,"suffix_array"]
 
 numericDTypes = frozenset(["bool", "int64", "float64"]) 
 
@@ -600,8 +601,15 @@ def random_strings_uniform(minlen : int, maxlen : int, size : int,
                             "uniform", characters,
                             NUMBER_FORMAT_STRINGS['int64'].format(minlen),
                             NUMBER_FORMAT_STRINGS['int64'].format(maxlen))
+#    print("In random_strings_uniform, msg={}".format(msg))
     repMsg = generic_msg(msg)
+#    print("In random_strings_uniform,repMsg={}".format(repMsg))
+#    print("In random_strings_uniform,split={}".format(repMsg.split('+')))
+#    print("In random_strings_uniform,*split={}".format(*(repMsg.split('+'))))
     return Strings(*(repMsg.split('+')))
+
+
+
 
 
 def random_strings_lognormal(logmean : Union[float, int], logstd : float, 
@@ -662,3 +670,54 @@ def random_strings_lognormal(logmean : Union[float, int], logstd : float,
                              NUMBER_FORMAT_STRINGS['float64'].format(logstd))
     repMsg = generic_msg(msg)
     return Strings(*(repMsg.split('+')))
+
+
+
+@typechecked
+def suffix_array( strings : Strings) -> Pdarrays:
+        """
+        Return the suffix arrays of given strings. The size/shape of each suffix
+	arrays is the same as the corresponding strings. 
+	A simple example of suffix array is as follow. Given string "banana$",
+	all the suffixes are as follows. 
+	s[0]="banana$"
+	s[1]="anana$"
+	s[2]="nana$"
+	s[3]="ana$"
+	s[4]="na$"
+	s[5]="a$"
+	s[6]="$"
+	The suffix array of string "banana$"  is the array of indices of sorted suffixes.
+	s[6]="$"
+	s[5]="a$"
+	s[3]="ana$"
+	s[1]="anana$"
+	s[0]="banana$"
+	s[4]="na$"
+	s[2]="nana$"
+	so sa=[6,5,3,1,0,4,2]
+
+        Returns
+        -------
+        pdarray
+            The suffix arrays of the given strings
+
+        See Also
+        --------
+
+        Notes
+        -----
+        
+        Raises
+        ------  
+        RuntimeError
+            Raised if there is a server-side error in executing group request or
+            creating the pdarray encapsulating the return message
+        """
+        msg = "segmentedSuffixAry {} {} {}".format( strings.objtype,
+                                                        strings.offsets.name,
+                                                        strings.bytes.name) 
+        repMsg = generic_msg(msg)
+        pdarrays= Pdarrays(*(repMsg.split('+')))
+        return pdarrays
+

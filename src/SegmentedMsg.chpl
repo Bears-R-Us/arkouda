@@ -10,6 +10,10 @@ module SegmentedMsg {
   use IO;
   use GenSymIO only jsonToPdArray;
 
+  use SymArrayDmap;
+  use SACA;
+
+
   private config const DEBUG = false;
 
   proc randomStringsMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
@@ -58,6 +62,8 @@ module SegmentedMsg {
       }
       return repMsg;
   }
+
+
 
   proc segmentLengthsMsg(cmd: string, payload: bytes, 
                                           st: borrowed SymTab): string throws {
@@ -367,6 +373,16 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
               var s = strings[idx];
               return "item %s %jt".format("str", s);
           }
+          when "int" {
+              // Make a temporary strings array
+              var arrays = new owned SegArray(args[1], args[2], st);
+              // Parse the index
+              var idx = args[3]:int;
+              // TO DO: in the future, we will force the client to handle this
+              idx = convertPythonIndexToChapel(idx, arrays.size);
+              var s = arrays[idx];
+              return "item %s %jt".format("int", s);
+          }
           otherwise { 
               var errorMsg = notImplementedError(pn, objtype); 
               writeln(generateErrorContext(
@@ -658,4 +674,76 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       }
       return "created " + st.attrib(rname);
   }
+
+
+
+  proc segSuffixArrayMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+      var pn = Reflection.getRoutineName();
+      var (objtype, segName, valName) = payload.decode().splitMsgToTuple(3);
+      var repMsg: string;
+      var x:int;
+      var y:int(32);
+
+      // check to make sure symbols defined
+      st.check(segName);
+      st.check(valName);
+
+      var strings = new owned SegString(segName, valName, st);
+      var size=strings.size;
+      var nBytes = strings.nBytes;
+      var length=strings.getLengths();
+      var offsegs = (+ scan length) - length;
+      var startposition:int;
+      var endposition:int;
+
+      select (objtype) {
+          when "str" {
+              // To be checked, I am not sure if this formula can estimate the total memory requirement
+              // Lengths + 2*segs + 2*vals (copied to SymTab)
+              overMemLimit(8*size + 16*size + nBytes);
+
+              //allocate an offset array
+	      var sasoff = offsegs;
+              //allocate an values array
+              var sasval:[0..(nBytes-1)] int;
+
+	      var i:int;
+              for i in 0..(size-1) do {
+	        // the start position of ith string in value array
+                startposition = offsegs[i];
+                endposition = startposition+length[i]-1;
+                var sasize=length[i]:int(32);
+                ref strArray=strings.values.a[startposition..endposition];
+                var tmparray:[1..sasize] int(32);
+                divsufsort(strArray,tmparray,sasize);
+                for (x, y) in zip(sasval[startposition..endposition], tmparray[1..sasize]) do
+                    x = y;
+	      }
+
+              var segName2 = st.nextName();
+              var valName2 = st.nextName();
+
+      	      var segEntry = new shared SymEntry(sasoff);
+              var valEntry = new shared SymEntry(sasval);
+
+              st.addEntry(segName2, segEntry);
+              st.addEntry(valName2, valEntry);
+              repMsg = 'created ' + st.attrib(segName2) + '+created ' + st.attrib(valName2);
+              return repMsg;
+
+          }
+          otherwise {
+              var errorMsg = notImplementedError(pn, "("+objtype+")");
+              writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError")); 
+              return errorMsg;            
+          }
+      }
+
+  }
 }
+

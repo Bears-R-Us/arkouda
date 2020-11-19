@@ -134,7 +134,14 @@ module SegmentedArray {
         end = offsets.a[idx+1] - 1;
       }
       // Take the slice of the bytearray and "cast" it to a chpl string
-      var s = interpretAsString(values.a[start..end]);
+//      var s = interpretAsString(values.a[start..end]);
+      var tmp=values.a[start..end];
+      var s: string;
+      var i:int;
+      s="";
+      for i in tmp do {
+          s=s+" "+ i:string;
+      }
       return s;
     }
 
@@ -661,6 +668,430 @@ module SegmentedArray {
   } // class SegString
 
 
+
+  /**
+   * Represents an array of arrays, implemented as a segmented array of integers.
+   * Instances are ephemeral, not stored in the symbol table. Instead, attributes
+   * of this class refer to symbol table entries that persist. This class is a
+   * convenience for bundling those persistent objects and defining suffix array-relevant
+   * operations.
+   */
+  class SegArray {
+ 
+    /**
+     * The name of the SymEntry corresponding to the pdarray containing
+     * the offsets, which are start indices for each suffix array
+     */
+    var offsetName: string;
+
+    /**
+     * The pdarray containing the offsets, which are the start indices of
+     * the integerarrays, each of whichs corresponds to an individual suffix array.
+     */ 
+    var offsets: borrowed SymEntry(int);
+
+    /**
+     * The name of the SymEntry corresponding to the pdarray containing
+     * the suffix array values where each value is integer array.
+     */
+    var valueName: string;
+
+    /**
+     * The pdaray containing the complete byte array composed of bytes
+     * corresponding to each string, joined by nulls. Note: the null byte
+     * is int value of zero.
+     */ 
+    var values: borrowed SymEntry(int);
+    
+    /**
+     * The number of strings in the segmented array
+     */
+    var size: int;
+    
+    /**
+     * The total number of integer in the entire segmented array including
+     * the integer index corresonding to the suffix array.
+     */ 
+    var nBytes: int;
+
+    /* 
+     * This version of the init method is the most common and is only used 
+     * when the names of the segments (offsets) and values SymEntries are known.
+     */
+    proc init(segName: string, valName: string, st: borrowed SymTab) {
+      offsetName = segName;
+      // The try! is needed here because init cannot throw
+      var gs = try! st.lookup(segName);
+      // I want this to be borrowed, but that throws a lifetime error
+      var segs = toSymEntry(gs, int): unmanaged SymEntry(int);
+      offsets = segs;
+      valueName = valName;
+
+      var vs = try! st.lookup(valName);
+      var vals = toSymEntry(vs, int): unmanaged SymEntry(int);
+      values = vals;
+      size = segs.size;
+      nBytes = vals.size;
+    }
+
+    /*
+     * This version of init method takes segments and values arrays as
+     * inputs, generates the SymEntry objects for each and passes the
+     * offset and value SymTab lookup names to the alternate init method
+     */
+    proc init(segments: [] int, values: [] int, st: borrowed SymTab) {
+      var oName = st.nextName();
+      var segEntry = new shared SymEntry(segments);
+      try! st.addEntry(oName, segEntry);
+      var vName = st.nextName();
+      var valEntry = new shared SymEntry(values);
+      try! st.addEntry(vName, valEntry);
+      this.init(oName, vName, st);
+    }
+
+    proc show(n: int = 3) throws {
+      if (size >= 2*n) {
+        for i in 0..#n {
+          writeln(this[i]);
+        }
+        writeln("...");
+        for i in size-n..#n {
+          writeln(this[i]);
+        }
+      } else {
+        for i in 0..#size {
+          writeln(this[i]);
+        }
+      }
+    }
+
+    /* Retrieve one string from the array */
+    proc this(idx: int): string throws {
+      if (idx < offsets.aD.low) || (idx > offsets.aD.high) {
+        throw new owned OutOfBoundsError();
+      }
+      // Start index of the string
+      var start = offsets.a[idx];
+      // Index of last (null) byte in string
+      var end: int;
+      if (idx == size - 1) {
+        end = nBytes - 1;
+      } else {
+        end = offsets.a[idx+1] - 1;
+      }
+      // Take the slice of the bytearray and "cast" it to a chpl string
+      var s = interpretAsString(values.a[start..end]);
+      return s;
+    }
+
+    /* Take a slice of strings from the array. The slice must be a 
+       Chapel range, i.e. low..high by stride, not a Python slice.
+       Returns arrays for the segment offsets and bytes of the slice.*/
+    proc this(const slice: range(stridable=true)) throws {
+      if (slice.low < offsets.aD.low) || (slice.high > offsets.aD.high) {
+        throw new owned OutOfBoundsError();
+      }
+      // Early return for zero-length result
+      if (size == 0) || (slice.size == 0) {
+        return (makeDistArray(0, int), makeDistArray(0, int));
+      }
+      // Start of bytearray slice
+      var start = offsets.a[slice.low];
+      // End of bytearray slice
+      var end: int;
+      if (slice.high == offsets.aD.high) {
+        // if slice includes the last string, go to the end of values
+        end = values.aD.high;
+      } else {
+        end = offsets.a[slice.high+1] - 1;
+      }
+      // Segment offsets of the new slice
+      var newSegs = makeDistArray(slice.size, int);
+      ref oa = offsets.a;
+      // newSegs = offsets.a[slice] - start;
+      forall (i, ns) in zip(newSegs.domain, newSegs) with (var agg = newSrcAggregator(int)) {
+        agg.copy(ns, oa[slice.low + i]);
+      }
+      // Offsets need to be re-zeroed
+      newSegs -= start;
+      // Bytearray of the new slice
+      var newVals = makeDistArray(end - start + 1, int);
+      ref va = values.a;
+      // newVals = values.a[start..end];
+      forall (i, nv) in zip(newVals.domain, newVals) with (var agg = newSrcAggregator(int)) {
+        agg.copy(nv, va[start + i]);
+      }
+      return (newSegs, newVals);
+    }
+
+    /* Gather strings by index. Returns arrays for the segment offsets
+       and bytes of the gathered strings.*/
+    proc this(iv: [?D] int) throws {
+      // Early return for zero-length result
+      if (D.size == 0) {
+        return (makeDistArray(0, int), makeDistArray(0, int));
+      }
+      // Check all indices within bounds
+      var ivMin = min reduce iv;
+      var ivMax = max reduce iv;
+      if (ivMin < 0) || (ivMax >= offsets.size) {
+        throw new owned OutOfBoundsError();
+      }
+      if v {writeln("Computing lengths and offsets"); stdout.flush();}
+      var t1 = getCurrentTime();
+      ref oa = offsets.a;
+      const low = offsets.aD.low, high = offsets.aD.high;
+      // Gather the right and left boundaries of the indexed strings
+      // NOTE: cannot compute lengths inside forall because agg.copy will
+      // experience race condition with loop-private variable
+      var right: [D] int, left: [D] int;
+      forall (r, l, idx) in zip(right, left, iv) with (var agg = newSrcAggregator(int)) {
+        if (idx == high) {
+          agg.copy(r, values.size);
+        } else {
+          agg.copy(r, oa[idx+1]);
+        }
+        agg.copy(l, oa[idx]);
+      }
+      // Lengths of segments including null bytes
+      var gatheredLengths: [D] int = right - left;
+      // The returned offsets are the 0-up cumulative lengths
+      var gatheredOffsets = (+ scan gatheredLengths);
+      // The total number of bytes in the gathered strings
+      var retBytes = gatheredOffsets[D.high];
+      gatheredOffsets -= gatheredLengths;
+      if v {
+        writeln(getCurrentTime() - t1, " seconds");
+        writeln("Copying values"); stdout.flush();
+        t1 = getCurrentTime();
+      }
+      var gatheredVals = makeDistArray(retBytes, int);
+      // Multi-locale requires some extra localization work that is not needed
+      // in CHPL_COMM=none
+      if CHPL_COMM != 'none' {
+        // Compute the src index for each byte in gatheredVals
+        /* For performance, we will do this with a scan, so first we need an array
+           with the difference in index between the current and previous byte. For
+           the interior of a segment, this is just one, but at the segment boundary,
+           it is the difference between the src offset of the current segment ("left")
+           and the src index of the last byte in the previous segment (right - 1).
+        */
+        var srcIdx = makeDistArray(retBytes, int);
+        srcIdx = 1;
+        var diffs: [D] int;
+        diffs[D.low] = left[D.low]; // first offset is not affected by scan
+        diffs[D.interior(D.size-1)] = left[D.interior(D.size-1)] - (right[D.interior(-(D.size-1))] - 1);
+        // Set srcIdx to diffs at segment boundaries
+        forall (go, d) in zip(gatheredOffsets, diffs) with (var agg = newDstAggregator(int)) {
+          agg.copy(srcIdx[go], d);
+        }
+        srcIdx = + scan srcIdx;
+        // Now srcIdx has a dst-local copy of the source index and vals can be efficiently gathered
+        ref va = values.a;
+        forall (v, si) in zip(gatheredVals, srcIdx) with (var agg = newSrcAggregator(int)) {
+          agg.copy(v, va[si]);
+        }
+      } else {
+        ref va = values.a;
+        // Copy string data to gathered result
+        forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, iv) {
+          for pos in 0..#gl {
+            gatheredVals[go+pos] = va[oa[idx]+pos];
+          }
+        }
+      }
+      if v {writeln(getCurrentTime() - t1, " seconds"); stdout.flush();}
+      return (gatheredOffsets, gatheredVals);
+    }
+
+    /* Logical indexing (compress) of strings. */
+    proc this(iv: [?D] bool) throws {
+      // Index vector must be same domain as array
+      if (D != offsets.aD) {
+        throw new owned OutOfBoundsError();
+      }
+      if v {writeln("Computing lengths and offsets"); stdout.flush();}
+      var t1 = getCurrentTime();
+      ref oa = offsets.a;
+      const low = offsets.aD.low, high = offsets.aD.high;
+      // Calculate the destination indices
+      var steps = + scan iv;
+      var newSize = steps[high];
+      steps -= iv;
+      // Early return for zero-length result
+      if (newSize == 0) {
+        return (makeDistArray(0, int), makeDistArray(0,int));
+      }
+      var segInds = makeDistArray(newSize, int);
+      forall (t, dst, idx) in zip(iv, steps, D) with (var agg = newDstAggregator(int)) {
+        if t {
+          agg.copy(segInds[dst], idx);
+        }
+      }
+      return this[segInds];
+      
+      /* // Lengths of dest segments including null bytes */
+      /* var gatheredLengths = makeDistArray(newSize, int); */
+      /* forall (idx, present, i) in zip(D, iv, steps) { */
+      /*   if present { */
+      /*     segInds[i-1] = idx; */
+      /*     if (idx == high) { */
+      /*       gatheredLengths[i-1] = values.size - oa[high]; */
+      /*     } else { */
+      /*       gatheredLengths[i-1] = oa[idx+1] - oa[idx]; */
+      /*     } */
+      /*   } */
+      /* } */
+      /* // Make dest offsets from lengths */
+      /* var gatheredOffsets = (+ scan gatheredLengths); */
+      /* var retBytes = gatheredOffsets[newSize-1]; */
+      /* gatheredOffsets -= gatheredLengths; */
+      /* if v { */
+      /*   writeln(getCurrentTime() - t1, " seconds"); */
+      /*   writeln("Copying values"); stdout.flush(); */
+      /*   t1 = getCurrentTime(); */
+      /* } */
+      /* var gatheredVals = makeDistArray(retBytes, uint(8)); */
+      /* ref va = values.a; */
+      /* if DEBUG { */
+      /*   printAry("gatheredOffsets: ", gatheredOffsets); */
+      /*   printAry("gatheredLengths: ", gatheredLengths); */
+      /*   printAry("segInds: ", segInds); */
+      /* } */
+      /* // Copy string bytes from src to dest */
+      /* forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, segInds) { */
+      /*   gatheredVals[{go..#gl}] = va[{oa[idx]..#gl}]; */
+      /* } */
+      /* if v {writeln(getCurrentTime() - t1, " seconds"); stdout.flush();} */
+      /* return (gatheredOffsets, gatheredVals); */
+    }
+
+    /* Apply a hash function to all strings. This is useful for grouping
+       and set membership. The hash used is SipHash128.*/
+    proc hash() throws {
+      // 128-bit hash values represented as 2-tuples of uint(64)
+      var hashes: [offsets.aD] 2*uint(64);
+      // Early exit for zero-length result
+      if (size == 0) {
+        return hashes;
+      }
+      ref oa = offsets.a;
+      ref va = values.a;
+      // Compute lengths of strings
+      var lengths = getLengths();
+      // Hash each string
+      // TO DO: test on clause with aggregator
+      forall (o, l, h) in zip(oa, lengths, hashes) {
+        const myRange = o..#l;
+        h = sipHash128(va, myRange);
+        /* // localize the string bytes */
+        /* const myBytes = va[{o..#l}]; */
+        /* h = sipHash128(myBytes, hashKey); */
+        /* // Perf Note: localizing string bytes is ~3x faster on IB multilocale than this: */
+        /* // h = sipHash128(va[{o..#l}]); */
+      }
+      return hashes;
+    }
+
+    /* Return a permutation that groups the strings. Because hashing is used,
+       this permutation will not sort the strings, but all equivalent strings
+       will fall in one contiguous block. */
+    proc argGroup() throws {
+      var t = new Timer();
+      if useHash {
+        // Hash all strings
+        if v { writeln("Hashing strings"); stdout.flush(); t.start(); }
+        var hashes = this.hash();
+        if v { t.stop(); writeln("hashing took %t seconds\nSorting hashes".format(t.elapsed())); stdout.flush(); t.clear(); t.start(); }
+        // Return the permutation that sorts the hashes
+        var iv = radixSortLSD_ranks(hashes);
+        if v { t.stop(); writeln("sorting took %t seconds".format(t.elapsed())); stdout.flush(); }
+        if DEBUG {
+          var sortedHashes = [i in iv] hashes[i];
+          var diffs = sortedHashes[(iv.domain.low+1)..#(iv.size-1)] - sortedHashes[(iv.domain.low)..#(iv.size-1)];
+          printAry("diffs = ", diffs);
+          var nonDecreasing = [(d0,d1) in diffs] ((d0 > 0) || ((d0 == 0) && (d1 >= 0)));
+          writeln("Are hashes sorted? ", && reduce nonDecreasing);
+        }
+        return iv;
+      } else {
+        var iv = argsort();
+        return iv;
+      }
+    }
+
+    /* Return lengths of all strings, including null terminator. */
+    proc getLengths() {
+      var lengths: [offsets.aD] int;
+      if (size == 0) {
+        return lengths;
+      }
+      ref oa = offsets.a;
+      const low = offsets.aD.low;
+      const high = offsets.aD.high;
+      forall (i, o, l) in zip(offsets.aD, oa, lengths) {
+        if (i == high) {
+          l = values.size - o;
+        } else {
+          l = oa[i+1] - o;
+        }
+      }
+      /* lengths[low..high-1] = (oa[low+1..high] - oa[low..high-1]); */
+      /* lengths[high] = values.size - oa[high]; */
+      return lengths;
+    }
+
+    
+
+    proc ediff():[offsets.aD] int {
+      var diff: [offsets.aD] int;
+      if (size < 2) {
+        return diff;
+      }
+      ref oa = offsets.a;
+      ref va = values.a;
+      const high = offsets.aD.high;
+      forall (i, a) in zip(offsets.aD, diff) {
+        if (i < high) {
+          var asc: bool;
+          const left = oa[i]..oa[i+1]-1;
+          if (i < high - 1) {
+            const right = oa[i+1]..oa[i+2]-1;
+            a = -memcmp(va, left, va, right);
+          } else { // i == high - 1
+            const right = oa[i+1]..values.aD.high;
+            a = -memcmp(va, left, va, right);
+          }
+        } else { // i == high
+          a = 0;
+        } 
+      }
+      return diff;
+    }
+
+    proc isSorted():bool {
+      if (size < 2) {
+        return true;
+      }
+      return (&& reduce (ediff() >= 0));
+    }
+
+    proc argsort(checkSorted:bool=true): [offsets.aD] int throws {
+      const ref D = offsets.aD;
+      const ref va = values.a;
+      if checkSorted && isSorted() {
+        if DEBUG { writeln("argsort called on already sorted array"); stdout.flush(); }
+        var ranks: [D] int = [i in D] i;
+        return ranks;
+      }
+      var ranks = twoPhaseStringSort(this);
+      return ranks;
+    }
+
+  } // class SegArray
+
+
+
   inline proc memcmp(const ref x: [] uint(8), const xinds, const ref y: [] uint(8), const yinds): int {
     const l = min(xinds.size, yinds.size);
     var ret: int = 0;
@@ -924,19 +1355,26 @@ module SegmentedArray {
   }
 
   /* Convert an array of raw bytes into a Chapel string. */
-  inline proc interpretAsString(bytearray: [?D] uint(8)): string {
+  inline proc interpretAsString(bytearray: [?D] int(64)): string {
     // Byte buffer must be local in order to make a C pointer
-    var localBytes: [{0..#D.size}] uint(8) = bytearray;
+    var localBytes: [{0..#D.size}] int = bytearray;
     var cBytes = c_ptrTo(localBytes);
     // Byte buffer is null-terminated, so length is buffer.size - 1
     // The contents of the buffer should be copied out because cBytes will go out of scope
     // var s = new string(cBytes, D.size-1, D.size, isowned=false, needToCopy=true);
     var s: string;
+    var i:int;
+    s="";
+    for i in bytearray do {
+       s=s+" "+ i:string;
+    }
+/*
     try {
       s = createStringWithNewBuffer(cBytes, D.size-1, D.size);
     } catch {
       s = "<error interpreting bytes as string>";
     }
+*/
     return s;
   }
 }

@@ -26,12 +26,26 @@ def time_ak_gather(isize, vsize, trials, dtype, random):
             v = ak.random_strings_uniform(1, 16, Nv)
         else:
             v = ak.ones(Nv, dtype=dtype)
-    
+    print("v={}".format(v))    
+    print("v.offsets={}".format(v.offsets))    
+    print("v.nbytes={}".format(v.nbytes))    
+    print("v[1]={}".format(v[1]))    
+    print("In Gather size={}".format(v.size))    
+    print("In Gather nbytes={}".format(v.nbytes))    
+    print("In Gather ndim={}".format(v.ndim))    
+    print("In Gather shape={}".format(v.shape))    
+    print("In Gather offsets name ={}".format(v.offsets.name))
+    print("In Gather offsets size={}".format(v.offsets.size))
+    print("In Gather bytes name ={}".format(v.bytes.name))
+    print("In Gather bytes size={}".format(v.bytes.size))
     timings = []
     for _ in range(trials):
+        print("In Gather loop i={}".format(i))
+        print("In Gather v[i]={}".format(v[i]))
         start = time.time()
         c = v[i]
         end = time.time()
+        print("In Gather loop c={}".format(c))
         timings.append(end - start)
     tavg = sum(timings) / trials
 
