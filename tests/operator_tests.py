@@ -246,13 +246,9 @@ class OperatorsTest(ArkoudaTest):
 
         pdaOne = ak.array([True,False,True])
         pdaTwo = ak.array([False,True,True])
-        
-        # bool test written this way because bool == bool not implemented
-        results = ak.concatenate([pdaOne,pdaTwo]).to_ndarray()
-        expected = ak.array([True, False, True, False, True, True]).to_ndarray()
-        
-        for result in enumerate(results):
-            self.assertEqual(expected[result[0]],result[1])
+       
+        self.assertTrue((ak.array([True, False, True, False, True, True]) == 
+                ak.concatenate([pdaOne,pdaTwo])).all())
         
     def testAllOperators(self):
         run_tests(verbose)

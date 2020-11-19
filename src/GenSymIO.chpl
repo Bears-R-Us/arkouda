@@ -260,7 +260,7 @@ module GenSymIO {
                 return try! errMsg;
             }
             // Glob returns filenames in weird order. Sort for consistency
-            // sort(tmp);
+            sort(tmp);
             filedom = tmp.domain;
             filenames = tmp;
         } else {
@@ -438,7 +438,7 @@ module GenSymIO {
                 return try! "Error: no files matching %s".format(filelist[0]);
             }
             // Glob returns filenames in weird order. Sort for consistency
-            // sort(tmp);
+            sort(tmp);
             filedom = tmp.domain;
             filenames = tmp;
         } else {
@@ -1559,15 +1559,23 @@ module GenSymIO {
      * Generates a list of filenames to be written to based upon a file prefix,
      * extension, and number of locales.
      */
-    proc generateFilenames(prefix : string, extension : string, A) : [] string { 
+    proc generateFilenames(prefix : string, extension : string, A) : [] string throws { 
         // Generate the filenames based upon the number of targetLocales.
         var filenames: [0..#A.targetLocales().size] string;
         for i in 0..#A.targetLocales().size {
-            filenames[i] = try! "%s_LOCALE%s%s".format(prefix, i:string, extension);
+            filenames[i] = generateFilename(prefix, extension, i);
         }
         return filenames;
     }
 
+    /*
+     * Generates a file name composed of a prefix, which is a filename provided by
+     * the user along with a file index and extension.
+     */
+    proc generateFilename(prefix : string, extension : string, idx : int) : string throws {
+        var suffix = '%04i'.format(idx);
+        return "%s_LOCALE%s%s".format(prefix, suffix, extension);
+    }    
 
     /*
      * If APPEND mode, checks to see if the matchingFilenames matches the filenames
