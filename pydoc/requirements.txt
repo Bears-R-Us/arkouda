@@ -8,3 +8,4 @@ pytest
 pytest-env
 numpy
 zmq
+typeguard
