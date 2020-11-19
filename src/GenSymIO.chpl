@@ -260,7 +260,7 @@ module GenSymIO {
                 return try! errMsg;
             }
             // Glob returns filenames in weird order. Sort for consistency
-            // sort(tmp);
+            sort(tmp);
             filedom = tmp.domain;
             filenames = tmp;
         } else {
@@ -438,7 +438,7 @@ module GenSymIO {
                 return try! "Error: no files matching %s".format(filelist[0]);
             }
             // Glob returns filenames in weird order. Sort for consistency
-            // sort(tmp);
+            sort(tmp);
             filedom = tmp.domain;
             filenames = tmp;
         } else {
@@ -1577,7 +1577,7 @@ module GenSymIO {
 
         if idx < 10 {
             suffix = '000%i'.format(idx);
-        } else if 9 < idx  && idx < 100 {
+        } else if 10 <= idx  && idx < 100 {
             suffix = '00%i'.format(idx);
         } else if 100 <= idx && idx < 1000 {
             suffix = '0%i'.format(idx);
