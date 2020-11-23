@@ -311,3 +311,20 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertIsInstance(strings, ak.Strings)
         self.assertEqual(5, len(series))
         
+        series = pd.Series(np.random.randint(0,10,10))
+        p_array = ak.from_series(series)
+
+        self.assertIsInstance(p_array,ak.pdarray)
+        self.assertEqual(np.int64, p_array.dtype)
+        
+        series = pd.Series(np.random.uniform(low=0.0,high=1.0,size=10))
+        p_array = ak.from_series(series)
+
+        self.assertIsInstance(p_array,ak.pdarray)
+        self.assertEqual(np.float64, p_array.dtype)       
+        
+        series = pd.Series(np.random.choice([True, False],size=10))
+        p_array = ak.from_series(series)
+
+        self.assertIsInstance(p_array,ak.pdarray)
+        self.assertEqual(bool, p_array.dtype)         
