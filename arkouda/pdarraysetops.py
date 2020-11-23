@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import cast, Iterable, Optional, Sequence, Tuple, Union, ForwardRef
+from typing import cast, Optional, Sequence, Tuple, Union, ForwardRef
 from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
@@ -117,6 +117,8 @@ def in1d(pda1 : Union[pdarray,Strings,'Categorical'], pda2 : Union[pdarray,Strin
     TypeError
         Raised if either pda1 or pda2 is not a pdarray, Strings, or 
         Categorical object or if invert is not a bool
+    RuntimeError
+        Raised if the dtype of either array is not supported
 
     See Also
     --------
@@ -128,6 +130,16 @@ def in1d(pda1 : Union[pdarray,Strings,'Categorical'], pda2 : Union[pdarray,Strin
     python keyword `in`, for 1-D sequences. ``in1d(a, b)`` is logically
     equivalent to ``ak.array([item in b for item in a])``, but is much
     faster and scales to arbitrarily large ``a``.
+    
+    ak.in1d is not supported for bool or float64 pdarrays
+
+    Examples
+    --------
+    >>> ak.in1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
+    array([False, True, False])    
+    
+    >>> ak.in1d(ak.array(['one','two']),ak.array(['two', 'three','four','five']))
+    array([False, True])
     """
     from arkouda.categorical import Categorical as Categorical_
     if hasattr(pda1, 'in1d'):
@@ -152,12 +164,13 @@ def in1d(pda1 : Union[pdarray,Strings,'Categorical'], pda2 : Union[pdarray,Strin
 @typechecked
 def concatenate(arrays : Sequence[Union[pdarray,Strings]]) -> Union[pdarray,Strings]:
     """
-    Concatenate an iterable of ``pdarray`` objects into one ``pdarray``.
+    Concatenate an iterable of ``pdarray`` or ``Strings`` objects into 
+    one ``pdarray`` or ``Strings`` object, respectively.
 
     Parameters
     ----------
     arrays : Sequence[Union[pdarray,Strings]]
-        The arrays or Strings to concatenate. For pdarrays, all must have same 
+        The pdarrays or Strings to concatenate. For pdarrays, all must have same 
         dtype.
 
     Returns
@@ -173,14 +186,24 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings]]) -> Union[pdarray,Stri
         differing dtypes
     TypeError
         Raised if arrays is not a pdarrays or Strings iterable
-    NotImplementedError
-        Raised if 1..n array elements are not dtypes for which
+    RuntimeError
+        Raised if 1..n array elements are dtypes for which
         concatenate has not been implemented.
+
+    Notes
+    -----
+    ak.concatenate is not supported for bool or float64 pdarrays
 
     Examples
     --------
     >>> ak.concatenate([ak.array([1, 2, 3]), ak.array([4, 5, 6])])
     array([1, 2, 3, 4, 5, 6])
+    
+    >>> ak.concatenate([ak.array([True,False,True]),ak.array([False,True,True])])
+    array([True, False, True, False, True, True])
+    
+    >>> ak.concatenate([ak.array(['one','two']),ak.array(['three','four','five'])])
+    array(['one', 'two', 'three', 'four', 'five'])
     """
     size = 0
     objtype = None
@@ -249,15 +272,21 @@ def union1d(pda1 : pdarray, pda2 : pdarray) -> pdarray:
     ------
     TypeError
         Raised if either pda1 or pda2 is not a pdarray
+    RuntimeError
+        Raised if the dtype of either array is not supported
 
     See Also
     --------
     intersect1d, unique
 
+    Notes
+    -----
+    ak.union1d is not supported for bool or float64 pdarrays
+
     Examples
     --------
-    >>> ak.union1d([-1, 0, 1], [-2, 0, 2])
-    array([-2, -1,  0,  1,  2])
+    >>> ak.union1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
+    array([-2, -1, 0, 1, 2])
     """
     if pda1.size == 0:
         return pda2 # union is pda2
@@ -299,10 +328,16 @@ def intersect1d(pda1 : pdarray, pda2 : pdarray,
     ------
     TypeError
         Raised if either pda1 or pda2 is not a pdarray
+    RuntimeError
+        Raised if the dtype of either pdarray is not supported
 
     See Also
     --------
     unique, union1d
+
+    Notes
+    -----
+    ak.intersect1d is not supported for bool or float64 pdarrays
 
     Examples
     --------
@@ -355,10 +390,16 @@ def setdiff1d(pda1 : pdarray, pda2 : pdarray,
     ------
     TypeError
         Raised if either pda1 or pda2 is not a pdarray
+    RuntimeError
+        Raised if the dtype of either pdarray is not supported
 
     See Also
     --------
     unique, setxor1d
+
+    Notes
+    -----
+    ak.setdiff1d is not supported for bool or float64 pdarrays
 
     Examples
     --------
@@ -410,6 +451,12 @@ def setxor1d(pda1 : pdarray, pda2 : pdarray,
     ------
     TypeError
         Raised if either pda1 or pda2 is not a pdarray
+    RuntimeError
+        Raised if the dtype of either pdarray is not supported
+
+    Notes
+    -----
+    ak.setxor1d is not supported for bool or float64 pdarrays
 
     Examples
     --------

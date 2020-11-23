@@ -260,12 +260,35 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
     Raises 
     ------
     TypeError
-        Raised if condition is not a pdarray or if pdarray dtypes
-        are not supported
+        Raised if the condition objectc is not a pdarray, if pdarray dtypes are 
+        not supported or do not match, or if multiple condition clauses (see 
+        Notes section) are applied
+        
+    Examples
+    --------
+    >>> a1 = ak.arange(1,10)
+    >>> a2 = ak.ones(9, dtype=np.int64)
+    >>> cond = a1 < 5
+    >>> ak.where(cond,a1,a2)
+    array([1, 2, 3, 4, 1, 1, 1, 1, 1])
+    
+    >>> a1 = ak.arange(1,10)
+    >>> a2 = ak.ones(9, dtype=np.int64)
+    >>> cond = a1 == 5
+    >>> ak.where(cond,a1,a2)
+    array([1, 1, 1, 1, 5, 1, 1, 1, 1])
+
+    >>> a1 = ak.arange(1,10)
+    >>> a2 = 10
+    >>> cond = a1 < 5
+    >>> ak.where(cond,a1,a2)
+    array([1, 2, 3, 4, 10, 10, 10, 10, 10])
 
     Notes
     -----
-    A and B must have the same dtype.
+    A and B must have the same dtype and only one conditional clause 
+    is supported e.g., n < 5, n > 1, which is supported in numpy
+    is not currently supported in Arkouda
     """
     if isinstance(A, pdarray) and isinstance(B, pdarray):
         repMsg = generic_msg("efunc3vv {} {} {} {}".\

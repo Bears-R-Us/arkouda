@@ -1,3 +1,4 @@
+import numpy as np
 from context import arkouda as ak
 from arkouda.dtypes import str as akstr
 from base_test import ArkoudaTest
@@ -56,100 +57,79 @@ class NumericTest(ArkoudaTest):
                         cm.exception.args[0])  
     
     def testLog(self):
-        pda = ak.linspace(1,10,10)
-        result = ak.log(pda) 
+        na = np.linspace(1,10,10)
+        pda = ak.array(na)
 
-        self.assertIsInstance(result, ak.pdarray)
-        self.assertEqual(10, len(result))
-        self.assertEqual(float, result.dtype)
-        
+        self.assertTrue((np.log(na) == ak.log(pda).to_ndarray()).all())
         with self.assertRaises(TypeError) as cm:
             ak.log([range(0,10)])
         self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
                         cm.exception.args[0])  
         
     def testExp(self):
-        pda = ak.linspace(1,10,10)
-        result = ak.exp(pda) 
+        na = np.linspace(1,10,10)
+        pda = ak.array(na)
 
-        self.assertIsInstance(result, ak.pdarray)
-        self.assertEqual(10, len(result))
-        self.assertEqual(float, result.dtype)
-        
+        self.assertTrue((np.exp(na) == ak.exp(pda).to_ndarray()).all())
         with self.assertRaises(TypeError) as cm:
             ak.exp([range(0,10)])
         self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
                         cm.exception.args[0])  
         
     def testAbs(self):
-        pda = ak.linspace(1,10,10)
-        result = ak.abs(pda) 
+        na = np.linspace(1,10,10)
+        pda = ak.array(na)
 
-        self.assertIsInstance(result, ak.pdarray)
-        self.assertEqual(10, len(result))
-        self.assertEqual(float, result.dtype)
-        
+        self.assertTrue((np.abs(na) == ak.abs(pda).to_ndarray()).all())
         with self.assertRaises(TypeError) as cm:
             ak.abs([range(0,10)])
         self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
                         cm.exception.args[0])  
-        
-        
-    def testCumSum(self):
-        pda = ak.linspace(1,10,10)
-        result = ak.cumsum(pda) 
 
-        self.assertIsInstance(result, ak.pdarray)
-        self.assertEqual(10, len(result))
-        self.assertEqual(float, result.dtype)
-        
+    def testCumSum(self):
+        na = np.linspace(1,10,10)
+        pda = ak.array(na)
+
+        self.assertTrue((np.cumsum(na) == ak.cumsum(pda).to_ndarray()).all())
         with self.assertRaises(TypeError) as cm:
             ak.cumsum([range(0,10)])
         self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
                         cm.exception.args[0])  
         
     def testCumProd(self):
-        pda = ak.linspace(1,10,10)
-        result = ak.cumprod(pda) 
+        na = np.linspace(1,10,10)
+        pda = ak.array(na)
 
-        self.assertIsInstance(result, ak.pdarray)
-        self.assertEqual(10, len(result))
-        self.assertEqual(float, result.dtype)
-        
+        self.assertTrue((np.cumprod(na) == ak.cumprod(pda).to_ndarray()).all())
         with self.assertRaises(TypeError) as cm:
             ak.cumprod([range(0,10)])
         self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
                         cm.exception.args[0])  
         
     def testSin(self):
-        pda = ak.linspace(1,10,10)
-        result = ak.sin(pda) 
-
-        self.assertIsInstance(result, ak.pdarray)
-        self.assertEqual(10, len(result))
-        self.assertEqual(float, result.dtype)
-        
-        with self.assertRaises(TypeError) as cm:
-            ak.sin([range(0,10)])
-        self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
-                        cm.exception.args[0]) 
-        
-    def testCos(self):
-        pda = ak.linspace(1,10,10)
-        result = ak.cos(pda) 
-
-        self.assertIsInstance(result, ak.pdarray)
-        self.assertEqual(10, len(result))
-        self.assertEqual(float, result.dtype)
-        
+        na = np.linspace(1,10,10)
+        pda = ak.array(na)
+    
+        self.assertTrue((np.sin(na) == ak.sin(pda).to_ndarray()).all())
         with self.assertRaises(TypeError) as cm:
             ak.cos([range(0,10)])
         self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
-                        cm.exception.args[0])   
+                        cm.exception.args[0])  
+        
+    def testCos(self):
+        na = np.linspace(1,10,10)
+        pda = ak.array(na)
+  
+        self.assertTrue((np.cos(na) == ak.cos(pda).to_ndarray()).all())    
+        with self.assertRaises(TypeError) as cm:
+            ak.cos([range(0,10)])
+        self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
+                        cm.exception.args[0])    
         
     def testValueCounts(self):
         pda = ak.ones(100, dtype=ak.int64)
         result = ak.value_counts(pda)
+
         self.assertEqual(ak.array([1]), result[0])
         self.assertEqual(ak.array([100]), result[1])
         

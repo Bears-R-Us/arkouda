@@ -225,7 +225,7 @@ make install-deps
 make
 ```
 
-Now that the arkouda_server is built and tested, install the Python library
+Now that the arkouda\_server is built and tested, install the Python library
 
 ## Installing the Arkouda Python Library and Dependencies
 
@@ -313,7 +313,7 @@ are pushed to the Arkouda or Arkouda fork _master branch_. Next, navigate to the
 option. The Github Pages docs url will be displayed once the source option is selected. Click on the link and the
 Arkouda documentation homepage will be displayed.
 
-## Running arkouda_server
+## Running arkouda\_server
 
 The command-line invocation depends on whether you built a single-locale version (with `CHPL_COMM=none`) or 
 multi-locale version (with `CHPL_COMM` set to the desired number of locales).
@@ -353,39 +353,39 @@ Other command line options are available, view them by using `--help`
 ## Token-Based Authentication in Arkouda
 
 Arkouda features a token-based authentication mechanism analogous to Jupyter, where a randomized alphanumeric string is
-generated or loaded at arkouda_server startup. The command to start arkouda_server with token authentication is as follows:
+generated or loaded at arkouda\_server startup. The command to start arkouda\_server with token authentication is as follows:
 
 ```bash
 ./arkouda_server --authenticate
 ```
 
 The generated token is saved to the tokens.txt file which is contained in the .arkouda directory located in the same 
-working directory the arkouda_server is launched from. The arkouda_server will re-use the same token until the 
-.arkouda/tokens.txt file is removed, which forces arkouda_server to generate a new token and corresponding
+working directory the arkouda\_server is launched from. The arkouda\_server will re-use the same token until the 
+.arkouda/tokens.txt file is removed, which forces arkouda\_server to generate a new token and corresponding
 tokens.txt file.
 
 ## Connecting to Arkouda
 
-The client connects to the arkouda\_server either by supplying a host and port or by providing a url connect string:
+The client connects to the arkouda\_server either by supplying a host and port or by providing a connect\_url connect string:
 
 ```bash
 arkouda.connect(server='localhost', port=5555)
-arkouda.connect(url='tcp://localhost:5555')
+arkouda.connect(connect_url='tcp://localhost:5555')
 ```
 
-When arkouda_server is launched in authentication-enabled mode, clients connect by either specifying the access_token
-parameter or by adding the token to the end of the url connect string:
+When arkouda\_server is launched in authentication-enabled mode, clients connect by either specifying the access\_token
+parameter or by adding the token to the end of the connect\_url connect string:
 
 ```bash
 arkouda.connect(server='localhost', port=5555, access_token='dcxCQntDQllquOsBNjBp99Pu7r3wDJn')
-arkouda.connect(url='tcp://localhost:5555?token=dcxCQntDQllquOsBNjBp99Pu7r3wDJn')
+arkouda.connect(connect_url='tcp://localhost:5555?token=dcxCQntDQllquOsBNjBp99Pu7r3wDJn')
 ```
 
-Note: once a client has successfully connected to an authentication-enabled arkouda_server, the token is cached in the
-user's $ARKOUDA_HOME .arkouda/tokens.txt file. _As long as the arkouda_server token remains the same, the user can
+Note: once a client has successfully connected to an authentication-enabled arkouda\_server, the token is cached in the
+user's $ARKOUDA\_HOME .arkouda/tokens.txt file. As long as the arkouda_server token remains the same, the user can
 connect without specifying the token via the access_token parameter or token url argument.
 
-## Testing arkouda_server
+## Testing arkouda\_server
 
 To sanity check the arkouda server, you can run
 

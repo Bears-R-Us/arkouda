@@ -234,6 +234,29 @@ class OperatorsTest(ArkoudaTest):
         result = ak.concatenate([onesOne,onesTwo])
         self.assertEqual(200, len(result))
         self.assertEqual(np.int64,result.dtype)
+
+    def testConcatenate(self):
+        pdaOne = ak.arange(1,4)
+        pdaTwo = ak.arange(4,7)  
+        
+        self.assertTrue((ak.array([1,2,3,4,5,6])
+                              == ak.concatenate([pdaOne,pdaTwo])).all())
+        self.assertTrue((ak.array([4,5,6,1,2,3])
+                              == ak.concatenate([pdaTwo,pdaOne])).all())
+        
+        pdaOne = ak.linspace(start=1,stop=3,length=3)
+        pdaTwo = ak.linspace(start=4,stop=6,length=3)        
+        
+        self.assertTrue((ak.array([1,2,3,4,5,6])
+                              == ak.concatenate([pdaOne,pdaTwo])).all())
+        self.assertTrue((ak.array([4,5,6,1,2,3])
+                              == ak.concatenate([pdaTwo,pdaOne])).all())
+
+        pdaOne = ak.array([True,False,True])
+        pdaTwo = ak.array([False,True,True])
+       
+        self.assertTrue((ak.array([True, False, True, False, True, True]) == 
+                ak.concatenate([pdaOne,pdaTwo])).all())
         
     def testAllOperators(self):
         run_tests(verbose)
@@ -263,6 +286,13 @@ class OperatorsTest(ArkoudaTest):
             ak.unique(list(range(0,10)))
         self.assertEqual('must be pdarray, Strings, or Categorical {}', 
                          cm.exception.args[0])
+        
+        with self.assertRaises(RuntimeError) as cm:
+            ak.concatenate([ak.ones(100),ak.array([True])])
+
+        self.assertEqual('Error: concatenateMsg: Incompatible arguments: ' +
+                         'Expected float64 dtype but got bool dtype', 
+                         cm.exception.args[0])     
         
 if __name__ == '__main__':
     '''

@@ -58,7 +58,8 @@ def parse_single_value(msg : str) -> object:
                               format(mydtype.name, value)))
     try:
         if mydtype == akstr_:
-            return mydtype.type(unescape(value.strip('"')))
+            # String value will always be surrounded with double quotes, so remove them
+            return mydtype.type(unescape(value[1:-1]))
         return mydtype.type(value)
     except:
         raise ValueError(("unsupported value from server {} {}".\
@@ -344,10 +345,16 @@ class pdarray:
         return self._binop(other, ">=")
 
     def __eq__(self, other):
-        return self._binop(other, "==")
+        if (self.dtype == bool) and (isinstance(other, pdarray) and (other.dtype == bool)):
+            return ~(self ^ other)
+        else:
+            return self._binop(other, "==")
 
     def __ne__(self, other):
-        return self._binop(other, "!=")
+        if (self.dtype == bool) and (isinstance(other, pdarray) and (other.dtype == bool)):
+            return (self ^ other)
+        else:
+            return self._binop(other, "!=")
 
     # overload unary- for pdarray implemented as pdarray*(-1)
     def __neg__(self):

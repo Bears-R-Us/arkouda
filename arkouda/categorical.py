@@ -149,6 +149,7 @@ class Categorical:
         return self.shape[0]
 
     def __str__(self):
+        # limit scope of import to pick up changes to global variable
         from arkouda.client import pdarrayIterThresh
         if self.size <= pdarrayIterThresh:
             vals = ["'{}'".format(self[i]) for i in range(self.size)]
