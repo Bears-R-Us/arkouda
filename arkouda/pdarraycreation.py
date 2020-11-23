@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import struct
 from typing import Iterable, Union
 from typeguard import typechecked
@@ -11,11 +12,30 @@ from arkouda.strings import Strings
 
 __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", "arange",
            "linspace", "randint", "uniform", "standard_normal",
-           "random_strings_uniform", "random_strings_lognormal"]
+           "random_strings_uniform", "random_strings_lognormal", "from_series"]
 
 numericDTypes = frozenset(["bool", "int64", "float64"]) 
 
 RANDINT_TYPES = {'int64','float64'}
+
+def from_series(series : pd.Series) -> Union[pdarray,Strings]:
+    """
+    Converts a Pandas Series to an Arkouda pdarray or Strings object.
+    
+    Parameters
+    ----------
+    series : Pandas Series
+    
+    
+    Returns
+    -------
+    Union[pdarray,Strings]
+    """    
+    if series.dtype.name == 'string':
+        n_array = series.to_numpy(dtype=np.str_)
+        return array(n_array)
+    else:
+        return array(series.to_numpy())
 
 def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     """
@@ -85,7 +105,7 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     if a.ndim != 1:
         raise RuntimeError("Only rank-1 pdarrays or ndarrays supported")
     # Check if array of strings
-    if a.dtype.kind == 'U':
+    if a.dtype.kind == 'U' or  'U' in a.dtype.kind:
         encoded = np.array([elem.encode() for elem in a])
         # Length of each string, plus null byte terminator
         lengths = np.array([len(elem) for elem in encoded]) + 1
