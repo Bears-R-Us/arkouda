@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import cast, Sequence, Union
-from typeguard import typechecked
+from typeguard import typechecked, check_type
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros
@@ -9,7 +9,6 @@ from arkouda.dtypes import *
 
 __all__ = ["argsort", "coargsort", "sort"]
 
-@typechecked
 def argsort(pda : Union[pdarray,Strings,'Categorical']) -> pdarray: # type: ignore
     """
     Return the permutation that sorts the array.
@@ -46,6 +45,8 @@ def argsort(pda : Union[pdarray,Strings,'Categorical']) -> pdarray: # type: igno
     array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
     """
     from arkouda.categorical import Categorical
+    check_type(argname=pda, value=pda, 
+                      expected_type=Union[pdarray,Strings,Categorical])
     if hasattr(pda, "argsort"):
         return cast(Categorical,pda).argsort()
     if pda.size == 0:
