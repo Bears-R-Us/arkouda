@@ -1,4 +1,4 @@
-from typing import cast, Tuple, Union
+from typing import Tuple
 import numpy as np # type: ignore
 import builtins
 
@@ -63,13 +63,13 @@ def translate_np_dtype(dt: np.dtype) -> Tuple[builtins.str, int]:
     kind = trans[dt.kind]
     return kind, dt.itemsize
 
-def resolve_scalar_dtype(val : Union[np.bool,np.float64,int,np.int,np.uint8]) -> str: #type: ignore
+def resolve_scalar_dtype(val : object) -> str:
     """
     Try to infer what dtype arkouda_server should treat val as.
     """
     # Python bool or np.bool
     if isinstance(val, builtins.bool) or (hasattr(val, 'dtype') \
-                                and cast(np,val).dtype.kind == 'b'):
+                                and val.dtype.kind == 'b'):
         return 'bool'
     # Python int or np.int* or np.uint*
     elif isinstance(val, int) or (hasattr(val, 'dtype') and \
