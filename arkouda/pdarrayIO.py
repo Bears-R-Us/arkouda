@@ -40,7 +40,13 @@ def read_hdf(dsetName : str, filenames : Union[str,List[str]],
         The name of the dataset (must be the same across all files)
     filenames : list or str
         Either a list of filenames or shell expression
-
+    strictTypes: bool
+        If True (default), require all dtypes in all files to have the
+        same precision and sign. If False, allow dtypes of different
+        precision and sign across different files. For example, if one 
+        file contains a uint32 dataset and another contains an int64
+        dataset, the contents of both will be read into an int64 pdarray.
+        
     Returns
     -------
     Union[pdarray,Strings] 
@@ -92,8 +98,15 @@ def read_all(filenames : Union[str,List[str]],
         Either a list of filenames or shell expression
     datasets : list or str or None
         (List of) name(s) of dataset(s) to read (default: all available)
-    iterative : boolean
+    iterative : bool
         Iterative (True) or Single (False) function call(s) to server
+    strictTypes: bool
+        If True (default), require all dtypes of a given dataset to have the
+        same precision and sign. If False, allow dtypes of different
+        precision and sign across different files. For example, if one 
+        file contains a uint32 dataset and another contains an int64
+        dataset with the same name, the contents of both will be read 
+        into an int64 pdarray.
 
     Returns
     -------
