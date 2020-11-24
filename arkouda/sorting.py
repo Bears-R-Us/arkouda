@@ -45,7 +45,7 @@ def argsort(pda : Union[pdarray,Strings,'Categorical']) -> pdarray: # type: igno
     array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
     """
     from arkouda.categorical import Categorical
-    check_type(argname=pda, value=pda, 
+    check_type(argname='argsort', value=pda, 
                       expected_type=Union[pdarray,Strings,Categorical])
     if hasattr(pda, "argsort"):
         return cast(Categorical,pda).argsort()
