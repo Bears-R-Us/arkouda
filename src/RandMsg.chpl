@@ -37,13 +37,12 @@ module RandMsg
                 overMemLimit(8*len);
                 var aMin = aMinStr:int;
                 var aMax = aMaxStr:int;
-                var aSeed = aSeedStr:int;
                 var t1 = Time.getCurrentTime();
                 var e = st.addEntry(rname, len, int);
                 if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
                 
                 t1 = Time.getCurrentTime();
-                fillInt(e.a, aMin, aMax, aSeed);
+                fillInt(e.a, aMin, aMax, getSeed(aSeedStr));
                 if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
             }
             when (DType.UInt8) {
@@ -55,20 +54,19 @@ module RandMsg
                 if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
                 
                 t1 = Time.getCurrentTime();
-                fillUInt(e.a, aMin, aMax);
+                fillUInt(e.a, aMin, aMax, getSeed(aSeedStr));
                 if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
             }
             when (DType.Float64) {
                 overMemLimit(8*len);
                 var aMin = aMinStr:real;
                 var aMax = aMaxStr:real;
-                var aSeed = aSeedStr:int;
                 var t1 = Time.getCurrentTime();
                 var e = st.addEntry(rname, len, real);
                 if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
                 
                 t1 = Time.getCurrentTime();
-                fillReal(e.a, aMin, aMax, aSeed);
+                fillReal(e.a, aMin, aMax, getSeed(aSeedStr));
                 if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
             }
             when (DType.Bool) {
@@ -94,6 +92,14 @@ module RandMsg
         }
         // response message
         return try! "created " + st.attrib(rname);
+    }
+    
+    proc getSeed(seedStr : string) : int throws {
+        if seedStr.isEmpty() {
+            return -99;
+        } else {
+            return seedStr:int;
+        }    
     }
 
     proc randomNormalMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {

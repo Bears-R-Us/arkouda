@@ -29,11 +29,15 @@ module RandArray {
     }
   }
 
-  proc fillUInt(a:[] ?t, const aMin, const aMax) where isUintType(t) {
+  proc fillUInt(a:[] ?t, const aMin, const aMax, const aSeed:int=-99) where isUintType(t) {
     coforall loc in Locales {
       on loc {
         ref myA = a.localSlice[a.localSubdomain()];
-        fillRandom(myA);
+        if aSeed != -99 {
+            fillRandom(myA,aSeed);
+        } else {
+            fillRandom(myA);        
+        }
         if (aMax > aMin) {
           const modulus = aMax - aMin;
           [x in myA] x = ((x % modulus) + aMin):t;
