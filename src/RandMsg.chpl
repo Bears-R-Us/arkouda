@@ -62,12 +62,13 @@ module RandMsg
                 overMemLimit(8*len);
                 var aMin = aMinStr:real;
                 var aMax = aMaxStr:real;
+                var aSeed = aSeedStr:int;
                 var t1 = Time.getCurrentTime();
                 var e = st.addEntry(rname, len, real);
                 if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
                 
                 t1 = Time.getCurrentTime();
-                fillReal(e.a, aMin, aMax);
+                fillReal(e.a, aMin, aMax, aSeed);
                 if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
             }
             when (DType.Bool) {

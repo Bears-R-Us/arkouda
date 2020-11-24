@@ -112,8 +112,18 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertEqual(10, len(testArray))
         self.assertEqual(ak.int64, testArray.dtype)
         self.assertEqual([10], testArray.shape)
+
+        testArrayDupe = ak.randint(low=1,high=5,size=10,seed=1)        
+        self.assertTrue((testArray == testArrayDupe).all())
         
-        self.assertTrue((ak.array([4, 4, 2, 4, 1, 4, 1, 4, 2, 3]) == testArray).all())
+        testArray = ak.randint(low=1.0,high=5.0,size=10,seed=1, dtype=ak.float64)
+        self.assertIsInstance(testArray, ak.pdarray)
+        self.assertEqual(10, len(testArray))
+        self.assertEqual(ak.float64, testArray.dtype)
+        self.assertEqual([10], testArray.shape)
+
+        testArrayDupe = ak.randint(low=1.0,high=5.0,size=10,seed=1, dtype=ak.float64)       
+        self.assertTrue((testArray== testArrayDupe).all())
     
     def testUniform(self):
         testArray = ak.uniform(3)

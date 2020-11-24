@@ -43,11 +43,15 @@ module RandArray {
     }
   }
 
-  proc fillReal(a:[] real, const aMin:numeric=0.0, const aMax:numeric=1.0) {
+  proc fillReal(a:[] real, const aMin:numeric=0.0, const aMax:numeric=1.0, const aSeed:int=-99) {
     coforall loc in Locales {
       on loc {
         ref myA = a.localSlice[a.localSubdomain()];
-        fillRandom(myA);
+        if aSeed != -99 {
+            fillRandom(myA,aSeed);
+        } else {
+            fillRandom(myA);        
+        }
         const scale = aMax - aMin;
         myA = scale*myA + aMin;
       }

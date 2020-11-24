@@ -16,7 +16,7 @@ __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", "arange",
 numericDTypes = frozenset(["bool", "int64", "float64"]) 
 
 RANDINT_TYPES = {'int64','float64'}
-NULL_INT_SEED = -99
+NONE_SEED = -99
 
 
 def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
@@ -468,7 +468,7 @@ def linspace(start : int, stop : int, length : int) -> pdarray:
     return create_pdarray(repMsg)
 
 def randint(low : Union[int,float], high : Union[int,float], 
-                            size : int, seed : int=NULL_INT_SEED, dtype=int64) -> pdarray:
+                            size : int, seed : int=NONE_SEED, dtype=int64) -> pdarray:
     """
     Generate a pdarray of randomized int, float, or bool values in a specified range.
 
@@ -480,8 +480,8 @@ def randint(low : Union[int,float], high : Union[int,float],
         The high value (exclusive for int, inclusive for float) of the range
     size : int
         The length of the returned array
-    seed : Optional[int,float]
-        The seed used to deliver deterministic pdarrays of random values
+    seed : Optional[int]
+        The seed used to deliver deterministic pdarrays of random int or float values
     dtype : {int64, float64, bool}
         The dtype of the array
 
