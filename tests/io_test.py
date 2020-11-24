@@ -4,6 +4,7 @@ from typing import List, Mapping, Union
 from base_test import ArkoudaTest
 from context import arkouda as ak
 from arkouda import io_util
+import h5py
 
 '''
 Tests writing Arkouda pdarrays to and reading from files
@@ -431,7 +432,24 @@ class IOTest(ArkoudaTest):
 
         self.assertTrue((strings  == r_strings).all())
 
-
+    def testStrictTypes(self):
+        N = 100
+        prefix = '{}/strict-type-test'.format(IOTest.io_test_dir)
+        inttypes = [np.uint32, np.int64, np.uint16, np.int16]
+        floattypes = [np.float32, np.float64, np.float32, np.float64]
+        for i, (it, ft) in enumerate(zip(inttypes, floattypes)):
+            with h5py.File('{}-{}'.format(prefix, i), 'w') as f:
+                idata = np.arange(i*N, (i+1)*N, dtype=it)
+                f.create_dataset('integers', data=idata)
+                fdata = np.arange(i*N, (i+1)*N, dtype=ft)
+                f.create_dataset('floats', data=fdata)
+        with self.assertRaises(RuntimeError) as cm:
+            a = ak.read_all(prefix+'*')
+        self.assertTrue('Error: inconsistent precision or sign' in cm.exception.args[0])
+        a = ak.read_all(prefix+'*', strictTypes=False)
+        self.assertTrue((a['integers'] == ak.arange(len(inttypes)*N)).all())
+        self.assertTrue(np.allclose(a['floats'].to_ndarray(), np.arange(len(floattypes)*N, dtype=np.float64)))
+                
     def tearDown(self):
         super(IOTest, self).tearDown()
         for f in glob.glob('{}/*'.format(IOTest.io_test_dir)):
