@@ -8,11 +8,17 @@ module RandArray {
   use Map;
   use SipHash;
 
-  proc fillInt(a:[] ?t, const aMin, const aMax) where isIntType(t) {
+  proc fillInt(a:[] ?t, const aMin : int, const aMax : int, const seed : int=-99) where isIntType(t) {
     coforall loc in Locales {
       on loc {
         ref myA = a.localSlice[a.localSubdomain()];
-        fillRandom(myA);
+
+        if seed != -99 {
+            fillRandom(myA, seed);
+        } else {
+            fillRandom(myA);
+        }
+
         [ai in myA] if (ai < 0) { ai = -ai; }
         if (aMax > aMin) {
           const modulus = aMax - aMin;

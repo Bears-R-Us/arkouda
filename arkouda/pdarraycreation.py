@@ -1,6 +1,6 @@
 import numpy as np
 import struct
-from typing import Iterable, Union
+from typing import Iterable, Optional, Union
 from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.dtypes import *
@@ -16,6 +16,8 @@ __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", "arange",
 numericDTypes = frozenset(["bool", "int64", "float64"]) 
 
 RANDINT_TYPES = {'int64','float64'}
+NULL_INT_SEED = -99
+
 
 def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     """
@@ -465,7 +467,8 @@ def linspace(start : int, stop : int, length : int) -> pdarray:
     repMsg = generic_msg("linspace {} {} {}".format(startstr, stopstr, lenstr))
     return create_pdarray(repMsg)
 
-def randint(low : Union[int,float], high : Union[int,float], size : int, dtype=int64) -> pdarray:
+def randint(low : Union[int,float], high : Union[int,float], 
+                            size : int, seed : int=NULL_INT_SEED, dtype=int64) -> pdarray:
     """
     Generate a pdarray of randomized int, float, or bool values in a specified range.
 
@@ -477,6 +480,8 @@ def randint(low : Union[int,float], high : Union[int,float], size : int, dtype=i
         The high value (exclusive for int, inclusive for float) of the range
     size : int
         The length of the returned array
+    seed : Optional[int,float]
+        The seed used to deliver deterministic pdarrays of random values
     dtype : {int64, float64, bool}
         The dtype of the array
 
@@ -526,8 +531,9 @@ def randint(low : Union[int,float], high : Union[int,float], size : int, dtype=i
     lowstr = NUMBER_FORMAT_STRINGS[dtype.name].format(low)
     highstr = NUMBER_FORMAT_STRINGS[dtype.name].format(high)
     sizestr = NUMBER_FORMAT_STRINGS['int64'].format(size)
-    repMsg = generic_msg("randint {} {} {} {}".\
-                         format(sizestr, dtype.name, lowstr, highstr))
+    seedstr = NUMBER_FORMAT_STRINGS['int64'].format(seed)    
+    repMsg = generic_msg("randint {} {} {} {} {}".\
+                         format(sizestr, dtype.name, lowstr, highstr, seedstr))
     return create_pdarray(repMsg)
 
 @typechecked

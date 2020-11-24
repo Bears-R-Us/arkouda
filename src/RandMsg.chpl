@@ -22,7 +22,7 @@ module RandMsg
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (lenStr,dtypeStr,aMinStr,aMaxStr) = payload.decode().splitMsgToTuple(4);
+        var (lenStr,dtypeStr,aMinStr,aMaxStr,aSeedStr) = payload.decode().splitMsgToTuple(5);
         var len = lenStr:int;
         var dtype = str2dtype(dtypeStr);
 
@@ -37,12 +37,13 @@ module RandMsg
                 overMemLimit(8*len);
                 var aMin = aMinStr:int;
                 var aMax = aMaxStr:int;
+                var aSeed = aSeedStr:int;
                 var t1 = Time.getCurrentTime();
                 var e = st.addEntry(rname, len, int);
                 if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
                 
                 t1 = Time.getCurrentTime();
-                fillInt(e.a, aMin, aMax);
+                fillInt(e.a, aMin, aMax, aSeed);
                 if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
             }
             when (DType.UInt8) {

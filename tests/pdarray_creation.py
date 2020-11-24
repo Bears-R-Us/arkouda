@@ -106,6 +106,15 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertEqual("The high parameter must be an integer or float", 
                          cm.exception.args[0])     
     
+    def testRandintSeeds(self):
+        testArray = ak.randint(low=1,high=5,size=10,seed=1)
+        self.assertIsInstance(testArray, ak.pdarray)
+        self.assertEqual(10, len(testArray))
+        self.assertEqual(ak.int64, testArray.dtype)
+        self.assertEqual([10], testArray.shape)
+        
+        self.assertTrue((ak.array([4, 4, 2, 4, 1, 4, 1, 4, 2, 3]) == testArray).all())
+    
     def testUniform(self):
         testArray = ak.uniform(3)
         self.assertIsInstance(testArray, ak.pdarray)
