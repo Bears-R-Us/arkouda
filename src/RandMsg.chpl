@@ -22,7 +22,7 @@ module RandMsg
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (lenStr,dtypeStr,aMinStr,aMaxStr) = payload.decode().splitMsgToTuple(4);
+        var (lenStr,dtypeStr,aMinStr,aMaxStr,seed) = payload.decode().splitMsgToTuple(5);
         var len = lenStr:int;
         var dtype = str2dtype(dtypeStr);
 
@@ -42,7 +42,7 @@ module RandMsg
                 if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
                 
                 t1 = Time.getCurrentTime();
-                fillInt(e.a, aMin, aMax);
+                fillInt(e.a, aMin, aMax, seed);
                 if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
             }
             when (DType.UInt8) {
@@ -54,7 +54,7 @@ module RandMsg
                 if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
                 
                 t1 = Time.getCurrentTime();
-                fillUInt(e.a, aMin, aMax);
+                fillUInt(e.a, aMin, aMax, seed);
                 if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
             }
             when (DType.Float64) {
@@ -66,7 +66,7 @@ module RandMsg
                 if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
                 
                 t1 = Time.getCurrentTime();
-                fillReal(e.a, aMin, aMax);
+                fillReal(e.a, aMin, aMax, seed);
                 if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
             }
             when (DType.Bool) {
@@ -76,7 +76,7 @@ module RandMsg
                 if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
                 
                 t1 = Time.getCurrentTime();
-                fillBool(e.a);
+                fillBool(e.a, seed);
                 if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
             }            
             otherwise {
@@ -96,13 +96,13 @@ module RandMsg
 
     proc randomNormalMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
       var pn = Reflection.getRoutineName();
-      var (lenStr) = payload.decode().splitMsgToTuple(1);
+      var (lenStr, seed) = payload.decode().splitMsgToTuple(2);
       var len = lenStr:int;
       // Result + 2 scratch arrays
       overMemLimit(3*8*len);
       var rname = st.nextName();
       var entry = new shared SymEntry(len, real);
-      fillNormal(entry.a);
+      fillNormal(entry.a, seed);
       st.addEntry(rname, entry);
       return "created " + st.attrib(rname);
     }
