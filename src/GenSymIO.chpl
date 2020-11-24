@@ -234,7 +234,11 @@ module GenSymIO {
     proc readhdfMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string;
         // reqMsg = "readhdf <dsetName> <nfiles> [<json_filenames>]"
-        var (dsetName, nfilesStr, jsonfiles) = payload.decode().splitMsgToTuple(3);
+        var (dsetName, strictFlag, nfilesStr, jsonfiles) = payload.decode().splitMsgToTuple(4);
+        var strictTypes: bool = true;
+        if (strictFlag.toLower() == "false") {
+          strictTypes = false;
+        }
         var nfiles = try! nfilesStr:int;
         var filelist: [0..#nfiles] string;
         try {
@@ -308,8 +312,10 @@ module GenSymIO {
         const bytesize = bytesizes[filedom.first];
         const isSigned = signFlags[filedom.first];
         for (name, sa, dc, bs, sf) in zip(filenames, segArrayFlags, dclasses, bytesizes, signFlags) {
-            if (sa != isSegArray) || (dc != dataclass) || (bs != bytesize) || (sf != isSigned) {
-                return try! "Error: inconsistent dtype in dataset %s of file %s".format(dsetName, name);
+            if ((sa != isSegArray) || (dc != dataclass)) {
+                return "Error: inconsistent dtype in dataset %s of file %s".format(dsetName, name);
+            } else if (strictTypes && ((bs != bytesize) || (sf != isSigned))) {
+                return "Error: inconsistent precision or sign in dataset %s of file %s\nWith strictTypes, mixing of precision and signedness not allowed (set strictTypes=False to suppress)".format(dsetName, name);
             }
         }
         if GenSymIO_DEBUG {
@@ -407,7 +413,11 @@ module GenSymIO {
         // reqMsg = "readAllHdf <ndsets> <nfiles> [<json_dsetname>] | [<json_filenames>]"
         var repMsg: string;
         // May need a more robust delimiter then " | "
-        var (ndsetsStr, nfilesStr, arraysStr) = payload.decode().splitMsgToTuple(3);
+        var (strictFlag, ndsetsStr, nfilesStr, arraysStr) = payload.decode().splitMsgToTuple(4);
+        var strictTypes: bool = true;
+        if (strictFlag.toLower() == "false") {
+          strictTypes = false;
+        }
         var (jsondsets, jsonfiles) = arraysStr.splitMsgToTuple(" | ",2);
         var ndsets = try! ndsetsStr:int;
         var nfiles = try! nfilesStr:int;
@@ -484,9 +494,11 @@ module GenSymIO {
             const bytesize = bytesizes[filedom.first];
             const isSigned = signFlags[filedom.first];
             for (name, sa, dc, bs, sf) in zip(filenames, segArrayFlags, dclasses, bytesizes, signFlags) {
-                if (sa != isSegArray) || (dc != dataclass) || (bs != bytesize) || (sf != isSigned) {
-                    return try! "Error: inconsistent dtype in dataset %s of file %s".format(dsetName, name);
-                }
+              if ((sa != isSegArray) || (dc != dataclass)) {
+                return "Error: inconsistent dtype in dataset %s of file %s".format(dsetName, name);
+              } else if (strictTypes && ((bs != bytesize) || (sf != isSigned))) {
+                return "Error: inconsistent precision or sign in dataset %s of file %s\nWith strictTypes, mixing of precision and signedness not allowed (set strictTypes=False to suppress)".format(dsetName, name);
+              }
             }
             if GenSymIO_DEBUG {
                 writeln("Verified all dtypes across files for dataset ", dsetName);
