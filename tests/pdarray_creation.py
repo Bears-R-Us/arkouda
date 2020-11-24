@@ -280,12 +280,7 @@ class PdarrayCreationTest(ArkoudaTest):
             ak.random_strings_lognormal('2', 0.25, 100)          
         self.assertEqual('type of argument "logmean" must be one of (float, int); got str instead', 
                          cm.exception.args[0])   
-        
-        with self.assertRaises(TypeError) as cm:          
-            ak.random_strings_lognormal(2, 25, 100)          
-        self.assertEqual('type of argument "logstd" must be a float; got int instead', 
-                         cm.exception.args[0])     
-        
+                
         with self.assertRaises(TypeError) as cm:          
             ak.random_strings_lognormal(2, 0.25, '100')          
         self.assertEqual('type of argument "size" must be int; got str instead', 
