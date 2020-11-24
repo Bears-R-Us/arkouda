@@ -27,7 +27,8 @@ def ls_hdf(filename : str) -> str:
     return generic_msg("lshdf {}".format(json.dumps([filename])))
 
 @typechecked
-def read_hdf(dsetName : str, filenames : Union[str,List[str]]) \
+def read_hdf(dsetName : str, filenames : Union[str,List[str]],
+             strictTypes: bool=True) \
           -> Union[pdarray, Strings]:
     """
     Read a single dataset from multiple HDF5 files into an Arkouda
@@ -75,10 +76,12 @@ def read_hdf(dsetName : str, filenames : Union[str,List[str]]) \
     #     return Strings(*rep_msg.split('+'))
     # else:
     #     return create_pdarray(rep_msg)
-    return read_all(filenames, datasets=dsetName)
+    return read_all(filenames, datasets=dsetName, strictTypes=strictTypes)
 
-def read_all(filenames : Union[str,List[str]], datasets : 
-             Optional[Union[str,List[str]]]=None, iterative : bool=False) \
+def read_all(filenames : Union[str,List[str]],
+             datasets : Optional[Union[str,List[str]]]=None,
+             iterative : bool=False,
+             strictTypes: bool=True) \
              -> Union[pdarray, Strings, Mapping[str,Union[pdarray,Strings]]]:
     """
     Read datasets from HDF5 files.
@@ -136,10 +139,10 @@ def read_all(filenames : Union[str,List[str]], datasets :
         if len(nonexistent) > 0:
             raise ValueError("Dataset(s) not found: {}".format(nonexistent))
     if iterative == True: # iterative calls to server readhdf
-        return {dset:read_hdf(dset, filenames) for dset in datasets}
+        return {dset:read_hdf(dset, filenames, strictTypes=strictTypes) for dset in datasets}
     else:  # single call to server readAllHdf
-        rep_msg = generic_msg("readAllHdf {:n} {:n} {} | {}".\
-                format(len(datasets), len(filenames), json.dumps(datasets), 
+        rep_msg = generic_msg("readAllHdf {} {:n} {:n} {} | {}".\
+                format(strictTypes, len(datasets), len(filenames), json.dumps(datasets), 
                        json.dumps(filenames)))
         if ',' in rep_msg:
             rep_msgs = rep_msg.split(' , ')
