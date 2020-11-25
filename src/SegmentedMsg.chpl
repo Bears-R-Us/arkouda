@@ -681,8 +681,6 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var pn = Reflection.getRoutineName();
       var (objtype, segName, valName) = payload.decode().splitMsgToTuple(3);
       var repMsg: string;
-      var x:int;
-      var y:int(32);
 
       // check to make sure symbols defined
       st.check(segName);
@@ -693,8 +691,6 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var nBytes = strings.nBytes;
       var length=strings.getLengths();
       var offsegs = (+ scan length) - length;
-      var startposition:int;
-      var endposition:int;
 
       select (objtype) {
           when "str" {
@@ -708,14 +704,18 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
               var sasval:[0..(nBytes-1)] int;
 
 	      var i:int;
-              for i in 0..(size-1) do {
+              forall i in 0..(size-1) do {
 	        // the start position of ith string in value array
+                var startposition:int;
+                var endposition:int;
                 startposition = offsegs[i];
                 endposition = startposition+length[i]-1;
                 var sasize=length[i]:int(32);
                 ref strArray=strings.values.a[startposition..endposition];
                 var tmparray:[1..sasize] int(32);
                 divsufsort(strArray,tmparray,sasize);
+                var x:int;
+                var y:int(32);
                 for (x, y) in zip(sasval[startposition..endposition], tmparray[1..sasize]) do
                     x = y;
 	      }

@@ -89,7 +89,8 @@ def parse_single_int_array_value(msg : str) -> object:
         else:
             raise ValueError(("unsupported value from server {} {}".\
                               format(mydtype.name, value)))
-    return fields[1]
+    nfields = fields[1].split("\"")
+    return nfields[1]
 
 # class for the pdarray
 class pdarray:

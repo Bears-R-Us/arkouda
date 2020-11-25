@@ -11,13 +11,16 @@ def time_ak_sa( vsize, trials, dtype):
     cfg = ak.get_config()
     Nv = vsize * cfg["numLocales"]
     print("numLocales = {},  num of strings  = {:,}".format(cfg["numLocales"], Nv))
-    v = ak.random_strings_uniform(90000000, 100000000, Nv)
-#    print("All the random strings are as follows")
-#    print(v)    
+#    v = ak.random_strings_uniform(90000000, 100000000, Nv)
+    v = ak.random_strings_uniform(1, 16, Nv)
     c=ak.suffix_array(v)
     print("size of suffix array={}".format(c.bytes.size))    
-#    for k in range(vsize):
-#       print("the {} th suffix array ={}".format(k,c[k]))    
+#    print("All the random strings are as follows")
+    for k in range(vsize):
+       print("the {} th random tring ={}".format(k,v[k]))    
+       print("the {} th suffix array ={}".format(k,c[k]))    
+       print("")
+#    print(v)    
     timings = []
     for _ in range(trials):
         start = time.time()
