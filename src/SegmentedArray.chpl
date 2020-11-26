@@ -676,7 +676,7 @@ module SegmentedArray {
    * convenience for bundling those persistent objects and defining suffix array-relevant
    * operations.
    */
-  class SegArray {
+  class SegSArray {
  
     /**
      * The name of the SymEntry corresponding to the pdarray containing
@@ -1088,7 +1088,7 @@ module SegmentedArray {
       return ranks;
     }
 
-  } // class SegArray
+  } // class SegSArray
 
 
 

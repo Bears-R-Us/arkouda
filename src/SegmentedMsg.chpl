@@ -375,7 +375,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
           }
           when "int" {
               // Make a temporary strings array
-              var arrays = new owned SegArray(args[1], args[2], st);
+              var arrays = new owned SegSArray(args[1], args[2], st);
               // Parse the index
               var idx = args[3]:int;
               // TO DO: in the future, we will force the client to handle this
@@ -691,7 +691,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var nBytes = strings.nBytes;
       var length=strings.getLengths();
       var offsegs = (+ scan length) - length;
-
+      writeln("offsegs=");
+      writeln(offsegs);
       select (objtype) {
           when "str" {
               // To be checked, I am not sure if this formula can estimate the total memory requirement
@@ -745,5 +746,78 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       }
 
   }
+
+  proc segSAFileMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+      var pn = Reflection.getRoutineName();
+//      var (FileName) = payload.decode().splitMsgToTuple(1);
+      var FileName = payload.decode();
+      var repMsg: string;
+
+      var filesize:int(32);
+      var f = open(FileName, iomode.r);
+      var size:int=1;
+      var nBytes = f.size;
+      var length:[0..0] int  =nBytes;
+      var offsegs:[0..0] int =0 ;
+
+      select ("str") {
+          when "str" {
+              // To be checked, I am not sure if this formula can estimate the total memory requirement
+              // Lengths + 2*segs + 2*vals (copied to SymTab)
+              overMemLimit(8*size + 16*size + nBytes);
+
+              //allocate an offset array
+	      var sasoff = offsegs;
+              //allocate an values array
+              var sasval:[0..(nBytes-1)] int;
+
+	      var i:int;
+              forall i in 0..(size-1) do {
+	        // the start position of ith string in value array
+                var startposition:int;
+                var endposition:int;
+                startposition = 0;
+                endposition = nBytes-1;
+                var sasize=nBytes:int(32);
+                var strArray:[startposition..endposition]uint(8);
+                var r = f.reader(kind=ionative);
+                r.read(strArray);
+                var tmparray:[1..sasize] int(32);
+                divsufsort(strArray,tmparray,sasize);
+                var x:int;
+                var y:int(32);
+                for (x, y) in zip(sasval[startposition..endposition], tmparray[1..sasize]) do
+                    x = y;
+	      }
+
+              var segName2 = st.nextName();
+              var valName2 = st.nextName();
+
+      	      var segEntry = new shared SymEntry(sasoff);
+              var valEntry = new shared SymEntry(sasval);
+
+              st.addEntry(segName2, segEntry);
+              st.addEntry(valName2, valEntry);
+              repMsg = 'created ' + st.attrib(segName2) + '+created ' + st.attrib(valName2);
+              return repMsg;
+
+          }
+          otherwise {
+              var errorMsg = notImplementedError(pn, "("+FileName+")");
+              writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError")); 
+              return errorMsg;            
+          }
+      }
+
+  }
+
 }
+
+
+
 

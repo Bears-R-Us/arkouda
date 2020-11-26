@@ -8,7 +8,8 @@ from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
 from arkouda.dtypes import dtype as akdtype
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.strings import Strings
-from arkouda.strings import Pdarrays
+from arkouda.strings import SArrays
+from multipledispatch import dispatch 
 
 __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", "arange",
            "linspace", "randint", "uniform", "standard_normal",
@@ -673,12 +674,13 @@ def random_strings_lognormal(logmean : Union[float, int], logstd : float,
 
 
 
-@typechecked
-def suffix_array( strings : Strings) -> Pdarrays:
+#@typechecked
+@dispatch(Strings) 
+def suffix_array( strings : Strings) -> SArrays:
         """
         Return the suffix arrays of given strings. The size/shape of each suffix
 	arrays is the same as the corresponding strings. 
-	A simple example of suffix array is as follow. Given string "banana$",
+	A simple example of suffix array is as follow. Given a string "banana$",
 	all the suffixes are as follows. 
 	s[0]="banana$"
 	s[1]="anana$"
@@ -718,6 +720,50 @@ def suffix_array( strings : Strings) -> Pdarrays:
                                                         strings.offsets.name,
                                                         strings.bytes.name) 
         repMsg = generic_msg(msg)
-        pdarrays= Pdarrays(*(repMsg.split('+')))
+        pdarrays= SArrays(*(repMsg.split('+')))
         return pdarrays
+@dispatch(str) 
+def suffix_array(filename: str)  -> SArrays:
+        """
+        This function is major used for testing correctness and performance
+        Return the suffix array of given file name's content as a string. 
+	A simple example of suffix array is as follow. Given string "banana$",
+	all the suffixes are as follows. 
+	s[0]="banana$"
+	s[1]="anana$"
+	s[2]="nana$"
+	s[3]="ana$"
+	s[4]="na$"
+	s[5]="a$"
+	s[6]="$"
+	The suffix array of string "banana$"  is the array of indices of sorted suffixes.
+	s[6]="$"
+	s[5]="a$"
+	s[3]="ana$"
+	s[1]="anana$"
+	s[0]="banana$"
+	s[4]="na$"
+	s[2]="nana$"
+	so sa=[6,5,3,1,0,4,2]
 
+        Returns
+        -------
+        pdarray
+            The suffix arrays of the given strings
+
+        See Also
+        --------
+
+        Notes
+        -----
+        
+        Raises
+        ------  
+        RuntimeError
+            Raised if there is a server-side error in executing group request or
+            creating the pdarray encapsulating the return message
+        """
+        msg = "segmentedSAFile {}".format( filename )
+        repMsg = generic_msg(msg)
+        pdarrays= SArrays(*(repMsg.split('+')))
+        return pdarrays

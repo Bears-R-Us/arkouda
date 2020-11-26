@@ -11,7 +11,7 @@ import json
 global verbose
 global pdarrayIterThresh
 
-__all__ = ['Strings','Pdarrays']
+__all__ = ['Strings','SArrays']
 
 class Strings:
     """
@@ -788,13 +788,13 @@ class Strings:
                        pdarray.attach(user_defined_name+'_bytes'))
 
 
-class Pdarrays:
+class SArrays:
     """
     Represents an array of (suffix) arrays whose data resides on the
     arkouda server. The user should not call this class directly;
     rather its instances are created by other arkouda functions. It is
     very similar to Strings and the difference is that its content is 
-    an int arrays instead of strings.
+    int arrays instead of strings.
 
     Attributes
     ----------
@@ -806,6 +806,7 @@ class Pdarrays:
         The number of suffix arrays in the array
     nbytes : int
         The total number of indices in all suffix arrays
+        We have the same number indices as the number of characters/suffixes in strings
     ndim : int
         The rank of the array (currently only rank 1 arrays supported)
     shape : tuple
@@ -817,9 +818,9 @@ class Pdarrays:
         
     Notes
     -----
-    Pdarrays is composed of two pdarrays: (1) offsets, which contains the
+    SArrays is composed of two pdarrays: (1) offsets, which contains the
     starting indices for each string's suffix array  and (2) bytes, which contains the 
-    raw indices of all suffix arrays,no any spliter between the arrays.    
+    indices of all suffix arrays, no any spliter between two index arrays.    
     """
 
     BinOps = frozenset(["==", "!="])
@@ -828,7 +829,7 @@ class Pdarrays:
     def __init__(self, offset_attrib : Union[pdarray,np.ndarray], 
                  bytes_attrib : Union[pdarray,np.ndarray]) -> None:
         """
-        Initializes the Pdarrays instance by setting all instance
+        Initializes the SArrays instance by setting all instance
         attributes, some of which are derived from the array parameters.
         
         Parameters
@@ -836,7 +837,7 @@ class Pdarrays:
         offset_attrib : Union[pdarray, np.ndarray,array]
             the array containing the offsets 
         bytes_attrib : Union[pdarray, np.ndarray,array]
-            the array containing the suffix array values    
+            the array containing the suffix array indices    
             
         Returns
         -------
@@ -872,11 +873,12 @@ class Pdarrays:
             self.shape = self.offsets.shape
         except Exception as e:
             raise ValueError(e)   
+#        maybe we need to change the dtype into int later
         self.dtype = np.str
         self.logger = getArkoudaLogger(name=__class__.__name__)
 
     def __iter__(self):
-        raise NotImplementedError('Strings does not support iteration')
+        raise NotImplementedError('SArrays does not support iteration now')
 
     def __len__(self) -> int:
         return self.shape[0]
@@ -893,16 +895,16 @@ class Pdarrays:
     def __repr__(self) -> str:
         return "array({})".format(self.__str__())
 
-    def _binop(self, other : Pdarrays, op : str) -> pdarray:
+    def _binop(self, other : SArrays, op : str) -> pdarray:
         """
-        Executes the requested binop on this Pdarrays instance and the
-        parameter Pdarrays object and returns the results within
+        Executes the requested binop on this SArrays instance and the
+        parameter SArrays object and returns the results within
         a pdarray object.
 
         Parameters
         ----------
-        other : Pdarrays
-            the other object is a Pdarrays object
+        other : SArrays
+            the other object is a SArrays object
         op : str
             name of the binary operation to be performed 
       
@@ -916,16 +918,16 @@ class Pdarrays:
         ValueError
             Raised if (1) the op is not in the self.BinOps set, or (2) if the
             sizes of this and the other instance don't match, or (3) the other
-            object is not a Pdarrays object
+            object is not a SArrays object
         RuntimeError
             Raised if a server-side error is thrown while executing the
             binary operation
         """
         if op not in self.BinOps:
-            raise ValueError("Pdarrays: unsupported operator: {}".format(op))
-        if isinstance(other, Pdarrays):
+            raise ValueError("SArrays: unsupported operator: {}".format(op))
+        if isinstance(other, SArrays):
             if self.size != other.size:
-                raise ValueError("Pdarrays: size mismatch {} {}".\
+                raise ValueError("SArrays: size mismatch {} {}".\
                                  format(self.size, other.size))
             msg = "segmentedBinopvv {} {} {} {} {} {} {}".format(op,
                                                                  self.objtype,
@@ -942,7 +944,7 @@ class Pdarrays:
                                                               self.objtype,
                                                               json.dumps([other]))
         else:
-            raise ValueError("Pdarrays: {} not supported between Pdarrays and {}"\
+            raise ValueError("SArrays: {} not supported between SArrays and {}"\
                              .format(op, other.__class__.__name__))
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
@@ -983,7 +985,7 @@ class Pdarrays:
                                                                stride)
             repMsg = generic_msg(msg)
             offsets, values = repMsg.split('+')
-            return Pdarrays(offsets, values);
+            return SArrays(offsets, values);
         elif isinstance(key, pdarray):
             kind, _ = translate_np_dtype(key.dtype)
             if kind not in ("bool", "int"):
@@ -997,7 +999,7 @@ class Pdarrays:
                                                          key.name)
             repMsg = generic_msg(msg)
             offsets, values = repMsg.split('+')
-            return Pdarrays(offsets, values)
+            return SArrays(offsets, values)
         else:
             raise TypeError("unsupported pdarray index type {}".format(key.__class__.__name__))
 
@@ -1020,14 +1022,14 @@ class Pdarrays:
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
-    def __add__(self, other : Pdarrays) -> Pdarrays:
+    def __add__(self, other : SArrays) -> SArrays:
         return self.stick(other)
     
 
     def save(self, prefix_path : str, dataset : str='int_array', 
              mode : str='truncate') -> None:
         """
-        Save the Pdarrays object to HDF5. The result is a collection of HDF5 files,
+        Save the SArrays object to HDF5. The result is a collection of HDF5 files,
         one file per locale of the arkouda server, where each filename starts
         with prefix_path. Each locale saves its chunk of the array to its
         corresponding file.
@@ -1037,10 +1039,10 @@ class Pdarrays:
         prefix_path : str
             Directory and filename prefix that all output files share
         dataset : str
-            The name of the Pdarrays dataset to be written, defaults to int_array
+            The name of the SArrays dataset to be written, defaults to int_array
         mode : str {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
-            If 'append', create a new Pdarrays dataset within existing files.
+            If 'append', create a new SArrays dataset within existing files.
 
         Returns
         -------
@@ -1058,9 +1060,9 @@ class Pdarrays:
 
         Notes
         -----
-        Important implementation notes: (1) Pdarrays state is saved as two datasets
+        Important implementation notes: (1) SArrays state is saved as two datasets
         within an hdf5 group, (2) the hdf5 group is named via the dataset parameter, 
-        (3) the hdf5 group encompasses the two pdarrays composing a Pdarrays object:
+        (3) the hdf5 group encompasses the two pdarrays composing a SArrays object:
         segments and values and (4) save logic is delegated to pdarray.save
         """       
         self.bytes.save(prefix_path=prefix_path, 
@@ -1070,7 +1072,7 @@ class Pdarrays:
     def register_helper(cls, offsets, bytes):
         return cls(offsets, bytes)
 
-    def register(self, user_defined_name : str) -> 'Pdarrays':
+    def register(self, user_defined_name : str) -> 'SArrays':
         return self.register_helper(self.offsets.register(user_defined_name+'_offsets'),
                                self.bytes.register(user_defined_name+'_bytes'))
 
@@ -1079,7 +1081,7 @@ class Pdarrays:
         self.bytes.unregister()
 
     @staticmethod
-    def attach(user_defined_name : str) -> 'Pdarrays':
+    def attach(user_defined_name : str) -> 'SArrays':
         return Strings(pdarray.attach(user_defined_name+'_offsets'),
                        pdarray.attach(user_defined_name+'_bytes'))
 
