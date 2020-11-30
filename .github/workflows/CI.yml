@@ -16,6 +16,8 @@ jobs:
         
   mypy:
     runs-on: ubuntu-latest
+    container:
+      image: chapel/chapel:1.23.0
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
