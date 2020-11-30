@@ -391,6 +391,6 @@ class StringTest(ArkoudaTest):
     def test_peel(self):
         run_test_peel(self.strings, self.test_strings, self.delim)
 
-    @pytest.mark.skip(reson="awaiting bug fix.")
+    @pytest.mark.skip(reason="awaiting bug fix.")
     def test_stick(self):
         run_test_stick(self.strings, self.test_strings, self.base_words, self.delim)

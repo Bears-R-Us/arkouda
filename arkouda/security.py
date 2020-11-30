@@ -1,10 +1,11 @@
 import os, platform, secrets, json
 from os.path import expanduser
+from pathlib import Path
 from collections import defaultdict 
 from typeguard import typechecked
 from arkouda import io_util
 
-username_tokenizer = defaultdict(lambda x : x.split('/'))
+username_tokenizer = defaultdict(lambda x : x.split('/')) #type: ignore
 username_tokenizer['Windows'] = lambda x : x.split('\\')
 username_tokenizer['Linux'] = lambda x : x.split('/')
 username_tokenizer['Darwin'] = lambda x : x.split('/')
@@ -48,7 +49,7 @@ def get_home_directory() -> str:
     """
     return expanduser("~")
 
-def get_arkouda_client_directory() -> str:
+def get_arkouda_client_directory() -> Path:
     """
     A platform-independent means of finding path to
     the current user's .arkouda directory where artifacts
@@ -56,8 +57,8 @@ def get_arkouda_client_directory() -> str:
 
     Returns
     -------
-    str
-        String corresponding to the .arkouda directory path
+    Path
+        Path corresponding to the .arkouda directory path
 
     Notes
     -----
@@ -96,7 +97,7 @@ def get_username() -> str:
         u_tokens = \
           username_tokenizer[platform.system()](get_home_directory())
     except KeyError as ke:
-        return EnvironmentError('Unsupported OS: {}'.format(ke))
+        raise EnvironmentError('Unsupported OS: {}'.format(ke))
     return u_tokens[-1]
 
 @typechecked

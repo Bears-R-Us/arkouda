@@ -1,6 +1,7 @@
-import numpy as np
+import numpy as np # type: ignore
+import pandas as pd # type: ignore
 import struct
-from typing import Iterable, Union
+from typing import cast, Iterable, Union
 from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.dtypes import *
@@ -11,11 +12,30 @@ from arkouda.strings import Strings
 
 __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", "arange",
            "linspace", "randint", "uniform", "standard_normal",
-           "random_strings_uniform", "random_strings_lognormal"]
+           "random_strings_uniform", "random_strings_lognormal", "from_series"]
 
 numericDTypes = frozenset(["bool", "int64", "float64"]) 
 
 RANDINT_TYPES = {'int64','float64'}
+
+def from_series(series : pd.Series) -> Union[pdarray,Strings]:
+    """
+    Converts a Pandas Series to an Arkouda pdarray or Strings object.
+    
+    Parameters
+    ----------
+    series : Pandas Series
+    
+    
+    Returns
+    -------
+    Union[pdarray,Strings]
+    """    
+    if series.dtype.name == 'string':
+        n_array = series.to_numpy(dtype=np.str_)
+        return array(n_array)
+    else:
+        return array(series.to_numpy())
 
 def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     """
@@ -85,7 +105,7 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     if a.ndim != 1:
         raise RuntimeError("Only rank-1 pdarrays or ndarrays supported")
     # Check if array of strings
-    if a.dtype.kind == 'U':
+    if a.dtype.kind == 'U' or  'U' in a.dtype.kind:
         encoded = np.array([elem.encode() for elem in a])
         # Length of each string, plus null byte terminator
         lengths = np.array([len(elem) for elem in encoded]) + 1
@@ -116,8 +136,8 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     fmt = ">{:n}{}".format(size, structDtypeCodes[a.dtype.name])
     req_msg = "array {} {:n} ".\
                     format(a.dtype.name, size).encode() + struct.pack(fmt, *a)
-    rep_msg = generic_msg(req_msg, send_bytes=True)
-    return create_pdarray(rep_msg)
+    repMsg = generic_msg(req_msg, send_bytes=True)
+    return create_pdarray(cast(str,repMsg))
 
 def zeros(size : int, dtype : type=np.float64) -> pdarray:
     """
@@ -161,11 +181,11 @@ def zeros(size : int, dtype : type=np.float64) -> pdarray:
                                      format(size.__class__.__name__))
     dtype = akdtype(dtype) # normalize dtype
     # check dtype for error
-    if dtype.name not in numericDTypes:
+    if cast(np.dtype,dtype).name not in numericDTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
     kind, itemsize = translate_np_dtype(dtype)
-    repMsg = generic_msg("create {} {}".format(dtype.name, size))
-    return create_pdarray(repMsg)
+    repMsg = generic_msg("create {} {}".format(cast(np.dtype,dtype).name, size))
+    return create_pdarray(cast(str, repMsg))
 
 def ones(size : int, dtype : type=float64) -> pdarray:
     """
@@ -209,11 +229,11 @@ def ones(size : int, dtype : type=float64) -> pdarray:
                                             format(size.__class__.__name__))
     dtype = akdtype(dtype) # normalize dtype
     # check dtype for error
-    if dtype.name not in numericDTypes:
+    if cast(np.dtype,dtype).name not in numericDTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
     kind, itemsize = translate_np_dtype(dtype)
-    repMsg = generic_msg("create {} {}".format(dtype.name, size))
-    a = create_pdarray(repMsg)
+    repMsg = generic_msg("create {} {}".format(cast(np.dtype,dtype).name, size))
+    a = create_pdarray(cast(str,repMsg))
     a.fill(1)
     return a
 
@@ -386,7 +406,7 @@ def arange(*args) -> pdarray:
         if stride < 0:
             stop = stop + 2
         repMsg = generic_msg("arange {} {} {}".format(start, stop, stride))
-        return create_pdarray(repMsg)
+        return create_pdarray(cast(str,repMsg))
     else:
         raise TypeError("start,stop,stride must be type int {} {} {}".\
                                     format(start,stop,stride))
@@ -463,7 +483,7 @@ def linspace(start : int, stop : int, length : int) -> pdarray:
                         ' can be parsed to an int, but is a {}'.format(ke)))
 
     repMsg = generic_msg("linspace {} {} {}".format(startstr, stopstr, lenstr))
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))
 
 def randint(low : Union[int,float], high : Union[int,float], size : int, dtype=int64, seed : Union[None, int]=None) -> pdarray:
     """
@@ -602,7 +622,7 @@ def standard_normal(size : int, seed : Union[None, int]=None) -> pdarray:
         raise ValueError("The size parameter must be > 0")
     msg = "randomNormal {} {}".format(NUMBER_FORMAT_STRINGS['int64'].format(size), seed)
     repMsg = generic_msg(msg)
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))
 
 @typechecked
 def random_strings_uniform(minlen : int, maxlen : int, size : int, 
@@ -646,7 +666,7 @@ def random_strings_uniform(minlen : int, maxlen : int, size : int,
                  NUMBER_FORMAT_STRINGS['int64'].format(maxlen),
                  seed)
     repMsg = generic_msg(msg)
-    return Strings(*(repMsg.split('+')))
+    return Strings(*(cast(str,repMsg).split('+')))
 
 @typechecked
 def random_strings_lognormal(logmean : Union[float, int], logstd : Union[float, int], 
@@ -700,4 +720,4 @@ def random_strings_lognormal(logmean : Union[float, int], logstd : Union[float, 
                  NUMBER_FORMAT_STRINGS['float64'].format(logstd),
                  seed)
     repMsg = generic_msg(msg)
-    return Strings(*(repMsg.split('+')))
+    return Strings(*(cast(str,repMsg).split('+')))

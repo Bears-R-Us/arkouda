@@ -1,9 +1,9 @@
-from typing import Tuple
+from typing import cast, Tuple
 from typeguard import typechecked
 from arkouda.client import generic_msg
-from arkouda.dtypes import *
-from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
-from arkouda.dtypes import dtype as akdtype
+from arkouda.dtypes import int64 as akint64
+#from arkouda.dtypes import dtype as akdtype
+from arkouda.dtypes import resolve_scalar_dtype, NUMBER_FORMAT_STRINGS
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.groupbyclass import GroupBy
 
@@ -52,16 +52,16 @@ def join_on_eq_with_dt(a1 : pdarray, a2 : pdarray, t1 : pdarray,
         if a1, a2, t1, or t2 dtype is not int64, pred is not 
         'true_dt', 'abs_dt', or 'pos_dt', or result_limit is < 0    
     """
-    if not (a1.dtype == int64):
+    if not (a1.dtype == akint64):
         raise ValueError("a1 must be int64 dtype")
 
-    if not (a2.dtype == int64):
+    if not (a2.dtype == akint64):
         raise ValueError("a2 must be int64 dtype")
 
-    if not (t1.dtype == int64):
+    if not (t1.dtype == akint64):
         raise ValueError("t1 must be int64 dtype")
         
-    if not (t2.dtype == int64):
+    if not (t2.dtype == akint64):
         raise ValueError("t2 must be int64 dtype")
     
     if not (pred in predicates.keys()):
@@ -83,14 +83,14 @@ def join_on_eq_with_dt(a1 : pdarray, a2 : pdarray, t1 : pdarray,
     # pass result into server joinEqWithDT operation
     repMsg = generic_msg("joinEqWithDT {} {} {} {} {} {} {} {} {}".\
                          format(a1.name,
-                                g2.segments.name,
-                                g2.unique_keys.name,
+                                cast(pdarray, g2.segments).name,  # type: ignore
+                                cast(pdarray, g2.unique_keys).name,  # type: ignore
                                 g2.permutation.name,
                                 t1.name,
                                 t2.name,
                                 dtstr, predstr, result_limitstr))
     # create pdarrays for results
-    resIAttr, resJAttr = repMsg.split("+")
+    resIAttr, resJAttr = cast(str,repMsg).split("+")
     resI = create_pdarray(resIAttr)
     resJ = create_pdarray(resJAttr)
     return (resI, resJ)

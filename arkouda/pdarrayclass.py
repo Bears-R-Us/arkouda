@@ -1,18 +1,21 @@
 from __future__ import annotations
-from typing import Tuple, Union
+from typing import cast, Sequence, Tuple, Union
 from typeguard import typechecked
 import json, struct
-import numpy as np
+import numpy as np # type: ignore
 from arkouda.client import generic_msg
-from arkouda.dtypes import *
-from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
+from arkouda.dtypes import dtype, DTypes, resolve_scalar_dtype, structDtypeCodes, \
+     translate_np_dtype, NUMBER_FORMAT_STRINGS
+from arkouda.dtypes import int64 as akint64
+from arkouda.dtypes import str_ as akstr_
+from arkouda.dtypes import bool as akbool
 from arkouda.logger import getArkoudaLogger
 import builtins
 
 __all__ = ["pdarray", "info", "clear", "any", "all", "is_sorted", "sum", "prod", 
            "min", "max", "argmin", "argmax", "mean", "var", "std", "mink", 
-           "maxk", "argmink", "argmaxk",
-           "register_pdarray", "attach_pdarray", "unregister_pdarray"]
+           "maxk", "argmink", "argmaxk", "register_pdarray", "attach_pdarray", 
+           "unregister_pdarray"]
 
 logger = getArkoudaLogger(name='pdarray')    
 
@@ -45,7 +48,7 @@ def parse_single_value(msg : str) -> object:
         return res
     dtname, value = msg.split(maxsplit=1)
     mydtype = dtype(dtname)
-    if mydtype == bool:
+    if mydtype == akbool:
         if value == "True":
             return mydtype.type(True)
         elif value == "False":
@@ -54,7 +57,7 @@ def parse_single_value(msg : str) -> object:
             raise ValueError(("unsupported value from server {} {}".\
                               format(mydtype.name, value)))
     try:
-        if mydtype == str_:
+        if mydtype == akstr_:
             # String value will always be surrounded with double quotes, so remove them
             return mydtype.type(unescape(value[1:-1]))
         return mydtype.type(value)
@@ -82,8 +85,8 @@ class pdarray:
         The number of elements in the array
     ndim : int
         The rank of the array (currently only rank 1 arrays supported)
-    shape : tuple
-        The sizes of each dimension of the array
+    shape : Sequence[int]
+        A list or tuple containing the sizes of each dimension of the array
     itemsize : int
         The size in bytes of each element
     """
@@ -97,7 +100,7 @@ class pdarray:
     __array_priority__ = 1000
 
     def __init__(self, name : str, mydtype : np.dtype, size : int, ndim : int, 
-                 shape: Tuple, itemsize : int) -> None:
+                 shape: Sequence[int], itemsize : int) -> None:
         self.name = name
         self.dtype = dtype(mydtype)
         self.size = size
@@ -195,7 +198,7 @@ class pdarray:
                 raise ValueError("size mismatch {} {}".format(self.size,other.size))
             msg = "binopvv {} {} {}".format(op, self.name, other.name)
             repMsg = generic_msg(msg)
-            return create_pdarray(repMsg)
+            return create_pdarray(cast(str,repMsg))
         # pdarray binop scalar
         dt = resolve_scalar_dtype(other)
         if dt not in DTypes:
@@ -204,7 +207,7 @@ class pdarray:
         msg = "binopvs {} {} {} {}".\
                   format(op, self.name, dt, NUMBER_FORMAT_STRINGS[dt].format(other))
         repMsg = generic_msg(msg)
-        return create_pdarray(repMsg)
+        return create_pdarray(cast(str,repMsg))
 
     # reverse binary operators
     # pdarray binop pdarray: taken care of by binop function
@@ -244,7 +247,7 @@ class pdarray:
                       format(op, dt, NUMBER_FORMAT_STRINGS[dt].format(other), 
                                                                     self.name)
         repMsg = generic_msg(msg)
-        return create_pdarray(repMsg)
+        return create_pdarray(cast(str,repMsg))
 
     # overload + for pdarray, other can be {pdarray, int, float}
     def __add__(self, other):
@@ -359,7 +362,7 @@ class pdarray:
 
     # overload unary~ for pdarray implemented as pdarray^(~0)
     def __invert__(self):
-        if self.dtype == int64:
+        if self.dtype == akint64:
             return self._binop(~0, "^")
         if self.dtype == bool:
             return self._binop(True, "^")
@@ -450,7 +453,7 @@ class pdarray:
             (start,stop,stride) = key.indices(self.size)
             logger.debug(start,stop,stride)
             repMsg = generic_msg("[slice] {} {} {} {}".format(self.name, start, stop, stride))
-            return create_pdarray(repMsg);
+            return create_pdarray(cast(str,repMsg));
         if isinstance(key, pdarray):
             kind, itemsize = translate_np_dtype(key.dtype)
             if kind not in ("bool", "int"):
@@ -458,7 +461,7 @@ class pdarray:
             if kind == "bool" and self.size != key.size:
                 raise ValueError("size mismatch {} {}".format(self.size,key.size))
             repMsg = generic_msg("[pdarray] {} {}".format(self.name, key.name))
-            return create_pdarray(repMsg);
+            return create_pdarray(cast(str,repMsg))
         else:
             raise TypeError("Unhandled key type: {} ({})".format(key, type(key)))
 
@@ -514,19 +517,19 @@ class pdarray:
         generic_msg("set {} {} {}".format(self.name, 
                                         self.dtype.name, self.format_other(value)))
 
-    def any(self) -> bool.type:
+    def any(self) -> akbool:
         """
         Return True iff any element of the array evaluates to True.
         """
         return any(self)
 
-    def all(self) -> bool.type:
+    def all(self) -> np.bool_:
         """
         Return True iff all elements of the array evaluate to True.
         """
         return all(self)
 
-    def is_sorted(self) -> bool.type:
+    def is_sorted(self) -> akbool:
         """
         Return True iff the array is monotonically non-decreasing.
         
@@ -782,7 +785,7 @@ class pdarray:
         # Use struct to interpret bytes as a big-endian numeric array
         fmt = '>{:n}{}'.format(self.size, structDtypeCodes[self.dtype.name])
         # Return a numpy ndarray
-        return np.array(struct.unpack(fmt, rep_msg))
+        return np.array(struct.unpack(fmt, rep_msg)) # type: ignore
 
     def to_cuda(self):
         """
@@ -829,7 +832,7 @@ class pdarray:
         numpy.devicendarray
         """
         try:
-            from numba import cuda
+            from numba import cuda # type: ignore
             if not(cuda.is_available()):
                 raise ImportError(('CUDA is not available. Check for the CUDA toolkit ' +
                                   'and ensure a GPU is installed.'))
@@ -933,8 +936,8 @@ class pdarray:
             json_array = json.dumps([prefix_path])
         except Exception as e:
             raise ValueError(e)
-        return generic_msg("tohdf {} {} {} {} {}".\
-                           format(self.name, dataset, m, json_array, self.dtype))
+        return cast(str, generic_msg("tohdf {} {} {} {} {}".\
+                           format(self.name, dataset, m, json_array, self.dtype)))
 
 
     def register(self, user_defined_name : str) -> pdarray:
@@ -1067,6 +1070,7 @@ class pdarray:
 # creates pdarray object
 #   only after:
 #       all values have been checked by python module and...
+#       server has created pdarray already before this is called
 #       server has created pdarray already befroe this is called
 @typechecked
 def create_pdarray(repMsg : str) -> pdarray:
@@ -1132,8 +1136,11 @@ def info(pda : Union[pdarray, str]) -> str:
         retrieving information about the pdarray
     """
     if isinstance(pda, pdarray):
-        return generic_msg("info {}".format(pda.name))
+        return cast(str,generic_msg("info {}".format(pda.name)))
     elif isinstance(pda, str):
+        return cast(str,generic_msg("info {}".format(pda)))
+    else:
+        raise TypeError("info: must be pdarray or string".format(pda))
         return generic_msg("info {}".format(pda))
 
 def clear() -> None:
@@ -1152,7 +1159,7 @@ def clear() -> None:
     generic_msg("clear")
 
 @typechecked
-def any(pda : pdarray) -> bool.type:
+def any(pda : pdarray) -> akbool:
     """
     Return True iff any element of the array evaluates to True.
     
@@ -1174,10 +1181,10 @@ def any(pda : pdarray) -> bool.type:
         Raised if there's a server-side error thrown
     """
     repMsg = generic_msg("reduction {} {}".format("any", pda.name))
-    return parse_single_value(repMsg)
+    return parse_single_value(cast(str,repMsg))
 
 @typechecked
-def all(pda : pdarray) -> bool.type:
+def all(pda : pdarray) -> np.bool_:
     """
     Return True iff all elements of the array evaluate to True.
 
@@ -1199,10 +1206,10 @@ def all(pda : pdarray) -> bool.type:
         Raised if there's a server-side error thrown
     """
     repMsg = generic_msg("reduction {} {}".format("all", pda.name))
-    return parse_single_value(repMsg)
+    return parse_single_value(cast(str,repMsg))
 
 @typechecked
-def is_sorted(pda : pdarray) -> bool.type:
+def is_sorted(pda : pdarray) -> np.bool_:
     """
     Return True iff the array is monotonically non-decreasing.
     
@@ -1224,7 +1231,7 @@ def is_sorted(pda : pdarray) -> bool.type:
         Raised if there's a server-side error thrown
     """
     repMsg = generic_msg("reduction {} {}".format("is_sorted", pda.name))
-    return parse_single_value(repMsg)
+    return parse_single_value(cast(str,repMsg))
 
 @typechecked
 def sum(pda : pdarray) -> np.float64:
@@ -1249,7 +1256,7 @@ def sum(pda : pdarray) -> np.float64:
         Raised if there's a server-side error thrown
     """
     repMsg = generic_msg("reduction {} {}".format("sum", pda.name))
-    return parse_single_value(repMsg)
+    return parse_single_value(cast(str,repMsg))
 
 @typechecked
 def prod(pda : pdarray) -> np.float64:
@@ -1275,7 +1282,7 @@ def prod(pda : pdarray) -> np.float64:
         Raised if there's a server-side error thrown
     """
     repMsg = generic_msg("reduction {} {}".format("prod", pda.name))
-    return parse_single_value(repMsg)
+    return parse_single_value(cast(str,repMsg))
 
 def min(pda : pdarray) -> Union[np.float64,np.int64]:
     """
@@ -1299,7 +1306,7 @@ def min(pda : pdarray) -> Union[np.float64,np.int64]:
         Raised if there's a server-side error thrown
     """
     repMsg = generic_msg("reduction {} {}".format("min", pda.name))
-    return parse_single_value(repMsg)
+    return parse_single_value(cast(str,repMsg))
 
 @typechecked
 def max(pda : pdarray) -> Union[np.float64,np.int64]:
@@ -1324,7 +1331,7 @@ def max(pda : pdarray) -> Union[np.float64,np.int64]:
         Raised if there's a server-side error thrown
     """
     repMsg = generic_msg("reduction {} {}".format("max", pda.name))
-    return parse_single_value(repMsg)
+    return parse_single_value(cast(str,repMsg))
 
 @typechecked
 def argmin(pda : pdarray) -> np.int64:
@@ -1349,7 +1356,7 @@ def argmin(pda : pdarray) -> np.int64:
         Raised if there's a server-side error thrown
     """
     repMsg = generic_msg("reduction {} {}".format("argmin", pda.name))
-    return parse_single_value(repMsg)
+    return parse_single_value(cast(str,repMsg))
 
 @typechecked
 def argmax(pda : pdarray) -> np.int64:
@@ -1374,8 +1381,7 @@ def argmax(pda : pdarray) -> np.int64:
         Raised if there's a server-side error thrown
     """
     repMsg = generic_msg("reduction {} {}".format("argmax", pda.name))
-    return parse_single_value(repMsg)
-
+    return parse_single_value(cast(str,repMsg))
 
 @typechecked
 def mean(pda : pdarray) -> np.float64:
@@ -1549,7 +1555,7 @@ def mink(pda : pdarray, k : int) -> pdarray:
         raise ValueError("must be a non-empty pdarray of type int or float")
 
     repMsg = generic_msg("mink {} {} {}".format(pda.name, k, False))
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))
 
 @typechecked
 def maxk(pda : pdarray, k : int) -> pdarray:
@@ -1602,7 +1608,7 @@ def maxk(pda : pdarray, k : int) -> pdarray:
         raise ValueError("must be a non-empty pdarray of type int or float")
 
     repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, False))
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))
 
 @typechecked
 def argmink(pda : pdarray, k : int) -> pdarray:
@@ -1654,7 +1660,7 @@ def argmink(pda : pdarray, k : int) -> pdarray:
         raise ValueError("must be a non-empty pdarray of type int or float")
 
     repMsg = generic_msg("mink {} {} {}".format(pda.name, k, True))
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))
 
 @typechecked
 def argmaxk(pda : pdarray, k : int) -> pdarray:
@@ -1704,7 +1710,8 @@ def argmaxk(pda : pdarray, k : int) -> pdarray:
         raise ValueError("must be a non-empty pdarray of type int or float")
 
     repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, True))
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))
+
 
 @typechecked
 def register_pdarray(pda : Union[str,pdarray], user_defined_name : str) -> pdarray:
@@ -1754,12 +1761,12 @@ def register_pdarray(pda : Union[str,pdarray], user_defined_name : str) -> pdarr
     if isinstance(pda, pdarray):
         repMsg = generic_msg("register {} {}".\
                              format(pda.name, user_defined_name))
-        return create_pdarray(repMsg)
+        return create_pdarray(cast(str,repMsg))
 
     if isinstance(pda, str):
         repMsg = generic_msg("register {} {}".\
                              format(pda, user_defined_name))        
-        return create_pdarray(repMsg)
+        return create_pdarray(cast(str,repMsg))
 
 
 @typechecked
@@ -1803,7 +1810,7 @@ def attach_pdarray(user_defined_name : str) -> pdarray:
     >>> ak.unregister_pdarray(b)
     """
     repMsg = generic_msg("attach {}".format(user_defined_name))
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))
 
 
 @typechecked

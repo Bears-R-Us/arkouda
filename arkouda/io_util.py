@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Dict, Mapping
 
 def get_directory(path : str) -> Path:
     '''
@@ -55,7 +55,7 @@ def write_line_to_file(path : str, line : str) -> None:
         f.write(''.join([line,'\n']))
 
 def delimited_file_to_dict(path : str, 
-                      delimiter : str=',') -> Mapping[str,str]: 
+                      delimiter : str=',') -> Dict[str,str]: 
     """
     Returns a dictionary populated by lines from a file where 
     the first delimited element of each line is the key and
@@ -79,7 +79,7 @@ def delimited_file_to_dict(path : str,
     UnsupportedOperation 
         Raised if there's an error in reading the file
     """
-    values : Mapping[str,str] = {}
+    values : Dict[str,str] = {}
     
     with open(path,'a+') as f:
         f.seek(0)
