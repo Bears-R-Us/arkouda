@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import cast, Tuple
 import numpy as np # type: ignore
 import builtins
 
@@ -63,27 +63,27 @@ def translate_np_dtype(dt: np.dtype) -> Tuple[builtins.str, int]:
     kind = trans[dt.kind]
     return kind, dt.itemsize
 
-def resolve_scalar_dtype(val : object) -> str:
+def resolve_scalar_dtype(val : object) -> str: # type: ignore
     """
     Try to infer what dtype arkouda_server should treat val as.
     """
     # Python bool or np.bool
     if isinstance(val, builtins.bool) or (hasattr(val, 'dtype') \
-                                and val.dtype.kind == 'b'):
+                                and cast(np.bool,val).dtype.kind == 'b'):
         return 'bool'
     # Python int or np.int* or np.uint*
     elif isinstance(val, int) or (hasattr(val, 'dtype') and \
-                                  val.dtype.kind in 'ui'):
+                                  cast(np.uint,val).dtype.kind in 'ui'):
         return 'int64'
     # Python float or np.float*
     elif isinstance(val, float) or (hasattr(val, 'dtype') and \
-                                    val.dtype.kind == 'f'):
+                                    cast(np.float, val).dtype.kind == 'f'):
         return 'float64'
     elif isinstance(val, builtins.str) or isinstance(val, np.str):
         return 'str'
     # Other numpy dtype
     elif hasattr(val, 'dtype'):
-        return val.dtype.name
+        return cast(np.dtype, val).dtype.name
     # Other python type
     else:
         return builtins.str(type(val))
