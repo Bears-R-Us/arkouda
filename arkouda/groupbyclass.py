@@ -1,6 +1,8 @@
 from __future__ import annotations
-from typing import List, Tuple, Union
-import numpy as np
+from typing import cast, List, Sequence, Tuple, Union, TYPE_CHECKING
+if TYPE_CHECKING:
+    from arkouda.categorical import Categorical
+import numpy as np # type: ignore
 from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
@@ -51,54 +53,60 @@ class GroupBy:
     Reductions = frozenset(['sum', 'prod', 'mean',
                             'min', 'max', 'argmin', 'argmax',
                             'nunique', 'any', 'all'])
-    def __init__(self, keys : List[Union[pdarray,np.int64,Strings]], 
+    def __init__(self, keys : Union[pdarray,Strings,'Categorical',List[Union[pdarray,np.int64,Strings]]], 
                 assume_sorted : bool=False, hash_strings : bool=True) -> None:
+        from arkouda.categorical import Categorical
         self.logger = getArkoudaLogger(name=self.__class__.__name__)
         self.assume_sorted = assume_sorted
         self.hash_strings = hash_strings
-        self.keys = keys
+        self.keys : Union[pdarray,Strings,Categorical]
+
         if isinstance(keys, pdarray):
+            self.keys = cast(pdarray, keys)
             self.nkeys = 1
-            self.size = keys.size
+            self.size = cast(int, keys.size)
             if assume_sorted:
-                self.permutation = arange(self.size)
+                self.permutation = cast(pdarray, arange(self.size))
             else:
-                self.permutation = argsort(keys)
-        # for Strings or Categorical
-        elif hasattr(keys, "group"):
+                self.permutation = cast(pdarray, argsort(keys))
+        elif hasattr(keys, "group"): # for Strings or Categorical
             self.nkeys = 1
-            self.size = keys.size
+            self.keys = cast(Union[Strings,Categorical],keys)
+            self.size = cast(int, self.keys.size) # type: ignore
             if assume_sorted:
-                self.permutation = arange(self.size)
+                self.permutation = cast(pdarray,arange(self.size))
             else:
-                self.permutation = keys.group()
+                self.permutation = cast(Union[Strings, Categorical],keys).group()
         else:
+            self.keys = cast(Union[pdarray, Strings, Categorical],keys)
             self.nkeys = len(keys)
-            self.size = keys[0].size
+            self.size = cast(int,keys[0].size) # type: ignore
             for k in keys:
                 if k.size != self.size:
                     raise ValueError("Key arrays must all be same size")
             if assume_sorted:
-                self.permutation = arange(self.size)
+                self.permutation = cast(pdarray, arange(self.size))
             else:
-                self.permutation = coargsort(keys)
+                self.permutation = cast(pdarray, coargsort(cast(Sequence[pdarray],keys)))
             
         # self.permuted_keys = self.keys[self.permutation]
         self.find_segments()       
             
     def find_segments(self) -> None:
+        from arkouda.categorical import Categorical
         cmd = "findSegments"
+
         if self.nkeys == 1:
             # for Categorical
-            if hasattr(self.keys, 'segments') and self.keys.segments is not None:
-                self.unique_keys = self.keys.categories
-                self.segments = self.keys.segments
+            if hasattr(self.keys, 'segments') and cast(Categorical, self.keys).segments is not None:
+                self.unique_keys = cast(Categorical, self.keys).categories
+                self.segments = cast(pdarray, cast(Categorical, self.keys).segments)
                 return
             else:
                 mykeys = [self.keys]            
         else:
-            mykeys = self.keys
-        keyobjs = [] # needed to maintain obj refs esp for h1 and h2 in the strings case
+            mykeys = cast(List[pdarray], self.keys) # type: ignore
+        keyobjs : List[Union[pdarray,Strings,'Categorical']] = [] # needed to maintain obj refs esp for h1 and h2 in the strings case
         keynames = []
         keytypes = []
         effectiveKeys = self.nkeys
@@ -118,8 +126,8 @@ class GroupBy:
             # for Categorical
             elif hasattr(k, 'codes'):
                 keyobjs.append(k)
-                keynames.append(k.codes.name)
-                keytypes.append(k.codes.objtype)
+                keynames.append(cast(Categorical,k).codes.name)
+                keytypes.append(cast(Categorical,k).codes.objtype)
             elif isinstance(k, pdarray):
                 keyobjs.append(k)
                 keynames.append(k.name)
@@ -129,15 +137,15 @@ class GroupBy:
                                              effectiveKeys,
                                              ' '.join(keynames),
                                              ' '.join(keytypes))
-        repMsg = generic_msg(reqMsg)
-        segAttr, uniqAttr = repMsg.split("+")
+        repMsg = generic_msg(message=cast(str,reqMsg))
+        segAttr, uniqAttr = cast(str,repMsg).split("+")
         self.logger.debug('{},{}'.format(segAttr, uniqAttr))
-        self.segments = create_pdarray(segAttr)
-        unique_key_indices = create_pdarray(uniqAttr)
+        self.segments = cast(pdarray, create_pdarray(repMsg=cast(str,segAttr)))
+        unique_key_indices = create_pdarray(repMsg=cast(str,uniqAttr))
         if self.nkeys == 1:
-            self.unique_keys = self.keys[unique_key_indices]
+            self.unique_keys = cast(List[Union[pdarray,Strings]], self.keys[unique_key_indices])
         else:
-            self.unique_keys = [k[unique_key_indices] for k in self.keys]
+            self.unique_keys = cast(List[Union[pdarray,Strings]], [k[unique_key_indices] for k in self.keys])
 
 
     def count(self) -> Tuple[List[Union[pdarray,Strings]],pdarray]:
@@ -158,8 +166,8 @@ class GroupBy:
         
         '''
         cmd = "countReduction"
-        reqMsg = "{} {} {}".format(cmd, self.segments.name, self.size)
-        repMsg = generic_msg(reqMsg)
+        reqMsg = "{} {} {}".format(cmd, cast(pdarray, self.segments).name, self.size)
+        repMsg = cast(str, generic_msg(reqMsg))
         self.logger.debug(repMsg)
         return self.unique_keys, create_pdarray(repMsg)
     
@@ -202,18 +210,19 @@ class GroupBy:
         if self.assume_sorted:
             permuted_values = values
         else:
-            permuted_values = values[self.permutation]
+            permuted_values = values[cast(pdarray, self.permutation)]
         cmd = "segmentedReduction"
+
         reqMsg = "{} {} {} {} {}".format(cmd,
                                          permuted_values.name,
                                          self.segments.name,
                                          operator,
                                          skipna)
-        repMsg = generic_msg(reqMsg)
+        repMsg = cast(str, generic_msg(reqMsg))
         self.logger.debug(repMsg)
         if operator.startswith('arg'):
             return (self.unique_keys, 
-                              self.permutation[create_pdarray(repMsg)])
+                              cast(pdarray, self.permutation[create_pdarray(repMsg)]))
         else:
             return self.unique_keys, create_pdarray(repMsg)
 

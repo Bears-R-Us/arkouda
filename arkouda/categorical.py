@@ -1,13 +1,15 @@
 from __future__ import annotations
+from typing import cast, List
+import numpy as np # type: ignore
+from typeguard import typechecked
 from arkouda.strings import Strings
 from arkouda.pdarrayclass import pdarray
 from arkouda.groupbyclass import GroupBy
 from arkouda.pdarraycreation import zeros, zeros_like, arange
-from arkouda.dtypes import int64, resolve_scalar_dtype
+from arkouda.dtypes import resolve_scalar_dtype
+from arkouda.dtypes import int64 as akint64
 from arkouda.sorting import argsort
 from arkouda.pdarraysetops import unique, concatenate, in1d
-import numpy as np
-from typeguard import typechecked
 
 __all__ = ['Categorical']
 
@@ -55,9 +57,9 @@ class Categorical:
             self.codes = kwargs['codes']
             self.categories = kwargs['categories']            
             if 'permutation' in kwargs:
-                self.permutation = kwargs['permutation']
+                self.permutation = cast(pdarray, kwargs['permutation'])
             if 'segments' in kwargs:
-                self.segments = kwargs['segments']
+                self.segments = cast(pdarray,kwargs['segments'])
         else:
             # Typical initialization, called with values
             if not isinstance(values, Strings):
@@ -65,10 +67,10 @@ class Categorical:
                                  "Strings not yet supported"))
             g = GroupBy(values)
             self.categories = g.unique_keys
-            self.codes = zeros(values.size, dtype=int64)
-            self.codes[g.permutation] = \
+            self.codes = zeros(values.size, dtype=np.int64)
+            self.codes[cast(pdarray, g.permutation)] = \
                                 g.broadcast(arange(self.categories.size))
-            self.permutation = g.permutation
+            self.permutation = cast(pdarray, g.permutation)
             self.segments = g.segments
         # Always set these values
         self.size = self.codes.size
@@ -108,7 +110,7 @@ class Categorical:
             Raised if codes is not a pdarray of int64 objects or if
             categories is not a Strings object
         """
-        if codes.dtype != int64:
+        if codes.dtype != akint64:
             raise TypeError("Codes must be pdarray of int64")
         return cls(None, codes=codes, categories=categories, 
                             permutation=permutation, segments=segments)
@@ -263,7 +265,7 @@ class Categorical:
         """
         g = GroupBy(self.codes)
         idx = self.categories[g.unique_keys]
-        newvals = zeros(self.codes.size, int64)
+        newvals = zeros(self.codes.size, akint64)
         newvals[g.permutation] = g.broadcast(arange(idx.size))
         return Categorical.from_codes(newvals, idx, permutation=g.permutation, 
                                       segments=g.segments)
@@ -368,12 +370,12 @@ class Categorical:
         return categoriesendswith[self.codes]
 
     def in1d(self, test):
-        __doc__ = in1d.__doc__
+        #__doc__ = in1d.__doc__
         categoriesisin = in1d(self.categories, test)
         return categoriesisin[self.codes]
 
     def unique(self) -> Categorical:
-        __doc__ = unique.__doc__
+        #__doc__ = unique.__doc__
         return Categorical.from_codes(arange(self.categories.size), 
                                       self.categories)
 
@@ -408,7 +410,7 @@ class Categorical:
             return self.permutation
 
     def argsort(self):
-        __doc__ = argsort.__doc__
+        #__doc__ = argsort.__doc__
         idxperm = argsort(self.categories)
         inverse = zeros_like(idxperm)
         inverse[idxperm] = arange(idxperm.size)
@@ -416,7 +418,7 @@ class Categorical:
         return argsort(newvals)
 
     def sort(self):
-        __doc__ = sort.__doc__
+        #__doc__ = sort.__doc__
         idxperm = argsort(self.categories)
         inverse = zeros_like(idxperm)
         inverse[idxperm] = arange(idxperm.size)
@@ -424,14 +426,14 @@ class Categorical:
         return Categorical.from_codes(newvals, self.categories[idxperm])
     
     @typechecked
-    def merge(self, others : [Categorical]) -> Categorical:
+    def merge(self, others : List[Categorical]) -> Categorical:
         """
         Merge this Categorical with other Categorical objects in the array, 
         concatenating the arrays and synchronizing the categories.
 
         Parameters
         ----------
-        others : [Categorical]
+        others : List[Categorical]
             The Categorical arrays to concatenate and merge with this one
 
         Returns
@@ -457,17 +459,17 @@ class Categorical:
             if not isinstance(c, Categorical):
                 raise TypeError(("Categorical: can only merge/concatenate " +
                                 "with other Categoricals"))
-            if (self.categories.size != other.categories.size) or not \
-                                    (self.categories == other.categories).all():
+            if (self.categories.size != c.categories.size) or not \
+                                    (self.categories == c.categories).all():
                 samecategories = False
         if samecategories:
-            newvals = concatenate([self.codes] + [o.codes for o in others])
+            newvals = cast(pdarray, concatenate([self.codes] + [o.codes for o in others]))
             return Categorical.from_codes(newvals, self.categories)
         else:
-            g = ak.GroupBy(concatenate([self.categories] + \
+            g = GroupBy(concatenate([self.categories] + \
                                        [o.categories for o in others]))
             newidx = g.unique_keys
-            wherediditgo = zeros(newidx.size, dtype=int64)
+            wherediditgo = zeros(newidx.size, dtype=akint64)
             wherediditgo[g.permutation] = arange(newidx.size)
             idxsizes = np.array([self.categories.size] + \
                                 [o.categories.size for o in others])
@@ -476,23 +478,3 @@ class Categorical:
                                     + [o.codes for o in others], idxoffsets)])
             newvals = wherediditgo[oldvals]
             return Categorical.from_codes(newvals, newidx)
-    #     msg = "segmentedMerge {} {} {} {} {} {}".\
-    #                                 format(self.categories.objtype,
-    #                                 self.categories.offsets.name,
-    #                                 self.categories.bytes.name,
-    #                                 other.categories.objtype,
-    #                                 other.categories.offsets.name,
-    #                                 other.categories.bytes.name)
-    #     repMsg = generic_msg(msg)
-    #     perm_attrib, seg_attrib, val_attrib = repMsg.split('+')
-    #     perm = create_pdarray(perm_attrib)
-    #     categories = Strings(seg_attrib, val_attrib)
-    # #     return create_pdarray(repMsg)
-        
-    # # def merge(self, other):
-    # #     perm = self.argmerge(other)
-    # #     categories = concatenate((self.categories, other.categories))[perm]
-    #     codes = zeros(self.size + other.size, int64)
-    #     codes[:self.size] = perm[self.codes]
-    #     codes[self.size:] = perm[other.codes + self.categories.size]
-    #     return Categorical(codes, categories)

@@ -1,6 +1,6 @@
 from typeguard import typechecked
 import json, os
-from typing import List, Mapping, Optional, Union
+from typing import cast, Dict, List, Mapping, Optional, Union
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.strings import Strings
@@ -24,7 +24,7 @@ def ls_hdf(filename : str) -> str:
     str
         The string output of `h5ls <filename>` from the server
     """
-    return generic_msg("lshdf {}".format(json.dumps([filename])))
+    return cast(str,generic_msg("lshdf {}".format(json.dumps([filename]))))
 
 @typechecked
 def read_hdf(dsetName : str, filenames : Union[str,List[str]],
@@ -82,7 +82,8 @@ def read_hdf(dsetName : str, filenames : Union[str,List[str]],
     #     return Strings(*rep_msg.split('+'))
     # else:
     #     return create_pdarray(rep_msg)
-    return read_all(filenames, datasets=dsetName, strictTypes=strictTypes)
+    return cast(Union[pdarray, Strings], 
+                read_all(filenames, datasets=dsetName, strictTypes=strictTypes))
 
 def read_all(filenames : Union[str,List[str]],
              datasets : Optional[Union[str,List[str]]]=None,
@@ -158,18 +159,18 @@ def read_all(filenames : Union[str,List[str]],
                 format(strictTypes, len(datasets), len(filenames), json.dumps(datasets), 
                        json.dumps(filenames)))
         if ',' in rep_msg:
-            rep_msgs = rep_msg.split(' , ')
-            d = dict()
+            rep_msgs = cast(str,rep_msg).split(' , ')
+            d : Dict[str,Union[pdarray,Strings]] = dict()
             for dset, rm in zip(datasets, rep_msgs):
-                    if('+' in rm): #String
-                        d[dset]=Strings(*rm.split('+'))
-                    else:
-                        d[dset]=create_pdarray(rm)
+                if('+' in cast(str,rm)): #String
+                    d[dset]=Strings(*cast(str,rm).split('+'))
+                else:
+                    d[dset]=create_pdarray(cast(str,rm))
             return d
         elif '+' in rep_msg:
-            return Strings(*rep_msg.split('+'))
+            return Strings(*cast(str,rep_msg).split('+'))
         else:
-            return create_pdarray(rep_msg)
+            return create_pdarray(cast(str,rep_msg))
 
 @typechecked
 def load(path_prefix : str, dataset : str='array') -> Union[pdarray,Strings]:
@@ -185,8 +186,8 @@ def load(path_prefix : str, dataset : str='array') -> Union[pdarray,Strings]:
 
     Returns
     -------
-    pdarray or Strings
-        The pdarray or Strings object that was previously saved
+    Union[pdarray, Strings]
+        The pdarray or Strings that was previously saved
 
     Raises
     ------
@@ -308,20 +309,23 @@ def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : 
     <columns> as new datasets to existing files. If the wrong number of files
     is present or dataset names already exist, a RuntimeError is raised.
     """
-    if names is not None and len(names) != len(columns):
-        raise ValueError("Number of names does not match number of columns")
+    if names is not None:
+        if len(names) != len(columns):
+            raise ValueError("Number of names does not match number of columns")
+        else:
+            datasetNames = names
     if isinstance(columns, dict):
-        pdarrays = columns.values()
+        pdarrays = list(columns.values())
         if names is None:
-            names = columns.keys()
+            datasetNames = list(columns.keys())
     elif isinstance(columns, list):
-        pdarrays = columns
+        pdarrays = cast(List[pdarray],columns)
         if names is None:
-            names = range(len(columns))
+            datasetNames = [str(column) for column in range(len(columns))]
     if (mode.lower() not in 'append') and (mode.lower() not in 'truncate'):
         raise ValueError("Allowed modes are 'truncate' and 'append'")
     first_iter = True
-    for arr, name in zip(pdarrays, names):
+    for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
         # Append all pdarrays to existing files as new datasets EXCEPT the first one, and only if user requests truncation
         if mode.lower() not in 'append' and first_iter:
             arr.save(prefix_path=prefix_path, dataset=name, mode='truncate')

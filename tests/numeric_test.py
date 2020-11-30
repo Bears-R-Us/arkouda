@@ -1,5 +1,6 @@
 import numpy as np
 from context import arkouda as ak
+from arkouda.dtypes import str as akstr
 from base_test import ArkoudaTest
 
 """
@@ -16,12 +17,12 @@ class NumericTest(ArkoudaTest):
         roundtripable = set(((ak.bool, ak.bool),
                          (ak.int64, ak.int64),
                          (ak.int64, ak.float64),
-                         (ak.int64, ak.str),
+                         (ak.int64, akstr),
                          (ak.float64, ak.float64),
-                         (ak.float64, ak.str),
+                         (ak.float64, akstr),
                          (ak.uint8, ak.int64),
                          (ak.uint8, ak.float64),
-                         (ak.uint8, ak.str)))
+                         (ak.uint8, akstr)))
         for t1, orig in arrays.items():
             for t2 in ak.DTypes:
                 t2 = ak.dtype(t2)
@@ -137,10 +138,8 @@ class NumericTest(ArkoudaTest):
             ak.value_counts(pda) 
         self.assertEqual('Error: unique: float64 not implemented', 
                         cm.exception.args[0])    
-        
-        with self.assertRaises(TypeError) as cm:
+
+        with self.assertRaises(TypeError) as cm:  
             ak.value_counts([0]) 
         self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
                         cm.exception.args[0])   
-        
-            
