@@ -272,6 +272,42 @@ make test-all
 For more details regarding Arkouda testing, please consult the Python test [README](tests/README.md) and Chapel test
 [README](test/README.md), respectively.
 
+## Type Checking in Arkouda
+
+Both static and runtime type checking are becoming increasingly popular in Python, especially for large Python code bases 
+such as those found at [dropbox](https://dropbox.tech/application/our-journey-to-type-checking-4-million-lines-of-python). 
+Arkouda uses [mypy](https://mypy.readthedocs.io/en/stable/) for static type checking and [typeguard](https://typeguard.readthedocs.io/en/latest/) 
+for runtime type checking.
+
+Enabling runtime as well as static type checking in Python starts with adding [type hints](https://www.python.org/dev/peps/pep-0484/), 
+as shown below to a method signature:
+
+```
+def connect(server : str="localhost", port : int=5555, timeout : int=0, 
+                           access_token : str=None, connect_url=None) -> None:
+```
+
+mypy static type checking can be invoked either directly via the mypy command or via make:
+
+```
+$ mypy arkouda
+Success: no issues found in 16 source files
+$ make mypy
+python3 -m mypy arkouda
+Success: no issues found in 16 source files
+```
+
+Runtime type checking is enabled at the Python method level by annotating the method if interest with the @typechecked decorator, an 
+example of which is shown below:
+
+```
+@typechecked
+def save(self, prefix_path : str, dataset : str='array', mode : str='truncate') -> str:
+```
+
+Type checking in Arkouda is implemented on an "opt-in" basis. Accordingly, Arkouda continues to support [duck typing](https://en.wikipedia.org/wiki/Duck_typing) for parts of the Arkouda API where type checking is too confining to be useful. As detailed above, both runtime and static 
+type checking require type hints. Consequently, to opt-out of type checking, simply leave type hints out of any method declarations where duck typing is desired.
+
 ## Building the Arkouda documentation
 
 First ensure that all Python doc dependencies including sphinx and sphinx extensions have been installed as detailed 
