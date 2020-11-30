@@ -1,5 +1,5 @@
 import numpy as np # type: ignore
-import pandas as pd
+import pandas as pd # type: ignore
 import struct
 from typing import cast, Iterable, Union
 from typeguard import typechecked
