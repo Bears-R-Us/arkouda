@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from collections import deque
 from base_test import ArkoudaTest
 from context import arkouda as ak
@@ -302,3 +303,28 @@ class PdarrayCreationTest(ArkoudaTest):
             
         self.assertEqual('Only rank-1 pdarrays or ndarrays supported', 
                          cm.exception.args[0])
+        
+    def test_from_series(self):
+        series = pd.Series(['a', 'b', 'c', 'd', 'e'], dtype="string")
+        strings = ak.from_series(series)
+        
+        self.assertIsInstance(strings, ak.Strings)
+        self.assertEqual(5, len(series))
+        
+        series = pd.Series(np.random.randint(0,10,10))
+        p_array = ak.from_series(series)
+
+        self.assertIsInstance(p_array,ak.pdarray)
+        self.assertEqual(np.int64, p_array.dtype)
+        
+        series = pd.Series(np.random.uniform(low=0.0,high=1.0,size=10))
+        p_array = ak.from_series(series)
+
+        self.assertIsInstance(p_array,ak.pdarray)
+        self.assertEqual(np.float64, p_array.dtype)       
+        
+        series = pd.Series(np.random.choice([True, False],size=10))
+        p_array = ak.from_series(series)
+
+        self.assertIsInstance(p_array,ak.pdarray)
+        self.assertEqual(bool, p_array.dtype)         
