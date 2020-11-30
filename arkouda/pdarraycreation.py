@@ -485,7 +485,7 @@ def linspace(start : int, stop : int, length : int) -> pdarray:
     repMsg = generic_msg("linspace {} {} {}".format(startstr, stopstr, lenstr))
     return create_pdarray(cast(str,repMsg))
 
-def randint(low : Union[int,float], high : Union[int,float], size : int, dtype=int64) -> pdarray:
+def randint(low : Union[int,float], high : Union[int,float], size : int, dtype=int64, seed : Union[None, int]=None) -> pdarray:
     """
     Generate a pdarray of randomized int, float, or bool values in a specified range.
 
@@ -546,12 +546,12 @@ def randint(low : Union[int,float], high : Union[int,float], size : int, dtype=i
     lowstr = NUMBER_FORMAT_STRINGS[dtype.name].format(low)
     highstr = NUMBER_FORMAT_STRINGS[dtype.name].format(high)
     sizestr = NUMBER_FORMAT_STRINGS['int64'].format(size)
-    repMsg = generic_msg("randint {} {} {} {}".\
-                         format(sizestr, dtype.name, lowstr, highstr))
-    return create_pdarray(cast(str,repMsg))
+    repMsg = generic_msg("randint {} {} {} {} {}".\
+                         format(sizestr, dtype.name, lowstr, highstr, seed))
+    return create_pdarray(repMsg)
 
 @typechecked
-def uniform(size : int, low : float=0.0, high : float=1.0) -> pdarray:
+def uniform(size : int, low : float=0.0, high : float=1.0, seed: Union[None, int]=None) -> pdarray:
     """
     Generate a pdarray with uniformly distributed random values 
     in a specified range.
@@ -583,11 +583,11 @@ def uniform(size : int, low : float=0.0, high : float=1.0) -> pdarray:
     >>> ak.uniform(3)
     array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])
     """
-    return randint(low=low, high=high, size=size, dtype='float64')
+    return randint(low=low, high=high, size=size, dtype='float64', seed=seed)
 
     
 @typechecked
-def standard_normal(size : int) -> pdarray:
+def standard_normal(size : int, seed : Union[None, int]=None) -> pdarray:
     """
     Draw real numbers from the standard normal distribution.
 
@@ -620,13 +620,13 @@ def standard_normal(size : int) -> pdarray:
     """
     if size < 0:
         raise ValueError("The size parameter must be > 0")
-    msg = "randomNormal {}".format(NUMBER_FORMAT_STRINGS['int64'].format(size))
+    msg = "randomNormal {} {}".format(NUMBER_FORMAT_STRINGS['int64'].format(size), seed)
     repMsg = generic_msg(msg)
     return create_pdarray(cast(str,repMsg))
 
 @typechecked
 def random_strings_uniform(minlen : int, maxlen : int, size : int, 
-                           characters : str='uppercase') -> Strings:
+                           characters : str='uppercase', seed : Union[None, int]=None) -> Strings:
     """
     Generate random strings with lengths uniformly distributed between 
     minlen and maxlen, and with characters drawn from a specified set.
@@ -659,17 +659,19 @@ def random_strings_uniform(minlen : int, maxlen : int, size : int,
     if minlen < 0 or maxlen < minlen or size < 0:
         raise ValueError(("Incompatible arguments: minlen < 0, maxlen < minlen, " +
                           "or size < 0"))
-    msg = "randomStrings {} {} {} {} {}".\
-                            format(NUMBER_FORMAT_STRINGS['int64'].format(size),
-                            "uniform", characters,
-                            NUMBER_FORMAT_STRINGS['int64'].format(minlen),
-                            NUMBER_FORMAT_STRINGS['int64'].format(maxlen))
+    msg = "randomStrings {} {} {} {} {} {}".\
+          format(NUMBER_FORMAT_STRINGS['int64'].format(size),
+                 "uniform", characters,
+                 NUMBER_FORMAT_STRINGS['int64'].format(minlen),
+                 NUMBER_FORMAT_STRINGS['int64'].format(maxlen),
+                 seed)
     repMsg = generic_msg(msg)
     return Strings(*(cast(str,repMsg).split('+')))
 
 @typechecked
-def random_strings_lognormal(logmean : Union[float, int], logstd : float, 
-                             size : int, characters : str='uppercase') -> Strings:
+def random_strings_lognormal(logmean : Union[float, int], logstd : Union[float, int], 
+                             size : int, characters : str='uppercase',
+                             seed : Union[None, int]=None) -> Strings:
     """
     Generate random strings with log-normally distributed lengths and 
     with characters drawn from a specified set.
@@ -709,15 +711,13 @@ def random_strings_lognormal(logmean : Union[float, int], logstd : float,
     have an average length of :math:`exp(\mu + 0.5*\sigma^2)`, a minimum length of 
     zero, and a heavy tail towards longer strings.
     """
-    # needed because per https://www.python.org/dev/peps/pep-0484/#id27 any int is a float
-    if not isinstance(logstd, float):
-        raise TypeError('type of argument "logstd" must be a float; got int instead')
     if logstd <= 0 or size < 0:
         raise ValueError("Incompatible arguments: logstd <= 0 or size < 0")
-    msg = "randomStrings {} {} {} {} {}".\
-                             format(NUMBER_FORMAT_STRINGS['int64'].format(size),
-                             "lognormal", characters,
-                             NUMBER_FORMAT_STRINGS['float64'].format(logmean),
-                             NUMBER_FORMAT_STRINGS['float64'].format(logstd))
+    msg = "randomStrings {} {} {} {} {} {}".\
+          format(NUMBER_FORMAT_STRINGS['int64'].format(size),
+                 "lognormal", characters,
+                 NUMBER_FORMAT_STRINGS['float64'].format(logmean),
+                 NUMBER_FORMAT_STRINGS['float64'].format(logstd),
+                 seed)
     repMsg = generic_msg(msg)
     return Strings(*(cast(str,repMsg).split('+')))

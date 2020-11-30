@@ -14,8 +14,8 @@ module SegmentedMsg {
 
   proc randomStringsMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
       var pn = Reflection.getRoutineName();
-      var (lenStr, dist, charsetStr, arg1str, arg2str)
-          = payload.decode().splitMsgToTuple(5);
+      var (lenStr, dist, charsetStr, arg1str, arg2str, seedStr)
+          = payload.decode().splitMsgToTuple(6);
       var len = lenStr: int;
       var charset = str2CharSet(charsetStr);
       var segName = st.nextName();
@@ -27,7 +27,7 @@ module SegmentedMsg {
               var maxLen = arg2str:int;
               // Lengths + 2*segs + 2*vals (copied to SymTab)
               overMemLimit(8*len + 16*len + (maxLen + minLen)*len);
-              var (segs, vals) = newRandStringsUniformLength(len, minLen, maxLen, charset);
+              var (segs, vals) = newRandStringsUniformLength(len, minLen, maxLen, charset, seedStr);
               var segEntry = new shared SymEntry(segs);
               var valEntry = new shared SymEntry(vals);
               st.addEntry(segName, segEntry);
@@ -39,7 +39,7 @@ module SegmentedMsg {
               var logStd = arg2str:real;
               // Lengths + 2*segs + 2*vals (copied to SymTab)
               overMemLimit(8*len + 16*len + exp(logMean + (logStd**2)/2):int*len);
-              var (segs, vals) = newRandStringsLogNormalLength(len, logMean, logStd, charset);
+              var (segs, vals) = newRandStringsLogNormalLength(len, logMean, logStd, charset, seedStr);
               var segEntry = new shared SymEntry(segs);
               var valEntry = new shared SymEntry(vals);
               st.addEntry(segName, segEntry);

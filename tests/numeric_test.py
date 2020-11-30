@@ -8,7 +8,33 @@ Encapsulates unit tests for the numeric module with the exception
 of the where method, which is in the where_test module
 """
 class NumericTest(ArkoudaTest):
-    
+
+    def testSeededRNG(self):
+        N = 100
+        seed = 8675309
+        numericdtypes = [ak.int64, ak.float64, ak.bool]
+        for dt in numericdtypes:
+            # Make sure unseeded runs differ
+            a = ak.randint(0, 2**32, N, dtype=dt)
+            b = ak.randint(0, 2**32, N, dtype=dt)
+            self.assertFalse((a == b).all())
+            # Make sure seeded results are same
+            a = ak.randint(0, 2**32, N, dtype=dt, seed=seed)
+            b = ak.randint(0, 2**32, N, dtype=dt, seed=seed)
+            self.assertTrue((a == b).all())
+        # Uniform
+        self.assertFalse((ak.uniform(N) == ak.uniform(N)).all())
+        self.assertTrue((ak.uniform(N, seed=seed) == ak.uniform(N, seed=seed)).all())
+        # Standard Normal
+        self.assertFalse((ak.standard_normal(N) == ak.standard_normal(N)).all())
+        self.assertTrue((ak.standard_normal(N, seed=seed) == ak.standard_normal(N, seed=seed)).all())
+        # Strings (uniformly distributed length)
+        self.assertFalse((ak.random_strings_uniform(1, 10, N) == ak.random_strings_uniform(1, 10, N)).all())
+        self.assertTrue((ak.random_strings_uniform(1, 10, N, seed=seed) == ak.random_strings_uniform(1, 10, N, seed=seed)).all())
+        # Strings (log-normally distributed length)
+        self.assertFalse((ak.random_strings_lognormal(2, 1, N) == ak.random_strings_lognormal(2, 1, N)).all())
+        self.assertTrue((ak.random_strings_lognormal(2, 1, N, seed=seed) == ak.random_strings_lognormal(2, 1, N, seed=seed)).all())
+            
     def testCast(self):
         N = 100
         arrays = {ak.int64: ak.randint(-(2**48), 2**48, N),
