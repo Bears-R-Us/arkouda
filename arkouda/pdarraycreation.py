@@ -18,6 +18,7 @@ numericDTypes = frozenset(["bool", "int64", "float64"])
 
 RANDINT_TYPES = {'int64','float64'}
 
+@typechecked
 def from_series(series : pd.Series) -> Union[pdarray,Strings]:
     """
     Converts a Pandas Series to an Arkouda pdarray or Strings object.
@@ -25,17 +26,48 @@ def from_series(series : pd.Series) -> Union[pdarray,Strings]:
     Parameters
     ----------
     series : Pandas Series
-    
-    
+
     Returns
     -------
     Union[pdarray,Strings]
+    
+    Raises
+    ------
+    TypeError
+        Raised if series is not a Pandas Series object
+    ValueError
+        Raised if the Series dtype is not bool, float64, int64, string, or datetime
+
+    Examples
+    --------
+    >>> ak.from_series(pd.Series(np.random.randint(0,10,5)))
+    array([9, 0, 4, 7, 9])
+    >>> ak.from_series(pd.Series(np.random.uniform(low=0.0,high=1.0,size=3)))
+    array([0.57600036956445599, 0.41619265571741659, 0.6615356693784662])
+    >>> ak.from_series(pd.Series(np.random.choice([True, False],size=5)))
+    array([True, False, True, True, True])
+    >>> ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e'], dtype="string"))
+    array(['a', 'b', 'c', 'd', 'e'])
+    >>> ak.from_series(pd.Series(pd.to_datetime(['1/1/2018', np.datetime64('2018-01-01')])))
+    array([1514764800000000000, 1514764800000000000])  
+    
+    Notes
+    -----
+    The supported datatypes are bool, float64, int64, string, and datetime. Series of 
+    datetime are converted to Arkouda arrays of dtype int64 (date in milliseconds)
     """    
-    if series.dtype.name == 'string':
+    d_type = series.dtype.name
+    
+    if d_type == 'string':
         n_array = series.to_numpy(dtype=np.str_)
-        return array(n_array)
+    elif d_type == 'datetime64[ns]':
+        n_array = series.to_numpy(dtype=np.int64)
+    elif d_type in numericDTypes:
+        n_array = series.to_numpy(None)
     else:
-        return array(series.to_numpy())
+        raise ValueError(('dtype {} is unsupported. Supported dtypes are bool, ' +
+                          'float64, int64, string, and datetime').format(d_type))
+    return array(n_array)
 
 def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     """
