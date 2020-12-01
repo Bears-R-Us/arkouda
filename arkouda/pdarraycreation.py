@@ -18,6 +18,13 @@ numericDTypes = frozenset(["bool", "int64", "float64"])
 
 RANDINT_TYPES = {'int64','float64'}
 
+series_dtypes = {'string' : np.str_,
+                 'int64' : None,
+                 'float64' : None,
+                 'bool' : None,
+                 'datetime64[ns]' : np.int64
+                }
+
 @typechecked
 def from_series(series : pd.Series) -> Union[pdarray,Strings]:
     """
@@ -57,14 +64,10 @@ def from_series(series : pd.Series) -> Union[pdarray,Strings]:
     datetime are converted to Arkouda arrays of dtype int64 (date in milliseconds)
     """    
     d_type = series.dtype.name
-    
-    if d_type == 'string':
-        n_array = series.to_numpy(dtype=np.str_)
-    elif d_type == 'datetime64[ns]':
-        n_array = series.to_numpy(dtype=np.int64)
-    elif d_type in numericDTypes:
-        n_array = series.to_numpy(None)
-    else:
+
+    try:
+        n_array = series.to_numpy(dtype=series_dtypes[d_type])
+    except KeyError:
         raise ValueError(('dtype {} is unsupported. Supported dtypes are bool, ' +
                           'float64, int64, string, and datetime').format(d_type))
     return array(n_array)
