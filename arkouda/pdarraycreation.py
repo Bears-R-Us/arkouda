@@ -1,7 +1,7 @@
 import numpy as np # type: ignore
 import pandas as pd # type: ignore
 import struct
-from typing import cast, Iterable, Union
+from typing import cast, Iterable, Optional, Union
 from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.dtypes import *
@@ -19,20 +19,30 @@ numericDTypes = frozenset(["bool", "int64", "float64"])
 RANDINT_TYPES = {'int64','float64'}
 
 series_dtypes = {'string' : np.str_,
-                 'int64' : None,
-                 'float64' : None,
-                 'bool' : None,
+                 "<class 'str'>" : np.str_,
+                 'int64' : np.int64,
+                 "<class 'numpy.int64'>" : np.int64,                
+                 'float64' : np.float64,
+                 "<class 'numpy.float64'>" : np.float64,                   
+                 'bool' : np.bool,
+                 "<class 'bool'>" : np.bool,
                  'datetime64[ns]' : np.int64
                 }
 
 @typechecked
-def from_series(series : pd.Series) -> Union[pdarray,Strings]:
+def from_series(series : pd.Series, dtype=None) -> Union[pdarray,Strings]:
     """
-    Converts a Pandas Series to an Arkouda pdarray or Strings object.
+    Converts a Pandas Series to an Arkouda pdarray or Strings object. If
+    dtype is None, the dtype is inferred from the Pandas Series. Otherwise,
+    the dtype parameter is set if the dtype of the Pandas Series is to 
+    be overridden, normally in situations where the Series dtype is object.
     
     Parameters
     ----------
     series : Pandas Series
+        The Pandas Series with a dtype of bool, float64, int64, or string
+    dtype : Optional[str]
+        The valid dtypes are np.bool, np.float64, np.int64, and np.str
 
     Returns
     -------
@@ -60,16 +70,19 @@ def from_series(series : pd.Series) -> Union[pdarray,Strings]:
     
     Notes
     -----
-    The supported datatypes are bool, float64, int64, string, and datetime. Series of 
-    datetime are converted to Arkouda arrays of dtype int64 (date in milliseconds)
-    """    
-    d_type = series.dtype.name
-
+    The supported datatypes are bool, float64, int64, string, and datetime. 
+    
+    Series of datetime are converted to Arkouda arrays of dtype int64 (date in milliseconds)
+    """ 
+    if not dtype:   
+        dtype = series.dtype.name
+    else:
+        dtype = str(dtype)
     try:
-        n_array = series.to_numpy(dtype=series_dtypes[d_type])
+        n_array = series.to_numpy(dtype=series_dtypes[dtype])
     except KeyError:
         raise ValueError(('dtype {} is unsupported. Supported dtypes are bool, ' +
-                          'float64, int64, string, and datetime').format(d_type))
+                          'float64, int64, string, and datetime').format(dtype))
     return array(n_array)
 
 def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:

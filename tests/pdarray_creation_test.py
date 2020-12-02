@@ -305,21 +305,44 @@ class PdarrayCreationTest(ArkoudaTest):
         
         self.assertIsInstance(strings, ak.Strings)
         self.assertEqual(5, len(strings))
+        
+        objects = ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e']), dtype=np.str)
+        
+        self.assertIsInstance(objects, ak.Strings)
+        self.assertEqual(np.str, objects.dtype)
 
         p_array = ak.from_series(pd.Series(np.random.randint(0,10,10)))
 
         self.assertIsInstance(p_array,ak.pdarray)
         self.assertEqual(np.int64, p_array.dtype)
+    
+        p_i_objects_array = ak.from_series(pd.Series(np.random.randint(0,10,10), 
+                                                   dtype='object'), dtype=np.int64)
+
+        self.assertIsInstance(p_i_objects_array,ak.pdarray)
+        self.assertEqual(np.int64, p_i_objects_array.dtype)
         
         p_array = ak.from_series(pd.Series(np.random.uniform(low=0.0,high=1.0,size=10)))
 
         self.assertIsInstance(p_array,ak.pdarray)
-        self.assertEqual(np.float64, p_array.dtype)       
+        self.assertEqual(np.float64, p_array.dtype)    
+        
+        p_f_objects_array = ak.from_series(pd.Series(np.random.uniform(low=0.0,high=1.0,size=10), 
+                                           dtype='object'), dtype=np.float64)
+
+        self.assertIsInstance(p_f_objects_array,ak.pdarray)
+        self.assertEqual(np.float64, p_f_objects_array.dtype)          
         
         p_array = ak.from_series(pd.Series(np.random.choice([True, False],size=10)))
 
         self.assertIsInstance(p_array,ak.pdarray)
-        self.assertEqual(bool, p_array.dtype)         
+        self.assertEqual(bool, p_array.dtype)       
+        
+        p_b_objects_array = ak.from_series(pd.Series(np.random.choice([True, False],size=10), 
+                                            dtype='object'), dtype=np.bool)
+
+        self.assertIsInstance( p_b_objects_array,ak.pdarray)
+        self.assertEqual(bool, p_b_objects_array.dtype)     
 
         p_array = ak.from_series(pd.Series([dt.datetime(2016,1,1,0,0,1)]))
         
@@ -336,7 +359,7 @@ class PdarrayCreationTest(ArkoudaTest):
         
         self.assertIsInstance(p_array,ak.pdarray)
         self.assertEqual(np.int64, p_array.dtype)  
-       
+  
         with self.assertRaises(TypeError) as cm:          
             ak.from_series(np.ones(100))        
         self.assertEqual(('type of argument "series" must be pandas.core.series.Series; ' +
