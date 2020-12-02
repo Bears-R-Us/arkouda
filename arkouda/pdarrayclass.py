@@ -517,7 +517,7 @@ class pdarray:
         generic_msg("set {} {} {}".format(self.name, 
                                         self.dtype.name, self.format_other(value)))
 
-    def any(self) -> akbool:
+    def any(self) -> np.bool_:
         """
         Return True iff any element of the array evaluates to True.
         """
@@ -529,7 +529,7 @@ class pdarray:
         """
         return all(self)
 
-    def is_sorted(self) -> akbool:
+    def is_sorted(self) -> np.bool_:
         """
         Return True iff the array is monotonically non-decreasing.
         
@@ -1159,7 +1159,7 @@ def clear() -> None:
     generic_msg("clear")
 
 @typechecked
-def any(pda : pdarray) -> akbool:
+def any(pda : pdarray) -> np.bool_:
     """
     Return True iff any element of the array evaluates to True.
     
