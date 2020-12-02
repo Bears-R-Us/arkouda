@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python-version: ['3.7', '3.8', '3.9', '3.x']
     container:
       image: chapel/chapel:1.23.0
     steps:
@@ -66,6 +66,9 @@ jobs:
     - name: Arkouda make check
       run: |
         make check
+    - name: Arkouda unit tests
+      run: |
+        make test-python
 
   arkouda_tests_linux:
     runs-on: ubuntu-latest
