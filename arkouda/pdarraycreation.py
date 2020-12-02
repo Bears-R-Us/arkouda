@@ -1,7 +1,7 @@
 import numpy as np # type: ignore
 import pandas as pd # type: ignore
 import struct
-from typing import cast, Iterable, Union
+from typing import cast, Iterable, Optional, Union
 from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.dtypes import *
@@ -18,24 +18,82 @@ numericDTypes = frozenset(["bool", "int64", "float64"])
 
 RANDINT_TYPES = {'int64','float64'}
 
-def from_series(series : pd.Series) -> Union[pdarray,Strings]:
+series_dtypes = {'string' : np.str_,
+                 "<class 'str'>" : np.str_,
+                 'int64' : np.int64,
+                 "<class 'numpy.int64'>" : np.int64,                
+                 'float64' : np.float64,
+                 "<class 'numpy.float64'>" : np.float64,                   
+                 'bool' : np.bool,
+                 "<class 'bool'>" : np.bool,
+                 'datetime64[ns]' : np.int64
+                }
+
+@typechecked
+def from_series(series : pd.Series, dtype : Optional[type]=None) -> Union[pdarray,Strings]:
     """
-    Converts a Pandas Series to an Arkouda pdarray or Strings object.
+    Converts a Pandas Series to an Arkouda pdarray or Strings object. If
+    dtype is None, the dtype is inferred from the Pandas Series. Otherwise,
+    the dtype parameter is set if the dtype of the Pandas Series is to be overridden or is 
+    unknown (for example, in situations where the Series dtype is object).
     
     Parameters
     ----------
     series : Pandas Series
-    
-    
+        The Pandas Series with a dtype of bool, float64, int64, or string
+    dtype : Optional[type]
+        The valid dtype types are np.bool, np.float64, np.int64, and np.str
+
     Returns
     -------
     Union[pdarray,Strings]
-    """    
-    if series.dtype.name == 'string':
-        n_array = series.to_numpy(dtype=np.str_)
-        return array(n_array)
+    
+    Raises
+    ------
+    TypeError
+        Raised if series is not a Pandas Series object
+    ValueError
+        Raised if the Series dtype is not bool, float64, int64, string, or datetime
+
+    Examples
+    --------
+    >>> ak.from_series(pd.Series(np.random.randint(0,10,5)))
+    array([9, 0, 4, 7, 9])
+    >>> ak.from_series(pd.Series(['1', '2', '3', '4', '5']),dtype=np.int64)
+    array([1, 2, 3, 4, 5])
+    >>> ak.from_series(pd.Series(np.random.uniform(low=0.0,high=1.0,size=3)))
+    array([0.57600036956445599, 0.41619265571741659, 0.6615356693784662])
+    >>> ak.from_series(pd.Series(['0.57600036956445599', '0.41619265571741659',
+                       '0.6615356693784662']), dtype=np.float64)
+    array([0.57600036956445599, 0.41619265571741659, 0.6615356693784662])
+    >>> ak.from_series(pd.Series(np.random.choice([True, False],size=5)))
+    array([True, False, True, True, True])
+    >>> ak.from_series(pd.Series(['True', 'False', 'False', 'True', 'True']), dtype=np.bool)
+    array([True, True, True, True, True])
+    >>> ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e'], dtype="string"))
+    array(['a', 'b', 'c', 'd', 'e'])
+    >>> ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e']),dtype=np.str)
+    array(['a', 'b', 'c', 'd', 'e'])
+    >>> ak.from_series(pd.Series(pd.to_datetime(['1/1/2018', np.datetime64('2018-01-01')])))
+    array([1514764800000000000, 1514764800000000000])  
+    
+    Notes
+    -----
+    The supported datatypes are bool, float64, int64, string, and datetime64[ns],which are
+    either inferred from the the Pandas Series or is set via the dtype parameter. 
+    
+    Series of datetime are converted to Arkouda arrays of dtype int64 (date in milliseconds)
+    """ 
+    if not dtype:   
+        dt = series.dtype.name
     else:
-        return array(series.to_numpy())
+        dt = str(dtype)
+    try:
+        n_array = series.to_numpy(dtype=series_dtypes[dt])
+    except KeyError:
+        raise ValueError(('dtype {} is unsupported. Supported dtypes are bool, ' +
+                          'float64, int64, string, and datetime64[ns]').format(dt))
+    return array(n_array)
 
 def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     """

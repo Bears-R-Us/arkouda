@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import datetime as dt
 from collections import deque
 from base_test import ArkoudaTest
 from context import arkouda as ak
@@ -300,26 +301,74 @@ class PdarrayCreationTest(ArkoudaTest):
                          cm.exception.args[0])
         
     def test_from_series(self):
-        series = pd.Series(['a', 'b', 'c', 'd', 'e'], dtype="string")
-        strings = ak.from_series(series)
+        strings = ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e'], dtype="string"))
         
         self.assertIsInstance(strings, ak.Strings)
-        self.assertEqual(5, len(series))
+        self.assertEqual(5, len(strings))
         
-        series = pd.Series(np.random.randint(0,10,10))
-        p_array = ak.from_series(series)
+        print(type(np.str))
+        objects = ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e']), dtype=np.str)
+        
+        self.assertIsInstance(objects, ak.Strings)
+        self.assertEqual(np.str, objects.dtype)
+
+        p_array = ak.from_series(pd.Series(np.random.randint(0,10,10)))
 
         self.assertIsInstance(p_array,ak.pdarray)
         self.assertEqual(np.int64, p_array.dtype)
+    
+        p_i_objects_array = ak.from_series(pd.Series(np.random.randint(0,10,10), 
+                                                   dtype='object'), dtype=np.int64)
+
+        self.assertIsInstance(p_i_objects_array,ak.pdarray)
+        self.assertEqual(np.int64, p_i_objects_array.dtype)
         
-        series = pd.Series(np.random.uniform(low=0.0,high=1.0,size=10))
-        p_array = ak.from_series(series)
+        p_array = ak.from_series(pd.Series(np.random.uniform(low=0.0,high=1.0,size=10)))
 
         self.assertIsInstance(p_array,ak.pdarray)
-        self.assertEqual(np.float64, p_array.dtype)       
+        self.assertEqual(np.float64, p_array.dtype)    
         
-        series = pd.Series(np.random.choice([True, False],size=10))
-        p_array = ak.from_series(series)
+        p_f_objects_array = ak.from_series(pd.Series(np.random.uniform(low=0.0,high=1.0,size=10), 
+                                           dtype='object'), dtype=np.float64)
+
+        self.assertIsInstance(p_f_objects_array,ak.pdarray)
+        self.assertEqual(np.float64, p_f_objects_array.dtype)          
+        
+        p_array = ak.from_series(pd.Series(np.random.choice([True, False],size=10)))
 
         self.assertIsInstance(p_array,ak.pdarray)
-        self.assertEqual(bool, p_array.dtype)         
+        self.assertEqual(bool, p_array.dtype)       
+        
+        p_b_objects_array = ak.from_series(pd.Series(np.random.choice([True, False],size=10), 
+                                            dtype='object'), dtype=np.bool)
+
+        self.assertIsInstance( p_b_objects_array,ak.pdarray)
+        self.assertEqual(bool, p_b_objects_array.dtype)     
+
+        p_array = ak.from_series(pd.Series([dt.datetime(2016,1,1,0,0,1)]))
+        
+        self.assertIsInstance(p_array,ak.pdarray)
+        self.assertEqual(np.int64, p_array.dtype)   
+
+        p_array = ak.from_series(pd.Series([np.datetime64('2018-01-01')]))
+        
+        self.assertIsInstance(p_array,ak.pdarray)
+        self.assertEqual(np.int64, p_array.dtype)   
+        
+        p_array = ak.from_series(pd.Series(pd.to_datetime(['1/1/2018', 
+                                    np.datetime64('2018-01-01'), dt.datetime(2018, 1, 1)])))
+        
+        self.assertIsInstance(p_array,ak.pdarray)
+        self.assertEqual(np.int64, p_array.dtype)  
+  
+        with self.assertRaises(TypeError) as cm:          
+            ak.from_series(np.ones(100))        
+        self.assertEqual(('type of argument "series" must be pandas.core.series.Series; ' +
+                         'got numpy.ndarray instead'), 
+                         cm.exception.args[0])    
+
+        with self.assertRaises(ValueError) as cm:          
+            ak.from_series(pd.Series(np.random.randint(0,10,10), dtype=np.int8))        
+        self.assertEqual(('dtype int8 is unsupported. Supported dtypes are bool, ' +
+                          'float64, int64, string, and datetime64[ns]'), 
+                         cm.exception.args[0])    
