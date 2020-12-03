@@ -13,9 +13,11 @@ module Logging {
      */
     class Logger {
         var level = LogLevel.WARN;
+        var warnLevels = new set(LogLevel,[LogLevel.WARN,LogLevel.DEBUG,LogLevel.INFO]);
+        var debugLevels = new set(LogLevel,[LogLevel.DEBUG,LogLevel.INFO]);  
         
         proc debug(moduleName, routineName, lineNumber, msg: string) throws {
-            if level == LogLevel.DEBUG || level == LogLevel.INFO {
+            if debugLevels.contains(level) {
                 writeln("[%s] %s Line %i DEBUG [Chapel] %s".format(moduleName, 
                     routineName, lineNumber, msg));
             }
@@ -29,7 +31,7 @@ module Logging {
         }
         
         proc warn(moduleName, routineName, lineNumber, msg: string) throws {
-            if level == LogLevel.WARN || level == LogLevel.DEBUG || level == LogLevel.INFO {
+            if warnLevels.contains(level) {
                 writeln("[%s] %s Line %i WARN [Chapel] %s".format(moduleName, 
                     routineName, lineNumber, msg));
             }
