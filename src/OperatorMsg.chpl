@@ -524,7 +524,10 @@ module OperatorMsg
                 return errorMsg;                                         
             }
         }
-        return try! "created " + st.attrib(rname);
+        var message = "created %s".format(st.attrib(rname));
+
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),message);
+        return try! message;
     }
     /*
     Parse and respond to binopvs message.
@@ -963,7 +966,10 @@ module OperatorMsg
             otherwise {return unrecognizedTypeError(pn,
                                                     "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");}
         }
-        return try! "created " + st.attrib(rname);
+        var message = "created %s".format(st.attrib(rname));
+
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),message);
+        return message;
     }
 
     /*
@@ -1350,7 +1356,11 @@ module OperatorMsg
             otherwise {return unrecognizedTypeError(pn,
                                                     "("+dtype2str(dtype)+","+dtype2str(right.dtype)+")");}
         }
-        return try! "created " + st.attrib(rname);
+        
+        var message = "created %s".format(st.attrib(rname));
+
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),message);
+        return try! message;
     }
 
     /*
