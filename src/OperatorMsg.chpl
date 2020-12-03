@@ -30,18 +30,18 @@ module OperatorMsg
     :returns: (string) 
     :throws: `UndefinedSymbolError(name)`
     */
-    proc binopvvMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
-        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),"In binopvvMsg");
-        
+    proc binopvvMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {       
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
         var (op, aname, bname) = payload.decode().splitMsgToTuple(3);
         var rname = st.nextName();
-        logger.debug(getModuleName(), getRoutineName(), getLineNumber(), 
-             "COMMAND: %s OP: %s ANAME: %s BNAME: %s : RNAME: %s".format(cmd,op,aname,bname,rname));
+
         var left: borrowed GenSymEntry = st.lookup(aname);
         var right: borrowed GenSymEntry = st.lookup(bname);
+
+        logger.debug(getModuleName(), getRoutineName(), getLineNumber(), 
+             "COMMAND: %t OP: %t LEFT: %t RIGHT: %t".format(cmd,op,left,right));
 
         select (left.dtype, right.dtype) {
             when (DType.Int64, DType.Int64) {
@@ -550,7 +550,7 @@ module OperatorMsg
 
         var left: borrowed GenSymEntry = st.lookup(aname);
         logger.debug(getModuleName(), getRoutineName(), getLineNumber(),
-                                              "LEFT: %t VALUE: %t DTYPE: %s".format(left, value, dtypeStr));
+                                              "LEFT: %t VALUE: %t DTYPE: %t".format(left, value,dtype));
         select (left.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
                 var l = toSymEntry(left,int);
@@ -1372,9 +1372,13 @@ module OperatorMsg
         // split request into fields
         var (op, aname, bname) = payload.decode().splitMsgToTuple(3);
         if v {writeln("%s %s %s %s".format(cmd,op,aname,bname));try! stdout.flush();}
-        
+ 
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                           "OP: %t ANAME: %t BNAME: %t".format(op,aname,bname));       
         var left: borrowed GenSymEntry = st.lookup(aname);
         var right: borrowed GenSymEntry = st.lookup(bname);
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                    "LEFT: %t RIGHT: %t BNAME: %t".format(left,right));   
         select (left.dtype, right.dtype) {
             when (DType.Int64, DType.Int64) {
                 var l = toSymEntry(left,int);
@@ -1508,7 +1512,8 @@ module OperatorMsg
         if v {writeln("%s %s %s %s %s".format(cmd,op,aname,dtype2str(dtype),value));try! stdout.flush();}
 
         var left: borrowed GenSymEntry = st.lookup(aname);
-
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                               "OP: %t ANAME: %t DTYPE: %t VALUE: %t".format(op,aname,dtypeStr,value));
         select (left.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
                 var l = toSymEntry(left,int);
