@@ -10,8 +10,13 @@ module OperatorMsg
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
-    use ServerErrorStrings;
-
+    use ServerErrorStrings; 
+    use Reflection;
+    use Logging;
+    
+    const logger = new Logger();
+    logger.level = LogLevel.DEBUG;
+    
     /*
     Parse and respond to binopvv message.
     vv == vector op vector
@@ -26,13 +31,15 @@ module OperatorMsg
     :throws: `UndefinedSymbolError(name)`
     */
     proc binopvvMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),"In binopvvMsg");
+        
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
         var (op, aname, bname) = payload.decode().splitMsgToTuple(3);
         var rname = st.nextName();
-        if v {writeln("%s %s %s %s : %s".format(cmd,op,aname,bname,rname));try! stdout.flush();}
-
+        logger.debug(getModuleName(), getRoutineName(), getLineNumber(), 
+             "COMMAND: %s OP: %s ANAME: %s BNAME: %s : RNAME: %s".format(cmd,op,aname,bname,rname));
         var left: borrowed GenSymEntry = st.lookup(aname);
         var right: borrowed GenSymEntry = st.lookup(bname);
 
@@ -542,7 +549,8 @@ module OperatorMsg
         if v {writeln("%s %s %s %s %s : %s".format(cmd,op,aname,dtype2str(dtype),value,rname));try! stdout.flush();}
 
         var left: borrowed GenSymEntry = st.lookup(aname);
-
+        logger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                                              "LEFT: %t VALUE: %t DTYPE: %s".format(left, value, dtypeStr));
         select (left.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
                 var l = toSymEntry(left,int);
