@@ -76,4 +76,4 @@ Logical indexing is a powerful construct from NumPy (and Matlab). In logical ind
       >>> A
       array([0, 1, 42, 3, 4, 42, 6, 7, 8, 9])
 
-Assignment with a logical index vector is not supported, but will be soon.
+Assignment with a logical index is also supported. needs an example to be added here.
