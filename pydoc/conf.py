@@ -33,7 +33,8 @@ master_doc = 'index'
 # ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon', 
               'sphinxarg.ext', 'sphinx.ext.githubpages',
-              'sphinx.ext.coverage', 'autoapi.extension'
+              'sphinx.ext.coverage', 'autoapi.extension',
+              'recommonmark'
              ]
 
 # path to directory containing files to autogenerate docs from comments
