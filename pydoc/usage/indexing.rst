@@ -69,11 +69,15 @@ Logical indexing is a powerful construct from NumPy (and Matlab). In logical ind
    >>> inds = ak.zeros(10, dtype=ak.bool)
    >>> inds[2] = True
    >>> inds[5] = True
-   >>> A[inds]
+   >>> A[inds] # boolean-compression indexing yield values where inds is True
    array([2, 5])
    ..
-      >>> A[inds] = 42
-      >>> A
-      array([0, 1, 42, 3, 4, 42, 6, 7, 8, 9])
-
-Assignment with a logical index is also supported. needs an example to be added here.
+   >>> A[inds] = 42 # boolean-expansion indexing with scalar sets values where inds is True
+   >>> A
+   array([0, 1, 42, 3, 4, 42, 6, 7, 8, 9])
+   ..
+   >>> B = ak.arange(0, 10, 1)
+   >>> lim = 10//2
+   >>> B[B < lim] = B[:lim] * -1 # boolean-expansion indexing with array sets values where True
+   >>> B
+   array([0, -1, -2, -3, -4, 5, 6, 7, 8, 9])
