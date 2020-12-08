@@ -365,7 +365,7 @@ Multi-locale startup (user selects the number of locales):
 ```bash
 ./arkouda_server -nl 2
 ```
-Memory tracking is turned on by default now, you can run server with memory turned off by
+Memory tracking is turned on by default now, you can run server with memory tracking turned off by
 
 ```bash
 ./arkouda_server --memTrack=false
@@ -374,7 +374,7 @@ Memory tracking is turned on by default now, you can run server with memory turn
 By default, the server listens on port `5555` and prints verbose output. These options can be changed with command-line 
 flags `--ServerPort=1234` and `--v=false`
 
-Memory checking is turned on by default and turned off by using `--memTrack=false`
+Memory tracking is turned on by default and turned off by using `--memTrack=false`
 
 Logging messages are turned on by default and turned off by using `--logging=false`
 
