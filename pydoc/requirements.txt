@@ -9,4 +9,3 @@ pytest-env
 typeguard
 numpy
 zmq
-recommonmark
