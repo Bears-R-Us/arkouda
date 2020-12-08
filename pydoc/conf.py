@@ -33,11 +33,8 @@ master_doc = 'index'
 # ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon', 
               'sphinxarg.ext', 'sphinx.ext.githubpages',
-              'sphinx.ext.coverage', 'autoapi.extension',
-              'recommonmark'
+              'sphinx.ext.coverage', 'autoapi.extension'
              ]
-
-source_suffix = ['.rst', '.md']
 
 # path to directory containing files to autogenerate docs from comments
 autoapi_dirs = ['../arkouda']
