@@ -21,10 +21,6 @@ Welcome to arkouda's documentation!
    autoapi/index
    server/index
 
-README
-===================================
-   ../README.md
-
 Indices and tables
 ==================
 
