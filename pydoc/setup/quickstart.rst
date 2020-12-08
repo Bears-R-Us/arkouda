@@ -17,7 +17,7 @@ You should see a startup message like
    $ ./arkouda_server -nl 1
    arkouda server version = 2020.07.07
    memory tracking = true
-   initialized the .arkouda directory /Users/valton/chapel/arkouda/arkouda/.arkouda
+   initialized the .arkouda directory /Your/PATH/arkouda/.arkouda
    getMemLimit() = 123695058124
    bytes of memoryUsed() = 2462
    server listening on tcp://node01:5555
@@ -41,7 +41,7 @@ The last line is the most important, because it contains the connection url with
 Connect the Python 3 Client
 ******************************
 
-In another terminal window, launch an interactive Python 3 session, such as ``ipython`` or ``jupyter notebook`` (both included with the Anaconda distribution). To connect to the arkouda server, you must import the arkouda module and call connect with the hostname and port from the server startup message. In Python, run
+In another terminal window, launch an interactive Python 3 session, such as ``ipython`` or ``jupyter notebook`` (both included with the Anaconda distribution). To connect to the arkouda server, you must import the arkouda module and call connect with the connection url from the server startup messages. In Python, run
 
 .. code-block:: python
 
