@@ -23,7 +23,7 @@ Welcome to arkouda's documentation!
 
 README
 ===================================
-   .. mdinclude:: ../README.md
+   ../README.md
 
 Indices and tables
 ==================
