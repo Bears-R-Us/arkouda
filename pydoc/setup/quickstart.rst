@@ -10,19 +10,32 @@ Launch Arkouda Server
 
 In a terminal, run the arkouda server program with one locale
 
-.. code-block:: none
-
-  $ arkouda_server -nl 1
-
 You should see a startup message like
 
 .. code-block:: none
 
-  arkouda server version = 0.0.9-2019-09-23
-  ...
-  server listening on node01:5555
+   $ ./arkouda_server -nl 1
+   arkouda server version = 2020.07.07
+   memory tracking = true
+   initialized the .arkouda directory /Users/valton/chapel/arkouda/arkouda/.arkouda
+   getMemLimit() = 123695058124
+   bytes of memoryUsed() = 2462
+   server listening on tcp://node01:5555
 
-The last line is the most important, because it contains the hostname and port required for the client to connect to the server.
+or with authentication turned on 
+
+.. code-block:: none
+
+   $ ./arkouda_server -nl 1 --authenticate
+   arkouda server version = 2020.07.07
+   memory tracking = true
+   initialized the .arkouda directory /Your/PATH/arkouda/.arkouda
+   getMemLimit() = 123695058124
+   bytes of memoryUsed() = 2462
+   server listening on tcp://node01:5555?token=vikq8Co2fqv20usbrRnRtFsLr9nNbad
+
+
+The last line is the most important, because it contains the connection url with the hostname and port required for the client to connect to the server.
 
 ******************************
 Connect the Python 3 Client
@@ -33,9 +46,11 @@ In another terminal window, launch an interactive Python 3 session, such as ``ip
 .. code-block:: python
 
    >>> import arkouda as ak
-   >>> ak.connect('node01', 5555)
+   >>> default way to connect is
+   >>> ak.connect(connect_url='tcp://node01:5555')
    ...
    connected to tcp://node01:5555
+   
 
 substituting the hostname and port appropriately (defaults are 'localhost' and 5555).
 
