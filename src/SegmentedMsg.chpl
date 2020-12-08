@@ -691,8 +691,6 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var nBytes = strings.nBytes;
       var length=strings.getLengths();
       var offsegs = (+ scan length) - length;
-      writeln("offsegs=");
-      writeln(offsegs);
       select (objtype) {
           when "str" {
               // To be checked, I am not sure if this formula can estimate the total memory requirement
@@ -705,19 +703,35 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
               var sasval:[0..(nBytes-1)] int;
 
 	      var i:int;
+	      var j:int;
               forall i in 0..(size-1) do {
+//              for i in 0..(size-1) do {
 	        // the start position of ith string in value array
                 var startposition:int;
                 var endposition:int;
                 startposition = offsegs[i];
                 endposition = startposition+length[i]-1;
-                var sasize=length[i]:int(32);
+//                var sasize=length[i]:int(32);
+//                ref strArray=strings.values.a[startposition..endposition];
+//                var tmparray:[1..sasize] int(32);
+//                divsufsort(strArray,tmparray,sasize);
+//                var x:int;
+//                var y:int(32);
+//                for (x, y) in zip(sasval[startposition..endposition], tmparray[1..sasize]) do
+//                    x = y;
+
+                var sasize=length[i]:int;
                 ref strArray=strings.values.a[startposition..endposition];
-                var tmparray:[1..sasize] int(32);
-                divsufsort(strArray,tmparray,sasize);
+                var tmparray:[0..sasize+2] int;
+                var intstrArray:[0..sasize+2] int;
+		forall (x,y) in zip ( intstrArray[0..sasize-1],strings.values.a[startposition..endposition]) do x=y;
+		intstrArray[sasize]=0;
+		intstrArray[sasize+1]=0;
+		intstrArray[sasize+2]=0;
+		SuffixArraySkew(intstrArray,tmparray,sasize,256);
                 var x:int;
                 var y:int(32);
-                for (x, y) in zip(sasval[startposition..endposition], tmparray[1..sasize]) do
+                for (x, y) in zip(sasval[startposition..endposition], tmparray[0..sasize-1]) do
                     x = y;
 	      }
 
@@ -755,7 +769,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
 
       var filesize:int(32);
       var f = open(FileName, iomode.r);
-      var size:int=1;
+      var size=1:int;
       var nBytes = f.size;
       var length:[0..0] int  =nBytes;
       var offsegs:[0..0] int =0 ;
