@@ -15,7 +15,11 @@ module OperatorMsg
     use Logging;
     
     const logger = new Logger();
-    logger.level = LogLevel.DEBUG;
+    if v {
+        logger.level = LogLevel.DEBUG;
+    } else {
+        logger.level = LogLevel.INFO;    
+    }
     
     /*
     Parse and respond to binopvv message.
@@ -549,11 +553,13 @@ module OperatorMsg
         var (op, aname, dtypeStr, value) = payload.decode().splitMsgToTuple(4);
         var dtype = str2dtype(dtypeStr);
         var rname = st.nextName();
-        if v {writeln("%s %s %s %s %s : %s".format(cmd,op,aname,dtype2str(dtype),value,rname));try! stdout.flush();}
+
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                           "%s %s %s %s %s : %s".format(cmd,op,aname,dtype2str(dtype),value,rname));
 
         var left: borrowed GenSymEntry = st.lookup(aname);
         logger.debug(getModuleName(), getRoutineName(), getLineNumber(),
-                                              "LEFT: %t VALUE: %t DTYPE: %t".format(left, value,dtype));
+                                          "LEFT: %t VALUE: %t DTYPE: %t".format(left, value,dtype));
         select (left.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
                 var l = toSymEntry(left,int);
@@ -964,7 +970,7 @@ module OperatorMsg
                 }
             }
             otherwise {return unrecognizedTypeError(pn,
-                                                    "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");}
+                                             "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");}
         }
         var message = "created %s".format(st.attrib(rname));
 
@@ -992,7 +998,8 @@ module OperatorMsg
         var (op, dtypeStr, value, aname) = payload.decode().splitMsgToTuple(4);
         var dtype = str2dtype(dtypeStr);
         var rname = st.nextName();
-        if v {writeln("%s %s %s %s %s : %s".format(cmd,op,dtype2str(dtype),value,aname,rname));try! stdout.flush();}
+        logger.debug(getModuleName(),getRoutineName,getLineNumber(),
+                 "%s %s %s %s %s : %s".format(cmd,op,dtype2str(dtype),value,aname,rname));
 
         var right: borrowed GenSymEntry = st.lookup(aname);
 
@@ -1381,7 +1388,8 @@ module OperatorMsg
         var repMsg: string; // response message
         // split request into fields
         var (op, aname, bname) = payload.decode().splitMsgToTuple(3);
-        if v {writeln("%s %s %s %s".format(cmd,op,aname,bname));try! stdout.flush();}
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                             "%s %s %s %s".format(cmd,op,aname,bname));
  
         logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                            "OP: %t ANAME: %t BNAME: %t".format(op,aname,bname));       
@@ -1519,11 +1527,13 @@ module OperatorMsg
         // split request into fields
         var (op, aname, dtypeStr, value) = payload.decode().splitMsgToTuple(4);
         var dtype = str2dtype(dtypeStr);
-        if v {writeln("%s %s %s %s %s".format(cmd,op,aname,dtype2str(dtype),value));try! stdout.flush();}
+
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                        "%s %s %s %s %s".format(cmd,op,aname,dtype2str(dtype),value));
 
         var left: borrowed GenSymEntry = st.lookup(aname);
         logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               "OP: %t ANAME: %t DTYPE: %t VALUE: %t".format(op,aname,dtypeStr,value));
+                         "OP: %t ANAME: %t DTYPE: %t VALUE: %t".format(op,aname,dtypeStr,value));
         select (left.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
                 var l = toSymEntry(left,int);

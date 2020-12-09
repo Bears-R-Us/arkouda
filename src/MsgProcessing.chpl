@@ -7,6 +7,7 @@ module MsgProcessing
     use Math only;
     use Reflection;
     use Errors;
+    use Logging;
     use Memory;
     
     use MultiTypeSymbolTable;
@@ -33,6 +34,14 @@ module MsgProcessing
     public use ArraySetopsMsg;
     public use KExtremeMsg;
     public use CastMsg;
+    
+    const logger = new Logger();
+    
+    if v {
+        logger.level = LogLevel.DEBUG;
+    } else {
+        logger.level = LogLevel.INFO;
+    }
     
     /* 
     Parse, execute, and respond to a create message 

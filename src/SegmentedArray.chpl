@@ -14,7 +14,16 @@ module SegmentedArray {
   use Unique;
   use Time only Timer, getCurrentTime;
   use Reflection;
+  use Logging;
   use Errors;
+
+  const logger = new Logger();
+  
+  if v {
+      logger.level = LogLevel.DEBUG;
+  } else {
+      logger.level = LogLevel.INFO;
+  }
 
   private config const DEBUG = false;
   private config param useHash = true;
@@ -106,15 +115,14 @@ module SegmentedArray {
     proc show(n: int = 3) throws {
       if (size >= 2*n) {
         for i in 0..#n {
-          writeln(this[i]);
+            logger.info(getModuleName(),getRoutineName(),getLineNumber(),this[i]);
         }
-        writeln("...");
         for i in size-n..#n {
-          writeln(this[i]);
+            logger.info(getModuleName(),getRoutineName(),getLineNumber(),this[i]);
         }
       } else {
         for i in 0..#size {
-          writeln(this[i]);
+            logger.info(getModuleName(),getRoutineName(),getLineNumber(),this[i]);
         }
       }
     }
@@ -191,7 +199,8 @@ module SegmentedArray {
       if (ivMin < 0) || (ivMax >= offsets.size) {
         throw new owned OutOfBoundsError();
       }
-      if v {writeln("Computing lengths and offsets"); stdout.flush();}
+      logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                              "Computing lengths and offsets");
       var t1 = getCurrentTime();
       ref oa = offsets.a;
       const low = offsets.aD.low, high = offsets.aD.high;
@@ -214,10 +223,12 @@ module SegmentedArray {
       // The total number of bytes in the gathered strings
       var retBytes = gatheredOffsets[D.high];
       gatheredOffsets -= gatheredLengths;
+      
+      logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                                  "%i seconds".format(getCurrentTime() - t1));
+      logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Copying values");
       if v {
-        writeln(getCurrentTime() - t1, " seconds");
-        writeln("Copying values"); stdout.flush();
-        t1 = getCurrentTime();
+          t1 = getCurrentTime();
       }
       var gatheredVals = makeDistArray(retBytes, uint(8));
       // Multi-locale requires some extra localization work that is not needed
@@ -358,7 +369,8 @@ module SegmentedArray {
       var t = new Timer();
       if useHash {
         // Hash all strings
-        if v { writeln("Hashing strings"); stdout.flush(); t.start(); }
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Hashing strings"); 
+        if v { t.start(); }
         var hashes = this.hash();
         if v { t.stop(); writeln("hashing took %t seconds\nSorting hashes".format(t.elapsed())); stdout.flush(); t.clear(); t.start(); }
         // Return the permutation that sorts the hashes
@@ -654,9 +666,10 @@ module SegmentedArray {
       const ref D = offsets.aD;
       const ref va = values.a;
       if checkSorted && isSorted() {
-        if DEBUG { writeln("argsort called on already sorted array"); stdout.flush(); }
-        var ranks: [D] int = [i in D] i;
-        return ranks;
+          logger.warn(getModuleName(),getRoutineName(),getLineNumber(),
+                                                   "argsort called on already sorted array");
+          var ranks: [D] int = [i in D] i;
+          return ranks;
       }
       var ranks = twoPhaseStringSort(this);
       return ranks;
@@ -816,11 +829,17 @@ module SegmentedArray {
     }
     // Hash all strings for fast comparison
     var t = new Timer();
-    if v {writeln("Hashing strings"); stdout.flush(); t.start();}
+    logger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Hashing strings");
+    if v { t.start(); }
     const hashes = mainStr.hash();
     if v {
-      t.stop(); writeln("%t seconds".format(t.elapsed())); t.clear();
-      writeln("Making associative domains for test set on each locale"); stdout.flush(); t.start();
+        t.stop(); 
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                                "%t seconds".format(t.elapsed())); 
+        t.clear();
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                           "Making associative domains for test set on each locale");
+        t.start();
     }
     // On each locale, make an associative domain with the hashes of the second array
     // parSafe=false because we are adding in serial and it's faster
@@ -878,7 +897,9 @@ module SegmentedArray {
       const (uoMain, uvMain, cMain, revIdx) = uniqueGroup(mainStr, returnInverse=true);
       const (uoTest, uvTest, cTest, revTest) = uniqueGroup(testStr);
       const (segs, vals) = concat(uoMain, uvMain, uoTest, uvTest);
-      if DEBUG {writeln("Unique strings in first array: %t\nUnique strings in second array: %t\nConcat length: %t".format(uoMain.size, uoTest.size, segs.size)); try! stdout.flush();}
+      logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+           "Unique strings in first array: %t\nUnique strings in second array: %t\nConcat length: %t".format(uoMain.size, 
+                                                                                          uoTest.size, segs.size));
       var st = new owned SymTab();
       const ar = new owned SegString(segs, vals, st);
       const order = ar.argsort();

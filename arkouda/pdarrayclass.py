@@ -451,7 +451,7 @@ class pdarray:
                 raise IndexError("[int] {} is out of bounds with size {}".format(orig_key,self.size))
         if isinstance(key, slice):
             (start,stop,stride) = key.indices(self.size)
-            logger.debug(start,stop,stride)
+            logger.debug('start: {} stop: {} stride: {}'.format(start,stop,stride))
             repMsg = generic_msg("[slice] {} {} {} {}".format(self.name, start, stop, stride))
             return create_pdarray(cast(str,repMsg));
         if isinstance(key, pdarray):
@@ -488,7 +488,7 @@ class pdarray:
                                    self.format_other(value)))
         elif isinstance(key, slice):
             (start,stop,stride) = key.indices(self.size)
-            logger.debug(start,stop,stride)
+            logger.debug('start: {} stop: {} stride: {}'.format(start,stop,stride))
             if isinstance(value, pdarray):
                 generic_msg("[slice]=pdarray {} {} {} {} {}".\
                             format(self.name,start,stop,stride,value.name))
