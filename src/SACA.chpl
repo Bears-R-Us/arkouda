@@ -228,12 +228,4 @@ proc SuffixArraySkew(s:[] int, SA: [] int, n:int, K: int) {
 
 
 
-
-
-
-
-
-
-
-
 }
