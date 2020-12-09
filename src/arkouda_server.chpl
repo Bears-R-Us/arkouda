@@ -291,17 +291,19 @@ proc main() {
                 when "clear"             {repMsg = clearMsg(cmd, payload, st);}
                 when "connect" {
                     if authenticate {
-                        repMsg = "connected to arkouda server tcp://*:%t as user %s with token %s".format(ServerPort,user,token);
+                        repMsg = "connected to arkouda server tcp://*:%t as user %s with token %s".format(
+                                                          ServerPort,user,token);
                     } else {
                         repMsg = "connected to arkouda server tcp://*:%t".format(ServerPort);
                     }
+                    
                 }
                 when "disconnect" {
                     repMsg = "disconnected from arkouda server tcp://*:%t".format(ServerPort);
                 }
                 when "noop" {
                     repMsg = "noop";
-                    if v { writeln("no-op"); try! stdout.flush(); }
+                    logger.debug(getModuleName(),getRoutineName(),getLineNumber(),"no-op");
                 }
                 when "ruok" {
                     repMsg = "imok";

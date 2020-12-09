@@ -544,7 +544,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
             st.addEntry(vname, new shared SymEntry(newVals));
           }
           repMsg = "created %s+created %s".format(st.attrib(oname), st.attrib(vname));
-          if DEBUG {writeln(repMsg);}
+          logger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         }
         otherwise {return notImplementedError(pn, ltype, op, rtype);}
         }

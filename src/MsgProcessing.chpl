@@ -69,10 +69,13 @@ module MsgProcessing
         var rname = st.nextName();
         
         // if verbose print action
-        if v {try! writeln("%s %s %i : %s".format(cmd,dtype2str(dtype),size,rname)); try! stdout.flush();}
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+            "%s %s %i : %s".format(cmd,dtype2str(dtype),size,rname));
         // create and add entry to symbol table
         st.addEntry(rname, size, dtype);
         // response message
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                               "created %t".format(st.lookup(rname)));
         return try! "created " + st.attrib(rname);
     }
 
@@ -91,7 +94,8 @@ module MsgProcessing
         var repMsg: string; // response message
         // split request into fields
         var (name) = payload.decode().splitMsgToTuple(1);
-        if v {try! writeln("%s %s".format(cmd,name));try! stdout.flush();}
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                                            "%s %s".format(cmd,name));
         // delete entry from symbol table
         st.deleteEntry(name);
         return try! "deleted %s".format(name);
@@ -111,7 +115,7 @@ module MsgProcessing
     proc clearMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         var (_) = payload.decode().splitMsgToTuple(1); // split request into fields
-        if v {try! writeln("%s".format(cmd));try! stdout.flush();}
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "%s".format(cmd));
         st.clear();
         return "success";
     }
@@ -242,7 +246,8 @@ module MsgProcessing
         overMemLimit(8*len);
         // get next symbol name
         var rname = st.nextName();
-        if v {try! writeln("%s %i %i %i : %i , %s".format(cmd, start, stop, stride, len, rname));try! stdout.flush();}
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                       "%s %i %i %i : %i , %s".format(cmd, start, stop, stride, len, rname));
         
         var t1 = Time.getCurrentTime();
         var e = st.addEntry(rname, len, int);
@@ -282,7 +287,8 @@ module MsgProcessing
         overMemLimit(8*len);
         // get next symbol name
         var rname = st.nextName();
-        if v {try! writeln("%s %r %r %i : %r , %s".format(cmd, start, stop, len, stride, rname));try! stdout.flush();}
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                        "%s %r %r %i : %r , %s".format(cmd, start, stop, len, stride, rname));
 
         var t1 = Time.getCurrentTime();
         var e = st.addEntry(rname, len, real);
@@ -325,7 +331,8 @@ module MsgProcessing
             when (DType.Int64, DType.Int64) {
                 var e = toSymEntry(gEnt,int);
                 var val: int = try! value:int;
-                if v {try! writeln("%s %s to %t".format(cmd,name,val));try! stdout.flush();}
+                logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                      "%s %s to %t".format(cmd,name,val));
                 e.a = val;
                 repMsg = try! "set %s to %t".format(name, val);
             }

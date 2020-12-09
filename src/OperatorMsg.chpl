@@ -559,7 +559,7 @@ module OperatorMsg
 
         var left: borrowed GenSymEntry = st.lookup(aname);
         logger.debug(getModuleName(), getRoutineName(), getLineNumber(),
-                                          "LEFT: %t VALUE: %t DTYPE: %t".format(left, value,dtype));
+                                          "pdarray: %t scalar: %t".format(left, value));
         select (left.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
                 var l = toSymEntry(left,int);
@@ -972,9 +972,11 @@ module OperatorMsg
             otherwise {return unrecognizedTypeError(pn,
                                              "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");}
         }
+        
         var message = "created %s".format(st.attrib(rname));
 
-        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),message);
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+             "created pdarray %t from %s with scalar %t on pdarray".format(st.lookup(rname),op,value));
         return message;
     }
 

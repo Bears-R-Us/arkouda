@@ -27,6 +27,13 @@ module ArgSortMsg
     use SegmentedArray;
     use Reflection;
     use Errors;
+    use Logging;
+
+    if v {
+        logger.level = LogLevel.DEBUG;
+    } else {
+        logger.level = LogLevel.INFO;
+    }
     
     // thresholds for different sized sorts
     var lgSmall = 10;
@@ -447,6 +454,8 @@ module ArgSortMsg
       var (nstr, rest) = payload.decode().splitMsgToTuple(2);
       var n = nstr:int; // number of arrays to sort
       var fields = rest.split();
+      logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                  "number of arrays: %i fields: %t".format(n,fields));
       // Check that fields contains the stated number of arrays
       if (fields.size != 2*n) { 
           var errorMsg = incompatibleArgumentsError(pn, 

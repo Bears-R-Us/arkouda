@@ -279,7 +279,8 @@ module SegmentedArray {
       if (D != offsets.aD) {
         throw new owned OutOfBoundsError();
       }
-      if v {writeln("Computing lengths and offsets"); stdout.flush();}
+      logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                                       "Computing lengths and offsets");
       var t1 = getCurrentTime();
       ref oa = offsets.a;
       const low = offsets.aD.low, high = offsets.aD.high;

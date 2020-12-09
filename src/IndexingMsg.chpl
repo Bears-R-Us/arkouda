@@ -5,11 +5,20 @@ module IndexingMsg
 
     use Reflection;
     use Errors;
+    use Logging;
 
     use MultiTypeSymEntry;
     use MultiTypeSymbolTable;
 
     use CommAggregation;
+    
+    const logger = new Logger();
+
+    if v {
+        logger.level = LogLevel.DEBUG;
+    } else {
+        logger.level = LogLevel.INFO;
+    }
 
     /* intIndex "a[int]" response to __getitem__(int) */
     proc intIndexMsg(cmd: string, payload: bytes, st: borrowed SymTab):string throws {
@@ -18,11 +27,11 @@ module IndexingMsg
         // split request into fields
         var (name, idxStr) = payload.decode().splitMsgToTuple(2);
         var idx = try! idxStr:int;
-        if v {writeln("%s %s %i".format(cmd, name, idx));try! stdout.flush();}
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),"%s %s %i".format(cmd, name, idx));
 
-         var gEnt: borrowed GenSymEntry = st.lookup(name);
+        var gEnt: borrowed GenSymEntry = st.lookup(name);
          
-         select (gEnt.dtype) {
+        select (gEnt.dtype) {
              when (DType.Int64) {
                  var e = toSymEntry(gEnt, int);
                  return try! "item %s %t".format(dtype2str(e.dtype),e.a[idx]);
@@ -70,10 +79,15 @@ module IndexingMsg
         // BAD FORM start < stop and stride is negative
         else {slice = 1..0;}
 
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                         "pdarray to slice %t".format(st.lookup(name)));
+
         // get next symbol name
         var rname = st.nextName();
-
-        if v {writeln("%s %s %i %i %i : %t , %s".format(cmd, name, start, stop, stride, slice, rname));try! stdout.flush();}
+  
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                "cmd: %s name: %s start: %i stop: %i stride: %i slice: %t new name: %s".format(
+                cmd, name, start, stop, stride, slice, rname));
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
@@ -121,7 +135,8 @@ module IndexingMsg
         // get next symbol name
         var rname = st.nextName();
 
-        if v {writeln("%s %s %s : %s".format(cmd, name, iname, rname));try! stdout.flush();}
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                           "%s %s %s : %s".format(cmd, name, iname, rname));
 
         var gX: borrowed GenSymEntry = st.lookup(name);
         var gIV: borrowed GenSymEntry = st.lookup(iname);
@@ -178,7 +193,9 @@ module IndexingMsg
             }
             var iv: [truth.aD] int = (+ scan truth.a);
             var pop = iv[iv.size-1];
-            if v {writeln("pop = ",pop,"last-scan = ",iv[iv.size-1]);try! stdout.flush();}
+            logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                              "pop = %t last-scan = %t".format(pop,iv[iv.size-1]));
+
             var a = st.addEntry(rname, pop, XType);
             //[i in e.aD] if (truth.a[i] == true) {a.a[iv[i]-1] = e.a[i];}// iv[i]-1 for zero base index
             ref ead = e.aD;
@@ -234,11 +251,13 @@ module IndexingMsg
         var (name, idxStr, dtypeStr, value) = payload.decode().splitMsgToTuple(4);
         var idx = try! idxStr:int;
         var dtype = str2dtype(dtypeStr);
-        if v {writeln("%s %s %i %s %s".format(cmd, name, idx, dtype2str(dtype), value));try! stdout.flush();}
+        
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                               "%s %s %i %s %s".format(cmd, name, idx, dtype2str(dtype), value));
 
-         var gEnt: borrowed GenSymEntry = st.lookup(name);
+        var gEnt: borrowed GenSymEntry = st.lookup(name);
 
-         select (gEnt.dtype, dtype) {
+        select (gEnt.dtype, dtype) {
              when (DType.Int64, DType.Int64) {
                  var e = toSymEntry(gEnt,int);
                  var val = try! value:int;
@@ -294,7 +313,7 @@ module IndexingMsg
              }
              otherwise {
                  var errorMsg = notImplementedError(pn,
-                                                   "("+dtype2str(gEnt.dtype)+","+dtype2str(dtype)+")");
+                                                "("+dtype2str(gEnt.dtype)+","+dtype2str(dtype)+")");
                  writeln(generateErrorContext(
                                      msg=errorMsg, 
                                      lineNumber=getLineNumber(), 
@@ -315,7 +334,8 @@ module IndexingMsg
         var (name, iname, dtypeStr, value) = payload.decode().splitMsgToTuple(4);
         var dtype = str2dtype(dtypeStr);
 
-        if v {writeln("%s %s %s %s %s".format(cmd, name, iname, dtype2str(dtype), value));try! stdout.flush();}
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                              "%s %s %s %s %s".format(cmd, name, iname, dtype2str(dtype), value));
 
         var gX: borrowed GenSymEntry = st.lookup(name);
         var gIV: borrowed GenSymEntry = st.lookup(iname);
@@ -431,7 +451,8 @@ module IndexingMsg
         // split request into fields
         var (name, iname, yname) = payload.decode().splitMsgToTuple(3);
 
-        if v {writeln("%s %s %s %s".format(cmd, name, iname, yname));try! stdout.flush();}
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                             "%s %s %s %s".format(cmd, name, iname, yname));
 
         var gX: borrowed GenSymEntry = st.lookup(name);
         var gIV: borrowed GenSymEntry = st.lookup(iname);
@@ -504,7 +525,8 @@ module IndexingMsg
             var truth = toSymEntry(gIV,bool);
             var iv: [truth.aD] int = (+ scan truth.a);
             var pop = iv[iv.size-1];
-            if v {writeln("pop = ",pop,"last-scan = ",iv[iv.size-1]);try! stdout.flush();}
+            logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                         "pop = %t last-scan = %t".format(pop,iv[iv.size-1]));
             var y = toSymEntry(gY,t);
             if (y.size != pop) {
                 var errorMsg = "Error: %s: pop size mismatch %i %i".format(pn,pop,y.size);
@@ -581,8 +603,9 @@ module IndexingMsg
         // BAD FORM start < stop and stride is negative
         else {slice = 1..0;}
 
-        if v {writeln("%s %s %i %i %i %s %s".format(cmd, name, start, stop, 
-                                        stride, dtype2str(dtype), value));try! stdout.flush();}
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                       "%s %s %i %i %i %s %s".format(cmd, name, start, stop, stride, 
+                                  dtype2str(dtype), value));
         
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
@@ -674,8 +697,8 @@ module IndexingMsg
         // BAD FORM start < stop and stride is negative
         else {slice = 1..0;}
 
-        if v {writeln("%s %s %i %i %i %s".format(cmd, name, start, stop, 
-                                                      stride, yname)); try! stdout.flush();}
+        logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                        "%s %s %i %i %i %s".format(cmd, name, start, stop, stride, yname));
 
         var gX: borrowed GenSymEntry = st.lookup(name);
         var gY: borrowed GenSymEntry = st.lookup(yname);

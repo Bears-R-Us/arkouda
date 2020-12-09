@@ -6,6 +6,7 @@ module ConcatenateMsg
     use Math only;
     use Reflection;
     use Errors;
+    use Logging;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -13,6 +14,13 @@ module ConcatenateMsg
     use CommAggregation;
 
     use AryUtil;
+
+    const logger = new Logger();
+    if v {
+        logger.level = LogLevel.DEBUG;
+    } else {
+        logger.level = LogLevel.INFO;
+    }
 
     /* Concatenate a list of arrays together
        to form one array
@@ -25,6 +33,9 @@ module ConcatenateMsg
         var fields = rest.split();
         const low = fields.domain.low;
         var names = fields[low..];
+        
+        logger.debug(getModuleName(),getRoutineName(), getLineNumber(), 
+              "number of arrays: %i fields: %t low: %t names: %t".format(n,fields,low,names));
         // Check that fields contains the stated number of arrays
         if (n != names.size) { 
             var errorMsg = incompatibleArgumentsError(pn, 
@@ -51,9 +62,13 @@ module ConcatenateMsg
                     (name, valName) = rawName.splitMsgToTuple('+', 2);
                     var gval = st.lookup(valName);
                     nbytes += gval.size;
+                    logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                             "name: %s valName: %s".format(name,valName));
                 }
                 when "pdarray" {
                     name = rawName;
+                    logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                 "pdarray name %s".format(rawName));
                 }
                 otherwise { 
                     var errorMsg = notImplementedError(pn, objtype); 
@@ -112,10 +127,14 @@ module ConcatenateMsg
                     segStart += thisSegs.size;
                     valStart += thisVals.size;
                 }
-                return "created " + st.attrib(segName) + "+created " + st.attrib(valName);
+                var repMsg = "created " + st.attrib(segName) + "+created " + st.attrib(valName);
+                logger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+                return repMsg;
             }
             when "pdarray" {
                 var rname = st.nextName();
+                logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                             "creating pdarray %s of type %t".format(rname,dtype));
                 select (dtype) {
                     when DType.Int64 {
                         // create array to copy into
@@ -194,5 +213,4 @@ module ConcatenateMsg
             }
         }
     }
-    
 }
