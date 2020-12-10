@@ -310,6 +310,10 @@ class StringTest(ArkoudaTest):
         x, w = tuple(zip(*Counter(''.join(self.base_words.to_ndarray())).items()))
         self.delim =  np.random.choice(x, p=(np.array(w)/sum(w)))
         self.akset = set(ak.unique(self.strings).to_ndarray())
+        self.gremlins_base_words = base_words = ak.concatenate((base_words1, base_words2, gremlins))
+        self.gremlins_strings = ak.concatenate((base_words[choices], gremlins))
+        self.gremlins_test_strings = self.gremlins_strings.to_ndarray()
+        self.gremlins_cat = ak.Categorical(self.gremlins_strings)
 
     def test_compare_strings(self):
         assert compare_strings(self.base_words.to_ndarray(), self.np_base_words)
@@ -325,9 +329,11 @@ class StringTest(ArkoudaTest):
 
     def test_groupby(self):
         run_test_groupby(self.strings, self.cat, self.akset)
-    
+
     def test_index(self):
         run_test_index(self.strings, self.test_strings, self.cat, range(-len(self.gremlins), 0))
+        run_test_index(self.gremlins_strings, self.gremlins_test_strings, self.gremlins_cat, 
+                       range(-len(self.gremlins), 0))
         
     def test_slice(self):
         run_test_slice(self.strings, self.test_strings, self.cat)
@@ -343,6 +349,14 @@ class StringTest(ArkoudaTest):
 
     def test_ends_with(self):
         run_test_ends_with(self.strings, self.test_strings, self.delim)
+        
+        # Test for expected errors for gremlins delimiters
+        with self.assertRaises(AttributeError):
+            run_test_ends_with(self.gremlins_strings, self.test_strings, ' ')       
+        with self.assertRaises(AttributeError):
+            run_test_ends_with(self.gremlins_strings, self.test_strings, '')     
+        with self.assertRaises(AttributeError):
+            run_test_ends_with(self.gremlins_strings, self.test_strings, '"')  
         
     def test_error_handling(self):
         stringsOne = ak.random_strings_uniform(1, 10, UNIQUE, 
@@ -387,7 +401,21 @@ class StringTest(ArkoudaTest):
 
     def test_peel(self):
         run_test_peel(self.strings, self.test_strings, self.delim)
+        
+        # Test for expected errors for gremlins delimiters
+        with self.assertRaises(AssertionError):
+            run_test_peel(self.gremlins_strings, self.gremlins_test_strings, ' ')       
+        with self.assertRaises(ValueError):
+            run_test_peel(self.gremlins_strings, self.gremlins_test_strings, '')  
+        # Passing in '"' as a delimiter causes the Arkouda server to hang
 
-    @pytest.mark.skip(reason="awaiting bug fix.")
     def test_stick(self):
         run_test_stick(self.strings, self.test_strings, self.base_words, self.delim)
+ 
+        # Test for expected errors for gremlins delimiters    
+        with self.assertRaises(RuntimeError):   
+            run_test_stick(self.gremlins_strings, self.gremlins_test_strings, self.base_words, ' ')
+        with self.assertRaises(RuntimeError):   
+            run_test_stick(self.gremlins_strings, self.gremlins_test_strings, self.base_words, '')
+        with self.assertRaises(RuntimeError):   
+            run_test_stick(self.gremlins_strings, self.gremlins_test_strings, self.base_words, '"')
