@@ -222,11 +222,11 @@ if __name__ == '__main__':
     base_words1 = ak.random_strings_uniform(1, 10, UNIQUE, characters='printable')
     base_words2 = ak.random_strings_lognormal(2, 0.25, UNIQUE, characters='printable')
     gremlins = ak.array(['"', ' ', ''])
-    base_words = ak.concatenate((base_words1, base_words2, gremlins))
+    base_words = ak.concatenate((base_words1, base_words2))
     np_base_words = np.hstack((base_words1.to_ndarray(), base_words2.to_ndarray()))
     assert(compare_strings(base_words.to_ndarray(), np_base_words))
     choices = ak.randint(0, base_words.size, N)
-    strings = ak.concatenate((base_words[choices], gremlins))
+    strings = base_words[choices]
     test_strings = strings.to_ndarray()
     cat = ak.Categorical(strings)
     print("strings =", strings)
@@ -301,10 +301,10 @@ class StringTest(ArkoudaTest):
         base_words2 = ak.random_strings_lognormal(2, 0.25, UNIQUE, characters='printable')
         gremlins = ak.array(['"', ' ', ''])
         self.gremlins = gremlins
-        self.base_words = ak.concatenate((base_words1, base_words2, gremlins))
+        self.base_words = ak.concatenate((base_words1, base_words2))
         self.np_base_words = np.hstack((base_words1.to_ndarray(), base_words2.to_ndarray()))
         choices = ak.randint(0, self.base_words.size, N)
-        self.strings = ak.concatenate((self.base_words[choices], gremlins))
+        self.strings = self.base_words[choices]
         self.test_strings = self.strings.to_ndarray()
         self.cat = ak.Categorical(self.strings)
         x, w = tuple(zip(*Counter(''.join(self.base_words.to_ndarray())).items()))
@@ -326,7 +326,6 @@ class StringTest(ArkoudaTest):
     def test_groupby(self):
         run_test_groupby(self.strings, self.cat, self.akset)
     
-    #@pytest.mark.skip(reason="awaiting bug fix.")
     def test_index(self):
         run_test_index(self.strings, self.test_strings, self.cat, range(-len(self.gremlins), 0))
         
@@ -342,7 +341,6 @@ class StringTest(ArkoudaTest):
     def test_starts_with(self):
         run_test_starts_with(self.strings, self.test_strings, self.delim)
 
-    @pytest.mark.skip(reason="awaiting bug fix.")
     def test_ends_with(self):
         run_test_ends_with(self.strings, self.test_strings, self.delim)
         
@@ -387,7 +385,6 @@ class StringTest(ArkoudaTest):
         self.assertEqual('times must be >= 1', 
                          cm.exception.args[0])  
 
-    @pytest.mark.skip(reason="awaiting bug fix.")
     def test_peel(self):
         run_test_peel(self.strings, self.test_strings, self.delim)
 
