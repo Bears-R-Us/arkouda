@@ -49,6 +49,14 @@ The list of reductions supported on ``pdarray`` objects is:
 
 .. automethod:: arkouda.pdarray.std
 
+.. automethod:: arkouda.pdarray.mink
+
+.. automethod:: arkouda.pdarray.maxk
+
+.. automethod:: arkouda.pdarray.argmink
+
+.. automethod:: arkouda.pdarray.argmaxk
+
    
 Histogram
 =========
