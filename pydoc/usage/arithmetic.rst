@@ -76,6 +76,14 @@ Reductions return a scalar value.
 
 .. autofunction:: arkouda.std
 
+.. autofunction:: arkouda.mink
+
+.. autofunction:: arkouda.maxk
+
+.. autofunction:: arkouda.argmink
+
+.. autofunction:: arkouda.argmaxk
+
 Where
 =====
 
