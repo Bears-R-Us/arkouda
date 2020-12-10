@@ -334,6 +334,7 @@ class StringTest(ArkoudaTest):
         run_test_index(self.strings, self.test_strings, self.cat, range(-len(self.gremlins), 0))
         run_test_index(self.gremlins_strings, self.gremlins_test_strings, self.gremlins_cat, 
                        range(-len(self.gremlins), 0))
+        print("passed test_index")
         
     def test_slice(self):
         run_test_slice(self.strings, self.test_strings, self.cat)
@@ -343,9 +344,11 @@ class StringTest(ArkoudaTest):
 
     def test_contains(self):
         run_test_contains(self.strings, self.test_strings, self.delim)
+        print('passed test_contains')
         
     def test_starts_with(self):
         run_test_starts_with(self.strings, self.test_strings, self.delim)
+        print('passed starts_with')
 
     def test_ends_with(self):
         run_test_ends_with(self.strings, self.test_strings, self.delim)
@@ -356,7 +359,8 @@ class StringTest(ArkoudaTest):
         with self.assertRaises(AttributeError):
             run_test_ends_with(self.gremlins_strings, self.test_strings, '')     
         with self.assertRaises(AttributeError):
-            run_test_ends_with(self.gremlins_strings, self.test_strings, '"')  
+            run_test_ends_with(self.gremlins_strings, self.test_strings, '"') 
+        print('passed test_ends_with') 
         
     def test_error_handling(self):
         stringsOne = ak.random_strings_uniform(1, 10, UNIQUE, 
@@ -398,6 +402,7 @@ class StringTest(ArkoudaTest):
             stringsOne.peel("",-5)
         self.assertEqual('times must be >= 1', 
                          cm.exception.args[0])  
+        print('passed error handling')
 
     def test_peel(self):
         run_test_peel(self.strings, self.test_strings, self.delim)
@@ -408,6 +413,7 @@ class StringTest(ArkoudaTest):
         with self.assertRaises(ValueError):
             run_test_peel(self.gremlins_strings, self.gremlins_test_strings, '')  
         # Passing in '"' as a delimiter causes the Arkouda server to hang
+        print('passed test_peel')
 
     def test_stick(self):
         run_test_stick(self.strings, self.test_strings, self.base_words, self.delim)
@@ -419,3 +425,4 @@ class StringTest(ArkoudaTest):
             run_test_stick(self.gremlins_strings, self.gremlins_test_strings, self.base_words, '')
         with self.assertRaises(RuntimeError):   
             run_test_stick(self.gremlins_strings, self.gremlins_test_strings, self.base_words, '"')
+        print('passed test_stick')
