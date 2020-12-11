@@ -17,12 +17,12 @@ module SegmentedArray {
   use Logging;
   use Errors;
 
-  const logger = new Logger();
+  const saLogger = new Logger();
   
   if v {
-      logger.level = LogLevel.DEBUG;
+      saLogger.level = LogLevel.DEBUG;
   } else {
-      logger.level = LogLevel.INFO;
+      saLogger.level = LogLevel.INFO;
   }
 
   private config const DEBUG = false;
@@ -115,14 +115,14 @@ module SegmentedArray {
     proc show(n: int = 3) throws {
       if (size >= 2*n) {
         for i in 0..#n {
-            logger.info(getModuleName(),getRoutineName(),getLineNumber(),this[i]);
+            saLogger.info(getModuleName(),getRoutineName(),getLineNumber(),this[i]);
         }
         for i in size-n..#n {
-            logger.info(getModuleName(),getRoutineName(),getLineNumber(),this[i]);
+            saLogger.info(getModuleName(),getRoutineName(),getLineNumber(),this[i]);
         }
       } else {
         for i in 0..#size {
-            logger.info(getModuleName(),getRoutineName(),getLineNumber(),this[i]);
+            saLogger.info(getModuleName(),getRoutineName(),getLineNumber(),this[i]);
         }
       }
     }
@@ -199,7 +199,7 @@ module SegmentedArray {
       if (ivMin < 0) || (ivMax >= offsets.size) {
         throw new owned OutOfBoundsError();
       }
-      logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                               "Computing lengths and offsets");
       var t1 = getCurrentTime();
       ref oa = offsets.a;
@@ -224,9 +224,9 @@ module SegmentedArray {
       var retBytes = gatheredOffsets[D.high];
       gatheredOffsets -= gatheredLengths;
       
-      logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                                   "%i seconds".format(getCurrentTime() - t1));
-      logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Copying values");
+      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Copying values");
       if v {
           t1 = getCurrentTime();
       }
@@ -279,7 +279,7 @@ module SegmentedArray {
       if (D != offsets.aD) {
         throw new owned OutOfBoundsError();
       }
-      logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                                        "Computing lengths and offsets");
       var t1 = getCurrentTime();
       ref oa = offsets.a;
@@ -370,7 +370,7 @@ module SegmentedArray {
       var t = new Timer();
       if useHash {
         // Hash all strings
-        logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Hashing strings"); 
+        saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Hashing strings"); 
         if v { t.start(); }
         var hashes = this.hash();
         if v { t.stop(); writeln("hashing took %t seconds\nSorting hashes".format(t.elapsed())); stdout.flush(); t.clear(); t.start(); }
@@ -667,7 +667,7 @@ module SegmentedArray {
       const ref D = offsets.aD;
       const ref va = values.a;
       if checkSorted && isSorted() {
-          logger.warn(getModuleName(),getRoutineName(),getLineNumber(),
+          saLogger.warn(getModuleName(),getRoutineName(),getLineNumber(),
                                                    "argsort called on already sorted array");
           var ranks: [D] int = [i in D] i;
           return ranks;
@@ -830,15 +830,15 @@ module SegmentedArray {
     }
     // Hash all strings for fast comparison
     var t = new Timer();
-    logger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Hashing strings");
+    saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Hashing strings");
     if v { t.start(); }
     const hashes = mainStr.hash();
     if v {
         t.stop(); 
-        logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+        saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                                 "%t seconds".format(t.elapsed())); 
         t.clear();
-        logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+        saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                            "Making associative domains for test set on each locale");
         t.start();
     }
@@ -898,7 +898,7 @@ module SegmentedArray {
       const (uoMain, uvMain, cMain, revIdx) = uniqueGroup(mainStr, returnInverse=true);
       const (uoTest, uvTest, cTest, revTest) = uniqueGroup(testStr);
       const (segs, vals) = concat(uoMain, uvMain, uoTest, uvTest);
-      logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
            "Unique strings in first array: %t\nUnique strings in second array: %t\nConcat length: %t".format(uoMain.size, 
                                                                                           uoTest.size, segs.size));
       var st = new owned SymTab();

@@ -1,6 +1,7 @@
 module SegmentedMsg {
   use Reflection;
   use Errors;
+  use Logging;
   use SegmentedArray;
   use ServerErrorStrings;
   use ServerConfig;
@@ -11,6 +12,14 @@ module SegmentedMsg {
   use GenSymIO only jsonToPdArray;
 
   private config const DEBUG = false;
+  
+  const smLogger = new Logger();
+  
+  if v {
+      smLogger.level = LogLevel.DEBUG;
+  } else {
+      smLogger.level = LogLevel.INFO;
+  }
 
   proc randomStringsMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
       var pn = Reflection.getRoutineName();
@@ -544,7 +553,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
             st.addEntry(vname, new shared SymEntry(newVals));
           }
           repMsg = "created %s+created %s".format(st.attrib(oname), st.attrib(vname));
-          logger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         }
         otherwise {return notImplementedError(pn, ltype, op, rtype);}
         }

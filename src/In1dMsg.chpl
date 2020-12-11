@@ -5,12 +5,20 @@ module In1dMsg
 
     use Reflection;
     use Errors;
+    use Logging;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
 
     use In1d;
+
+    var iLogger = new Logger();
+    if v {
+        iLogger.level = LogLevel.DEBUG;
+    } else {
+        iLogger.level = LogLevel.INFO;    
+    }
     
     /*
     Small bound const. Brute force in1d implementation recommended.
@@ -25,7 +33,8 @@ module In1dMsg
     /* in1d takes two pdarray and returns a bool pdarray
        with the "in"/contains for each element tested against the second pdarray.
        
-       in1dMsg processes the request, considers the size of the arguements, and decides which implementation
+       in1dMsg processes the request, considers the size of the arguements, and decides 
+       which implementation
        of in1d to utilize.
     */
     proc in1dMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
@@ -34,25 +43,24 @@ module In1dMsg
         // split request into fields
         var (name, sname, flag) = payload.decode().splitMsgToTuple(3);
         var invert: bool;
+        
         if flag == "True" {invert = true;}
         else if flag == "False" {invert = false;}
         else {
             var errorMsg = "Error: %s: %s".format(pn,flag);
-            writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IllegalArgumentError"));    
+            iLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return errorMsg;         
         }
 
         // get next symbol name
         var rname = st.nextName();
-        if v {try! writeln("%s %s %s %s : %s".format(cmd, name, sname, invert, rname));try! stdout.flush();}
 
         var gAr1: borrowed GenSymEntry = st.lookup(name);
         var gAr2: borrowed GenSymEntry = st.lookup(sname);
+        
+        iLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                        "cmd: %s pdarray1: %t pdarray2: %t invert: %t new pdarray name: %t".format(
+                                   cmd,gAr1,gAr2,invert,rname));
 
         select (gAr1.dtype, gAr2.dtype) {
             when (DType.Int64, DType.Int64) {
@@ -64,8 +72,8 @@ module In1dMsg
 
                 // brute force if below small bound
                 if (ar2.size <= sBound) {
-                    if v {try! writeln("%t <= %t, using GlobalAr2Bcast".format(ar2.size,sBound)); try! stdout.flush();}
-
+                    iLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                           "%t <= %t, using GlobalAr2Bcast".format(ar2.size,sBound));                    
                     var truth = in1dGlobalAr2Bcast(ar1.a, ar2.a);
                     if (invert) {truth = !truth;}
                     
@@ -73,8 +81,8 @@ module In1dMsg
                 }
                 // per locale assoc domain if below medium bound
                 else if (ar2.size <= mBound) {
-                    if v {try! writeln("%t <= %t, using Ar2PerLocAssoc".format(ar2.size,mBound)); try! stdout.flush();}
-                    
+                    iLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                               "%t <= %t, using Ar2PerLocAssoc".format(ar2.size,mBound));                  
                     var truth = in1dAr2PerLocAssoc(ar1.a, ar2.a);
                     if (invert) {truth = !truth;}
                     
@@ -82,22 +90,17 @@ module In1dMsg
                 }
                 // sort-based strategy if above medium bound
                 else {
-                    if v {try! writeln("%t > %t, using sort-based strategy".format(ar2.size, mBound)); try! stdout.flush();}
+                    iLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                          "%t > %t, using sort-based strategy".format(ar2.size, mBound));
                     var truth = in1dSort(ar1.a, ar2.a);
                     if (invert) {truth = !truth;}
 
                     st.addEntry(rname, new shared SymEntry(truth));
                 }
-                
             }
             otherwise {
                 var errorMsg = notImplementedError(pn,gAr1.dtype,"in",gAr2.dtype);
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
+                iLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return errorMsg;
             }
         }

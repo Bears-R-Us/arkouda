@@ -20,12 +20,12 @@ use Reflection;
 use SymArrayDmap;
 use ServerErrorStrings;
 
-const logger = new Logger();
+const asLogger = new Logger();
 
 if v {
-    logger.level = LogLevel.DEBUG;
+    asLogger.level = LogLevel.DEBUG;
 } else {
-    logger.level = LogLevel.INFO;
+    asLogger.level = LogLevel.INFO;
 }
 
 proc initArkoudaDirectory() {
@@ -35,18 +35,18 @@ proc initArkoudaDirectory() {
 }
 
 proc main() {
-    logger.info(getModuleName(), getRoutineName(), getLineNumber(),
+    asLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
                                                "arkouda server version = %s".format(arkoudaVersion));
-    logger.info(getModuleName(), getRoutineName(), getLineNumber(),
+    asLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
                                                "memory tracking = %t".format(memTrack));
     const arkDirectory = initArkoudaDirectory();
-    logger.info(getModuleName(), getRoutineName(), getLineNumber(),
+    asLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
                                        "initialized the .arkouda directory %s".format(arkDirectory));
 
     if (memTrack) {
-        logger.info(getModuleName(), getRoutineName(), getLineNumber(), 
+        asLogger.info(getModuleName(), getRoutineName(), getLineNumber(), 
                                                "getMemLimit() %i".format(getMemLimit()));
-        logger.info(getModuleName(), getRoutineName(), getLineNumber(), 
+        asLogger.info(getModuleName(), getRoutineName(), getLineNumber(), 
                                                "bytes of memoryUsed() = %i".format(memoryUsed()));
     }
 
@@ -70,7 +70,7 @@ proc main() {
 
     socket.bind("tcp://*:%t".format(ServerPort));
 
-    logger.info(getModuleName(), getRoutineName(), getLineNumber(), serverMessage);
+    asLogger.info(getModuleName(), getRoutineName(), getLineNumber(), serverMessage);
     
     createServerConnectionInfo();
 
@@ -90,10 +90,10 @@ proc main() {
         repCount += 1;
         if logging {
           if t==bytes {
-              logger.info(getModuleName(),getRoutineName(),getLineNumber(),
+              asLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
                                                         "repMsg: <binary-data>");
           } else {
-              logger.info(getModuleName(),getRoutineName(),getLineNumber(), 
+              asLogger.info(getModuleName(),getRoutineName(),getLineNumber(), 
                                                         "repMsg: %s".format(repMsg));
           }
         }
@@ -168,7 +168,7 @@ proc main() {
             try! {
                  cmdStr = cmdRaw.decode();
             } catch e: DecodeError {
-               logger.error(getModuleName(),getRoutineName(),getLineNumber(),
+               asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                        "illegal byte sequence in command: %t".format(cmdRaw.decode(decodePolicy.replace)));
                sendRepMsg(unknownError(e.message()));
             }
@@ -188,11 +188,11 @@ proc main() {
             if (logging) {
               try {
                 if (cmd != "array") {
-                  logger.info(getModuleName(), getRoutineName(), getLineNumber(),
-                                                     ">>> %s %s".format(cmd, 
+                  asLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
+                                                     ">>> %t %t".format(cmd, 
                                                     payload.decode(decodePolicy.replace)));
                 } else {
-                  logger.info(getModuleName(), getRoutineName(), getLineNumber(),
+                  asLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
                                                      ">>> %s [binary data]".format(cmd));
                 }
               } catch {
@@ -204,16 +204,16 @@ proc main() {
             if cmd == "shutdown" {
                 shutdown();
                 if (logging) {
-                    logger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                    asLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
                                          "<<< shutdown took %.17r sec".format(t1.elapsed() - s0));
                 }
                 break;
             }
 
             /*
-            Declare the repMsg and binaryRepMsg variables, one of which is sent to sendRepMsg
-            depending upon whether a string (repMsg) or bytes (binarRepMsg) is to be returned.
-            */
+             * Declare the repMsg and binaryRepMsg variables, one of which is sent to sendRepMsg
+             * depending upon whether a string (repMsg) or bytes (binarRepMsg) is to be returned.
+             */
             var binaryRepMsg: bytes;
             var repMsg: string;
 
@@ -303,13 +303,14 @@ proc main() {
                 }
                 when "noop" {
                     repMsg = "noop";
-                    logger.debug(getModuleName(),getRoutineName(),getLineNumber(),"no-op");
+                    asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"no-op");
                 }
                 when "ruok" {
                     repMsg = "imok";
                 }
                 otherwise {
                     repMsg = "Error: unrecognized command: %s".format(cmd);
+                    asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
                 }
             }
 
@@ -325,23 +326,23 @@ proc main() {
              * the time to do so
              */
             if logging {
-                logger.info(getModuleName(),getRoutineName(),getLineNumber(), 
+                asLogger.info(getModuleName(),getRoutineName(),getLineNumber(), 
                                                   "<<< %s took %.17r sec".format(cmd, t1.elapsed() - s0));
             }
             if (logging && memTrack) {
-                logger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                asLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
                        "bytes of memory used after command %t".format(memoryUsed():uint * numLocales:uint));
             }
         } catch (e: ErrorWithMsg) {
             sendRepMsg(e.msg);
             if logging {
-                logger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                       "<<< %s resulted in error %s in  %.17r sec".format(cmd, e.msg, t1.elapsed() - s0));
+                asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                    "<<< %s resulted in error %s in  %.17r sec".format(cmd, e.msg, t1.elapsed() - s0));
             }
         } catch (e: Error) {
             sendRepMsg(unknownError(e.message()));
             if logging {
-                logger.error(getModuleName(), getRoutineName(), getLineNumber(), 
+                asLogger.error(getModuleName(), getRoutineName(), getLineNumber(), 
                     "<<< %s resulted in error: %s in %.17r sec".format(cmd, e.message(),t1.elapsed() - s0));
             }
         }
@@ -351,7 +352,7 @@ proc main() {
 
     deleteServerConnectionInfo();
 
-    logger.info(getModuleName(), getRoutineName(), getLineNumber(),
+    asLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
                "requests = %i responseCount = %i elapsed sec = %i".format(reqCount,repCount,t1.elapsed()));
 }
 

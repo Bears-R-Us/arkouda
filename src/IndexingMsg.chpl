@@ -12,12 +12,12 @@ module IndexingMsg
 
     use CommAggregation;
     
-    const logger = new Logger();
+    const imLogger = new Logger();
 
     if v {
-        logger.level = LogLevel.DEBUG;
+        imLogger.level = LogLevel.DEBUG;
     } else {
-        logger.level = LogLevel.INFO;
+        imLogger.level = LogLevel.INFO;
     }
 
     /* intIndex "a[int]" response to __getitem__(int) */
@@ -27,8 +27,8 @@ module IndexingMsg
         // split request into fields
         var (name, idxStr) = payload.decode().splitMsgToTuple(2);
         var idx = try! idxStr:int;
-        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),"%s %s %i".format(cmd, name, idx));
-
+        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                        "%s %s %i".format(cmd, name, idx));
         var gEnt: borrowed GenSymEntry = st.lookup(name);
          
         select (gEnt.dtype) {
@@ -49,12 +49,7 @@ module IndexingMsg
              }
              otherwise {
                  var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
-                 writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));  
+                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                  return errorMsg;               
              }
          }
@@ -79,17 +74,13 @@ module IndexingMsg
         // BAD FORM start < stop and stride is negative
         else {slice = 1..0;}
 
-        logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                         "pdarray to slice %t".format(st.lookup(name)));
-
         // get next symbol name
         var rname = st.nextName();
-  
-        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                "cmd: %s name: %s start: %i stop: %i stride: %i slice: %t new name: %s".format(
-                cmd, name, start, stop, stride, slice, rname));
-
         var gEnt: borrowed GenSymEntry = st.lookup(name);
+        
+        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            "cmd: %s pdarray to slice: %t start: %i stop: %i stride: %i slice: %t new name: %s".format(
+                       cmd, gEnt, start, stop, stride, slice, rname));
 
         proc sliceHelper(type t) throws {
             var e = toSymEntry(gEnt,t);
@@ -99,6 +90,8 @@ module IndexingMsg
             forall (elt,j) in zip(aa, slice) with (var agg = newSrcAggregator(t)) {
               agg.copy(elt,ea[j]);
             }
+            imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                             "Created pdarray from slice operation %t".format(st.lookup(rname)));
             return try! "created " + st.attrib(rname);
         }
         
@@ -114,12 +107,7 @@ module IndexingMsg
             }
             otherwise {
                 var errorMsg = notImplementedError(pn,dtype2str(gEnt.dtype));
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));  
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return errorMsg;              
             }
         }
@@ -135,11 +123,11 @@ module IndexingMsg
         // get next symbol name
         var rname = st.nextName();
 
-        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                           "%s %s %s : %s".format(cmd, name, iname, rname));
-
         var gX: borrowed GenSymEntry = st.lookup(name);
         var gIV: borrowed GenSymEntry = st.lookup(iname);
+        
+        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                           "cmd: %s name: %s gX: %t gIV: %t".format(cmd, name, gX, gIV));       
 
         // gather indexing by integer index vector
         proc ivInt64Helper(type XType) throws {
@@ -153,22 +141,12 @@ module IndexingMsg
             var ivMax = max reduce iv.a;
             if ivMin < 0 {
                 var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IncompatibleArgumentsError")); 
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return errorMsg;                
             }
             if ivMax >= e.size {
                 var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMin,e.size-1);
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IncompatibleArgumentsError"));                
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);             
                 return errorMsg;
             }
             var a = st.addEntry(rname, iv.size, XType);
@@ -193,7 +171,7 @@ module IndexingMsg
             }
             var iv: [truth.aD] int = (+ scan truth.a);
             var pop = iv[iv.size-1];
-            logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+            imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                               "pop = %t last-scan = %t".format(pop,iv[iv.size-1]));
 
             var a = st.addEntry(rname, pop, XType);
@@ -232,12 +210,7 @@ module IndexingMsg
             otherwise {
                 var errorMsg = notImplementedError(pn,
                                        "("+dtype2str(gX.dtype)+","+dtype2str(gIV.dtype)+")");
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return errorMsg;
             }
         }
@@ -252,7 +225,7 @@ module IndexingMsg
         var idx = try! idxStr:int;
         var dtype = str2dtype(dtypeStr);
         
-        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+        imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                                "%s %s %i %s %s".format(cmd, name, idx, dtype2str(dtype), value));
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
@@ -314,12 +287,7 @@ module IndexingMsg
              otherwise {
                  var errorMsg = notImplementedError(pn,
                                                 "("+dtype2str(gEnt.dtype)+","+dtype2str(dtype)+")");
-                 writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
+                 imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                  return errorMsg;                                                   
              }
          }
@@ -334,11 +302,11 @@ module IndexingMsg
         var (name, iname, dtypeStr, value) = payload.decode().splitMsgToTuple(4);
         var dtype = str2dtype(dtypeStr);
 
-        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              "%s %s %s %s %s".format(cmd, name, iname, dtype2str(dtype), value));
-
         var gX: borrowed GenSymEntry = st.lookup(name);
         var gIV: borrowed GenSymEntry = st.lookup(iname);
+        
+        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                              "cmd: %s gX: %t gIV: %t value: %s".format(cmd,gX,gIV,value));
 
         // scatter indexing by integer index vector
         proc ivInt64Helper(type Xtype, type dtype): string throws {
@@ -348,22 +316,12 @@ module IndexingMsg
             var ivMax = max reduce iv.a;
             if ivMin < 0 {
                 var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IncompatibleArgumentsError")); 
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return errorMsg;
             }
             if ivMax >= e.size {
                 var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IncompatibleArgumentsError")); 
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return errorMsg;   
             }
             if isBool(dtype) {
@@ -387,12 +345,7 @@ module IndexingMsg
             if (e.size != truth.size) {
                 var errorMsg = "Error: %s: bool iv must be same size %i != %i".format(pn,e.size,
                                                                                     truth.size);
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IncompatibleArgumentsError"));   
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return errorMsg;                                                                
             }
             if isBool(dtype) {
@@ -433,12 +386,7 @@ module IndexingMsg
             otherwise {
                 var errorMsg = notImplementedError(pn,
                       "("+dtype2str(gX.dtype)+","+dtype2str(gIV.dtype)+","+dtype2str(dtype)+")");
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return errorMsg;                      
             }
         }
@@ -451,12 +399,12 @@ module IndexingMsg
         // split request into fields
         var (name, iname, yname) = payload.decode().splitMsgToTuple(3);
 
-        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                             "%s %s %s %s".format(cmd, name, iname, yname));
-
         var gX: borrowed GenSymEntry = st.lookup(name);
         var gIV: borrowed GenSymEntry = st.lookup(iname);
         var gY: borrowed GenSymEntry = st.lookup(yname);
+        
+        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                             "cmd: %s gX: %t gIV: %t gY: %t".format(cmd, gX, gIV, gY));
 
         // add check for IV to be dtype of int64 or bool
 
@@ -465,12 +413,7 @@ module IndexingMsg
             // add check to make syre IV and Y are same size
             if (gIV.size != gY.size) {
                 var errorMsg = "Error: %s: size mismatch %i %i".format(pn,gIV.size,gY.size);
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IncompatibleArgumentsError"));
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return errorMsg;     
             }
             var e = toSymEntry(gX,t);
@@ -480,22 +423,12 @@ module IndexingMsg
             var y = toSymEntry(gY,t);
             if ivMin < 0 {
                 var errorMsg = "Error: %s: OOBindex %i < 0".format(pn,ivMin);
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IncompatibleArgumentsError"));   
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
                 return errorMsg;  
             }
             if ivMax >= e.size {
                 var errorMsg = "Error: %s: OOBindex %i > %i".format(pn,ivMax,e.size-1);
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IncompatibleArgumentsError"));            
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
                 return errorMsg;
             }
             //[(i,v) in zip(iv.a,y.a)] e.a[i] = v;
@@ -513,29 +446,19 @@ module IndexingMsg
             // add check to make syre IV and Y are same size
             if (gIV.size != gX.size) {
                 var errorMsg = "Error: %s: size mismatch %i %i".format(pn,gIV.size,gX.size);
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IncompatibleArgumentsError")); 
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return errorMsg;                
             }
             var e = toSymEntry(gX,t);
             var truth = toSymEntry(gIV,bool);
             var iv: [truth.aD] int = (+ scan truth.a);
             var pop = iv[iv.size-1];
-            logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+            imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                          "pop = %t last-scan = %t".format(pop,iv[iv.size-1]));
             var y = toSymEntry(gY,t);
             if (y.size != pop) {
                 var errorMsg = "Error: %s: pop size mismatch %i %i".format(pn,pop,y.size);
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IncompatibleArgumentsError")); 
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return errorMsg;                
             }
             ref ya = y.a;
@@ -572,12 +495,7 @@ module IndexingMsg
             otherwise {
                 var errorMsg = notImplementedError(pn,
                      "("+dtype2str(gX.dtype)+","+dtype2str(gIV.dtype)+","+dtype2str(gY.dtype)+")");
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IncompatibleArgumentsError")); 
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return errorMsg;                    
             }
         }
@@ -603,7 +521,7 @@ module IndexingMsg
         // BAD FORM start < stop and stride is negative
         else {slice = 1..0;}
 
-        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                        "%s %s %i %i %i %s %s".format(cmd, name, start, stop, stride, 
                                   dtype2str(dtype), value));
         
@@ -666,12 +584,7 @@ module IndexingMsg
             otherwise {
                 var errorMsg = notImplementedError(pn,
                                         "("+dtype2str(gEnt.dtype)+","+dtype2str(dtype)+")");
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IncompatibleArgumentsError")); 
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return errorMsg;                                        
             }
         }
@@ -697,7 +610,7 @@ module IndexingMsg
         // BAD FORM start < stop and stride is negative
         else {slice = 1..0;}
 
-        logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                         "%s %s %i %i %i %s".format(cmd, name, start, stop, stride, yname));
 
         var gX: borrowed GenSymEntry = st.lookup(name);
@@ -706,12 +619,7 @@ module IndexingMsg
         // add check to make syre IV and Y are same size
         if (slice.size != gY.size) {      
             var errorMsg = "Error: %s: size mismatch %i %i".format(pn,slice.size, gY.size);
-            writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IncompatibleArgumentsError"));             
+            imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);        
             return errorMsg;
         }
 
@@ -764,12 +672,7 @@ module IndexingMsg
             otherwise {
                 var errorMsg = notImplementedError(pn,
                                      "("+dtype2str(gX.dtype)+","+dtype2str(gY.dtype)+")");
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));  
+                imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return errorMsg;                                          
             }
         }

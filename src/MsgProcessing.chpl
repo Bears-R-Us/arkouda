@@ -35,12 +35,12 @@ module MsgProcessing
     public use KExtremeMsg;
     public use CastMsg;
     
-    const logger = new Logger();
+    const mpLogger = new Logger();
     
     if v {
-        logger.level = LogLevel.DEBUG;
+        mpLogger.level = LogLevel.DEBUG;
     } else {
-        logger.level = LogLevel.INFO;
+        mpLogger.level = LogLevel.INFO;
     }
     
     /* 
@@ -69,13 +69,16 @@ module MsgProcessing
         var rname = st.nextName();
         
         // if verbose print action
-        logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-            "%s %s %i : %s".format(cmd,dtype2str(dtype),size,rname));
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+            "cmd: %s dtype: %s size: %i new pdarray name: %s".format(
+                                                     cmd,dtype2str(dtype),size,rname));
         // create and add entry to symbol table
         st.addEntry(rname, size, dtype);
-        // response message
-        logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                               "created %t".format(st.lookup(rname)));
+        // if verbose print result
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                    "created the pdarray %t".format(st.lookup(rname)));
+                                    
+        // response message                                    
         return try! "created " + st.attrib(rname);
     }
 
@@ -94,7 +97,7 @@ module MsgProcessing
         var repMsg: string; // response message
         // split request into fields
         var (name) = payload.decode().splitMsgToTuple(1);
-        logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                                             "%s %s".format(cmd,name));
         // delete entry from symbol table
         st.deleteEntry(name);
@@ -115,7 +118,7 @@ module MsgProcessing
     proc clearMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         var (_) = payload.decode().splitMsgToTuple(1); // split request into fields
-        logger.debug(getModuleName(),getRoutineName(),getLineNumber(), "%s".format(cmd));
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "%s".format(cmd));
         st.clear();
         return "success";
     }
@@ -198,7 +201,8 @@ module MsgProcessing
         // split request into fields
         var (name, ptstr) = payload.decode().splitMsgToTuple(2);
         var printThresh = try! ptstr:int;
-        if v {try! writeln("%s %s %i".format(cmd,name,printThresh));try! stdout.flush();}
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                              "%s %s %i".format(cmd,name,printThresh));       
         return st.datastr(name,printThresh);
     }
 
@@ -218,7 +222,8 @@ module MsgProcessing
         // split request into fields
         var (name, ptstr) = payload.decode().splitMsgToTuple(2);
         var printThresh = try! ptstr:int;
-        if v {try! writeln("%s %s %i".format(cmd,name,printThresh));try! stdout.flush();}
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                              "%s %s %i".format(cmd,name,printThresh));
         return st.datarepr(name,printThresh);
     }
 
@@ -246,12 +251,13 @@ module MsgProcessing
         overMemLimit(8*len);
         // get next symbol name
         var rname = st.nextName();
-        logger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                        "%s %i %i %i : %i , %s".format(cmd, start, stop, stride, len, rname));
         
         var t1 = Time.getCurrentTime();
         var e = st.addEntry(rname, len, int);
-        if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                      "alloc time = %i sec".format(Time.getCurrentTime() - t1));
 
         t1 = Time.getCurrentTime();
         ref ea = e.a;
@@ -259,7 +265,8 @@ module MsgProcessing
         forall (ei, i) in zip(ea,ead) {
             ei = start + (i * stride);
         }
-        if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                      "compute time = %i sec".format(Time.getCurrentTime() - t1));
 
         return try! "created " + st.attrib(rname);
     }            
@@ -287,7 +294,7 @@ module MsgProcessing
         overMemLimit(8*len);
         // get next symbol name
         var rname = st.nextName();
-        logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                         "%s %r %r %i : %r , %s".format(cmd, start, stop, len, stride, rname));
 
         var t1 = Time.getCurrentTime();
@@ -327,12 +334,13 @@ module MsgProcessing
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                      "cmd: %s value: %s in pdarray %t".format(cmd,name,gEnt));
+
         select (gEnt.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
                 var e = toSymEntry(gEnt,int);
                 var val: int = try! value:int;
-                logger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                      "%s %s to %t".format(cmd,name,val));
                 e.a = val;
                 repMsg = try! "set %s to %t".format(name, val);
             }
@@ -399,16 +407,10 @@ module MsgProcessing
                 repMsg = try! "set %s to %t".format(name, val);
             }
             otherwise {
-                var errorMsg = unrecognizedTypeError(pn,dtypestr);
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="UnrecognizedTypeError")); 
-                return errorMsg;                
+                return unrecognizedTypeError(pn,dtypestr);
             }
         }
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return repMsg;
     }
 }
