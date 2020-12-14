@@ -3,7 +3,6 @@ module SACA{
 //Nov.15, 2020
 //Algorithm 1
 // The first algorithm divsufsort is the fastest C codes on suffix array
-/*
 require "../thirdparty/SA/libdivsufsort/include/config.h";
 require "../thirdparty/SA/libdivsufsort/include/divsufsort.h";
 require "../thirdparty/SA/libdivsufsort/include/divsufsort_private.h";
@@ -22,7 +21,6 @@ extern proc divsufsort(inputstr:[] uint(8),suffixarray:[] int(32),totallen:int(3
 //void SACA_K(unsigned char *s, unsigned int *SA,
 //  unsigned int n, unsigned int K,
 //  unsigned int m, int level) ;
-*/
 
 //Algorithm 2
 
