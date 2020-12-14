@@ -14,7 +14,7 @@ require "../thirdparty/SA/libdivsufsort/lib/trsort.c";
 require "../thirdparty/SA/libdivsufsort/lib/utils.c";
 extern proc divsufsort(inputstr:[] uint(8),suffixarray:[] int(32),totallen:int(32));
 
-//this is another saca algorithm
+//Another possible SACA algorithm to utilize. 
 //require "../thirdparty/SA/SACA-K/saca-k.c";
 
 //extern proc SACA_K(inputstr:[] uint(8), suffixarray:[] uint, n:uint, K:uint,m:uint, level:int);
@@ -78,7 +78,7 @@ proc radixPass(a:[] int, b:[] int, r:[] int, n:int, K:int )
              c[i]=sum;
              sum+=t;
         }
-        // let b[j] stores the position of each a[i] based on their order. 
+        // let b[j] store the position of each a[i] based on their order. 
         //The same character but following the previous suffix will be put at the next position.
         for i in 0..n-1 do {
             b[c[r[a[i]]]] = a[i];
@@ -150,7 +150,7 @@ proc SuffixArraySkew(s:[] int, SA: [] int, n:int, K: int) {
 		} // right half
 	}
 
-// recurse if names are not yet unique
+// recurse if names are not unique
 	if (name < n02) {
 		SuffixArraySkew(s12, SA12, n02, name);
 // store unique names in s12 using the suffix array
@@ -163,7 +163,7 @@ proc SuffixArraySkew(s:[] int, SA: [] int, n:int, K: int) {
 // stably sort the mod 0 suffixes from SA12 by their first character
         j=0;
 	for i in 0..n02-1 do {
-// here in fact we take advantage of the sorted SA12 the just sort s0 once to get its sorted array
+// here in fact we take advantage of the sorted SA12 to just sort s0 once to get its sorted array
 // at first we think the postion i%3=1 is the position
            if (SA12[i] < n0) { 
               s0[j] = 3*SA12[i]; 
@@ -197,7 +197,7 @@ proc SuffixArraySkew(s:[] int, SA: [] int, n:int, K: int) {
         	} else {
            	// i % 3 =2
 			flag=leq(s[i],s[i+1],s12[SA12[t]-n0+1], s[j],s[j+1],s12[j/3+n0]);
-//			flag=leq(s[i],s[i+1],s12[SA12[t]-n0], s[j],s[j+1],s12[j/3+n0]);
+		// flag=leq(s[i],s[i+1],s12[SA12[t]-n0], s[j],s[j+1],s12[j/3+n0]);
         	}
         	if (flag)
 		{// suffix from SA12 is smaller
