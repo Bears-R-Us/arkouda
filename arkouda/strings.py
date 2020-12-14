@@ -781,11 +781,10 @@ class Strings:
 
 class SArrays:
     """
-    Represents an array of (suffix) arrays whose data resides on the
-    arkouda server. The user should not call this class directly;
-    rather its instances are created by other arkouda functions. It is
-    very similar to Strings and the difference is that its content is 
-    int arrays instead of strings.
+    Represents an array of (suffix) arrays whose data resides on the arkouda server.
+    The user should not call this class directly; rather its instances are created
+    by other arkouda functions. It is very similar to Strings and the difference is
+    that its content is int arrays instead of strings.
 
     Attributes
     ----------
