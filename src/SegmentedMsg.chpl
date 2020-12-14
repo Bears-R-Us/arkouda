@@ -375,15 +375,12 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
           }
           when "int" {
               // Make a temporary int array
-	      writeln(args[1]);
-	      writeln(args[2]);
-	      writeln(args[3]);
-              var tmparrays = new owned SegSArray(args[1], args[2], st);
+              var arrays = new owned SegSArray(args[1], args[2], st);
               // Parse the index
               var idx = args[3]:int;
               // TO DO: in the future, we will force the client to handle this
-              idx = convertPythonIndexToChapel(idx, tmparrays.size);
-              var s = tmparrays[idx];
+              idx = convertPythonIndexToChapel(idx, arrays.size);
+              var s = arrays[idx];
               return "item %s %jt".format("int", s);
           }
           otherwise { 
