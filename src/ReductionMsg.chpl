@@ -12,6 +12,7 @@ module ReductionMsg
     use ServerErrorStrings;
     use Reflection;
     use Errors;
+    use Logging;
 
     use AryUtil;
     use PrivateDist;
@@ -19,7 +20,15 @@ module ReductionMsg
 
     private config const reductionDEBUG = false;
     private config const lBins = 2**25 * numLocales;
-      
+
+    const rmLogger = new Logger();
+  
+    if v {
+        rmLogger.level = LogLevel.DEBUG;
+    } else {
+        rmLogger.level = LogLevel.INFO;
+    }
+
     // these functions take an array and produce a scalar
     // parse and respond to reduction message
     // scalar = reductionop(vector)
@@ -28,7 +37,8 @@ module ReductionMsg
         var repMsg: string; // response message
         // split request into fields
         var (reductionop, name) = payload.decode().splitMsgToTuple(2);
-        if v {try! writeln("%s %s %s".format(cmd,reductionop,name));try! stdout.flush();}
+        rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                         "cmd: %s reductionop: %s name: %s".format(cmd,reductionop,name));
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
        
@@ -101,12 +111,7 @@ module ReductionMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
-                        writeln(generateErrorContext(
-                                           msg=errorMsg, 
-                                           lineNumber=getLineNumber(), 
-                                           moduleName=getModuleName(), 
-                                           routineName=getRoutineName(), 
-                                           errorClass="NotImplementedError"));   
+                        rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                         return errorMsg;                      
                     }
                 }
@@ -159,12 +164,7 @@ module ReductionMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
-                        writeln(generateErrorContext(
-                            msg=errorMsg, 
-                            lineNumber=getLineNumber(), 
-                            moduleName=getModuleName(), 
-                            routineName=getRoutineName(), 
-                            errorClass="NotImplementedError"));    
+                        rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                         return errorMsg;                    
                     }
                 }
@@ -205,24 +205,14 @@ module ReductionMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
-                        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IncompatibleArgumentsError"));  
+                        rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                         return errorMsg;                       
                     }
                 }
             }
             otherwise {
                 var errorMsg = unrecognizedTypeError(pn, dtype2str(gEnt.dtype));
-                writeln(generateErrorContext(
-                     msg=errorMsg, 
-                     lineNumber=getLineNumber(), 
-                     moduleName=getModuleName(), 
-                     routineName=getRoutineName(), 
-                     errorClass="UnrecognizedTypeError"));          
+                rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);       
                 return errorMsg;       
             }
         }
@@ -235,7 +225,8 @@ module ReductionMsg
       var (segments_name, sizeStr) = payload.decode().splitMsgToTuple(2);
       var size = try! sizeStr:int;
       var rname = st.nextName();
-      if v {writeln("%s %s %s".format(cmd,segments_name, size));try! stdout.flush();}
+      rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                       "cmd: %s segments_name: %s size: %s".format(cmd,segments_name, size));
 
       var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
       var segments = toSymEntry(gSeg, int);
@@ -270,18 +261,15 @@ module ReductionMsg
         var skipNan = stringtobool(skip_nan);
       
         var rname = st.nextName();
-        if v {writeln("%s %s %s %s %s".format(cmd,values_name,segments_name,operator,skipNan));try! stdout.flush();}
+        rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                      "cmd: %s values_name: %s segments_name: %s operator: %s skipNan: %s".format(
+                                       cmd,values_name,segments_name,operator,skipNan));
         var gVal: borrowed GenSymEntry = st.lookup(values_name);
         var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
         var segments = toSymEntry(gSeg, int);
         if (segments == nil) {
             var errorMsg = "Error: array of segment offsets must be int dtype";
-            writeln(generateErrorContext(
-                     msg=errorMsg, 
-                     lineNumber=getLineNumber(), 
-                     moduleName=getModuleName(), 
-                     routineName=getRoutineName(), 
-                     errorClass="IncompatibleArgumentsError"));   
+            rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
             return errorMsg;        
         }
         select (gVal.dtype) {
@@ -322,12 +310,7 @@ module ReductionMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,operator,gVal.dtype);
-                        writeln(generateErrorContext(
-                                  msg=errorMsg, 
-                                  lineNumber=getLineNumber(), 
-                                  moduleName=getModuleName(), 
-                                  routineName=getRoutineName(), 
-                                  errorClass="NotImplementedError"));  
+                        rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                         return errorMsg;  
                     }                       
                 }    
@@ -365,12 +348,7 @@ module ReductionMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,operator,gVal.dtype);
-                        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));               
+                        rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);         
                         return errorMsg;
                     }
                }
@@ -396,24 +374,14 @@ module ReductionMsg
                    }
                    otherwise {
                        var errorMsg = notImplementedError(pn,operator,gVal.dtype);
-                       writeln(generateErrorContext(
-                                 msg=errorMsg, 
-                                 lineNumber=getLineNumber(), 
-                                 moduleName=getModuleName(), 
-                                 routineName=getRoutineName(), 
-                                 errorClass="NotImplementedError")); 
+                       rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                        return errorMsg;                 
                    }
                }
            }
            otherwise {
                var errorMsg = unrecognizedTypeError(pn, dtype2str(gVal.dtype));
-               writeln(generateErrorContext(
-                     msg=errorMsg, 
-                     lineNumber=getLineNumber(), 
-                     moduleName=getModuleName(), 
-                     routineName=getRoutineName(), 
-                     errorClass="UnrecognizedTypeError"));          
+               rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                return errorMsg;
            }
        }
@@ -699,7 +667,7 @@ module ReductionMsg
       return keys;
     }
 
-    proc segNumUnique(values: [?kD] int, segments: [?sD] int) {
+    proc segNumUnique(values: [?kD] int, segments: [?sD] int) throws {
       var res: [sD] int;
       if (sD.size == 0) {
         return res;
@@ -707,26 +675,29 @@ module ReductionMsg
       var keys = expandKeys(kD, segments);
       // sort keys and values together
       var t1 = Time.getCurrentTime();
-      if v {writeln("Sorting keys and values..."); try! stdout.flush();}
+      rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                                         "Sorting keys and values...");
       /* var toSort = [(k, v) in zip(keys, values)] (k, v); */
       /* Sort.TwoArrayRadixSort.twoArrayRadixSort(toSort); */
       var firstIV = radixSortLSD_ranks(values);
       var intermediate: [kD] int;
       forall (ii, idx) in zip(intermediate, firstIV) with (var agg = newSrcAggregator(int)) {
-        agg.copy(ii, keys[idx]);
+          agg.copy(ii, keys[idx]);
       }
       var deltaIV = radixSortLSD_ranks(intermediate);
       var IV: [kD] int;
       forall (IVi, idx) in zip(IV, deltaIV) with (var agg = newSrcAggregator(int)) {
-       agg.copy(IVi, firstIV[idx]);
+          agg.copy(IVi, firstIV[idx]);
       }
       var sortedKV: [kD] (int, int);
       forall ((kvi0,kvi1), idx) in zip(sortedKV, IV) with (var agg = newSrcAggregator(int)) {
         agg.copy(kvi0, keys[idx]);
         agg.copy(kvi1, values[idx]);
       }
-      if v {writeln("sort time = ", Time.getCurrentTime() - t1); try! stdout.flush();}
-      if v {writeln("Finding unique (key, value) pairs..."); try! stdout.flush();}
+      rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                           "sort time = %i".format(Time.getCurrentTime() - t1));
+      rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                           "Finding unique (key, value) pairs...");
       var truth: [kD] bool;
       // true where new (k, v) pair appears
       [(t, (_,val), i) in zip(truth, sortedKV, kD)] if i > kD.low {
@@ -748,8 +719,10 @@ module ReductionMsg
           agg.copy(keyhits[count[i]-1], key);
         }
       }
-      if v {writeln("time = ", Time.getCurrentTime() - t1); try! stdout.flush();}
-      if v {writeln("Finding unique keys and num unique vals per key."); try! stdout.flush(); t1 = Time.getCurrentTime();}
+      rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                       "time = %i".format(Time.getCurrentTime() - t1));
+      rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                       "Finding unique keys and num unique vals per key.");
       // find steps in keys
       var truth2: [hD] bool;
       truth2[hD.low] = true;
@@ -782,7 +755,8 @@ module ReductionMsg
           }
         }
       }
-      if v {writeln("time = ", Time.getCurrentTime() - t1); try! stdout.flush();}
+      rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                   "time = %i".format(Time.getCurrentTime() - t1));
       return res;
     }
 

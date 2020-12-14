@@ -43,7 +43,7 @@ module MultiTypeSymbolTable
 
             // check to see if name is defined
             if (!tab.contains(name)) {
-                mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                                      "regName: undefined symbol: %s".format(name));
                 throw getErrorWithContext(
                                    msg=unknownSymbolError("regName", name),
@@ -70,7 +70,7 @@ module MultiTypeSymbolTable
             
             // check to see if name is defined
             if (!registry.contains(name) || !tab.contains(name))  {
-                mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                                              "unregName: undefined symbol: %s ".format(name));
                 throw getErrorWithContext(
                                    msg=unknownSymbolError("regName", name),
@@ -203,7 +203,7 @@ module MultiTypeSymbolTable
         proc lookup(name: string): borrowed GenSymEntry throws {
             if (!tab.contains(name))
             {
-                mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                                                 "undefined symbol: %s".format(name));
                 throw getErrorWithContext(
                                    msg=unknownSymbolError("", name),
@@ -222,7 +222,7 @@ module MultiTypeSymbolTable
         proc check(name: string) throws { 
             if (!tab.contains(name)) 
             { 
-                mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                                                 "undefined symbol: %s".format(name));
                 throw getErrorWithContext(
                     msg=unknownSymbolError("", name),

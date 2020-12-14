@@ -57,12 +57,7 @@ module SegmentedMsg {
           }
           otherwise { 
               repMsg = notImplementedError(pn, dist);       
-              writeln(generateErrorContext(
-                                     msg=repMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));          
+              smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
           }
       }
       return repMsg;
@@ -87,12 +82,7 @@ module SegmentedMsg {
       }
       otherwise {
           var errorMsg = notImplementedError(pn, "%s".format(objtype));
-          writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                   
+          smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                      
           return errorMsg;
       }
     }
@@ -215,12 +205,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
           } otherwise {
               var errorMsg = notImplementedError(pn, 
                                "subcmd: %s, (%s, %s)".format(subcmd, objtype, valtype));
-              writeln(generateErrorContext(
-                                     msg=repMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));   
+              smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
               return errorMsg;                            
               }
           }
@@ -232,24 +217,14 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
         otherwise {
             var errorMsg = notImplementedError(pn, 
                               "subcmd: %s, (%s, %s)".format(subcmd, objtype, valtype));
-            writeln(generateErrorContext(
-                                     msg=repMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));    
+            smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
             return errorMsg;                                          
         }
       }
     }
     otherwise {
         var errorMsg = notImplementedError(pn, "(%s, %s)".format(objtype, valtype));
-        writeln(generateErrorContext(
-                                     msg=repMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));  
+        smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
         return errorMsg;       
       }
     }
@@ -280,12 +255,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
         }
         otherwise {
             var errorMsg = notImplementedError(pn, objtype);
-            writeln(generateErrorContext(
-                                     msg=repMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
+            smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
             return errorMsg;
         }
     }
@@ -324,32 +294,17 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
             }
             otherwise {
                 var errorMsg = "Error: in %s, nknown subcommand %s".format(pn, subcmd);
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="UknownSubcommandError")); 
-               return errorMsg;
+                smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
+                return errorMsg;
             }
         }
     } catch e: OutOfBoundsError {
         var errorMsg = "Error: index out of bounds";
-        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="OutOfBoundsError")); 
+        smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
         return errorMsg;
     } catch {
         var errorMsg = "Error: unknown cause";
-        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="UnknownError")); 
+        smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
         return errorMsg;
     }
   }
@@ -378,13 +333,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
           }
           otherwise { 
               var errorMsg = notImplementedError(pn, objtype); 
-              writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
-             return errorMsg;                          
+              smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
+              return errorMsg;                          
           }
       }
   }
@@ -418,12 +368,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
         // Only stride-1 slices are allowed for now
         if (stride != 1) { 
             var errorMsg = notImplementedError(pn, "stride != 1"); 
-            writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
+            smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
             return errorMsg;
         }
         // TO DO: in the future, we will force the client to handle this
@@ -441,12 +386,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       }
       otherwise {
           var errorMsg = notImplementedError(pn, objtype);
-          writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
+          smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
           return errorMsg;          
         }
       }
@@ -627,12 +567,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
     }
     otherwise {
         var errorMsg = unrecognizedTypeError(pn, "("+mainObjtype+", "+testObjtype+")");
-        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
+        smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
         return errorMsg;            
       }
     }
@@ -656,12 +591,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
           }
           otherwise {
               var errorMsg = notImplementedError(pn, "("+objtype+")");
-              writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
+              smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
               return errorMsg;            
           }
       }
