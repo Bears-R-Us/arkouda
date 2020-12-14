@@ -220,6 +220,8 @@ proc main() {
                 when "segmentedBinopvv"  {repMsg = segBinopvvMsg(cmd, payload, st);}
                 when "segmentedBinopvs"  {repMsg = segBinopvsMsg(cmd, payload, st);}
                 when "segmentedGroup"    {repMsg = segGroupMsg(cmd, payload, st);}
+                when "segmentedSuffixAry"{repMsg = segSuffixArrayMsg(cmd, payload, st);}
+                when "segmentedSAFile"   {repMsg = segSAFileMsg(cmd, payload, st);}
                 when "segmentedIn1d"     {repMsg = segIn1dMsg(cmd, payload, st);}
                 when "lshdf"             {repMsg = lshdfMsg(cmd, payload, st);}
                 when "readhdf"           {repMsg = readhdfMsg(cmd, payload, st);}
