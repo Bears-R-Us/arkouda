@@ -942,7 +942,7 @@ class SArrays:
     def __eq__(self, other) -> bool:
         return self._binop(other, "==")
 
-    def __ne__(self, other : object) -> bool:
+    def __ne__(self, other : SArrays) -> bool:
         return self._binop(other, "!=")
 
     def __getitem__(self, key):
@@ -1012,8 +1012,8 @@ class SArrays:
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
-    def __add__(self, other : SArrays) -> SArrays:
-        return self.stick(other)
+#    def __add__(self, other : SArrays) -> SArrays:
+#        return self.stick(other)
     
 
     def save(self, prefix_path : str, dataset : str='int_array', 

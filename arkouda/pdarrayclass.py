@@ -85,15 +85,7 @@ def parse_single_int_array_value(msg : str) -> object:
     """
     fields = msg.split(" ",1)
     dtname=fields[0]
-    mydtype = dtype(dtname)
-    if mydtype == bool:
-        if value == "True":
-            return bool(True)
-        elif value == "False":
-            return bool(False)
-        else:
-            raise ValueError(("unsupported value from server {} {}".\
-                              format(mydtype.name, value)))
+#    mydtype = dtype(dtname)
     nfields = fields[1].split("\"")
     return nfields[1]
 

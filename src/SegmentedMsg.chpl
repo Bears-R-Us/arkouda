@@ -698,16 +698,16 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
               overMemLimit(8*size + 16*size + nBytes);
 
               //allocate an offset array
-	      var sasoff = offsegs;
+              var sasoff = offsegs;
               //allocate an values array
               var sasval:[0..(nBytes-1)] int;
               var lcpval:[0..(nBytes-1)] int;
 
-	      var i:int;
-	      var j:int;
+              var i:int;
+              var j:int;
               forall i in 0..(size-1) do {
 //              for i in 0..(size-1) do {
-	        // the start position of ith string in value array
+              // the start position of ith string in value array
                 var startposition:int;
                 var endposition:int;
                 startposition = offsegs[i];
@@ -728,39 +728,38 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                 var x:int;
                 var y:int(32);
 //                var y:int;
-		forall (x,y) in zip ( intstrArray[0..sasize-1],strings.values.a[startposition..endposition]) do x=y;
-		intstrArray[sasize]=0;
-		intstrArray[sasize+1]=0;
-		intstrArray[sasize+2]=0;
-		SuffixArraySkew(intstrArray,tmparray,sasize,256);
+                forall (x,y) in zip ( intstrArray[0..sasize-1],strings.values.a[startposition..endposition]) do x=y;
+                intstrArray[sasize]=0;
+                intstrArray[sasize+1]=0;
+                intstrArray[sasize+2]=0;
+                SuffixArraySkew(intstrArray,tmparray,sasize,256);
                 for (x, y) in zip(sasval[startposition..endposition], tmparray[0..sasize-1]) do
                     x = y;
 // Here we calculate the lcp(Longest Common Prefix) array value
                 forall j in startposition+1..endposition do{
-			var tmpcount=0:int;
-			var tmpbefore=sasval[j-1]:int;
-			var tmpcur=sasval[j]:int;
-			var tmplen=min(sasize-tmpcur, sasize-tmpbefore);
-			var tmpi:int;
+                        var tmpcount=0:int;
+                        var tmpbefore=sasval[j-1]:int;
+                        var tmpcur=sasval[j]:int;
+                        var tmplen=min(sasize-tmpcur, sasize-tmpbefore);
+                        var tmpi:int;
                         for tmpi in 0..tmplen-1 do {
-				if (intstrArray[tmpbefore]!=intstrArray[tmpcur]) {
-					break;
-				}
-				tmpcount+=1;
-			}
-			lcpval[j]=tmpcount;
+                            if (intstrArray[tmpbefore]!=intstrArray[tmpcur]) {
+                                 break;
+                            }                        
+                            tmpcount+=1;
+                        } 
+                        lcpval[j]=tmpcount;
                 }
-	      }
-
+              }
               var segName2 = st.nextName();
               var valName2 = st.nextName();
               var lcpvalName = st.nextName();
 
-      	      var segEntry = new shared SymEntry(sasoff);
+              var segEntry = new shared SymEntry(sasoff);
               var valEntry = new shared SymEntry(sasval);
               var lcpvalEntry = new shared SymEntry(lcpval);
-	      valEntry.EnhancedInfo=lcpvalName;
-	      lcpvalEntry.EnhancedInfo=valName2;
+              valEntry.EnhancedInfo=lcpvalName;
+              lcpvalEntry.EnhancedInfo=valName2;
 
               st.addEntry(segName2, segEntry);
               st.addEntry(valName2, valEntry);
@@ -806,14 +805,14 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
               overMemLimit(8*size + 16*size + nBytes);
 
               //allocate an offset array
-	      var sasoff = offsegs;
+              var sasoff = offsegs;
               //allocate a suffix array  values array and lcp array
               var sasval:[0..(nBytes-1)] int;
               var lcpval:[0..(nBytes-1)] int;
 
-	      var i:int;
+              var i:int;
               forall i in 0..(size-1) do {
-	        // the start position of ith string in value array
+              // the start position of ith string in value array
                 var startposition:int;
                 var endposition:int;
                 startposition = 0;
@@ -828,40 +827,39 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                 var intstrArray:[0..sasize+2] int;
                 var x:int;
                 var y:int;
-		forall (x,y) in zip ( intstrArray[0..sasize-1],strArray[startposition..endposition]) do x=y;
-		intstrArray[sasize]=0;
-		intstrArray[sasize+1]=0;
-		intstrArray[sasize+2]=0;
-		SuffixArraySkew(intstrArray,tmparray,sasize,256);
+                forall (x,y) in zip ( intstrArray[0..sasize-1],strArray[startposition..endposition]) do x=y;
+                intstrArray[sasize]=0;
+                intstrArray[sasize+1]=0;
+                intstrArray[sasize+2]=0;
+                SuffixArraySkew(intstrArray,tmparray,sasize,256);
 //                divsufsort(strArray,tmparray,sasize);
                 forall (x, y) in zip(sasval[startposition..endposition], tmparray[0..sasize-1]) do
                     x = y;
 // Here we calculate the lcp(Longest Common Prefix) array value
                 forall j in startposition+1..endposition do{
-			var tmpcount=0:int;
-			var tmpbefore=sasval[j-1]:int;
-			var tmpcur=sasval[j]:int;
-			var tmplen=min(sasize-tmpcur, sasize-tmpbefore);
-			var tmpi:int;
+                        var tmpcount=0:int;
+                        var tmpbefore=sasval[j-1]:int;
+                        var tmpcur=sasval[j]:int;
+                        var tmplen=min(sasize-tmpcur, sasize-tmpbefore);
+                        var tmpi:int;
                         for tmpi in 0..tmplen-1 do {
-				if (intstrArray[tmpbefore]!=intstrArray[tmpcur]) {
-					break;
-				}
-				tmpcount+=1;
-			}
-			lcpval[j]=tmpcount;
-		}
-	      }
-
+                             if (intstrArray[tmpbefore]!=intstrArray[tmpcur]) {
+                                   break;
+                             }
+                             tmpcount+=1;
+                        } 
+                        lcpval[j]=tmpcount;
+                }
+              }
               var segName2 = st.nextName();
               var valName2 = st.nextName();
               var lcpvalName = st.nextName();
 
-      	      var segEntry = new shared SymEntry(sasoff);
+              var segEntry = new shared SymEntry(sasoff);
               var valEntry = new shared SymEntry(sasval);
               var lcpvalEntry = new shared SymEntry(lcpval);
-	      valEntry.EnhancedInfo=lcpvalName;
-	      lcpvalEntry.EnhancedInfo=valName2;
+              valEntry.EnhancedInfo=lcpvalName;
+              lcpvalEntry.EnhancedInfo=valName2;
 
               st.addEntry(segName2, segEntry);
               st.addEntry(valName2, valEntry);
