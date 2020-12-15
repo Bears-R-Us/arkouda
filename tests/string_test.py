@@ -48,7 +48,7 @@ def run_test_index(strings, test_strings, cat, specificInds):
     for i in specificInds:
         assert(strings[i] == test_strings[i])
         assert(cat[i] == test_strings[i])
-    print("int index passed")
+    print("test_index passed")
     
 def run_test_slice(strings, test_strings, cat):
     assert(compare_strings(strings[N//4:N//3].to_ndarray(), 
@@ -316,41 +316,59 @@ class StringTest(ArkoudaTest):
         self.gremlins_cat = ak.Categorical(self.gremlins_strings)
 
     def test_compare_strings(self):
+        print('starting test_compare_Strings')
         assert compare_strings(self.base_words.to_ndarray(), self.np_base_words)
+        print('passed test_compare_strings')
     
     def test_argsort(self):
+        print('starting test_argsort')
         run_test_argsort(self.strings, self.test_strings, self.cat)
+        print('passed test_argsort')
 
     def test_in1d(self):
+        print('starting test_in1d')
         run_test_in1d(self.strings, self.cat, self.base_words)
+        print('passed test_in1d')
                       
     def test_unique(self):
+        print('starting test_unique')
         run_test_unique(self.strings, self.test_strings, self.cat)
+        print('passed test_unique')
 
     def test_groupby(self):
+        print('starting test_groupby')
         run_test_groupby(self.strings, self.cat, self.akset)
+        print('passed test_groupby')
 
     def test_index(self):
+        print('starting test_index')
         run_test_index(self.strings, self.test_strings, self.cat, range(-len(self.gremlins), 0))
         run_test_index(self.gremlins_strings, self.gremlins_test_strings, self.gremlins_cat, 
                        range(-len(self.gremlins), 0))
         print("passed test_index")
         
     def test_slice(self):
+        print('starting test_slice')
         run_test_slice(self.strings, self.test_strings, self.cat)
+        print('passed test_slice')
         
     def test_pdarray_index(self):
+        print('starting test_pdarray_index')
         run_test_pdarray_index(self.strings, self.test_strings, self.cat)
+        print('passed test_pdarray_index')
 
     def test_contains(self):
+        print('starting test_contains')
         run_test_contains(self.strings, self.test_strings, self.delim)
         print('passed test_contains')
         
     def test_starts_with(self):
+        print('starting starts_with')
         run_test_starts_with(self.strings, self.test_strings, self.delim)
         print('passed starts_with')
 
     def test_ends_with(self):
+        print('starting test_ends_with')
         run_test_ends_with(self.strings, self.test_strings, self.delim)
         
         # Test for expected errors for gremlins delimiters
@@ -363,6 +381,7 @@ class StringTest(ArkoudaTest):
         print('passed test_ends_with') 
         
     def test_error_handling(self):
+        print('starting test_error_handling')
         stringsOne = ak.random_strings_uniform(1, 10, UNIQUE, 
                                             characters='printable')
         stringsTwo = ak.random_strings_uniform(1, 10, UNIQUE, 
@@ -402,20 +421,20 @@ class StringTest(ArkoudaTest):
             stringsOne.peel("",-5)
         self.assertEqual('times must be >= 1', 
                          cm.exception.args[0])  
-        print('passed error handling')
+        print('passed test_error_handling')
 
     def test_peel(self):
+        print('starting test_peel')
         run_test_peel(self.strings, self.test_strings, self.delim)
         
-        # Test for expected errors for gremlins delimiters
-        with self.assertRaises(AssertionError):
-            run_test_peel(self.gremlins_strings, self.gremlins_test_strings, ' ')       
+        # Test for expected errors for gremlins delimiters 
         with self.assertRaises(ValueError):
             run_test_peel(self.gremlins_strings, self.gremlins_test_strings, '')  
-        # Passing in '"' as a delimiter causes the Arkouda server to hang
+        # Passing in '"' or ' ' as a delimiter causes the Arkouda server to hang
         print('passed test_peel')
 
     def test_stick(self):
+        print('starting test_stick')
         run_test_stick(self.strings, self.test_strings, self.base_words, self.delim)
  
         # Test for expected errors for gremlins delimiters    
