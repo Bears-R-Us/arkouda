@@ -164,6 +164,17 @@ class GroupBy:
         counts : pdarray, int64
             The number of times each unique key appears
         
+        Examples
+        --------
+        >>> a = ak.randint(1,5,10)
+        >>> a
+        array([3, 2, 3, 1, 2, 4, 3, 4, 3, 4])
+        >>> g = ak.GroupBy(a)
+        >>> keys,counts = g.count()
+        >>> keys
+        array([1, 2, 3, 4])
+        >>> counts
+        array([1, 2, 4, 3])        
         '''
         cmd = "countReduction"
         reqMsg = "{} {} {}".format(cmd, cast(pdarray, self.segments).name, self.size)
@@ -602,7 +613,24 @@ class GroupBy:
         >>> b[g.permutation] = g.broadcast(values)
         >>> b
         array([3, 5, 3, 5, 3])
+        
+        >>> a = ak.randint(1,5,10)
+        >>> a
+        array([3, 1, 4, 4, 4, 1, 3, 3, 2, 2])
+        >>> g = ak.GroupBy(a)
+        >>> keys,counts = g.count()
+        >>> g.broadcast(counts > 2)
+        array([0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
+        >>> g.broadcast(counts == 3)
+        array([0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
+        >>> g.broadcast(counts < 4)
+        array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
         """
+        '''if values a boolean array, convert to an int64 array, which
+           is needed for now because Arkouda does not support broadcasting
+           of boolean arrays'''
+        if values.dtype == np.bool:
+            values = 1*values
         if values.size != self.segments.size:
             raise ValueError("Must have one value per segment")
         temp = zeros(self.size, values.dtype)
@@ -611,5 +639,3 @@ class GroupBy:
         diffs = concatenate((array([values[0]]), values[1:] - values[:-1]))
         temp[self.segments] = diffs
         return cumsum(temp)
-
-   

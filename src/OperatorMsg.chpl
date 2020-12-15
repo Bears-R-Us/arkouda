@@ -381,10 +381,6 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, bool);
                         e.a = l.a != r.a;
                     }
-                    when "-" {
-                        var e = st.addEntry(rname, l.size, bool);
-                        e.a = (l.a:int - r.a:int):bool;
-                    }         
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                         writeln(generateErrorContext(
