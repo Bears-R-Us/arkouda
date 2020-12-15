@@ -269,7 +269,8 @@ module SegmentedArray {
           }
         }
       }
-      if v {writeln(getCurrentTime() - t1, " seconds"); stdout.flush();}
+      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber,
+                                                     "%i seconds".format(getCurrentTime() -t1));
       return (gatheredOffsets, gatheredVals);
     }
 

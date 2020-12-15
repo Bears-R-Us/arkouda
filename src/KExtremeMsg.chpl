@@ -10,6 +10,7 @@ module KExtremeMsg
     use Math only;
     use Reflection;
     use Errors;
+    use Logging;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;

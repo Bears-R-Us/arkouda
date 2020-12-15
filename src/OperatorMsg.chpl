@@ -43,9 +43,10 @@ module OperatorMsg
 
         var left: borrowed GenSymEntry = st.lookup(aname);
         var right: borrowed GenSymEntry = st.lookup(bname);
-
+        
         omLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), 
-             "cmd: %t op: %t left pdarray: %t right pdarray: %t".format(cmd,op,left,right));
+             "cmd: %t op: %t left pdarray: %t right pdarray: %t".format(
+                                          cmd,op,st.attrib(aname),st.attrib(bname)));
 
         select (left.dtype, right.dtype) {
             when (DType.Int64, DType.Int64) {
@@ -474,7 +475,7 @@ module OperatorMsg
             }
         }
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                    "created pdarray %t".format(st.lookup(rname)));
+                                                    "created pdarray %t".format(st.attrib(rname)));
 
         return try! "created %s".format(st.attrib(rname));
     }
@@ -501,7 +502,8 @@ module OperatorMsg
         var left: borrowed GenSymEntry = st.lookup(aname);
 
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                           "op: %s dtype: %t pdarray: %t scalar: %t".format(op,dtype,left,value));
+                           "op: %s dtype: %t pdarray: %t scalar: %t".format(
+                                                     op,dtype,st.attrib(aname),value));
 
         select (left.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
@@ -890,7 +892,7 @@ module OperatorMsg
 
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
              "created pdarray %t from %s with scalar %t on pdarray".format(
-                                                                    st.lookup(rname),op,value));
+                                                                    st.attrib(rname),op,value));
         return message;
     }
 
@@ -919,7 +921,7 @@ module OperatorMsg
         
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                  "command = %t op = %t scalar dtype = %t scalar = %t pdarray = %t".format(
-                                                         cmd,op,dtype2str(dtype),value,right));
+                                   cmd,op,dtype2str(dtype),value,st.attrib(aname)));
 
         select (dtype, right.dtype) {
             when (DType.Int64, DType.Int64) {
@@ -1487,12 +1489,13 @@ module OperatorMsg
         var dtype = str2dtype(dtypeStr);
 
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                        "%s %s %s %s %s".format(cmd,op,aname,dtype2str(dtype),value));
+                        "cmd: %s op: %s aname: %s dtype: %s scalar: %s".format(
+                                                 cmd,op,aname,dtype2str(dtype),value));
 
         var left: borrowed GenSymEntry = st.lookup(aname);
-
+ 
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                         "op: %t pdarray: %t scalar: %t".format(op,left,value));
+                         "op: %t pdarray: %t scalar: %t".format(op,st.attrib(aname),value));
         select (left.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
                 var l = toSymEntry(left,int);

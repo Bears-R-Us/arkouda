@@ -4,14 +4,26 @@ module CastMsg {
   use Reflection;
   use SegmentedArray;
   use Errors;
+  use Logging;
   use SysError;
   use ServerErrorStrings;
+  use ServerConfig;
   use CommAggregation;
+
+  const castLogger = new Logger();
+  if v {
+      castLogger.level = LogLevel.DEBUG;
+  } else {
+      castLogger.level = LogLevel.INFO;    
+  }
 
   proc castMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     use ServerConfig; // for string.splitMsgToTuple
     param pn = Reflection.getRoutineName();
     var (name, objtype, targetDtype, opt) = payload.decode().splitMsgToTuple(4);
+    castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+          "name: %s obgtype: %t targetDtype: %t opt: %t".format(
+                                                 name,objtype,targetDtype,opt));
     select objtype {
       when "pdarray" {
         var gse: borrowed GenSymEntry = st.lookup(name);
@@ -106,42 +118,30 @@ module CastMsg {
           }
           otherwise {
             var errorMsg = notImplementedError(pn,"str",":",targetDtype);
-            writeln(generateErrorContext(
-                                         msg=errorMsg, 
-                                         lineNumber=getLineNumber(), 
-                                         moduleName=getModuleName(), 
-                                         routineName=getRoutineName(), 
-                                         errorClass="NotImplementedError"));                             
+            castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return errorMsg;
           }
           }
       }
       otherwise {
         var errorMsg = notImplementedError(pn,objtype);
-        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                             
+        castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                      
         return errorMsg;
       }
       }
   }
 
-  proc castGenSymEntry(gse: borrowed GenSymEntry, st: borrowed SymTab, type fromType, type toType): string throws {
+  proc castGenSymEntry(gse: borrowed GenSymEntry, st: borrowed SymTab, type fromType, 
+                                             type toType): string throws {
     const before = toSymEntry(gse, fromType);
     const name = st.nextName();
     var after = st.addEntry(name, before.size, toType);
     try {
       after.a = before.a : toType;
     } catch e: IllegalArgumentError {
-      var errorMsg = "bad value in cast from %s to %s".format(fromType:string, toType:string);
-      writeln(generateErrorContext(msg=errorMsg, 
-                                   lineNumber=getLineNumber(), 
-                                   moduleName=getModuleName(), 
-                                   routineName=getRoutineName(), 
-                                   errorClass="IllegalArgumentError"));
+      var errorMsg = "bad value in cast from %s to %s".format(fromType:string, 
+                                                       toType:string);
+      castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);   
       return "Error: %s".format(errorMsg);
     }
     return "created " + st.attrib(name);
@@ -159,11 +159,7 @@ module CastMsg {
         }
       } catch e {
         var errorMsg = "could not convert float64 value to decimal representation";
-        writeln(generateErrorContext(msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="InvalidArgumentError"));
+        castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);   
         return "Error: %s".format(errorMsg);
       }
     } else {
@@ -171,11 +167,7 @@ module CastMsg {
         strings = [s in before.a] s : string;
       } catch e: IllegalArgumentError {
         var errorMsg = "bad value in cast from %s to string".format(fromType:string);
-        writeln(generateErrorContext(msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IllegalArgumentError"));
+        castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);   
         return "Error: %s".format(errorMsg);
       }
     }
@@ -190,36 +182,40 @@ module CastMsg {
         agg.copy(va[o+i], b);
       }
     }
-    return "created " + st.attrib(oname) + "+created " + st.attrib(vname);
+    var returnMsg ="created " + st.attrib(oname) + "+created " + st.attrib(vname);
+    
+    castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
+    return returnMsg;
   }
 
   proc castStringToSymEntry(s: SegString, st: borrowed SymTab, type toType): string throws {
-    ref oa = s.offsets.a;
-    ref va = s.values.a;
-    const name = st.nextName();
-    var entry = st.addEntry(name, s.size, toType);
-    const highInd = s.offsets.aD.high;
-    try {
-      forall (i, o, e) in zip(s.offsets.aD, s.offsets.a, entry.a) {
-        const start = o;
-        var end: int;
-        if (i == highInd) {
-          end = s.nBytes - 1;
-        } else {
-          end = oa[i+1] - 1;
-        }
-        e = interpretAsString(va[start..end]) : toType;
+      ref oa = s.offsets.a;
+      ref va = s.values.a;
+      const name = st.nextName();
+      var entry = st.addEntry(name, s.size, toType);
+    
+      const highInd = s.offsets.aD.high;
+      try {
+          forall (i, o, e) in zip(s.offsets.aD, s.offsets.a, entry.a) {
+              const start = o;
+              var end: int;
+
+              if (i == highInd) {
+              end = s.nBytes - 1;
+              } else {
+                   end = oa[i+1] - 1;
+              }
+              e = interpretAsString(va[start..end]) : toType;
+          }
+      } catch e: IllegalArgumentError {
+          var errorMsg = "bad value in cast from string to %s".format(toType:string);
+          castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);   
+          return "Error: %s".format(errorMsg);
       }
-    } catch e: IllegalArgumentError {
-      var errorMsg = "bad value in cast from string to %s".format(toType:string);
-      writeln(generateErrorContext(msg=errorMsg, 
-                                   lineNumber=getLineNumber(), 
-                                   moduleName=getModuleName(), 
-                                   routineName=getRoutineName(), 
-                                   errorClass="IllegalArgumentError"));
-      return "Error: %s".format(errorMsg);
-    }
-    return "created " + st.attrib(name);
+      var returnMsg = "created " + st.attrib(name);
+    
+      castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
+      return returnMsg;
   }
   
 }

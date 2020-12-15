@@ -6,10 +6,18 @@ module RegistrationMsg
     use Math only;
     use Reflection;
     use Errors;
+    use Logging;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
+
+    const regLogger = new Logger();
+    if v {
+        regLogger.level = LogLevel.DEBUG;
+    } else {
+        regLogger.level = LogLevel.INFO;    
+    }
 
     /* 
     Parse, execute, and respond to a register message 
@@ -28,7 +36,8 @@ module RegistrationMsg
         var (name, userDefinedName) = payload.decode().splitMsgToTuple(2);
 
         // if verbose print action
-        if v {writeln("%s %s %s".format(cmd,name,userDefinedName)); try! stdout.flush();}
+        regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                  "cmd: %s name: %s userDefinedName: %s".format(cmd,name,userDefinedName));
 
         // register new user_defined_name for name
         st.regName(name, userDefinedName);
@@ -87,5 +96,4 @@ module RegistrationMsg
         
         return "success";
     }
-
 }
