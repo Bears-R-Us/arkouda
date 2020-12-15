@@ -6,6 +6,7 @@ module SegStringSort {
   use CPtr;
   use CommAggregation;
   use PrivateDist;
+  use Logging;
 
   private config const SSS_v = true;
   private const v = SSS_v;
@@ -15,6 +16,14 @@ module SegStringSort {
   private const MINBYTES = SSS_MINBYTES;
   private config const SSS_MEMFACTOR = 5;
   private const MEMFACTOR = SSS_MEMFACTOR;
+  
+  
+  const ssLogger = new Logger();
+  if v {
+      ssLogger.level = LogLevel.DEBUG;
+  } else {
+      ssLogger.level = LogLevel.INFO;    
+  }
 
   record StringIntComparator {
     proc keyPart((a0,_): (string, int), in i: int) {

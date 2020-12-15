@@ -16,6 +16,7 @@ module UniqueMsg
     use Math only;
     use Reflection;
     use Errors;
+    use Logging;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -23,6 +24,14 @@ module UniqueMsg
     use ServerErrorStrings;
 
     use Unique;
+    
+    const uLogger = new Logger();
+  
+    if v {
+        uLogger.level = LogLevel.DEBUG;
+    } else {
+        uLogger.level = LogLevel.INFO;
+    }
     
     /* unique take a pdarray and returns a pdarray with the unique values */
     proc uniqueMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
@@ -37,12 +46,7 @@ module UniqueMsg
         else if returnCountsStr == "False" {returnCounts = false;}
         else {
             var errorMsg = "Error: %s: %s".format(pn,returnCountsStr);
-            writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="ReturnCountsError"));                
+            uLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);              
             return errorMsg;
         }
         select objtype {
@@ -51,8 +55,9 @@ module UniqueMsg
                 var vname = st.nextName();
                 // get next symbol anme for counts
                 var cname = st.nextName();
-                if v {writeln("%s %s %t: %s %s".format(cmd, name, returnCounts, 
-                          vname, cname)); try! stdout.flush();}
+                uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                          "cmd: %s name: %s returnCounts: %t: vname: %s cname: %s".format(
+                          cmd,name,returnCounts,vname,cname));
         
                 var gEnt: borrowed GenSymEntry = st.lookup(name);
                 // the upper limit here is the same as argsort/radixSortLSD_keys
@@ -91,12 +96,7 @@ module UniqueMsg
                 }
                 otherwise {
                     var errorMsg = notImplementedError("unique",gEnt.dtype);
-                    writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                   
+                    uLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                
                     return errorMsg;
                 }
             }
@@ -191,12 +191,7 @@ module UniqueMsg
             }
             otherwise {
                 var errorMsg = notImplementedError(pn,gEnt.dtype);
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));   
+                uLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return errorMsg;                 
             }
         }
