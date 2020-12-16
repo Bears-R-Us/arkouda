@@ -1,6 +1,7 @@
 
 module MultiTypeSymEntry
 {
+    use Reflection;
     use ServerConfig;
     use Logging;
 
