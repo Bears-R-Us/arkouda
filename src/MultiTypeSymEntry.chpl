@@ -1,22 +1,13 @@
 
 module MultiTypeSymEntry
 {
-    use Reflection;
     use ServerConfig;
-    use Logging;
 
     public use NumPyDType;
 
     public use SymArrayDmap;
 
     use AryUtil;
-    
-    const mtsLogger = new Logger();
-    if v {
-        mtsLogger.level = LogLevel.DEBUG;
-    } else {
-        mtsLogger.level = LogLevel.INFO;    
-    }
     
     /* Casts a GenSymEntry to the specified type and returns it.
        
@@ -116,9 +107,9 @@ module MultiTypeSymEntry
         Verbose flag utility method
         */
         proc deinit() {
-            try! MultiTypeSymEntry.mtsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                                "deinit SymEntry");
+            if v {writeln("deinit SymEntry");try! stdout.flush();}
         }
         
     }
+
 }
