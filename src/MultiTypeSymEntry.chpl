@@ -116,7 +116,7 @@ module MultiTypeSymEntry
         Verbose flag utility method
         */
         proc deinit() {
-            try! mtsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+            try! MultiTypeSymEntry.mtsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                                 "deinit SymEntry");
         }
         
