@@ -5,6 +5,7 @@ module In1d
     use Unique;
     use CommAggregation;
     use RadixSortLSD;
+    use Reflection;
 
     use Time only;
     use Math only;

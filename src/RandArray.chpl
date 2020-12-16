@@ -7,6 +7,7 @@ module RandArray {
   use MultiTypeSymEntry;
   use Map;
   use SipHash;
+  private use IO;
 
   proc fillInt(a:[] ?t, const aMin, const aMax, const seedStr:string="None") throws where isIntType(t) {
     coforall loc in Locales {
