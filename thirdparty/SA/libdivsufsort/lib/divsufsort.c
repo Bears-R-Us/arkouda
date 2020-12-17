@@ -25,7 +25,7 @@
  */
 
 //#include "divsufsort_private.h"
-#include "/home/z/zd4/SA/libdivsufsort/include/divsufsort_private.h"
+#include "../include/divsufsort_private.h"
 #ifdef _OPENMP
 # include <omp.h>
 #endif
