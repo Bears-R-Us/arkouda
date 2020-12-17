@@ -130,13 +130,8 @@ module UniqueMsg
               return s;
           }
           otherwise { 
-              var errorMsg = notImplementedError(Reflection.getRoutineName(), objtype);
-              writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));   
+             var errorMsg = notImplementedError(Reflection.getRoutineName(), objtype);
+             uLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errorMsg);
              return errorMsg;              
            }
         }
@@ -152,7 +147,8 @@ module UniqueMsg
         // get next symbol name
         var vname = st.nextName();
         var cname = st.nextName();
-        if v {writeln("%s %s : %s %s".format(cmd, name, vname, cname));try! stdout.flush();}
+        uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                       "cmd: %s name: %s vname: %s cname: %s".format(cmd, name, vname, cname));
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 

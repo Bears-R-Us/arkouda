@@ -1,6 +1,7 @@
 module Logging {
     use Set;
     use IO;
+    use DateTime;
 
     /*
      * The LogLevel enum is used to provide a strongly-typed means of
@@ -14,47 +15,74 @@ module Logging {
      */
     class Logger {
         var level = LogLevel.WARN;
-        var warnLevels = new set(LogLevel,[LogLevel.WARN,LogLevel.INFO,LogLevel.DEBUG]);
-        var criticalLevels =  new set(LogLevel, [LogLevel.CRITICAL,LogLevel.WARN,
+        
+        var warnLevels = new set(LogLevel,[LogLevel.WARN, LogLevel.INFO,
+                           LogLevel.DEBUG]);
+        
+        var criticalLevels =  new set(LogLevel, [LogLevel.CRITICAL, LogLevel.WARN,
                                          LogLevel.INFO,LogLevel.DEBUG]);
-        var errorLevels =  new set(LogLevel,[LogLevel.ERROR, LogLevel.CRITICAL,LogLevel.WARN,
-                             LogLevel.INFO, LogLevel.DEBUG]);
+                                         
+        var errorLevels =  new set(LogLevel,[LogLevel.ERROR, LogLevel.CRITICAL,
+                           LogLevel.WARN, LogLevel.INFO, LogLevel.DEBUG]);
+                             
         var infoLevels = new set(LogLevel,[LogLevel.INFO,LogLevel.DEBUG]);  
+        
+        var printDate: bool = true;
         
         proc debug(moduleName, routineName, lineNumber, msg: string) throws {
             if level == LogLevel.DEBUG  {
-                writeln("[%s] %s Line %i DEBUG [Chapel] %s".format(moduleName, 
-                    routineName, lineNumber, msg));
+                writeln(generateLogMessage(moduleName, routineName, lineNumber, 
+                                            msg, level));
                 stdout.flush();
             }
         }
         
         proc info(moduleName, routineName, lineNumber, msg: string) throws {
             if infoLevels.contains(level) {
-                writeln("[%s] %s Line %i INFO [Chapel] %s".format(moduleName, 
-                    routineName, lineNumber, msg));
+                writeln(generateLogMessage(moduleName, routineName, lineNumber, 
+                                            msg, level));
                 stdout.flush();
             }
         }
         
         proc warn(moduleName, routineName, lineNumber, msg: string) throws {
             if warnLevels.contains(level) {
-                writeln("[%s] %s Line %i WARN [Chapel] %s".format(moduleName, 
-                    routineName, lineNumber, msg));
+                writeln(generateLogMessage(moduleName, routineName, lineNumber, 
+                                            msg, level));
                 stdout.flush();
             }
         }
         
         proc critical(moduleName, routineName, lineNumber, msg: string) throws {
-            writeln("[%s] %s Line %i CRITICAL [Chapel] %s".format(moduleName, 
-                    routineName, lineNumber, msg));
+            writeln(generateLogMessage(moduleName, routineName, lineNumber, 
+                                            msg, level));
             stdout.flush();
         }
         
         proc error(moduleName, routineName, lineNumber, msg: string) throws {
-            writeln("[%s] %s Line %i ERROR [Chapel] %s".format(moduleName, 
-                    routineName, lineNumber, msg));
+            writeln(generateLogMessage(moduleName, routineName, lineNumber, 
+                                            msg, level));
             stdout.flush();
+        }
+        
+        proc generateLogMessage(moduleName: string, routineName, lineNumber, 
+                           msg, level: LogLevel) throws {
+             if printDate {
+                 return "%s [%s] %s Line %i %s %s [Chapel] %s".format(
+                 generateDateTimeString(), moduleName, routineName, lineNumber, 
+                                     level:string, msg);
+             } else {
+                 return "[%s] %s Line %i %s %s [Chapel] %s".format(moduleName, 
+                 routineName, lineNumber, level:string, msg);            
+             }
+        }
+         
+        proc generateDateTimeString() throws {
+            var dts = datetime.today():string;
+            var vals = dts.split("T");
+            var cd = vals(0);
+            var rawCms = vals(1).split(".");
+            return "%s:%s".format(cd,rawCms(0));        
         }
     }
 }

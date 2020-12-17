@@ -6,6 +6,7 @@ module SegStringSort {
   use CPtr;
   use CommAggregation;
   use PrivateDist;
+  use Reflection;
   use Logging;
 
   private config const SSS_v = true;
@@ -35,10 +36,14 @@ module SegStringSort {
   proc twoPhaseStringSort(ss: SegString): [ss.offsets.aD] int throws {
     var t = getCurrentTime();
     const lengths = ss.getLengths();
-    if v { writeln("Found lengths in %t seconds".format(getCurrentTime() - t)); stdout.flush(); t = getCurrentTime(); }
+    ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                         "Found lengths in %t seconds".format(getCurrentTime() - t));
+    if v { t = getCurrentTime(); }
     // Compute length survival function and choose a pivot length
     const (pivot, nShort) = getPivot(lengths);
-    if v { writeln("Computed pivot in %t seconds".format(getCurrentTime() - t)); writeln("Pivot = %t, nShort = %t".format(pivot, nShort)); stdout.flush(); t = getCurrentTime(); }
+    if v { writeln("Computed pivot in %t seconds".format(getCurrentTime() - t)); 
+            writeln("Pivot = %t, nShort = %t".format(pivot, nShort)); stdout.flush(); 
+            t = getCurrentTime(); }
     const longStart = ss.offsets.aD.low + nShort;
     const isLong = (lengths >= pivot);
     var locs = [i in ss.offsets.aD] i;
@@ -53,7 +58,8 @@ module SegStringSort {
         agg.copy(gatherInds[longStart+ll-1], i);
       }
     }
-    if v { writeln("Partitioned short/long strings in %t seconds".format(getCurrentTime() - t)); stdout.flush(); }
+    ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                   "Partitioned short/long strings in %t seconds".format(getCurrentTime() - t));
     on Locales[Locales.domain.high] {
       var tl = getCurrentTime();
       const ref highDom = {longStart..ss.offsets.aD.high};
@@ -69,11 +75,13 @@ module SegStringSort {
         const (_,val) = stringsWithInds[s];
         agg.copy(gatherInds[h], val);
       }
-      if v { writeln("Permuted long inds in %t seconds".format(getCurrentTime() - tl)); stdout.flush(); }
+      ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                              "Permuted long inds in %t seconds".format(getCurrentTime() - tl));
     }
     if v { t = getCurrentTime(); }
     const ranks = radixSortLSD_raw(ss.offsets.a, lengths, ss.values.a, gatherInds, pivot);
-    if v { writeln("Sorted ranks in %t seconds".format(getCurrentTime() - t)); stdout.flush(); }
+    ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                          "Sorted ranks in %t seconds".format(getCurrentTime() - t));
     return ranks;
   }
   
@@ -206,7 +214,7 @@ module SegStringSort {
     }
     
     var kr0: [aD] state;
-    if v { writeln("rshift = 0"); stdout.flush(); }
+    ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"rshift = 0");
     forall (k, rank) in zip(kr0, inds) {
       copyDigit(k, offsets[rank], lengths[rank], rank, pivot);
     }
@@ -218,7 +226,7 @@ module SegStringSort {
         
     // loop over digits
     for rshift in {2..#pivot by 2} {
-      if v {writeln("rshift = ",rshift); stdout.flush();}
+      ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"rshift = %t".format(rshift));
       // count digits
       coforall loc in Locales {
         on loc {

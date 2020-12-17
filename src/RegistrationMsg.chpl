@@ -63,7 +63,8 @@ module RegistrationMsg
         var (name) = payload.decode().splitMsgToTuple(1);
 
         // if verbose print action
-        if v {writeln("%s %s".format(cmd,name)); try! stdout.flush();}
+        regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                          "%s %s".format(cmd,name));
 
         // lookup name in symbol table to get attributes
         var attrib = st.attrib(name);
@@ -89,7 +90,8 @@ module RegistrationMsg
         var (name) = payload.decode().splitMsgToTuple(1);
 
         // if verbose print action
-        if v {writeln("%s %s".format(cmd,name)); try! stdout.flush();}
+        regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                          "%s %s".format(cmd,name));
 
         // take name out of the registry and delete entry in symbol table
         st.unregName(name);

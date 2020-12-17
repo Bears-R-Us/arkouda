@@ -280,7 +280,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
     var (subcmd, objtype, rest) = payload.decode().splitMsgToTuple(3);
     var fields = rest.split();
     var args: [1..#fields.size] string = fields; // parsed by subroutines
-    writeln("subcmd: %s objtype: %s rest: %s".format(subcmd,objtype,rest));
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                            "subcmd: %s objtype: %s rest: %s".format(subcmd,objtype,rest));
     try {
         select subcmd {
             when "intIndex" {
