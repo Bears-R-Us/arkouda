@@ -22,6 +22,14 @@ module ArraySetopsMsg
     use RadixSortLSD;
     use Reflection;
     use Errors;
+    use Logging;
+    
+    var asLogger = new Logger();
+    if v {
+        asLogger.level = LogLevel.DEBUG;
+    } else {
+        asLogger.level = LogLevel.INFO;    
+    }
     
     /*
     Parse, execute, and respond to a intersect1d message
@@ -52,12 +60,7 @@ module ArraySetopsMsg
           when (DType.Int64) {
              if (gEnt.dtype != gEnt2.dtype) {
                  var errorMsg = notImplementedError("newIntersect1d",gEnt2.dtype);
-                 writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                            
+                 asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                             
                  return errorMsg;
              }
              var e = toSymEntry(gEnt,int);
@@ -71,13 +74,7 @@ module ArraySetopsMsg
            }
            otherwise {
                var errorMsg = notImplementedError("newIntersect1d",gEnt.dtype);
-               writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                   
-             
+               asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
                return errorMsg;
            }
         }
@@ -112,12 +109,7 @@ module ArraySetopsMsg
           when (DType.Int64) {
              if(gEnt.dtype != gEnt2.dtype) {
                  var errorMsg = notImplementedError("setxor1d",gEnt2.dtype);
-                 writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                  
+                 asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                 
                  return errorMsg;
              }
              var e = toSymEntry(gEnt,int);
@@ -131,12 +123,7 @@ module ArraySetopsMsg
            }
            otherwise {
                var errorMsg = notImplementedError("setxor1d",gEnt.dtype);
-               writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                  
+               asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                  
                return errorMsg;
            }
         }
@@ -171,12 +158,7 @@ module ArraySetopsMsg
           when (DType.Int64) {
              if (gEnt.dtype != gEnt2.dtype) {
                  var errorMsg = notImplementedError("setdiff1d",gEnt2.dtype);
-                 writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                  
+                 asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                
                  return errorMsg;             
              }
              var e = toSymEntry(gEnt,int);
@@ -190,12 +172,7 @@ module ArraySetopsMsg
            }
            otherwise {
                var errorMsg = notImplementedError("setdiff1d",gEnt.dtype);
-               writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                  
+               asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                 
                return errorMsg;             
            }
         }
@@ -229,12 +206,7 @@ module ArraySetopsMsg
         when (DType.Int64) {
            if (gEnt.dtype != gEnt2.dtype) {
                var errorMsg = notImplementedError("newUnion1d",gEnt2.dtype);
-               writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                  
+               asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                   
                return errorMsg;              
            }
            var e = toSymEntry(gEnt,int);
@@ -248,12 +220,7 @@ module ArraySetopsMsg
          }
          otherwise {
              var errorMsg = notImplementedError("newUnion1d",gEnt.dtype);
-             writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                  
+             asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                   
              return errorMsg;              
          }
       }

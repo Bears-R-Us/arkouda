@@ -5,11 +5,20 @@ module In1d
     use Unique;
     use CommAggregation;
     use RadixSortLSD;
+    use Reflection;
 
     use Time only;
     use Math only;
 
     use PrivateDist;
+    use Logging;
+    
+    var inLogger = new Logger();
+    if v {
+        inLogger.level = LogLevel.DEBUG;
+    } else {
+        inLogger.level = LogLevel.INFO;    
+    }
 
     /* Brute force:
     forward-way reduction per element of ar1 over ar2.
@@ -104,12 +113,12 @@ module In1d
             }
         }
 
-        if v {
-            writeln("max create time = ",     max reduce [i in PrivateSpace] timings[i][0]);
-            writeln("max fill time = ",       max reduce [i in PrivateSpace] timings[i][1]);
-            writeln("max membership time = ", max reduce [i in PrivateSpace] timings[i][2]);
-            try! stdout.flush();
-        }
+        try! inLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                     "max create time = %t".format(max reduce [i in PrivateSpace] timings[i][0]));
+        try! inLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                        "max fill time = %t".format(max reduce [i in PrivateSpace] timings[i][1]));
+        try! inLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                  "max membership time = %t".format(max reduce [i in PrivateSpace] timings[i][2]));
         
         return truth;
     }

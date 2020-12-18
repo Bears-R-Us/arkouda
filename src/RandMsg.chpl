@@ -6,11 +6,20 @@ module RandMsg
     use Math only;
     use Reflection;
     use Errors;
+    use Logging;
     use RandArray;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
+    
+    const randLogger = new Logger();
+    
+    if v {
+        randLogger.level = LogLevel.DEBUG;
+    } else {
+        randLogger.level = LogLevel.INFO;
+    }   
 
     /*
     parse, execute, and respond to randint message
@@ -30,8 +39,9 @@ module RandMsg
         var rname = st.nextName();
         
         // if verbose print action
-        if v {writeln("%s %i %s %s %s: %s".format(cmd,len,dtype2str(dtype),
-                                         rname,aMinStr,aMaxStr)); try! stdout.flush();}
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+               "cmd: %s len: %i dtype: %s rname: %s aMin: %s: aMax: %s".format(
+                                           cmd,len,dtype2str(dtype),rname,aMinStr,aMaxStr)); 
         select (dtype) {
             when (DType.Int64) {
                 overMemLimit(8*len);
@@ -39,11 +49,13 @@ module RandMsg
                 var aMax = aMaxStr:int;
                 var t1 = Time.getCurrentTime();
                 var e = st.addEntry(rname, len, int);
-                if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
+                randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                   "alloc time = %i sec".format(Time.getCurrentTime() - t1));
                 
                 t1 = Time.getCurrentTime();
                 fillInt(e.a, aMin, aMax, seed);
-                if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
+                randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                  "compute time = %i sec".format(Time.getCurrentTime() - t1));
             }
             when (DType.UInt8) {
                 overMemLimit(len);
@@ -51,11 +63,13 @@ module RandMsg
                 var aMax = aMaxStr:int;
                 var t1 = Time.getCurrentTime();
                 var e = st.addEntry(rname, len, uint(8));
-                if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
+                randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                     "alloc time = %i sec".format(Time.getCurrentTime() - t1));
                 
                 t1 = Time.getCurrentTime();
                 fillUInt(e.a, aMin, aMax, seed);
-                if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
+                randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                        "compute time = %i".format(Time.getCurrentTime() - t1));
             }
             when (DType.Float64) {
                 overMemLimit(8*len);
@@ -63,31 +77,29 @@ module RandMsg
                 var aMax = aMaxStr:real;
                 var t1 = Time.getCurrentTime();
                 var e = st.addEntry(rname, len, real);
-                if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
+                randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                         "alloc time = %i sec".format(Time.getCurrentTime() - t1));
                 
                 t1 = Time.getCurrentTime();
                 fillReal(e.a, aMin, aMax, seed);
-                if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
+                randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                          "compute time = %i sec".format(Time.getCurrentTime() - t1));
             }
             when (DType.Bool) {
                 overMemLimit(len);
                 var t1 = Time.getCurrentTime();
                 var e = st.addEntry(rname, len, bool);
-                if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
+                randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                  "alloc time = %i sec".format(Time.getCurrentTime() - t1));
                 
                 t1 = Time.getCurrentTime();
                 fillBool(e.a, seed);
-                if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
+                randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "compute time = %i sec".format(Time.getCurrentTime() - t1));
             }            
             otherwise {
                 var errorMsg = notImplementedError(pn,dtype);
-                writeln(generateErrorContext(
-                     msg=errorMsg, 
-                     lineNumber=getLineNumber(), 
-                     moduleName=getModuleName(), 
-                     routineName=getRoutineName(), 
-                     errorClass="IncompatibleArgumentsError")); 
-                return errorMsg;
+                randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             }
         }
         // response message

@@ -7,12 +7,21 @@ module EfuncMsg
     use Math only;
     use Reflection;
     use Errors;
+    use Logging;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     
     use AryUtil;
+    
+    const eLogger = new Logger();
+
+    if v {
+        eLogger.level = LogLevel.DEBUG;
+    } else {
+        eLogger.level = LogLevel.INFO;
+    }
     
     /* These ops are functions which take an array and produce an array.
        
@@ -36,9 +45,11 @@ module EfuncMsg
         // split request into fields
         var (efunc, name) = payload.decode().splitMsgToTuple(2);
         var rname = st.nextName();
-        if v {writeln("%s %s %s : %s".format(cmd,efunc,name,rname));try! stdout.flush();}
-
+        
         var gEnt: borrowed GenSymEntry = st.lookup(name);
+        
+        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                           "cmd: %s efunc: %s pdarray: %t".format(cmd,efunc,gEnt));
        
         select (gEnt.dtype) {
             when (DType.Int64) {
@@ -47,8 +58,7 @@ module EfuncMsg
                 {
                     when "abs" {
                         var a = st.addEntry(rname, e.size, real);
-                        a.a = Math.abs(e.a);
-                        
+                        a.a = Math.abs(e.a);                      
                     }
                     when "log" {
                         var a = st.addEntry(rname, e.size, real);
@@ -76,12 +86,7 @@ module EfuncMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
-                        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                                                 
+                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                                               
                         return errorMsg;
                     }
                 }
@@ -120,12 +125,7 @@ module EfuncMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
-                        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));      
+                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
                         return errorMsg;                     
                     }
                 }
@@ -146,24 +146,14 @@ module EfuncMsg
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
-                        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                           
+                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                        
                         return errorMsg;
                     }
                 }
             }
             otherwise {
                 var errorMsg = unrecognizedTypeError(pn, dtype2str(gEnt.dtype));
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="UnrecognizedTypeError"));                   
+                eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                  
                 return errorMsg;    
             }
         }
@@ -189,20 +179,13 @@ module EfuncMsg
         // split request into fields
         var (efunc, name1, name2, name3) = payload.decode().splitMsgToTuple(4);
         var rname = st.nextName();
-        if v {writeln("%s %s %s %s %s %s : %s".format(cmd,efunc,name1,
-                                             name2,name3,rname));try! stdout.flush();}
 
         var g1: borrowed GenSymEntry = st.lookup(name1);
         var g2: borrowed GenSymEntry = st.lookup(name2);
         var g3: borrowed GenSymEntry = st.lookup(name3);
         if !((g1.size == g2.size) && (g2.size == g3.size)) {
             var errorMsg = "Error: size mismatch in arguments to "+pn;
-            writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IncompatibleArgumentsError"));  
+            eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
             return errorMsg; 
         }
         select (g1.dtype, g2.dtype, g3.dtype) {
@@ -218,12 +201,7 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                            g2.dtype,g3.dtype);
-                        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));  
+                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
                         return errorMsg; 
                     }                
                 } 
@@ -240,12 +218,7 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                        g2.dtype,g3.dtype);
-                        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));   
+                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
                         return errorMsg;
                     }
                 } 
@@ -262,24 +235,14 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                        g2.dtype,g3.dtype);
-                        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                                                          
+                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                                                      
                         return errorMsg;
                     }
                 } 
             }
             otherwise {
                var errorMsg = notImplementedError(pn,efunc,g1.dtype,g2.dtype,g3.dtype);
-               writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                
+               eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);       
                return errorMsg;
             }
         }
@@ -305,19 +268,16 @@ module EfuncMsg
               = payload.decode().splitMsgToTuple(5); // split request into fields
         var dtype = str2dtype(dtypestr);
         var rname = st.nextName();
-        if v {writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,
-                                     name2,dtype,value,rname));try! stdout.flush();}
+
+        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            "cmd: %s efunc: %s scalar: %s dtype: %s name1: %s name2: %s rname: %s".format(
+             cmd,efunc,value,dtype,name1,name2,rname));
 
         var g1: borrowed GenSymEntry = st.lookup(name1);
         var g2: borrowed GenSymEntry = st.lookup(name2);
         if !(g1.size == g2.size) {
             var errorMsg = "Error: size mismatch in arguments to "+pn;
-            writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IncompatibleArgumentsError"));   
+            eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
             return errorMsg;
         }
         select (g1.dtype, g2.dtype, dtype) {
@@ -333,12 +293,7 @@ module EfuncMsg
                   otherwise {
                       var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                          g2.dtype,dtype);
-                      writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));   
+                      eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
                       return errorMsg;
                   }
                } 
@@ -355,12 +310,7 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                           g2.dtype,dtype);
-                        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));   
+                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
                         return errorMsg;
                     }
                 }
@@ -377,12 +327,7 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                            g2.dtype,dtype);
-                        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                           
+                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                         
                         return errorMsg;
                     }
                 } 
@@ -390,12 +335,7 @@ module EfuncMsg
             otherwise {
                 var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                    g2.dtype,dtype);
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));   
+                eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
                 return errorMsg;            
             }
         }
@@ -421,19 +361,16 @@ module EfuncMsg
               = payload.decode().splitMsgToTuple(5); // split request into fields
         var dtype = str2dtype(dtypestr);
         var rname = st.nextName();
-        if v {writeln("%s %s %s %s %s %s %s : %s".format(cmd,efunc,name1,dtype,value,
-                                                        name2,rname));try! stdout.flush();}
+
+        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            "cmd: %s efunc: %s scalar: %s dtype: %s name1: %s name2: %s rname: %s".format(
+             cmd,efunc,value,dtype,name1,name2,rname));
 
         var g1: borrowed GenSymEntry = st.lookup(name1);
         var g2: borrowed GenSymEntry = st.lookup(name2);
         if !(g1.size == g2.size) {
             var errorMsg = "Error: size mismatch in arguments to "+pn;
-            writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IncompatibleArgumentsError"));             
+            eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
             return errorMsg;
         }
         select (g1.dtype, dtype, g2.dtype) {
@@ -449,12 +386,7 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                            dtype,g2.dtype);
-                        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                       
+                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                  
                         return errorMsg;
                     }   
                } 
@@ -469,14 +401,9 @@ module EfuncMsg
                         st.addEntry(rname, new shared SymEntry(a));
                     }
                     otherwise {
-                        var errorMsg = notImplementedError(pn,efunc,g1.dtype,
+                      var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                            dtype,g2.dtype);
-                        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));   
+                      eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
                       return errorMsg;
                     }
                 } 
@@ -493,12 +420,7 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                            dtype,g2.dtype);
-                        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));  
+                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
                         return errorMsg;                    
                     }
                } 
@@ -506,12 +428,7 @@ module EfuncMsg
             otherwise {
                 var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                    dtype,g2.dtype);
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                                                     
+                eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                                                 
                 return errorMsg;
             }
         }
@@ -538,8 +455,10 @@ module EfuncMsg
         var dtype1 = str2dtype(dtype1str);
         var dtype2 = str2dtype(dtype2str);
         var rname = st.nextName();
-        if v {writeln("%s %s %s %s %s %s %s %s : %s".format(cmd,efunc,
-                        name1,dtype1,value1,dtype2,value2,rname));try! stdout.flush();}
+        
+        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            "cmd: %s efunc: %s scalar1: %s dtype1: %s scalar2: %s dtype2: %s name: %s rname: %s".format(
+             cmd,efunc,value1,dtype1,value2,dtype2,name1,rname));
 
         var g1: borrowed GenSymEntry = st.lookup(name1);
         select (g1.dtype, dtype1, dtype1) {
@@ -555,12 +474,7 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                       dtype1,dtype2);
-                        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
+                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
                         return errorMsg;
                     }
                 } 
@@ -577,12 +491,7 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                         dtype1,dtype2);
-                        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));    
+                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
                         return errorMsg;                                                     
                     }
                 } 
@@ -599,12 +508,7 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                        dtype1,dtype2);
-                        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
+                        eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
                         return errorMsg;      
                    }
                } 
@@ -612,12 +516,7 @@ module EfuncMsg
             otherwise {
                 var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                dtype1,dtype2);
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));   
+                eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
                 return errorMsg;                                             
             }
         }

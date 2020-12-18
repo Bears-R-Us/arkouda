@@ -1,6 +1,16 @@
 module AryUtil
 {
     use Random;
+    use Reflection;
+    use Logging;
+    use ServerConfig;
+    
+    const auLogger = new Logger();
+    if v {
+        auLogger.level = LogLevel.DEBUG;
+    } else {
+        auLogger.level = LogLevel.INFO;    
+    }
     
     /*
       Threshold for the amount of data that will be printed. 
@@ -15,9 +25,13 @@ module AryUtil
       :arg A: array to be printed
     */
     proc printAry(name:string, A) {
-        if A.size <= printThresh {writeln(name,A);}
-        else {writeln(name,[i in A.domain.low..A.domain.low+2] A[i],
-                      " ... ", [i in A.domain.high-2..A.domain.high] A[i]);}
+        if A.size <= printThresh {
+            try! auLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                                         "name: %t A: %t".format(name,A));
+        } else {
+            try! writeln(name,[i in A.domain.low..A.domain.low+2] A[i],
+                      " ... ", [i in A.domain.high-2..A.domain.high] A[i]);       
+        }
     }
     
     /* 1.18 version print out localSubdomains 

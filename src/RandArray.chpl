@@ -1,12 +1,23 @@
 module RandArray {
   use Reflection;
   use Errors;
+  use Logging;
   use Random;
   use SegmentedArray;
   use ServerErrorStrings;
   use MultiTypeSymEntry;
   use Map;
   use SipHash;
+  use ServerConfig;
+  private use IO;
+  
+  const raLogger = new Logger();
+  
+  if v {
+      raLogger.level = LogLevel.DEBUG;
+  } else {
+      raLogger.level = LogLevel.INFO;
+  } 
 
   proc fillInt(a:[] ?t, const aMin, const aMax, const seedStr:string="None") throws where isIntType(t) {
     coforall loc in Locales {
@@ -137,12 +148,8 @@ module RandArray {
                                    characters:charSet = charSet.Uppercase,
                                    const seedStr:string="None") throws {
     if (n < 0) || (minLen < 0) || (maxLen < minLen) {  
-        writeln(generateErrorContext(
-                 msg="Incompatible arguments: n and minLen must be > 0 and maxLen < minLen", 
-                 lineNumber=getLineNumber(), 
-                 moduleName=getModuleName(), 
-                 routineName=getRoutineName(), 
-                 errorClass="ArgumentError"));  
+        raLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                  "Incompatible arguments: n and minLen must be > 0 and maxLen < minLen"); 
         throw new owned ArgumentError();                     
     }
     var lengths = makeDistArray(n, int);
@@ -163,12 +170,8 @@ module RandArray {
                                      characters:charSet = charSet.Uppercase,
                                      const seedStr:string="None") throws {
     if (n < 0) || (logStd <= 0) {
-        writeln(generateErrorContext(
-                     msg="Incompatible arguments: n must be > 0 and logStd <= 0", 
-                     lineNumber=getLineNumber(), 
-                     moduleName=getModuleName(), 
-                     routineName=getRoutineName(), 
-                     errorClass="ArgumentError")); 
+        raLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                     "Incompatible arguments: n must be > 0 and logStd <= 0");      
         throw new owned ArgumentError();
     }
     var ltemp = makeDistArray(n, real);

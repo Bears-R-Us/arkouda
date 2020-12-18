@@ -7,6 +7,15 @@ module Histogram
 
     use PrivateDist;
     use SymArrayDmap;
+    use Logging;
+    use Reflection;
+    
+    const hgLogger = new Logger();
+    if v {
+        hgLogger.level = LogLevel.DEBUG;
+    } else {
+        hgLogger.level = LogLevel.INFO;    
+    }
     
     /*
     Takes the data in array a, creates an atomic histogram in parallel, 
@@ -41,14 +50,17 @@ module Histogram
         forall v in a {
             var vBin = ((v - aMin) / binWidth):int;
             if v == aMax {vBin = bins-1;}
-            //if (v_bin < 0) | (v_bin > (bins-1)) {try! writeln("OOB");try! stdout.flush();}
+            if (vBin < 0) | (vBin > (bins-1)) {
+                try! hgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),"OOB");
+            }
             atomicHist[vBin].add(1);
         }
         
         var hist = makeDistArray(bins,int);
         // copy from atomic histogram to normal histogram
         [(e,ae) in zip(hist, atomicHist)] e = ae.read();
-        //if v {try! writeln("hist =",hist); try! stdout.flush();}
+        try! hgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                             "hist = %t".format(hist));
 
         return hist;
     }
