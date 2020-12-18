@@ -105,7 +105,7 @@ class ArkoudaLogger(Logger):
             handler.setLevel(logLevel.value)
             handlers = [handler]
         for handler in handlers: 
-            if logFormat != '':
+            if logFormat:
                 handler.setFormatter(Formatter(logFormat))  
             self.addHandler(handler)
         
