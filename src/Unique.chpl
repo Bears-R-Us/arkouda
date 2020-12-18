@@ -25,6 +25,17 @@ module Unique
     use RadixSortLSD;
     use SegmentedArray;
     use AryUtil;
+    use Reflection;
+    use Logging;
+    
+    const uLogger = new Logger();
+  
+    if v {
+        uLogger.level = LogLevel.DEBUG;
+    } else {
+        uLogger.level = LogLevel.INFO;
+    } 
+
 
     /* // thresholds for different unique counting algorithms */
     /* var sBins = 2**10; // small-range maybe for using reduce intents on forall loops */
@@ -274,7 +285,8 @@ module Unique
     /*     //[val in a] if !uniqSet[here.id].contains(val) {uniqSet[here.id] += val;} */
     /*     [val in a] uniqSet[here.id] += val; */
     /*     var numUniq = + reduce [i in PrivateSpace]  uniqSet[i].size; */
-    /*     if v {try! writeln("num unique vals upper bound = %t".format(numUniq));try! stdout.flush();} */
+    /*     uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                    "num unique vals upper bound = %t".format(numUniq));*/
 
     /*     // global assoc domain for global unique value set */
     /*     //var globalUniqSet: domain(int) dmapped Hashed(idxType=int); */
@@ -291,7 +303,8 @@ module Unique
     /*     //         for val in uniqSet[here.id] {globalUniqSet += val;} */
     /*     //     } */
     /*     // } */
-    /*     if v {try! writeln("num unique vals = %t".format(globalUniqSet.size));try! stdout.flush();} */
+    /*     uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                   "num unique vals = %t".format(globalUniqSet.size));*/
 
     /*     // allocate global uniqCounts over global set of uniq values */
     /*     var globalUniqCounts: [globalUniqSet] atomic int; */
@@ -361,7 +374,8 @@ module Unique
         
     /*     // reduce counts across locales */
     /*     var numUniq = + reduce [i in PrivateSpace]  uniqSet[i].size; */
-    /*     if v {try! writeln("num unique vals upper bound = %t".format(numUniq));try! stdout.flush();} */
+    /*     uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                    "num unique vals upper bound = %t".format(numUniq));*/
 
     /*     // global assoc domain for global unique value set */
     /*     // parSafe=false means NO modifying the domain in a parallel context */
@@ -375,7 +389,8 @@ module Unique
     /*             for val in uniqSet[here.id] {globalUniqSet += val;} */
     /*         } */
     /*     } */
-    /*     if v {try! writeln("num unique vals = %t".format(globalUniqSet.size));try! stdout.flush();} */
+    /*     uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                    "num unique vals = %t".format(globalUniqSet.size));*/
 
     /*     // allocate global uniqCounts over global set of uniq values */
     /*     var globalUniqCounts: [globalUniqSet] atomic int; */
@@ -420,7 +435,7 @@ module Unique
     */
     proc uniqueSort(a: [?aD] int, param needCounts = true) {
         if (aD.size == 0) {
-            if v {writeln("zero size");try! stdout.flush();}
+            try! uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"zero size");
             var u = makeDistArray(0, int);
             if (needCounts) {
                 var c = makeDistArray(0, int);
@@ -449,7 +464,7 @@ module Unique
 
     proc uniqueSortWithInverse(a: [?aD] int) {
         if (aD.size == 0) {
-            if v {writeln("zero size");try! stdout.flush();}
+            try! uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"zero size");
             var u = makeDistArray(0, int);
             var c = makeDistArray(0, int);
             var inv = makeDistArray(0, int);
@@ -488,7 +503,8 @@ module Unique
         [(t, s, i) in zip(truth, sorted, aD)] if i > aD.low { t = (sorted[i-1] != s); }
         var allUnique: int = + reduce truth;
         if (allUnique == aD.size) {
-            if v {writeln("early out already unique");try! stdout.flush();}
+           try!  uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                    "early out already unique");
             var u = makeDistArray(aD.size, int);
             u = sorted; // array is already unique
             if (needCounts) {
@@ -503,7 +519,7 @@ module Unique
         var iv: [truth.domain] int = (+ scan truth);
         // compute how many segments
         var pop = iv[iv.size-1];
-        if v {writeln("pop = ",pop);try! stdout.flush();}
+        try! uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"pop = %t".format(pop));
 
         var segs = makeDistArray(pop, int);
         var ukeys = makeDistArray(pop, int);
@@ -540,7 +556,7 @@ module Unique
 
     proc uniqueGroup(str: SegString, returnInverse = false, assumeSorted=false) throws {
         if (str.size == 0) {
-            if v {writeln("zero size");try! stdout.flush();}
+            uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"zero size");
             var uo = makeDistArray(0, int);
             var uv = makeDistArray(0, uint(8));
             var c = makeDistArray(0, int);
@@ -639,7 +655,7 @@ module Unique
     proc uniqueFromTruth(str: SegString, perm: [?aD] int, truth: [aD] bool) throws {
         var allUnique: int = + reduce truth;
         if (allUnique == aD.size) {
-            if v {writeln("early out already unique");try! stdout.flush();}
+            uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"early out already unique");
             var uo = makeDistArray(aD.size, int);
             var uv = makeDistArray(str.nBytes, uint(8));
             var c = makeDistArray(aD.size, int);
@@ -652,7 +668,7 @@ module Unique
         var iv: [aD] int = (+ scan truth);
         // compute how many segments
         var pop = iv[iv.size-1];
-        if v {writeln("pop = ",pop);try! stdout.flush();}
+        uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"pop = %t".format(pop));
 
         var segs = makeDistArray(pop, int);
         var counts = makeDistArray(pop, int);
