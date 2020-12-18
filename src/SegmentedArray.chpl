@@ -25,7 +25,6 @@ module SegmentedArray {
       saLogger.level = LogLevel.INFO;
   }
 
-  private config const DEBUG = false;
   private config param useHash = true;
   param SegmentedArrayUseHash = useHash;
   
@@ -325,7 +324,7 @@ module SegmentedArray {
       /* } */
       /* var gatheredVals = makeDistArray(retBytes, uint(8)); */
       /* ref va = values.a; */
-      /* if DEBUG { */
+      /* if v { */
       /*   printAry("gatheredOffsets: ", gatheredOffsets); */
       /*   printAry("gatheredLengths: ", gatheredLengths); */
       /*   printAry("segInds: ", segInds); */
@@ -391,7 +390,7 @@ module SegmentedArray {
             saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                             "sorting took %t seconds".format(t.elapsed())); 
         }
-        if DEBUG{
+        if v{
           var sortedHashes = [i in iv] hashes[i];
           var diffs = sortedHashes[(iv.domain.low+1)..#(iv.size-1)] - 
                                                  sortedHashes[(iv.domain.low)..#(iv.size-1)];
@@ -448,14 +447,14 @@ module SegmentedArray {
       }
       var t = new Timer();
 
-      if DEBUG {
+      if v {
            saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                 "Checking bytes of substr"); 
            t.start();
       }
       const truth = findSubstringInBytes(substr);
       const D = truth.domain;
-      if DEBUG {
+      if v {
             t.stop(); 
             saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                   "took %t seconds\nTranslating to segments...".format(t.elapsed())); 
@@ -466,7 +465,7 @@ module SegmentedArray {
       const tail = + reduce (offsets.a > D.high);
       // oD is the right-truncated domain representing segments that are candidates for containing substr
       var oD: subdomain(offsets.aD) = offsets.aD[offsets.aD.low..#(offsets.size - tail)];
-      if DEBUG {
+      if v {
              t.stop(); 
              saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                    "took %t seconds\ndetermining answer...".format(t.elapsed())); 
@@ -490,7 +489,7 @@ module SegmentedArray {
         hits[oD.interior(-(oD.size-1))] = truth[oa[oD.interior(oD.size-1)] - substr.numBytes - 1];
         hits[oD.high] = truth[D.high];
       }
-      if DEBUG {
+      if v {
           t.stop(); 
           saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                    "took %t seconds".format(t.elapsed()));
@@ -952,7 +951,7 @@ module SegmentedArray {
       const order = ar.argsort();
       const (sortedSegs, sortedVals) = ar[order];
       const sar = new owned SegString(sortedSegs, sortedVals, st);
-      if DEBUG { 
+      if v { 
           saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                             "Sorted concatenated unique strings:"); 
           sar.show(10); 
@@ -993,7 +992,7 @@ module SegmentedArray {
       forall (o, f) in zip(order, flag) with (var agg = newDstAggregator(bool)) {
         agg.copy(ret[o], f);
       }
-      if DEBUG {
+      if v {
           saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                 "Ret pop: %t".format(+ reduce ret));
       }

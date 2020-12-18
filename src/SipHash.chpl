@@ -10,8 +10,6 @@ module SipHash {
   param cROUNDS = 2;
   param dROUNDS = 4;
 
-  private config param DEBUG = false;
-
   const defaultSipHashKey: [0..#16] uint(8) = for i in 0..#16 do i: uint(8);
 
   const shLogger = new Logger();

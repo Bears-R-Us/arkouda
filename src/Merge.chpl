@@ -13,8 +13,6 @@ module Merge {
   } else {
       mLogger.level = LogLevel.INFO;
   }
-
-  private config const DEBUG = false;
   
   /* Given a *sorted*, zero-up array, use binary search to find the index of the first element 
    * that is greater than or equal to a target.

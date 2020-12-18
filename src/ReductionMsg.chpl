@@ -18,7 +18,6 @@ module ReductionMsg
     use PrivateDist;
     use RadixSortLSD;
 
-    private config const reductionDEBUG = false;
     private config const lBins = 2**25 * numLocales;
 
     const rmLogger = new Logger();

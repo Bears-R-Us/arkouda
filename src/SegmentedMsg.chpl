@@ -11,8 +11,6 @@ module SegmentedMsg {
   use IO;
   use GenSymIO only jsonToPdArray;
 
-  private config const DEBUG = false;
-  
   const smLogger = new Logger();
   
   if v {
