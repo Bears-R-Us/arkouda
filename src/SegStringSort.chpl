@@ -37,13 +37,15 @@ module SegStringSort {
     var t = getCurrentTime();
     const lengths = ss.getLengths();
     ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                         "Found lengths in %t seconds".format(getCurrentTime() - t));
+                                       "Found lengths in %t seconds".format(getCurrentTime() - t));
     if v { t = getCurrentTime(); }
     // Compute length survival function and choose a pivot length
     const (pivot, nShort) = getPivot(lengths);
-    if v { writeln("Computed pivot in %t seconds".format(getCurrentTime() - t)); 
-            writeln("Pivot = %t, nShort = %t".format(pivot, nShort)); stdout.flush(); 
-            t = getCurrentTime(); }
+    ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                       "Computed pivot in %t seconds".format(getCurrentTime() - t)); 
+    ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                       "Pivot = %t, nShort = %t".format(pivot, nShort)); 
+    if v {t = getCurrentTime(); }
     const longStart = ss.offsets.aD.low + nShort;
     const isLong = (lengths >= pivot);
     var locs = [i in ss.offsets.aD] i;
@@ -66,11 +68,18 @@ module SegStringSort {
       ref highInds = gatherInds[highDom];
       // Get local copy of the long strings as Chapel strings, and their original indices
       var stringsWithInds = gatherLongStrings(ss, lengths, highInds);
-      if v {writeln("Gathered long strings in %t seconds".format(getCurrentTime() - tl)); stdout.flush(); tl = getCurrentTime(); }
+
+      ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                           "Gathered long strings in %t seconds".format(getCurrentTime() - tl));
+      if v { tl = getCurrentTime(); }
       // Sort the strings, but bring the inds along for the ride
       const myComparator = new StringIntComparator();
       sort(stringsWithInds, comparator=myComparator);
-      if v { writeln("Sorted long strings in %t seconds".format(getCurrentTime() - tl)); stdout.flush(); tl = getCurrentTime(); }
+
+      ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                             "Sorted long strings in %t seconds".format(getCurrentTime() - tl));
+      if v { tl = getCurrentTime(); }
+
       forall (h, s) in zip(highDom, stringsWithInds.domain) with (var agg = newDstAggregator(int)) {
         const (_,val) = stringsWithInds[s];
         agg.copy(gatherInds[h], val);

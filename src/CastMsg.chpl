@@ -89,14 +89,9 @@ module CastMsg {
           return castGenSymEntryToString(gse, st, bool);
         }
         otherwise {
-          var errorMsg = notImplementedError(pn,gse.dtype:string,":",targetDtype);
-                        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                             
-                        return errorMsg;
+            var errorMsg = notImplementedError(pn,gse.dtype:string,":",targetDtype);
+            castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                    
+            return errorMsg;
         }
         }
       }
@@ -144,31 +139,35 @@ module CastMsg {
       castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);   
       return "Error: %s".format(errorMsg);
     }
+
+    var returnMsg = "created " + st.attrib(name);
+    castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
     return "created " + st.attrib(name);
   }
 
-  proc castGenSymEntryToString(gse: borrowed GenSymEntry, st: borrowed SymTab, type fromType): string throws {
+  proc castGenSymEntryToString(gse: borrowed GenSymEntry, st: borrowed SymTab, 
+                                                       type fromType): string throws {
     const before = toSymEntry(gse, fromType);
     const oname = st.nextName();
     var segments = st.addEntry(oname, before.size, int);
     var strings: [before.aD] string;
     if fromType == real {
       try {
-        forall (s, v) in zip(strings, before.a) {
-          s = "%.17r".format(v);
-        }
+          forall (s, v) in zip(strings, before.a) {
+              s = "%.17r".format(v);
+          }
       } catch e {
-        var errorMsg = "could not convert float64 value to decimal representation";
-        castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);   
-        return "Error: %s".format(errorMsg);
+          var errorMsg = "could not convert float64 value to decimal representation";
+          castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);   
+          return "Error: %s".format(errorMsg);
       }
     } else {
       try {
-        strings = [s in before.a] s : string;
+          strings = [s in before.a] s : string;
       } catch e: IllegalArgumentError {
-        var errorMsg = "bad value in cast from %s to string".format(fromType:string);
-        castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);   
-        return "Error: %s".format(errorMsg);
+          var errorMsg = "bad value in cast from %s to string".format(fromType:string);
+          castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);   
+          return "Error: %s".format(errorMsg);
       }
     }
     const byteLengths = [s in strings] s.numBytes + 1;
@@ -182,8 +181,8 @@ module CastMsg {
         agg.copy(va[o+i], b);
       }
     }
+
     var returnMsg ="created " + st.attrib(oname) + "+created " + st.attrib(vname);
-    
     castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
     return returnMsg;
   }
@@ -212,8 +211,8 @@ module CastMsg {
           castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);   
           return "Error: %s".format(errorMsg);
       }
+
       var returnMsg = "created " + st.attrib(name);
-    
       castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
       return returnMsg;
   }

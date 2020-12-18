@@ -25,12 +25,12 @@ module UniqueMsg
 
     use Unique;
     
-    const uLogger = new Logger();
+    const umLogger = new Logger();
   
     if v {
-        uLogger.level = LogLevel.DEBUG;
+        umLogger.level = LogLevel.DEBUG;
     } else {
-        uLogger.level = LogLevel.INFO;
+        umLogger.level = LogLevel.INFO;
     }
     
     /* unique take a pdarray and returns a pdarray with the unique values */
@@ -46,7 +46,7 @@ module UniqueMsg
         else if returnCountsStr == "False" {returnCounts = false;}
         else {
             var errorMsg = "Error: %s: %s".format(pn,returnCountsStr);
-            uLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);              
+            umLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);              
             return errorMsg;
         }
         select objtype {
@@ -55,7 +55,7 @@ module UniqueMsg
                 var vname = st.nextName();
                 // get next symbol anme for counts
                 var cname = st.nextName();
-                uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                           "cmd: %s name: %s returnCounts: %t: vname: %s cname: %s".format(
                           cmd,name,returnCounts,vname,cname));
         
@@ -74,16 +74,19 @@ module UniqueMsg
                 
                     /* // how many bins in histogram */
                     /* var bins = eMax-eMin+1; */
-                    /* if v {writeln("bins = %t".format(bins));try! stdout.flush();} */
+                    /* umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                           "bins = %t".format(bins)); */
 
                     /* if (bins <= mBins) { */
-                    /*     if v {try! writeln("bins <= %t".format(mBins));try! stdout.flush();} */
+                    /*     umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                "bins <= %t".format(mBins));*/
                     /*     var (aV,aC) = uniquePerLocHistGlobHist(e.a, eMin, eMax); */
                     /*     st.addEntry(vname, new shared SymEntry(aV)); */
                     /*     if returnCounts {st.addEntry(cname, new shared SymEntry(aC));} */
                     /* } */
                     /* else { */
-                    /*     if v {try! writeln("bins = %t".format(bins));try! stdout.flush();} */
+                    /*     umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                "bins = %t".format(bins));*/
                     /*     var (aV,aC) = uniquePerLocAssocParUnsafeGlobAssocParUnsafe(e.a, eMin, eMax); */
                     /*     st.addEntry(vname, new shared SymEntry(aV)); */
                     /*     if returnCounts {st.addEntry(cname, new shared SymEntry(aC));} */
@@ -96,7 +99,7 @@ module UniqueMsg
                 }
                 otherwise {
                     var errorMsg = notImplementedError("unique",gEnt.dtype);
-                    uLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                
+                    umLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                
                     return errorMsg;
                 }
             }
@@ -131,7 +134,7 @@ module UniqueMsg
           }
           otherwise { 
              var errorMsg = notImplementedError(Reflection.getRoutineName(), objtype);
-             uLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errorMsg);
+             umLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errorMsg);
              return errorMsg;              
            }
         }
@@ -147,7 +150,7 @@ module UniqueMsg
         // get next symbol name
         var vname = st.nextName();
         var cname = st.nextName();
-        uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+        umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                        "cmd: %s name: %s vname: %s cname: %s".format(cmd, name, vname, cname));
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
@@ -160,22 +163,26 @@ module UniqueMsg
 
                 /* // how many bins in histogram */
                 /* var bins = eMax-eMin+1; */
-                /* if v {writeln("bins = %t".format(bins));try! stdout.flush();} */
+                /* umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                         "bins = %t".format(bins));*/
 
                 /* if (bins <= mBins) { */
-                /*     if v {try! writeln("bins <= %t".format(mBins));try! stdout.flush();} */
+                /*     umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                         "bins <= %t".format(mBins));*/
                 /*     var (aV,aC) = uniquePerLocHistGlobHist(e.a, eMin, eMax); */
                 /*     st.addEntry(vname, new shared SymEntry(aV)); */
                 /*     st.addEntry(cname, new shared SymEntry(aC)); */
                 /* } */
                 /* else if (bins <= lBins) { */
-                /*     if v {try! writeln("bins <= %t".format(lBins));try! stdout.flush();} */
+                /*     umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                         "bins <= %t".format(lBins));*/
                 /*     var (aV,aC) = uniquePerLocAssocGlobHist(e.a, eMin, eMax); */
                 /*     st.addEntry(vname, new shared SymEntry(aV)); */
                 /*     st.addEntry(cname, new shared SymEntry(aC)); */
                 /* } */
                 /* else { */
-                /*     if v {try! writeln("bins = %t".format(bins));try! stdout.flush();} */
+                /*     umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                         "bins = %t".format(bins));*/
                 /*     var (aV,aC) = uniquePerLocAssocGlobAssoc(e.a, eMin, eMax); */
                 /*     st.addEntry(vname, new shared SymEntry(aV)); */
                 /*     st.addEntry(cname, new shared SymEntry(aC)); */
@@ -187,7 +194,7 @@ module UniqueMsg
             }
             otherwise {
                 var errorMsg = notImplementedError(pn,gEnt.dtype);
-                uLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                umLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return errorMsg;                 
             }
         }

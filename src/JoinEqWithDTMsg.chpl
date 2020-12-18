@@ -7,6 +7,7 @@ module JoinEqWithDTMsg
     use Sort only;
     use Reflection;
     use Errors;
+    use Logging;
     use PrivateDist;
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -16,6 +17,14 @@ module JoinEqWithDTMsg
     param TRUE_DT = 0;
     param ABS_DT = 1;
     param POS_DT = 2;
+    
+    const jeLogger = new Logger();
+  
+    if v {
+        jeLogger.level = LogLevel.DEBUG;
+    } else {
+        jeLogger.level = LogLevel.INFO;
+    }
     
     // operator overloads so + reduce and + scan can work on atomic int arrays
     proc +(x: atomic int, y: atomic int) {
@@ -87,7 +96,8 @@ module JoinEqWithDTMsg
                       t1: [a1D] int, t2: [a2D] int, dt: int, pred: int,
                       resLimitPerLocale: int) {
 
-        writeln("resLimitPerLocale = ", resLimitPerLocale);
+        try! jeLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                                            "resLimitPerLocale = %t".format(resLimitPerLocale));
         
         // allocate result arrays per locale
         var locResI: [PrivateSpace] [0..#resLimitPerLocale] int;
@@ -106,7 +116,8 @@ module JoinEqWithDTMsg
                         // find matching value(unique key in g2) and
                         // return found flag and a range for the segment of that value(unique key)
                         var (found, j_seg) = findMatch(a1[i], seg, ukeys, perm);
-                        //writeln((a1[i], found, j_seg));
+                        try! jeLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                          "a1: %t found: %t j_seq: %t".format(a1[i], found, j_seg));
                         // if there is a matching value in ukeys
                         if (found) {
                             var t1_i = t1[i];
@@ -138,7 +149,10 @@ module JoinEqWithDTMsg
                                         when TRUE_DT {
                                             addResFlag = true;
                                         }
-                                        otherwise {writeln("OOPS! bad predicate number!"); }
+                                        otherwise {
+                                            try! jeLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                                                           "OOPS! bad predicate number!"); 
+                                        }
                                     }
                                 // add result to list if predicate was true
                                 if addResFlag {
@@ -171,8 +185,11 @@ module JoinEqWithDTMsg
         // last value should be total results
         var resEnds: [PrivateSpace] int = + scan locNumResults;
         var numResults: int = resEnds[resEnds.domain.high];
-        //writeln(resEnds);
-        writeln("numResults = ",numResults);
+
+        try! jeLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                        "result ends: %t".format(resEnds));
+        try! jeLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                                                        "numResults = %i".format(numResults));
         
         // allocate result arrays
         var resI = makeDistArray(numResults, int);
@@ -184,7 +201,8 @@ module JoinEqWithDTMsg
                 // construct start and end for array assignment
                 var gEnd: int = resEnds[here.id] - 1;
                 var gStart: int = resEnds[here.id] - locNumResults[here.id];
-                //writeln((gStart, gEnd));
+                try! jeLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                  "start: %t end: %t".format(gStart,gEnd));
                 // copy local results into global results
                 resI[{gStart..gEnd}] = locResI[here.id][{0..#locNumResults[here.id]}];
                 resJ[{gStart..gEnd}] = locResJ[here.id][{0..#locNumResults[here.id]}];                
@@ -220,13 +238,11 @@ module JoinEqWithDTMsg
         var resI_name = st.nextName();
         var resJ_name = st.nextName();
         
-        if v {
-            try! writeln("%s %s %s %s %s %s %s %t %t %t : %s %s".format(
+        jeLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                "cmd: %s array1: %s g2seg2: %s g2ukeys: %s g2perm: %s t1name: %s t2name: %s dt: %t pred: %t resLimit: %t resI: %s resJ: %s".format(
                                             cmd, a1_name, g2Seg_name, g2Ukeys_name, 
                                             g2Perm_name, t1_name, t2_name, dt, 
                                             pred, resLimit, resI_name, resJ_name));
-            try! stdout.flush();
-        }
         
         // check and throw if over memory limit
         overMemLimit(resLimit*6*8);

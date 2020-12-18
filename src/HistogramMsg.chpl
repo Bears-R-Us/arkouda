@@ -12,11 +12,11 @@ module HistogramMsg
 
     use Histogram;
 
-    const hgLogger = new Logger();
+    const hgmLogger = new Logger();
     if v {
-        hgLogger.level = LogLevel.DEBUG;
+        hgmLogger.level = LogLevel.DEBUG;
     } else {
-        hgLogger.level = LogLevel.INFO;    
+        hgmLogger.level = LogLevel.INFO;    
     }
     
     private config const sBound = 2**12;
@@ -32,7 +32,7 @@ module HistogramMsg
         
         // get next symbol name
         var rname = st.nextName();
-        hgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+        hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                       "cmd: %s name: %s bins: %i rname: %s".format(cmd, name, bins, rname));
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
@@ -43,23 +43,23 @@ module HistogramMsg
           var aMin = min reduce e.a;
           var aMax = max reduce e.a;
           var binWidth:real = (aMax - aMin):real / bins:real;
-          hgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+          hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                            "binWidth %r".format(binWidth));
 
           if (bins <= sBound) {
-              hgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+              hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                            "%t <= %t".format(bins,sBound));
               var hist = histogramReduceIntent(e.a, aMin, aMax, bins, binWidth);
               st.addEntry(rname, new shared SymEntry(hist));
           }
           else if (bins <= mBound) {
-              hgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+              hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                            "%t <= %t".format(bins,mBound));
               var hist = histogramLocalAtomic(e.a, aMin, aMax, bins, binWidth);
               st.addEntry(rname, new shared SymEntry(hist));
           }
           else {
-              hgLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+              hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                             "%t > %t".format(bins,mBound));
               var hist = histogramGlobalAtomic(e.a, aMin, aMax, bins, binWidth);
               st.addEntry(rname, new shared SymEntry(hist));
@@ -71,7 +71,7 @@ module HistogramMsg
             when (DType.Float64) {histogramHelper(real);}
             otherwise {
                 var errorMsg = notImplementedError(pn,gEnt.dtype);
-                hgLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);               
+                hgmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);               
             }
         }
         

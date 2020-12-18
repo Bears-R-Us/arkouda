@@ -22,6 +22,16 @@ module RadixSortLSD
     use CommAggregation;
     use IO;
     use CPtr;
+    use Reflection;
+    use Logging;
+    use ServerConfig;
+    
+    const rsLogger = new Logger();
+    if v {
+        rsLogger.level = LogLevel.DEBUG;
+    } else {
+        rsLogger.level = LogLevel.INFO;    
+    }
 
     inline proc getBitWidth(a: [?aD] int): (int, bool) {
       var aMin = min reduce a;
@@ -147,7 +157,8 @@ module RadixSortLSD
         }
         
         var (nBits, negs) = getBitWidth(a);
-        if vv {writeln("type = ", t:string, ", nBits = ", nBits);}
+        try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                       "type = %s nBits = %t".format(t:string,nBits));
         
         // form (key,rank) vector
         var kr0: [aD] (t,int) = [(key,rank) in zip(a,aD)] (key,rank);
@@ -161,7 +172,8 @@ module RadixSortLSD
         // loop over digits
         for rshift in {0..#nBits by bitsPerDigit} {
             const last = (rshift + bitsPerDigit) >= nBits;
-            if vv {writeln("rshift = ",rshift);}
+            try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                        "rshift = %t".format(rshift));
             // count digits
             coforall loc in Locales {
                 on loc {
@@ -174,7 +186,8 @@ module RadixSortLSD
                         var lD = kr0.localSubdomain();
                         // calc task's indices from local domain's indices
                         var tD = calcBlock(task, lD.low, lD.high);
-                        if vv {writeln((loc.id,task,tD));}
+                        try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                   "locid: %t task: %t tD: %t".format(loc.id,task,tD));
                         // count digits in this task's part of the array
                         for i in tD {
                             const (key,_) = kr0[i];
@@ -184,7 +197,8 @@ module RadixSortLSD
                         // write counts in to global counts in transposed order
                         var aggregator = newDstAggregator(int);
                         for bucket in bD {
-                            aggregator.copy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], taskBucketCounts[bucket]);
+                            aggregator.copy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], 
+                                                         taskBucketCounts[bucket]);
                         }
                         aggregator.flush();
                     }//coforall task
@@ -214,7 +228,8 @@ module RadixSortLSD
                         {
                             var aggregator = newSrcAggregator(int);
                             for bucket in bD {
-                                aggregator.copy(taskBucketPos[bucket], globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
+                                aggregator.copy(taskBucketPos[bucket], 
+                                           globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
                             }
                             aggregator.flush();
                         }
@@ -263,7 +278,8 @@ module RadixSortLSD
         // calc max value in bit position
         var (nBits, negs) = getBitWidth(a);
 
-        if vv {writeln("type = ", t:string, ", nBits = ", nBits);}
+        try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                       "type = %s nBits = %t".format(t:string,nBits));
         
         var k0: [aD] t = a;
         var k1: [aD] t;
@@ -276,7 +292,8 @@ module RadixSortLSD
         // loop over digits
         for rshift in {0..#nBits by bitsPerDigit} {
             const last = (rshift + bitsPerDigit) >= nBits;
-            if vv {writeln("rshift = ",rshift);}
+            try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                        "rshift = %t".format(rshift));
             // count digits
             coforall loc in Locales {
                 on loc {
@@ -289,7 +306,8 @@ module RadixSortLSD
                         var lD = k0.localSubdomain();
                         // calc task's indices from local domain's indices
                         var tD = calcBlock(task, lD.low, lD.high);
-                        if vv {writeln((loc.id,task,tD));}
+                        try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                 "loc id: %t task: %t tD: %t".format(loc.id,task,tD));
                         // count digits in this task's part of the array
                         for i in tD {
                             var bucket = getDigit(k0[i], rshift, last, negs); // calc bucket from key
@@ -298,7 +316,8 @@ module RadixSortLSD
                         // write counts in to global counts in transposed order
                         var aggregator = newDstAggregator(int);
                         for bucket in bD {
-                            aggregator.copy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], taskBucketCounts[bucket]);
+                            aggregator.copy(globalCounts[calcGlobalIndex(bucket, loc.id, task)], 
+                                              taskBucketCounts[bucket]);
                         }
                         aggregator.flush();
                     }//coforall task
@@ -328,7 +347,8 @@ module RadixSortLSD
                         {
                             var aggregator = newSrcAggregator(int);
                             for bucket in bD {
-                                aggregator.copy(taskBucketPos[bucket], globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
+                                aggregator.copy(taskBucketPos[bucket], 
+                                             globalStarts[calcGlobalIndex(bucket, loc.id, task)]);
                             }
                             aggregator.flush();
                         }

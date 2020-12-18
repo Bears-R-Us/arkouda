@@ -22,6 +22,14 @@ module KExtremeMsg
     use RadixSortLSD;
     use ArraySetopsMsg;
 
+    const keLogger = new Logger();
+  
+    if v {
+        keLogger.level = LogLevel.DEBUG;
+    } else {
+        keLogger.level = LogLevel.INFO;
+    }
+
     /*
     Parse, execute, and respond to a mink message
     :arg reqMsg: request containing (name,k,returnIndices)
@@ -80,12 +88,7 @@ module KExtremeMsg
            }
            otherwise {
                var errorMsg = notImplementedError("mink",gEnt.dtype);
-               writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
+               keLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                return errorMsg;               
            }
         }
@@ -150,12 +153,7 @@ module KExtremeMsg
 
            otherwise {
                var errorMsg = notImplementedError("maxk",gEnt.dtype);
-               writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
+               keLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                return errorMsg;
            }
         }

@@ -32,7 +32,7 @@ module Logging {
         proc debug(moduleName, routineName, lineNumber, msg: string) throws {
             if level == LogLevel.DEBUG  {
                 writeln(generateLogMessage(moduleName, routineName, lineNumber, 
-                                            msg, level));
+                                            msg, "DEBUG"));
                 stdout.flush();
             }
         }
@@ -40,7 +40,7 @@ module Logging {
         proc info(moduleName, routineName, lineNumber, msg: string) throws {
             if infoLevels.contains(level) {
                 writeln(generateLogMessage(moduleName, routineName, lineNumber, 
-                                            msg, level));
+                                            msg, "INFO"));
                 stdout.flush();
             }
         }
@@ -48,32 +48,32 @@ module Logging {
         proc warn(moduleName, routineName, lineNumber, msg: string) throws {
             if warnLevels.contains(level) {
                 writeln(generateLogMessage(moduleName, routineName, lineNumber, 
-                                            msg, level));
+                                            msg, "WARN"));
                 stdout.flush();
             }
         }
         
         proc critical(moduleName, routineName, lineNumber, msg: string) throws {
             writeln(generateLogMessage(moduleName, routineName, lineNumber, 
-                                            msg, level));
+                                            msg, "CRITICAL"));
             stdout.flush();
         }
         
         proc error(moduleName, routineName, lineNumber, msg: string) throws {
             writeln(generateLogMessage(moduleName, routineName, lineNumber, 
-                                            msg, level));
+                                            msg, "ERROR"));
             stdout.flush();
         }
         
         proc generateLogMessage(moduleName: string, routineName, lineNumber, 
-                           msg, level: LogLevel) throws {
+                           msg, level: string) throws {
              if printDate {
-                 return "%s [%s] %s Line %i %s %s [Chapel] %s".format(
-                 generateDateTimeString(), moduleName, routineName, lineNumber, 
-                                     level:string, msg);
+                 return "%s [%s] %s Line %i %s [Chapel] %s".format(
+                 generateDateTimeString(), moduleName,routineName,lineNumber, 
+                                     level,msg);
              } else {
-                 return "[%s] %s Line %i %s %s [Chapel] %s".format(moduleName, 
-                 routineName, lineNumber, level:string, msg);            
+                 return "[%s] %s Line %i %s [Chapel] %s".format(moduleName, 
+                 routineName,lineNumber,level,msg);            
              }
         }
          

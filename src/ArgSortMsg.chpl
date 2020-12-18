@@ -68,7 +68,8 @@ module ArgSortMsg
 
     /*     // how many bins in histogram */
     /*     var bins = aMax-aMin+1; */
-    /*     if v {try! writeln("bins = %t".format(bins));} */
+    /*     asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                    "bins = %t".format(bins)); */
 
     /*     // histogram domain size should be equal to a_nvals */
     /*     var hD = makeDistDom(bins); */
@@ -119,7 +120,8 @@ module ArgSortMsg
 
     /*     // how many bins in histogram */
     /*     var bins = aMax-aMin+1; */
-    /*     if v {try! writeln("bins = %t".format(bins));} */
+    /*     asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                   "bins = %t".format(bins)); */
 
     /*     // create a global count array to scan */
     /*     var globalCounts = makeDistArray(bins * numLocales, int); */
@@ -201,7 +203,8 @@ module ArgSortMsg
 
     /*     // how many bins in histogram */
     /*     var bins = aMax-aMin+1; */
-    /*     if v {try! writeln("bins = %t".format(bins));} */
+    /*     asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                                             "bins = %t".format(bins));*/
 
     /*     // create a global count array to scan */
     /*     var globalCounts = makeDistArray(bins * numLocales, int); */
@@ -216,7 +219,8 @@ module ArgSortMsg
     /*     var t1 = Time.getCurrentTime(); */
     /*     // count number of each value into local atomic histogram */
     /*     [val in a] atomicHist[here.id][val-aMin].add(1); */
-    /*     if v {writeln("done atomicHist time = ",Time.getCurrentTime() - t1);try! stdout.flush();} */
+    /*     asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                      "done atomicHist time = %i".format(Time.getCurrentTime() - t1);try! stdout.flush();}*/
 
     /*     // start timer */
     /*     t1 = Time.getCurrentTime(); */
@@ -226,7 +230,8 @@ module ArgSortMsg
     /*             [i in hD] globalCounts[i * numLocales + here.id] = atomicHist[here.id][i].read(); */
     /*         } */
     /*     } */
-    /*     if v {writeln("done copy to globalCounts time = ",Time.getCurrentTime() - t1);try! stdout.flush();} */
+    /*     asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                  "done copy to globalCounts time = %i".format(Time.getCurrentTime() - t1));*/
 
     /*     // scan globalCounts to get bucket ends on each locale */
     /*     var globalEnds: [globalCounts.domain] int = + scan globalCounts; */
@@ -243,7 +248,8 @@ module ArgSortMsg
     /*             [i in hD] localCounts[here.id][i] = globalCounts[i * numLocales + here.id]; */
     /*         } */
     /*     } */
-    /*     if v {writeln("done copy back to localCounts time = ",Time.getCurrentTime() - t1);try! stdout.flush();} */
+    /*     asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                  "done copy back to localCounts time = %i".format(Time.getCurrentTime() - t1));*/
         
     /*     // start timer */
     /*     t1 = Time.getCurrentTime(); */
@@ -281,7 +287,8 @@ module ArgSortMsg
     /*             } */
     /*         } */
     /*     } */
-    /*     if v {writeln("done sort locally and move segments time = ",Time.getCurrentTime() - t1);try! stdout.flush();} */
+    /*     asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                    "done sort locally and move segments time = %i".format(Time.getCurrentTime() - t1));*/
         
     /*     // return the index vector */
     /*     return iv; */
@@ -297,7 +304,7 @@ module ArgSortMsg
 
     /*     // how many bins in histogram */
     /*     var bins = aMax-aMin+1; */
-    /*     if v {try! writeln("bins = %t".format(bins));} */
+    /*     asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"bins = %t".format(bins));*/
 
     /*     // create a global count array to scan */
     /*     var globalCounts = makeDistArray(bins * numLocales, int); */
@@ -312,7 +319,8 @@ module ArgSortMsg
     /*     var t1 = Time.getCurrentTime(); */
     /*     // count number of each value into local atomic histogram */
     /*     [val in a] atomicHist[here.id][val-aMin].add(1); */
-    /*     if v {writeln("done atomicHist time = ",Time.getCurrentTime() - t1);try! stdout.flush();} */
+    /*     asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                      "done atomicHist time = %i".format(Time.getCurrentTime() - t1));*/
 
     /*     // start timer */
     /*     t1 = Time.getCurrentTime(); */
@@ -322,7 +330,8 @@ module ArgSortMsg
     /*             [i in hD] globalCounts[i * numLocales + here.id] = atomicHist[here.id][i].read(); */
     /*         } */
     /*     } */
-    /*     if v {writeln("done copy to globalCounts time = ",Time.getCurrentTime() - t1);try! stdout.flush();} */
+    /*     asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                        "done copy to globalCounts time = %i".format(Time.getCurrentTime() - t1));*/
 
     /*     // scan globalCounts to get bucket ends on each locale */
     /*     var globalEnds: [globalCounts.domain] int = + scan globalCounts; */
@@ -338,7 +347,8 @@ module ArgSortMsg
     /*             [i in hD] localCounts[here.id][i] = globalCounts[i * numLocales + here.id]; */
     /*         } */
     /*     } */
-    /*     if v {writeln("done copy back to localCounts time = ",Time.getCurrentTime() - t1);try! stdout.flush();} */
+    /*     asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                         "done copy back to localCounts time = %i".format(Time.getCurrentTime() - t1));*/
         
     /*     // start timer */
     /*     t1 = Time.getCurrentTime(); */
@@ -348,7 +358,8 @@ module ArgSortMsg
     /*             [i in hD] atomicHist[here.id][i].write(globalEnds[i * numLocales + here.id] - localCounts[here.id][i]); */
     /*         } */
     /*     } */
-    /*     if v {writeln("done init atomic counts time = ",Time.getCurrentTime() - t1);try! stdout.flush();} */
+    /*     asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                             "done init atomic counts time = %i".format(Time.getCurrentTime() - t1));*/
         
     /*     // start timer */
     /*     t1 = Time.getCurrentTime(); */
@@ -363,7 +374,8 @@ module ArgSortMsg
     /*             } */
     /*         } */
     /*     } */
-    /*     if v {writeln("done move time = ",Time.getCurrentTime() - t1);try! stdout.flush();} */
+    /*     asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "done move time = %i".format(Time.getCurrentTime() - t1));*/
 
     /*     // return the index vector */
     /*     return iv; */
@@ -462,12 +474,7 @@ module ArgSortMsg
       if (fields.size != 2*n) { 
           var errorMsg = incompatibleArgumentsError(pn, 
                         "Expected %i arrays but got %i".format(n, fields.size/2 - 1));
-          writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IncompatibleArgumentsError"));
+          asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           return errorMsg;
       }
       const low = fields.domain.low;
@@ -493,12 +500,7 @@ module ArgSortMsg
           }
           otherwise {return unrecognizedTypeError(pn, objtype);
               var errorMsg = unrecognizedTypeError(pn, objtype);
-              writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="UnrecognizedTypeError"));         
+              asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
               return errorMsg;
           }
         }
@@ -509,12 +511,7 @@ module ArgSortMsg
             if (thisSize != size) { 
                 var errorMsg = incompatibleArgumentsError(pn, 
                                                "Arrays must all be same size");
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IncompatibleArgumentsError")); 
+                asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return errorMsg;
             }
         }
@@ -640,7 +637,8 @@ module ArgSortMsg
       //Sort.TwoArrayRadixSort.twoArrayRadixSort(AI);
       //var iv = [(a, i) in AI] i;
       var iv = radixSortLSD_ranks(A);
-      if v {writeln("argsort time = ", Time.getCurrentTime() - t1); try! stdout.flush();}
+      try! asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                             "argsort time = %i".format(Time.getCurrentTime() - t1));
       return iv;
     }
     
@@ -653,7 +651,8 @@ module ArgSortMsg
 
         // get next symbol name
         var ivname = st.nextName();
-        if v {writeln("%s %s : %s %s".format(cmd, name, ivname));try! stdout.flush();}
+        asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                              "cmd: %s name: %s ivname: %s".format(cmd, name, ivname));
 
         select objtype {
           when "pdarray" {
@@ -675,12 +674,7 @@ module ArgSortMsg
                 }
                 otherwise {
                     var errorMsg = notImplementedError(pn,gEnt.dtype);
-                    writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                    
+                    asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);               
                     return errorMsg;
                 }
             }
@@ -696,12 +690,7 @@ module ArgSortMsg
           }
           otherwise {
               var errorMsg = notImplementedError(pn, objtype);
-              writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                    
+              asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                    
               return errorMsg;
           }
         }

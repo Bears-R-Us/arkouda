@@ -318,9 +318,10 @@ module SegmentedArray {
       /* var retBytes = gatheredOffsets[newSize-1]; */
       /* gatheredOffsets -= gatheredLengths; */
       /* if v { */
-      /*   writeln(getCurrentTime() - t1, " seconds"); */
-      /*   writeln("Copying values"); stdout.flush(); */
-      /*   t1 = getCurrentTime(); */
+      /*     saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                  "%i seconds".format(getCurrentTime() - t1)); */
+      /*     saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Copying values"));*/
+      /*     t1 = getCurrentTime(); */
       /* } */
       /* var gatheredVals = makeDistArray(retBytes, uint(8)); */
       /* ref va = values.a; */
@@ -333,7 +334,8 @@ module SegmentedArray {
       /* forall (go, gl, idx) in zip(gatheredOffsets, gatheredLengths, segInds) { */
       /*   gatheredVals[{go..#gl}] = va[{oa[idx]..#gl}]; */
       /* } */
-      /* if v {writeln(getCurrentTime() - t1, " seconds"); stdout.flush();} */
+      /* saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                     "%i seconds".format(getCurrentTime() - t1));*/
       /* return (gatheredOffsets, gatheredVals); */
     }
 
@@ -374,16 +376,29 @@ module SegmentedArray {
         saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Hashing strings"); 
         if v { t.start(); }
         var hashes = this.hash();
-        if v { t.stop(); writeln("hashing took %t seconds\nSorting hashes".format(t.elapsed())); stdout.flush(); t.clear(); t.start(); }
+
+        if v { 
+            t.stop();    
+            saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                           "hashing took %t seconds\nSorting hashes".format(t.elapsed())); 
+            t.clear(); t.start(); 
+        }
+
         // Return the permutation that sorts the hashes
         var iv = radixSortLSD_ranks(hashes);
-        if v { t.stop(); writeln("sorting took %t seconds".format(t.elapsed())); stdout.flush(); }
-        if DEBUG {
+        if v { 
+            t.stop(); 
+            saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                            "sorting took %t seconds".format(t.elapsed())); 
+        }
+        if DEBUG{
           var sortedHashes = [i in iv] hashes[i];
-          var diffs = sortedHashes[(iv.domain.low+1)..#(iv.size-1)] - sortedHashes[(iv.domain.low)..#(iv.size-1)];
+          var diffs = sortedHashes[(iv.domain.low+1)..#(iv.size-1)] - 
+                                                 sortedHashes[(iv.domain.low)..#(iv.size-1)];
           printAry("diffs = ", diffs);
           var nonDecreasing = [(d0,d1) in diffs] ((d0 > 0) || ((d0 == 0) && (d1 >= 0)));
-          writeln("Are hashes sorted? ", && reduce nonDecreasing);
+          saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                    "Are hashes sorted? %i".format(&& reduce nonDecreasing));
         }
         return iv;
       } else {
@@ -432,15 +447,32 @@ module SegmentedArray {
         return hits;
       }
       var t = new Timer();
-      if DEBUG {writeln("Checking bytes of substr"); stdout.flush(); t.start();}
+
+      if DEBUG {
+           saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                "Checking bytes of substr"); 
+           t.start();
+      }
       const truth = findSubstringInBytes(substr);
       const D = truth.domain;
-      if DEBUG {t.stop(); writeln("took %t seconds\nTranslating to segments...".format(t.elapsed())); stdout.flush(); t.clear(); t.start();}
+      if DEBUG {
+            t.stop(); 
+            saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                  "took %t seconds\nTranslating to segments...".format(t.elapsed())); 
+            t.clear(); 
+            t.start();
+      }
       // Need to ignore segment(s) at the end of the array that are too short to contain substr
       const tail = + reduce (offsets.a > D.high);
       // oD is the right-truncated domain representing segments that are candidates for containing substr
       var oD: subdomain(offsets.aD) = offsets.aD[offsets.aD.low..#(offsets.size - tail)];
-      if DEBUG {t.stop(); writeln("took %t seconds\ndetermining answer...".format(t.elapsed())); stdout.flush(); t.clear(); t.start();}
+      if DEBUG {
+             t.stop(); 
+             saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                   "took %t seconds\ndetermining answer...".format(t.elapsed())); 
+             t.clear(); 
+             t.start();
+      }
       ref oa = offsets.a;
       if mode == SearchMode.contains {
         // Determine whether each segment contains a hit
@@ -458,7 +490,11 @@ module SegmentedArray {
         hits[oD.interior(-(oD.size-1))] = truth[oa[oD.interior(oD.size-1)] - substr.numBytes - 1];
         hits[oD.high] = truth[D.high];
       }
-      if DEBUG {t.stop(); writeln("took %t seconds".format(t.elapsed())); stdout.flush();}
+      if DEBUG {
+          t.stop(); 
+          saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                   "took %t seconds".format(t.elapsed()));
+      }
       return hits;
     }
 
@@ -860,11 +896,20 @@ module SegmentedArray {
       }
     }
     if v {
-      t.stop(); writeln("%t seconds".format(t.elapsed())); t.clear();
-      writeln("Testing membership"); stdout.flush(); t.start();
+      t.stop(); 
+      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                             "%t seconds".format(t.elapsed())); 
+      t.clear();
+      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),      
+                                             "Testing membership"); 
+      t.start();
     }
     [i in truth.domain] truth[i] = localTestHashes[here.id].contains(hashes[i]);
-    if v {t.stop(); writeln("%t seconds".format(t.elapsed())); stdout.flush();}
+    if v {
+        t.stop(); 
+        saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                             "%t seconds".format(t.elapsed()));
+    }
     return truth;
   }
 
@@ -900,14 +945,19 @@ module SegmentedArray {
       const (uoTest, uvTest, cTest, revTest) = uniqueGroup(testStr);
       const (segs, vals) = concat(uoMain, uvMain, uoTest, uvTest);
       saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-           "Unique strings in first array: %t\nUnique strings in second array: %t\nConcat length: %t".format(uoMain.size, 
-                                                                                          uoTest.size, segs.size));
+           "Unique strings in first array: %t\nUnique strings in second array: %t\nConcat length: %t".format(
+                                             uoMain.size, uoTest.size, segs.size));
       var st = new owned SymTab();
       const ar = new owned SegString(segs, vals, st);
       const order = ar.argsort();
       const (sortedSegs, sortedVals) = ar[order];
       const sar = new owned SegString(sortedSegs, sortedVals, st);
-      if DEBUG { writeln("Sorted concatenated unique strings:"); sar.show(10); stdout.flush(); }
+      if DEBUG { 
+          saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                            "Sorted concatenated unique strings:"); 
+          sar.show(10); 
+          stdout.flush(); 
+      }
       const D = sortedSegs.domain;
       // First compare lengths and only check pairs whose lengths are equal (because gathering them is expensive)
       var flag: [D] bool;
@@ -932,7 +982,10 @@ module SegmentedArray {
           }
         }
       }
-      if DEBUG {writeln("Flag pop: ", + reduce flag); try! stdout.flush();}
+      
+      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                             "Flag pop: %t".format(+ reduce flag));
+
       // Now flag contains true for both elements of duplicate pairs
       if invert {flag = !flag;}
       // Permute back to unique order
@@ -940,7 +993,10 @@ module SegmentedArray {
       forall (o, f) in zip(order, flag) with (var agg = newDstAggregator(bool)) {
         agg.copy(ret[o], f);
       }
-      if DEBUG {writeln("Ret pop: ", + reduce ret); try! stdout.flush();}
+      if DEBUG {
+          saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                "Ret pop: %t".format(+ reduce ret));
+      }
       // Broadcast back to original (pre-unique) order
       var truth: [mainStr.offsets.aD] bool;
       forall (t, i) in zip(truth, revIdx) with (var agg = newSrcAggregator(bool)) {
