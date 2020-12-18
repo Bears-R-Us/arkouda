@@ -2,10 +2,20 @@ module Merge {
   use IO;
   use SegmentedArray;
   use RadixSortLSD only numTasks, calcBlock;
-
-  private config const DEBUG = false;
+  use Reflection;
+  use ServerConfig;
+  use Logging;
   
-  /* Given a *sorted*, zero-up array, use binary search to find the index of the first element that is greater than or equal to a target.
+  const mLogger = new Logger();
+  
+  if v {
+      mLogger.level = LogLevel.DEBUG;
+  } else {
+      mLogger.level = LogLevel.INFO;
+  }
+  
+  /* Given a *sorted*, zero-up array, use binary search to find the index of the first element 
+   * that is greater than or equal to a target.
    */
   proc binarySearch(a, x) throws {
     var l = 0;
@@ -29,16 +39,16 @@ module Merge {
 
   //const numTasks = RadixSortLSD.numTasks;
   inline proc findStart(loc, task, s: SegString) throws {
-    ref va = s.values.a;
-    const lD = va.localSubdomain();
-    const tD = RadixSortLSD.calcBlock(task, lD.low, lD.high);
-    const i = tD.low;
-    ref oa = s.offsets.a;
-    if && reduce (oa < i) {
-      return va.size;
-    } else {
-      return binarySearch(oa, i);
-    }    
+      ref va = s.values.a;
+      const lD = va.localSubdomain();
+      const tD = RadixSortLSD.calcBlock(task, lD.low, lD.high);
+      const i = tD.low;
+      ref oa = s.offsets.a;
+      if && reduce (oa < i) {
+          return va.size;
+      } else {
+          return binarySearch(oa, i);
+      }    
   }
 
   proc mergeSorted(left: SegString, right: SegString) throws {
@@ -69,54 +79,76 @@ module Merge {
       }
     }
     // barrier
-    if DEBUG {writeln("Starting second coforall");}
+    mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Starting second coforall");
     coforall loc in Locales {
       on loc {
-        if DEBUG {writeln("Inside loc"); stdout.flush();}
-        ref biga = big.offsets.a;
-        ref smalla = small.offsets.a;
-        coforall task in tD {
-          var (bigPos, bigEnd, smallPos, smallEnd) = bounds[loc.id][task];
-          var outPos = bigPos + smallPos;
-          const end = bigEnd + smallEnd + 1;
-          var outOffset = biga[bigPos] + smalla[smallPos];
-          var bigS = big[bigPos];
-          var smallS = small[smallPos];
-          if DEBUG && (numLocales == 1) { writeln("Task %t init: bigPos = %t, smallPos = %t, outPos = %t, end = %t, outOffset = %t, bigS = %s, smallS = %s".format(task, bigPos, smallPos, outPos, end, outOffset, bigS, smallS)); stdout.flush(); }
-          // leapfrog the two arrays until all the output has been filled
-          while outPos <= end {
-            // take from the big array until it leapfrogs the small
-            while (bigPos <= bigEnd) && ((smallPos > smallEnd) || (bigS <= smallS)) {
-              if DEBUG {
-                if (outPos > perm.domain.high) { writeln("OOB: outPos = %t not in %t".format(outPos, perm.domain)); stdout.flush();}
-                if (bigPos > big.offsets.aD.high) { writeln("OOB: bigPos = %t not in %t".format(bigPos, big.offsets.aD)); stdout.flush();}
-                if (outOffset + bigS.numBytes >= vals.size) { writeln("OOB: (outOffset = %t + bigS.numBytes = %t) not in %t".format(outOffset, bigS.numBytes, vals.domain)); stdout.flush();}
-              } 
-              if bigIsLeft {
-                perm[outPos] = bigPos;
-              } else {
-                perm[outPos] = bigPos + small.size;
+          mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Inside loc"); 
+          ref biga = big.offsets.a;
+          ref smalla = small.offsets.a;
+          coforall task in tD {
+              var (bigPos, bigEnd, smallPos, smallEnd) = bounds[loc.id][task];
+              var outPos = bigPos + smallPos;
+              const end = bigEnd + smallEnd + 1;
+              var outOffset = biga[bigPos] + smalla[smallPos];
+              var bigS = big[bigPos];
+              var smallS = small[smallPos];
+              if (numLocales == 1) { 
+                  mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                  "Task %t init: bigPos = %t, smallPos = %t, outPos = %t, end = %t, outOffset = %t, bigS = %s, smallS = %s".format(
+                            task, bigPos, smallPos, outPos, end, outOffset, bigS, smallS)); 
               }
-              segs[outPos] = outOffset;
-              const l = bigS.numBytes;
-              vals[{outOffset..#l}] = for b in bigS.chpl_bytes() do b;
-              outPos += 1;
-              outOffset += l + 1;
-              bigPos += 1;
-              if (bigPos <= bigEnd) {
-                bigS = big[bigPos];
-              }
+              // leapfrog the two arrays until all the output has been filled
+              while outPos <= end {
+                  // take from the big array until it leapfrogs the small
+                  while (bigPos <= bigEnd) && ((smallPos > smallEnd) || (bigS <= smallS)) {
+              
+                      if (outPos > perm.domain.high) { 
+                      mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                          "OOB: outPos = %t not in %t".format(outPos, perm.domain));
+                  }
+                  if (bigPos > big.offsets.aD.high) { 
+                      mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                          "OOB: bigPos = %t not in %t".format(bigPos, big.offsets.aD));
+                  }
+                  if (outOffset + bigS.numBytes >= vals.size) { 
+                      mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                           "OOB: (outOffset = %t + bigS.numBytes = %t) not in %t".format(
+                                                               outOffset, bigS.numBytes, vals.domain));
+                  }
+                  if bigIsLeft {
+                      perm[outPos] = bigPos;
+                  } else {
+                      perm[outPos] = bigPos + small.size;
+                  }
+                  segs[outPos] = outOffset;
+                  const l = bigS.numBytes;
+                  vals[{outOffset..#l}] = for b in bigS.chpl_bytes() do b;
+                  outPos += 1;
+                  outOffset += l + 1;
+                  bigPos += 1;
+                  if (bigPos <= bigEnd) {
+                      bigS = big[bigPos];
+                  }
+             }
+             // take from the small array until it catches up with the big
+             while (smallPos <= smallEnd) && ((bigPos > bigEnd) || (smallS < bigS)) {          
+                if (outPos > perm.domain.high) { 
+                    mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                               "OOB: outPos = %t not in %t".format(outPos, perm.domain));
+                }
+                if (smallPos > small.offsets.aD.high) { 
+                    mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                               "OOB: smallPos = %t not in %t".format(smallPos, small.offsets.aD));
+                }
+                if (outOffset + bigS.numBytes >= vals.size) {
+                    mLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                               "OOB: (outOffset = %t + smallS.numBytes = %t) not in %t".format(
+                               outOffset, smallS.numBytes, vals.domain));
+                }
             }
-            // take from the small array until it catches up with the big
-            while (smallPos <= smallEnd) && ((bigPos > bigEnd) || (smallS < bigS)) {
-              if DEBUG {
-                if (outPos > perm.domain.high) { writeln("OOB: outPos = %t not in %t".format(outPos, perm.domain)); stdout.flush();}
-                if (smallPos > small.offsets.aD.high) { writeln("OOB: smallPos = %t not in %t".format(smallPos, small.offsets.aD)); stdout.flush();}
-                if (outOffset + bigS.numBytes >= vals.size) { writeln("OOB: (outOffset = %t + smallS.numBytes = %t) not in %t".format(outOffset, smallS.numBytes, vals.domain)); stdout.flush();}
-              }
-              if bigIsLeft {
+            if bigIsLeft {
                 perm[outPos] = smallPos + big.size;
-              } else {
+            } else {
                 perm[outPos] = smallPos;
               }
               segs[outPos] = outOffset;

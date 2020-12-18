@@ -6,6 +6,7 @@ module FindSegmentsMsg
     use Math only;
     use Reflection;
     use Errors;
+    use Logging;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -14,6 +15,13 @@ module FindSegmentsMsg
 
     use PrivateDist;
     use CommAggregation;
+
+    const fsLogger = new Logger();
+    if v {
+        fsLogger.level = LogLevel.DEBUG;
+    } else {
+        fsLogger.level = LogLevel.INFO;    
+    }
 
     /*
 
@@ -37,12 +45,7 @@ module FindSegmentsMsg
         if (fields.size != 2*nkeys) { 
              var errorMsg = incompatibleArgumentsError(pn, 
                        "Expected %i arrays but got %i".format(nkeys, (fields.size - 3)/2));
-             writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IncompatibleArgumentsError")); 
+             fsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
              return errorMsg;                       
         }
         var low = fields.domain.low;
@@ -53,12 +56,7 @@ module FindSegmentsMsg
         var gPerm = st.lookup(pname);
         if (gPerm.dtype != DType.Int64) { 
             var errorMsg = notImplementedError(pn,"(permutation dtype "+dtype2str(gPerm.dtype)+")"); 
-            writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
+            fsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return errorMsg;
         }        
         // var keyEntries: [0..#nkeys] borrowed GenSymEntry;
@@ -80,12 +78,7 @@ module FindSegmentsMsg
           }
           otherwise {
               var errorMsg = unrecognizedTypeError(pn, objtype);
-              writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="UnrecognizedTypeError"));   
+              fsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
               return errorMsg;          
           }
       }
@@ -95,23 +88,13 @@ module FindSegmentsMsg
           if (thisSize != size) { 
               var errorMsg = incompatibleArgumentsError(pn, 
                                 "Expected array of size %i, got size %i".format(size, thisSize)); 
-              writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));  
+              fsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
               return errorMsg;                        
           }
       }
           if (thisType != DType.Int64) { 
               var errorMsg = notImplementedError(pn,"(key array dtype "+dtype2str(thisType)+")");
-              writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
+              fsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
               return errorMsg;
           }
       }
@@ -149,7 +132,8 @@ module FindSegmentsMsg
         }
         when "str" {
           var (myNames1,myNames2) = name.splitMsgToTuple('+', 2);
-          writeln("findSegmentsMessage myNames1: {} myNames2: {}".format(myNames1,myNames2));
+          fsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                              "findSegmentsMessage myNames1: {} myNames2: {}".format(myNames1,myNames2));
           var str = new owned SegString(myNames1, myNames2, st);
           var (permOffsets, permVals) = str[pa];
           const ref D = permOffsets.domain;
@@ -183,7 +167,8 @@ module FindSegmentsMsg
         var iv: [ukeylocs.domain] int = (+ scan ukeylocs);
         // compute how many segments
         var pop = iv[iv.size-1];
-        if v {writeln("pop = ",pop,"last-scan = ",iv[iv.size-1]);try! stdout.flush();}
+        fsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                 "pop = %t last-scan = %t".format(pop,iv[iv.size-1]));
         // Create SymEntry to hold segment boundaries
         var sname = st.nextName(); // segments
         var segs = st.addEntry(sname, pop, int);
@@ -201,13 +186,19 @@ module FindSegmentsMsg
         var uname = st.nextName(); // unique key indices
         var ukeyinds = st.addEntry(uname, pop, int);
         ref uka = ukeyinds.a;
-        // Segment boundaries are in terms of permuted arrays, so invert the permutation to get back to original index
+        /*
+         Segment boundaries are in terms of permuted arrays, so invert the permutation to get 
+         back to the original index
+         */
         forall (s, i) in zip(sa, saD) {
-          // TODO convert to aggreation, which side is remote though?
+          // TODO convert to aggregation, which side is remote though?
           use UnorderedCopy;
           unorderedCopy(uka[i], pa[s]);
         }
         // Return entry names of segments and unique key indices
+        var returnMsg =  try! "created " + st.attrib(sname) + " +created " + st.attrib(uname);
+
+        fsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
         return try! "created " + st.attrib(sname) + " +created " + st.attrib(uname);
     }
 }

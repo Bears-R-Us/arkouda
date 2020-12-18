@@ -2,14 +2,23 @@ module SipHash {
   private use CommPrimitives;
   private use AryUtil;
   private use CPtr;
+  use ServerConfig;
   use Errors;
+  use Reflection;
+  use Logging;
   
   param cROUNDS = 2;
   param dROUNDS = 4;
 
-  private config param DEBUG = false;
-
   const defaultSipHashKey: [0..#16] uint(8) = for i in 0..#16 do i: uint(8);
+
+  const shLogger = new Logger();
+
+  if v {
+      shLogger.level = LogLevel.DEBUG;
+  } else {
+      shLogger.level = LogLevel.INFO;
+  }
 
   inline proc ROTL(x, b) {
     return (((x) << (b)) | ((x) >> (64 - (b))));
@@ -142,14 +151,16 @@ module SipHash {
     }
 
     inline proc TRACE() {
-      if DEBUG {
         try! {
-          writeln("%i v0 %016xu".format(D.size, v0));
-          writeln("%i v1 %016xu".format(D.size, v1));
-          writeln("%i v2 %016xu".format(D.size, v2));
-          writeln("%i v3 %016xu".format(D.size, v3));
+          shLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                               "%i v0 %016xu".format(D.size, v0));
+          shLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                               "%i v1 %016xu".format(D.size, v1));
+          shLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                               "%i v2 %016xu".format(D.size, v2));
+          shLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                               "%i v3 %016xu".format(D.size, v3));
         }
-      }
     }
 
     for pos in D.low..lastPos-1 by 8 {

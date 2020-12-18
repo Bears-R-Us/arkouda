@@ -12,6 +12,15 @@ module SortMsg
     use ServerErrorStrings;
     use RadixSortLSD;
     use AryUtil;
+    use Logging;
+    
+    const sortLogger = new Logger();
+  
+    if v {
+        sortLogger.level = LogLevel.DEBUG;
+    } else {
+        sortLogger.level = LogLevel.INFO;
+    }
   
     /* Sort the given pdarray using Radix Sort and
        return sorted keys as a block distributed array */
@@ -20,7 +29,6 @@ module SortMsg
       return sorted;
     }
 
-    
     /* sort takes pdarray and returns a sorted copy of the array */
     proc sortMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
       param pn = Reflection.getRoutineName();
@@ -29,10 +37,8 @@ module SortMsg
 
       // get next symbol name
       var sortedName = st.nextName();
-      if v {
-          writeln("%s %s : %s %s".format(cmd, name, sortedName));
-          stdout.flush();
-      }
+      sortLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                "cmd: %s name: %s sortedName: %s".format(cmd, name, sortedName));
 
       var gEnt: borrowed GenSymEntry = st.lookup(name);
 
@@ -55,12 +61,7 @@ module SortMsg
           }// end when(DType.Float64)
           otherwise {
               var errorMsg = notImplementedError(pn,gEnt.dtype);
-              writeln(generateErrorContext(
-                              msg=errorMsg, 
-                              lineNumber=getLineNumber(), 
-                              moduleName=getModuleName(), 
-                              routineName=getRoutineName(), 
-                              errorClass="NotImplementedError")); 
+              sortLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
               return errorMsg;
           }            
       }// end select(gEnt.dtype)
