@@ -10,7 +10,7 @@ from arkouda.dtypes import dtype as akdtype
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.strings import Strings
 from arkouda.strings import SArrays
-from multipledispatch import dispatch 
+#from multipledispatch import dispatch 
 
 __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", "arange",
            "linspace", "randint", "uniform", "standard_normal",
@@ -785,8 +785,7 @@ def random_strings_lognormal(logmean : Union[float, int], logstd : Union[float, 
 
 
 
-#@typechecked
-@dispatch(Strings) 
+@typechecked
 def suffix_array( strings : Strings) -> SArrays:
         """
         Return the suffix arrays of given strings. The size/shape of each suffix
@@ -833,8 +832,8 @@ def suffix_array( strings : Strings) -> SArrays:
         repMsg = generic_msg(msg)
         pdarrays= SArrays(*(repMsg.split('+')))
         return pdarrays
-@dispatch(str) 
-def suffix_array(filename: str)  -> SArrays:
+@typechecked
+def suffix_array_file(filename: str)  -> SArrays:
         """
         This function is major used for testing correctness and performance
         Return the suffix array of given file name's content as a string. 
