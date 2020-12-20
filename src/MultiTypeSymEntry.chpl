@@ -78,8 +78,8 @@ module MultiTypeSymEntry
         :arg etype: type to be instantiated
         :type etype: type
         */
-	var EnhancedInfo:string;
-	/* this entry is used to described the LCP (longest common prefix) array
+        var EnhancedInfo:string;
+        /* this entry is used to described the LCP (longest common prefix) array
            of suffix array or any other information closely related to this entry
         */
         proc init(len: int, type etype) {
