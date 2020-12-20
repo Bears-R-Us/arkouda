@@ -1072,7 +1072,7 @@ class SArrays:
 
     @staticmethod
     def attach(user_defined_name : str) -> 'SArrays':
-        return Strings(pdarray.attach(user_defined_name+'_offsets'),
+        return SArrays(pdarray.attach(user_defined_name+'_offsets'),
                        pdarray.attach(user_defined_name+'_bytes'))
 
 
