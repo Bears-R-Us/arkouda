@@ -8,6 +8,7 @@ from arkouda.dtypes import NUMBER_FORMAT_STRINGS
 from arkouda.logger import getArkoudaLogger
 import numpy as np # type: ignore
 from arkouda.dtypes import str as akstr
+from arkouda.dtypes import int64 as akint
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS, resolve_scalar_dtype, \
      translate_np_dtype
 import json
@@ -863,9 +864,8 @@ class SArrays:
             self.shape = self.offsets.shape
         except Exception as e:
             raise ValueError(e)   
-#        maybe we need to change the dtype into int later
-        self.dtype = np.str
-        self.logger = getArkoudaLogger(name=__class__.__name__)
+        self.dtype = akint
+        self.logger = getArkoudaLogger(name=__class__.__name__) # type: ignore
 
     def __iter__(self):
         raise NotImplementedError('SArrays does not support iteration now')
@@ -942,7 +942,7 @@ class SArrays:
     def __eq__(self, other) -> bool:
         return self._binop(other, "==")
 
-    def __ne__(self, other : SArrays) -> bool:
+    def __ne__(self, other) -> bool:
         return self._binop(other, "!=")
 
     def __getitem__(self, key):

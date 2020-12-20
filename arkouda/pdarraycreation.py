@@ -609,7 +609,7 @@ def randint(low : Union[int,float], high : Union[int,float], size : int, dtype=i
     sizestr = NUMBER_FORMAT_STRINGS['int64'].format(size)
     repMsg = generic_msg("randint {} {} {} {} {}".\
                          format(sizestr, dtype.name, lowstr, highstr, seed))
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))
 
 @typechecked
 def uniform(size : int, low : float=0.0, high : float=1.0, seed: Union[None, int]=None) -> pdarray:
@@ -830,8 +830,9 @@ def suffix_array( strings : Strings) -> SArrays:
                                                         strings.offsets.name,
                                                         strings.bytes.name) 
         repMsg = generic_msg(msg)
-        pdarrays= SArrays(*(repMsg.split('+')))
-        return pdarrays
+        return SArrays(*(cast(str,repMsg).split('+')))
+#        pdarrays= SArrays(*(repMsg.split('+')))
+
 @typechecked
 def suffix_array_file(filename: str)  -> SArrays:
         """
@@ -875,5 +876,6 @@ def suffix_array_file(filename: str)  -> SArrays:
         """
         msg = "segmentedSAFile {}".format( filename )
         repMsg = generic_msg(msg)
-        pdarrays= SArrays(*(repMsg.split('+')))
-        return pdarrays
+        return SArrays(*(cast(str,repMsg).split('+')))
+#        pdarrays= SArrays(*(repMsg.split('+')))
+#        return pdarrays

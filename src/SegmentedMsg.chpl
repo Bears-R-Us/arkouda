@@ -758,8 +758,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
               var segEntry = new shared SymEntry(sasoff);
               var valEntry = new shared SymEntry(sasval);
               var lcpvalEntry = new shared SymEntry(lcpval);
-              valEntry.EnhancedInfo=lcpvalName;
-              lcpvalEntry.EnhancedInfo=valName2;
+              valEntry.enhancedInfo=lcpvalName;
+              lcpvalEntry.enhancedInfo=valName2;
 
               st.addEntry(segName2, segEntry);
               st.addEntry(valName2, valEntry);
@@ -858,8 +858,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
               var segEntry = new shared SymEntry(sasoff);
               var valEntry = new shared SymEntry(sasval);
               var lcpvalEntry = new shared SymEntry(lcpval);
-              valEntry.EnhancedInfo=lcpvalName;
-              lcpvalEntry.EnhancedInfo=valName2;
+              valEntry.enhancedInfo=lcpvalName;
+              lcpvalEntry.enhancedInfo=valName2;
 
               st.addEntry(segName2, segEntry);
               st.addEntry(valName2, valEntry);
