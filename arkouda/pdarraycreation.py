@@ -469,15 +469,16 @@ def arange(*args) -> pdarray:
         raise TypeError("start,stop,stride must be type int {} {} {}".\
                                     format(start,stop,stride))
 
+@typechecked
 def linspace(start : int, stop : int, length : int) -> pdarray:
     """
     Create a pdarray of linearly-spaced floats in a closed interval.
 
     Parameters
     ----------
-    start : scalar
+    start : int
         Start of interval (inclusive)
-    stop : scalar
+    stop : int
         End of interval (inclusive)
     length : int
         Number of points
@@ -512,40 +513,15 @@ def linspace(start : int, stop : int, length : int) -> pdarray:
     >>> ak.linspace(start=-5, stop=0, length=5)
     array([-5, -3.75, -2.5, -1.25, 0])
     """
-    if not all((np.isscalar(start), np.isscalar(stop), np.isscalar(length))):
-        raise TypeError("all arguments must be scalars")
-
-    starttype = resolve_scalar_dtype(start)
-
-    try: 
-        startstr = NUMBER_FORMAT_STRINGS[starttype].format(start)
-    except KeyError as ke:
-        raise TypeError(('The start parameter must be an int or a scalar that'  +
-                        ' can be parsed to an int, but is a {}'.format(ke)))
-    stoptype = resolve_scalar_dtype(stop)
-
-    try: 
-        stopstr = NUMBER_FORMAT_STRINGS[stoptype].format(stop)
-    except KeyError as ke:
-        raise TypeError(('The stop parameter must be an int or a scalar that'  +
-                        ' can be parsed to an int, but is a {}'.format(ke)))
-
-    lentype = resolve_scalar_dtype(length)
-    if lentype != 'int64':
-        raise TypeError("The length parameter must be an int64")
-
-    try: 
-        lenstr = NUMBER_FORMAT_STRINGS[lentype].format(length)
-    except KeyError as ke:
-        raise TypeError(('The length parameter must be an int or a scalar that'  +
-                        ' can be parsed to an int, but is a {}'.format(ke)))
-
-    repMsg = generic_msg("linspace {} {} {}".format(startstr, stopstr, lenstr))
+    repMsg = generic_msg("linspace {} {} {}".format(start, stop, length))
     return create_pdarray(cast(str,repMsg))
 
-def randint(low : Union[int,float], high : Union[int,float], size : int, dtype=int64, seed : Union[None, int]=None) -> pdarray:
+@typechecked
+def randint(low : Union[int,float], high : Union[int,float], size : int, 
+                              dtype=int64, seed : int=None) -> pdarray:
     """
-    Generate a pdarray of randomized int, float, or bool values in a specified range.
+    Generate a pdarray of randomized int, float, or bool values in a 
+    specified range bounded by the low and high parameters.
 
     Parameters
     ----------
@@ -557,6 +533,9 @@ def randint(low : Union[int,float], high : Union[int,float], size : int, dtype=i
         The length of the returned array
     dtype : {int64, float64, bool}
         The dtype of the array
+    seed : int
+        Index for where to pull the first returned value
+        
 
     Returns
     -------
@@ -566,8 +545,8 @@ def randint(low : Union[int,float], high : Union[int,float], size : int, dtype=i
     Raises
     ------
     TypeError
-        Raised if dtype.name not in DTypes, size is not an int, low or if 
-        not a scalar
+        Raised if dtype.name not in DTypes, size is not an int, low or high is
+        not an int or float, or seed is not an int
     ValueError
         Raised if size < 0 or if high < low
 
@@ -586,15 +565,16 @@ def randint(low : Union[int,float], high : Union[int,float], size : int, dtype=i
 
     >>> ak.randint(0, 1, 5, dtype=ak.bool)
     array([True, False, True, True, True])
+    
+    >>> ak.randint(1, 5, 10, seed=2)
+    array([4, 3, 1, 3, 4, 4, 2, 4, 3, 2])
+
+    >>> ak.randint(1, 5, 3, dtype=ak.float64, seed=2)
+    array([2.9160772326374946, 4.353429832157099, 4.5392023718621486])
+    
+    >>> ak.randint(1, 5, 10, dtype=ak.bool, seed=2)
+    array([False, True, True, True, True, False, True, True, True, True])
     """
-    if not all((np.isscalar(low), np.isscalar(high), np.isscalar(size))):
-        raise TypeError("all arguments must be scalars")
-    if resolve_scalar_dtype(size) != 'int64':
-        raise TypeError("The size parameter must be an integer")
-    if resolve_scalar_dtype(low) not in RANDINT_TYPES:
-        raise TypeError("The low parameter must be an integer or float")
-    if resolve_scalar_dtype(high) not in RANDINT_TYPES:
-        raise TypeError("The high parameter must be an integer or float")
     if size < 0 or high < low:
         raise ValueError("size must be > 0 and high > low")
     dtype = akdtype(dtype) # normalize dtype
@@ -609,9 +589,10 @@ def randint(low : Union[int,float], high : Union[int,float], size : int, dtype=i
     return create_pdarray(repMsg)
 
 @typechecked
-def uniform(size : int, low : float=0.0, high : float=1.0, seed: Union[None, int]=None) -> pdarray:
+def uniform(size : int, low : float=0.0, high : float=1.0, 
+                                       seed: Union[None, int]=None) -> pdarray:
     """
-    Generate a pdarray with uniformly distributed random values 
+    Generate a pdarray with uniformly distributed random float values 
     in a specified range.
 
     Parameters
@@ -622,6 +603,8 @@ def uniform(size : int, low : float=0.0, high : float=1.0, seed: Union[None, int
         The high value (inclusive) of the range
     size : int
         The length of the returned array
+    seed : int
+        Index for where to pull the first returned value
 
     Returns
     -------
@@ -636,10 +619,18 @@ def uniform(size : int, low : float=0.0, high : float=1.0, seed: Union[None, int
     ValueError
         Raised if size < 0 or if high < low
 
+    Notes
+    -----
+    The logic for uniform is delegated to the ak.randint method which 
+    is invoked with a dtype of float64
+
     Examples
     --------
     >>> ak.uniform(3)
     array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])
+
+    >>> ak.uniform(size=3,low=0,high=5,seed=0)
+    array([0.30013431967121934, 0.47383036230759112, 1.0441791878997098])
     """
     return randint(low=low, high=high, size=size, dtype='float64', seed=seed)
 
@@ -653,6 +644,8 @@ def standard_normal(size : int, seed : Union[None, int]=None) -> pdarray:
     ----------
     size : int
         The number of samples to draw (size of the returned array)
+    seed : int
+        Index for where to pull the first returned value
     
     Returns
     -------
@@ -675,6 +668,11 @@ def standard_normal(size : int, seed : Union[None, int]=None) -> pdarray:
     For random samples from :math:`N(\mu, \sigma^2)`, use:
 
     ``(sigma * standard_normal(size)) + mu``
+    
+    Examples
+    --------
+    >>> ak.standard_normal(3,1)
+    array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])
     """
     if size < 0:
         raise ValueError("The size parameter must be > 0")
@@ -684,7 +682,7 @@ def standard_normal(size : int, seed : Union[None, int]=None) -> pdarray:
 
 @typechecked
 def random_strings_uniform(minlen : int, maxlen : int, size : int, 
-                           characters : str='uppercase', seed : Union[None, int]=None) -> Strings:
+                   characters : str='uppercase', seed : Union[None, int]=None) -> Strings:
     """
     Generate random strings with lengths uniformly distributed between 
     minlen and maxlen, and with characters drawn from a specified set.
@@ -699,6 +697,8 @@ def random_strings_uniform(minlen : int, maxlen : int, size : int,
         The number of strings to generate
     characters : (uppercase, lowercase, numeric, printable, binary)
         The set of characters to draw from
+    seed : int
+        Index for where to pull the first returned value
 
     Returns
     -------
@@ -713,6 +713,14 @@ def random_strings_uniform(minlen : int, maxlen : int, size : int,
     See Also
     --------
     random_strings_lognormal, randint
+    
+    Examples
+    --------
+    >>> ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=5)
+    array(['TVKJ', 'EWAB', 'CO', 'HFMD', 'U'])
+    
+    >>> ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=5, characters='printable')
+    array(['+5"f', '-P]3', '4k', '~HFF', 'F'])
     """
     if minlen < 0 or maxlen < minlen or size < 0:
         raise ValueError(("Incompatible arguments: minlen < 0, maxlen < minlen, " +
@@ -744,6 +752,8 @@ def random_strings_lognormal(logmean : Union[float, int], logstd : Union[float, 
         The number of strings to generate
     characters : (uppercase, lowercase, numeric, printable, binary)
         The set of characters to draw from
+    seed : int
+        Index for where to pull the first returned value
 
     Returns
     -------
@@ -768,6 +778,14 @@ def random_strings_lognormal(logmean : Union[float, int], logstd : Union[float, 
     with :math:`\mu = logmean` and :math:`\sigma = logstd`. Thus, the strings will
     have an average length of :math:`exp(\mu + 0.5*\sigma^2)`, a minimum length of 
     zero, and a heavy tail towards longer strings.
+    
+    Examples
+    --------
+    >>> ak.random_strings_lognormal(2, 0.25, 5, seed=1)
+    array(['TVKJTE', 'ABOCORHFM', 'LUDMMGTB', 'KWOQNPHZ', 'VSXRRL'])
+    
+    >>> ak.random_strings_lognormal(2, 0.25, 5, seed=1, characters='printable')
+    array(['+5"fp-', ']3Q4kC~HF', '=F=`,IE!', 'DjkBa'9(', '5oZ1)='])
     """
     if logstd <= 0 or size < 0:
         raise ValueError("Incompatible arguments: logstd <= 0 or size < 0")
