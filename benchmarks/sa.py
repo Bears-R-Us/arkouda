@@ -11,7 +11,11 @@ def time_ak_sa( vsize,strlen, trials, dtype):
     cfg = ak.get_config()
     Nv = vsize * cfg["numLocales"]
     print("numLocales = {},  num of strings  = {:,}".format(cfg["numLocales"], Nv))
-    v = ak.random_strings_uniform(1, strlen, Nv)
+
+    if dtype == 'str':
+         v = ak.random_strings_uniform(1, strlen, Nv)
+    else:
+        print("Wrong data type")
     c=ak.suffix_array(v)
 #    print("size of suffix array={}".format(c.bytes.size))    
 #    print("offset/number of suffix array={}".format(c.offsets.size))    
@@ -32,7 +36,6 @@ def time_ak_sa( vsize,strlen, trials, dtype):
     print("Average time = {:.4f} sec".format(tavg))
     if dtype == 'str':
         offsets_transferred = 0 * c.offsets.size * c.offsets.itemsize
-#        bytes_transferred = (c.offsets.size * c.offsets.itemsize) + (2 * c.bytes.size)
         bytes_transferred = (c.bytes.size * c.offsets.itemsize) + (0 * c.bytes.size)
         bytes_per_sec = (offsets_transferred + bytes_transferred) / tavg
     else:
@@ -56,11 +59,6 @@ def create_parser():
 #    parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
 #    parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
     return parser
-
-
-    return parser
-
-
 
 
     

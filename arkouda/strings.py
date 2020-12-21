@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import cast, Tuple, Union
 from typeguard import typechecked
 from arkouda.client import generic_msg, pdarrayIterThresh
-from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value,parse_single_int_array_value
+from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value,_parse_single_int_array_value
 from arkouda.dtypes import *
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS
 from arkouda.logger import getArkoudaLogger
@@ -959,7 +959,7 @@ class SArrays:
                                                              key)
                 repMsg = generic_msg(msg)
                 _, value = repMsg.split(maxsplit=1)
-                return parse_single_int_array_value(value)
+                return _parse_single_int_array_value(value)
             else:
                 raise IndexError("[int] {} is out of bounds with size {}".\
                                  format(orig_key,self.size))

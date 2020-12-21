@@ -69,7 +69,7 @@ def parse_single_value(msg : str) -> object:
 
 
 @typechecked
-def parse_single_int_array_value(msg : str) -> object:
+def _parse_single_int_array_value(msg : str) -> object:
     """
     Attempt to convert a scalar return value from the arkouda server to a
     numpy string in Python. The user should not call this function directly. 
@@ -84,10 +84,19 @@ def parse_single_int_array_value(msg : str) -> object:
     object numpy scalar         
     """
     fields = msg.split(" ",1)
-    dtname=fields[0]
-#    mydtype = dtype(dtname)
-    nfields = fields[1].split("\"")
-    return nfields[1]
+    dtname, value = msg.split(maxsplit=1)
+    mydtype = dtype(dtname)
+    try:
+        if mydtype == akint64:
+            nfields = value.split("\"")
+            return nfields[1]
+        else:
+            raise ValueError(("not correct int data type from server {} {}".\
+                              format(mydtype.name, value)))
+    except:
+        raise ValueError(("unsupported value from server {} {}".\
+                              format(mydtype.name, value)))
+
 
 # class for the pdarray
 class pdarray:
