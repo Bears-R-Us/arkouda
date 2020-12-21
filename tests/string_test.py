@@ -2,7 +2,6 @@ import numpy as np
 from collections import Counter
 from context import arkouda as ak
 from base_test import ArkoudaTest
-import pytest
 ak.verbose = False
 
 N = 100
@@ -180,7 +179,7 @@ def run_test_peel(strings, test_strings, delim):
     for times, inc, part in it.product(range(1,4), tf, tf):
         ls, rs = strings.peel(delim, times=times, includeDelimiter=inc, keepPartial=part)
         triples = [s.partition(delim) for s in test_strings]
-        for i in range(times-1):
+        for _ in range(times-1):
             triples = [slide(t, delim) for t in triples]
         ltest, rtest = munge(triples, inc, part)
         assert((ltest == ls.to_ndarray()).all() and (rtest == rs.to_ndarray()).all())
@@ -188,7 +187,7 @@ def run_test_peel(strings, test_strings, delim):
     for times, inc, part in it.product(range(1,4), tf, tf):
         ls, rs = strings.rpeel(delim, times=times, includeDelimiter=inc, keepPartial=part)
         triples = [s.rpartition(delim) for s in test_strings]
-        for i in range(times-1):
+        for _ in range(times-1):
             triples = [rslide(t, delim) for t in triples]
         ltest, rtest = rmunge(triples, inc, part)
         assert((ltest == ls.to_ndarray()).all() and (rtest == rs.to_ndarray()).all())
@@ -296,6 +295,7 @@ if __name__ == '__main__':
 class StringTest(ArkoudaTest):
   
     def setUp(self):
+        self.maxDiff = None
         ArkoudaTest.setUp(self)
         base_words1 = ak.random_strings_uniform(1, 10, UNIQUE, characters='printable')
         base_words2 = ak.random_strings_lognormal(2, 0.25, UNIQUE, characters='printable')
@@ -445,3 +445,9 @@ class StringTest(ArkoudaTest):
         with self.assertRaises(RuntimeError):   
             run_test_stick(self.gremlins_strings, self.gremlins_test_strings, self.base_words, '"')
         print('passed test_stick')
+        
+    def test_str_output(self):
+        strings = ak.array(['string {}'.format(i) for i in range (0,101)])
+        print(str(strings))
+        self.assertEqual("['string 0', 'string 1', 'string 2', ... , 'string 98', 'string 99', 'string 100']",
+                         str(strings))

@@ -111,7 +111,7 @@ class Strings:
         else:
             vals = ["'{}'".format(self[i]) for i in range(3)]
             vals.append('... ')
-            vals.extend([self[i] for i in range(self.size-3, self.size)])
+            vals.extend(["'{}'".format(self[i]) for i in range(self.size-3, self.size)])
         return "[{}]".format(', '.join(vals))
 
     def __repr__(self) -> str:
