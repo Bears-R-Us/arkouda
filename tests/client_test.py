@@ -20,16 +20,23 @@ class ClientTest(ArkoudaTest):
         '''
         self.assertTrue(ak.client.connected)
         try:
-            ak.client.disconnect()
+            ak.disconnect()
         except Exception as e:
             raise AssertionError(e)
    
         self.assertFalse(ak.client.connected)
         try:
-            ak.client.connect(server=ArkoudaTest.server, port=ArkoudaTest.port)
+            ak.connect(server=ArkoudaTest.server, port=ArkoudaTest.port)
         except Exception as e:
             raise AssertionError(e)
         self.assertTrue(ak.client.connected)
+        
+    def test_disconnect_on_disconnected_client(self):
+        
+        ak.disconnect()
+        self.assertFalse(ak.client.connected)
+        ak.disconnect()
+        ak.connect()
         
     def test_client_get_config(self):
         '''

@@ -139,10 +139,53 @@ class GroupByTest(ArkoudaTest):
         :raise: AssertionError if there are any errors encountered in run_test with levels = 2
         '''
         self.assertEqual(0, run_test(2, verbose))
+        
+    def test_broadcast_ints(self):
+        
+        values = ak.array([4, 1, 3, 2, 2, 2, 5, 5, 2, 3])
+        gb = ak.GroupBy(values)
+        keys,counts = gb.count()
 
+        self.assertTrue((np.array([1,4,2,1,2]) == counts.to_ndarray()).all())
+        self.assertTrue((np.array([1,2,3,4,5]) == keys.to_ndarray()).all())
+
+        results = gb.broadcast(1*(counts > 2))
+        self.assertTrue((np.array([0,1,1,1,1,0,0,0,0,0]),results.to_ndarray()))
+        
+        results = gb.broadcast(1*(counts == 2))
+        self.assertTrue((np.array([0,0,0,0,0,1,1,0,1,1]),results.to_ndarray()))     
+        
+        results = gb.broadcast(1*(counts < 4))
+        self.assertTrue((np.array([1,0,0,0,0,1,1,1,1,1]),results.to_ndarray()))  
+        
+    def test_broadcast_booleans(self):
+        
+        values = ak.array([4, 1, 3, 2, 2, 2, 5, 5, 2, 3])
+        gb = ak.GroupBy(values)
+        keys,counts = gb.count()
+
+        self.assertTrue((np.array([1,4,2,1,2]) == counts.to_ndarray()).all())
+        self.assertTrue((np.array([1,2,3,4,5]) == keys.to_ndarray()).all())
+
+        results = gb.broadcast(counts > 2)
+        self.assertTrue((np.array([0,1,1,1,1,0,0,0,0,0]),results.to_ndarray()))
+        
+        results = gb.broadcast(counts == 2)
+        self.assertTrue((np.array([0,0,0,0,0,1,1,0,1,1]),results.to_ndarray()))     
+        
+        results = gb.broadcast(counts < 4)
+        self.assertTrue((np.array([1,0,0,0,0,1,1,1,1,1]),results.to_ndarray()))    
+        
+    def test_count(self):   
+        values = ak.array([4, 1, 3, 2, 2, 2, 5, 5, 2, 3])
+        gb = ak.GroupBy(values)
+        keys, counts = gb.count()
+        
+        self.assertTrue((np.array([1,2,3,4,5]) == keys.to_ndarray()).all())
+        self.assertTrue((np.array([1,4,2,1,2]) == counts.to_ndarray()).all())
+        
     def test_error_handling(self):
         d = make_arrays()
-        df = pd.DataFrame(d)
         akdf = {k:ak.array(v) for k, v in d.items()}        
         gb = ak.GroupBy([akdf['keys'], akdf['keys2']])
 

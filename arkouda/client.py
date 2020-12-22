@@ -37,7 +37,8 @@ maxTransferBytesDefVal = 2**30
 maxTransferBytes = maxTransferBytesDefVal
 AllSymbols = "__AllSymbols__"
 
-logger = getArkoudaLogger(name='Arkouda Client')    
+logger = getArkoudaLogger(name='Arkouda Client') 
+clientLogger = getArkoudaLogger(name='Arkouda User Logger', logFormat='%(message)s')   
 
 # reset settings to default values
 def set_defaults() -> None:
@@ -151,6 +152,7 @@ def connect(server : str="localhost", port : int=5555, timeout : int=0,
                       'this may cause some commands to fail or behave ' +
                       'incorrectly! Updating arkouda is strongly recommended.').\
                       format(__version__, conf['arkoudaVersion']), RuntimeWarning)
+    clientLogger.info(return_message)
 
 def _parse_url(url : str) -> Tuple[str,int,Optional[str]]:
     """
@@ -399,7 +401,7 @@ def disconnect() -> None:
     """
     global socket, pspStr, connected, verbose, token
 
-    if socket is not None:
+    if connected:
         # send disconnect message to server
         message = "disconnect"
         logger.debug("[Python] Sending request: {}".format(message))
@@ -410,8 +412,10 @@ def disconnect() -> None:
         except Exception as e:
             raise ConnectionError(e)
         connected = False
+        clientLogger.info(return_message)
     else:
-        logger.error("not connected; cannot disconnect")
+        clientLogger.info("not connected; cannot disconnect")
+    
 
 def shutdown() -> None:
     """

@@ -374,13 +374,13 @@ Memory tracking is turned on by default now, you can run server with memory trac
 By default, the server listens on port `5555` and prints verbose output. These options can be changed with command-line 
 flags `--ServerPort=1234` and `--v=false`
 
-Memory tracking is turned on by default and turned off by using `--memTrack=false`
+Memory tracking is turned on by default and turned off by using the  `--memTrack=false` flag
 
-Logging messages are turned on by default and turned off by using `--logging=false`
+Logging messages are turned on by default and turned off by using the `--logging=false` flag
 
-Verbose messages are turned on by default and turned off by using  `--v=false`
+Verbose messages at the debug level are turned off by default and are turned on by using the `--v` flag
 
-Other command line options are available, view them by using `--help`
+Other command line options are available, view them by using the `--help` flag
 
 ```bash
 ./arkouda-server --help
