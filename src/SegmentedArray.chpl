@@ -1076,18 +1076,32 @@ module SegmentedArray {
       var t = new Timer();
       if useHash {
         // Hash all strings
-        if v { writeln("Hashing strings"); stdout.flush(); t.start(); }
+        saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Hashing strings"); 
+        if v { t.start(); }
         var hashes = this.hash();
-        if v { t.stop(); writeln("hashing took %t seconds\nSorting hashes".format(t.elapsed())); stdout.flush(); t.clear(); t.start(); }
+
+        if v { 
+            t.stop();    
+            saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                           "hashing took %t seconds\nSorting hashes".format(t.elapsed())); 
+            t.clear(); t.start(); 
+        }
+
         // Return the permutation that sorts the hashes
         var iv = radixSortLSD_ranks(hashes);
-        if v { t.stop(); writeln("sorting took %t seconds".format(t.elapsed())); stdout.flush(); }
-        if DEBUG {
+        if v { 
+            t.stop(); 
+            saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                            "sorting took %t seconds".format(t.elapsed())); 
+        }
+        if v{
           var sortedHashes = [i in iv] hashes[i];
-          var diffs = sortedHashes[(iv.domain.low+1)..#(iv.size-1)] - sortedHashes[(iv.domain.low)..#(iv.size-1)];
+          var diffs = sortedHashes[(iv.domain.low+1)..#(iv.size-1)] - 
+                                                 sortedHashes[(iv.domain.low)..#(iv.size-1)];
           printAry("diffs = ", diffs);
           var nonDecreasing = [(d0,d1) in diffs] ((d0 > 0) || ((d0 == 0) && (d1 >= 0)));
-          writeln("Are hashes sorted? ", && reduce nonDecreasing);
+          saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                    "Are hashes sorted? %i".format(&& reduce nonDecreasing));
         }
         return iv;
       } else {
@@ -1136,15 +1150,32 @@ module SegmentedArray {
         return hits;
       }
       var t = new Timer();
-      if DEBUG {writeln("Checking bytes of substr"); stdout.flush(); t.start();}
+
+      if v {
+           saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                "Checking bytes of substr"); 
+           t.start();
+      }
       const truth = findSubstringInBytes(substr);
       const D = truth.domain;
-      if DEBUG {t.stop(); writeln("took %t seconds\nTranslating to segments...".format(t.elapsed())); stdout.flush(); t.clear(); t.start();}
+      if v {
+            t.stop(); 
+            saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                  "took %t seconds\nTranslating to segments...".format(t.elapsed())); 
+            t.clear(); 
+            t.start();
+      }
       // Need to ignore segment(s) at the end of the array that are too short to contain substr
       const tail = + reduce (offsets.a > D.high);
       // oD is the right-truncated domain representing segments that are candidates for containing substr
       var oD: subdomain(offsets.aD) = offsets.aD[offsets.aD.low..#(offsets.size - tail)];
-      if DEBUG {t.stop(); writeln("took %t seconds\ndetermining answer...".format(t.elapsed())); stdout.flush(); t.clear(); t.start();}
+      if v {
+             t.stop(); 
+             saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                   "took %t seconds\ndetermining answer...".format(t.elapsed())); 
+             t.clear(); 
+             t.start();
+      }
       ref oa = offsets.a;
       if mode == SearchMode.contains {
         // Determine whether each segment contains a hit
@@ -1162,7 +1193,11 @@ module SegmentedArray {
         hits[oD.interior(-(oD.size-1))] = truth[oa[oD.interior(oD.size-1)] - substr.numBytes - 1];
         hits[oD.high] = truth[D.high];
       }
-      if DEBUG {t.stop(); writeln("took %t seconds".format(t.elapsed())); stdout.flush();}
+      if v {
+          t.stop(); 
+          saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                   "took %t seconds".format(t.elapsed()));
+      }
       return hits;
     }
 
@@ -1374,9 +1409,10 @@ module SegmentedArray {
       const ref D = offsets.aD;
       const ref va = values.a;
       if checkSorted && isSorted() {
-        if DEBUG { writeln("argsort called on already sorted array"); stdout.flush(); }
-        var ranks: [D] int = [i in D] i;
-        return ranks;
+          saLogger.warn(getModuleName(),getRoutineName(),getLineNumber(),
+                                                   "argsort called on already sorted array");
+          var ranks: [D] int = [i in D] i;
+          return ranks;
       }
       var ranks = twoPhaseStringSort(this);
       return ranks;
