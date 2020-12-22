@@ -3,7 +3,7 @@ from typeguard import typechecked
 from typing import cast as type_cast
 from typing import Optional, Tuple, Union, ForwardRef
 from arkouda.client import generic_msg
-from arkouda.dtypes import *
+from arkouda.dtypes import resolve_scalar_dtype, DTypes
 from arkouda.dtypes import _as_dtype
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraysetops import unique
@@ -36,6 +36,20 @@ def cast(pda : Union[pdarray, Strings], dt) -> Union[pdarray, Strings]:
     The cast is performed according to Chapel's casting rules and is NOT safe 
     from overflows or underflows. The user must ensure that the target dtype 
     has the precision and capacity to hold the desired result.
+    
+    Examples
+    --------
+    >>> ak.cast(ak.linspace(1.0,5.0,5), dt=ak.int64)
+    array([1, 2, 3, 4, 5])    
+    
+    >>> ak.cast(ak.arange(0,5), dt=ak.float64).dtype
+    dtype('float64')
+    
+    >>> ak.cast(ak.arange(0,5), dt=ak.bool)
+    array([False, True, True, True, True])
+    
+    >>> ak.cast(ak.linspace(0,4,5), dt=ak.bool)
+    array([False, True, True, True, True])
     """
 
     if isinstance(pda, pdarray):
@@ -73,6 +87,14 @@ def abs(pda : pdarray) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+        
+    Examples
+    --------
+    >>> ak.abs(ak.arange(-5,-1))
+    array([5, 4, 3, 2])
+    
+    >>> ak.abs(ak.linspace(-5,-1,5))
+    array([5, 4, 3, 2, 1])    
     """
     repMsg = generic_msg("efunc {} {}".format("abs", pda.name))
     return create_pdarray(type_cast(str,repMsg))
@@ -101,6 +123,8 @@ def log(pda : pdarray) -> pdarray:
     -----
     Logarithms with other bases can be computed as follows:
 
+    Examples
+    --------
     >>> A = ak.array([1, 10, 100])
     # Natural log
     >>> ak.log(A)
@@ -134,6 +158,15 @@ def exp(pda : pdarray) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+        
+    Examples
+    --------
+    >>> ak.exp(ak.arange(1,5))
+    array([2.7182818284590451, 7.3890560989306504, 20.085536923187668, 54.598150033144236])
+    
+    >>> ak.exp(ak.uniform(5,1.0,5.0))
+    array([11.84010843172504, 46.454368507659211, 5.5571769623557188, 
+           33.494295836924771, 13.478894913238722])
     """
     repMsg = generic_msg("efunc {} {}".format("exp", pda.name))
     return create_pdarray(type_cast(str,repMsg))
@@ -160,6 +193,18 @@ def cumsum(pda : pdarray) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+        
+    Examples
+    --------
+    >>> ak.cumsum(ak.arange([1,5]))
+    array([1, 3, 6])
+
+    >>> ak.cumsum(ak.uniform(5,1.0,5.0))
+    array([3.1598310770203937, 5.4110385860243131, 9.1622479306453748, 
+           12.710615785506533, 13.945880905466208])
+    
+    >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool))
+    array([0, 1, 1, 2, 3])
     """
     repMsg = generic_msg("efunc {} {}".format("cumsum", pda.name))
     return create_pdarray(type_cast(str,repMsg))
@@ -186,6 +231,15 @@ def cumprod(pda : pdarray) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+        
+    Examples
+    --------
+    >>> ak.cumprod(ak.arange(1,5))
+    array([1, 2, 6, 24]))
+
+    >>> ak.cumprod(ak.uniform(5,1.0,5.0))
+    array([1.5728783400481925, 7.0472855509390593, 33.78523998586553, 
+           134.05309592737584, 450.21589865655358])
     """
     repMsg = generic_msg("efunc {} {}".format("cumprod", pda.name))
     return create_pdarray(type_cast(str,repMsg))
@@ -383,9 +437,7 @@ def histogram(pda : pdarray, bins : int=10) -> pdarray:
     Examples
     --------
     >>> A = ak.arange(0, 10, 1)
-    >>> nbins = 3
-    >>> h = ak.histogram(A, bins=nbins)
-    >>> h
+    >>> ak.histogram(A, bins=3)
     array([3, 3, 4])
     # Recreate the bin edges in NumPy
     >>> binEdges = np.linspace(A.min(), A.max(), nbins+1)
@@ -430,7 +482,8 @@ def value_counts(pda : pdarray) -> Union[Categorical, # type: ignore
     Notes
     -----
     This function differs from ``histogram()`` in that it only returns
-    counts for values that are present, leaving out empty "bins".
+    counts for values that are present, leaving out empty "bins". This
+    function delegates all logic to the unique() method.
 
     Examples
     --------

@@ -55,6 +55,8 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertTrue((ak.array([0, 1, 2, 3, 4]) == ak.arange(0, 5, 1)).all())
 
         self.assertTrue((ak.array([5, 4, 3, 2, 1]) == ak.arange(5, 0, -1)).all())
+        
+        self.assertTrue((ak.array([-5, -6, -7, -8, -9]) == ak.arange(-5, -10, -1)).all())
 
         self.assertTrue((ak.array([0, 2, 4, 6, 8]) == ak.arange(0, 10, 2)).all())
 
@@ -232,7 +234,7 @@ class PdarrayCreationTest(ArkoudaTest):
         
         self.assertEqual(ak.bool,boolZerosLike.dtype)        
 
-    def testLinspace(self):
+    def test_linspace(self):
         pda = ak.linspace(0, 100, 1000)  
         self.assertEqual(1000, len(pda))
         self.assertEqual(float, pda.dtype)

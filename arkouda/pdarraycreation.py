@@ -63,28 +63,36 @@ def from_series(series : pd.Series,
     --------
     >>> ak.from_series(pd.Series(np.random.randint(0,10,5)))
     array([9, 0, 4, 7, 9])
+
     >>> ak.from_series(pd.Series(['1', '2', '3', '4', '5']),dtype=np.int64)
     array([1, 2, 3, 4, 5])
+
     >>> ak.from_series(pd.Series(np.random.uniform(low=0.0,high=1.0,size=3)))
     array([0.57600036956445599, 0.41619265571741659, 0.6615356693784662])
+
     >>> ak.from_series(pd.Series(['0.57600036956445599', '0.41619265571741659',
                        '0.6615356693784662']), dtype=np.float64)
     array([0.57600036956445599, 0.41619265571741659, 0.6615356693784662])
+
     >>> ak.from_series(pd.Series(np.random.choice([True, False],size=5)))
     array([True, False, True, True, True])
+
     >>> ak.from_series(pd.Series(['True', 'False', 'False', 'True', 'True']), dtype=np.bool)
     array([True, True, True, True, True])
+
     >>> ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e'], dtype="string"))
     array(['a', 'b', 'c', 'd', 'e'])
+
     >>> ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e']),dtype=np.str)
     array(['a', 'b', 'c', 'd', 'e'])
+
     >>> ak.from_series(pd.Series(pd.to_datetime(['1/1/2018', np.datetime64('2018-01-01')])))
     array([1514764800000000000, 1514764800000000000])  
     
     Notes
     -----
-    The supported datatypes are bool, float64, int64, string, and datetime64[ns],which are
-    either inferred from the the Pandas Series or is set via the dtype parameter. 
+    The supported datatypes are bool, float64, int64, string, and datetime64[ns]. The
+    data type is either inferred from the the Series or is set via the dtype parameter. 
     
     Series of datetime are converted to Arkouda arrays of dtype int64 (date in milliseconds)
     """ 
@@ -101,8 +109,8 @@ def from_series(series : pd.Series,
 
 def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     """
-    Convert an iterable to a pdarray or Strings object, sending the corresponding
-    data to the arkouda server. 
+    Convert a Python or Numpy Iterable to a pdarray or Strings object, sending 
+    the corresponding data to the arkouda server. 
 
     Parameters
     ----------
@@ -144,13 +152,15 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
 
     Examples
     --------
-    >>> a = [3, 5, 7]
-    >>> b = ak.array(a)
-    >>> b
-    array([3, 5, 7])
+    >>> ak.array(np.arange(1,10))
+    array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+    
+    >>> ak.array(range(1,10))
+    array([1, 2, 3, 4, 5, 6, 7, 8, 9])
    
-    >>> type(b)
-    arkouda.pdarray    
+    >>> strings = ak.array(['string {}'.format(i) for i in range(0,5)])
+    >>> type(strings)
+    <class 'arkouda.strings.Strings'>  
     """
     # If a is already a pdarray, do nothing
     if isinstance(a, pdarray):
@@ -435,6 +445,9 @@ def arange(*args) -> pdarray:
 
     >>> ak.arange(0, 10, 2)
     array([0, 2, 4, 6, 8])
+    
+    >>> ak.arange(-5, -10, -1)
+    array([-5, -6, -7, -8, -9])
     """
    
     #if one arg is given then arg is stop
@@ -460,7 +473,6 @@ def arange(*args) -> pdarray:
         raise ZeroDivisionError("division by zero")
 
     if isinstance(start, int) and isinstance(stop, int) and isinstance(stride, int):
-        # TODO: fix bug in server that goes 2 steps too far for negative strides
         if stride < 0:
             stop = stop + 2
         repMsg = generic_msg("arange {} {} {}".format(start, stop, stride))
