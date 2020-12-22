@@ -210,7 +210,10 @@ class GroupBy:
         ValueError
             Raised if the key array size does not match the values size or
             if the operator is not in the GroupBy.Reductions array
-
+ 
+        Examples
+        --------
+        
         '''
         if values.size != self.size:
             raise ValueError(("Attempt to group array using key array of " +

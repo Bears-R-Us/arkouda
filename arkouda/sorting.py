@@ -5,7 +5,7 @@ from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros
 from arkouda.strings import Strings
-from arkouda.dtypes import *
+from arkouda.dtypes import int64
 
 __all__ = ["argsort", "coargsort", "sort"]
 
@@ -35,7 +35,7 @@ def argsort(pda : Union[pdarray,Strings,'Categorical']) -> pdarray: # type: igno
     Notes
     -----
     Uses a least-significant-digit radix sort, which is stable and
-    resilinent to non-uniformity in data but communication intensive.
+    resilient to non-uniformity in data but communication intensive.
 
     Examples
     --------
