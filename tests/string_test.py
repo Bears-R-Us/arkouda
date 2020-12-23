@@ -291,6 +291,7 @@ if __name__ == '__main__':
 class StringTest(ArkoudaTest):
   
     def setUp(self):
+        self.maxDiff = None
         ArkoudaTest.setUp(self)
         base_words1 = ak.random_strings_uniform(1, 10, UNIQUE, characters='printable')
         base_words2 = ak.random_strings_lognormal(2, 0.25, UNIQUE, characters='printable')
@@ -412,3 +413,9 @@ class StringTest(ArkoudaTest):
             run_test_stick(self.gremlins_strings, self.gremlins_test_strings, self.base_words, '')
         with self.assertRaises(RuntimeError):   
             run_test_stick(self.gremlins_strings, self.gremlins_test_strings, self.base_words, '"')
+        
+    def test_str_output(self):
+        strings = ak.array(['string {}'.format(i) for i in range (0,101)])
+        print(str(strings))
+        self.assertEqual("['string 0', 'string 1', 'string 2', ... , 'string 98', 'string 99', 'string 100']",
+                         str(strings))
