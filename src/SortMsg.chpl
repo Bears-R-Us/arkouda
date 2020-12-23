@@ -37,14 +37,16 @@ module SortMsg
 
       // get next symbol name
       var sortedName = st.nextName();
-      sortLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                "cmd: %s name: %s sortedName: %s".format(cmd, name, sortedName));
 
       var gEnt: borrowed GenSymEntry = st.lookup(name);
 
       // check and throw if over memory limit
       overMemLimit(((2 + 1) * gEnt.size * gEnt.itemsize)
                    + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+ 
+      sortLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                "cmd: %s name: %s sortedName: %s dtype: %t".format(
+                 cmd, name, sortedName, gEnt.dtype));
       
       // Sort the input pda and create a new symbol entry for
       // the sorted pda.
@@ -61,11 +63,14 @@ module SortMsg
           }// end when(DType.Float64)
           otherwise {
               var errorMsg = notImplementedError(pn,gEnt.dtype);
-              sortLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              sortLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                                                     errorMsg);
               return errorMsg;
           }            
       }// end select(gEnt.dtype)
-        
-      return try! "created " + st.attrib(sortedName);
+      repMsg = "created " + st.attrib(sortedName);
+
+      sortLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
+      return repMsg;
     }// end sortMsg()
 }// end module SortMsg

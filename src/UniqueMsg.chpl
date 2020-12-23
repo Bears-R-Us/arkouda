@@ -106,7 +106,7 @@ module UniqueMsg
         
             var s = try! "created " + st.attrib(vname);
             if returnCounts {s += " +created " + st.attrib(cname);}
-
+            umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),s);  
             return s;
           }
           when "str" {
@@ -124,12 +124,13 @@ module UniqueMsg
               var (uo, uv, c, inv) = uniqueGroup(str);
               st.addEntry(offsetName, new shared SymEntry(uo));
               st.addEntry(valueName, new shared SymEntry(uv));
-              var s = try! "created " + st.attrib(offsetName) + " +created " + st.attrib(valueName);
+              var s = "created " + st.attrib(offsetName) + " +created " + st.attrib(valueName);
               if returnCounts {
                   var countName = st.nextName();
                   st.addEntry(countName, new shared SymEntry(c));
                   s += " +created " + st.attrib(countName);
               }
+              umLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), s);
               return s;
           }
           otherwise { 
@@ -198,7 +199,8 @@ module UniqueMsg
                 return errorMsg;                 
             }
         }
-        
-        return try! "created " + st.attrib(vname) + " +created " + st.attrib(cname);
+        repMsg = "created " + st.attrib(vname) + " +created " + st.attrib(cname);
+        umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return repMsg;
     }
 }

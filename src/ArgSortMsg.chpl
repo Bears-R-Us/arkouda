@@ -694,7 +694,8 @@ module ArgSortMsg
               return errorMsg;
           }
         }
-            
-        return try! "created " + st.attrib(ivname);
+        repMsg = "created " + st.attrib(ivname);
+        asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return repMsg;
     }
 }

@@ -422,6 +422,8 @@ module MsgProcessing
                 repMsg = try! "set %s to %t".format(name, val);
             }
             otherwise {
+                mpLogger.error(getModuleName(),getRoutineName(),
+                                               getLineNumber(),"dtype: %s".format(dtypestr));
                 return unrecognizedTypeError(pn,dtypestr);
             }
         }

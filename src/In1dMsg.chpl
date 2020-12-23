@@ -104,7 +104,8 @@ module In1dMsg
                 return errorMsg;
             }
         }
-        
-        return try! "created " + st.attrib(rname);
+        repMsg = "created " + st.attrib(rname);
+        iLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return repMsg;
     }   
 }
