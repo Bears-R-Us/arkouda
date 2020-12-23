@@ -333,8 +333,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
         var errorMsg = "Error: index out of bounds";
         smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
         return errorMsg;
-    } catch {
-        var errorMsg = "Error: unknown cause";
+    } catch e: Error {
+        var errorMsg = "Error: unknown cause %t".format(e);
         smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
         return errorMsg;
     }
@@ -450,35 +450,45 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
 
     var newSegName = st.nextName();
     var newValName = st.nextName();
+    
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                  "objtype:%s".format(objtype));
+    
     select objtype {
         when "str" {
             var strings = new owned SegString(args[1], args[2], st);
             var iname = args[3];
             var gIV: borrowed GenSymEntry = st.lookup(iname);
-            select gIV.dtype {
-                when DType.Int64 {
-                    var iv = toSymEntry(gIV, int);
-                    var (newSegs, newVals) = strings[iv.a];
-                    var newSegsEntry = new shared SymEntry(newSegs);
-                    var newValsEntry = new shared SymEntry(newVals);
-                    st.addEntry(newSegName, newSegsEntry);
-                    st.addEntry(newValName, newValsEntry);
-                }
-                when DType.Bool {
-                    var iv = toSymEntry(gIV, bool);
-                    var (newSegs, newVals) = strings[iv.a];
-                    var newSegsEntry = new shared SymEntry(newSegs);
-                    var newValsEntry = new shared SymEntry(newVals);
-                    st.addEntry(newSegName, newSegsEntry);
-                    st.addEntry(newValName, newValsEntry);
-                }
-                otherwise {
-                    var errorMsg = "("+objtype+","+dtype2str(gIV.dtype)+")";
-                    smLogger.error(getModuleName(),getRoutineName(),
+            try {
+                select gIV.dtype {
+                    when DType.Int64 {
+                        var iv = toSymEntry(gIV, int);
+                        var (newSegs, newVals) = strings[iv.a];
+                        var newSegsEntry = new shared SymEntry(newSegs);
+                        var newValsEntry = new shared SymEntry(newVals);
+                        st.addEntry(newSegName, newSegsEntry);
+                        st.addEntry(newValName, newValsEntry);
+                    }
+                    when DType.Bool {
+                        var iv = toSymEntry(gIV, bool);
+                        var (newSegs, newVals) = strings[iv.a];
+                        var newSegsEntry = new shared SymEntry(newSegs);
+                        var newValsEntry = new shared SymEntry(newVals);
+                        st.addEntry(newSegName, newSegsEntry);
+                        st.addEntry(newValName, newValsEntry);
+                    }
+                    otherwise {
+                        var errorMsg = "("+objtype+","+dtype2str(gIV.dtype)+")";
+                        smLogger.error(getModuleName(),getRoutineName(),
                                                       getLineNumber(),errorMsg); 
-                    return notImplementedError(pn,errorMsg);
+                        return notImplementedError(pn,errorMsg);
+                    }
                 }
-           }
+            } catch e: Error {
+                smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                      e.message());
+                return "Error: %t".format(e.message());
+            }
         }
         otherwise {
             var errorMsg = "unsupported objtype: %t".format(objtype);

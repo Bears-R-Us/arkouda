@@ -228,7 +228,7 @@ module SegmentedArray {
       gatheredOffsets -= gatheredLengths;
       
       saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                                  "%i seconds".format(getCurrentTime() - t1));
+                                "aggregation in %i seconds".format(getCurrentTime() - t1));
       saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Copying values");
       if v {
           t1 = getCurrentTime();
@@ -272,8 +272,9 @@ module SegmentedArray {
           }
         }
       }
-      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber,
-                                                     "%i seconds".format(getCurrentTime() -t1));
+      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                            "Gathered offsets and vals in %i seconds".format(
+                                           getCurrentTime() -t1));
       return (gatheredOffsets, gatheredVals);
     }
 
@@ -286,7 +287,7 @@ module SegmentedArray {
           throw new owned OutOfBoundsError();
       }
       saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                                       "Computing lengths and offsets");
+                                                 "Computing lengths and offsets");
       var t1 = getCurrentTime();
       ref oa = offsets.a;
       const low = offsets.aD.low, high = offsets.aD.high;

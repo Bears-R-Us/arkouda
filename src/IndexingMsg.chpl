@@ -418,8 +418,12 @@ module IndexingMsg
         var gIV: borrowed GenSymEntry = st.lookup(iname);
         var gY: borrowed GenSymEntry = st.lookup(yname);
         
-        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                             "cmd: %s gX: %t gIV: %t gY: %t".format(cmd, gX, gIV, gY));
+        if v {
+            imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                             "cmd: %s gX: %t gIV: %t gY: %t".format(
+                                              cmd, st.attrib(name), st.attrib(iname),
+                                              st.attrib(yname)));
+        }
 
         // add check for IV to be dtype of int64 or bool
 
