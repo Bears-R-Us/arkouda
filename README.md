@@ -436,6 +436,14 @@ against a running server by running the following Python command:
 python3 tests/check.py localhost 5555
 ```
 
+## Logging
+
+The Arkouda server features a Chapel logging framework that prints out the module name, routine name and line number
+for all logged messages. Available logging levels are ERROR, CRITICAL, WARN, INFO, and DEBUG. 
+
+The default logging level is INFO where all messages at the ERROR, CRITICAL, WARN, and INFO levels are printed. For debugging, 
+the DEBUG level is enabled by passing in the --v flag upon arkouda\_server startup.
+
 ## Contributing to Arkouda
 
 If you'd like to contribute, please see [CONTRIBUTING.md](CONTRIBUTING.md).
