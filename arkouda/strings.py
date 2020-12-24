@@ -899,6 +899,7 @@ class SArrays:
     def __repr__(self) -> str:
         return "array({})".format(self.__str__())
 
+    '''
     def _binop(self, other : Union[SArrays,np.int_], op : str) -> pdarray:
         """
         Executes the requested binop on this SArrays instance and the
@@ -953,14 +954,15 @@ class SArrays:
         repMsg = generic_msg(msg)
         return create_pdarray(cast(str,repMsg))
 
-#    def __eq__(self, other) -> bool:
-    def __eq__(self, other) -> pdarray:
+    def __eq__(self, other) -> bool:
+#    def __eq__(self, other) -> pdarray:
         return self._binop(other, "==")
 #        return self._binop(cast(SArrays, other), "==")
 
     def __ne__(self, other) -> bool:
 #    def __ne__(self, other) -> pdarray:
         return self._binop(cast(SArrays, other), "!=")
+    '''
 
     def __getitem__(self, key):
         if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
