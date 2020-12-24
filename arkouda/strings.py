@@ -887,6 +887,7 @@ class SArrays:
         return self.shape[0]
 
     def __str__(self) -> str:
+        from arkouda.client import pdarrayIterThres
         if self.size <= pdarrayIterThresh:
             vals = ["'{}'".format(self[i]) for i in range(self.size)]
         else:
@@ -950,13 +951,13 @@ class SArrays:
             raise ValueError("SArrays: {} not supported between SArrays and {}"\
                              .format(op, other.__class__.__name__))
         repMsg = generic_msg(msg)
-        return create_pdarray(repMsg)
+        return create_pdarray(cast(str,repMsg))
 
     def __eq__(self, other) -> bool:
         return self._binop(other, "==")
 
     def __ne__(self, other) -> bool:
-        return self._binop(other, "!=")
+        return self._binop(cast(Strings, other), "!=")
 
     def __getitem__(self, key):
         if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
@@ -1023,7 +1024,7 @@ class SArrays:
         msg = "segmentLengths {} {} {}".\
                         format(self.objtype, self.offsets.name, self.bytes.name)
         repMsg = generic_msg(msg)
-        return create_pdarray(repMsg)
+        return create_pdarray(cast(str,repMsg))
 
 #    def __add__(self, other : SArrays) -> SArrays:
 #        return self.stick(other)
