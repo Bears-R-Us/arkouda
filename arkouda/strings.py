@@ -928,6 +928,7 @@ class SArrays:
             Raised if a server-side error is thrown while executing the
             binary operation
         """
+     '''
         if op not in self.BinOps:
             raise ValueError("SArrays: unsupported operator: {}".format(op))
         if isinstance(other, SArrays):
@@ -953,7 +954,7 @@ class SArrays:
                              .format(op, other.__class__.__name__))
         repMsg = generic_msg(msg)
         return create_pdarray(cast(str,repMsg))
-
+    
     def __eq__(self, other) -> bool:
 #    def __eq__(self, other) -> pdarray:
         return self._binop(other, "==")
