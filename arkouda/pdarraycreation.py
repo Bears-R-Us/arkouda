@@ -8,14 +8,12 @@ from arkouda.dtypes import *
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS
 from arkouda.dtypes import dtype as akdtype
 from arkouda.pdarrayclass import pdarray, create_pdarray
-from arkouda.strings import Strings
-from arkouda.strings import SArrays
-#from multipledispatch import dispatch 
+from arkouda.strings import Strings, SArrays
 
 __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", "arange",
            "linspace", "randint", "uniform", "standard_normal",
            "random_strings_uniform", "random_strings_lognormal", "from_series",
-           "suffix_array"]
+           "suffix_array","suffix_array_file"]
 
 numericDTypes = frozenset(["bool", "int64", "float64"]) 
 
@@ -786,7 +784,7 @@ def random_strings_lognormal(logmean : Union[float, int], logstd : Union[float, 
 
 
 @typechecked
-def suffix_array( strings : Strings) -> SArrays:
+def suffix_array(strings : Strings) -> SArrays:
         """
         Return the suffix arrays of given strings. The size/shape of each suffix
 	arrays is the same as the corresponding strings. 
@@ -831,7 +829,6 @@ def suffix_array( strings : Strings) -> SArrays:
                                                         strings.bytes.name) 
         repMsg = generic_msg(msg)
         return SArrays(*(cast(str,repMsg).split('+')))
-#        pdarrays= SArrays(*(repMsg.split('+')))
 
 @typechecked
 def suffix_array_file(filename: str)  -> SArrays:
@@ -877,5 +874,3 @@ def suffix_array_file(filename: str)  -> SArrays:
         msg = "segmentedSAFile {}".format( filename )
         repMsg = generic_msg(msg)
         return SArrays(*(cast(str,repMsg).split('+')))
-#        pdarrays= SArrays(*(repMsg.split('+')))
-#        return pdarrays
