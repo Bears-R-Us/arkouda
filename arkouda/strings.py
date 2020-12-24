@@ -887,7 +887,7 @@ class SArrays:
         return self.shape[0]
 
     def __str__(self) -> str:
-        from arkouda.client import pdarrayIterThres
+        from arkouda.client import pdarrayIterThresh
         if self.size <= pdarrayIterThresh:
             vals = ["'{}'".format(self[i]) for i in range(self.size)]
         else:
