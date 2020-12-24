@@ -955,11 +955,11 @@ class SArrays:
 
 #    def __eq__(self, other) -> bool:
     def __eq__(self, other) -> pdarray:
-#        return self._binop(other, "==")
-        return self._binop(cast(SArrays, other), "==")
+        return self._binop(other, "==")
+#        return self._binop(cast(SArrays, other), "==")
 
-#    def __ne__(self, other) -> bool:
-    def __ne__(self, other) -> pdarray:
+    def __ne__(self, other) -> bool:
+#    def __ne__(self, other) -> pdarray:
         return self._binop(cast(SArrays, other), "!=")
 
     def __getitem__(self, key):
