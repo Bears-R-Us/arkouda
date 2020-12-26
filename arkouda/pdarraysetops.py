@@ -5,7 +5,7 @@ from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros_like, array
 from arkouda.sorting import argsort
-from arkouda.strings import Strings
+from arkouda.strings import Strings,SArrays
 from arkouda.logger import getArkoudaLogger
 
 Categorical = ForwardRef('Categorical')
