@@ -46,8 +46,8 @@ def time_np_sa(Ni, Nv, trials, dtype, random):
     print("to be done")
 
 def check_correctness(dtype, random):
-    print("to be done")
-    assert( 1==1)
+#    print("to be done")
+    assert  True
 
 def create_parser():
     parser = argparse.ArgumentParser(description="Measure the performance of suffix array building: C= suffix_array(V)")
