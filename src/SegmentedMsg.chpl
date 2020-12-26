@@ -9,7 +9,7 @@ module SegmentedMsg {
   use MultiTypeSymEntry;
   use RandArray;
   use IO;
-  use GenSymIO only jsonToPdArray;
+  use GenSymIO only jsonToPdArray,jsonToPdArrayInt;
 
   use SymArrayDmap;
   use SACA;
@@ -84,6 +84,12 @@ module SegmentedMsg {
         var lengths = st.addEntry(rname, strings.size, int);
         // Do not include the null terminator in the length
         lengths.a = strings.getLengths() - 1;
+      }
+      when "int" {
+        var sarrays = new owned SegSArray(segName, valName, st);
+        var lengths = st.addEntry(rname, sarrays.size, int);
+        // Do not include the null terminator in the length
+        lengths.a = sarrays.getLengths() - 1;
       }
       otherwise {
           var errorMsg = notImplementedError(pn, "%s".format(objtype));
@@ -258,6 +264,20 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
             }
             return "created " + st.attrib(name1) + "+created " + st.attrib(name2);
         }
+/*
+        when "int" {
+            var sarrays = new owned SegSArray(segName, valName, st);
+            var hashes = sarrays.hash();
+            var name1 = st.nextName();
+            var hash1 = st.addEntry(name1, hashes.size, int);
+            var name2 = st.nextName();
+            var hash2 = st.addEntry(name2, hashes.size, int);
+            forall (h, h1, h2) in zip(hashes, hash1.a, hash2.a) {
+                (h1,h2) = h:(int,int);
+            }
+            return "created " + st.attrib(name1) + "+created " + st.attrib(name2);
+        }
+*/
         otherwise {
             var errorMsg = notImplementedError(pn, objtype);
             smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
@@ -393,6 +413,33 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
         var newValName = st.nextName();
         // Compute the slice
         var (newSegs, newVals) = strings[slice];
+
+        // Store the resulting offsets and bytes arrays
+        var newSegsEntry = new shared SymEntry(newSegs);
+        var newValsEntry = new shared SymEntry(newVals);
+        st.addEntry(newSegName, newSegsEntry);
+        st.addEntry(newValName, newValsEntry);
+        return "created " + st.attrib(newSegName) + " +created " + st.attrib(newValName);
+      }
+      when "int" {
+        // Make a temporary integer  array
+        var sarrays = new owned SegSArray(args[1], args[2], st);
+        // Parse the slice parameters
+        var start = args[3]:int;
+        var stop = args[4]:int;
+        var stride = args[5]:int;
+        // Only stride-1 slices are allowed for now
+        if (stride != 1) { 
+            var errorMsg = notImplementedError(pn, "stride != 1"); 
+            smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
+            return errorMsg;
+        }
+        // TO DO: in the future, we will force the client to handle this
+        var slice: range(stridable=true) = convertPythonSliceToChapel(start, stop, stride);
+        var newSegName = st.nextName();
+        var newValName = st.nextName();
+        // Compute the slice
+        var (newSegs, newVals) = sarrays[slice];
         // Store the resulting offsets and bytes arrays
         var newSegsEntry = new shared SymEntry(newSegs);
         var newValsEntry = new shared SymEntry(newVals);
@@ -455,6 +502,32 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                                                 "("+objtype+","+dtype2str(gIV.dtype)+")");}
           }
       }
+      when "int" {
+        var sarrays = new owned SegSArray(args[1], args[2], st);
+        var iname = args[3];
+        var gIV: borrowed GenSymEntry = st.lookup(iname);
+        select gIV.dtype {
+          when DType.Int64 {
+            var iv = toSymEntry(gIV, int);
+            var (newSegs, newVals) = sarrays[iv.a];
+            var newSegsEntry = new shared SymEntry(newSegs);
+            var newValsEntry = new shared SymEntry(newVals);
+            st.addEntry(newSegName, newSegsEntry);
+            st.addEntry(newValName, newValsEntry);
+          }
+          when DType.Bool {
+            var iv = toSymEntry(gIV, bool);
+            var (newSegs, newVals) = sarrays[iv.a];
+            var newSegsEntry = new shared SymEntry(newSegs);
+            var newValsEntry = new shared SymEntry(newVals);
+            st.addEntry(newSegName, newSegsEntry);
+            st.addEntry(newValName, newValsEntry);
+          }
+          otherwise {return notImplementedError(pn,
+                                                "("+objtype+","+dtype2str(gIV.dtype)+")");}
+          }
+      }
+
       otherwise {return notImplementedError(pn, objtype);}
       }
     return "created " + st.attrib(newSegName) + "+created " + st.attrib(newValName);
@@ -519,6 +592,47 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
     return repMsg;
   }
 
+  proc segBinopvvIntMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    var pn = Reflection.getRoutineName();
+    var repMsg: string;
+    var (op,
+         // Type and attrib names of left segmented array
+         ltype, lsegName, lvalName,
+         // Type and attrib names of right segmented array
+         rtype, rsegName, rvalName, leftStr, jsonStr)
+           = payload.decode().splitMsgToTuple(9);
+
+    // check to make sure symbols defined
+    st.check(lsegName);
+    st.check(lvalName);
+    st.check(rsegName);
+    st.check(rvalName);
+
+    select (ltype, rtype) {
+    when ("int", "int") {
+      var lsa = new owned SegSArray(lsegName, lvalName, st);
+      var rsa = new owned SegString(rsegName, rvalName, st);
+      select op {
+        when "==" {
+          var rname = st.nextName();
+          var e = st.addEntry(rname, lsa.size, bool);
+          e.a = (lsa == rsa);
+          repMsg = "created " + st.attrib(rname);
+        }
+        when "!=" {
+          var rname = st.nextName();
+          var e = st.addEntry(rname, lsa.size, bool);
+          e.a = (lsa != rsa);
+          repMsg = "created " + st.attrib(rname);
+        }
+        otherwise {return notImplementedError(pn, ltype, op, rtype);}
+        }
+    }
+    otherwise {return unrecognizedTypeError(pn, "("+ltype+", "+rtype+")");} 
+    }
+    return repMsg;
+  }
+
   proc segBinopvsMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
@@ -528,7 +642,6 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
     // check to make sure symbols defined
     st.check(segName);
     st.check(valName);
-
     var json = jsonToPdArray(encodedVal, 1);
     var value = json[json.domain.low];
     var rname = st.nextName();
@@ -543,6 +656,42 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
         when "!=" {
           var e = st.addEntry(rname, strings.size, bool);
           e.a = (strings != value);
+        }
+        otherwise {return notImplementedError(pn, objtype, op, valtype);}
+        }
+    }
+    otherwise {return unrecognizedTypeError(pn, "("+objtype+", "+valtype+")");} 
+    }
+    return "created " + st.attrib(rname);
+  }
+
+  proc segBinopvsIntMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    var pn = Reflection.getRoutineName();
+    var repMsg: string;
+    var (op, objtype, segName, valName, valtype, encodedVal)
+          = payload.decode().splitMsgToTuple(6);
+
+    // check to make sure symbols defined
+    st.check(segName);
+    st.check(valName);
+    var json = jsonToPdArrayInt(encodedVal, 1);
+    var value = json[json.domain.low];
+    var rname = st.nextName();
+    select (objtype, valtype) {
+    when ("int", "int") {
+      var sarrays  = new owned SegSArray(segName, valName, st);
+      select op {
+        when "==" {
+          var e = st.addEntry(rname, sarrays.size, bool);
+          var tmp=sarrays[sarrays.offsets.aD.low]:int;
+          e.a = (tmp == value);
+//          e.a = (sarrays == value);
+        }
+        when "!=" {
+          var e = st.addEntry(rname, sarrays.size, bool);
+          var tmp=sarrays[sarrays.offsets.aD.low]:int;
+          e.a = (tmp != value);
+//          e.a = (sarrays != value);
         }
         otherwise {return notImplementedError(pn, objtype, op, valtype);}
         }
@@ -590,6 +739,43 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
     return "created " + st.attrib(rname);
   }
 
+  proc segIn1dIntMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    var pn = Reflection.getRoutineName();
+    var repMsg: string;
+    var (mainObjtype, mainSegName, mainValName, testObjtype, testSegName,
+         testValName, invertStr) = payload.decode().splitMsgToTuple(7);
+
+    // check to make sure symbols defined
+    st.check(mainSegName);
+    st.check(mainValName);
+    st.check(testSegName);
+    st.check(testValName);
+
+    var invert: bool;
+    if invertStr == "True" {invert = true;}
+    else if invertStr == "False" {invert = false;}
+    else {return "Error: Invalid argument in %s: %s (expected True or False)".format(pn, invertStr);}
+    
+    var rname = st.nextName();
+    select (mainObjtype, testObjtype) {
+    when ("int", "int") {
+      var mainSA = new owned SegSArray(mainSegName, mainValName, st);
+      var testSA = new owned SegSArray(testSegName, testValName, st);
+      var e = st.addEntry(rname, mainSA.size, bool);
+      if invert {
+        e.a = !in1d_Int(mainSA, testSA);
+      } else {
+        e.a = in1d_Int(mainSA, testSA);
+      }
+    }
+    otherwise {
+        var errorMsg = unrecognizedTypeError(pn, "("+mainObjtype+", "+testObjtype+")");
+        smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
+        return errorMsg;            
+      }
+    }
+    return "created " + st.attrib(rname);
+  }
   proc segGroupMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
       var pn = Reflection.getRoutineName();
       var (objtype, segName, valName) = payload.decode().splitMsgToTuple(3);

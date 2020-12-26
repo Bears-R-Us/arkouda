@@ -10,25 +10,7 @@ from arkouda.dtypes import int64 as akint
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS, resolve_scalar_dtype, \
      translate_np_dtype
 import json
-'''
-from __future__ import annotations
-from typing import cast, Tuple, Union
-from typeguard import typechecked
-from arkouda.client import generic_msg, pdarrayIterThresh
-from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value,_parse_single_int_array_value
-from arkouda.dtypes import *
-from arkouda.dtypes import NUMBER_FORMAT_STRINGS
-from arkouda.logger import getArkoudaLogger
-import numpy as np # type: ignore
-from arkouda.dtypes import str as akstr
-from arkouda.dtypes import int64 as akint
-from arkouda.dtypes import NUMBER_FORMAT_STRINGS, resolve_scalar_dtype, \
-     translate_np_dtype
-import json
 
-global verbose
-global pdarrayIterThresh
-'''
 __all__ = ['Strings','SArrays']
 
 class Strings:
@@ -93,20 +75,16 @@ class Strings:
             from either the offset_attrib or bytes_attrib parameter 
         """
         if isinstance(offset_attrib, pdarray):
-#            print("In Strings init 1 offset_attrib={}".format(offset_attrib))
             self.offsets = offset_attrib
         else:
             try:
-#                print("In Strings init 2 offset_attrib={}".format(offset_attrib))
                 self.offsets = create_pdarray(offset_attrib)
             except Exception as e:
                 raise RuntimeError(e)
         if isinstance(bytes_attrib, pdarray):
-#            print("In Strings init 1 bytes_attrib={}".format(bytes_attrib))
             self.bytes = bytes_attrib
         else:
             try:
-#                print("In Strings init 1 bytes_attrib={}".format(bytes_attrib))
                 self.bytes = create_pdarray(bytes_attrib)
             except Exception as e:
                 raise RuntimeError(e)
@@ -681,7 +659,6 @@ class Strings:
         repMsg = generic_msg(msg)
         return create_pdarray(cast(str,repMsg))
 
-
     def to_ndarray(self) -> np.ndarray:
         """
         Convert the array to a np.ndarray, transferring array data from the
@@ -792,7 +769,6 @@ class Strings:
         return Strings(pdarray.attach(user_defined_name+'_offsets'),
                        pdarray.attach(user_defined_name+'_bytes'))
 
-
 class SArrays:
     """
     Represents an array of (suffix) arrays whose data resides on the arkouda server.
@@ -899,7 +875,7 @@ class SArrays:
     def __repr__(self) -> str:
         return "array({})".format(self.__str__())
 
-    '''
+    @typechecked
     def _binop(self, other : Union[SArrays,np.int_], op : str) -> pdarray:
         """
         Executes the requested binop on this SArrays instance and the
@@ -928,14 +904,13 @@ class SArrays:
             Raised if a server-side error is thrown while executing the
             binary operation
         """
-     '''
         if op not in self.BinOps:
             raise ValueError("SArrays: unsupported operator: {}".format(op))
-        if isinstance(other, SArrays):
+        if isinstance(other, Strings):
             if self.size != other.size:
                 raise ValueError("SArrays: size mismatch {} {}".\
                                  format(self.size, other.size))
-            msg = "segmentedBinopvv {} {} {} {} {} {} {}".format(op,
+            msg = "segmentedBinopvvInt {} {} {} {} {} {} {}".format(op,
                                                                  self.objtype,
                                                                  self.offsets.name,
                                                                  self.bytes.name,
@@ -943,7 +918,7 @@ class SArrays:
                                                                  other.offsets.name,
                                                                  other.bytes.name)
         elif resolve_scalar_dtype(other) == 'int':
-            msg = "segmentedBinopvs {} {} {} {} {} {}".format(op,
+            msg = "segmentedBinopvsInt {} {} {} {} {} {}".format(op,
                                                               self.objtype,
                                                               self.offsets.name,
                                                               self.bytes.name,
@@ -954,16 +929,12 @@ class SArrays:
                              .format(op, other.__class__.__name__))
         repMsg = generic_msg(msg)
         return create_pdarray(cast(str,repMsg))
-    
+
     def __eq__(self, other) -> bool:
-#    def __eq__(self, other) -> pdarray:
         return self._binop(other, "==")
-#        return self._binop(cast(SArrays, other), "==")
 
     def __ne__(self, other) -> bool:
-#    def __ne__(self, other) -> pdarray:
         return self._binop(cast(SArrays, other), "!=")
-    '''
 
     def __getitem__(self, key):
         if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
@@ -1000,7 +971,7 @@ class SArrays:
             kind, _ = translate_np_dtype(key.dtype)
             if kind not in ("bool", "int"):
                 raise TypeError("unsupported pdarray index type {}".format(key.dtype))
-            if kind == "bool" and self.size != key.size:
+            if kind == "int" and self.size != key.size:
                 raise ValueError("size mismatch {} {}".format(self.size,key.size))
             msg = "segmentedIndex {} {} {} {} {}".format('pdarrayIndex',
                                                          self.objtype,
@@ -1032,9 +1003,35 @@ class SArrays:
         repMsg = generic_msg(msg)
         return create_pdarray(cast(str,repMsg))
 
-#    def __add__(self, other : SArrays) -> SArrays:
-#        return self.stick(other)
+    '''
+    def __add__(self, other : SArrays) -> SArrays:
+        return self.stick(other)
     
+
+    def hash(self) -> Tuple[pdarray,pdarray]:
+        """
+        Compute a 128-bit hash of each suffix array.
+
+        Returns
+        -------
+        Tuple[pdarray,pdarray]
+            A tuple of two int64 pdarrays. The ith hash value is the concatenation
+            of the ith values from each array.
+
+        Notes
+        -----
+        The implementation uses SipHash128, a fast and balanced hash function (used
+        by Python for dictionaries and sets). For realistic numbers of suffix array (up
+        to about 10**15), the probability of a collision between two 128-bit hash
+        values is negligible.
+        """
+        msg = "segmentedHash {} {} {}".format(self.objtype, self.offsets.name,
+                                              self.bytes.name)
+        repMsg = generic_msg(msg)
+        h1, h2 = cast(str,repMsg).split('+')
+        return create_pdarray(cast(str,h1)), create_pdarray(cast(str,h2))
+
+    '''
 
     def save(self, prefix_path : str, dataset : str='int_array', 
              mode : str='truncate') -> None:

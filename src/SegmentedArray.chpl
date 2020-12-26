@@ -141,14 +141,7 @@ module SegmentedArray {
         end = offsets.a[idx+1] - 1;
       }
       // Take the slice of the bytearray and "cast" it to a chpl string
-//      var s = interpretAsString(values.a[start..end]);
-      var tmp=values.a[start..end];
-      var s: string;
-      var i:int;
-      s="";
-      for i in tmp do {
-          s=s+" "+ i:string;
-      }
+      var s = interpretAsString(values.a[start..end]);
       return s;
     }
 
@@ -372,6 +365,32 @@ module SegmentedArray {
       return hashes;
     }
 
+    /* Apply a hash function to all suffix array. This is useful for grouping
+       and set membership. The hash used is SipHash128.*/
+    proc hashInt() throws {
+      // 128-bit hash values represented as 2-tuples of uint(64)
+      var hashes: [offsets.aD] 2*uint(64);
+      // Early exit for zero-length result
+      if (size == 0) {
+        return hashes;
+      }
+      ref oa = offsets.a;
+      ref va = values.a;
+      // Compute lengths of strings
+      var lengths = getLengths();
+      // Hash each string
+      // TO DO: test on clause with aggregator
+      forall (o, l, h) in zip(oa, lengths, hashes) {
+        const myRange = o..#l;
+        h = sipHash128(va, myRange);
+        /* // localize the string bytes */
+        /* const myBytes = va[{o..#l}]; */
+        /* h = sipHash128(myBytes, hashKey); */
+        /* // Perf Note: localizing string bytes is ~3x faster on IB multilocale than this: */
+        /* // h = sipHash128(va[{o..#l}]); */
+      }
+      return hashes;
+    }
     /* Return a permutation that groups the strings. Because hashing is used,
        this permutation will not sort the strings, but all equivalent strings
        will fall in one contiguous block. */
@@ -850,7 +869,7 @@ module SegmentedArray {
       return s;
     }
 
-    /* Take a slice of strings from the array. The slice must be a 
+    /* Take a slice of indices from the array. The slice must be a 
        Chapel range, i.e. low..high by stride, not a Python slice.
        Returns arrays for the segment offsets and bytes of the slice.*/
     proc this(const slice: range(stridable=true)) throws {
@@ -859,7 +878,8 @@ module SegmentedArray {
       }
       // Early return for zero-length result
       if (size == 0) || (slice.size == 0) {
-        return (makeDistArray(0, int), makeDistArray(0, uint(8)));
+//        return (makeDistArray(0, int), makeDistArray(0, uint(8)));
+        return (makeDistArray(0, int), makeDistArray(0, int));
       }
       // Start of bytearray slice
       var start = offsets.a[slice.low];
@@ -1563,6 +1583,7 @@ module SegmentedArray {
     return truth;
   }
 
+
   /* Test array of strings for membership in another array (set) of strings. Returns
      a boolean vector the same size as the first array. */
   proc in1d(mainStr: SegString, testStr: SegString, invert=false) throws where useHash {
@@ -1594,6 +1615,62 @@ module SegmentedArray {
         ref mySet = localTestHashes[here.id];
         mySet.requestCapacity(testStr.size);
         const testHashes = testStr.hash();
+        for h in testHashes {
+          mySet += h;
+        }
+        /* // Check membership of hashes in this locale's chunk of the array */
+        /* [i in truth.localSubdomain()] truth[i] = mySet.contains(hashes[i]); */
+      }
+    }
+    if v {
+      t.stop(); 
+      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                             "%t seconds".format(t.elapsed())); 
+      t.clear();
+      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),      
+                                             "Testing membership"); 
+      t.start();
+    }
+    [i in truth.domain] truth[i] = localTestHashes[here.id].contains(hashes[i]);
+    if v {
+        t.stop(); 
+        saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                             "%t seconds".format(t.elapsed()));
+    }
+    return truth;
+  }
+
+  /* Test array of strings for membership in another array (set) of strings. Returns
+     a boolean vector the same size as the first array. */
+  proc in1d_Int(mainSar: SegSArray, testSar: SegSArray, invert=false) throws where useHash {
+    var truth: [mainSar.offsets.aD] bool;
+    // Early exit for zero-length result
+    if (mainSar.size == 0) {
+      return truth;
+    }
+    // Hash all suffix array for fast comparison
+    var t = new Timer();
+    saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Hashing strings");
+    if v { t.start(); }
+    const hashes = mainSar.hash();
+    if v {
+        t.stop(); 
+        saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                                "%t seconds".format(t.elapsed())); 
+        t.clear();
+        saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                           "Making associative domains for test set on each locale");
+        t.start();
+    }
+    // On each locale, make an associative domain with the hashes of the second array
+    // parSafe=false because we are adding in serial and it's faster
+    var localTestHashes: [PrivateSpace] domain(2*uint(64), parSafe=false);
+    coforall loc in Locales {
+      on loc {
+        // Local hashes of second array
+        ref mySet = localTestHashes[here.id];
+        mySet.requestCapacity(testSar.size);
+        const testHashes = testSar.hash();
         for h in testHashes {
           mySet += h;
         }
@@ -1711,6 +1788,86 @@ module SegmentedArray {
       return truth;
     }
   }
+
+
+  proc in1d_Int(mainSar: SegSArray, testSar: SegSArray, invert=false) throws where !useHash {
+    var truth: [mainSar.offsets.aD] bool;
+    // Early exit for zero-length result
+    if (mainSar.size == 0) {
+      return truth;
+    }
+    if (testSar.size <= in1dSortThreshold) {
+      for i in 0..#testSar.size {
+        truth |= (mainSar == testSar[i]);
+      }
+      return truth;
+    } else {
+      // This is inspired by numpy in1d
+      const (uoMain, uvMain, cMain, revIdx) = uniqueGroup(mainSar, returnInverse=true);
+      const (uoTest, uvTest, cTest, revTest) = uniqueGroup(testSar);
+      const (segs, vals) = concat(uoMain, uvMain, uoTest, uvTest);
+      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+           "Unique strings in first array: %t\nUnique strings in second array: %t\nConcat length: %t".format(
+                                             uoMain.size, uoTest.size, segs.size));
+      var st = new owned SymTab();
+      const ar = new owned SegSArray(segs, vals, st);
+      const order = ar.argsort();
+      const (sortedSegs, sortedVals) = ar[order];
+      const sar = new owned SegSArray(sortedSegs, sortedVals, st);
+      if v { 
+          saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                            "Sorted concatenated unique strings:"); 
+          sar.show(10); 
+          stdout.flush(); 
+      }
+      const D = sortedSegs.domain;
+      // First compare lengths and only check pairs whose lengths are equal (because gathering them is expensive)
+      var flag: [D] bool;
+      const lengths = sar.getLengths();
+      const ref saro = sar.offsets.a;
+      const ref sarv = sar.values.a;
+      const high = D.high;
+      forall (i, f, o, l) in zip(D, flag, saro, lengths) {
+        if (i < high) && (l == lengths[i+1]) {
+          const left = o..saro[i+1]-1;
+          var eq: bool;
+          if (i < high - 1) {
+            const right = saro[i+1]..saro[i+2]-1;
+            eq = (memcmp(sarv, left, sarv, right) == 0);
+          } else {
+            const ref right = saro[i+1]..sar.values.aD.high;
+            eq = (memcmp(sarv, left, sarv, right) == 0);
+          }
+          if eq {
+            f = true;
+            flag[i+1] = true;
+          }
+        }
+      }
+      
+      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                             "Flag pop: %t".format(+ reduce flag));
+
+      // Now flag contains true for both elements of duplicate pairs
+      if invert {flag = !flag;}
+      // Permute back to unique order
+      var ret: [D] bool;
+      forall (o, f) in zip(order, flag) with (var agg = newDstAggregator(bool)) {
+        agg.copy(ret[o], f);
+      }
+      if v {
+          saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                "Ret pop: %t".format(+ reduce ret));
+      }
+      // Broadcast back to original (pre-unique) order
+      var truth: [mainSar.offsets.aD] bool;
+      forall (t, i) in zip(truth, revIdx) with (var agg = newSrcAggregator(bool)) {
+        agg.copy(t, ret[i]);
+      }
+      return truth;
+    }
+  }
+
 
   /* Convert an array of raw bytes into a Chapel string. */
   inline proc interpretAsString(bytearray: [?D] uint(8)): string {
