@@ -47,6 +47,7 @@ def time_np_sa(Ni, Nv, trials, dtype, random):
 
 def check_correctness(dtype, random):
     print("to be done")
+    assert( 1==1)
 
 def create_parser():
     parser = argparse.ArgumentParser(description="Measure the performance of suffix array building: C= suffix_array(V)")
@@ -57,7 +58,8 @@ def create_parser():
     parser.add_argument('-t', '--trials', type=int, default=6, help='Number of times to run the benchmark')
     parser.add_argument('-d', '--dtype', default='str', help='Dtype of value array ({})'.format(', '.join(TYPES)))
 #    parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
-#    parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
+    parser.add_argument('-r', '--randomize', default=False, action='store_true', help='Use random values instead of ones')
+    parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
     return parser
 
 
@@ -70,6 +72,12 @@ if __name__ == "__main__":
         raise ValueError("Dtype must be {}, not {}".format('/'.join(TYPES), args.dtype))
     ak.verbose = False
     ak.connect(args.hostname, args.port)
+
+    if args.correctness_only:
+        for dtype in TYPES:
+            check_correctness(dtype, args.randomize)
+        sys.exit(0)
+
 
     print("length of strings = {:,}".format(args.size))
     print("number of strings = {:,}".format(args.number))
