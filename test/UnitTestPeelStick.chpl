@@ -129,7 +129,7 @@ proc testMessageLayer(substr, n, minLen, maxLen) throws {
   d.stop("make_strings");
   var reqMsg = "peel str %s %s str 1 True True True %jt".format(strings.offsetName, strings.valueName, [substr]);
   writeReq(reqMsg);
-  var repMsg = segmentedPeelMsg(cmd="segmentedPeel", payload=reqMsg.encode(), st);
+  var repMsg = segmentedEfuncMsg(cmd="segmentedEfunc", payload=reqMsg.encode(), st);
   writeRep(repMsg);
   var (loAttribs,lvAttribs,roAttribs,rvAttribs) = repMsg.splitMsgToTuple('+', 4);
   var loname = parseName(loAttribs);
