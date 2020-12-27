@@ -3,6 +3,8 @@
 import time, argparse
 import numpy as np
 import arkouda as ak
+import random
+import string
 
 TYPES = ('int64', 'float64', 'bool', 'str')
 
@@ -42,12 +44,47 @@ def time_ak_sa( vsize,strlen, trials, dtype):
         print("Wrong data type")
     print("Average rate = {:.2f} GiB/sec".format(bytes_per_sec/2**30))
 
-def time_np_sa(Ni, Nv, trials, dtype, random):
-    print("to be done")
+
+def suffixArray(s):
+    suffixes = [(s[i:], i) for i in range(len(s))]
+    suffixes.sort(key=lambda x: x[0])
+    sa= [s[1] for s in suffixes]
+    #sa.insert(0,len(sa))
+    return sa
+
+def time_np_sa(vsize, strlen, trials, dtype):
+    s=''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(strlen))
+    timings = []
+    for _ in range(trials):
+        start = time.time()
+        sa=suffixArray(s)
+        end = time.time()
+        timings.append(end - start)
+    tavg = sum(timings) / trials
+    print("Average time = {:.4f} sec".format(tavg))
+    if dtype == 'str':
+        offsets_transferred = 0
+        bytes_transferred = len(s)
+        bytes_per_sec = (offsets_transferred + bytes_transferred) / tavg
+    else:
+        print("Wrong data type")
+    print("Average rate = {:.2f} GiB/sec".format(bytes_per_sec/2**30))
 
 def check_correctness(dtype, random):
-#    print("to be done")
-    assert  True
+    Ni = 10*4
+    Nv = 100
+
+    v = ak.random_strings_uniform(1, Ni, Nv)
+    c=ak.suffix_array(v)
+    for k in range(Nv):
+        s=v[k]
+        sa=suffixArray(s)
+        aksa=c[k]
+        _,tmp=c[k].split(maxsplit=1)
+        aksa=tmp.split()
+        intaksa  = [int(numeric_string) for numeric_string in aksa]
+        assert (sa==intaksa)
+
 
 def create_parser():
     parser = argparse.ArgumentParser(description="Measure the performance of suffix array building: C= suffix_array(V)")
@@ -57,7 +94,7 @@ def create_parser():
     parser.add_argument('-v', '--number', type=int, default=10,help='Number of strings')
     parser.add_argument('-t', '--trials', type=int, default=6, help='Number of times to run the benchmark')
     parser.add_argument('-d', '--dtype', default='str', help='Dtype of value array ({})'.format(', '.join(TYPES)))
-#    parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
+    parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
     parser.add_argument('-r', '--randomize', default=False, action='store_true', help='Use random values instead of ones')
     parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
     return parser
@@ -82,6 +119,7 @@ if __name__ == "__main__":
     print("length of strings = {:,}".format(args.size))
     print("number of strings = {:,}".format(args.number))
     print("number of trials = ", args.trials)
-    time_ak_sa( args.number, args.size, args.trials, args.dtype)
-        
+    time_ak_sa(args.number, args.size, args.trials, args.dtype)
+    if args.numpy:
+        time_np_sa(args.number, args.size, args.trials, args.dtype)
     sys.exit(0)
