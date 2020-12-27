@@ -89,7 +89,14 @@ def _parse_single_int_array_value(msg : str) -> object:
     try:
         if mydtype == akint64:
             nfields = value.split("\"")
-            return nfields[1]
+#            return nfields[1]
+#            original we return a string include the last ending 0
+
+            _,sastr=nfields[1].split(maxsplit=1)
+            tmpstr=sastr.split()
+            intary  = [int(numeric_string) for numeric_string in tmpstr]
+            return intary
+#           now we return a suffix array and not include the last ending 0
         else:
             raise ValueError(("not correct int data type from server {} {}".\
                               format(mydtype.name, value)))

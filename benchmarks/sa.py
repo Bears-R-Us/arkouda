@@ -22,11 +22,11 @@ def time_ak_sa( vsize,strlen, trials, dtype):
 #    print("size of suffix array={}".format(c.bytes.size))    
 #    print("offset/number of suffix array={}".format(c.offsets.size))    
 #    print("itemsize of suffix array={}".format(c.offsets.itemsize))    
-#    print("All the random strings are as follows")
-#    for k in range(vsize):
-#       print("the {} th random tring ={}".format(k,v[k]))    
-#       print("the {} th suffix array ={}".format(k,c[k]))    
-#       print("")
+    print("All the random strings are as follows")
+    for k in range(vsize):
+       print("the {} th random tring ={}".format(k,v[k]))    
+       print("the {} th suffix array ={}".format(k,c[k]))    
+       print("")
     timings = []
     for _ in range(trials):
         start = time.time()
@@ -70,9 +70,9 @@ def time_np_sa(vsize, strlen, trials, dtype):
         print("Wrong data type")
     print("Average rate = {:.2f} GiB/sec".format(bytes_per_sec/2**30))
 
-def check_correctness(dtype, random):
-    Ni = 10*4
-    Nv = 100
+def check_correctness( vsize,strlen, trials, dtype):
+    Ni = strlen
+    Nv = vsize
 
     v = ak.random_strings_uniform(1, Ni, Nv)
     c=ak.suffix_array(v)
@@ -80,10 +80,13 @@ def check_correctness(dtype, random):
         s=v[k]
         sa=suffixArray(s)
         aksa=c[k]
-        _,tmp=c[k].split(maxsplit=1)
-        aksa=tmp.split()
-        intaksa  = [int(numeric_string) for numeric_string in aksa]
-        assert (sa==intaksa)
+#        _,tmp=c[k].split(maxsplit=1)
+#        aksa=tmp.split()
+#        intaksa  = [int(numeric_string) for numeric_string in aksa]
+#        intaksa  = aksa[1:-1]
+#        print(sa)
+#        print(intaksa)
+        assert (sa==aksa)
 
 
 def create_parser():
@@ -111,8 +114,7 @@ if __name__ == "__main__":
     ak.connect(args.hostname, args.port)
 
     if args.correctness_only:
-        for dtype in TYPES:
-            check_correctness(dtype, args.randomize)
+        check_correctness(args.number, args.size, args.trials, args.dtype)
         sys.exit(0)
 
 
