@@ -42,15 +42,6 @@ def run_test_unique(strings, test_strings, cat):
 
 def run_test_index(strings, test_strings, cat, specificInds):
     # int index
-    print("===============in run=============================")
-    print("The passed strints=");
-    print(str(strings))
-    print("The passed test_strints=");
-    print(str(test_strings))
-    print("The passed strints[N//3]=");
-    print(str(strings[N//3]))
-    print("The passed test_strints[N//3]=");
-    print(str(test_strings[N//3]))
     assert(strings[N//3] == test_strings[N//3])
     assert(cat[N//3] == test_strings[N//3])
     for i in specificInds:
@@ -227,17 +218,10 @@ if __name__ == '__main__':
     # test_strings = np.random.choice(base_words, N, replace=True)
     # strings = ak.array(test_strings)
 
-    print("===============main=============================")
     base_words1 = ak.random_strings_uniform(1, 10, UNIQUE, characters='printable')
-    print("base_words1=")
-    print(str(base_word1))
     base_words2 = ak.random_strings_lognormal(2, 0.25, UNIQUE, characters='printable')
-    print("base_words2=")
-    print(str(base_word2))
     gremlins = ak.array(['"', ' ', ''])
     base_words = ak.concatenate((base_words1, base_words2))
-    print("base_words=")
-    print(str(base_word))
     np_base_words = np.hstack((base_words1.to_ndarray(), base_words2.to_ndarray()))
     assert(compare_strings(base_words.to_ndarray(), np_base_words))
     choices = ak.randint(0, base_words.size, N)
@@ -249,15 +233,6 @@ if __name__ == '__main__':
     print("Generation and concatenate passed")
   
     # int index
-    print("")
-    print(str(strings))
-    print("")
-    print(str(test_strings))
-    print("")
-    print(str(strings[N//3]))
-    print("")
-    print(str(test_strings[N//3]))
-    print("")
     run_test_index(strings, test_strings, cat, range(-len(gremlins), 0))
     print("int index passed")
   
@@ -339,22 +314,6 @@ class StringTest(ArkoudaTest):
         self.gremlins_strings = ak.concatenate((base_words[choices], gremlins))
         self.gremlins_test_strings = self.gremlins_strings.to_ndarray()
         self.gremlins_cat = ak.Categorical(self.gremlins_strings)
-        print("=================In Class will check===========================")
-        print("")
-        print(str(base_words1))
-        print("After base_word1 ")
-        print("")
-        print(str(self.strings))
-        print("After Print strings")
-        print(str(self.test_strings))
-        print("")
-        print("After Print teststrings")
-        print(str(self.strings[N//3]))
-        print("")
-        print("After Print strings[N//3]")
-        print(str(self.test_strings[N//3]))
-        print("")
-        print("After Print test_strings[N//3]")
 
     def test_compare_strings(self):
         print('starting test_compare_Strings')
@@ -383,7 +342,6 @@ class StringTest(ArkoudaTest):
 
     def test_index(self):
         print('starting test_index')
-        print("")
         run_test_index(self.strings, self.test_strings, self.cat, range(-len(self.gremlins), 0))
         run_test_index(self.gremlins_strings, self.gremlins_test_strings, self.gremlins_cat, 
                        range(-len(self.gremlins), 0))
@@ -490,7 +448,6 @@ class StringTest(ArkoudaTest):
         
     def test_str_output(self):
         strings = ak.array(['string {}'.format(i) for i in range (0,101)])
-        print("============================================")
         print(str(strings))
         self.assertEqual("['string 0', 'string 1', 'string 2', ... , 'string 98', 'string 99', 'string 100']",
                          str(strings))
