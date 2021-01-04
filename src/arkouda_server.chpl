@@ -239,6 +239,7 @@ proc main() {
                 when "segmentedBinopvsInt"  {repMsg = segBinopvsIntMsg(cmd, payload, st);}
                 when "segmentedGroup"    {repMsg = segGroupMsg(cmd, payload, st);}
                 when "segmentedSuffixAry"{repMsg = segSuffixArrayMsg(cmd, payload, st);}
+                when "segmentedLCP"      {repMsg = segLCPMsg(cmd, payload, st);}
                 when "segmentedSAFile"   {repMsg = segSAFileMsg(cmd, payload, st);}
                 when "segmentedIn1d"     {repMsg = segIn1dMsg(cmd, payload, st);}
                 when "segmentedIn1dInt"     {repMsg = segIn1dIntMsg(cmd, payload, st);}

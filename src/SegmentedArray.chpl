@@ -1151,6 +1151,7 @@ module SegmentedArray {
       return lengths;
     }
 
+/*
     proc findSubstringInBytes(const substr: string) {
       // Find the start position of every occurence of substr in the flat bytes array
       // Start by making a right-truncated subdomain representing all valid starting positions for substr of given length
@@ -1391,7 +1392,7 @@ module SegmentedArray {
       }
       return (newOffsets, newVals);
     }
-
+*/
     proc ediff():[offsets.aD] int {
       var diff: [offsets.aD] int;
       if (size < 2) {

@@ -826,7 +826,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
               var sasoff = offsegs;
               //allocate an values array
               var sasval:[0..(nBytes-1)] int;
-              var lcpval:[0..(nBytes-1)] int;
+//              var lcpval:[0..(nBytes-1)] int;
 
               var i:int;
               var j:int;
@@ -851,8 +851,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                 var tmparray:[0..sasize+2] int;
                 var intstrArray:[0..sasize+2] int;
                 var x:int;
-                var y:int(32);
-//                var y:int;
+//                var y:int(32);
+                var y:int;
                 forall (x,y) in zip ( intstrArray[0..sasize-1],strings.values.a[startposition..endposition]) do x=y;
                 intstrArray[sasize]=0;
                 intstrArray[sasize+1]=0;
@@ -860,6 +860,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                 SuffixArraySkew(intstrArray,tmparray,sasize,256);
                 for (x, y) in zip(sasval[startposition..endposition], tmparray[0..sasize-1]) do
                     x = y;
+/*
 // Here we calculate the lcp(Longest Common Prefix) array value
                 forall j in startposition+1..endposition do{
                         var tmpcount=0:int;
@@ -875,21 +876,116 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                         } 
                         lcpval[j]=tmpcount;
                 }
+*/
               }
               var segName2 = st.nextName();
               var valName2 = st.nextName();
-              var lcpvalName = st.nextName();
+//              var lcpvalName = st.nextName();
 
               var segEntry = new shared SymEntry(sasoff);
               var valEntry = new shared SymEntry(sasval);
-              var lcpvalEntry = new shared SymEntry(lcpval);
+//              var lcpvalEntry = new shared SymEntry(lcpval);
+              /*
               valEntry.enhancedInfo=lcpvalName;
               lcpvalEntry.enhancedInfo=valName2;
-
+              we have removed enchancedInfo.
+              */
               st.addEntry(segName2, segEntry);
               st.addEntry(valName2, valEntry);
-              st.addEntry(lcpvalName, lcpvalEntry);
+//              st.addEntry(lcpvalName, lcpvalEntry);
               repMsg = 'created ' + st.attrib(segName2) + '+created ' + st.attrib(valName2);
+              return repMsg;
+
+
+          }
+          otherwise {
+              var errorMsg = notImplementedError(pn, "("+objtype+")");
+              writeln(generateErrorContext(
+                                     msg=errorMsg, 
+                                     lineNumber=getLineNumber(), 
+                                     moduleName=getModuleName(), 
+                                     routineName=getRoutineName(), 
+                                     errorClass="NotImplementedError")); 
+              return errorMsg;            
+          }
+      }
+
+  }
+
+  proc segLCPMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+      var pn = Reflection.getRoutineName();
+      var (objtype, segName1, valName1,segName2,valName2) = payload.decode().splitMsgToTuple(5);
+      var repMsg: string;
+
+      // check to make sure symbols defined
+      st.check(segName1);
+      st.check(valName1);
+      st.check(segName2);
+      st.check(valName2);
+
+      var suffixarrays = new owned SegSArray(segName1, valName1, st);
+      var size=suffixarrays.size;
+      var nBytes = suffixarrays.nBytes;
+      var length=suffixarrays.getLengths();
+      var offsegs = (+ scan length) - length;
+
+
+      var strings = new owned SegString(segName2, valName2, st);
+
+      select (objtype) {
+          when "int" {
+              // To be checked, I am not sure if this formula can estimate the total memory requirement
+              // Lengths + 2*segs + 2*vals (copied to SymTab)
+              overMemLimit(8*size + 16*size + nBytes);
+
+              //allocate an offset array
+              var sasoff = offsegs;
+              //allocate an values array
+              var lcpval:[0..(nBytes-1)] int;
+
+              var i:int;
+              var j:int;
+              forall i in 0..(size-1) do {
+              // the start position of ith surrix array  in value array
+                var startposition:int;
+                var endposition:int;
+                startposition = offsegs[i];
+                endposition = startposition+length[i]-1;
+
+                var sasize=length[i]:int;
+                ref sufArray=suffixarrays.values.a[startposition..endposition];
+                ref strArray=strings.values.a[startposition..endposition];
+// Here we calculate the lcp(Longest Common Prefix) array value
+                forall j in startposition+1..endposition do{
+                        var tmpcount=0:int;
+                        var tmpbefore=sufArray[j-1]:int;
+                        var tmpcur=sufArray[j]:int;
+                        var tmplen=min(sasize-tmpcur, sasize-tmpbefore);
+                        var tmpi:int;
+                        for tmpi in 0..tmplen-1 do {
+                            if (strArray[tmpbefore]!=strArray[tmpcur]) {
+                                 break;
+                            }                        
+                            tmpbefore+=1;
+                            tmpcur+=1;
+                            tmpcount+=1;
+                        } 
+                        lcpval[j]=tmpcount;
+                }
+              }
+              var lcpsegName = st.nextName();
+              var lcpvalName = st.nextName();
+
+              var lcpsegEntry = new shared SymEntry(sasoff);
+              var lcpvalEntry = new shared SymEntry(lcpval);
+              /*
+              valEntry.enhancedInfo=lcpvalName;
+              lcpvalEntry.enhancedInfo=valName2;
+              we have removed enchancedInfo.
+              */
+              st.addEntry(lcpsegName, lcpsegEntry);
+              st.addEntry(lcpvalName, lcpvalEntry);
+              repMsg = 'created ' + st.attrib(lcpsegName) + '+created ' + st.attrib(lcpvalName);
               return repMsg;
 
 
@@ -933,7 +1029,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
               var sasoff = offsegs;
               //allocate a suffix array  values array and lcp array
               var sasval:[0..(nBytes-1)] int;
-              var lcpval:[0..(nBytes-1)] int;
+//              var lcpval:[0..(nBytes-1)] int;
 
               var i:int;
               forall i in 0..(size-1) do {
@@ -960,6 +1056,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
 //                divsufsort(strArray,tmparray,sasize);
                 forall (x, y) in zip(sasval[startposition..endposition], tmparray[0..sasize-1]) do
                     x = y;
+/*
 // Here we calculate the lcp(Longest Common Prefix) array value
                 forall j in startposition+1..endposition do{
                         var tmpcount=0:int;
@@ -975,20 +1072,23 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                         } 
                         lcpval[j]=tmpcount;
                 }
+*/
               }
               var segName2 = st.nextName();
               var valName2 = st.nextName();
-              var lcpvalName = st.nextName();
+//              var lcpvalName = st.nextName();
 
               var segEntry = new shared SymEntry(sasoff);
               var valEntry = new shared SymEntry(sasval);
-              var lcpvalEntry = new shared SymEntry(lcpval);
+//              var lcpvalEntry = new shared SymEntry(lcpval);
+              /*
               valEntry.enhancedInfo=lcpvalName;
               lcpvalEntry.enhancedInfo=valName2;
-
+              We have removed enhancedInfo.
+              */
               st.addEntry(segName2, segEntry);
               st.addEntry(valName2, valEntry);
-              st.addEntry(lcpvalName, lcpvalEntry);
+//              st.addEntry(lcpvalName, lcpvalEntry);
               repMsg = 'created ' + st.attrib(segName2) + '+created ' + st.attrib(valName2);
               return repMsg;
 

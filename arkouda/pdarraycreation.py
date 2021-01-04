@@ -13,7 +13,7 @@ from arkouda.strings import Strings, SArrays
 __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", "arange",
            "linspace", "randint", "uniform", "standard_normal",
            "random_strings_uniform", "random_strings_lognormal", "from_series",
-           "suffix_array","suffix_array_file"]
+           "suffix_array","lcp_array","suffix_array_file"]
 
 numericDTypes = frozenset(["bool", "int64", "float64"]) 
 
@@ -825,6 +825,36 @@ def suffix_array(strings : Strings) -> SArrays:
             creating the pdarray encapsulating the return message
         """
         msg = "segmentedSuffixAry {} {} {}".format( strings.objtype,
+                                                        strings.offsets.name,
+                                                        strings.bytes.name) 
+        repMsg = generic_msg(msg)
+        return SArrays(*(cast(str,repMsg).split('+')))
+
+
+@typechecked
+def lcp_array(suffixarrays : SArrays, strings : Strings) -> SArrays:
+        """
+        Return the longest common prefix of given suffix arrays. The size/shape of each lcp
+	arrays is the same as the corresponding suffix array. 
+        -------
+        SArrays 
+            The LCP arrays of the given suffix arrays
+
+        See Also
+        --------
+
+        Notes
+        -----
+        
+        Raises
+        ------  
+        RuntimeError
+            Raised if there is a server-side error in executing group request or
+            creating the pdarray encapsulating the return message
+        """
+        msg = "segmentedLCP {} {} {} {} {}".format( suffixarrays.objtype,
+                                                        suffixarrays.offsets.name,
+                                                        suffixarrays.bytes.name, 
                                                         strings.offsets.name,
                                                         strings.bytes.name) 
         repMsg = generic_msg(msg)
