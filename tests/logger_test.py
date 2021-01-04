@@ -15,7 +15,13 @@ class LoggerTest(unittest.TestCase):
         self.assertEqual('INFO', LogLevel.INFO.value) 
         self.assertEqual('WARN', LogLevel.WARN.value)  
         self.assertEqual('CRITICAL', LogLevel.CRITICAL.value)
-        self.assertEqual('ERROR', LogLevel.ERROR.value)        
+        self.assertEqual('ERROR', LogLevel.ERROR.value)   
+        
+        self.assertEqual(LogLevel.DEBUG,LogLevel('DEBUG'))    
+        self.assertEqual(LogLevel.INFO,LogLevel('INFO'))  
+        self.assertEqual(LogLevel.WARN,LogLevel('WARN')) 
+        self.assertEqual(LogLevel.CRITICAL,LogLevel('CRITICAL')) 
+        self.assertEqual(LogLevel.ERROR,LogLevel('ERROR')) 
         
     def testArkoudaLogger(self): 
         handler = StreamHandler()

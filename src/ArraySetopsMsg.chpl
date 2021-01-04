@@ -169,7 +169,7 @@ module ArraySetopsMsg
              var aV = setdiff1d(e.a, f.a, isUnique);
              st.addEntry(vname, new shared SymEntry(aV));
 
-             var s = try! "created " + st.attrib(vname);
+             var s = "created " + st.attrib(vname);
              asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),s);
              return s;
            }
@@ -218,7 +218,7 @@ module ArraySetopsMsg
            var aV = union1d(e.a, f.a);
            st.addEntry(vname, new shared SymEntry(aV));
 
-           var s = try! "created " + st.attrib(vname);
+           var s = "created " + st.attrib(vname);
            asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),s);
            return s;
          }

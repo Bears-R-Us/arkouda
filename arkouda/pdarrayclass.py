@@ -198,7 +198,7 @@ class pdarray:
                 raise ValueError("size mismatch {} {}".format(self.size,other.size))
             msg = "binopvv {} {} {}".format(op, self.name, other.name)
             repMsg = generic_msg(msg)
-            return create_pdarray(cast(str,repMsg))
+            return create_pdarray(repMsg)
         # pdarray binop scalar
         dt = resolve_scalar_dtype(other)
         if dt not in DTypes:
@@ -207,7 +207,7 @@ class pdarray:
         msg = "binopvs {} {} {} {}".\
                   format(op, self.name, dt, NUMBER_FORMAT_STRINGS[dt].format(other))
         repMsg = generic_msg(msg)
-        return create_pdarray(cast(str,repMsg))
+        return create_pdarray(repMsg)
 
     # reverse binary operators
     # pdarray binop pdarray: taken care of by binop function
@@ -247,7 +247,7 @@ class pdarray:
                       format(op, dt, NUMBER_FORMAT_STRINGS[dt].format(other), 
                                                                     self.name)
         repMsg = generic_msg(msg)
-        return create_pdarray(cast(str,repMsg))
+        return create_pdarray(repMsg)
 
     # overload + for pdarray, other can be {pdarray, int, float}
     def __add__(self, other):
@@ -453,7 +453,7 @@ class pdarray:
             (start,stop,stride) = key.indices(self.size)
             logger.debug('start: {} stop: {} stride: {}'.format(start,stop,stride))
             repMsg = generic_msg("[slice] {} {} {} {}".format(self.name, start, stop, stride))
-            return create_pdarray(cast(str,repMsg));
+            return create_pdarray(repMsg);
         if isinstance(key, pdarray):
             kind, _ = translate_np_dtype(key.dtype)
             if kind not in ("bool", "int"):
@@ -461,7 +461,7 @@ class pdarray:
             if kind == "bool" and self.size != key.size:
                 raise ValueError("size mismatch {} {}".format(self.size,key.size))
             repMsg = generic_msg("[pdarray] {} {}".format(self.name, key.name))
-            return create_pdarray(cast(str,repMsg))
+            return create_pdarray(repMsg)
         else:
             raise TypeError("Unhandled key type: {} ({})".format(key, type(key)))
 
@@ -1612,7 +1612,7 @@ def maxk(pda : pdarray, k : int) -> pdarray:
         raise ValueError("must be a non-empty pdarray of type int or float")
 
     repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, False))
-    return create_pdarray(cast(str,repMsg))
+    return create_pdarray(repMsg)
 
 @typechecked
 def argmink(pda : pdarray, k : int) -> pdarray:
@@ -1664,7 +1664,7 @@ def argmink(pda : pdarray, k : int) -> pdarray:
         raise ValueError("must be a non-empty pdarray of type int or float")
 
     repMsg = generic_msg("mink {} {} {}".format(pda.name, k, True))
-    return create_pdarray(cast(str,repMsg))
+    return create_pdarray(repMsg)
 
 @typechecked
 def argmaxk(pda : pdarray, k : int) -> pdarray:
@@ -1719,7 +1719,7 @@ def argmaxk(pda : pdarray, k : int) -> pdarray:
         raise ValueError("must be a non-empty pdarray of type int or float")
 
     repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, True))
-    return create_pdarray(cast(str,repMsg))
+    return create_pdarray(repMsg)
 
 
 @typechecked
@@ -1770,12 +1770,12 @@ def register_pdarray(pda : Union[str,pdarray], user_defined_name : str) -> pdarr
     if isinstance(pda, pdarray):
         repMsg = generic_msg("register {} {}".\
                              format(pda.name, user_defined_name))
-        return create_pdarray(cast(str,repMsg))
+        return create_pdarray(repMsg)
 
     if isinstance(pda, str):
         repMsg = generic_msg("register {} {}".\
                              format(pda, user_defined_name))        
-        return create_pdarray(cast(str,repMsg))
+        return create_pdarray(repMsg)
 
 
 @typechecked
@@ -1819,7 +1819,7 @@ def attach_pdarray(user_defined_name : str) -> pdarray:
     >>> ak.unregister_pdarray(b)
     """
     repMsg = generic_msg("attach {}".format(user_defined_name))
-    return create_pdarray(cast(str,repMsg))
+    return create_pdarray(repMsg)
 
 
 @typechecked

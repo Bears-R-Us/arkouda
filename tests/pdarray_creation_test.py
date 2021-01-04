@@ -240,18 +240,24 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertEqual(float, pda.dtype)
         self.assertIsInstance(pda, ak.pdarray)
         
+        pda = ak.linspace(0.0, 100.0, 150)  
+            
         pda = ak.linspace(start=5, stop=0, length=6)
+        self.assertEqual(5.0000, pda[0])
+        self.assertEqual(0.0000, pda[5])
+        
+        pda = ak.linspace(start=5.0, stop=0.0, length=6)
         self.assertEqual(5.0000, pda[0])
         self.assertEqual(0.0000, pda[5])
         
         with self.assertRaises(TypeError) as cm:        
             ak.linspace(0,'100', 1000)
-        self.assertEqual(('type of argument "stop" must be int; got str instead'), 
+        self.assertEqual(('type of argument "stop" must be one of (float, int); got str instead'), 
                          cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:        
             ak.linspace('0',100, 1000)
-        self.assertEqual(('type of argument "start" must be int; got str instead'), 
+        self.assertEqual(('type of argument "start" must be one of (float, int); got str instead'), 
                          cm.exception.args[0])  
 
         with self.assertRaises(TypeError) as cm:          

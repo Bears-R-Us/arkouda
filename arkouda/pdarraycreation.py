@@ -209,7 +209,7 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     req_msg = "array {} {:n} ".\
                     format(a.dtype.name, size).encode() + struct.pack(fmt, *a)
     repMsg = generic_msg(req_msg, send_bytes=True)
-    return create_pdarray(cast(str,repMsg))
+    return create_pdarray(repMsg)
 
 def zeros(size : int, dtype : type=np.float64) -> pdarray:
     """
@@ -256,7 +256,7 @@ def zeros(size : int, dtype : type=np.float64) -> pdarray:
     if cast(np.dtype,dtype).name not in numericDTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
     repMsg = generic_msg("create {} {}".format(cast(np.dtype,dtype).name, size))
-    return create_pdarray(cast(str, repMsg))
+    return create_pdarray(repMsg)
 
 def ones(size : int, dtype : type=float64) -> pdarray:
     """
@@ -303,7 +303,7 @@ def ones(size : int, dtype : type=float64) -> pdarray:
     if cast(np.dtype,dtype).name not in numericDTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
     repMsg = generic_msg("create {} {}".format(cast(np.dtype,dtype).name, size))
-    a = create_pdarray(cast(str,repMsg))
+    a = create_pdarray(repMsg)
     a.fill(1)
     return a
 
@@ -476,13 +476,13 @@ def arange(*args) -> pdarray:
         if stride < 0:
             stop = stop + 2
         repMsg = generic_msg("arange {} {} {}".format(start, stop, stride))
-        return create_pdarray(cast(str,repMsg))
+        return create_pdarray(repMsg)
     else:
         raise TypeError("start,stop,stride must be type int {} {} {}".\
                                     format(start,stop,stride))
 
 @typechecked
-def linspace(start : int, stop : int, length : int) -> pdarray:
+def linspace(start : Union[float,int], stop : Union[float,int], length : int) -> pdarray:
     """
     Create a pdarray of linearly-spaced floats in a closed interval.
 
@@ -503,7 +503,7 @@ def linspace(start : int, stop : int, length : int) -> pdarray:
     Raises
     ------
     TypeError
-        Raised if start or stop is not a scalar or if length is not int
+        Raised if start or stop is not a float or int or if length is not an int
 
     See Also
     --------
@@ -526,7 +526,7 @@ def linspace(start : int, stop : int, length : int) -> pdarray:
     array([-5, -3.75, -2.5, -1.25, 0])
     """
     repMsg = generic_msg("linspace {} {} {}".format(start, stop, length))
-    return create_pdarray(cast(str,repMsg))
+    return create_pdarray(repMsg)
 
 @typechecked
 def randint(low : Union[int,float], high : Union[int,float], size : int, 
@@ -690,7 +690,7 @@ def standard_normal(size : int, seed : Union[None, int]=None) -> pdarray:
     msg = "randomNormal {} {}".format(NUMBER_FORMAT_STRINGS['int64'].format(size), 
                                       seed)
     repMsg = generic_msg(msg)
-    return create_pdarray(cast(str,repMsg))
+    return create_pdarray(repMsg)
 
 @typechecked
 def random_strings_uniform(minlen : int, maxlen : int, size : int, 
