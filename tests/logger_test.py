@@ -80,6 +80,15 @@ class LoggerTest(unittest.TestCase):
         ak.disableVerbose()
         loggerOne.debug('loggerOne after disableVerbose')
         loggerTwo.debug('loggerTwo after disableVerbose')  
+        
+    def testErrorHandling(self):
+        logger = getArkoudaLogger(name='VerboseLogger', logLevel=LogLevel('INFO'))
+
+        with self.assertRaises(ValueError):
+            logger.getHandler('not-a-handler')
+            
+        with self.assertRaises(TypeError):
+            logger.disableVerbose(logLevel='INFO')
     
     @classmethod
     def tearDownClass(cls):

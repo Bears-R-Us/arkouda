@@ -295,28 +295,34 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
                         B : Union[Union[int,float], pdarray]) -> pdarray:
     """
     Returns an array with elements chosen from A and B based upon a 
-    conditioning array.
+    conditioning array. As is the case with numpy.where, the return array
+    consists of values from the first array (A) where the conditioning array 
+    elements are True and from the second array (B) where the conditioning
+    array elements are False.
     
     Parameters
     ----------
     condition : pdarray
         Used to choose values from A or B
     A : scalar or pdarray
-        Value(s) used when condition is True
+        Value(s) used when condition is True for A
     B : scalar or pdarray
-        Value(s) used when condition is False
+        Value(s) used when condition is False for A
 
     Returns
     -------
     pdarray
-        Values chosen from A and B according to condition
+        Values chosen from A where the condition is True and B where
+        the condition is False
         
     Raises 
     ------
     TypeError
-        Raised if the condition objectc is not a pdarray, if pdarray dtypes are 
+        Raised if the condition object is not a pdarray, if pdarray dtypes are 
         not supported or do not match, or if multiple condition clauses (see 
         Notes section) are applied
+    ValueError
+        Raised if the shapes of the condition, A, and B pdarrays are unequal
         
     Examples
     --------
@@ -436,8 +442,11 @@ def histogram(pda : pdarray, bins : int=10) -> pdarray:
 
     Examples
     --------
+    >>> import matplotlib.pyplot as plt
     >>> A = ak.arange(0, 10, 1)
-    >>> ak.histogram(A, bins=3)
+    >>> nbins = 3
+    >>> h = ak.histogram(A, bins=nbins)
+    >>> h
     array([3, 3, 4])
     # Recreate the bin edges in NumPy
     >>> binEdges = np.linspace(A.min(), A.max(), nbins+1)
@@ -483,7 +492,8 @@ def value_counts(pda : pdarray) -> Union[Categorical, # type: ignore
     -----
     This function differs from ``histogram()`` in that it only returns
     counts for values that are present, leaving out empty "bins". This
-    function delegates all logic to the unique() method.
+    function delegates all logic to the unique() method where the 
+    return_counts parameter is set to True.
 
     Examples
     --------

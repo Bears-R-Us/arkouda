@@ -21,8 +21,11 @@ class DtypesTest(ArkoudaTest):
         dtypes.check_np_dtype(np.dtype(np.float64))
         dtypes.check_np_dtype(np.dtype(np.uint8))
         dtypes.check_np_dtype(np.dtype(np.str))
+
         with self.assertRaises(TypeError):
             dtypes.check_np_dtype(np.dtype(np.int16))
+        with self.assertRaises(TypeError):
+            dtypes.check_np_dtype('np.str')
 
     def test_translate_np_dtype(self):
         '''
@@ -46,8 +49,11 @@ class DtypesTest(ArkoudaTest):
         d_tuple = dtypes.translate_np_dtype(np.dtype(np.str))
         self.assertEqual(0, d_tuple[1])
         self.assertEqual('str', d_tuple[0])   
+
         with self.assertRaises(TypeError):
             dtypes.check_np_dtype(np.dtype(np.int16))
+        with self.assertRaises(TypeError):
+            dtypes.translate_np_dtype('np.str')
             
     def test_resolve_scalar_dtype(self):
         '''
