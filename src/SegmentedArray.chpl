@@ -145,9 +145,12 @@ module SegmentedArray {
       return s;
     }
 
+
     /* Take a slice of strings from the array. The slice must be a 
-       Chapel range, i.e. low..high by stride, not a Python slice.
-       Returns arrays for the segment offsets and bytes of the slice.*/
+     *  Chapel range, i.e. low..high by stride, not a Python slice.
+     *  Returns arrays for the segment offsets and bytes of the slice.
+     */
+
     proc this(const slice: range(stridable=true)) throws {
       if (slice.low < offsets.aD.low) || (slice.high > offsets.aD.high) {
         throw new owned OutOfBoundsError();
@@ -186,7 +189,8 @@ module SegmentedArray {
     }
 
     /* Gather strings by index. Returns arrays for the segment offsets
-       and bytes of the gathered strings.*/
+     *  and bytes of the gathered strings.
+     */
     proc this(iv: [?D] int) throws {
       // Early return for zero-length result
       if (D.size == 0) {
@@ -235,11 +239,11 @@ module SegmentedArray {
       if CHPL_COMM != 'none' {
         // Compute the src index for each byte in gatheredVals
         /* For performance, we will do this with a scan, so first we need an array
-           with the difference in index between the current and previous byte. For
-           the interior of a segment, this is just one, but at the segment boundary,
-           it is the difference between the src offset of the current segment ("left")
-           and the src index of the last byte in the previous segment (right - 1).
-        */
+         *  with the difference in index between the current and previous byte. For
+         *  the interior of a segment, this is just one, but at the segment boundary,
+         *  it is the difference between the src offset of the current segment ("left")
+         *  and the src index of the last byte in the previous segment (right - 1).
+         */
         var srcIdx = makeDistArray(retBytes, int);
         srcIdx = 1;
         var diffs: [D] int;
@@ -336,6 +340,7 @@ module SegmentedArray {
       /* saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                      "%i seconds".format(getCurrentTime() - t1));*/
       /* return (gatheredOffsets, gatheredVals); */
+
     }
 
     /* Apply a hash function to all strings. This is useful for grouping
@@ -365,32 +370,6 @@ module SegmentedArray {
       return hashes;
     }
 
-    /* Apply a hash function to all suffix array. This is useful for grouping
-       and set membership. The hash used is SipHash128.*/
-    proc hashInt() throws {
-      // 128-bit hash values represented as 2-tuples of uint(64)
-      var hashes: [offsets.aD] 2*uint(64);
-      // Early exit for zero-length result
-      if (size == 0) {
-        return hashes;
-      }
-      ref oa = offsets.a;
-      ref va = values.a;
-      // Compute lengths of strings
-      var lengths = getLengths();
-      // Hash each string
-      // TO DO: test on clause with aggregator
-      forall (o, l, h) in zip(oa, lengths, hashes) {
-        const myRange = o..#l;
-        h = sipHash128(va, myRange);
-        /* // localize the string bytes */
-        /* const myBytes = va[{o..#l}]; */
-        /* h = sipHash128(myBytes, hashKey); */
-        /* // Perf Note: localizing string bytes is ~3x faster on IB multilocale than this: */
-        /* // h = sipHash128(va[{o..#l}]); */
-      }
-      return hashes;
-    }
     /* Return a permutation that groups the strings. Because hashing is used,
        this permutation will not sort the strings, but all equivalent strings
        will fall in one contiguous block. */
@@ -741,7 +720,6 @@ module SegmentedArray {
   } // class SegString
 
 
-
   /**
    * Represents an array of arrays, implemented as a segmented array of integers.
    * Instances are ephemeral, not stored in the symbol table. Instead, attributes
@@ -752,7 +730,6 @@ module SegmentedArray {
    */
   class SegSArray {
  
-
     /**
      * The name of the SymEntry corresponding to the pdarray containing
      * the offsets, which are start indices for each string bytearray
@@ -816,6 +793,7 @@ module SegmentedArray {
      * inputs, generates the SymEntry objects for each and passes the
      * offset and value SymTab lookup names to the alternate init method
      */
+
     //    proc init(segments: [] int, values: [] uint(8), st: borrowed SymTab) {
     proc init(segments: [] int, values: [] int, st: borrowed SymTab) {
       var oName = st.nextName();
@@ -959,7 +937,9 @@ module SegmentedArray {
       // Multi-locale requires some extra localization work that is not needed
       // in CHPL_COMM=none
       if CHPL_COMM != 'none' {
+
         // Compute the src index for each byte in gatheredVals
+
         /* For performance, we will do this with a scan, so first we need an array
            with the difference in index between the current and previous byte. For
            the interior of a segment, this is just one, but at the segment boundary,
@@ -1151,10 +1131,14 @@ module SegmentedArray {
       return lengths;
     }
 
+
     /*
+
     proc findSubstringInBytes(const substr: string) {
       // Find the start position of every occurence of substr in the flat bytes array
-      // Start by making a right-truncated subdomain representing all valid starting positions for substr of given length
+      // Start by making a right-truncated subdomain representing all valid starting positions 
+      // for substr of given length
+
       var D: subdomain(values.aD) = values.aD[values.aD.low..#(values.size - substr.numBytes)];
       // Every start position is valid until proven otherwise
       var truth: [D] bool = true;
@@ -1394,6 +1378,11 @@ module SegmentedArray {
     }
     */
 
+    /* The comments above is treated as though they were ediff's comment string, which will cause sphinx errors
+     * It takes me several hours without any idea and thanks  Brad help out. He added the following 
+     * line to solve the problem
+     * dummy chpldoc description for ediff() 
+     */
     proc ediff():[offsets.aD] int {
       var diff: [offsets.aD] int;
       if (size < 2) {
