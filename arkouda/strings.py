@@ -169,8 +169,7 @@ class Strings:
         else:
             raise ValueError("Strings: {} not supported between Strings and {}"\
                              .format(op, other.__class__.__name__))
-        repMsg = generic_msg(msg)
-        return create_pdarray(cast(str,repMsg))
+        return create_pdarray(generic_msg(msg))
 
     def __eq__(self, other) -> bool:
         return self._binop(other, "==")
@@ -242,8 +241,7 @@ class Strings:
         """
         msg = "segmentLengths {} {} {}".\
                         format(self.objtype, self.offsets.name, self.bytes.name)
-        repMsg = generic_msg(msg)
-        return create_pdarray(cast(str,repMsg))
+        return create_pdarray(generic_msg(msg))
 
     @typechecked
     def contains(self, substr : Union[str, bytes]) -> pdarray:
@@ -279,8 +277,7 @@ class Strings:
                                                         self.bytes.name,
                                                         "str",
                                                         json.dumps([substr]))
-        repMsg = generic_msg(msg)
-        return create_pdarray(cast(str,repMsg))
+        return create_pdarray(generic_msg(msg))
 
     @typechecked
     def startswith(self, substr : Union[str, bytes]) -> pdarray:
@@ -316,8 +313,7 @@ class Strings:
                                                         self.bytes.name,
                                                         "str",
                                                         json.dumps([substr]))
-        repMsg = generic_msg(msg)
-        return create_pdarray(cast(str,repMsg))
+        return create_pdarray(generic_msg(msg))
 
     @typechecked
     def endswith(self, substr : Union[str,bytes]) -> pdarray:
@@ -353,8 +349,7 @@ class Strings:
                                                         self.bytes.name,
                                                         "str",
                                                         json.dumps([substr]))
-        repMsg = generic_msg(msg)
-        return create_pdarray(cast(str,repMsg))
+        return create_pdarray(generic_msg(msg))
 
     @typechecked
     def peel(self, delimiter : str, times : int=1, includeDelimiter : bool=False, 
@@ -621,7 +616,7 @@ class Strings:
                                               self.bytes.name)
         repMsg = generic_msg(msg)
         h1, h2 = cast(str,repMsg).split('+')
-        return create_pdarray(cast(str,h1)), create_pdarray(cast(str,h2))
+        return create_pdarray(h1), create_pdarray(h2)
 
     def group(self) -> pdarray:
         """
@@ -655,8 +650,7 @@ class Strings:
         """
         msg = "segmentedGroup {} {} {}".\
                            format(self.objtype, self.offsets.name, self.bytes.name)
-        repMsg = generic_msg(msg)
-        return create_pdarray(cast(str,repMsg))
+        return create_pdarray(generic_msg(msg))
 
     def to_ndarray(self) -> np.ndarray:
         """

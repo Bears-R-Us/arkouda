@@ -689,8 +689,7 @@ def standard_normal(size : int, seed : Union[None, int]=None) -> pdarray:
         raise ValueError("The size parameter must be > 0")
     msg = "randomNormal {} {}".format(NUMBER_FORMAT_STRINGS['int64'].format(size), 
                                       seed)
-    repMsg = generic_msg(msg)
-    return create_pdarray(repMsg)
+    return create_pdarray(generic_msg(msg))
 
 @typechecked
 def random_strings_uniform(minlen : int, maxlen : int, size : int, 
