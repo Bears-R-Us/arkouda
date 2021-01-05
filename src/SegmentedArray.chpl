@@ -775,7 +775,7 @@ module SegmentedArray {
      * The pdaray containing the complete int array composed of integer index
      * corresponding to each string, 
      */ 
-//    var values: borrowed SymEntry(uint(8));
+    //    var values: borrowed SymEntry(uint(8));
     var values: borrowed SymEntry(int);
     
     /**
@@ -804,7 +804,7 @@ module SegmentedArray {
       valueName = valName;
 
       var vs = try! st.lookup(valName);
-//      var vals = toSymEntry(vs, uint(8)): unmanaged SymEntry(uint(8));
+      //      var vals = toSymEntry(vs, uint(8)): unmanaged SymEntry(uint(8));
       var vals = toSymEntry(vs, int): unmanaged SymEntry(int);
       values = vals;
       size = segs.size;
@@ -816,7 +816,7 @@ module SegmentedArray {
      * inputs, generates the SymEntry objects for each and passes the
      * offset and value SymTab lookup names to the alternate init method
      */
-//    proc init(segments: [] int, values: [] uint(8), st: borrowed SymTab) {
+    //    proc init(segments: [] int, values: [] uint(8), st: borrowed SymTab) {
     proc init(segments: [] int, values: [] int, st: borrowed SymTab) {
       var oName = st.nextName();
       var segEntry = new shared SymEntry(segments);
@@ -858,7 +858,7 @@ module SegmentedArray {
         end = offsets.a[idx+1] - 1;
       }
       // Take the slice of the bytearray and "cast" it to a chpl string
-//      var s = interpretAsString(values.a[start..end]);
+      //var s = interpretAsString(values.a[start..end]);
       var tmp=values.a[start..end];
       var s: string;
       var i:int;
@@ -878,7 +878,7 @@ module SegmentedArray {
       }
       // Early return for zero-length result
       if (size == 0) || (slice.size == 0) {
-//        return (makeDistArray(0, int), makeDistArray(0, uint(8)));
+        //return (makeDistArray(0, int), makeDistArray(0, uint(8)));
         return (makeDistArray(0, int), makeDistArray(0, int));
       }
       // Start of bytearray slice
@@ -901,11 +901,11 @@ module SegmentedArray {
       // Offsets need to be re-zeroed
       newSegs -= start;
       // Bytearray of the new slice
-//      var newVals = makeDistArray(end - start + 1, uint(8));
+      //var newVals = makeDistArray(end - start + 1, uint(8));
       var newVals = makeDistArray(end - start + 1, int);
       ref va = values.a;
       // newVals = values.a[start..end];
-//      forall (i, nv) in zip(newVals.domain, newVals) with (var agg = newSrcAggregator(uint(8))) {
+      //forall (i, nv) in zip(newVals.domain, newVals) with (var agg = newSrcAggregator(uint(8))) {
       forall (i, nv) in zip(newVals.domain, newVals) with (var agg = newSrcAggregator(int)) {
         agg.copy(nv, va[start + i]);
       }
@@ -917,7 +917,7 @@ module SegmentedArray {
     proc this(iv: [?D] int) throws {
       // Early return for zero-length result
       if (D.size == 0) {
-//        return (makeDistArray(0, int), makeDistArray(0, uint(8)));
+        //return (makeDistArray(0, int), makeDistArray(0, uint(8)));
         return (makeDistArray(0, int), makeDistArray(0, int));
       }
       // Check all indices within bounds
@@ -954,7 +954,7 @@ module SegmentedArray {
         writeln("Copying values"); stdout.flush();
         t1 = getCurrentTime();
       }
-//      var gatheredVals = makeDistArray(retBytes, uint(8));
+      //var gatheredVals = makeDistArray(retBytes, uint(8));
       var gatheredVals = makeDistArray(retBytes, int);
       // Multi-locale requires some extra localization work that is not needed
       // in CHPL_COMM=none
@@ -982,7 +982,7 @@ module SegmentedArray {
         srcIdx = + scan srcIdx;
         // Now srcIdx has a dst-local copy of the source index and vals can be efficiently gathered
         ref va = values.a;
-//        forall (v, si) in zip(gatheredVals, srcIdx) with (var agg = newSrcAggregator(uint(8))) {
+        //forall (v, si) in zip(gatheredVals, srcIdx) with (var agg = newSrcAggregator(uint(8))) {
         forall (v, si) in zip(gatheredVals, srcIdx) with (var agg = newSrcAggregator(int)) {
           agg.copy(v, va[si]);
         }
@@ -1015,7 +1015,7 @@ module SegmentedArray {
       steps -= iv;
       // Early return for zero-length result
       if (newSize == 0) {
-//        return (makeDistArray(0, int), makeDistArray(0, uint(8)));
+        //return (makeDistArray(0, int), makeDistArray(0, uint(8)));
         return (makeDistArray(0, int), makeDistArray(0, int));
       }
       var segInds = makeDistArray(newSize, int);
@@ -1151,7 +1151,7 @@ module SegmentedArray {
       return lengths;
     }
 
-/*
+    /*
     proc findSubstringInBytes(const substr: string) {
       // Find the start position of every occurence of substr in the flat bytes array
       // Start by making a right-truncated subdomain representing all valid starting positions for substr of given length
@@ -1319,8 +1319,8 @@ module SegmentedArray {
       const leftOffsets = (+ scan leftLengths) - leftLengths;
       const rightOffsets = (+ scan rightLengths) - rightLengths;
       // Allocate values and fill
-//      var leftVals = makeDistArray((+ reduce leftLengths), uint(8));
-//      var rightVals = makeDistArray((+ reduce rightLengths), uint(8));
+      // var leftVals = makeDistArray((+ reduce leftLengths), uint(8));
+      // var rightVals = makeDistArray((+ reduce rightLengths), uint(8));
       var leftVals = makeDistArray((+ reduce leftLengths), int);
       var rightVals = makeDistArray((+ reduce rightLengths), int);
       ref va = values.a;
@@ -1392,7 +1392,8 @@ module SegmentedArray {
       }
       return (newOffsets, newVals);
     }
-*/
+    */
+
     proc ediff():[offsets.aD] int {
       var diff: [offsets.aD] int;
       if (size < 2) {
