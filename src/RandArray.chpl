@@ -1,18 +1,34 @@
 module RandArray {
   use Reflection;
   use Errors;
+  use Logging;
   use Random;
   use SegmentedArray;
   use ServerErrorStrings;
   use MultiTypeSymEntry;
   use Map;
   use SipHash;
+  use ServerConfig;
+  private use IO;
+  
+  const raLogger = new Logger();
+  
+  if v {
+      raLogger.level = LogLevel.DEBUG;
+  } else {
+      raLogger.level = LogLevel.INFO;
+  } 
 
-  proc fillInt(a:[] ?t, const aMin, const aMax) where isIntType(t) {
+  proc fillInt(a:[] ?t, const aMin, const aMax, const seedStr:string="None") throws where isIntType(t) {
     coforall loc in Locales {
       on loc {
         ref myA = a.localSlice[a.localSubdomain()];
-        fillRandom(myA);
+        if (seedStr.toLower() == "none") {
+          fillRandom(myA);
+        } else {
+          var seed = (seedStr:int) + here.id;
+          fillRandom(myA, seed);
+        }
         [ai in myA] if (ai < 0) { ai = -ai; }
         if (aMax > aMin) {
           const modulus = aMax - aMin;
@@ -23,11 +39,16 @@ module RandArray {
     }
   }
 
-  proc fillUInt(a:[] ?t, const aMin, const aMax) where isUintType(t) {
+  proc fillUInt(a:[] ?t, const aMin, const aMax, const seedStr:string="None") throws where isUintType(t) {
     coforall loc in Locales {
       on loc {
         ref myA = a.localSlice[a.localSubdomain()];
-        fillRandom(myA);
+        if (seedStr.toLower() == "none") {
+          fillRandom(myA);
+        } else {
+          var seed = (seedStr:int) + here.id;
+          fillRandom(myA, seed);
+        }
         if (aMax > aMin) {
           const modulus = aMax - aMin;
           [x in myA] x = ((x % modulus) + aMin):t;
@@ -37,31 +58,47 @@ module RandArray {
     }
   }
 
-  proc fillReal(a:[] real, const aMin:numeric=0.0, const aMax:numeric=1.0) {
+  proc fillReal(a:[] real, const aMin:numeric=0.0, const aMax:numeric=1.0, const seedStr:string="None") throws {
     coforall loc in Locales {
       on loc {
         ref myA = a.localSlice[a.localSubdomain()];
-        fillRandom(myA);
+        if (seedStr.toLower() == "none") {
+          fillRandom(myA);
+        } else {
+          var seed = (seedStr:int) + here.id;
+          fillRandom(myA, seed);
+        }
         const scale = aMax - aMin;
         myA = scale*myA + aMin;
       }
     }
   }
 
-  proc fillBool(a:[] bool) {
+  proc fillBool(a:[] bool, const seedStr:string="None") throws {
     coforall loc in Locales {
       on loc {
         ref myA = a.localSlice[a.localSubdomain()];
-        fillRandom(myA);
+        if (seedStr.toLower() == "none") {
+          fillRandom(myA);
+        } else {
+          var seed = (seedStr:int) + here.id;
+          fillRandom(myA, seed);
+        }
       }
     }
   }
 
-  proc fillNormal(a:[?D] real) {
+  proc fillNormal(a:[?D] real, const seedStr:string="None") throws {
     var u1:[D] real;
     var u2:[D] real;
-    fillRandom(u1);
-    fillRandom(u2);
+    if (seedStr.toLower() == "none") {
+      fillRandom(u1);
+      fillRandom(u2);
+    } else {
+      var seed = (seedStr:int);
+      fillRandom(u1, seed);
+      fillRandom(u2, seed+1);
+    }
     a = sqrt(-2*log(u1))*cos(2*pi*u2);
   }
 
@@ -105,49 +142,47 @@ module RandArray {
   charBounds[charSet.Printable] = (32, 127);
   charBounds[charSet.Binary] = (0, 0);
 
-  proc newRandStringsUniformLength(const n: int, const minLen: int, 
-                           const maxLen: int, characters:charSet = charSet.Uppercase) throws {
+  proc newRandStringsUniformLength(const n: int,
+                                   const minLen: int, 
+                                   const maxLen: int,
+                                   characters:charSet = charSet.Uppercase,
+                                   const seedStr:string="None") throws {
     if (n < 0) || (minLen < 0) || (maxLen < minLen) {  
-        writeln(generateErrorContext(
-                 msg="Incompatible arguments: n and minLen must be > 0 and maxLen < minLen", 
-                 lineNumber=getLineNumber(), 
-                 moduleName=getModuleName(), 
-                 routineName=getRoutineName(), 
-                 errorClass="ArgumentError"));  
+        raLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                  "Incompatible arguments: n and minLen must be > 0 and maxLen < minLen"); 
         throw new owned ArgumentError();                     
     }
     var lengths = makeDistArray(n, int);
-    fillInt(lengths, minLen+1, maxLen+1);
+    fillInt(lengths, minLen+1, maxLen+1, seedStr=seedStr);
     const nBytes = + reduce lengths;
     var segs = (+ scan lengths) - lengths;
     var vals = makeDistArray(nBytes, uint(8));
     var (lb, ub) = charBounds[characters];
-    fillUInt(vals, lb, ub);
+    fillUInt(vals, lb, ub, seedStr=seedStr);
     // Strings are null-terminated
     [(s, l) in zip(segs, lengths)] vals[s+l-1] = 0:uint(8);
     return (segs, vals);
   }
 
-  proc newRandStringsLogNormalLength(const n: int, const logMean: numeric, 
-                       const logStd: numeric, characters:charSet = charSet.Uppercase) throws {
+  proc newRandStringsLogNormalLength(const n: int,
+                                     const logMean: numeric, 
+                                     const logStd: numeric,
+                                     characters:charSet = charSet.Uppercase,
+                                     const seedStr:string="None") throws {
     if (n < 0) || (logStd <= 0) {
-        writeln(generateErrorContext(
-                     msg="Incompatible arguments: n must be > 0 and logStd <= 0", 
-                     lineNumber=getLineNumber(), 
-                     moduleName=getModuleName(), 
-                     routineName=getRoutineName(), 
-                     errorClass="ArgumentError")); 
+        raLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                     "Incompatible arguments: n must be > 0 and logStd <= 0");      
         throw new owned ArgumentError();
     }
     var ltemp = makeDistArray(n, real);
-    fillNormal(ltemp);
+    fillNormal(ltemp, seedStr=seedStr);
     ltemp = exp(logMean + logStd*ltemp);
     var lengths:[ltemp.domain] int = [l in ltemp] ceil(l):int;
     const nBytes = + reduce lengths;
     var segs = (+ scan lengths) - lengths;
     var vals = makeDistArray(nBytes, uint(8));
     var (lb, ub) = charBounds[characters];
-    fillUInt(vals, lb, ub);
+    fillUInt(vals, lb, ub, seedStr=seedStr);
     // Strings are null-terminated
     [(s, l) in zip(segs, lengths)] vals[s+l-1] = 0:uint(8);
     return (segs, vals);

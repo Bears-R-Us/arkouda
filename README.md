@@ -272,6 +272,42 @@ make test-all
 For more details regarding Arkouda testing, please consult the Python test [README](tests/README.md) and Chapel test
 [README](test/README.md), respectively.
 
+## Type Checking in Arkouda
+
+Both static and runtime type checking are becoming increasingly popular in Python, especially for large Python code bases 
+such as those found at [dropbox](https://dropbox.tech/application/our-journey-to-type-checking-4-million-lines-of-python). 
+Arkouda uses [mypy](https://mypy.readthedocs.io/en/stable/) for static type checking and [typeguard](https://typeguard.readthedocs.io/en/latest/) 
+for runtime type checking.
+
+Enabling runtime as well as static type checking in Python starts with adding [type hints](https://www.python.org/dev/peps/pep-0484/), 
+as shown below to a method signature:
+
+```
+def connect(server : str="localhost", port : int=5555, timeout : int=0, 
+                           access_token : str=None, connect_url=None) -> None:
+```
+
+mypy static type checking can be invoked either directly via the mypy command or via make:
+
+```
+$ mypy arkouda
+Success: no issues found in 16 source files
+$ make mypy
+python3 -m mypy arkouda
+Success: no issues found in 16 source files
+```
+
+Runtime type checking is enabled at the Python method level by annotating the method if interest with the @typechecked decorator, an 
+example of which is shown below:
+
+```
+@typechecked
+def save(self, prefix_path : str, dataset : str='array', mode : str='truncate') -> str:
+```
+
+Type checking in Arkouda is implemented on an "opt-in" basis. Accordingly, Arkouda continues to support [duck typing](https://en.wikipedia.org/wiki/Duck_typing) for parts of the Arkouda API where type checking is too confining to be useful. As detailed above, both runtime and static 
+type checking require type hints. Consequently, to opt-out of type checking, simply leave type hints out of any method declarations where duck typing is desired.
+
 ## Building the Arkouda documentation
 
 First ensure that all Python doc dependencies including sphinx and sphinx extensions have been installed as detailed 
@@ -329,22 +365,22 @@ Multi-locale startup (user selects the number of locales):
 ```bash
 ./arkouda_server -nl 2
 ```
-Also can run server with memory checking turned on using
+Memory tracking is turned on by default now, you can run server with memory tracking turned off by
 
 ```bash
-./arkouda_server --memTrack=true
+./arkouda_server --memTrack=false
 ```
 
 By default, the server listens on port `5555` and prints verbose output. These options can be changed with command-line 
 flags `--ServerPort=1234` and `--v=false`
 
-Memory checking is turned off by default and turned on by using `--memTrack=true`
+Memory tracking is turned on by default and turned off by using the  `--memTrack=false` flag
 
-Logging messages are turned on by default and turned off by using `--logging=false`
+Logging messages are turned on by default and turned off by using the `--logging=false` flag
 
-Verbose messages are turned on by default and turned off by using  `--v=false`
+Verbose messages at the debug level are turned off by default and are turned on by using the `--v` flag
 
-Other command line options are available, view them by using `--help`
+Other command line options are available, view them by using the `--help` flag
 
 ```bash
 ./arkouda-server --help
@@ -399,6 +435,14 @@ against a running server by running the following Python command:
 ```bash
 python3 tests/check.py localhost 5555
 ```
+
+## Logging
+
+The Arkouda server features a Chapel logging framework that prints out the module name, routine name and line number
+for all logged messages. Available logging levels are ERROR, CRITICAL, WARN, INFO, and DEBUG. 
+
+The default logging level is INFO where all messages at the ERROR, CRITICAL, WARN, and INFO levels are printed. For debugging, 
+the DEBUG level is enabled by passing in the --v flag upon arkouda\_server startup.
 
 ## Contributing to Arkouda
 

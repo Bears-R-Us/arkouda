@@ -7,6 +7,7 @@ module MsgProcessing
     use Math only;
     use Reflection;
     use Errors;
+    use Logging;
     use Memory;
     
     use MultiTypeSymbolTable;
@@ -34,6 +35,14 @@ module MsgProcessing
     public use KExtremeMsg;
     public use CastMsg;
     
+    const mpLogger = new Logger();
+    
+    if v {
+        mpLogger.level = LogLevel.DEBUG;
+    } else {
+        mpLogger.level = LogLevel.INFO;
+    }
+    
     /* 
     Parse, execute, and respond to a create message 
 
@@ -60,10 +69,16 @@ module MsgProcessing
         var rname = st.nextName();
         
         // if verbose print action
-        if v {try! writeln("%s %s %i : %s".format(cmd,dtype2str(dtype),size,rname)); try! stdout.flush();}
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+            "cmd: %s dtype: %s size: %i new pdarray name: %s".format(
+                                                     cmd,dtype2str(dtype),size,rname));
         // create and add entry to symbol table
         st.addEntry(rname, size, dtype);
-        // response message
+        // if verbose print result
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                    "created the pdarray %t".format(st.lookup(rname)));
+                                    
+        // response message                                    
         return try! "created " + st.attrib(rname);
     }
 
@@ -82,7 +97,8 @@ module MsgProcessing
         var repMsg: string; // response message
         // split request into fields
         var (name) = payload.decode().splitMsgToTuple(1);
-        if v {try! writeln("%s %s".format(cmd,name));try! stdout.flush();}
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                                        "cmd: %s name: %s".format(cmd,name));
         // delete entry from symbol table
         st.deleteEntry(name);
         return try! "deleted %s".format(name);
@@ -102,7 +118,7 @@ module MsgProcessing
     proc clearMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         var (_) = payload.decode().splitMsgToTuple(1); // split request into fields
-        if v {try! writeln("%s".format(cmd));try! stdout.flush();}
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "cmd: %s".format(cmd));
         st.clear();
         return "success";
     }
@@ -123,7 +139,8 @@ module MsgProcessing
         var repMsg: string; // response message
         // split request into fields
         var (name) = payload.decode().splitMsgToTuple(1);
-        if v {try! writeln("%s %s".format(cmd,name));try! stdout.flush();}
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                                         "cmd: %s name: %s".format(cmd,name));
         // if name == "__AllSymbols__" passes back info on all symbols
         return st.info(name);
     }
@@ -142,7 +159,7 @@ module MsgProcessing
     proc getconfigMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         var (_) = payload.decode().splitMsgToTuple(1); // split request into fields
-        if v {try! writeln("%s".format(cmd));try! stdout.flush();}
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".format(cmd));
         return getConfig();
     }
 
@@ -160,7 +177,7 @@ module MsgProcessing
     proc getmemusedMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         var (_) = payload.decode().splitMsgToTuple(1); // split request into fields
-        if v {try! writeln("%s".format(cmd));try! stdout.flush();}
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".format(cmd));
         if (memTrack) {
             return (memoryUsed():uint * numLocales:uint):string;
         }
@@ -185,7 +202,9 @@ module MsgProcessing
         // split request into fields
         var (name, ptstr) = payload.decode().splitMsgToTuple(2);
         var printThresh = try! ptstr:int;
-        if v {try! writeln("%s %s %i".format(cmd,name,printThresh));try! stdout.flush();}
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                              "cmd: %s name: %s threshold: %i".format(
+                                               cmd,name,printThresh));       
         return st.datastr(name,printThresh);
     }
 
@@ -205,7 +224,9 @@ module MsgProcessing
         // split request into fields
         var (name, ptstr) = payload.decode().splitMsgToTuple(2);
         var printThresh = try! ptstr:int;
-        if v {try! writeln("%s %s %i".format(cmd,name,printThresh));try! stdout.flush();}
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                              "cmd: %s name: %s threshold: %i".format(
+                                              cmd,name,printThresh));
         return st.datarepr(name,printThresh);
     }
 
@@ -233,11 +254,14 @@ module MsgProcessing
         overMemLimit(8*len);
         // get next symbol name
         var rname = st.nextName();
-        if v {try! writeln("%s %i %i %i : %i , %s".format(cmd, start, stop, stride, len, rname));try! stdout.flush();}
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                       "cmd: %s start: %i stop: %i stride: %i : len: %i rname: %s".format(
+                        cmd, start, stop, stride, len, rname));
         
         var t1 = Time.getCurrentTime();
         var e = st.addEntry(rname, len, int);
-        if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                      "alloc time = %i sec".format(Time.getCurrentTime() - t1));
 
         t1 = Time.getCurrentTime();
         ref ea = e.a;
@@ -245,7 +269,8 @@ module MsgProcessing
         forall (ei, i) in zip(ea,ead) {
             ei = start + (i * stride);
         }
-        if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                      "compute time = %i sec".format(Time.getCurrentTime() - t1));
 
         return try! "created " + st.attrib(rname);
     }            
@@ -273,11 +298,14 @@ module MsgProcessing
         overMemLimit(8*len);
         // get next symbol name
         var rname = st.nextName();
-        if v {try! writeln("%s %r %r %i : %r , %s".format(cmd, start, stop, len, stride, rname));try! stdout.flush();}
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                        "cmd: %s start: %r stop: %r len: %i stride: %r rname: %s".format(
+                         cmd, start, stop, len, stride, rname));
 
         var t1 = Time.getCurrentTime();
         var e = st.addEntry(rname, len, real);
-        if v {writeln("alloc time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                      "alloc time = %i".format(Time.getCurrentTime() - t1));
 
         t1 = Time.getCurrentTime();
         ref ea = e.a;
@@ -287,7 +315,8 @@ module MsgProcessing
         }
         ea[0] = start;
         ea[len-1] = stop;
-        if v {writeln("compute time = ",Time.getCurrentTime() - t1,"sec"); try! stdout.flush();}
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                   "compute time = %i".format(Time.getCurrentTime() - t1));
 
         return try! "created " + st.attrib(rname);
     }
@@ -312,18 +341,21 @@ module MsgProcessing
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                      "cmd: %s value: %s in pdarray %t".format(cmd,name,gEnt));
+
         select (gEnt.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
                 var e = toSymEntry(gEnt,int);
                 var val: int = try! value:int;
-                if v {try! writeln("%s %s to %t".format(cmd,name,val));try! stdout.flush();}
                 e.a = val;
                 repMsg = try! "set %s to %t".format(name, val);
             }
             when (DType.Int64, DType.Float64) {
                 var e = toSymEntry(gEnt,int);
                 var val: real = try! value:real;
-                if v {try! writeln("%s %s to %t".format(cmd,name,val:int));try! stdout.flush();}
+                mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                        "cmd: %s name: %s to val: %t".format(cmd,name,val:int));
                 e.a = val:int;
                 repMsg = try! "set %s to %t".format(name, val:int);
             }
@@ -332,21 +364,24 @@ module MsgProcessing
                 value = value.replace("True","true");
                 value = value.replace("False","false");
                 var val: bool = try! value:bool;
-                if v {try! writeln("%s %s to %t".format(cmd,name,val:int));try! stdout.flush();}
+                mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                        "cmd: %s name: %s to val: %t".format(cmd,name,val:int));
                 e.a = val:int;
                 repMsg = try! "set %s to %t".format(name, val:int);
             }
             when (DType.Float64, DType.Int64) {
                 var e = toSymEntry(gEnt,real);
                 var val: int = try! value:int;
-                if v {try! writeln("%s %s to %t".format(cmd,name,val:real));try! stdout.flush();}
+                mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                      "cmd: %s name: %s to value: %t".format(cmd,name,val:real));
                 e.a = val:real;
                 repMsg = try! "set %s to %t".format(name, val:real);
             }
             when (DType.Float64, DType.Float64) {
                 var e = toSymEntry(gEnt,real);
                 var val: real = try! value:real;
-                if v {try! writeln("%s %s to %t".format(cmd,name,val));try! stdout.flush();}
+                mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                           "cmd: %s name; %s to value: %t".format(cmd,name,val));
                 e.a = val;
                 repMsg = try! "set %s to %t".format(name, val);
             }
@@ -355,21 +390,24 @@ module MsgProcessing
                 value = value.replace("True","true");
                 value = value.replace("False","false");                
                 var val: bool = try! value:bool;
-                if v {try! writeln("%s %s to %t".format(cmd,name,val:real));try! stdout.flush();}
+                mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                       "cmd: %s name: %s to value: %t".format(cmd,name,val:real));
                 e.a = val:real;
                 repMsg = try! "set %s to %t".format(name, val:real);
             }
             when (DType.Bool, DType.Int64) {
                 var e = toSymEntry(gEnt,bool);
                 var val: int = try! value:int;
-                if v {try! writeln("%s %s to %t".format(cmd,name,val:bool));try! stdout.flush();}
+                mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                       "cmd: %s name: %s to value: %t".format(cmd,name,val:bool));
                 e.a = val:bool;
                 repMsg = try! "set %s to %t".format(name, val:bool);
             }
             when (DType.Bool, DType.Float64) {
                 var e = toSymEntry(gEnt,int);
                 var val: real = try! value:real;
-                if v {try! writeln("%s %s to %t".format(cmd,name,val:bool));try! stdout.flush();}
+                mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                      "cmd: %s name: %s to  value: %t".format(cmd,name,val:bool));
                 e.a = val:bool;
                 repMsg = try! "set %s to %t".format(name, val:bool);
             }
@@ -378,21 +416,18 @@ module MsgProcessing
                 value = value.replace("True","true");
                 value = value.replace("False","false");
                 var val: bool = try! value:bool;
-                if v {try! writeln("%s %s to %t".format(cmd,name,val));try! stdout.flush();}
+                mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                            "cmd: %s name: %s to value: %t".format(cmd,name,val));
                 e.a = val;
                 repMsg = try! "set %s to %t".format(name, val);
             }
             otherwise {
-                var errorMsg = unrecognizedTypeError(pn,dtypestr);
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="UnrecognizedTypeError")); 
-                return errorMsg;                
+                mpLogger.error(getModuleName(),getRoutineName(),
+                                               getLineNumber(),"dtype: %s".format(dtypestr));
+                return unrecognizedTypeError(pn,dtypestr);
             }
         }
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return repMsg;
     }
 }

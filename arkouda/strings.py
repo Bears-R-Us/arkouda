@@ -1,13 +1,13 @@
 from __future__ import annotations
-from typing import Tuple, Union
+from typing import cast, Tuple, Union
 from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value
-from arkouda.dtypes import NUMBER_FORMAT_STRINGS
 from arkouda.logger import getArkoudaLogger
+import numpy as np # type: ignore
 from arkouda.dtypes import str as akstr
-from arkouda.dtypes import resolve_scalar_dtype, translate_np_dtype
-import numpy as np
+from arkouda.dtypes import NUMBER_FORMAT_STRINGS, resolve_scalar_dtype, \
+     translate_np_dtype
 import json
 
 __all__ = ['Strings']
@@ -94,8 +94,9 @@ class Strings:
             self.shape = self.offsets.shape
         except Exception as e:
             raise ValueError(e)   
+
         self.dtype = akstr
-        self.logger = getArkoudaLogger(name=__class__.__name__)
+        self.logger = getArkoudaLogger(name=__class__.__name__) # type: ignore
 
     def __iter__(self):
         raise NotImplementedError('Strings does not support iteration')
@@ -110,7 +111,7 @@ class Strings:
         else:
             vals = ["'{}'".format(self[i]) for i in range(3)]
             vals.append('... ')
-            vals.extend([self[i] for i in range(self.size-3, self.size)])
+            vals.extend(["'{}'".format(self[i]) for i in range(self.size-3, self.size)])
         return "[{}]".format(', '.join(vals))
 
     def __repr__(self) -> str:
@@ -168,14 +169,13 @@ class Strings:
         else:
             raise ValueError("Strings: {} not supported between Strings and {}"\
                              .format(op, other.__class__.__name__))
-        repMsg = generic_msg(msg)
-        return create_pdarray(repMsg)
+        return create_pdarray(generic_msg(msg))
 
     def __eq__(self, other) -> bool:
         return self._binop(other, "==")
 
-    def __ne__(self, other : object) -> bool:
-        return self._binop(other, "!=")
+    def __ne__(self, other) -> bool:
+        return self._binop(cast(Strings, other), "!=")
 
     def __getitem__(self, key):
         if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
@@ -241,8 +241,7 @@ class Strings:
         """
         msg = "segmentLengths {} {} {}".\
                         format(self.objtype, self.offsets.name, self.bytes.name)
-        repMsg = generic_msg(msg)
-        return create_pdarray(repMsg)
+        return create_pdarray(generic_msg(msg))
 
     @typechecked
     def contains(self, substr : Union[str, bytes]) -> pdarray:
@@ -269,6 +268,14 @@ class Strings:
         See Also
         --------
         Strings.startswith, Strings.endswith
+        
+        Examples
+        --------
+        >>> strings = ak.array(['string {}'.format(i) for i in range(1,6)])
+        >>> strings
+        array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5'])
+        >>> strings.contains('string')
+        array([True, True, True, True, True])
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
@@ -278,8 +285,7 @@ class Strings:
                                                         self.bytes.name,
                                                         "str",
                                                         json.dumps([substr]))
-        repMsg = generic_msg(msg)
-        return create_pdarray(repMsg)
+        return create_pdarray(generic_msg(msg))
 
     @typechecked
     def startswith(self, substr : Union[str, bytes]) -> pdarray:
@@ -306,6 +312,14 @@ class Strings:
         See Also
         --------
         Strings.contains, Strings.endswith
+        
+        Examples
+        --------
+        >>> strings = ak.array(['string {}'.format(i) for i in range(1,6)])
+        >>> strings
+        array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5'])
+        >>> strings.startswith('string')
+        array([True, True, True, True, True])
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
@@ -315,8 +329,7 @@ class Strings:
                                                         self.bytes.name,
                                                         "str",
                                                         json.dumps([substr]))
-        repMsg = generic_msg(msg)
-        return create_pdarray(repMsg)
+        return create_pdarray(generic_msg(msg))
 
     @typechecked
     def endswith(self, substr : Union[str,bytes]) -> pdarray:
@@ -343,6 +356,14 @@ class Strings:
         See Also
         --------
         Strings.contains, Strings.startswith
+        
+        Examples
+        --------
+        >>> strings = ak.array(['{} string'.format(i) for i in range(1,6)])
+        >>> strings
+        array(['1 string', '2 string', '3 string', '4 string', '5 string'])
+        >>> strings.endswith('ing')
+        array([True, True, True, True, True])
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
@@ -352,8 +373,7 @@ class Strings:
                                                         self.bytes.name,
                                                         "str",
                                                         json.dumps([substr]))
-        repMsg = generic_msg(msg)
-        return create_pdarray(repMsg)
+        return create_pdarray(generic_msg(msg))
 
     @typechecked
     def peel(self, delimiter : str, times : int=1, includeDelimiter : bool=False, 
@@ -433,7 +453,7 @@ class Strings:
                             NUMBER_FORMAT_STRINGS['bool'].format(not fromRight),
                             json.dumps([delimiter]))
         repMsg = generic_msg(msg)
-        arrays = repMsg.split('+', maxsplit=3)
+        arrays = cast(str,repMsg).split('+', maxsplit=3)
         leftStr = Strings(arrays[0], arrays[1])
         rightStr = Strings(arrays[2], arrays[3])
         return leftStr, rightStr
@@ -551,7 +571,7 @@ class Strings:
                             NUMBER_FORMAT_STRINGS['bool'].format(toLeft),
                             json.dumps([delimiter]))
         repMsg = generic_msg(msg)
-        return Strings(*repMsg.split('+'))
+        return Strings(*cast(str,repMsg).split('+'))
 
     def __add__(self, other : Strings) -> Strings:
         return self.stick(other)
@@ -619,7 +639,7 @@ class Strings:
         msg = "segmentedHash {} {} {}".format(self.objtype, self.offsets.name, 
                                               self.bytes.name)
         repMsg = generic_msg(msg)
-        h1, h2 = repMsg.split('+')
+        h1, h2 = cast(str,repMsg).split('+')
         return create_pdarray(h1), create_pdarray(h2)
 
     def group(self) -> pdarray:
@@ -654,8 +674,7 @@ class Strings:
         """
         msg = "segmentedGroup {} {} {}".\
                            format(self.objtype, self.offsets.name, self.bytes.name)
-        repMsg = generic_msg(msg)
-        return create_pdarray(repMsg)
+        return create_pdarray(generic_msg(msg))
 
     def to_ndarray(self) -> np.ndarray:
         """
@@ -687,7 +706,6 @@ class Strings:
         >>> a = ak.array(["hello", "my", "world"])
         >>> a.to_ndarray()
         array(['hello', 'my', 'world'], dtype='<U5')
-
         >>> type(a.to_ndarray())
         numpy.ndarray
         """
@@ -766,4 +784,3 @@ class Strings:
     def attach(user_defined_name : str) -> Strings:
         return Strings(pdarray.attach(user_defined_name+'_offsets'),
                        pdarray.attach(user_defined_name+'_bytes'))
-

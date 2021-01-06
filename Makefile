@@ -334,6 +334,9 @@ test-chapel: $(TEST_TARGETS)
 .PHONY: test-all
 test-all: test-python test-chapel
 
+mypy:
+	python3 -m mypy arkouda
+
 $(TEST_BINARY_DIR):
 	mkdir -p $(TEST_BINARY_DIR)
 

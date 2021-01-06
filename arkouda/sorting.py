@@ -1,15 +1,17 @@
 from __future__ import annotations
-from typing import Iterable, Union
-from typeguard import typechecked
+from typing import cast, Sequence, Union
+from typeguard import typechecked, check_type
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros
 from arkouda.strings import Strings
-from arkouda.dtypes import *
+from arkouda.dtypes import int64, float64
+
+numeric_dtypes = {float64,int64}
 
 __all__ = ["argsort", "coargsort", "sort"]
 
-def argsort(pda : Union[pdarray,Strings,'Categorical']) -> pdarray:
+def argsort(pda : Union[pdarray,Strings,'Categorical']) -> pdarray: # type: ignore
     """
     Return the permutation that sorts the array.
     
@@ -35,7 +37,7 @@ def argsort(pda : Union[pdarray,Strings,'Categorical']) -> pdarray:
     Notes
     -----
     Uses a least-significant-digit radix sort, which is stable and
-    resilinent to non-uniformity in data but communication intensive.
+    resilient to non-uniformity in data but communication intensive.
 
     Examples
     --------
@@ -44,8 +46,11 @@ def argsort(pda : Union[pdarray,Strings,'Categorical']) -> pdarray:
     >>> a[perm]
     array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
     """
+    from arkouda.categorical import Categorical
+    check_type(argname='argsort', value=pda, 
+                      expected_type=Union[pdarray,Strings,Categorical])
     if hasattr(pda, "argsort"):
-        return pda.argsort()
+        return cast(Categorical,pda).argsort()
     if pda.size == 0:
         return zeros(0, dtype=int64)
     if isinstance(pda, Strings):
@@ -53,10 +58,10 @@ def argsort(pda : Union[pdarray,Strings,'Categorical']) -> pdarray:
     else:
         name = pda.name
     repMsg = generic_msg("argsort {} {}".format(pda.objtype, name))
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))
 
 @typechecked
-def coargsort(arrays : Iterable[Union[Strings,pdarray]]) -> pdarray:
+def coargsort(arrays : Sequence[Union[Strings,pdarray]]) -> pdarray:
     """
     Return the permutation that groups the rows (left-to-right), if the
     input arrays are treated as columns. The permutation sorts numeric
@@ -64,7 +69,7 @@ def coargsort(arrays : Iterable[Union[Strings,pdarray]]) -> pdarray:
     
     Parameters
     ----------
-    arrays : iterable of pdarray or Strings
+    arrays : Sequence[Union[Strings,pdarray]]
         The columns (int64, float64, or Strings) to sort by row
 
     Returns
@@ -126,7 +131,7 @@ def coargsort(arrays : Iterable[Union[Strings,pdarray]]) -> pdarray:
                                     ' '.join(anames),
                                     ' '.join(atypes))
     repMsg = generic_msg(reqMsg)
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))
 
 @typechecked
 def sort(pda : pdarray) -> pdarray:
@@ -148,8 +153,9 @@ def sort(pda : pdarray) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
-    RuntimeError
+    ValueError
         Raised if sort attempted on a pdarray with an unsupported dtype
+        such as bool
 
     See Also
     --------
@@ -169,5 +175,7 @@ def sort(pda : pdarray) -> pdarray:
     """
     if pda.size == 0:
         return zeros(0, dtype=int64)
+    if pda.dtype not in numeric_dtypes:
+        raise ValueError("ak.sort supports float64 or int64, not {}".format(pda.dtype))
     repMsg = generic_msg("sort {}".format(pda.name))
-    return create_pdarray(repMsg)
+    return create_pdarray(cast(str,repMsg))

@@ -15,7 +15,16 @@ module GenSymIO {
     use PrivateDist;
     use Reflection;
     use Errors;
+    use Logging;
     use ServerConfig;
+    
+    const gsLogger = new Logger();
+  
+    if v {
+        gsLogger.level = LogLevel.DEBUG;
+    } else {
+        gsLogger.level = LogLevel.INFO;
+    } 
 
     config const GenSymIO_DEBUG = false;
     config const SEGARRAY_OFFSET_NAME = "segments";
@@ -36,6 +45,9 @@ module GenSymIO {
         var tmpf:file;
         overMemLimit(2*8*size);
 
+        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                          "dtype: %t size: %i".format(dtype,size));
+
         // Write the data payload composing the pdarray to a memory buffer
         try {
             tmpf = openmem();
@@ -43,7 +55,10 @@ module GenSymIO {
             tmpw.write(data);
             try! tmpw.close();
         } catch {
-            return "Error: Could not write to memory buffer";
+            var errorMsg = "Error: Could not write to memory buffer";
+            
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
+            return errorMsg;
         }
 
         // Get the next name from the SymTab cache
@@ -78,18 +93,26 @@ module GenSymIO {
             } else {
                 tmpr.close();
                 tmpf.close();
-                return try! "Error: Unhandled data type %s".format(dtypeBytes);
+
+                var errorMsg = "Error: Unhandled data type %s".format(dtypeBytes);
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
+                return errorMsg;
             }
             tmpr.close();
             tmpf.close();
         } catch {
-            return "Error: Could not read from memory buffer into SymEntry";
+            var errorMsg = "Error: Could not read from memory buffer into SymEntry";
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
+            return errorMsg;
         }
         /*
          * Return message indicating the SymTab name corresponding to the
          * newly-created pdarray
          */
-        return try! "created " + st.attrib(rname);
+        var returnMsg = try! "created " + st.attrib(rname);
+
+        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);         
+        return returnMsg;
     }
 
     /*
@@ -115,6 +138,8 @@ module GenSymIO {
             } else if entry.dtype == DType.UInt8 {
                 tmpw.write(toSymEntry(entry, uint(8)).a);
             } else {
+                var errorMsg = "Error: Unhandled dtype %s".format(entry.dtype);                
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
                 return try! b"Error: Unhandled dtype %s".format(entry.dtype);
             }
             tmpw.close();
@@ -174,16 +199,24 @@ module GenSymIO {
         try {
             filename = jsonToPdArray(jsonfile, 1)[0];
         } catch {
-            return try! "Error: could not decode json filenames via tempfile (%i files: %s)".format(1, jsonfile);
+            var errorMsg = "Error: could not decode json filenames via tempfile (%i files: %s)".format(
+                                     1, jsonfile);
+                                     
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return errorMsg;                                    
         }
 
         // Attempt to interpret filename as a glob expression and ls the first result
         var tmp = glob(filename);
-        if GenSymIO_DEBUG {
-            writeln(try! "glob expanded %s to %i files".format(filename, tmp.size));
-        }
+
+        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                          "glob expanded filename: %s to size: %i files".format(filename, tmp.size));
+
         if tmp.size <= 0 {
-            return try! "Error: no files matching %s".format(filename);
+            var errorMsg = "Error: no files matching %s".format(filename);
+            
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return errorMsg;
         }
         filename = tmp[tmp.domain.first];
         var exitCode: int;
@@ -207,23 +240,13 @@ module GenSymIO {
             f.close();
             remove(tmpfile);
         } catch e : Error {
-            writeln(generateErrorContext(
-                                msg=e.message(), 
-                                lineNumber=getLineNumber(), 
-                                moduleName=getModuleName(), 
-                                routineName=getRoutineName(), 
-                                errorClass="ProcessSpawnError"));
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),e.message());
             return "Error: failed to spawn process and read output %t".format(e);
         }
 
         if exitCode != 0 {
             var errMsg = "error opening %s, check file permissions".format(filename);
-            writeln(generateErrorContext(
-                                msg=errMsg, 
-                                lineNumber=getLineNumber(), 
-                                moduleName=getModuleName(), 
-                                routineName=getRoutineName(), 
-                                errorClass="FileAccessError"));
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
             return try! "Error: %s".format(errMsg);
         } else {
             return repMsg;
@@ -234,7 +257,11 @@ module GenSymIO {
     proc readhdfMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
         var repMsg: string;
         // reqMsg = "readhdf <dsetName> <nfiles> [<json_filenames>]"
-        var (dsetName, nfilesStr, jsonfiles) = payload.decode().splitMsgToTuple(3);
+        var (dsetName, strictFlag, nfilesStr, jsonfiles) = payload.decode().splitMsgToTuple(4);
+        var strictTypes: bool = true;
+        if (strictFlag.toLower() == "false") {
+          strictTypes = false;
+        }
         var nfiles = try! nfilesStr:int;
         var filelist: [0..#nfiles] string;
         try {
@@ -246,17 +273,12 @@ module GenSymIO {
         var filenames: [filedom] string;
         if filelist.size == 1 {
             var tmp = glob(filelist[0]);
-            if GenSymIO_DEBUG {
-                writeln(try! "glob expanded %s to %i files".format(filelist[0], tmp.size));
-            }
+
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                               "glob expanded %s to %i files".format(filelist[0], tmp.size));
             if tmp.size == 0 {
                 var errMsg = "Error: no files matching %s".format(filelist[0]);
-                writeln(generateErrorContext(
-                                msg=errMsg, 
-                                lineNumber=getLineNumber(), 
-                                moduleName=getModuleName(), 
-                                routineName=getRoutineName(), 
-                                errorClass="FileAccessError"));
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errMsg);
                 return try! errMsg;
             }
             // Glob returns filenames in weird order. Sort for consistency
@@ -275,31 +297,26 @@ module GenSymIO {
             try {
                 (segArrayFlags[i], dclasses[i], bytesizes[i], signFlags[i]) = get_dtype(fname, dsetName);
             } catch e: FileNotFoundError {
-                writeln(e.message());
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),e.message());
                 return try! "Error: file named %s not found".format(fname);
             } catch e: PermissionError {
-                writeln(e.message());
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),e.message());
                 return try! "Error: permission error opening %s".format(fname);
             } catch e: DatasetNotFoundError {
-                writeln(e.message());
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),e.message());
                 return e.publish();
             } catch e: NotHDF5FileError {
-                writeln(e.message());
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),e.message());
                 return e.publish();
             } catch e: HDF5FileFormatError {
-                writeln(e.message());
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),e.message());
                 return e.publish();             
             } catch e: SegArrayError {
-                writeln(e.message());
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),e.message());
                 return e.publish();
             } catch e: Error {
                 // Need a catch-all for non-throwing function
-                writeln(generateErrorContext(
-                                msg=e.message(), 
-                                lineNumber=getLineNumber(), 
-                                moduleName=getModuleName(), 
-                                routineName=getRoutineName(), 
-                                errorClass="Error"));
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),e.message());
                 return try! "Error: unknown cause %t".format(e);
             }
         }
@@ -308,13 +325,15 @@ module GenSymIO {
         const bytesize = bytesizes[filedom.first];
         const isSigned = signFlags[filedom.first];
         for (name, sa, dc, bs, sf) in zip(filenames, segArrayFlags, dclasses, bytesizes, signFlags) {
-            if (sa != isSegArray) || (dc != dataclass) || (bs != bytesize) || (sf != isSigned) {
-                return try! "Error: inconsistent dtype in dataset %s of file %s".format(dsetName, name);
+            if ((sa != isSegArray) || (dc != dataclass)) {
+                return "Error: inconsistent dtype in dataset %s of file %s".format(dsetName, name);
+            } else if (strictTypes && ((bs != bytesize) || (sf != isSigned))) {
+                return "Error: inconsistent precision or sign in dataset %s of file %s\nWith strictTypes, mixing of precision and signedness not allowed (set strictTypes=False to suppress)".format(dsetName, name);
             }
         }
-        if GenSymIO_DEBUG {
-            writeln("Verified all dtypes across files");
-        }
+        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                             "Verified all dtypes across files");
+
         var subdoms: [filedom] domain(1);
         var segSubdoms: [filedom] domain(1);
         var len: int;
@@ -327,25 +346,14 @@ module GenSymIO {
                 (subdoms, len) = get_subdoms(filenames, dsetName);
             }
         } catch e: HDF5RankError {
-            writeln(generateErrorContext(
-                                msg=e.message(), 
-                                lineNumber=getLineNumber(), 
-                                moduleName=getModuleName(), 
-                                routineName=getRoutineName(), 
-                                errorClass="FileAccessError"));
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),e.message());
             return notImplementedError("readhdf", try! "Rank %i arrays".format(e.rank));
         } catch e: Error {
-            writeln(generateErrorContext(
-                                msg=e.message(), 
-                                lineNumber=getLineNumber(), 
-                                moduleName=getModuleName(), 
-                                routineName=getRoutineName(), 
-                                errorClass="FileAccessError"));
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),e.message());
             return try! "Error: unknown cause: %t".format(e);
         }
-        if GenSymIO_DEBUG {
-            writeln("Got subdomains and total length");
-        }
+        gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                                                            "Got subdomains and total length");
 
         select (isSegArray, dataclass) {
             when (true, C_HDF5.H5T_INTEGER) {
@@ -357,7 +365,8 @@ module GenSymIO {
                 read_files_into_distributed_array(entrySeg.a, segSubdoms, filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);
                 fixupSegBoundaries(entrySeg.a, segSubdoms, subdoms);
                 var entryVal = new shared SymEntry(len, uint(8));
-                read_files_into_distributed_array(entryVal.a, subdoms, filenames, dsetName + "/" + SEGARRAY_VALUE_NAME);
+                read_files_into_distributed_array(entryVal.a, subdoms, filenames, 
+                                                         dsetName + "/" + SEGARRAY_VALUE_NAME);
 
                 var segName = st.nextName();
                 st.addEntry(segName, entrySeg);
@@ -367,9 +376,8 @@ module GenSymIO {
             }
             when (false, C_HDF5.H5T_INTEGER) {
                 var entryInt = new shared SymEntry(len, int);
-                if GenSymIO_DEBUG {
-                    writeln("Initialized int entry"); try! stdout.flush();
-                }                
+                gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                            "Initialized int entry");                
                 read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
                 var rname = st.nextName();
                 st.addEntry(rname, entryInt);
@@ -377,9 +385,8 @@ module GenSymIO {
             }
             when (false, C_HDF5.H5T_FLOAT) {
                 var entryReal = new shared SymEntry(len, real);
-                if GenSymIO_DEBUG {
-                    writeln("Initialized float entry"); try! stdout.flush();
-                }
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                                             "Initialized float entry");
                 read_files_into_distributed_array(entryReal.a, subdoms, filenames, dsetName);
                 var rname = st.nextName();
                 st.addEntry(rname, entryReal);
@@ -389,12 +396,7 @@ module GenSymIO {
                 var errorMsg = "Error: detected unhandled datatype: segmented? " +
                                "%t, class %i, size %i, signed? %t".format(isSegArray, 
                                dataclass, bytesize, isSigned);
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IllegalArgumentError"));
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return "Error: %s".format(errorMsg);
             }
         }
@@ -407,7 +409,11 @@ module GenSymIO {
         // reqMsg = "readAllHdf <ndsets> <nfiles> [<json_dsetname>] | [<json_filenames>]"
         var repMsg: string;
         // May need a more robust delimiter then " | "
-        var (ndsetsStr, nfilesStr, arraysStr) = payload.decode().splitMsgToTuple(3);
+        var (strictFlag, ndsetsStr, nfilesStr, arraysStr) = payload.decode().splitMsgToTuple(4);
+        var strictTypes: bool = true;
+        if (strictFlag.toLower() == "false") {
+          strictTypes = false;
+        }
         var (jsondsets, jsonfiles) = arraysStr.splitMsgToTuple(" | ",2);
         var ndsets = try! ndsetsStr:int;
         var nfiles = try! nfilesStr:int;
@@ -416,12 +422,15 @@ module GenSymIO {
         try {
             dsetlist = jsonToPdArray(jsondsets, ndsets);
         } catch {
-            return try! "Error: could not decode json dataset names via tempfile (%i files: %s)".format(ndsets, jsondsets);
+            var errorMsg = "Error: could not decode json dataset names via tempfile (%i files: %s)".format(
+                                               ndsets, jsondsets);
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
+            return errorMsg;
         }
         try {
             filelist = jsonToPdArray(jsonfiles, nfiles);
         } catch {
-            return try! "Error: could not decode json filenames via tempfile (%i files: %s)".format(nfiles, jsonfiles);
+            return "Error: could not decode json filenames via tempfile (%i files: %s)".format(nfiles, jsonfiles);
         }
         var dsetdom = dsetlist.domain;
         var filedom = filelist.domain;
@@ -431,11 +440,12 @@ module GenSymIO {
 
         if filelist.size == 1 {
             var tmp = glob(filelist[0]);
-            if GenSymIO_DEBUG {
-                writeln(try! "glob expanded %s to %i files".format(filelist[0], tmp.size));
-            }
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                  "glob expanded %s to %i files".format(filelist[0], tmp.size));
             if tmp.size == 0 {
-                return try! "Error: no files matching %s".format(filelist[0]);
+                var errorMsg = "Error: no files matching %s".format(filelist[0]);
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return errorMsg;
             }
             // Glob returns filenames in weird order. Sort for consistency
             sort(tmp);
@@ -454,28 +464,23 @@ module GenSymIO {
                 try {
                     (segArrayFlags[i], dclasses[i], bytesizes[i], signFlags[i]) = get_dtype(fname, dsetName);
                 } catch e: FileNotFoundError {
-                    writeln(e.message());
+                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),e.message());
                     return try! "Error: file named %s not found".format(fname);
                 } catch e: PermissionError {
-                    writeln(e.message());
+                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),e.message());
                     return try! "Error: permission error opening %s".format(fname);
                 } catch e: DatasetNotFoundError {
-                    writeln(e.message());
+                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),e.message());
                     return try! e.publish();
                 } catch e: NotHDF5FileError {
-                    writeln(e.message());
+                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),e.message());
                     return e.publish();
                 } catch e: SegArrayError {
-                    writeln(e.message());
+                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),e.message());
                     return e.publish();
                 } catch e : Error {
                     // Need a catch-all for non-throwing function
-                    writeln(generateErrorContext(
-                                     msg=e.message(), 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="Error"));
+                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),e.message());
                     return try! "Error: unknown cause";
                 }
             }
@@ -484,13 +489,18 @@ module GenSymIO {
             const bytesize = bytesizes[filedom.first];
             const isSigned = signFlags[filedom.first];
             for (name, sa, dc, bs, sf) in zip(filenames, segArrayFlags, dclasses, bytesizes, signFlags) {
-                if (sa != isSegArray) || (dc != dataclass) || (bs != bytesize) || (sf != isSigned) {
-                    return try! "Error: inconsistent dtype in dataset %s of file %s".format(dsetName, name);
-                }
+              if ((sa != isSegArray) || (dc != dataclass)) {
+                  var errorMsg = "Error: inconsistent dtype in dataset %s of file %s".format(dsetName, name);
+                  gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                  return errorMsg;
+              } else if (strictTypes && ((bs != bytesize) || (sf != isSigned))) {
+                  var errorMsg = "Error: inconsistent precision or sign in dataset %s of file %s\nWith strictTypes, mixing of precision and signedness not allowed (set strictTypes=False to suppress)".format(dsetName, name);
+                  gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                  return errorMsg;
+              }
             }
-            if GenSymIO_DEBUG {
-                writeln("Verified all dtypes across files for dataset ", dsetName);
-            }
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                           "Verified all dtypes across files for dataset %s".format(dsetName));
             var subdoms: [filedom] domain(1);
             var segSubdoms: [filedom] domain(1);
             var len: int;
@@ -503,17 +513,23 @@ module GenSymIO {
                     (subdoms, len) = get_subdoms(filenames, dsetName);
                 }
             } catch e: HDF5RankError {
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),e.message());
                 return notImplementedError("readhdf", try! "Rank %i arrays".format(e.rank));
-            } catch {
+            } catch e: Error {
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),e.message());
                 return try! "Error: unknown cause";
             }
-            if GenSymIO_DEBUG {
-                writeln("Got subdomains and total length for dataset ", dsetName);
-            }
+
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                                           "Got subdomains and total length for dataset %s".format(dsetName));
+
             select (isSegArray, dataclass) {
                 when (true, C_HDF5.H5T_INTEGER) {
                     if (bytesize != 1) || isSigned {
-                        return try! "Error: detected unhandled datatype: segmented? %t, class %i, size %i, signed? %t".format(isSegArray, dataclass, bytesize, isSigned);
+                        var errorMsg = "Error: detected unhandled datatype: segmented? %t, class %i, size %i, signed? %t".format(
+                                                isSegArray, dataclass, bytesize, isSigned);
+                        gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return errorMsg;
                     }
                     var entrySeg = new shared SymEntry(nSeg, int);
                     read_files_into_distributed_array(entrySeg.a, segSubdoms, filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);
@@ -528,9 +544,9 @@ module GenSymIO {
                 }
                 when (false, C_HDF5.H5T_INTEGER) {
                     var entryInt = new shared SymEntry(len, int);
-                    if GenSymIO_DEBUG {
-                        writeln("Initialized int entry for dataset ", dsetName); try! stdout.flush();
-                    }
+                    gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                  "Initialized int entry for dataset %s".format(dsetName));
+
                     read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
                     var rname = st.nextName();
                     
@@ -553,9 +569,8 @@ module GenSymIO {
                 }
                 when (false, C_HDF5.H5T_FLOAT) {
                     var entryReal = new shared SymEntry(len, real);
-                    if GenSymIO_DEBUG {
-                        writeln("Initialized float entry"); try! stdout.flush();
-                    }
+                    gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                                      "Initialized float entry");
                     read_files_into_distributed_array(entryReal.a, subdoms, filenames, dsetName);
                     var rname = st.nextName();
                     st.addEntry(rname, entryReal);
@@ -564,12 +579,7 @@ module GenSymIO {
                 otherwise {
                     var errorMsg = "detected unhandled datatype: segmented? %t, class %i, size %i, " +
                                    "signed? %t".format(isSegArray, dataclass, bytesize, isSigned);
-                    writeln(generateErrorContext(
-                                msg=errorMsg, 
-                                lineNumber=getLineNumber(), 
-                                moduleName=getModuleName(), 
-                                routineName=getRoutineName(), 
-                                errorClass="UnrecognizedTypeError")); 
+                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                     return try! "Error: %".format(errorMsg);
                 }
             }
@@ -774,12 +784,8 @@ module GenSymIO {
              * If there's an actual error, print it here. :TODO: revisit this
              * catch block after confirming the best way to handle HDF5 error
              */
-            writeln(generateErrorContext(
-                        msg="checking if isStringsDataset %t".format(e.message()), 
-                        lineNumber=getLineNumber(), 
-                        moduleName=getModuleName(), 
-                        routineName=getRoutineName(), 
-                        errorClass="Error"));
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                                    "checking if isStringsDataset %t".format(e.message())); 
         }
 
         return groupExists > -1;
@@ -804,12 +810,8 @@ module GenSymIO {
              * If there's an actual error, print it here. :TODO: revisit this
              * catch block after confirming the best way to handle HDF5 error
              */
-            writeln(generateErrorContext(
-                        msg="checking if isBooleanDataset %t".format(e.message()), 
-                        lineNumber=getLineNumber(), 
-                        moduleName=getModuleName(), 
-                        routineName=getRoutineName(), 
-                        errorClass="Error"));
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                                      "checking if isBooleanDataset %t".format(e.message()));
         }
 
         return groupExists > -1;
@@ -840,13 +842,8 @@ module GenSymIO {
              * If there's an actual error, print it here. :TODO: revisit this
              * catch block after confirming the best way to handle HDF5 error
              */
-            writeln(generateErrorContext(
-                msg="checking if isBooleanDataset %t with file %s".format(e.message(), 
-                                 fileName), 
-                lineNumber=getLineNumber(), 
-                moduleName=getModuleName(), 
-                routineName=getRoutineName(), 
-                errorClass="Error"));       
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                        "checking if isBooleanDataset %t with file %s".format(e.message()));
         }
         return boolDataset;
     }
@@ -901,10 +898,10 @@ module GenSymIO {
     proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), 
                                                  filenames: [FD] string, dsetName: string)
         where (MyDmap == Dmap.blockDist || MyDmap == Dmap.defaultRectangular) {
-            if GenSymIO_DEBUG {
-                writeln("entry.a.targetLocales() = ", A.targetLocales()); try! stdout.flush();
-                writeln("Filedomains: ", filedomains); try! stdout.flush();
-            }
+            try! gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                     "entry.a.targetLocales() = %t".format(A.targetLocales()));
+            try! gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                     "Filedomains: %t".format(filedomains));
 
             coforall loc in A.targetLocales() do on loc {
                 // Create local copies of args
@@ -941,10 +938,10 @@ module GenSymIO {
                             var memspace = C_HDF5.H5Screate_simple(1, c_ptrTo(memCount), nil);
                             C_HDF5.H5Sselect_hyperslab(memspace, C_HDF5.H5S_SELECT_SET, c_ptrTo(memOffset), 
                                                               c_ptrTo(memStride), c_ptrTo(memCount), nil);
-                            if GenSymIO_DEBUG {
-                                writeln("Locale ", loc, ", intersection ", intersection, ", dataset slice ", 
-                                        (intersection.low - filedom.low, intersection.high - filedom.low));
-                            }
+
+                            try! gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                    "Locale %t intersection %t dataset slice %t".format(loc,intersection, 
+                                          (intersection.low - filedom.low, intersection.high - filedom.low)));
 
                             /*
                              * The fact that intersection is a subset of a local subdomain means
@@ -1040,32 +1037,23 @@ module GenSymIO {
                     warnFlag = write1DDistStrings(filename, mode, dsetName, e.a, DType.UInt8);
                 } otherwise {
                     var errorMsg = unrecognizedTypeError("tohdf", dtype2str(entry.dtype));
-                    writeln(generateErrorContext(
-                                msg=errorMsg, 
-                                lineNumber=getLineNumber(), 
-                                moduleName=getModuleName(), 
-                                routineName=getRoutineName(), 
-                                errorClass="UnrecognizedTypeError"));                   
+                    try! gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+               
                     return errorMsg;
                 }
             }
         } catch e: FileNotFoundError {
-              writeln(e.message());
+              try! gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),e.message());
               return try! "Error: unable to open file for writing: %s".format(filename);
         } catch e: MismatchedAppendError {
-              writeln(e.message());
+              try! gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),e.message());
               return e.publish();
         } catch e: WriteModeError {
-              writeln(e.message());
+              try! gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),e.message());
               return e.publish();
         } catch e: Error {
               var errorMsg = "problem writing to file %s".format(e);
-              writeln(generateErrorContext(
-                            msg=errorMsg, 
-                            lineNumber=getLineNumber(), 
-                            moduleName=getModuleName(), 
-                            routineName=getRoutineName(), 
-                            errorClass="UnrecognizedTypeError"));  
+              try! gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
               return "Error: %s".format(errorMsg);
         }
         if warnFlag {
@@ -1148,9 +1136,9 @@ module GenSymIO {
         coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) with 
                         (ref leadingSliceIndices, ref trailingSliceIndices) do on loc {
             const myFilename = filenames[idx];
-            if GenSymIO_DEBUG {
-                writeln(try! "%s exists? %t".format(myFilename, exists(myFilename)));
-            }
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                   "%s exists? %t".format(myFilename, exists(myFilename)));
+
             var myFileID = C_HDF5.H5Fopen(myFilename.c_str(), 
                                        C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
             const locDom = A.localSubdomain();
@@ -1450,9 +1438,10 @@ module GenSymIO {
          */
         coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) do on loc {
             const myFilename = filenames[idx];
-            if GenSymIO_DEBUG {
-                writeln(try! "%s exists? %t".format(myFilename, exists(myFilename)));
-            }
+
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "%s exists? %t".format(myFilename, exists(myFilename)));
+
             var myFileID = C_HDF5.H5Fopen(myFilename.c_str(), 
                                        C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
             const locDom = A.localSubdomain();
@@ -1655,9 +1644,8 @@ module GenSymIO {
               //filenames[loc] = try! "%s_LOCALE%s%s".format(prefix, loc:string, extension);
               var file_id: C_HDF5.hid_t;
 
-              if GenSymIO_DEBUG {
-                  writeln("Creating or truncating file");
-              }
+              gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                             "Creating or truncating file");
 
               file_id = C_HDF5.H5Fcreate(filenames[loc].c_str(), C_HDF5.H5F_ACC_TRUNC,
                                                         C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
@@ -1757,9 +1745,8 @@ module GenSymIO {
               //filenames[loc] = try! "%s_LOCALE%s%s".format(prefix, loc:string, extension);
               var file_id: C_HDF5.hid_t;
 
-              if GenSymIO_DEBUG {
-                  writeln("Creating or truncating file");
-              }
+              gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                              "Creating or truncating file");
 
               file_id = C_HDF5.H5Fcreate(filenames[loc].c_str(), C_HDF5.H5F_ACC_TRUNC,
                                                       C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);

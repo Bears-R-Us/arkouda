@@ -227,6 +227,14 @@ class OperatorsTest(ArkoudaTest):
         self.assertIsInstance(dArray, ak.pdarrayclass.pdarray)
         self.assertEqual(np.float64(5), dArray[0])
         
+    def testPdArrayConcatenation(self):
+        onesOne = ak.randint(0, 100, 100)
+        onesTwo = ak.randint(0, 100, 100)
+        
+        result = ak.concatenate([onesOne,onesTwo])
+        self.assertEqual(200, len(result))
+        self.assertEqual(np.int64,result.dtype)
+
     def testConcatenate(self):
         pdaOne = ak.arange(1,4)
         pdaTwo = ak.arange(4,7)  
@@ -273,6 +281,11 @@ class OperatorsTest(ArkoudaTest):
         
         with self.assertRaises(TypeError):
             ak.ones(100).any([0])
+            
+        with self.assertRaises(TypeError) as cm:
+            ak.unique(list(range(0,10)))
+        self.assertEqual('must be pdarray, Strings, or Categorical {}', 
+                         cm.exception.args[0])
         
         with self.assertRaises(RuntimeError) as cm:
             ak.concatenate([ak.ones(100),ak.array([True])])

@@ -1,6 +1,7 @@
 module SegmentedMsg {
   use Reflection;
   use Errors;
+  use Logging;
   use SegmentedArray;
   use ServerErrorStrings;
   use ServerConfig;
@@ -10,24 +11,32 @@ module SegmentedMsg {
   use IO;
   use GenSymIO only jsonToPdArray;
 
-  private config const DEBUG = false;
+  const smLogger = new Logger();
+  
+  if v {
+      smLogger.level = LogLevel.DEBUG;
+  } else {
+      smLogger.level = LogLevel.INFO;
+  }
 
   proc randomStringsMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
       var pn = Reflection.getRoutineName();
-      var (lenStr, dist, charsetStr, arg1str, arg2str)
-          = payload.decode().splitMsgToTuple(5);
+      var (lenStr, dist, charsetStr, arg1str, arg2str, seedStr)
+          = payload.decode().splitMsgToTuple(6);
       var len = lenStr: int;
       var charset = str2CharSet(charsetStr);
       var segName = st.nextName();
       var valName = st.nextName();
       var repMsg: string;
+      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+             "dist: %s segName: %t valName: %t".format(dist.toLower(),segName,valName));
       select dist.toLower() {
           when "uniform" {
               var minLen = arg1str:int;
               var maxLen = arg2str:int;
               // Lengths + 2*segs + 2*vals (copied to SymTab)
               overMemLimit(8*len + 16*len + (maxLen + minLen)*len);
-              var (segs, vals) = newRandStringsUniformLength(len, minLen, maxLen, charset);
+              var (segs, vals) = newRandStringsUniformLength(len, minLen, maxLen, charset, seedStr);
               var segEntry = new shared SymEntry(segs);
               var valEntry = new shared SymEntry(vals);
               st.addEntry(segName, segEntry);
@@ -39,7 +48,7 @@ module SegmentedMsg {
               var logStd = arg2str:real;
               // Lengths + 2*segs + 2*vals (copied to SymTab)
               overMemLimit(8*len + 16*len + exp(logMean + (logStd**2)/2):int*len);
-              var (segs, vals) = newRandStringsLogNormalLength(len, logMean, logStd, charset);
+              var (segs, vals) = newRandStringsLogNormalLength(len, logMean, logStd, charset, seedStr);
               var segEntry = new shared SymEntry(segs);
               var valEntry = new shared SymEntry(vals);
               st.addEntry(segName, segEntry);
@@ -48,14 +57,10 @@ module SegmentedMsg {
           }
           otherwise { 
               repMsg = notImplementedError(pn, dist);       
-              writeln(generateErrorContext(
-                                     msg=repMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));          
+              smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
           }
       }
+      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
       return repMsg;
   }
 
@@ -69,6 +74,10 @@ module SegmentedMsg {
     st.check(valName);
     
     var rname = st.nextName();
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            "cmd: %s objtype: %t segName: %t valName: %t".format(
+                   cmd,objtype,segName,valName));
+
     select objtype {
       when "str" {
         var strings = new owned SegString(segName, valName, st);
@@ -78,55 +87,67 @@ module SegmentedMsg {
       }
       otherwise {
           var errorMsg = notImplementedError(pn, "%s".format(objtype));
-          writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                   
+          smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                      
           return errorMsg;
       }
     }
-    return "created "+st.attrib(rname);
+    var returnMsg = "created "+st.attrib(rname);
+    
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
+    return returnMsg;
   }
 
   proc segmentedEfuncMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
-    var pn = Reflection.getRoutineName();
-    var repMsg: string;
-    var (subcmd, objtype, segName, valName, valtype, valStr) = payload.decode().splitMsgToTuple(6);
+      var pn = Reflection.getRoutineName();
+      var repMsg: string;
+      var (subcmd, objtype, segName, valName, valtype, valStr) = 
+                                              payload.decode().splitMsgToTuple(6);
 
-    // check to make sure symbols defined
-    st.check(segName);
-    st.check(valName);
+      // check to make sure symbols defined
+      st.check(segName);
+      st.check(valName);
 
-    var json = jsonToPdArray(valStr, 1);
-    var val = json[json.domain.low];
-    var rname = st.nextName();
-    select (objtype, valtype) {
-    when ("str", "str") {
-      var strings = new owned SegString(segName, valName, st);
-      select subcmd {
-        when "contains" {
-          var truth = st.addEntry(rname, strings.size, bool);
-          truth.a = strings.substringSearch(val, SearchMode.contains);
-          repMsg = "created "+st.attrib(rname);
+      var json = jsonToPdArray(valStr, 1);
+      var val = json[json.domain.low];
+      var rname = st.nextName();
+    
+      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                         "cmd: %s subcmd: %s objtype: %t valtype: %t".format(
+                          cmd,subcmd,objtype,valtype));
+    
+        select (objtype, valtype) {
+          when ("str", "str") {
+            var strings = new owned SegString(segName, valName, st);
+            select subcmd {
+                when "contains" {
+                var truth = st.addEntry(rname, strings.size, bool);
+                truth.a = strings.substringSearch(val, SearchMode.contains);
+                repMsg = "created "+st.attrib(rname);
+            }
+            when "startswith" {
+                var truth = st.addEntry(rname, strings.size, bool);
+                truth.a = strings.substringSearch(val, SearchMode.startsWith);
+                repMsg = "created "+st.attrib(rname);
+            }
+            when "endswith" {
+                var truth = st.addEntry(rname, strings.size, bool);
+                truth.a = strings.substringSearch(val, SearchMode.endsWith);
+                repMsg = "created "+st.attrib(rname);
+            }
+            otherwise {
+               return notImplementedError(pn, "subcmd: %s, (%s, %s)".format(
+                         subcmd, objtype, valtype));
+            }
+          }
         }
-        when "startswith" {
-          var truth = st.addEntry(rname, strings.size, bool);
-          truth.a = strings.substringSearch(val, SearchMode.startsWith);
-          repMsg = "created "+st.attrib(rname);
+        otherwise {
+          var errorMsg = "(%s, %s)".format(objtype, valtype);
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+          return notImplementedError(pn, errorMsg);
         }
-        when "endswith" {
-          var truth = st.addEntry(rname, strings.size, bool);
-          truth.a = strings.substringSearch(val, SearchMode.endsWith);
-          repMsg = "created "+st.attrib(rname);
-        }
-        otherwise {return notImplementedError(pn, "subcmd: %s, (%s, %s)".format(subcmd, objtype, valtype));}
       }
-    }
-    otherwise {return notImplementedError(pn, "(%s, %s)".format(objtype, valtype));}
-    }
-    return repMsg;
+      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+      return repMsg;
   }
 
 proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
@@ -138,6 +159,10 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
     // check to make sure symbols defined
     st.check(segName);
     st.check(valName);
+
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                         "cmd: %s subcmd: %s objtype: %t valtype: %t".format(
+                          cmd,subcmd,objtype,valtype));
 
     select (objtype, valtype) {
     when ("str", "str") {
@@ -206,12 +231,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
           } otherwise {
               var errorMsg = notImplementedError(pn, 
                                "subcmd: %s, (%s, %s)".format(subcmd, objtype, valtype));
-              writeln(generateErrorContext(
-                                     msg=repMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));   
+              smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
               return errorMsg;                            
               }
           }
@@ -223,27 +243,19 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
         otherwise {
             var errorMsg = notImplementedError(pn, 
                               "subcmd: %s, (%s, %s)".format(subcmd, objtype, valtype));
-            writeln(generateErrorContext(
-                                     msg=repMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));    
+            smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
             return errorMsg;                                          
         }
       }
     }
     otherwise {
         var errorMsg = notImplementedError(pn, "(%s, %s)".format(objtype, valtype));
-        writeln(generateErrorContext(
-                                     msg=repMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));  
+        smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
         return errorMsg;       
       }
     }
+    
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
     return repMsg;
   }
 
@@ -267,16 +279,13 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
             forall (h, h1, h2) in zip(hashes, hash1.a, hash2.a) {
                 (h1,h2) = h:(int,int);
             }
-            return "created " + st.attrib(name1) + "+created " + st.attrib(name2);
+            var repMsg = "created " + st.attrib(name1) + "+created " + st.attrib(name2);
+            smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+            return repMsg;
         }
         otherwise {
             var errorMsg = notImplementedError(pn, objtype);
-            writeln(generateErrorContext(
-                                     msg=repMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
+            smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
             return errorMsg;
         }
     }
@@ -301,7 +310,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
     var (subcmd, objtype, rest) = payload.decode().splitMsgToTuple(3);
     var fields = rest.split();
     var args: [1..#fields.size] string = fields; // parsed by subroutines
-    writeln("subcmd: %s objtype: %s rest: %s".format(subcmd,objtype,rest));
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                            "subcmd: %s objtype: %s rest: %s".format(subcmd,objtype,rest));
     try {
         select subcmd {
             when "intIndex" {
@@ -315,32 +325,17 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
             }
             otherwise {
                 var errorMsg = "Error: in %s, nknown subcommand %s".format(pn, subcmd);
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="UknownSubcommandError")); 
-               return errorMsg;
+                smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
+                return errorMsg;
             }
         }
     } catch e: OutOfBoundsError {
         var errorMsg = "Error: index out of bounds";
-        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="OutOfBoundsError")); 
+        smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
         return errorMsg;
-    } catch {
-        var errorMsg = "Error: unknown cause";
-        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="UnknownError")); 
+    } catch e: Error {
+        var errorMsg = "Error: unknown cause %t".format(e);
+        smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
         return errorMsg;
     }
   }
@@ -365,17 +360,15 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
               // TO DO: in the future, we will force the client to handle this
               idx = convertPythonIndexToChapel(idx, strings.size);
               var s = strings[idx];
-              return "item %s %jt".format("str", s);
+
+              var repMsg = "item %s %jt".format("str", s);
+              smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
+              return repMsg;
           }
           otherwise { 
               var errorMsg = notImplementedError(pn, objtype); 
-              writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
-             return errorMsg;                          
+              smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
+              return errorMsg;                          
           }
       }
   }
@@ -409,12 +402,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
         // Only stride-1 slices are allowed for now
         if (stride != 1) { 
             var errorMsg = notImplementedError(pn, "stride != 1"); 
-            writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
+            smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
             return errorMsg;
         }
         // TO DO: in the future, we will force the client to handle this
@@ -428,16 +416,14 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
         var newValsEntry = new shared SymEntry(newVals);
         st.addEntry(newSegName, newSegsEntry);
         st.addEntry(newValName, newValsEntry);
-        return "created " + st.attrib(newSegName) + " +created " + st.attrib(newValName);
+        
+        var repMsg = "created " + st.attrib(newSegName) + " +created " + st.attrib(newValName);
+        smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
+        return repMsg;
       }
       otherwise {
           var errorMsg = notImplementedError(pn, objtype);
-          writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
+          smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
           return errorMsg;          
         }
       }
@@ -464,34 +450,55 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
 
     var newSegName = st.nextName();
     var newValName = st.nextName();
+    
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                  "objtype:%s".format(objtype));
+    
     select objtype {
-      when "str" {
-        var strings = new owned SegString(args[1], args[2], st);
-        var iname = args[3];
-        var gIV: borrowed GenSymEntry = st.lookup(iname);
-        select gIV.dtype {
-          when DType.Int64 {
-            var iv = toSymEntry(gIV, int);
-            var (newSegs, newVals) = strings[iv.a];
-            var newSegsEntry = new shared SymEntry(newSegs);
-            var newValsEntry = new shared SymEntry(newVals);
-            st.addEntry(newSegName, newSegsEntry);
-            st.addEntry(newValName, newValsEntry);
-          }
-          when DType.Bool {
-            var iv = toSymEntry(gIV, bool);
-            var (newSegs, newVals) = strings[iv.a];
-            var newSegsEntry = new shared SymEntry(newSegs);
-            var newValsEntry = new shared SymEntry(newVals);
-            st.addEntry(newSegName, newSegsEntry);
-            st.addEntry(newValName, newValsEntry);
-          }
-          otherwise {return notImplementedError(pn,
-                                                "("+objtype+","+dtype2str(gIV.dtype)+")");}
-          }
-      }
-      otherwise {return notImplementedError(pn, objtype);}
-      }
+        when "str" {
+            var strings = new owned SegString(args[1], args[2], st);
+            var iname = args[3];
+            var gIV: borrowed GenSymEntry = st.lookup(iname);
+            try {
+                select gIV.dtype {
+                    when DType.Int64 {
+                        var iv = toSymEntry(gIV, int);
+                        var (newSegs, newVals) = strings[iv.a];
+                        var newSegsEntry = new shared SymEntry(newSegs);
+                        var newValsEntry = new shared SymEntry(newVals);
+                        st.addEntry(newSegName, newSegsEntry);
+                        st.addEntry(newValName, newValsEntry);
+                    }
+                    when DType.Bool {
+                        var iv = toSymEntry(gIV, bool);
+                        var (newSegs, newVals) = strings[iv.a];
+                        var newSegsEntry = new shared SymEntry(newSegs);
+                        var newValsEntry = new shared SymEntry(newVals);
+                        st.addEntry(newSegName, newSegsEntry);
+                        st.addEntry(newValName, newValsEntry);
+                    }
+                    otherwise {
+                        var errorMsg = "("+objtype+","+dtype2str(gIV.dtype)+")";
+                        smLogger.error(getModuleName(),getRoutineName(),
+                                                      getLineNumber(),errorMsg); 
+                        return notImplementedError(pn,errorMsg);
+                    }
+                }
+            } catch e: Error {
+                smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                      e.message());
+                return "Error: %t".format(e.message());
+            }
+        }
+        otherwise {
+            var errorMsg = "unsupported objtype: %t".format(objtype);
+            smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return notImplementedError(pn, objtype);
+        }
+    }
+    var repMsg = "created " + st.attrib(newSegName) + "+created " + st.attrib(newValName);
+
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
     return "created " + st.attrib(newSegName) + "+created " + st.attrib(newValName);
   }
 
@@ -544,7 +551,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
             st.addEntry(vname, new shared SymEntry(newVals));
           }
           repMsg = "created %s+created %s".format(st.attrib(oname), st.attrib(vname));
-          if DEBUG {writeln(repMsg);}
+          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         }
         otherwise {return notImplementedError(pn, ltype, op, rtype);}
         }
@@ -618,12 +625,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
     }
     otherwise {
         var errorMsg = unrecognizedTypeError(pn, "("+mainObjtype+", "+testObjtype+")");
-        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
+        smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
         return errorMsg;            
       }
     }
@@ -647,12 +649,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
           }
           otherwise {
               var errorMsg = notImplementedError(pn, "("+objtype+")");
-              writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
+              smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
               return errorMsg;            
           }
       }

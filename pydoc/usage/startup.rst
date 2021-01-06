@@ -17,7 +17,7 @@ The last line of output from the ``arkouda_server`` command should look like
 
 .. code-block:: none
 		
-   server listening on node01:5555
+   server listening on tcp://node01:5555
 
 Use this hostname and port in the next step to connect to the server.
 
@@ -29,7 +29,7 @@ In Python 3, connect to the arkouda server using the hostname and port shown by 
 .. code-block:: python
 
    >>> import arkouda as ak
-   >>> ak.connect('node01', 5555)
+   >>> ak.connect(connect_url='tcp://node01:5555')
    ...
    connected to node01:5555
 
