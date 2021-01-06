@@ -124,8 +124,8 @@ class GroupByTest(ArkoudaTest):
     def setUp(self):
         ArkoudaTest.setUp(self)
         
-        self.bvalues = ak.array([4, 1, 3, 2, 2, 2, 5, 5, 2, 3])
-        self.bgb = ak.GroupBy(self.bvalues)
+        self.bvalues = ak.randint(0,1,10,dtype=bool)
+        self.fvalues = ak.randint(0,1,10,dtype=float)
         self.ivalues = ak.array([4, 1, 3, 2, 2, 2, 5, 5, 2, 3])
         self.igb = ak.GroupBy(self.ivalues)
 
@@ -163,18 +163,18 @@ class GroupByTest(ArkoudaTest):
         self.assertTrue((np.array([1,0,0,0,0,1,1,1,1,1]),results.to_ndarray()))  
         
     def test_broadcast_booleans(self):
-        keys,counts = self.bgb.count()
+        keys,counts = self.igb.count()
 
         self.assertTrue((np.array([1,4,2,1,2]) == counts.to_ndarray()).all())
         self.assertTrue((np.array([1,2,3,4,5]) == keys.to_ndarray()).all())
 
-        results = self.bgb.broadcast(counts > 2)
+        results = self.igb.broadcast(counts > 2)
         self.assertTrue((np.array([0,1,1,1,1,0,0,0,0,0]),results.to_ndarray()))
         
-        results = self.bgb.broadcast(counts == 2)
+        results = self.igb.broadcast(counts == 2)
         self.assertTrue((np.array([0,0,0,0,0,1,1,0,1,1]),results.to_ndarray()))     
         
-        results = self.bgb.broadcast(counts < 4)
+        results = self.igb.broadcast(counts < 4)
         self.assertTrue((np.array([1,0,0,0,0,1,1,1,1,1]),results.to_ndarray()))    
         
     def test_count(self):   
@@ -187,6 +187,16 @@ class GroupByTest(ArkoudaTest):
         d = make_arrays()
         akdf = {k:ak.array(v) for k, v in d.items()}        
         gb = ak.GroupBy([akdf['keys'], akdf['keys2']])
+        
+        with self.assertRaises(TypeError) as cm:
+            ak.GroupBy(self.bvalues)  
+        self.assertEqual('GroupBy only supports pdarrays with a dtype int64', 
+                         cm.exception.args[0])    
+        
+        with self.assertRaises(TypeError) as cm:
+            ak.GroupBy(self.fvalues)  
+        self.assertEqual('GroupBy only supports pdarrays with a dtype int64', 
+                         cm.exception.args[0])              
 
         with self.assertRaises(TypeError) as cm:
             gb.broadcast([])

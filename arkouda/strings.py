@@ -268,6 +268,14 @@ class Strings:
         See Also
         --------
         Strings.startswith, Strings.endswith
+        
+        Examples
+        --------
+        >>> strings = ak.array(['string {}'.format(i) for i in range(1,6)])
+        >>> strings
+        array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5'])
+        >>> strings.contains('string')
+        array([True, True, True, True, True])
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
@@ -304,6 +312,14 @@ class Strings:
         See Also
         --------
         Strings.contains, Strings.endswith
+        
+        Examples
+        --------
+        >>> strings = ak.array(['string {}'.format(i) for i in range(1,6)])
+        >>> strings
+        array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5'])
+        >>> strings.startswith('string')
+        array([True, True, True, True, True])
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
@@ -340,6 +356,14 @@ class Strings:
         See Also
         --------
         Strings.contains, Strings.startswith
+        
+        Examples
+        --------
+        >>> strings = ak.array(['{} string'.format(i) for i in range(1,6)])
+        >>> strings
+        array(['1 string', '2 string', '3 string', '4 string', '5 string'])
+        >>> strings.endswith('ing')
+        array([True, True, True, True, True])
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
@@ -682,7 +706,6 @@ class Strings:
         >>> a = ak.array(["hello", "my", "world"])
         >>> a.to_ndarray()
         array(['hello', 'my', 'world'], dtype='<U5')
-
         >>> type(a.to_ndarray())
         numpy.ndarray
         """
@@ -761,4 +784,3 @@ class Strings:
     def attach(user_defined_name : str) -> Strings:
         return Strings(pdarray.attach(user_defined_name+'_offsets'),
                        pdarray.attach(user_defined_name+'_bytes'))
-

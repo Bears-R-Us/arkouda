@@ -1,6 +1,6 @@
 from typeguard import typechecked
 import json, os
-from typing import cast, Dict, List, Mapping, Optional, Union
+from typing import cast, List, Mapping, Optional, Union
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.strings import Strings
@@ -326,7 +326,8 @@ def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : 
         raise ValueError("Allowed modes are 'truncate' and 'append'")
     first_iter = True
     for arr, name in zip(pdarrays, cast(List[str], datasetNames)):
-        # Append all pdarrays to existing files as new datasets EXCEPT the first one, and only if user requests truncation
+        '''Append all pdarrays to existing files as new datasets EXCEPT the first one, 
+           and only if user requests truncation'''
         if mode.lower() not in 'append' and first_iter:
             arr.save(prefix_path=prefix_path, dataset=name, mode='truncate')
             first_iter = False

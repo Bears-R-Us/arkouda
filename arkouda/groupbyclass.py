@@ -46,6 +46,11 @@ class GroupBy:
     logger : ArkoudaLogger
         Used for all logging operations
 
+    Raises
+    ------
+    TypeError
+        Raised if keys is a pdarray with a dtype other than int64
+
     Notes
     -----
     Only accepts pdarrays of int64 dtype or Strings.
@@ -65,6 +70,8 @@ class GroupBy:
         self.keys : Union[pdarray,Strings,Categorical]
 
         if isinstance(keys, pdarray):
+            if keys.dtype != int64:
+                raise TypeError('GroupBy only supports pdarrays with a dtype int64')
             self.keys = cast(pdarray, keys)
             self.nkeys = 1
             self.size = cast(int, keys.size)
@@ -101,7 +108,8 @@ class GroupBy:
 
         if self.nkeys == 1:
             # for Categorical
-            if hasattr(self.keys, 'segments') and cast(Categorical, self.keys).segments is not None:
+            if hasattr(self.keys, 'segments') and cast(Categorical, 
+                                                       self.keys).segments is not None:
                 self.unique_keys = cast(Categorical, self.keys).categories
                 self.segments = cast(pdarray, cast(Categorical, self.keys).segments)
                 return
@@ -146,9 +154,11 @@ class GroupBy:
         self.segments = cast(pdarray, create_pdarray(repMsg=cast(str,segAttr)))
         unique_key_indices = create_pdarray(repMsg=cast(str,uniqAttr))
         if self.nkeys == 1:
-            self.unique_keys = cast(List[Union[pdarray,Strings]], self.keys[unique_key_indices])
+            self.unique_keys = cast(List[Union[pdarray,Strings]], 
+                                    self.keys[unique_key_indices])
         else:
-            self.unique_keys = cast(List[Union[pdarray,Strings]], [k[unique_key_indices] for k in self.keys])
+            self.unique_keys = cast(List[Union[pdarray,Strings]], 
+                                    [k[unique_key_indices] for k in self.keys])
 
 
     def count(self) -> Tuple[List[Union[pdarray,Strings]],pdarray]:
@@ -258,7 +268,7 @@ class GroupBy:
             return self.unique_keys, create_pdarray(repMsg)
 
     def sum(self, values : pdarray, skipna : bool=True) \
-                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+                         -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group 
         another array of values and sum each group's values. 
