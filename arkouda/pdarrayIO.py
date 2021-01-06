@@ -1,6 +1,6 @@
 from typeguard import typechecked
 import json, os
-from typing import cast, List, Mapping, Optional, Union
+from typing import cast, Dict, List, Mapping, Optional, Union
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.strings import Strings
