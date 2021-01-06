@@ -45,6 +45,9 @@ module GenSymIO {
         var tmpf:file;
         overMemLimit(2*8*size);
 
+        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                          "dtype: %t size: %i".format(dtype,size));
+
         // Write the data payload composing the pdarray to a memory buffer
         try {
             tmpf = openmem();
@@ -52,7 +55,10 @@ module GenSymIO {
             tmpw.write(data);
             try! tmpw.close();
         } catch {
-            return "Error: Could not write to memory buffer";
+            var errorMsg = "Error: Could not write to memory buffer";
+            
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
+            return errorMsg;
         }
 
         // Get the next name from the SymTab cache
@@ -87,18 +93,26 @@ module GenSymIO {
             } else {
                 tmpr.close();
                 tmpf.close();
-                return try! "Error: Unhandled data type %s".format(dtypeBytes);
+
+                var errorMsg = "Error: Unhandled data type %s".format(dtypeBytes);
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
+                return errorMsg;
             }
             tmpr.close();
             tmpf.close();
         } catch {
-            return "Error: Could not read from memory buffer into SymEntry";
+            var errorMsg = "Error: Could not read from memory buffer into SymEntry";
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
+            return errorMsg;
         }
         /*
          * Return message indicating the SymTab name corresponding to the
          * newly-created pdarray
          */
-        return try! "created " + st.attrib(rname);
+        var returnMsg = try! "created " + st.attrib(rname);
+
+        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);         
+        return returnMsg;
     }
 
     /*
@@ -124,6 +138,8 @@ module GenSymIO {
             } else if entry.dtype == DType.UInt8 {
                 tmpw.write(toSymEntry(entry, uint(8)).a);
             } else {
+                var errorMsg = "Error: Unhandled dtype %s".format(entry.dtype);                
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
                 return try! b"Error: Unhandled dtype %s".format(entry.dtype);
             }
             tmpw.close();
@@ -183,7 +199,11 @@ module GenSymIO {
         try {
             filename = jsonToPdArray(jsonfile, 1)[0];
         } catch {
-            return try! "Error: could not decode json filenames via tempfile (%i files: %s)".format(1, jsonfile);
+            var errorMsg = "Error: could not decode json filenames via tempfile (%i files: %s)".format(
+                                     1, jsonfile);
+                                     
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return errorMsg;                                    
         }
 
         // Attempt to interpret filename as a glob expression and ls the first result
@@ -193,7 +213,10 @@ module GenSymIO {
                           "glob expanded filename: %s to size: %i files".format(filename, tmp.size));
 
         if tmp.size <= 0 {
-            return try! "Error: no files matching %s".format(filename);
+            var errorMsg = "Error: no files matching %s".format(filename);
+            
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return errorMsg;
         }
         filename = tmp[tmp.domain.first];
         var exitCode: int;
@@ -503,7 +526,10 @@ module GenSymIO {
             select (isSegArray, dataclass) {
                 when (true, C_HDF5.H5T_INTEGER) {
                     if (bytesize != 1) || isSigned {
-                        return try! "Error: detected unhandled datatype: segmented? %t, class %i, size %i, signed? %t".format(isSegArray, dataclass, bytesize, isSigned);
+                        var errorMsg = "Error: detected unhandled datatype: segmented? %t, class %i, size %i, signed? %t".format(
+                                                isSegArray, dataclass, bytesize, isSigned);
+                        gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return errorMsg;
                     }
                     var entrySeg = new shared SymEntry(nSeg, int);
                     read_files_into_distributed_array(entrySeg.a, segSubdoms, filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);

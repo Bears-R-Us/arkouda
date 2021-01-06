@@ -9,7 +9,7 @@ from arkouda.pdarraycreation import zeros, zeros_like, arange
 from arkouda.dtypes import resolve_scalar_dtype
 from arkouda.dtypes import int64 as akint64
 from arkouda.sorting import argsort
-from arkouda.pdarraysetops import unique, concatenate, in1d
+from arkouda.pdarraysetops import concatenate, in1d
 
 __all__ = ['Categorical']
 

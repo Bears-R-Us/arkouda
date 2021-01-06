@@ -1,5 +1,6 @@
 from typing import cast, Tuple
 import numpy as np # type: ignore
+from typeguard import typechecked
 import builtins
 
 __all__ = ["DTypes", "DTypeObjects", "dtype", "bool", "int64", "float64", 
@@ -26,11 +27,13 @@ str = np.dtype(np.str)
 DTypes = frozenset(["bool", "int64", "float64", "uint8", "str"])
 DTypeObjects = frozenset([bool, int64, float64, uint8, str])
 
-def _as_dtype(dt) -> np.dtype:
+@typechecked
+def _as_dtype(dt : np.dtype) -> np.dtype:
     if not isinstance(dt, np.dtype):
         return np.dtype(dt)
     return dt
 
+@typechecked
 def check_np_dtype(dt : np.dtype) -> None:
     """
     Assert that numpy dtype dt is one of the dtypes supported
@@ -39,12 +42,14 @@ def check_np_dtype(dt : np.dtype) -> None:
     Raises
     ------
     TypeError
-        Raised if the dtype is not in supported dtypes
+        Raised if the dtype is not in supported dtypes or if
+        dt is not a np.dtype
     """
     
     if _as_dtype(dt).name not in DTypes:
         raise TypeError("Unsupported type: {}".format(dt))
 
+@typechecked
 def translate_np_dtype(dt: np.dtype) -> Tuple[builtins.str, int]:
     """
     Split numpy dtype dt into its kind and byte size, raising
@@ -53,7 +58,8 @@ def translate_np_dtype(dt: np.dtype) -> Tuple[builtins.str, int]:
     Raises
     ------
     TypeError
-        Raised if the dtype is not in supported dtypes
+        Raised if the dtype is not in supported dtypes or if
+        dt is not a np.dtype
     """
     # Assert that dt is one of the arkouda supported dtypes
     dt = _as_dtype(dt)

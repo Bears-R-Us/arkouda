@@ -164,14 +164,14 @@ def in1d(pda1 : Union[pdarray,Strings,'Categorical'], pda2 : Union[pdarray,Strin
 @typechecked
 def concatenate(arrays : Sequence[Union[pdarray,Strings]]) -> Union[pdarray,Strings]:
     """
-    Concatenate an iterable of ``pdarray`` or ``Strings`` objects into 
+    Concatenate a list or tuple of ``pdarray`` or ``Strings`` objects into 
     one ``pdarray`` or ``Strings`` object, respectively.
 
     Parameters
     ----------
     arrays : Sequence[Union[pdarray,Strings]]
-        The pdarrays or Strings to concatenate. For pdarrays, all must have same 
-        dtype.
+        The list or tuple of pdarrays or Strings to concatenate. For pdarrays, all must 
+        have the same dtype.
 
     Returns
     -------
@@ -185,7 +185,8 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings]]) -> Union[pdarray,Stri
         Raised if arrays is empty or if 1..n pdarrays have
         differing dtypes
     TypeError
-        Raised if arrays is not a pdarrays or Strings iterable
+        Raised if arrays is not a pdarrays or Strings python Sequence such as a 
+        list or tuple
     RuntimeError
         Raised if 1..n array elements are dtypes for which
         concatenate has not been implemented.
