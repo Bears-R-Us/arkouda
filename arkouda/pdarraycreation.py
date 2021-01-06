@@ -616,7 +616,7 @@ def uniform(size : int, low : float=0.0, high : float=1.0,
     size : int
         The length of the returned array
     seed : int
-        Index for where to pull the first returned value
+        Value used to initialize the random number generator
 
     Returns
     -------
@@ -656,7 +656,7 @@ def standard_normal(size : int, seed : Union[None, int]=None) -> pdarray:
     size : int
         The number of samples to draw (size of the returned array)
     seed : int
-        Index for where to pull the first returned value
+        Value used to initialize the random number generator
     
     Returns
     -------
@@ -710,7 +710,7 @@ def random_strings_uniform(minlen : int, maxlen : int, size : int,
     characters : (uppercase, lowercase, numeric, printable, binary)
         The set of characters to draw from
     seed : int
-        Index for where to pull the first returned value
+        Value used to initialize the random number generator
 
     Returns
     -------
@@ -766,7 +766,7 @@ def random_strings_lognormal(logmean : Union[float, int], logstd : Union[float, 
     characters : (uppercase, lowercase, numeric, printable, binary)
         The set of characters to draw from
     seed : int
-        Index for where to pull the first returned value
+        Value used to initialize the random number generator
 
     Returns
     -------

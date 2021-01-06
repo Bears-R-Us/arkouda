@@ -30,8 +30,7 @@ class CategoricalTest(ArkoudaTest):
     def testContains(self):
         strings = ak.array(['string {}'.format(i) for i in range(1,11)])
         cat = ak.Categorical(strings)
-        self.assertTrue((ak.array([True,True,True,True,True,True,True,True,True,True])
-                         == cat.contains('string')).all())
+        self.assertTrue(cat.contains('string').all())
         
     def testGroup(self):
         strings = ak.array(['string {}'.format(i) for i in range(1,11)])

@@ -578,13 +578,13 @@ class pdarray:
 
     def argmin(self) -> np.int64:
         """
-        Return the index of the minimum value of the array.
+        Return the index of the first occurrence of the array min value
         """
         return argmin(self)
 
     def argmax(self) -> np.int64:
         """
-        Return the index of the maximum value of the array.
+        Return the index of the first occurrence of the array max value.
         """
         return argmax(self)
 
@@ -1336,7 +1336,7 @@ def max(pda : pdarray) -> Union[np.float64,np.int64]:
 @typechecked
 def argmin(pda : pdarray) -> np.int64:
     """
-    Return the index of the minimum value of the array.
+    Return the index of the first occurrence of the array min value.
 
     Parameters
     ----------
@@ -1361,7 +1361,7 @@ def argmin(pda : pdarray) -> np.int64:
 @typechecked
 def argmax(pda : pdarray) -> np.int64:
     """
-    Return the index of the maximum value of the array.
+    Return the index of the first occurrence of the array max value.
     
     Parameters
     ----------

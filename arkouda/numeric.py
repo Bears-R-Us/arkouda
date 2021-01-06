@@ -305,9 +305,9 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
     condition : pdarray
         Used to choose values from A or B
     A : scalar or pdarray
-        Value(s) used when condition is True for A
+        Value(s) used when condition is True
     B : scalar or pdarray
-        Value(s) used when condition is False for A
+        Value(s) used when condition is False
 
     Returns
     -------
