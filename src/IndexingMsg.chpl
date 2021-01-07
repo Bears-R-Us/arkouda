@@ -87,8 +87,8 @@ module IndexingMsg
         var gEnt: borrowed GenSymEntry = st.lookup(name);
         
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s pdarray to slice: %t start: %i stop: %i stride: %i slice: %t new name: %s".format(
-                       cmd, gEnt, start, stop, stride, slice, rname));
+            "cmd: %s pdarray to slice: %s start: %i stop: %i stride: %i slice: %t new name: %s".format(
+                       cmd, st.attrib(name), start, stop, stride, slice, rname));
 
         proc sliceHelper(type t) throws {
             var e = toSymEntry(gEnt,t);
@@ -318,7 +318,7 @@ module IndexingMsg
         var gIV: borrowed GenSymEntry = st.lookup(iname);
         
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              "cmd: %s gX: %t gIV: %t value: %s".format(cmd,gX,gIV,value));
+                              "cmd: %s gX: %s gIV: %s value: %s".format(cmd,st.attrib(name),st.attrib(iname),value));
 
         // scatter indexing by integer index vector
         proc ivInt64Helper(type Xtype, type dtype): string throws {

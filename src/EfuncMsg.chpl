@@ -49,7 +49,7 @@ module EfuncMsg
         var gEnt: borrowed GenSymEntry = st.lookup(name);
         
         eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                           "cmd: %s efunc: %s pdarray: %t".format(cmd,efunc,gEnt));
+                           "cmd: %s efunc: %s pdarray: %s".format(cmd,efunc,st.attrib(name)));
        
         select (gEnt.dtype) {
             when (DType.Int64) {

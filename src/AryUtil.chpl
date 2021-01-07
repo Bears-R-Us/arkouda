@@ -24,14 +24,17 @@ module AryUtil
       :arg name: name of the array
       :arg A: array to be printed
     */
-    proc printAry(name:string, A) {
+    proc formatAry(A):string throws {
         if A.size <= printThresh {
-            try! auLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                                         "name: %t A: %t".format(name,A));
+            return "%t".format(A);
         } else {
-            try! writeln(name,[i in A.domain.low..A.domain.low+2] A[i],
-                      " ... ", [i in A.domain.high-2..A.domain.high] A[i]);       
+            return "%t ... %t".format(A[A.domain.low..A.domain.low+2],
+                                      A[A.domain.high-2..A.domain.high]);
         }
+    }
+
+    proc printAry(name:string, A) {
+        try! writeln(name, formatAry(A));
     }
     
     /* 1.18 version print out localSubdomains 
