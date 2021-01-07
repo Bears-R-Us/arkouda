@@ -50,6 +50,10 @@ module MultiTypeSymEntry
         inline proc toSymEntry(type etype) {
             return try! this :borrowed SymEntry(etype);
         }
+
+        override proc writeThis(f) throws {
+          halt("GenSymEntry cannot be stringified");
+        }
     }
 
     /* Symbol table entry
@@ -110,6 +114,9 @@ module MultiTypeSymEntry
             if v {writeln("deinit SymEntry");try! stdout.flush();}
         }
         
+        override proc writeThis(f) throws {
+          halt("SymEntry cannot be stringified");
+        }
     }
 
 }
