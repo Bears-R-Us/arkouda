@@ -7,15 +7,15 @@ from glob import glob
 
 TYPES = ('int64', 'float64')
 
-def time_ak_write_read(N_per_locale, trials, dtype, path):
+def time_ak_write_read(N_per_locale, trials, dtype, path, seed):
     print(">>> arkouda write/read")
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
     if dtype == 'int64':
-        a = ak.randint(0, 2**32, N)
+        a = ak.randint(0, 2**32, N, seed=seed)
     elif dtype == 'float64':
-        a = ak.randint(0, 1, N, dtype=ak.float64)
+        a = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
      
     writetimes = []
     readtimes = []
@@ -40,12 +40,12 @@ def time_ak_write_read(N_per_locale, trials, dtype, path):
     print("Write rates: min = {:.4f} GiB/sec, max = {:.4f} GiB/sec, avg = {:.4f} GiB/sec".format(nb/2**30/max(writetimes), nb/2**30/min(writetimes), nb/2**30/avgwrite))
     print("Read rates : min = {:.4f} GiB/sec, max = {:.4f} GiB/sec, avg = {:.4f} GiB/sec".format(nb/2**30/max(readtimes), nb/2**30/min(readtimes), nb/2**30/avgread))
 
-def check_correctness(dtype, path):
+def check_correctness(dtype, path, seed):
     N = 10**4
     if dtype == 'int64':
-        a = ak.randint(0, 2**32, N)
+        a = ak.randint(0, 2**32, N, seed=seed)
     elif dtype == 'float64':
-        a = ak.randint(0, 1, N, dtype=ak.float64)
+        a = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
 
     a.save(path)
     b = ak.load(path)
@@ -62,6 +62,7 @@ def create_parser():
     parser.add_argument('-d', '--dtype', default='int64', help='Dtype of array ({})'.format(', '.join(TYPES)))
     parser.add_argument('-p', '--path', default=os.getcwd()+'ak-io-test', help='Target path for measuring read/write rates')
     parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
+    parser.add_argument('-s', '--seed', default=None, type=int, help='Value to initialize random number generator')
     return parser
 
 if __name__ == "__main__":
@@ -75,10 +76,10 @@ if __name__ == "__main__":
 
     if args.correctness_only:
         for dtype in TYPES:
-            check_correctness(dtype, args.path)
+            check_correctness(dtype, args.path, args.seed)
         sys.exit(0)
     
     print("array size = {:,}".format(args.size))
     print("number of trials = ", args.trials)
-    time_ak_write_read(args.size, args.trials, args.dtype, args.path)
+    time_ak_write_read(args.size, args.trials, args.dtype, args.path, args.seed)
     sys.exit(0)

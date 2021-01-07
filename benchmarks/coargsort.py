@@ -6,16 +6,20 @@ import arkouda as ak
 
 TYPES = ('int64', 'float64')
 
-def time_ak_coargsort(N_per_locale, trials, dtype):
+def time_ak_coargsort(N_per_locale, trials, dtype, seed):
     print(">>> arkouda coargsort")
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
     for numArrays in (1, 2, 8, 16):
+        if seed is None:
+            seeds = [None for _ in range(numArrays)]
+        else:
+            seeds = [seed+i for i in range(numArrays)]
         if dtype == 'int64':
-            arrs = [ak.randint(0, 2**32, N//numArrays) for _ in range(numArrays)]
+            arrs = [ak.randint(0, 2**32, N//numArrays, seed=s) for s in seeds]
         elif dtype == 'float64':
-            arrs = [ak.randint(0, 1, N//numArrays, dtype=ak.float64) for _ in range(numArrays)]
+            arrs = [ak.randint(0, 1, N//numArrays, dtype=ak.float64, seed=s) for s in seeds]
 
         timings = []
         for i in range(trials):
@@ -31,10 +35,11 @@ def time_ak_coargsort(N_per_locale, trials, dtype):
         bytes_per_sec = sum(a.size * a.itemsize for a in arrs) / tavg
         print("{}-array Average rate = {:.4f} GiB/sec".format(numArrays, bytes_per_sec/2**30))
 
-def time_np_coargsort(N, trials, dtype):
+def time_np_coargsort(N, trials, dtype, seed):
     print(">>> numpy coargsort") # technically lexsort
     print("N = {:,}".format(N))
-
+    if seed is not None:
+        np.random.seed(seed)
     for numArrays in (1, 2, 8, 16):
         if dtype == 'int64':
             arrs = [np.random.randint(0, 2**32, N//numArrays) for _ in range(numArrays)]
@@ -56,13 +61,13 @@ def time_np_coargsort(N, trials, dtype):
         bytes_per_sec = sum(a.size * a.itemsize for a in arrs) / tavg
         print("{}-array Average rate = {:.4f} GiB/sec".format(numArrays, bytes_per_sec/2**30))
 
-def check_correctness(dtype):
+def check_correctness(dtype, seed):
     N = 10**4
     if dtype == 'int64':
-        a = ak.randint(0, 2**32, N)
+        a = ak.randint(0, 2**32, N, seed=seed)
         z = ak.zeros(N, dtype=dtype)
     elif dtype == 'float64':
-        a = ak.randint(0, 1, N, dtype=ak.float64)
+        a = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
         z = ak.zeros(N, dtype=dtype)
 
     perm = ak.coargsort([a, z])
@@ -80,6 +85,7 @@ def create_parser():
     parser.add_argument('-d', '--dtype', default='int64', help='Dtype of array ({})'.format(', '.join(TYPES)))
     parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
     parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
+    parser.add_argument('-s', '--seed', default=None, type=int, help='Value to initialize random number generator')
     return parser
 
 if __name__ == "__main__":
@@ -93,12 +99,12 @@ if __name__ == "__main__":
 
     if args.correctness_only:
         for dtype in TYPES:
-            check_correctness(dtype)
+            check_correctness(dtype, args.seed)
         sys.exit(0)
 
     print("array size = {:,}".format(args.size))
     print("number of trials = ", args.trials)
-    time_ak_coargsort(args.size, args.trials, args.dtype)
+    time_ak_coargsort(args.size, args.trials, args.dtype, args.seed)
     if args.numpy:
-        time_np_coargsort(args.size, args.trials, args.dtype)
+        time_np_coargsort(args.size, args.trials, args.dtype, args.seed)
     sys.exit(0)

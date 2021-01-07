@@ -6,15 +6,15 @@ import arkouda as ak
 
 TYPES = ('int64', 'float64')
 
-def time_ak_argsort(N_per_locale, trials, dtype):
+def time_ak_argsort(N_per_locale, trials, dtype, seed):
     print(">>> arkouda argsort")
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
     if dtype == 'int64':
-        a = ak.randint(0, 2**32, N)
+        a = ak.randint(0, 2**32, N, seed=seed)
     elif dtype == 'float64':
-        a = ak.randint(0, 1, N, dtype=ak.float64)
+        a = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
      
     timings = []
     for i in range(trials):
@@ -29,9 +29,11 @@ def time_ak_argsort(N_per_locale, trials, dtype):
     bytes_per_sec = (a.size * a.itemsize) / tavg
     print("Average rate = {:.4f} GiB/sec".format(bytes_per_sec/2**30))
 
-def time_np_argsort(N, trials, dtype):
+def time_np_argsort(N, trials, dtype, seed):
     print(">>> numpy argsort")
     print("N = {:,}".format(N))
+    if seed is not None:
+        np.random.seed(seed)
     if dtype == 'int64':
         a = np.random.randint(0, 2**32, N)
     elif dtype == 'float64':
@@ -49,12 +51,12 @@ def time_np_argsort(N, trials, dtype):
     bytes_per_sec = (a.size * a.itemsize) / tavg
     print("Average rate = {:.4f} GiB/sec".format(bytes_per_sec/2**30))
 
-def check_correctness(dtype):
+def check_correctness(dtype, seed):
     N = 10**4
     if dtype == 'int64':
-        a = ak.randint(0, 2**32, N)
+        a = ak.randint(0, 2**32, N, seed=seed)
     elif dtype == 'float64':
-        a = ak.randint(0, 1, N, dtype=ak.float64)
+        a = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
 
     perm = ak.argsort(a)
     assert ak.is_sorted(a[perm])
@@ -68,6 +70,7 @@ def create_parser():
     parser.add_argument('-d', '--dtype', default='int64', help='Dtype of array ({})'.format(', '.join(TYPES)))
     parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
     parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
+    parser.add_argument('-s', '--seed', default=None, type=int, help='Value to initialize random number generator')
     return parser
 
 if __name__ == "__main__":
@@ -81,12 +84,12 @@ if __name__ == "__main__":
 
     if args.correctness_only:
         for dtype in TYPES:
-            check_correctness(dtype)
+            check_correctness(dtype, args.seed)
         sys.exit(0)
     
     print("array size = {:,}".format(args.size))
     print("number of trials = ", args.trials)
-    time_ak_argsort(args.size, args.trials, args.dtype)
+    time_ak_argsort(args.size, args.trials, args.dtype, args.seed)
     if args.numpy:
-        time_np_argsort(args.size, args.trials, args.dtype)
+        time_np_argsort(args.size, args.trials, args.dtype, args.seed)
     sys.exit(0)
