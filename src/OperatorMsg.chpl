@@ -1355,7 +1355,7 @@ module OperatorMsg
         var right: borrowed GenSymEntry = st.lookup(bname);
 
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "cmd: %s op: %s left pdarray: %s right pdarray: %s".format(cmd,op,aname,bname));
+                    "cmd: %s op: %s left pdarray: %s right pdarray: %s".format(cmd,op,st.attrib(aname),st.attrib(bname)));
 
         select (left.dtype, right.dtype) {
             when (DType.Int64, DType.Int64) {
