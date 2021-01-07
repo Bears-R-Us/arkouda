@@ -7,18 +7,18 @@ import arkouda as ak
 OPS = ('sum', 'prod', 'min', 'max')
 TYPES = ('int64', 'float64')
 
-def time_ak_reduce(N_per_locale, trials, dtype, random):
+def time_ak_reduce(N_per_locale, trials, dtype, random, seed):
     print(">>> arkouda reduce")
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
-    if random:
+    if random or seed is not None:
         if dtype == 'int64':
-            a = ak.randint(0, 2**32, N)
+            a = ak.randint(1, N, N, seed=seed)
         elif dtype == 'float64':
-            a = ak.randint(0, 1, N, dtype=ak.float64)
+            a = ak.uniform(N, seed=seed) + 0.5
     else:
-        a = ak.arange(0, N, 1)
+        a = ak.arange(1, N, 1)
         if dtype == 'float64':
             a = 1.0 * a
      
@@ -40,16 +40,18 @@ def time_ak_reduce(N_per_locale, trials, dtype, random):
         bytes_per_sec = (a.size * a.itemsize) / t
         print("  {} Average rate = {:.2f} GiB/sec".format(op, bytes_per_sec/2**30))
 
-def time_np_reduce(N, trials, dtype, random):
+def time_np_reduce(N, trials, dtype, random, seed):
     print(">>> numpy reduce")
     print("N = {:,}".format(N))
-    if random:
+    if seed is not None:
+        np.random.seed(seed)
+    if random or seed is not None:
         if dtype == 'int64':
-            a = np.random.randint(0, 2**32, N)
+            a = np.random.randint(1, N, N)
         elif dtype == 'float64':
-            a = np.random.random(N)
+            a = np.random.random(N) + 0.5
     else:   
-        a = np.arange(0, N, 1, dtype=dtype)
+        a = np.arange(1, N, 1, dtype=dtype)
      
     timings = {op: [] for op in OPS}
     results = {}
@@ -69,16 +71,18 @@ def time_np_reduce(N, trials, dtype, random):
         bytes_per_sec = (a.size * a.itemsize) / t
         print("  {} Average rate = {:.2f} GiB/sec".format(op, bytes_per_sec/2**30))
 
-def check_correctness(dtype, random):
+def check_correctness(dtype, random, seed):
     N = 10**4
-    if random:
+    if seed is not None:
+        np.random.seed(seed)
+    if random or seed is not None:
         if dtype == 'int64':
-            a = np.random.randint(0, 2**32, N)
+            a = np.random.randint(1, N, N)
         elif dtype == 'float64':
-            a = np.random.random(N)
+            a = np.random.random(N) + 0.5
     else:
         if dtype == 'int64':
-            a = np.arange(0, N, 1, dtype=dtype)
+            a = np.arange(1, N, 1, dtype=dtype)
         elif dtype == 'float64':
             a = np.arange(1, 1+1/N, (1/N)/N, dtype=dtype)
 
@@ -89,6 +93,11 @@ def check_correctness(dtype, random):
         npr = fxn()
         fxn = getattr(aka, op)
         akr = fxn()
+        # Because np.prod() returns an integer type with no infinity, it returns
+        # zero on overflow.
+        # By contrast, ak.prod() returns float64, so it returns inf on overflow
+        if dtype == 'int64' and op == 'prod' and npr == 0 and akr == np.inf:
+            continue
         assert np.isclose(npr, akr)
 
 def create_parser():
@@ -101,6 +110,7 @@ def create_parser():
     parser.add_argument('-r', '--randomize', default=False, action='store_true', help='Fill array with random values instead of range')
     parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
     parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
+    parser.add_argument('-s', '--seed', default=None, type=int, help='Value to initialize random number generator')
     return parser
         
 if __name__ == "__main__":
@@ -114,12 +124,12 @@ if __name__ == "__main__":
 
     if args.correctness_only:
         for dtype in TYPES:
-            check_correctness(dtype, args.randomize)
+            check_correctness(dtype, args.randomize, args.seed)
         sys.exit(0)
     
     print("array size = {:,}".format(args.size))
     print("number of trials = ", args.trials)
-    time_ak_reduce(args.size, args.trials, args.dtype, args.randomize)
+    time_ak_reduce(args.size, args.trials, args.dtype, args.randomize, args.seed)
     if args.numpy:
-        time_np_reduce(args.size, args.trials, args.dtype, args.randomize)
+        time_np_reduce(args.size, args.trials, args.dtype, args.randomize, args.seed)
     sys.exit(0)
