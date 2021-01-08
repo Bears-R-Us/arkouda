@@ -115,6 +115,7 @@ if __name__ == "__main__":
 
     if args.correctness_only:
         check_correctness(args.number, args.size, args.trials, args.dtype)
+        print("CORRECT")
         sys.exit(0)
 
 
