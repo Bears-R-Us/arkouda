@@ -269,7 +269,7 @@ def union1d(pda1 : pdarray, pda2 : pdarray) -> pdarray:
         repMsg = generic_msg("union1d {} {}".\
                              format(pda1.name, pda2.name))
         return create_pdarray(repMsg)
-    return unique(concatenate((unique(pda1), unique(pda2))))
+    return unique(concatenate((unique(pda1), unique(pda2)), ordered=False))
 
 # (A1 & A2) Set Intersection: elements have to be in both arrays
 @typechecked
@@ -320,7 +320,7 @@ def intersect1d(pda1 : pdarray, pda2 : pdarray,
     if not assume_unique:
         pda1 = unique(pda1)
         pda2 = unique(pda2)
-    aux = concatenate((pda1, pda2))
+    aux = concatenate((pda1, pda2), ordered=False)
     aux_sort_indices = argsort(aux)
     aux = aux[aux_sort_indices]
     mask = aux[1:] == aux[:-1]
@@ -429,7 +429,7 @@ def setxor1d(pda1 : pdarray, pda2 : pdarray,
     if not assume_unique:
         pda1 = unique(pda1)
         pda2 = unique(pda2)
-    aux = concatenate((pda1, pda2))
+    aux = concatenate((pda1, pda2), ordered=False)
     aux_sort_indices = argsort(aux)
     aux = aux[aux_sort_indices]
     flag = concatenate((array([True]), aux[1:] != aux[:-1], array([True])))
