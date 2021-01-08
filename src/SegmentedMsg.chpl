@@ -858,9 +858,15 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                     }
                     when 2 {
                        var sasize=length[i]:int(32);
+                       var localstrArray:[0..endposition-startposition] uint(8);
+                       var a:int(8);
+                       var b:int(8);
                        ref strArray=strings.values.a[startposition..endposition];
+                       localstrArray=strArray;
+                       //for all (a,b) in zip (localstrArray[0..sasize-1],strArray) do a=b;
                        var tmparray:[1..sasize] int(32);
-                       divsufsort(strArray,tmparray,sasize);
+                       divsufsort(localstrArray,tmparray,sasize);
+                       //divsufsort(strArray,tmparray,sasize);
                        var x:int;
                        var y:int(32);
                        for (x, y) in zip(sasval[startposition..endposition], tmparray[1..sasize]) do
