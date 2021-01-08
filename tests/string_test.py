@@ -2,16 +2,10 @@ import numpy as np
 from collections import Counter
 from context import arkouda as ak
 from base_test import ArkoudaTest
-import pytest
 ak.verbose = False
 
 N = 100
 UNIQUE = N//4
-
-# test_strings = np.array(['These are', 'some', 'interesting',
-#                          '~!@#$%^&*()_+', 'strings', '8675309.',
-#                          'These are', 'some', 'duplicates.',
-#                          'hello', 'world'])
 
 def compare_strings(a, b):
     return all(x == y for x, y in zip(a, b))
@@ -41,11 +35,14 @@ def run_test_unique(strings, test_strings, cat):
     assert(akset == npset)
     return akset
 
-def run_test_index(strings, test_strings, cat):
+def run_test_index(strings, test_strings, cat, specificInds):
     # int index
     assert(strings[N//3] == test_strings[N//3])
     assert(cat[N//3] == test_strings[N//3])
-    print("int index passed")
+    for i in specificInds:
+        assert(strings[i] == test_strings[i])
+        assert(cat[i] == test_strings[i])
+    print("test_index passed")
     
 def run_test_slice(strings, test_strings, cat):
     assert(compare_strings(strings[N//4:N//3].to_ndarray(), 
@@ -57,10 +54,27 @@ def run_test_pdarray_index(strings, test_strings, cat):
     inds = ak.arange(0, strings.size, 10)
     assert(compare_strings(strings[inds].to_ndarray(), test_strings[inds.to_ndarray()]))
     assert(compare_strings(cat[inds].to_ndarray(), test_strings[inds.to_ndarray()]))
-
+    logical = ak.zeros(strings.size, dtype=ak.bool)
+    logical[inds] = True
+    assert(compare_strings(strings[logical].to_ndarray(), test_strings[logical.to_ndarray()]))
+    # Indexing with a one-element pdarray (int) should return Strings array, not string scalar
+    i = N//2
+    singleton = ak.array([i])
+    result = strings[singleton]
+    assert(isinstance(result, ak.Strings) and (result.size == 1))
+    assert(result[0] == strings[i])
+    # Logical indexing with all-False array should return empty Strings array
+    logicalSingleton = ak.zeros(strings.size, dtype=ak.bool)
+    result = strings[logicalSingleton]
+    assert(isinstance(result, ak.Strings) and (result.size == 0))
+    # Logical indexing with a single True should return one-element Strings array, not string scalar
+    logicalSingleton[i] = True
+    result = strings[logicalSingleton]
+    assert(isinstance(result, ak.Strings) and (result.size == 1))
+    assert(result[0] == strings[i])
+    
 def run_comparison_test(strings, test_strings, cat):
     akinds = (strings == test_strings[N//4])
-    catinds = (cat == test_strings[N//4])
     npinds = (test_strings == test_strings[N//4])
     assert(np.allclose(akinds.to_ndarray(), npinds))
 
@@ -113,6 +127,8 @@ def run_test_starts_with(strings, test_strings, delim):
 def run_test_ends_with(strings, test_strings, delim):
     found = strings.endswith(delim).to_ndarray()
     npfound = np.array([s.endswith(delim) for s in test_strings])
+    if len(found) != len(npfound):
+        raise AttributeError('found and npfound are of different lengths')
     assert((found == npfound).all())
 
 def run_test_peel(strings, test_strings, delim):
@@ -159,7 +175,7 @@ def run_test_peel(strings, test_strings, delim):
     for times, inc, part in it.product(range(1,4), tf, tf):
         ls, rs = strings.peel(delim, times=times, includeDelimiter=inc, keepPartial=part)
         triples = [s.partition(delim) for s in test_strings]
-        for i in range(times-1):
+        for _ in range(times-1):
             triples = [slide(t, delim) for t in triples]
         ltest, rtest = munge(triples, inc, part)
         assert((ltest == ls.to_ndarray()).all() and (rtest == rs.to_ndarray()).all())
@@ -167,7 +183,7 @@ def run_test_peel(strings, test_strings, delim):
     for times, inc, part in it.product(range(1,4), tf, tf):
         ls, rs = strings.rpeel(delim, times=times, includeDelimiter=inc, keepPartial=part)
         triples = [s.rpartition(delim) for s in test_strings]
-        for i in range(times-1):
+        for _ in range(times-1):
             triples = [rslide(t, delim) for t in triples]
         ltest, rtest = rmunge(triples, inc, part)
         assert((ltest == ls.to_ndarray()).all() and (rtest == rs.to_ndarray()).all())
@@ -200,12 +216,12 @@ if __name__ == '__main__':
 
     base_words1 = ak.random_strings_uniform(1, 10, UNIQUE, characters='printable')
     base_words2 = ak.random_strings_lognormal(2, 0.25, UNIQUE, characters='printable')
-    gremlins = ak.array([' ', ''])
-    base_words = ak.concatenate((base_words1, base_words2, gremlins))
+    gremlins = ak.array(['"', ' ', ''])
+    base_words = ak.concatenate((base_words1, base_words2))
     np_base_words = np.hstack((base_words1.to_ndarray(), base_words2.to_ndarray()))
     assert(compare_strings(base_words.to_ndarray(), np_base_words))
     choices = ak.randint(0, base_words.size, N)
-    strings = ak.concatenate((base_words[choices], gremlins))
+    strings = base_words[choices]
     test_strings = strings.to_ndarray()
     cat = ak.Categorical(strings)
     print("strings =", strings)
@@ -213,7 +229,7 @@ if __name__ == '__main__':
     print("Generation and concatenate passed")
   
     # int index
-    run_test_index(strings, test_strings, cat)
+    run_test_index(strings, test_strings, cat, range(-len(gremlins), 0))
     print("int index passed")
   
     # slice
@@ -275,19 +291,25 @@ if __name__ == '__main__':
 class StringTest(ArkoudaTest):
   
     def setUp(self):
+        self.maxDiff = None
         ArkoudaTest.setUp(self)
         base_words1 = ak.random_strings_uniform(1, 10, UNIQUE, characters='printable')
         base_words2 = ak.random_strings_lognormal(2, 0.25, UNIQUE, characters='printable')
-        gremlins = ak.array([' ', ''])
-        self.base_words = ak.concatenate((base_words1, base_words2, gremlins))
+        gremlins = ak.array(['"', ' ', ''])
+        self.gremlins = gremlins
+        self.base_words = ak.concatenate((base_words1, base_words2))
         self.np_base_words = np.hstack((base_words1.to_ndarray(), base_words2.to_ndarray()))
         choices = ak.randint(0, self.base_words.size, N)
-        self.strings = ak.concatenate((self.base_words[choices], gremlins))
+        self.strings = self.base_words[choices]
         self.test_strings = self.strings.to_ndarray()
         self.cat = ak.Categorical(self.strings)
         x, w = tuple(zip(*Counter(''.join(self.base_words.to_ndarray())).items()))
         self.delim =  np.random.choice(x, p=(np.array(w)/sum(w)))
         self.akset = set(ak.unique(self.strings).to_ndarray())
+        self.gremlins_base_words = base_words = ak.concatenate((base_words1, base_words2, gremlins))
+        self.gremlins_strings = ak.concatenate((base_words[choices], gremlins))
+        self.gremlins_test_strings = self.gremlins_strings.to_ndarray()
+        self.gremlins_cat = ak.Categorical(self.gremlins_strings)
 
     def test_compare_strings(self):
         assert compare_strings(self.base_words.to_ndarray(), self.np_base_words)
@@ -303,10 +325,11 @@ class StringTest(ArkoudaTest):
 
     def test_groupby(self):
         run_test_groupby(self.strings, self.cat, self.akset)
-    
-    @pytest.mark.skip(reason="awaiting bug fix.")
+
     def test_index(self):
-        run_test_index(self.strings, self.test_strings, self.cat)
+        run_test_index(self.strings, self.test_strings, self.cat, range(-len(self.gremlins), 0))
+        run_test_index(self.gremlins_strings, self.gremlins_test_strings, self.gremlins_cat, 
+                       range(-len(self.gremlins), 0))
         
     def test_slice(self):
         run_test_slice(self.strings, self.test_strings, self.cat)
@@ -320,9 +343,16 @@ class StringTest(ArkoudaTest):
     def test_starts_with(self):
         run_test_starts_with(self.strings, self.test_strings, self.delim)
 
-    @pytest.mark.skip(reason="awaiting bug fix.")
     def test_ends_with(self):
         run_test_ends_with(self.strings, self.test_strings, self.delim)
+        
+        # Test for expected errors for gremlins delimiters
+        with self.assertRaises(AttributeError):
+            run_test_ends_with(self.gremlins_strings, self.test_strings, ' ')       
+        with self.assertRaises(AttributeError):
+            run_test_ends_with(self.gremlins_strings, self.test_strings, '')     
+        with self.assertRaises(AttributeError):
+            run_test_ends_with(self.gremlins_strings, self.test_strings, '"') 
         
     def test_error_handling(self):
         stringsOne = ak.random_strings_uniform(1, 10, UNIQUE, 
@@ -332,43 +362,60 @@ class StringTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             stringsOne.lstick(stringsTwo, delimiter=1)
-        self.assertEqual('Delimiter must be a string, not int', 
+        self.assertEqual('type of argument "delimiter" must be str; got int instead', 
                          cm.exception.args[0])
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.lstick([1], 1)
-        self.assertEqual('stick: not supported between String and list', 
+        self.assertEqual('type of argument "other" must be arkouda.strings.Strings; got list instead', 
                          cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.startswith(1)
-        self.assertEqual('Substring must be a string, not int', 
+        self.assertEqual('type of argument "substr" must be one of (str, bytes); got int instead', 
                          cm.exception.args[0])    
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.endswith(1)
-        self.assertEqual('Substring must be a string, not int', 
+        self.assertEqual('type of argument "substr" must be one of (str, bytes); got int instead', 
                          cm.exception.args[0])   
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.contains(1)
-        self.assertEqual('Substring must be a string, not int', 
+        self.assertEqual('type of argument "substr" must be one of (str, bytes); got int instead', 
                          cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.peel(1)
-        self.assertEqual('Delimiter must be a string, not int', 
+        self.assertEqual('type of argument "delimiter" must be str; got int instead', 
                          cm.exception.args[0])  
 
         with self.assertRaises(ValueError) as cm:
             stringsOne.peel("",-5)
-        self.assertEqual('Times must be >= 1', 
+        self.assertEqual('times must be >= 1', 
                          cm.exception.args[0])  
 
-    @pytest.mark.skip(reason="awaiting bug fix.")
     def test_peel(self):
         run_test_peel(self.strings, self.test_strings, self.delim)
+        
+        # Test for expected errors for gremlins delimiters 
+        with self.assertRaises(ValueError):
+            run_test_peel(self.gremlins_strings, self.gremlins_test_strings, '')  
+        # Passing in '"' or ' ' as a delimiter causes the Arkouda server to hang
 
-    @pytest.mark.skip(reson="awaiting bug fix.")
     def test_stick(self):
         run_test_stick(self.strings, self.test_strings, self.base_words, self.delim)
+ 
+        # Test for expected errors for gremlins delimiters    
+        with self.assertRaises(RuntimeError):   
+            run_test_stick(self.gremlins_strings, self.gremlins_test_strings, self.base_words, ' ')
+        with self.assertRaises(RuntimeError):   
+            run_test_stick(self.gremlins_strings, self.gremlins_test_strings, self.base_words, '')
+        with self.assertRaises(RuntimeError):   
+            run_test_stick(self.gremlins_strings, self.gremlins_test_strings, self.base_words, '"')
+        
+    def test_str_output(self):
+        strings = ak.array(['string {}'.format(i) for i in range (0,101)])
+        print(str(strings))
+        self.assertEqual("['string 0', 'string 1', 'string 2', ... , 'string 98', 'string 99', 'string 100']",
+                         str(strings))

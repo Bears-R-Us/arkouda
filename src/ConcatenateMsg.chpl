@@ -6,6 +6,7 @@ module ConcatenateMsg
     use Math only;
     use Reflection;
     use Errors;
+    use Logging;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -14,6 +15,13 @@ module ConcatenateMsg
     use PrivateDist;
     
     use AryUtil;
+
+    const cmLogger = new Logger();
+    if v {
+        cmLogger.level = LogLevel.DEBUG;
+    } else {
+        cmLogger.level = LogLevel.INFO;
+    }
 
     /* Concatenate a list of arrays together
        to form one array
@@ -26,16 +34,15 @@ module ConcatenateMsg
         var fields = rest.split();
         const low = fields.domain.low;
         var names = fields[low..];
+        
+        cmLogger.debug(getModuleName(),getRoutineName(), getLineNumber(), 
+              "number of arrays: %i fields: %t low: %t names: %t".format(n,fields,low,names));
+
         // Check that fields contains the stated number of arrays
         if (n != names.size) { 
             var errorMsg = incompatibleArgumentsError(pn, 
                              "Expected %i arrays but got %i".format(n, names.size)); 
-            writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IncompatibleArgumentsError"));                                 
+            cmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                               
             return errorMsg;
         }
         /* var arrays: [0..#n] borrowed GenSymEntry; */
@@ -56,18 +63,17 @@ module ConcatenateMsg
                     var gval = st.lookup(valName);
                     nbytes += gval.size;
                     valSize = gval.size;
+                    cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                             "name: %s valName: %s".format(name,valName));
                 }
                 when "pdarray" {
                     name = rawName;
+                    cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                 "pdarray name %s".format(rawName));
                 }
                 otherwise { 
                     var errorMsg = notImplementedError(pn, objtype); 
-                    writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));    
+                    cmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
                     return errorMsg;                    
                 }
             }
@@ -78,12 +84,7 @@ module ConcatenateMsg
                     var errorMsg = incompatibleArgumentsError(pn, 
                              "Expected %s dtype but got %s dtype".format(dtype2str(dtype), 
                                     dtype2str(g.dtype)));
-                    writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="IncompatibleArgumentsError"));    
+                    cmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                     return errorMsg;
                 }
             }
@@ -166,10 +167,15 @@ module ConcatenateMsg
                       valStart += thisVals.size;
                     }
                 }
-                return "created " + st.attrib(segName) + "+created " + st.attrib(valName);
+                var repMsg = "created " + st.attrib(segName) + "+created " + st.attrib(valName);
+                cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                  "created concatenated pdarray %s".format(st.attrib(valName)));
+                return repMsg;
             }
             when "pdarray" {
                 var rname = st.nextName();
+                cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                             "creating pdarray %s of type %t".format(rname,dtype));
                 select (dtype) {
                     when DType.Int64 {
                         // create array to copy into
@@ -197,6 +203,8 @@ module ConcatenateMsg
                               start += o.size;
                             }
                         }
+                        cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                         "created concatenated pdarray: %s".format(st.attrib(rname)));
                     }
                     when DType.Float64 {
                         // create array to copy into
@@ -224,6 +232,8 @@ module ConcatenateMsg
                               start += o.size;
                             }
                         }
+                        cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                         "created concatenated pdarray: %s".format(st.attrib(rname)));
                     }
                     when DType.Bool {
                         // create array to copy into
@@ -251,32 +261,24 @@ module ConcatenateMsg
                               start += o.size;
                             }
                         }
+                        cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                           "created concatenated pdarray: %s".format(st.attrib(rname)));
                     }
                     otherwise {
                         var errorMsg = notImplementedError("concatenate",dtype);
-                        writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));   
+                        cmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
                         return errorMsg;                         
                     }
                 }
-
-                return try! "created " + st.attrib(rname);
+                repMsg = "created " + st.attrib(rname);
+                cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+                return repMsg;
             }
             otherwise { 
                 var errorMsg = notImplementedError(pn, objtype); 
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));    
+                cmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return errorMsg;
             }
         }
     }
-    
 }

@@ -9,13 +9,13 @@ Just as the backbone of NumPy is the ``ndarray``, the backbone of arkouda is an 
 Data Type
 ============
 
-Currently, ``pdarray`` supports three data types:
+Currently, ``pdarray`` supports three user-facing data types (strings are exposed via a separate class, see :ref:`Strings in Arkouda <../strings.rst>`):
 
 * ``int64``: 64-bit signed integer
 * ``float64``: IEEE 64-bit floating point number
 * ``bool``: 8-bit boolean value
 
-Arkouda inherits all of its data types from numpy. For example, ``ak.int64`` is assigned to ``np.int64``.
+Arkouda inherits all of its data types from numpy. For example, ``ak.int64`` is derived from ``np.int64``.
 
 Rank
 =============
@@ -36,3 +36,19 @@ Iteration
 =========
 
 While it is possible to iterate directly over a ``pdarray`` with ``for x in array``, this is not recommended because it triggers a transfer of all array data from the arkouda server to the Python client as a ``numpy.ndarray``. This transfer will raise an error if it exceeds the byte limit defined in ``arkouda.maxTransferBytes``. There is almost always a more array-oriented way to express an iterator-based computation; see the coming sections for details.
+
+Type Casting
+============
+
+Conversion between dtypes is sometimes implicit, as in the following example:
+
+.. code-block:: python
+
+   >>> a = ak.arange(10)
+   >>> b = 1.0 * a
+   >>> b.dtype
+   dtype('float64')
+
+Explicit conversion is supported via the ``cast`` function.
+
+.. autofunction:: arkouda.cast

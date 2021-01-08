@@ -1,11 +1,13 @@
 from __future__ import annotations
-from typing import Tuple, Union
+from typing import cast, Tuple, Union
+from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value
-from arkouda.dtypes import *
-from arkouda.dtypes import NUMBER_FORMAT_STRINGS
 from arkouda.logger import getArkoudaLogger
-import numpy as np
+import numpy as np # type: ignore
+from arkouda.dtypes import str as akstr
+from arkouda.dtypes import NUMBER_FORMAT_STRINGS, resolve_scalar_dtype, \
+     translate_np_dtype
 import json
 
 __all__ = ['Strings']
@@ -31,7 +33,7 @@ class Strings:
     shape : tuple
         The sizes of each dimension of the array
     dtype : dtype
-        The dtype is np.str
+        The dtype is ak.str
     logger : ArkoudaLogger
         Used for all logging operations
         
@@ -92,8 +94,9 @@ class Strings:
             self.shape = self.offsets.shape
         except Exception as e:
             raise ValueError(e)   
-        self.dtype = np.str
-        self.logger = getArkoudaLogger(name=__class__.__name__)
+
+        self.dtype = akstr
+        self.logger = getArkoudaLogger(name=__class__.__name__) # type: ignore
 
     def __iter__(self):
         raise NotImplementedError('Strings does not support iteration')
@@ -108,13 +111,14 @@ class Strings:
         else:
             vals = ["'{}'".format(self[i]) for i in range(3)]
             vals.append('... ')
-            vals.extend([self[i] for i in range(self.size-3, self.size)])
+            vals.extend(["'{}'".format(self[i]) for i in range(self.size-3, self.size)])
         return "[{}]".format(', '.join(vals))
 
     def __repr__(self) -> str:
         return "array({})".format(self.__str__())
 
-    def _binop(self, other : Strings, op : str) -> pdarray:
+    @typechecked
+    def _binop(self, other : Union[Strings,np.str_], op : str) -> pdarray:
         """
         Executes the requested binop on this Strings instance and the
         parameter Strings object and returns the results within
@@ -122,7 +126,7 @@ class Strings:
 
         Parameters
         ----------
-        other : Strings
+        other : Strings or np.str_
             the other object is a Strings object
         op : str
             name of the binary operation to be performed 
@@ -165,14 +169,13 @@ class Strings:
         else:
             raise ValueError("Strings: {} not supported between Strings and {}"\
                              .format(op, other.__class__.__name__))
-        repMsg = generic_msg(msg)
-        return create_pdarray(repMsg)
+        return create_pdarray(generic_msg(msg))
 
     def __eq__(self, other) -> bool:
         return self._binop(other, "==")
 
-    def __ne__(self, other : object) -> bool:
-        return self._binop(other, "!=")
+    def __ne__(self, other) -> bool:
+        return self._binop(cast(Strings, other), "!=")
 
     def __getitem__(self, key):
         if np.isscalar(key) and resolve_scalar_dtype(key) == 'int64':
@@ -238,9 +241,9 @@ class Strings:
         """
         msg = "segmentLengths {} {} {}".\
                         format(self.objtype, self.offsets.name, self.bytes.name)
-        repMsg = generic_msg(msg)
-        return create_pdarray(repMsg)
+        return create_pdarray(generic_msg(msg))
 
+    @typechecked
     def contains(self, substr : Union[str, bytes]) -> pdarray:
         """
         Check whether each element contains the given substring.
@@ -265,21 +268,26 @@ class Strings:
         See Also
         --------
         Strings.startswith, Strings.endswith
+        
+        Examples
+        --------
+        >>> strings = ak.array(['string {}'.format(i) for i in range(1,6)])
+        >>> strings
+        array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5'])
+        >>> strings.contains('string')
+        array([True, True, True, True, True])
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
-        if not isinstance(substr, str):
-            raise TypeError("Substring must be a string, not {}".\
-                            format(substr.__class__.__name__))
         msg = "segmentedEfunc {} {} {} {} {} {}".format("contains",
                                                         self.objtype,
                                                         self.offsets.name,
                                                         self.bytes.name,
                                                         "str",
                                                         json.dumps([substr]))
-        repMsg = generic_msg(msg)
-        return create_pdarray(repMsg)
+        return create_pdarray(generic_msg(msg))
 
+    @typechecked
     def startswith(self, substr : Union[str, bytes]) -> pdarray:
         """
         Check whether each element starts with the given substring.
@@ -304,28 +312,33 @@ class Strings:
         See Also
         --------
         Strings.contains, Strings.endswith
+        
+        Examples
+        --------
+        >>> strings = ak.array(['string {}'.format(i) for i in range(1,6)])
+        >>> strings
+        array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5'])
+        >>> strings.startswith('string')
+        array([True, True, True, True, True])
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
-        if not isinstance(substr, str):
-            raise TypeError("Substring must be a string, not {}".\
-                            format(substr.__class__.__name__))
         msg = "segmentedEfunc {} {} {} {} {} {}".format("startswith",
                                                         self.objtype,
                                                         self.offsets.name,
                                                         self.bytes.name,
                                                         "str",
                                                         json.dumps([substr]))
-        repMsg = generic_msg(msg)
-        return create_pdarray(repMsg)
+        return create_pdarray(generic_msg(msg))
 
-    def endswith(self, substr : str) -> pdarray:
+    @typechecked
+    def endswith(self, substr : Union[str,bytes]) -> pdarray:
         """
         Check whether each element ends with the given substring.
 
         Parameters
         ----------
-        substr : str
+        substr : str or bytes
             The suffix to search for
 
         Returns
@@ -336,28 +349,33 @@ class Strings:
         Raises
         ------
         TypeError
-            Raised if the substr parameter is neither bytes nor a str
+            Raised if the substr parameter is not a str
         RuntimeError
             Raised if there is a server-side error thrown
 
         See Also
         --------
         Strings.contains, Strings.startswith
+        
+        Examples
+        --------
+        >>> strings = ak.array(['{} string'.format(i) for i in range(1,6)])
+        >>> strings
+        array(['1 string', '2 string', '3 string', '4 string', '5 string'])
+        >>> strings.endswith('ing')
+        array([True, True, True, True, True])
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
-        if not isinstance(substr, str):
-            raise TypeError("Substring must be a string, not {}".\
-                            format(substr.__class__.__name__))
         msg = "segmentedEfunc {} {} {} {} {} {}".format("endswith",
                                                         self.objtype,
                                                         self.offsets.name,
                                                         self.bytes.name,
                                                         "str",
                                                         json.dumps([substr]))
-        repMsg = generic_msg(msg)
-        return create_pdarray(repMsg)
+        return create_pdarray(generic_msg(msg))
 
+    @typechecked
     def peel(self, delimiter : str, times : int=1, includeDelimiter : bool=False, 
              keepPartial : bool=False, fromRight : bool=False) -> Tuple:
         """
@@ -396,8 +414,9 @@ class Strings:
         Raises
         ------
         TypeError
-            Raised if the delmiter parameter is neither bytes nor a str or
-            if times is not int64
+            Raised if the delmiter parameter is neither bytes nor a str, if
+            times is not int64, or if includeDelimiter, keepPartial, or 
+            fromRight is not bool
         ValueError
             Raised if times is < 1
         RuntimeError
@@ -421,14 +440,8 @@ class Strings:
         """
         if isinstance(delimiter, bytes):
             delimiter = delimiter.decode()
-        if not isinstance(delimiter, str):
-            raise TypeError("Delimiter must be a string, not {}".\
-                            format(delimiter.__class__.__name__))
-        if not np.isscalar(times) or resolve_scalar_dtype(times) != 'int64':
-            raise TypeError("Times must be integer, not {}".\
-                            format(times.__class__.__name__))
         if times < 1:
-            raise ValueError("Times must be >= 1")
+            raise ValueError("times must be >= 1")
         msg = "segmentedPeel {} {} {} {} {} {} {} {} {} {}".format("peel",
                             self.objtype,
                             self.offsets.name,
@@ -440,7 +453,7 @@ class Strings:
                             NUMBER_FORMAT_STRINGS['bool'].format(not fromRight),
                             json.dumps([delimiter]))
         repMsg = generic_msg(msg)
-        arrays = repMsg.split('+', maxsplit=3)
+        arrays = cast(str,repMsg).split('+', maxsplit=3)
         leftStr = Strings(arrays[0], arrays[1])
         rightStr = Strings(arrays[2], arrays[3])
         return leftStr, rightStr
@@ -501,6 +514,7 @@ class Strings:
         return self.peel(delimiter, times=times, includeDelimiter=includeDelimiter, 
                          keepPartial=keepPartial, fromRight=True)
 
+    @typechecked
     def stick(self, other : Strings, delimiter : str="", 
                                         toLeft : bool=False) -> Strings:
         """
@@ -544,14 +558,8 @@ class Strings:
         >>> s.stick(t, delimiter='.')
         array(['a.b', 'c.d', 'e.f'])
         """
-        if not isinstance(other, Strings):
-            raise TypeError("stick: not supported between String and {}".\
-                             format(other.__class__.__name__))
         if isinstance(delimiter, bytes):
             delimiter = delimiter.decode()
-        if not isinstance(delimiter, str):
-            raise TypeError("Delimiter must be a string, not {}".\
-                            format(delimiter.__class__.__name__))
         msg = "segmentedBinopvv {} {} {} {} {} {} {} {} {}".\
                             format("stick",
                             self.objtype,
@@ -563,11 +571,11 @@ class Strings:
                             NUMBER_FORMAT_STRINGS['bool'].format(toLeft),
                             json.dumps([delimiter]))
         repMsg = generic_msg(msg)
-        return Strings(*repMsg.split('+'))
+        return Strings(*cast(str,repMsg).split('+'))
 
     def __add__(self, other : Strings) -> Strings:
         return self.stick(other)
-    
+
     def lstick(self, other : Strings, delimiter : str="") -> Strings:
         """
         Join the strings from another array onto the left of the strings 
@@ -631,7 +639,7 @@ class Strings:
         msg = "segmentedHash {} {} {}".format(self.objtype, self.offsets.name, 
                                               self.bytes.name)
         repMsg = generic_msg(msg)
-        h1, h2 = repMsg.split('+')
+        h1, h2 = cast(str,repMsg).split('+')
         return create_pdarray(h1), create_pdarray(h2)
 
     def group(self) -> pdarray:
@@ -666,8 +674,7 @@ class Strings:
         """
         msg = "segmentedGroup {} {} {}".\
                            format(self.objtype, self.offsets.name, self.bytes.name)
-        repMsg = generic_msg(msg)
-        return create_pdarray(repMsg)
+        return create_pdarray(generic_msg(msg))
 
     def to_ndarray(self) -> np.ndarray:
         """
@@ -699,7 +706,6 @@ class Strings:
         >>> a = ak.array(["hello", "my", "world"])
         >>> a.to_ndarray()
         array(['hello', 'my', 'world'], dtype='<U5')
-
         >>> type(a.to_ndarray())
         numpy.ndarray
         """
@@ -717,6 +723,7 @@ class Strings:
             res[i] = np.str_(''.join(chr(b) for b in npvalues[o:o+l]))
         return res
 
+    @typechecked
     def save(self, prefix_path : str, dataset : str='strings_array', 
              mode : str='truncate') -> None:
         """
@@ -744,6 +751,8 @@ class Strings:
         ValueError 
             Raised if the lengths of columns and values differ, or the mode is 
             neither 'truncate' nor 'append'
+        TypeError
+            Raised if prefix_path, dataset, or mode is not a str
 
         See Also
         --------
@@ -763,7 +772,7 @@ class Strings:
     def register_helper(cls, offsets, bytes):
         return cls(offsets, bytes)
 
-    def register(self, user_defined_name : str) -> 'Strings':
+    def register(self, user_defined_name : str) -> Strings:
         return self.register_helper(self.offsets.register(user_defined_name+'_offsets'),
                                self.bytes.register(user_defined_name+'_bytes'))
 
@@ -772,7 +781,6 @@ class Strings:
         self.bytes.unregister()
 
     @staticmethod
-    def attach(user_defined_name : str) -> 'Strings':
+    def attach(user_defined_name : str) -> Strings:
         return Strings(pdarray.attach(user_defined_name+'_offsets'),
                        pdarray.attach(user_defined_name+'_bytes'))
-

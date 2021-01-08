@@ -225,7 +225,7 @@ make install-deps
 make
 ```
 
-Now that the arkouda_server is built and tested, install the Python library
+Now that the arkouda\_server is built and tested, install the Python library
 
 ## Installing the Arkouda Python Library and Dependencies
 
@@ -272,6 +272,42 @@ make test-all
 For more details regarding Arkouda testing, please consult the Python test [README](tests/README.md) and Chapel test
 [README](test/README.md), respectively.
 
+## Type Checking in Arkouda
+
+Both static and runtime type checking are becoming increasingly popular in Python, especially for large Python code bases 
+such as those found at [dropbox](https://dropbox.tech/application/our-journey-to-type-checking-4-million-lines-of-python). 
+Arkouda uses [mypy](https://mypy.readthedocs.io/en/stable/) for static type checking and [typeguard](https://typeguard.readthedocs.io/en/latest/) 
+for runtime type checking.
+
+Enabling runtime as well as static type checking in Python starts with adding [type hints](https://www.python.org/dev/peps/pep-0484/), 
+as shown below to a method signature:
+
+```
+def connect(server : str="localhost", port : int=5555, timeout : int=0, 
+                           access_token : str=None, connect_url=None) -> None:
+```
+
+mypy static type checking can be invoked either directly via the mypy command or via make:
+
+```
+$ mypy arkouda
+Success: no issues found in 16 source files
+$ make mypy
+python3 -m mypy arkouda
+Success: no issues found in 16 source files
+```
+
+Runtime type checking is enabled at the Python method level by annotating the method if interest with the @typechecked decorator, an 
+example of which is shown below:
+
+```
+@typechecked
+def save(self, prefix_path : str, dataset : str='array', mode : str='truncate') -> str:
+```
+
+Type checking in Arkouda is implemented on an "opt-in" basis. Accordingly, Arkouda continues to support [duck typing](https://en.wikipedia.org/wiki/Duck_typing) for parts of the Arkouda API where type checking is too confining to be useful. As detailed above, both runtime and static 
+type checking require type hints. Consequently, to opt-out of type checking, simply leave type hints out of any method declarations where duck typing is desired.
+
 ## Building the Arkouda documentation
 
 First ensure that all Python doc dependencies including sphinx and sphinx extensions have been installed as detailed 
@@ -313,7 +349,7 @@ are pushed to the Arkouda or Arkouda fork _master branch_. Next, navigate to the
 option. The Github Pages docs url will be displayed once the source option is selected. Click on the link and the
 Arkouda documentation homepage will be displayed.
 
-## Running arkouda_server
+## Running arkouda\_server
 
 The command-line invocation depends on whether you built a single-locale version (with `CHPL_COMM=none`) or 
 multi-locale version (with `CHPL_COMM` set to the desired number of locales).
@@ -329,22 +365,22 @@ Multi-locale startup (user selects the number of locales):
 ```bash
 ./arkouda_server -nl 2
 ```
-Also can run server with memory checking turned on using
+Memory tracking is turned on by default now, you can run server with memory tracking turned off by
 
 ```bash
-./arkouda_server --memTrack=true
+./arkouda_server --memTrack=false
 ```
 
 By default, the server listens on port `5555` and prints verbose output. These options can be changed with command-line 
 flags `--ServerPort=1234` and `--v=false`
 
-Memory checking is turned off by default and turned on by using `--memTrack=true`
+Memory tracking is turned on by default and turned off by using the  `--memTrack=false` flag
 
-Logging messages are turned on by default and turned off by using `--logging=false`
+Logging messages are turned on by default and turned off by using the `--logging=false` flag
 
-Verbose messages are turned on by default and turned off by using  `--v=false`
+Verbose messages at the debug level are turned off by default and are turned on by using the `--v` flag
 
-Other command line options are available, view them by using `--help`
+Other command line options are available, view them by using the `--help` flag
 
 ```bash
 ./arkouda-server --help
@@ -353,39 +389,39 @@ Other command line options are available, view them by using `--help`
 ## Token-Based Authentication in Arkouda
 
 Arkouda features a token-based authentication mechanism analogous to Jupyter, where a randomized alphanumeric string is
-generated or loaded at arkouda_server startup. The command to start arkouda_server with token authentication is as follows:
+generated or loaded at arkouda\_server startup. The command to start arkouda\_server with token authentication is as follows:
 
 ```bash
 ./arkouda_server --authenticate
 ```
 
 The generated token is saved to the tokens.txt file which is contained in the .arkouda directory located in the same 
-working directory the arkouda_server is launched from. The arkouda_server will re-use the same token until the 
-.arkouda/tokens.txt file is removed, which forces arkouda_server to generate a new token and corresponding
+working directory the arkouda\_server is launched from. The arkouda\_server will re-use the same token until the 
+.arkouda/tokens.txt file is removed, which forces arkouda\_server to generate a new token and corresponding
 tokens.txt file.
 
 ## Connecting to Arkouda
 
-The client connects to the arkouda\_server either by supplying a host and port or by providing a url connect string:
+The client connects to the arkouda\_server either by supplying a host and port or by providing a connect\_url connect string:
 
 ```bash
 arkouda.connect(server='localhost', port=5555)
-arkouda.connect(url='tcp://localhost:5555')
+arkouda.connect(connect_url='tcp://localhost:5555')
 ```
 
-When arkouda_server is launched in authentication-enabled mode, clients connect by either specifying the access_token
-parameter or by adding the token to the end of the url connect string:
+When arkouda\_server is launched in authentication-enabled mode, clients connect by either specifying the access\_token
+parameter or by adding the token to the end of the connect\_url connect string:
 
 ```bash
 arkouda.connect(server='localhost', port=5555, access_token='dcxCQntDQllquOsBNjBp99Pu7r3wDJn')
-arkouda.connect(url='tcp://localhost:5555?token=dcxCQntDQllquOsBNjBp99Pu7r3wDJn')
+arkouda.connect(connect_url='tcp://localhost:5555?token=dcxCQntDQllquOsBNjBp99Pu7r3wDJn')
 ```
 
-Note: once a client has successfully connected to an authentication-enabled arkouda_server, the token is cached in the
-user's $ARKOUDA_HOME .arkouda/tokens.txt file. _As long as the arkouda_server token remains the same, the user can
+Note: once a client has successfully connected to an authentication-enabled arkouda\_server, the token is cached in the
+user's $ARKOUDA\_HOME .arkouda/tokens.txt file. As long as the arkouda_server token remains the same, the user can
 connect without specifying the token via the access_token parameter or token url argument.
 
-## Testing arkouda_server
+## Testing arkouda\_server
 
 To sanity check the arkouda server, you can run
 
@@ -399,6 +435,14 @@ against a running server by running the following Python command:
 ```bash
 python3 tests/check.py localhost 5555
 ```
+
+## Logging
+
+The Arkouda server features a Chapel logging framework that prints out the module name, routine name and line number
+for all logged messages. Available logging levels are ERROR, CRITICAL, WARN, INFO, and DEBUG. 
+
+The default logging level is INFO where all messages at the ERROR, CRITICAL, WARN, and INFO levels are printed. For debugging, 
+the DEBUG level is enabled by passing in the --v flag upon arkouda\_server startup.
 
 ## Contributing to Arkouda
 

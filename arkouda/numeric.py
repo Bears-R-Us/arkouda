@@ -1,14 +1,73 @@
-import numpy as np
+import numpy as np # type: ignore
 from typeguard import typechecked
-from typing import Tuple, Union
+from typing import cast as type_cast
+from typing import Optional, Tuple, Union, ForwardRef
 from arkouda.client import generic_msg
-from arkouda.dtypes import *
+from arkouda.dtypes import resolve_scalar_dtype, DTypes
+from arkouda.dtypes import _as_dtype
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraysetops import unique
 from arkouda.strings import Strings
 
-__all__ = ["abs", "log", "exp", "cumsum", "cumprod", "sin", "cos", 
+Categorical = ForwardRef('Categorical')
+
+__all__ = ["cast", "abs", "log", "exp", "cumsum", "cumprod", "sin", "cos", 
            "where", "histogram", "value_counts"]    
+
+@typechecked
+def cast(pda : Union[pdarray, Strings], dt) -> Union[pdarray, Strings]:
+    """
+    Cast an array to another dtype.
+
+    Parameters
+    ----------
+    pda : pdarray or Strings
+        The array of values to cast
+    dtype : np.dtype or str
+        The target dtype to cast values to
+
+    Returns
+    -------
+    pdarray or Strings
+        Array of values cast to desired dtype
+
+    Notes
+    -----
+    The cast is performed according to Chapel's casting rules and is NOT safe 
+    from overflows or underflows. The user must ensure that the target dtype 
+    has the precision and capacity to hold the desired result.
+    
+    Examples
+    --------
+    >>> ak.cast(ak.linspace(1.0,5.0,5), dt=ak.int64)
+    array([1, 2, 3, 4, 5])    
+    
+    >>> ak.cast(ak.arange(0,5), dt=ak.float64).dtype
+    dtype('float64')
+    
+    >>> ak.cast(ak.arange(0,5), dt=ak.bool)
+    array([False, True, True, True, True])
+    
+    >>> ak.cast(ak.linspace(0,4,5), dt=ak.bool)
+    array([False, True, True, True, True])
+    """
+
+    if isinstance(pda, pdarray):
+        name = pda.name
+        objtype = "pdarray"
+    elif isinstance(pda, Strings):
+        name = '+'.join((pda.offsets.name, pda.bytes.name))
+        objtype = "str"    
+    # typechecked decorator guarantees no other case
+
+    dt = _as_dtype(dt)
+    opt = ""
+    msg = "cast {} {} {} {}".format(name, objtype, dt.name, opt)
+    repMsg = generic_msg(msg)
+    if dt.name.startswith("str"):
+        return Strings(*(type_cast(str,repMsg).split("+")))
+    else:
+        return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
 def abs(pda : pdarray) -> pdarray:
@@ -28,9 +87,17 @@ def abs(pda : pdarray) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+        
+    Examples
+    --------
+    >>> ak.abs(ak.arange(-5,-1))
+    array([5, 4, 3, 2])
+    
+    >>> ak.abs(ak.linspace(-5,-1,5))
+    array([5, 4, 3, 2, 1])    
     """
     repMsg = generic_msg("efunc {} {}".format("abs", pda.name))
-    return create_pdarray(repMsg)
+    return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
 def log(pda : pdarray) -> pdarray:
@@ -56,6 +123,8 @@ def log(pda : pdarray) -> pdarray:
     -----
     Logarithms with other bases can be computed as follows:
 
+    Examples
+    --------
     >>> A = ak.array([1, 10, 100])
     # Natural log
     >>> ak.log(A)
@@ -68,7 +137,7 @@ def log(pda : pdarray) -> pdarray:
     array([0, 3.3219280948873626, 6.6438561897747253])
     """
     repMsg = generic_msg("efunc {} {}".format("log", pda.name))
-    return create_pdarray(repMsg)
+    return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
 def exp(pda : pdarray) -> pdarray:
@@ -89,9 +158,18 @@ def exp(pda : pdarray) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+        
+    Examples
+    --------
+    >>> ak.exp(ak.arange(1,5))
+    array([2.7182818284590451, 7.3890560989306504, 20.085536923187668, 54.598150033144236])
+    
+    >>> ak.exp(ak.uniform(5,1.0,5.0))
+    array([11.84010843172504, 46.454368507659211, 5.5571769623557188, 
+           33.494295836924771, 13.478894913238722])
     """
     repMsg = generic_msg("efunc {} {}".format("exp", pda.name))
-    return create_pdarray(repMsg)
+    return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
 def cumsum(pda : pdarray) -> pdarray:
@@ -115,9 +193,21 @@ def cumsum(pda : pdarray) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+        
+    Examples
+    --------
+    >>> ak.cumsum(ak.arange([1,5]))
+    array([1, 3, 6])
+
+    >>> ak.cumsum(ak.uniform(5,1.0,5.0))
+    array([3.1598310770203937, 5.4110385860243131, 9.1622479306453748, 
+           12.710615785506533, 13.945880905466208])
+    
+    >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool))
+    array([0, 1, 1, 2, 3])
     """
     repMsg = generic_msg("efunc {} {}".format("cumsum", pda.name))
-    return create_pdarray(repMsg)
+    return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
 def cumprod(pda : pdarray) -> pdarray:
@@ -141,9 +231,18 @@ def cumprod(pda : pdarray) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
+        
+    Examples
+    --------
+    >>> ak.cumprod(ak.arange(1,5))
+    array([1, 2, 6, 24]))
+
+    >>> ak.cumprod(ak.uniform(5,1.0,5.0))
+    array([1.5728783400481925, 7.0472855509390593, 33.78523998586553, 
+           134.05309592737584, 450.21589865655358])
     """
     repMsg = generic_msg("efunc {} {}".format("cumprod", pda.name))
-    return create_pdarray(repMsg)
+    return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
 def sin(pda : pdarray) -> pdarray:
@@ -166,7 +265,7 @@ def sin(pda : pdarray) -> pdarray:
         Raised if the parameter is not a pdarray
     """
     repMsg = generic_msg("efunc {} {}".format("sin",pda.name))
-    return create_pdarray(repMsg)
+    return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
 def cos(pda : pdarray) -> pdarray:
@@ -188,15 +287,18 @@ def cos(pda : pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    repMsg = generic_msg("efunc {} {}".format("cos",pda.name))
-    return create_pdarray(repMsg)
+    repMsg = type_cast(str, generic_msg("efunc {} {}".format("cos",pda.name)))
+    return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
 def where(condition : pdarray, A : Union[Union[int,float], pdarray], 
                         B : Union[Union[int,float], pdarray]) -> pdarray:
     """
     Returns an array with elements chosen from A and B based upon a 
-    conditioning array.
+    conditioning array. As is the case with numpy.where, the return array
+    consists of values from the first array (A) where the conditioning array 
+    elements are True and from the second array (B) where the conditioning
+    array elements are False.
     
     Parameters
     ----------
@@ -210,17 +312,43 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
     Returns
     -------
     pdarray
-        Values chosen from A and B according to condition
+        Values chosen from A where the condition is True and B where
+        the condition is False
         
     Raises 
     ------
     TypeError
-        Raised if condition is not a pdarray or if pdarray dtypes
-        are not supported
+        Raised if the condition object is not a pdarray, if pdarray dtypes are 
+        not supported or do not match, or if multiple condition clauses (see 
+        Notes section) are applied
+    ValueError
+        Raised if the shapes of the condition, A, and B pdarrays are unequal
+        
+    Examples
+    --------
+    >>> a1 = ak.arange(1,10)
+    >>> a2 = ak.ones(9, dtype=np.int64)
+    >>> cond = a1 < 5
+    >>> ak.where(cond,a1,a2)
+    array([1, 2, 3, 4, 1, 1, 1, 1, 1])
+    
+    >>> a1 = ak.arange(1,10)
+    >>> a2 = ak.ones(9, dtype=np.int64)
+    >>> cond = a1 == 5
+    >>> ak.where(cond,a1,a2)
+    array([1, 1, 1, 1, 5, 1, 1, 1, 1])
+
+    >>> a1 = ak.arange(1,10)
+    >>> a2 = 10
+    >>> cond = a1 < 5
+    >>> ak.where(cond,a1,a2)
+    array([1, 2, 3, 4, 10, 10, 10, 10, 10])
 
     Notes
     -----
-    A and B must have the same dtype.
+    A and B must have the same dtype and only one conditional clause 
+    is supported e.g., n < 5, n > 1, which is supported in numpy
+    is not currently supported in Arkouda
     """
     if isinstance(A, pdarray) and isinstance(B, pdarray):
         repMsg = generic_msg("efunc3vv {} {} {} {}".\
@@ -252,7 +380,7 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
             raise TypeError(("Not implemented for scalar types {} " +
                             "and {}").format(dtA, dtB))
         # If the dtypes are the same, do not cast
-        if dtA == dtB:
+        if dtA == dtB: # type: ignore
             dt = dtA
         # If the dtypes are different, try casting one direction then the other
         elif dtB in DTypes and np.can_cast(A, dtB):
@@ -272,7 +400,7 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
                                     A,
                                     dt,
                                     B))
-    return create_pdarray(repMsg)
+    return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
 def histogram(pda : pdarray, bins : int=10) -> pdarray:
@@ -314,6 +442,7 @@ def histogram(pda : pdarray, bins : int=10) -> pdarray:
 
     Examples
     --------
+    >>> import matplotlib.pyplot as plt
     >>> A = ak.arange(0, 10, 1)
     >>> nbins = 3
     >>> h = ak.histogram(A, bins=nbins)
@@ -329,10 +458,11 @@ def histogram(pda : pdarray, bins : int=10) -> pdarray:
     if bins < 1:
         raise ValueError('bins must be 1 or greater')
     repMsg = generic_msg("histogram {} {}".format(pda.name, bins))
-    return create_pdarray(repMsg)
+    return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
-def value_counts(pda : pdarray) -> Tuple[Union[pdarray,Strings],pdarray]:
+def value_counts(pda : pdarray) -> Union[Categorical, # type: ignore
+                        Tuple[Union[pdarray,Strings],Optional[pdarray]]]:
     """
     Count the occurrences of the unique values of an array.
 
@@ -361,7 +491,9 @@ def value_counts(pda : pdarray) -> Tuple[Union[pdarray,Strings],pdarray]:
     Notes
     -----
     This function differs from ``histogram()`` in that it only returns
-    counts for values that are present, leaving out empty "bins".
+    counts for values that are present, leaving out empty "bins". This
+    function delegates all logic to the unique() method where the 
+    return_counts parameter is set to True.
 
     Examples
     --------

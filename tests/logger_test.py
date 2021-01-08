@@ -15,7 +15,13 @@ class LoggerTest(unittest.TestCase):
         self.assertEqual('INFO', LogLevel.INFO.value) 
         self.assertEqual('WARN', LogLevel.WARN.value)  
         self.assertEqual('CRITICAL', LogLevel.CRITICAL.value)
-        self.assertEqual('ERROR', LogLevel.ERROR.value)        
+        self.assertEqual('ERROR', LogLevel.ERROR.value)   
+        
+        self.assertEqual(LogLevel.DEBUG,LogLevel('DEBUG'))    
+        self.assertEqual(LogLevel.INFO,LogLevel('INFO'))  
+        self.assertEqual(LogLevel.WARN,LogLevel('WARN')) 
+        self.assertEqual(LogLevel.CRITICAL,LogLevel('CRITICAL')) 
+        self.assertEqual(LogLevel.ERROR,LogLevel('ERROR')) 
         
     def testArkoudaLogger(self): 
         handler = StreamHandler()
@@ -80,6 +86,15 @@ class LoggerTest(unittest.TestCase):
         ak.disableVerbose()
         loggerOne.debug('loggerOne after disableVerbose')
         loggerTwo.debug('loggerTwo after disableVerbose')  
+        
+    def testErrorHandling(self):
+        logger = getArkoudaLogger(name='VerboseLogger', logLevel=LogLevel('INFO'))
+
+        with self.assertRaises(ValueError):
+            logger.getHandler('not-a-handler')
+            
+        with self.assertRaises(TypeError):
+            logger.disableVerbose(logLevel='INFO')
     
     @classmethod
     def tearDownClass(cls):

@@ -13,6 +13,7 @@ module ServerConfig
     use ServerErrorStrings;
     use Reflection;
     use Errors;
+    use Logging;
 
     /*
     Logging flag
@@ -43,6 +44,14 @@ module ServerConfig
     Write the server `hostname:port` to this file.
     */
     config const serverConnectionInfo: string = getEnv("ARKOUDA_SERVER_CONNECTION_INFO", "");
+
+    const scLogger = new Logger();
+  
+    if v {
+        scLogger.level = LogLevel.DEBUG;
+    } else {
+        scLogger.level = LogLevel.INFO;
+    }
 
     /*
     Hostname where I am running
@@ -137,22 +146,26 @@ module ServerConfig
         // must set config var "-smemTrack=true"(compile time) or "--memTrack=true" (run time)
         // to use memoryUsed() procedure from Chapel's Memory module
         if (memTrack) {
-            var total = memoryUsed() + (additionalAmount:uint / numLocales:uint); // this is a per locale total
+            // this is a per locale total
+            var total = memoryUsed() + (additionalAmount:uint / numLocales:uint);
             if (logging) {
                 if (total > memHighWater) {
                     memHighWater = total;
-                    writeln("memory high watermark = ", memHighWater:uint * numLocales:uint,
-                            " memory limit = ", getMemLimit():uint * numLocales:uint);
-                    try! stdout.flush();
+                    scLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                    "memory high watermark = %i memory limit = %i".format(
+                           memHighWater:uint * numLocales:uint, 
+                           getMemLimit():uint * numLocales:uint));
                 }
             }
             if total > getMemLimit() {
+                var msg = "Error: Operation would exceed memory limit ("
+                                             +total:string+","+getMemLimit():string+")";
+                scLogger.error(getModuleName(),getRoutineName(),getLineNumber(), msg);  
                 throw getErrorWithContext(
-                          msg = "Error: Operation would exceed memory limit ("
-                                             +total:string+","+getMemLimit():string+")",
-                          lineNumber = getLineNumber(),
-                          routineName = getRoutineName(),
-                          moduleName = getModuleName(),
+                          msg=msg,
+                          lineNumber=getLineNumber(),
+                          routineName=getRoutineName(),
+                          moduleName=getModuleName(),
                           errorClass="ErrorWithContext");                                        
             }
         }

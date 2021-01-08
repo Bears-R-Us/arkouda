@@ -22,6 +22,14 @@ module ArraySetopsMsg
     use RadixSortLSD;
     use Reflection;
     use Errors;
+    use Logging;
+    
+    var asLogger = new Logger();
+    if v {
+        asLogger.level = LogLevel.DEBUG;
+    } else {
+        asLogger.level = LogLevel.INFO;    
+    }
     
     /*
     Parse, execute, and respond to a intersect1d message
@@ -52,12 +60,7 @@ module ArraySetopsMsg
           when (DType.Int64) {
              if (gEnt.dtype != gEnt2.dtype) {
                  var errorMsg = notImplementedError("newIntersect1d",gEnt2.dtype);
-                 writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                            
+                 asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                             
                  return errorMsg;
              }
              var e = toSymEntry(gEnt,int);
@@ -66,18 +69,13 @@ module ArraySetopsMsg
              var aV = intersect1d(e.a, f.a, isUnique);
              st.addEntry(vname, new shared SymEntry(aV));
 
-             var s = try! "created " + st.attrib(vname);
+             var s = "created " + st.attrib(vname);
+             asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),s);
              return s;
            }
            otherwise {
                var errorMsg = notImplementedError("newIntersect1d",gEnt.dtype);
-               writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                   
-             
+               asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
                return errorMsg;
            }
         }
@@ -112,12 +110,7 @@ module ArraySetopsMsg
           when (DType.Int64) {
              if(gEnt.dtype != gEnt2.dtype) {
                  var errorMsg = notImplementedError("setxor1d",gEnt2.dtype);
-                 writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                  
+                 asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                 
                  return errorMsg;
              }
              var e = toSymEntry(gEnt,int);
@@ -126,17 +119,13 @@ module ArraySetopsMsg
              var aV = setxor1d(e.a, f.a, isUnique);
              st.addEntry(vname, new shared SymEntry(aV));
 
-             var s = try! "created " + st.attrib(vname);
+             var s = "created " + st.attrib(vname);
+             asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),s);
              return s;
            }
            otherwise {
                var errorMsg = notImplementedError("setxor1d",gEnt.dtype);
-               writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                  
+               asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                  
                return errorMsg;
            }
         }
@@ -171,12 +160,7 @@ module ArraySetopsMsg
           when (DType.Int64) {
              if (gEnt.dtype != gEnt2.dtype) {
                  var errorMsg = notImplementedError("setdiff1d",gEnt2.dtype);
-                 writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                  
+                 asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                
                  return errorMsg;             
              }
              var e = toSymEntry(gEnt,int);
@@ -185,17 +169,13 @@ module ArraySetopsMsg
              var aV = setdiff1d(e.a, f.a, isUnique);
              st.addEntry(vname, new shared SymEntry(aV));
 
-             var s = try! "created " + st.attrib(vname);
+             var s = "created " + st.attrib(vname);
+             asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),s);
              return s;
            }
            otherwise {
                var errorMsg = notImplementedError("setdiff1d",gEnt.dtype);
-               writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                  
+               asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                 
                return errorMsg;             
            }
         }
@@ -229,12 +209,7 @@ module ArraySetopsMsg
         when (DType.Int64) {
            if (gEnt.dtype != gEnt2.dtype) {
                var errorMsg = notImplementedError("newUnion1d",gEnt2.dtype);
-               writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                  
+               asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                   
                return errorMsg;              
            }
            var e = toSymEntry(gEnt,int);
@@ -243,17 +218,13 @@ module ArraySetopsMsg
            var aV = union1d(e.a, f.a);
            st.addEntry(vname, new shared SymEntry(aV));
 
-           var s = try! "created " + st.attrib(vname);
+           var s = "created " + st.attrib(vname);
+           asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),s);
            return s;
          }
          otherwise {
              var errorMsg = notImplementedError("newUnion1d",gEnt.dtype);
-             writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                  
+             asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                   
              return errorMsg;              
          }
       }

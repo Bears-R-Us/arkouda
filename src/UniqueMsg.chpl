@@ -16,6 +16,7 @@ module UniqueMsg
     use Math only;
     use Reflection;
     use Errors;
+    use Logging;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -23,6 +24,14 @@ module UniqueMsg
     use ServerErrorStrings;
 
     use Unique;
+    
+    const umLogger = new Logger();
+  
+    if v {
+        umLogger.level = LogLevel.DEBUG;
+    } else {
+        umLogger.level = LogLevel.INFO;
+    }
     
     /* unique take a pdarray and returns a pdarray with the unique values */
     proc uniqueMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
@@ -37,12 +46,7 @@ module UniqueMsg
         else if returnCountsStr == "False" {returnCounts = false;}
         else {
             var errorMsg = "Error: %s: %s".format(pn,returnCountsStr);
-            writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="ReturnCountsError"));                
+            umLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);              
             return errorMsg;
         }
         select objtype {
@@ -51,8 +55,9 @@ module UniqueMsg
                 var vname = st.nextName();
                 // get next symbol anme for counts
                 var cname = st.nextName();
-                if v {writeln("%s %s %t: %s %s".format(cmd, name, returnCounts, 
-                          vname, cname)); try! stdout.flush();}
+                umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                          "cmd: %s name: %s returnCounts: %t: vname: %s cname: %s".format(
+                          cmd,name,returnCounts,vname,cname));
         
                 var gEnt: borrowed GenSymEntry = st.lookup(name);
                 // the upper limit here is the same as argsort/radixSortLSD_keys
@@ -69,16 +74,19 @@ module UniqueMsg
                 
                     /* // how many bins in histogram */
                     /* var bins = eMax-eMin+1; */
-                    /* if v {writeln("bins = %t".format(bins));try! stdout.flush();} */
+                    /* umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                           "bins = %t".format(bins)); */
 
                     /* if (bins <= mBins) { */
-                    /*     if v {try! writeln("bins <= %t".format(mBins));try! stdout.flush();} */
+                    /*     umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                "bins <= %t".format(mBins));*/
                     /*     var (aV,aC) = uniquePerLocHistGlobHist(e.a, eMin, eMax); */
                     /*     st.addEntry(vname, new shared SymEntry(aV)); */
                     /*     if returnCounts {st.addEntry(cname, new shared SymEntry(aC));} */
                     /* } */
                     /* else { */
-                    /*     if v {try! writeln("bins = %t".format(bins));try! stdout.flush();} */
+                    /*     umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                "bins = %t".format(bins));*/
                     /*     var (aV,aC) = uniquePerLocAssocParUnsafeGlobAssocParUnsafe(e.a, eMin, eMax); */
                     /*     st.addEntry(vname, new shared SymEntry(aV)); */
                     /*     if returnCounts {st.addEntry(cname, new shared SymEntry(aC));} */
@@ -91,19 +99,14 @@ module UniqueMsg
                 }
                 otherwise {
                     var errorMsg = notImplementedError("unique",gEnt.dtype);
-                    writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));                   
+                    umLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                
                     return errorMsg;
                 }
             }
         
             var s = try! "created " + st.attrib(vname);
             if returnCounts {s += " +created " + st.attrib(cname);}
-
+            umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),s);  
             return s;
           }
           when "str" {
@@ -121,22 +124,18 @@ module UniqueMsg
               var (uo, uv, c, inv) = uniqueGroup(str);
               st.addEntry(offsetName, new shared SymEntry(uo));
               st.addEntry(valueName, new shared SymEntry(uv));
-              var s = try! "created " + st.attrib(offsetName) + " +created " + st.attrib(valueName);
+              var s = "created " + st.attrib(offsetName) + " +created " + st.attrib(valueName);
               if returnCounts {
                   var countName = st.nextName();
                   st.addEntry(countName, new shared SymEntry(c));
                   s += " +created " + st.attrib(countName);
               }
+              umLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), s);
               return s;
           }
           otherwise { 
-              var errorMsg = notImplementedError(Reflection.getRoutineName(), objtype);
-              writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));   
+             var errorMsg = notImplementedError(Reflection.getRoutineName(), objtype);
+             umLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errorMsg);
              return errorMsg;              
            }
         }
@@ -152,7 +151,8 @@ module UniqueMsg
         // get next symbol name
         var vname = st.nextName();
         var cname = st.nextName();
-        if v {writeln("%s %s : %s %s".format(cmd, name, vname, cname));try! stdout.flush();}
+        umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                       "cmd: %s name: %s vname: %s cname: %s".format(cmd, name, vname, cname));
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
@@ -164,22 +164,26 @@ module UniqueMsg
 
                 /* // how many bins in histogram */
                 /* var bins = eMax-eMin+1; */
-                /* if v {writeln("bins = %t".format(bins));try! stdout.flush();} */
+                /* umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                         "bins = %t".format(bins));*/
 
                 /* if (bins <= mBins) { */
-                /*     if v {try! writeln("bins <= %t".format(mBins));try! stdout.flush();} */
+                /*     umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                         "bins <= %t".format(mBins));*/
                 /*     var (aV,aC) = uniquePerLocHistGlobHist(e.a, eMin, eMax); */
                 /*     st.addEntry(vname, new shared SymEntry(aV)); */
                 /*     st.addEntry(cname, new shared SymEntry(aC)); */
                 /* } */
                 /* else if (bins <= lBins) { */
-                /*     if v {try! writeln("bins <= %t".format(lBins));try! stdout.flush();} */
+                /*     umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                         "bins <= %t".format(lBins));*/
                 /*     var (aV,aC) = uniquePerLocAssocGlobHist(e.a, eMin, eMax); */
                 /*     st.addEntry(vname, new shared SymEntry(aV)); */
                 /*     st.addEntry(cname, new shared SymEntry(aC)); */
                 /* } */
                 /* else { */
-                /*     if v {try! writeln("bins = %t".format(bins));try! stdout.flush();} */
+                /*     umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                         "bins = %t".format(bins));*/
                 /*     var (aV,aC) = uniquePerLocAssocGlobAssoc(e.a, eMin, eMax); */
                 /*     st.addEntry(vname, new shared SymEntry(aV)); */
                 /*     st.addEntry(cname, new shared SymEntry(aC)); */
@@ -191,16 +195,12 @@ module UniqueMsg
             }
             otherwise {
                 var errorMsg = notImplementedError(pn,gEnt.dtype);
-                writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError"));   
+                umLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return errorMsg;                 
             }
         }
-        
-        return try! "created " + st.attrib(vname) + " +created " + st.attrib(cname);
+        repMsg = "created " + st.attrib(vname) + " +created " + st.attrib(cname);
+        umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return repMsg;
     }
 }
