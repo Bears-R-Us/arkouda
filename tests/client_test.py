@@ -36,7 +36,7 @@ class ClientTest(ArkoudaTest):
         ak.disconnect()
         self.assertFalse(ak.client.connected)
         ak.disconnect()
-        ak.connect()
+        ak.connect(server=ArkoudaTest.server, port=ArkoudaTest.port)
         
     def test_client_get_config(self):
         '''
@@ -107,4 +107,4 @@ class ClientTest(ArkoudaTest):
         ak.client.set_defaults()
         self.assertEqual(100, ak.client.pdarrayIterThresh)
         self.assertEqual(1073741824, ak.client.maxTransferBytes)
-        self.assertFalse(ak.client.verbose)        
+        self.assertFalse(ak.client.verbose)

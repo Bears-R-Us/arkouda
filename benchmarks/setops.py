@@ -7,14 +7,14 @@ import arkouda as ak
 OPS = ('intersect1d', 'union1d', 'setxor1d', 'setdiff1d')
 TYPES = ('int64',)
 
-def time_ak_setops(N_per_locale, trials, dtype):
+def time_ak_setops(N_per_locale, trials, dtype, seed):
     print(">>> arkouda setops")
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
     if dtype == 'int64':
-        a = ak.randint(0, 2**32, N)
-        b = ak.randint(0, 2**32, N)
+        a = ak.randint(0, 2**32, N, seed=seed)
+        b = ak.randint(0, 2**32, N, seed=seed)
     
     timings = {op: [] for op in OPS}
     results = {}
@@ -33,9 +33,11 @@ def time_ak_setops(N_per_locale, trials, dtype):
         bytes_per_sec = (a.size * a.itemsize * 2) / t
         print("  {} Average rate = {:.2f} GiB/sec".format(op, bytes_per_sec/2**30))
 
-def time_np_setops(N, trials, dtype):
+def time_np_setops(N, trials, dtype, seed):
     print(">>> numpy setops")
     print("N = {:,}".format(N))
+    if seed is not None:
+        np.random.seed(seed)
     if dtype == 'int64':
         a = np.random.randint(0, 2**32, N)
         b = np.random.randint(0, 2**32, N)
@@ -57,8 +59,10 @@ def time_np_setops(N, trials, dtype):
         bytes_per_sec = (a.size * a.itemsize * 2) / t
         print("  {} Average rate = {:.2f} GiB/sec".format(op, bytes_per_sec/2**30))
 
-def check_correctness(dtype):
+def check_correctness(dtype, seed):
     N = 10**4
+    if seed is not None:
+        np.random.seed(seed)
     if dtype == 'int64':
         a = np.random.randint(0, 2**32, N)
         b = np.random.randint(0, 2**32, N)
@@ -83,6 +87,7 @@ def create_parser():
     parser.add_argument('-d', '--dtype', default='int64', help='Dtype of array ({})'.format(', '.join(TYPES)))
     parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
     parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
+    parser.add_argument('-s', '--seed', default=None, type=int, help='Value to initialize random number generator')
     return parser
 
 if __name__ == "__main__":
@@ -97,16 +102,16 @@ if __name__ == "__main__":
 
     if args.correctness_only:
         for dtype in TYPES:
-            check_correctness(dtype)
+            check_correctness(dtype, args.seed)
         sys.exit(0)
     
     print("array size = {:,}".format(args.size))
     print("number of trials = ", args.trials)
-    time_ak_setops(args.size, args.trials, args.dtype)
+    time_ak_setops(args.size, args.trials, args.dtype, args.seed)
     if args.numpy:
-        time_np_setops(args.size, args.trials, args.dtype)
+        time_np_setops(args.size, args.trials, args.dtype, args.seed)
         print("Verifying agreement between arkouda and NumPy on small problem... ", end="")
-        check_correctness(args.dtype)
+        check_correctness(args.dtype, args.seed)
         print("CORRECT")
         
     sys.exit(0)

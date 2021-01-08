@@ -852,7 +852,9 @@ module SegmentedArray {
        Returns arrays for the segment offsets and bytes of the slice.*/
     proc this(const slice: range(stridable=true)) throws {
       if (slice.low < offsets.aD.low) || (slice.high > offsets.aD.high) {
-        throw new owned OutOfBoundsError();
+          saLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+          "Array is out of bounds");
+          throw new owned OutOfBoundsError();
       }
       // Early return for zero-length result
       if (size == 0) || (slice.size == 0) {
@@ -902,7 +904,9 @@ module SegmentedArray {
       var ivMin = min reduce iv;
       var ivMax = max reduce iv;
       if (ivMin < 0) || (ivMax >= offsets.size) {
-        throw new owned OutOfBoundsError();
+          saLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                              "Array out of bounds");
+          throw new owned OutOfBoundsError();
       }
       if v {writeln("Computing lengths and offsets"); stdout.flush();}
       var t1 = getCurrentTime();
@@ -927,6 +931,11 @@ module SegmentedArray {
       // The total number of bytes in the gathered strings
       var retBytes = gatheredOffsets[D.high];
       gatheredOffsets -= gatheredLengths;
+      
+      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                "aggregation in %i seconds".format(getCurrentTime() - t1));
+      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Copying values");
+
       if v {
         writeln(getCurrentTime() - t1, " seconds");
         writeln("Copying values"); stdout.flush();
@@ -975,7 +984,9 @@ module SegmentedArray {
           }
         }
       }
-      if v {writeln(getCurrentTime() - t1, " seconds"); stdout.flush();}
+      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                            "Gathered offsets and vals in %i seconds".format(
+                                           getCurrentTime() -t1));
       return (gatheredOffsets, gatheredVals);
     }
 
@@ -983,9 +994,12 @@ module SegmentedArray {
     proc this(iv: [?D] bool) throws {
       // Index vector must be same domain as array
       if (D != offsets.aD) {
-        throw new owned OutOfBoundsError();
+          saLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                                                           "Array out of bounds");
+          throw new owned OutOfBoundsError();
       }
-      if v {writeln("Computing lengths and offsets"); stdout.flush();}
+      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                                                 "Computing lengths and offsets");
       var t1 = getCurrentTime();
       ref oa = offsets.a;
       const low = offsets.aD.low, high = offsets.aD.high;

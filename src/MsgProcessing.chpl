@@ -76,7 +76,7 @@ module MsgProcessing
         st.addEntry(rname, size, dtype);
         // if verbose print result
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                    "created the pdarray %t".format(st.lookup(rname)));
+                                    "created the pdarray %s".format(st.attrib(rname)));
                                     
         // response message                                    
         return try! "created " + st.attrib(rname);
@@ -342,7 +342,7 @@ module MsgProcessing
         var gEnt: borrowed GenSymEntry = st.lookup(name);
 
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                      "cmd: %s value: %s in pdarray %t".format(cmd,name,gEnt));
+                                      "cmd: %s value: %s in pdarray %s".format(cmd,name,st.attrib(name)));
 
         select (gEnt.dtype, dtype) {
             when (DType.Int64, DType.Int64) {
@@ -422,6 +422,8 @@ module MsgProcessing
                 repMsg = try! "set %s to %t".format(name, val);
             }
             otherwise {
+                mpLogger.error(getModuleName(),getRoutineName(),
+                                               getLineNumber(),"dtype: %s".format(dtypestr));
                 return unrecognizedTypeError(pn,dtypestr);
             }
         }

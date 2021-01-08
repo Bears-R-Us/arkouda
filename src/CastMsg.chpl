@@ -142,7 +142,7 @@ module CastMsg {
 
     var returnMsg = "created " + st.attrib(name);
     castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
-    return "created " + st.attrib(name);
+    return returnMsg;
   }
 
   proc castGenSymEntryToString(gse: borrowed GenSymEntry, st: borrowed SymTab, 

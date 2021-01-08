@@ -111,6 +111,26 @@ module MultiTypeSymEntry
             if v {writeln("deinit SymEntry");try! stdout.flush();}
         }
         
+        override proc writeThis(f) throws {
+          use Reflection;
+          proc writeField(f, param i) throws {
+            if !isArray(getField(this, i)) {
+              f <~> getFieldName(this.type, i) <~> " = " <~> getField(this, i):string;
+            } else {
+              f <~> getFieldName(this.type, i) <~> " = " <~> formatAry(getField(this, i));
+            }
+          }
+
+          super.writeThis(f);
+          f <~> " {";
+          param nFields = numFields(this.type);
+          for param i in 0..nFields-2 {
+            writeField(f, i);
+            f <~> ", ";
+          }
+          writeField(f, nFields-1);
+          f <~> "}";
+        }
     }
 
 }

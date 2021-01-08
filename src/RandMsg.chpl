@@ -102,21 +102,26 @@ module RandMsg
                 randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             }
         }
-        // response message
-        return try! "created " + st.attrib(rname);
+
+        repMsg = "created " + st.attrib(rname);
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return repMsg;
     }
 
     proc randomNormalMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
-      var pn = Reflection.getRoutineName();
-      var (lenStr, seed) = payload.decode().splitMsgToTuple(2);
-      var len = lenStr:int;
-      // Result + 2 scratch arrays
-      overMemLimit(3*8*len);
-      var rname = st.nextName();
-      var entry = new shared SymEntry(len, real);
-      fillNormal(entry.a, seed);
-      st.addEntry(rname, entry);
-      return "created " + st.attrib(rname);
+        var pn = Reflection.getRoutineName();
+        var (lenStr, seed) = payload.decode().splitMsgToTuple(2);
+        var len = lenStr:int;
+        // Result + 2 scratch arrays
+        overMemLimit(3*8*len);
+        var rname = st.nextName();
+        var entry = new shared SymEntry(len, real);
+        fillNormal(entry.a, seed);
+        st.addEntry(rname, entry);
+
+        var repMsg = "created " + st.attrib(rname);
+        randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return repMsg;
     }
 
 }

@@ -5,7 +5,9 @@ from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros
 from arkouda.strings import Strings
-from arkouda.dtypes import *
+from arkouda.dtypes import int64, float64
+
+numeric_dtypes = {float64,int64}
 
 __all__ = ["argsort", "coargsort", "sort"]
 
@@ -35,7 +37,7 @@ def argsort(pda : Union[pdarray,Strings,'Categorical']) -> pdarray: # type: igno
     Notes
     -----
     Uses a least-significant-digit radix sort, which is stable and
-    resilinent to non-uniformity in data but communication intensive.
+    resilient to non-uniformity in data but communication intensive.
 
     Examples
     --------
@@ -151,8 +153,9 @@ def sort(pda : pdarray) -> pdarray:
     ------
     TypeError
         Raised if the parameter is not a pdarray
-    RuntimeError
+    ValueError
         Raised if sort attempted on a pdarray with an unsupported dtype
+        such as bool
 
     See Also
     --------
@@ -172,5 +175,7 @@ def sort(pda : pdarray) -> pdarray:
     """
     if pda.size == 0:
         return zeros(0, dtype=int64)
+    if pda.dtype not in numeric_dtypes:
+        raise ValueError("ak.sort supports float64 or int64, not {}".format(pda.dtype))
     repMsg = generic_msg("sort {}".format(pda.name))
     return create_pdarray(cast(str,repMsg))

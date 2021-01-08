@@ -1,8 +1,4 @@
-import importlib
 import numpy as np
-import math
-import gc
-import sys
 
 from base_test import ArkoudaTest
 from context import arkouda as ak

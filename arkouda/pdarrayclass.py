@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import cast, Sequence, Tuple, Union
+from typing import cast, Sequence, Union
 from typeguard import typechecked
 import json, struct
 import numpy as np # type: ignore
@@ -238,7 +238,7 @@ class pdarray:
                 raise ValueError("size mismatch {} {}".format(self.size,other.size))
             msg = "binopvv {} {} {}".format(op, self.name, other.name)
             repMsg = generic_msg(msg)
-            return create_pdarray(cast(str,repMsg))
+            return create_pdarray(repMsg)
         # pdarray binop scalar
         dt = resolve_scalar_dtype(other)
         if dt not in DTypes:
@@ -247,7 +247,7 @@ class pdarray:
         msg = "binopvs {} {} {} {}".\
                   format(op, self.name, dt, NUMBER_FORMAT_STRINGS[dt].format(other))
         repMsg = generic_msg(msg)
-        return create_pdarray(cast(str,repMsg))
+        return create_pdarray(repMsg)
 
     # reverse binary operators
     # pdarray binop pdarray: taken care of by binop function
@@ -287,7 +287,7 @@ class pdarray:
                       format(op, dt, NUMBER_FORMAT_STRINGS[dt].format(other), 
                                                                     self.name)
         repMsg = generic_msg(msg)
-        return create_pdarray(cast(str,repMsg))
+        return create_pdarray(repMsg)
 
     # overload + for pdarray, other can be {pdarray, int, float}
     def __add__(self, other):
@@ -493,15 +493,15 @@ class pdarray:
             (start,stop,stride) = key.indices(self.size)
             logger.debug('start: {} stop: {} stride: {}'.format(start,stop,stride))
             repMsg = generic_msg("[slice] {} {} {} {}".format(self.name, start, stop, stride))
-            return create_pdarray(cast(str,repMsg));
+            return create_pdarray(repMsg);
         if isinstance(key, pdarray):
-            kind, itemsize = translate_np_dtype(key.dtype)
+            kind, _ = translate_np_dtype(key.dtype)
             if kind not in ("bool", "int"):
                 raise TypeError("unsupported pdarray index type {}".format(key.dtype))
             if kind == "bool" and self.size != key.size:
                 raise ValueError("size mismatch {} {}".format(self.size,key.size))
             repMsg = generic_msg("[pdarray] {} {}".format(self.name, key.name))
-            return create_pdarray(cast(str,repMsg))
+            return create_pdarray(repMsg)
         else:
             raise TypeError("Unhandled key type: {} ({})".format(key, type(key)))
 
@@ -618,13 +618,13 @@ class pdarray:
 
     def argmin(self) -> np.int64:
         """
-        Return the max of the first minimum value of the array.
+        Return the index of the first occurrence of the array min value
         """
         return argmin(self)
 
     def argmax(self) -> np.int64:
         """
-        Return the index of the first maximum value of the array.
+        Return the index of the first occurrence of the array max value.
         """
         return argmax(self)
 
@@ -738,7 +738,7 @@ class pdarray:
         Returns
         -------
         pdarray, int
-            The maximum `k` values from pda
+            Indices corresponding to the maximum `k` values from pda
         
         Raises
         ------
@@ -749,7 +749,7 @@ class pdarray:
 
     def argmaxk(self, k : int) -> pdarray:
         """
-        Compute the maximum "k" values.
+        Finds the indices corresponding to the maximum "k" values.
         
         Parameters
         ----------
@@ -759,7 +759,7 @@ class pdarray:
         Returns
         -------
         pdarray, int
-            The maximum `k` values from pda
+            Indices corresponding to the  maximum `k` values, sorted
         
         Raises
         ------
@@ -1376,7 +1376,7 @@ def max(pda : pdarray) -> Union[np.float64,np.int64]:
 @typechecked
 def argmin(pda : pdarray) -> np.int64:
     """
-    Return the index of the first minimum value of the array.
+    Return the index of the first occurrence of the array min value.
 
     Parameters
     ----------
@@ -1401,7 +1401,7 @@ def argmin(pda : pdarray) -> np.int64:
 @typechecked
 def argmax(pda : pdarray) -> np.int64:
     """
-    Return the index of the first maximum value of the array.
+    Return the index of the first occurrence of the array max value.
     
     Parameters
     ----------
@@ -1562,7 +1562,7 @@ def mink(pda : pdarray, k : int) -> pdarray:
     Returns
     -------
     pdarray
-        The minimum `k` values from pda
+        The minimum `k` values from pda, sorted
         
     Raises
     ------
@@ -1588,6 +1588,8 @@ def mink(pda : pdarray, k : int) -> pdarray:
     >>> A = ak.array([10,5,1,3,7,2,9,0])
     >>> ak.mink(A, 3)
     array([0, 1, 2])
+    >>> ak.mink(A, 4)
+    array([0, 1, 2, 3])
     """
     if k < 1:
         raise ValueError('k must be 1 or greater')
@@ -1614,7 +1616,7 @@ def maxk(pda : pdarray, k : int) -> pdarray:
     Returns
     -------
     pdarray, int
-        The maximum `k` values from pda
+        The maximum `k` values from pda, sorted
         
     Raises
     ------
@@ -1641,6 +1643,8 @@ def maxk(pda : pdarray, k : int) -> pdarray:
     >>> A = ak.array([10,5,1,3,7,2,9,0])
     >>> ak.maxk(A, 3)
     array([7, 9, 10])
+    >>> ak.maxk(A, 4)
+    array([5, 7, 9, 10])
     """
     if k < 1:
         raise ValueError('k must be 1 or greater')
@@ -1648,26 +1652,24 @@ def maxk(pda : pdarray, k : int) -> pdarray:
         raise ValueError("must be a non-empty pdarray of type int or float")
 
     repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, False))
-    return create_pdarray(cast(str,repMsg))
+    return create_pdarray(repMsg)
 
 @typechecked
 def argmink(pda : pdarray, k : int) -> pdarray:
     """
-    Find the `k` minimum values of an array.
-
-    Returns the smallest `k` values of an array, sorted
+    Finds the indices corresponding to the `k` minimum values of an array.
 
     Parameters
     ----------
     pda : pdarray
         Input array.
     k : integer
-        The desired count of minimum values to be returned by the output.
+        The desired count of indices corresponding to minimum array values
 
     Returns
     -------
     pdarray, int
-        The indcies of the minimum `k` values from pda
+        The indices of the minimum `k` values from the pda, sorted
         
     Raises
     ------
@@ -1686,13 +1688,15 @@ def argmink(pda : pdarray, k : int) -> pdarray:
 
     This reduction will see a significant drop in performance as `k` grows
     beyond a certain value. This value is system dependent, but generally
-    about a `k` of 5 million is where performance degredation has been observed.
+    about a `k` of 5 million is where performance degradation has been observed.
 
     Examples
     --------
     >>> A = ak.array([10,5,1,3,7,2,9,0])
     >>> ak.argmink(A, 3)
     array([7, 2, 5])
+    >>> ak.argmink(A, 4)
+    array([7, 2, 5, 3])
     """
     if k < 1:
         raise ValueError('k must be 1 or greater')
@@ -1700,12 +1704,12 @@ def argmink(pda : pdarray, k : int) -> pdarray:
         raise ValueError("must be a non-empty pdarray of type int or float")
 
     repMsg = generic_msg("mink {} {} {}".format(pda.name, k, True))
-    return create_pdarray(cast(str,repMsg))
+    return create_pdarray(repMsg)
 
 @typechecked
 def argmaxk(pda : pdarray, k : int) -> pdarray:
     """
-    Find the `k` maximum values of an array.
+    Find the indices corresponding to the `k` maximum values of an array.
 
     Returns the largest `k` values of an array, sorted
 
@@ -1714,12 +1718,15 @@ def argmaxk(pda : pdarray, k : int) -> pdarray:
     pda : pdarray
         Input array.
     k : integer
-        The desired count of maximum values to be returned by the output.
+        The desired count of indices corresponding to maxmum array values
 
     Returns
     -------
     pdarray, int
-        The indices of the maximum `k` values from pda
+        The indices of the maximum `k` values from the pda, sorted
+        
+    Raises
+    ------   
     TypeError
         Raised if pda is not a pdarray or k is not an integer
     ValueError
@@ -1743,6 +1750,8 @@ def argmaxk(pda : pdarray, k : int) -> pdarray:
     >>> A = ak.array([10,5,1,3,7,2,9,0])
     >>> ak.argmaxk(A, 3)
     array([4, 6, 0])
+    >>> ak.argmaxk(A, 4)
+    array([1, 4, 6, 0])
     """
     if k < 1:
         raise ValueError('k must be 1 or greater')
@@ -1750,7 +1759,7 @@ def argmaxk(pda : pdarray, k : int) -> pdarray:
         raise ValueError("must be a non-empty pdarray of type int or float")
 
     repMsg = generic_msg("maxk {} {} {}".format(pda.name, k, True))
-    return create_pdarray(cast(str,repMsg))
+    return create_pdarray(repMsg)
 
 
 @typechecked
@@ -1801,12 +1810,12 @@ def register_pdarray(pda : Union[str,pdarray], user_defined_name : str) -> pdarr
     if isinstance(pda, pdarray):
         repMsg = generic_msg("register {} {}".\
                              format(pda.name, user_defined_name))
-        return create_pdarray(cast(str,repMsg))
+        return create_pdarray(repMsg)
 
     if isinstance(pda, str):
         repMsg = generic_msg("register {} {}".\
                              format(pda, user_defined_name))        
-        return create_pdarray(cast(str,repMsg))
+        return create_pdarray(repMsg)
 
 
 @typechecked
@@ -1850,7 +1859,7 @@ def attach_pdarray(user_defined_name : str) -> pdarray:
     >>> ak.unregister_pdarray(b)
     """
     repMsg = generic_msg("attach {}".format(user_defined_name))
-    return create_pdarray(cast(str,repMsg))
+    return create_pdarray(repMsg)
 
 
 @typechecked

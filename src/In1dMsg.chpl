@@ -59,8 +59,8 @@ module In1dMsg
         var gAr2: borrowed GenSymEntry = st.lookup(sname);
         
         iLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                        "cmd: %s pdarray1: %t pdarray2: %t invert: %t new pdarray name: %t".format(
-                                   cmd,gAr1,gAr2,invert,rname));
+                        "cmd: %s pdarray1: %s pdarray2: %s invert: %t new pdarray name: %t".format(
+                                   cmd,st.attrib(name),st.attrib(sname),invert,rname));
 
         select (gAr1.dtype, gAr2.dtype) {
             when (DType.Int64, DType.Int64) {
@@ -104,7 +104,8 @@ module In1dMsg
                 return errorMsg;
             }
         }
-        
-        return try! "created " + st.attrib(rname);
+        repMsg = "created " + st.attrib(rname);
+        iLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return repMsg;
     }   
 }

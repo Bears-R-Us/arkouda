@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from context import arkouda as ak
+from arkouda.dtypes import float64, int64
 from base_test import ArkoudaTest
 
 SIZE = 10000
@@ -120,8 +121,14 @@ which enables integration into a pytest test harness.
 '''
 class GroupByTest(ArkoudaTest): 
 
-    # https://github.com/mhmerrill/arkouda/issues/365
-    #@unittest.skip
+    def setUp(self):
+        ArkoudaTest.setUp(self)
+        
+        self.bvalues = ak.randint(0,1,10,dtype=bool)
+        self.fvalues = ak.randint(0,1,10,dtype=float)
+        self.ivalues = ak.array([4, 1, 3, 2, 2, 2, 5, 5, 2, 3])
+        self.igb = ak.GroupBy(self.ivalues)
+
     def test_groupby_on_one_level(self):
         '''
         Executes run_test with levels=1 and asserts whether there are any errors
@@ -141,45 +148,37 @@ class GroupByTest(ArkoudaTest):
         self.assertEqual(0, run_test(2, verbose))
         
     def test_broadcast_ints(self):
-        
-        values = ak.array([4, 1, 3, 2, 2, 2, 5, 5, 2, 3])
-        gb = ak.GroupBy(values)
-        keys,counts = gb.count()
+        keys,counts = self.igb.count()
 
         self.assertTrue((np.array([1,4,2,1,2]) == counts.to_ndarray()).all())
         self.assertTrue((np.array([1,2,3,4,5]) == keys.to_ndarray()).all())
 
-        results = gb.broadcast(1*(counts > 2))
+        results = self.igb.broadcast(1*(counts > 2))
         self.assertTrue((np.array([0,1,1,1,1,0,0,0,0,0]),results.to_ndarray()))
         
-        results = gb.broadcast(1*(counts == 2))
+        results = self.igb.broadcast(1*(counts == 2))
         self.assertTrue((np.array([0,0,0,0,0,1,1,0,1,1]),results.to_ndarray()))     
         
-        results = gb.broadcast(1*(counts < 4))
+        results = self.igb.broadcast(1*(counts < 4))
         self.assertTrue((np.array([1,0,0,0,0,1,1,1,1,1]),results.to_ndarray()))  
         
     def test_broadcast_booleans(self):
-        
-        values = ak.array([4, 1, 3, 2, 2, 2, 5, 5, 2, 3])
-        gb = ak.GroupBy(values)
-        keys,counts = gb.count()
+        keys,counts = self.igb.count()
 
         self.assertTrue((np.array([1,4,2,1,2]) == counts.to_ndarray()).all())
         self.assertTrue((np.array([1,2,3,4,5]) == keys.to_ndarray()).all())
 
-        results = gb.broadcast(counts > 2)
+        results = self.igb.broadcast(counts > 2)
         self.assertTrue((np.array([0,1,1,1,1,0,0,0,0,0]),results.to_ndarray()))
         
-        results = gb.broadcast(counts == 2)
+        results = self.igb.broadcast(counts == 2)
         self.assertTrue((np.array([0,0,0,0,0,1,1,0,1,1]),results.to_ndarray()))     
         
-        results = gb.broadcast(counts < 4)
+        results = self.igb.broadcast(counts < 4)
         self.assertTrue((np.array([1,0,0,0,0,1,1,1,1,1]),results.to_ndarray()))    
         
     def test_count(self):   
-        values = ak.array([4, 1, 3, 2, 2, 2, 5, 5, 2, 3])
-        gb = ak.GroupBy(values)
-        keys, counts = gb.count()
+        keys, counts = self.igb.count()
         
         self.assertTrue((np.array([1,2,3,4,5]) == keys.to_ndarray()).all())
         self.assertTrue((np.array([1,4,2,1,2]) == counts.to_ndarray()).all())
@@ -188,8 +187,68 @@ class GroupByTest(ArkoudaTest):
         d = make_arrays()
         akdf = {k:ak.array(v) for k, v in d.items()}        
         gb = ak.GroupBy([akdf['keys'], akdf['keys2']])
+        
+        with self.assertRaises(TypeError) as cm:
+            ak.GroupBy(self.bvalues)  
+        self.assertEqual('GroupBy only supports pdarrays with a dtype int64', 
+                         cm.exception.args[0])    
+        
+        with self.assertRaises(TypeError) as cm:
+            ak.GroupBy(self.fvalues)  
+        self.assertEqual('GroupBy only supports pdarrays with a dtype int64', 
+                         cm.exception.args[0])              
 
         with self.assertRaises(TypeError) as cm:
             gb.broadcast([])
         self.assertEqual('type of argument "values" must be arkouda.pdarrayclass.pdarray; got list instead', 
+                         cm.exception.args[0])  
+        
+        with self.assertRaises(TypeError) as cm:
+            self.igb.nunique(ak.randint(0,1,10,dtype=bool))
+        self.assertEqual('the pdarray dtype must be int64', 
+                         cm.exception.args[0])  
+
+        with self.assertRaises(TypeError) as cm:
+            self.igb.nunique(ak.randint(0,1,10,dtype=float64))
+        self.assertEqual('the pdarray dtype must be int64', 
+                         cm.exception.args[0])  
+        
+        with self.assertRaises(TypeError) as cm:
+            self.igb.any(ak.randint(0,1,10,dtype=float64))
+        self.assertEqual('any is only supported for pdarrays of dtype bool', 
+                         cm.exception.args[0])  
+
+        with self.assertRaises(TypeError) as cm:
+            self.igb.any(ak.randint(0,1,10,dtype=int64))
+        self.assertEqual('any is only supported for pdarrays of dtype bool', 
+                         cm.exception.args[0])  
+        
+        with self.assertRaises(TypeError) as cm:
+            self.igb.all(ak.randint(0,1,10,dtype=float64))
+        self.assertEqual('all is only supported for pdarrays of dtype bool', 
+                         cm.exception.args[0])  
+
+        with self.assertRaises(TypeError) as cm:
+            self.igb.all(ak.randint(0,1,10,dtype=int64))
+        self.assertEqual('all is only supported for pdarrays of dtype bool', 
+                         cm.exception.args[0])  
+        
+        with self.assertRaises(TypeError) as cm:
+            self.igb.min(ak.randint(0,1,10,dtype=bool))
+        self.assertEqual('min is only supported for pdarrays of dtype float64 and int64', 
+                         cm.exception.args[0])  
+
+        with self.assertRaises(TypeError) as cm:
+            self.igb.max(ak.randint(0,1,10,dtype=bool))
+        self.assertEqual('max is only supported for pdarrays of dtype float64 and int64', 
+                         cm.exception.args[0])  
+        
+        with self.assertRaises(TypeError) as cm:
+            self.igb.argmin(ak.randint(0,1,10,dtype=bool))
+        self.assertEqual('argmin is only supported for pdarrays of dtype float64 and int64', 
+                         cm.exception.args[0])  
+
+        with self.assertRaises(TypeError) as cm:
+            self.igb.argmax(ak.randint(0,1,10,dtype=bool))
+        self.assertEqual('argmax is only supported for pdarrays of dtype float64 and int64', 
                          cm.exception.args[0])  

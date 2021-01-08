@@ -6,18 +6,18 @@ import arkouda as ak
 
 TYPES = ('int64', 'float64')
 
-def time_ak_stream(N_per_locale, trials, alpha, dtype, random):
+def time_ak_stream(N_per_locale, trials, alpha, dtype, random, seed):
     print(">>> arkouda stream")
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
-    if random:
+    if random or seed is not None:
         if dtype == 'int64':
-            a = ak.randint(0, 2**32, N)
-            b = ak.randint(0, 2**32, N)
+            a = ak.randint(0, 2**32, N, seed=seed)
+            b = ak.randint(0, 2**32, N, seed=seed)
         elif dtype == 'float64':
-            a = ak.randint(0, 1, N, dtype=ak.float64)
-            b = ak.randint(0, 1, N, dtype=ak.float64)
+            a = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
+            b = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
     else:   
         a = ak.ones(N, dtype=dtype)
         b = ak.ones(N, dtype=dtype)
@@ -34,10 +34,12 @@ def time_ak_stream(N_per_locale, trials, alpha, dtype, random):
     bytes_per_sec = (c.size * c.itemsize * 3) / tavg
     print("Average rate = {:.2f} GiB/sec".format(bytes_per_sec/2**30))
 
-def time_np_stream(N, trials, alpha, dtype, random):
+def time_np_stream(N, trials, alpha, dtype, random, seed):
     print(">>> numpy stream")
     print("N = {:,}".format(N))
-    if random:
+    if seed is not None:
+        np.random.seed(seed)
+    if random or seed is not None:
         if dtype == 'int64':
             a = np.random.randint(0, 2**32, N)
             b = np.random.randint(0, 2**32, N)
@@ -60,9 +62,11 @@ def time_np_stream(N, trials, alpha, dtype, random):
     bytes_per_sec = (c.size * c.itemsize * 3) / tavg
     print("Average rate = {:.2f} GiB/sec".format(bytes_per_sec/2**30))
 
-def check_correctness(alpha, dtype, random):
+def check_correctness(alpha, dtype, random, seed):
     N = 10**4
-    if random:
+    if seed is not None:
+        np.random.seed(seed)
+    if random or seed is not None:
         if dtype == 'int64':
             a = np.random.randint(0, 2**32, N)
             b = np.random.randint(0, 2**32, N)
@@ -87,6 +91,7 @@ def create_parser():
     parser.add_argument('-a', '--alpha', default=1.0, help='Scalar multiple')
     parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
     parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
+    parser.add_argument('-s', '--seed', default=None, type=int, help='Value to initialize random number generator')
     return parser
 
 if __name__ == "__main__":
@@ -102,16 +107,16 @@ if __name__ == "__main__":
     if args.correctness_only:
         for dtype in TYPES:
             alpha = getattr(ak, dtype).type(args.alpha)
-            check_correctness(alpha, dtype, args.randomize)
+            check_correctness(alpha, dtype, args.randomize, args.seed)
         sys.exit(0)
     
     print("array size = {:,}".format(args.size))
     print("number of trials = ", args.trials)
-    time_ak_stream(args.size, args.trials, args.alpha, args.dtype, args.randomize)
+    time_ak_stream(args.size, args.trials, args.alpha, args.dtype, args.randomize, args.seed)
     if args.numpy:
-        time_np_stream(args.size, args.trials, args.alpha, args.dtype, args.randomize)
+        time_np_stream(args.size, args.trials, args.alpha, args.dtype, args.randomize, args.seed)
         print("Verifying agreement between arkouda and NumPy on small problem... ", end="")
-        check_correctness(args.alpha, args.dtype, args.randomize)
+        check_correctness(args.alpha, args.dtype, args.randomize, args.seed)
         print("CORRECT")
         
     sys.exit(0)

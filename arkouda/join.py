@@ -2,7 +2,6 @@ from typing import cast, Tuple
 from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.dtypes import int64 as akint64
-#from arkouda.dtypes import dtype as akdtype
 from arkouda.dtypes import resolve_scalar_dtype, NUMBER_FORMAT_STRINGS
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.groupbyclass import GroupBy

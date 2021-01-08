@@ -115,7 +115,7 @@ module ConcatenateMsg
                 }
                 var repMsg = "created " + st.attrib(segName) + "+created " + st.attrib(valName);
                 cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                          "created concatenated pdarray %t".format(st.lookup(valName)));
+                                  "created concatenated pdarray %s".format(st.attrib(valName)));
                 return repMsg;
             }
             when "pdarray" {
@@ -140,7 +140,7 @@ module ConcatenateMsg
                             start += o.size;
                         }
                         cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                               "created concatenated pdarray: %t".format(st.lookup(rname)));
+                                         "created concatenated pdarray: %s".format(st.attrib(rname)));
                     }
                     when DType.Float64 {
                         // create array to copy into
@@ -159,7 +159,7 @@ module ConcatenateMsg
                             start += o.size;
                         }
                         cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                               "created concatenated pdarray: %t".format(st.lookup(rname)));
+                                         "created concatenated pdarray: %s".format(st.attrib(rname)));
                     }
                     when DType.Bool {
                         // create array to copy into
@@ -178,7 +178,7 @@ module ConcatenateMsg
                             start += o.size;
                         }
                         cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                               "created concatenated pdarray: %t".format(st.lookup(rname)));
+                                           "created concatenated pdarray: %s".format(st.attrib(rname)));
                     }
                     otherwise {
                         var errorMsg = notImplementedError("concatenate",dtype);
@@ -186,8 +186,9 @@ module ConcatenateMsg
                         return errorMsg;                         
                     }
                 }
-
-                return try! "created " + st.attrib(rname);
+                repMsg = "created " + st.attrib(rname);
+                cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+                return repMsg;
             }
             otherwise { 
                 var errorMsg = notImplementedError(pn, objtype); 

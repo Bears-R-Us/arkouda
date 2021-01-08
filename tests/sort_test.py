@@ -18,9 +18,9 @@ class SortTest(ArkoudaTest):
         # Test RuntimeError from bool NotImplementedError
         bools = ak.randint(0, 1, 1000, dtype=ak.bool)   
      
-        with self.assertRaises(RuntimeError) as cm:
+        with self.assertRaises(ValueError) as cm:
             ak.sort(bools)
-        self.assertEqual('Error: sortMsg: bool not implemented', 
+        self.assertEqual('ak.sort supports float64 or int64, not bool', 
                          cm.exception.args[0])
         
         # Test TypeError from sort attempt on non-pdarray

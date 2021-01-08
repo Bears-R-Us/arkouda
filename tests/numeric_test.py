@@ -57,7 +57,10 @@ class NumericTest(ArkoudaTest):
                 if (t1, t2) in roundtripable:
                     roundtrip = ak.cast(other, t1)
                     self.assertTrue((orig == roundtrip).all(), f"{t1}: {orig[:5]}, {t2}: {roundtrip[:5]}")
-            
+                    
+        self.assertTrue((ak.array([1, 2, 3, 4, 5]) == ak.cast(ak.linspace(1,5,5), dt=ak.int64)).all())
+        self.assertEqual(ak.cast(ak.arange(0,5), dt=ak.float64).dtype, ak.float64)
+        self.assertTrue((ak.array([False, True, True, True, True]) == ak.cast(ak.linspace(0,4,5), dt=ak.bool)).all())
     
     def testHistogram(self):
         pda = ak.randint(10,30,40)
@@ -107,6 +110,9 @@ class NumericTest(ArkoudaTest):
         pda = ak.array(na)
 
         self.assertTrue((np.abs(na) == ak.abs(pda).to_ndarray()).all())
+        self.assertTrue((ak.arange(5,1,-1) == ak.abs(ak.arange(-5,-1))).all())
+        self.assertTrue((ak.array([5,4,3,2,1]) == ak.abs(ak.linspace(-5,-1,5))).all())
+        
         with self.assertRaises(TypeError) as cm:
             ak.abs([range(0,10)])
         self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 

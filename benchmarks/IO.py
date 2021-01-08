@@ -1,13 +1,14 @@
 #!/usr/bin/env python3                                                         
 
 import time, argparse
-import numpy as np
 import arkouda as ak
+import os
+from glob import glob
 
 TYPES = ('int64', 'float64')
 
-def time_ak_argsort(N_per_locale, trials, dtype, seed):
-    print(">>> arkouda argsort")
+def time_ak_write_read(N_per_locale, trials, dtype, path, seed):
+    print(">>> arkouda write/read")
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
@@ -16,59 +17,50 @@ def time_ak_argsort(N_per_locale, trials, dtype, seed):
     elif dtype == 'float64':
         a = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
      
-    timings = []
+    writetimes = []
+    readtimes = []
     for i in range(trials):
         start = time.time()
-        perm = ak.argsort(a)
+        a.save(path)
         end = time.time()
-        timings.append(end - start)
-    tavg = sum(timings) / trials
-
-    assert ak.is_sorted(a[perm])
-    print("Average time = {:.4f} sec".format(tavg))
-    bytes_per_sec = (a.size * a.itemsize) / tavg
-    print("Average rate = {:.4f} GiB/sec".format(bytes_per_sec/2**30))
-
-def time_np_argsort(N, trials, dtype, seed):
-    print(">>> numpy argsort")
-    print("N = {:,}".format(N))
-    if seed is not None:
-        np.random.seed(seed)
-    if dtype == 'int64':
-        a = np.random.randint(0, 2**32, N)
-    elif dtype == 'float64':
-        a = np.random.random(N)
-     
-    timings = []
-    for i in range(trials):
+        writetimes.append(end - start)
         start = time.time()
-        perm = np.argsort(a)
+        b = ak.load(path)
         end = time.time()
-        timings.append(end - start)
-    tavg = sum(timings) / trials
+        readtimes.append(end - start)
+        for f in glob(path+'_LOCALE*'):
+            os.remove(f)
+    avgwrite = sum(writetimes) / trials
+    avgread = sum(readtimes) / trials
 
-    print("Average time = {:.4f} sec".format(tavg))
-    bytes_per_sec = (a.size * a.itemsize) / tavg
-    print("Average rate = {:.4f} GiB/sec".format(bytes_per_sec/2**30))
+    print("Write times: min = {:.4f} sec, max = {:.4f} sec, avg = {:.4f} sec".format(min(writetimes), max(writetimes), avgwrite))
+    print("Read times : min = {:.4f} sec, max = {:.4f} sec, avg = {:.4f} sec".format(min(readtimes), max(readtimes), avgread))
 
-def check_correctness(dtype, seed):
+    nb = a.size * a.itemsize
+    print("Write rates: min = {:.4f} GiB/sec, max = {:.4f} GiB/sec, avg = {:.4f} GiB/sec".format(nb/2**30/max(writetimes), nb/2**30/min(writetimes), nb/2**30/avgwrite))
+    print("Read rates : min = {:.4f} GiB/sec, max = {:.4f} GiB/sec, avg = {:.4f} GiB/sec".format(nb/2**30/max(readtimes), nb/2**30/min(readtimes), nb/2**30/avgread))
+
+def check_correctness(dtype, path, seed):
     N = 10**4
     if dtype == 'int64':
         a = ak.randint(0, 2**32, N, seed=seed)
     elif dtype == 'float64':
         a = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
 
-    perm = ak.argsort(a)
-    assert ak.is_sorted(a[perm])
+    a.save(path)
+    b = ak.load(path)
+    for f in glob(path+"_LOCALE*"):
+        os.remove(f)
+    assert (a == b).all()
 
 def create_parser():
-    parser = argparse.ArgumentParser(description="Measure performance of sorting an array of random values.")
+    parser = argparse.ArgumentParser(description="Measure performance of writing and reading a random array from disk.")
     parser.add_argument('hostname', help='Hostname of arkouda server')
     parser.add_argument('port', type=int, help='Port of arkouda server')
-    parser.add_argument('-n', '--size', type=int, default=10**8, help='Problem size: length of array to argsort')
+    parser.add_argument('-n', '--size', type=int, default=10**8, help='Problem size: length of array to write/read')
     parser.add_argument('-t', '--trials', type=int, default=3, help='Number of times to run the benchmark')
     parser.add_argument('-d', '--dtype', default='int64', help='Dtype of array ({})'.format(', '.join(TYPES)))
-    parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
+    parser.add_argument('-p', '--path', default=os.getcwd()+'ak-io-test', help='Target path for measuring read/write rates')
     parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
     parser.add_argument('-s', '--seed', default=None, type=int, help='Value to initialize random number generator')
     return parser
@@ -84,12 +76,10 @@ if __name__ == "__main__":
 
     if args.correctness_only:
         for dtype in TYPES:
-            check_correctness(dtype, args.seed)
+            check_correctness(dtype, args.path, args.seed)
         sys.exit(0)
     
     print("array size = {:,}".format(args.size))
     print("number of trials = ", args.trials)
-    time_ak_argsort(args.size, args.trials, args.dtype, args.seed)
-    if args.numpy:
-        time_np_argsort(args.size, args.trials, args.dtype, args.seed)
+    time_ak_write_read(args.size, args.trials, args.dtype, args.path, args.seed)
     sys.exit(0)

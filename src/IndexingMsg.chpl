@@ -28,23 +28,31 @@ module IndexingMsg
         var (name, idxStr) = payload.decode().splitMsgToTuple(2);
         var idx = try! idxStr:int;
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                        "%s %s %i".format(cmd, name, idx));
+                                                    "%s %s %i".format(cmd, name, idx));
         var gEnt: borrowed GenSymEntry = st.lookup(name);
          
         select (gEnt.dtype) {
              when (DType.Int64) {
                  var e = toSymEntry(gEnt, int);
-                 return try! "item %s %t".format(dtype2str(e.dtype),e.a[idx]);
+                 repMsg = "item %s %t".format(dtype2str(e.dtype),e.a[idx]);
+
+                 imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+                 return repMsg;
              }
              when (DType.Float64) {
                  var e = toSymEntry(gEnt,real);
-                 return try! "item %s %.17r".format(dtype2str(e.dtype),e.a[idx]);
+                 repMsg = "item %s %.17r".format(dtype2str(e.dtype),e.a[idx]);
+
+                 imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+                 return repMsg;
              }
              when (DType.Bool) {
                  var e = toSymEntry(gEnt,bool);
                  var s = try! "item %s %t".format(dtype2str(e.dtype),e.a[idx]);
                  s = s.replace("true","True"); // chapel to python bool
                  s = s.replace("false","False"); // chapel to python bool
+
+                 imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),s);
                  return s;
              }
              otherwise {
@@ -79,8 +87,8 @@ module IndexingMsg
         var gEnt: borrowed GenSymEntry = st.lookup(name);
         
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s pdarray to slice: %t start: %i stop: %i stride: %i slice: %t new name: %s".format(
-                       cmd, gEnt, start, stop, stride, slice, rname));
+            "cmd: %s pdarray to slice: %s start: %i stop: %i stride: %i slice: %t new name: %s".format(
+                       cmd, st.attrib(name), start, stop, stride, slice, rname));
 
         proc sliceHelper(type t) throws {
             var e = toSymEntry(gEnt,t);
@@ -90,9 +98,9 @@ module IndexingMsg
             forall (elt,j) in zip(aa, slice) with (var agg = newSrcAggregator(t)) {
               agg.copy(elt,ea[j]);
             }
-            imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                             "Created pdarray from slice operation %t".format(st.lookup(rname)));
-            return try! "created " + st.attrib(rname);
+            repMsg = "created " + st.attrib(rname);
+            imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+            return repMsg;
         }
         
         select(gEnt.dtype) {
@@ -127,7 +135,8 @@ module IndexingMsg
         var gIV: borrowed GenSymEntry = st.lookup(iname);
         
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                           "cmd: %s name: %s gX: %t gIV: %t".format(cmd, name, gX, gIV));       
+                                           "cmd: %s name: %s gX: %t gIV: %t".format(
+                                           cmd, name, st.attrib(name), st.attrib(iname)));       
 
         // gather indexing by integer index vector
         proc ivInt64Helper(type XType) throws {
@@ -286,12 +295,15 @@ module IndexingMsg
              }
              otherwise {
                  var errorMsg = notImplementedError(pn,
-                                                "("+dtype2str(gEnt.dtype)+","+dtype2str(dtype)+")");
+                                        "("+dtype2str(gEnt.dtype)+","+dtype2str(dtype)+")");
                  imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                  return errorMsg;                                                   
              }
-         }
-         return try! "%s success".format(pn);
+        }
+        repMsg = "%s success".format(pn);
+
+        imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return repMsg;
     }
 
     /* setPdarrayIndexToValue "a[pdarray] = value" response to __setitem__(pdarray, value) */
@@ -306,7 +318,7 @@ module IndexingMsg
         var gIV: borrowed GenSymEntry = st.lookup(iname);
         
         imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              "cmd: %s gX: %t gIV: %t value: %s".format(cmd,gX,gIV,value));
+                              "cmd: %s gX: %s gIV: %s value: %s".format(cmd,st.attrib(name),st.attrib(iname),value));
 
         // scatter indexing by integer index vector
         proc ivInt64Helper(type Xtype, type dtype): string throws {
@@ -361,7 +373,10 @@ module IndexingMsg
                 agg.copy(ea[i],val);
               }
             }
-            return try! "%s success".format(pn);
+            var repMsg = "%s success".format(pn);
+
+            imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+            return repMsg;
         }
         
         select(gX.dtype, gIV.dtype, dtype) {
@@ -403,8 +418,12 @@ module IndexingMsg
         var gIV: borrowed GenSymEntry = st.lookup(iname);
         var gY: borrowed GenSymEntry = st.lookup(yname);
         
-        imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                             "cmd: %s gX: %t gIV: %t gY: %t".format(cmd, gX, gIV, gY));
+        if v {
+            imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                             "cmd: %s gX: %t gIV: %t gY: %t".format(
+                                              cmd, st.attrib(name), st.attrib(iname),
+                                              st.attrib(yname)));
+        }
 
         // add check for IV to be dtype of int64 or bool
 
@@ -470,7 +489,10 @@ module IndexingMsg
                 agg.copy(eai,ya[iv[i]-1]);
               }
             }
-            return try! "%s success".format(pn);
+            var repMsg = "%s success".format(pn);
+
+            imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+            return repMsg;
         }
 
         select(gX.dtype, gIV.dtype, gY.dtype) {
@@ -588,7 +610,10 @@ module IndexingMsg
                 return errorMsg;                                        
             }
         }
-        return try! "%s success".format(pn); 
+        repMsg = "%s success".format(pn);
+
+        imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return repMsg;
     }
     
     /* setSliceIndexToPdarray "a[slice] = pdarray" response to __setitem__(slice, pdarray) */
@@ -676,7 +701,10 @@ module IndexingMsg
                 return errorMsg;                                          
             }
         }
-        return try! "%s success".format(pn);
+        repMsg = "%s success".format(pn);
+
+        imLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return repMsg;
     }
     
 }
