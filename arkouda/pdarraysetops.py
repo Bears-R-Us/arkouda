@@ -145,7 +145,8 @@ def in1d(pda1 : Union[pdarray,Strings,Categorical], pda2 : Union[pdarray,Strings
         raise TypeError("must be pdarray {} or {}".format(pda1,pda2))
 
 @typechecked
-def concatenate(arrays : Iterable[Union[pdarray,Strings]]) \
+def concatenate(arrays : Iterable[Union[pdarray,Strings]],
+                ordered : bool=True) \
                                      -> Union[pdarray,Strings]:
     """
     Concatenate an iterable of ``pdarray`` objects into one ``pdarray``.
@@ -154,6 +155,11 @@ def concatenate(arrays : Iterable[Union[pdarray,Strings]]) \
     ----------
     arrays : iterable of ``pdarray`` or Strings or Categorical
         The arrays to concatenate. Must all have same dtype.
+    ordered : bool
+        If True (default), the arrays will be appended in the
+        order given. If False, array data may be interleaved
+        in blocks, which can greatly improve performance but
+        results in non-deterministic ordering of elements.
 
     Returns
     -------
@@ -180,12 +186,16 @@ def concatenate(arrays : Iterable[Union[pdarray,Strings]]) \
     objtype = None
     dtype = None
     names = []
+    if ordered:
+        mode = 'append'
+    else:
+        mode = 'interleave'
     if len(arrays) < 1:
         raise ValueError("concatenate called on empty iterable")
     if len(arrays) == 1:
         return arrays[0]
     if hasattr(arrays[0], 'concatenate'):
-        return arrays[0].concatenate(arrays[1:])
+        return arrays[0].concatenate(arrays[1:], ordered=ordered)
     for a in arrays:
         if not isinstance(a, pdarray) and not isinstance(a, Strings):
             raise TypeError(("arrays must be an iterable of pdarrays" 
@@ -209,8 +219,8 @@ def concatenate(arrays : Iterable[Union[pdarray,Strings]]) \
             return zeros_like(arrays[0])
         else:
             return arrays[0]
-    repMsg = generic_msg("concatenate {} {} {}".\
-                            format(len(arrays), objtype, ' '.join(names)))
+    repMsg = generic_msg("concatenate {} {} {} {}".\
+                            format(len(arrays), objtype, mode, ' '.join(names)))
     if objtype == "pdarray":
         return create_pdarray(repMsg)
     elif objtype == "str":

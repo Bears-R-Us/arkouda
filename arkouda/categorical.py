@@ -439,38 +439,20 @@ class Categorical:
                                     (self.categories == other.categories).all():
                 samecategories = False
         if samecategories:
-            newvals = concatenate([self.codes] + [o.codes for o in others])
+            newvals = concatenate([self.codes] + [o.codes for o in others], ordered=ordered)
             return Categorical.from_codes(newvals, self.categories)
         else:
             g = ak.GroupBy(concatenate([self.categories] + \
-                                       [o.categories for o in others]))
+                                       [o.categories for o in others],
+                                       ordered=False))
             newidx = g.unique_keys
             wherediditgo = zeros(newidx.size, dtype=int64)
             wherediditgo[g.permutation] = arange(newidx.size)
             idxsizes = np.array([self.categories.size] + \
                                 [o.categories.size for o in others])
             idxoffsets = np.cumsum(idxsizes) - idxsizes
-            oldvals = concatenate([c.codes + off for c, off in zip([self.codes] \
-                                    + [o.codes for o in others], idxoffsets)])
+            oldvals = concatenate([c.codes + off for c, off in \
+                                   zip([self.codes] + [o.codes for o in others], idxoffsets)],
+                                  ordered=ordered)
             newvals = wherediditgo[oldvals]
             return Categorical.from_codes(newvals, newidx)
-    #     msg = "segmentedMerge {} {} {} {} {} {}".\
-    #                                 format(self.categories.objtype,
-    #                                 self.categories.offsets.name,
-    #                                 self.categories.bytes.name,
-    #                                 other.categories.objtype,
-    #                                 other.categories.offsets.name,
-    #                                 other.categories.bytes.name)
-    #     repMsg = generic_msg(msg)
-    #     perm_attrib, seg_attrib, val_attrib = repMsg.split('+')
-    #     perm = create_pdarray(perm_attrib)
-    #     categories = Strings(seg_attrib, val_attrib)
-    # #     return create_pdarray(repMsg)
-        
-    # # def merge(self, other):
-    # #     perm = self.argmerge(other)
-    # #     categories = concatenate((self.categories, other.categories))[perm]
-    #     codes = zeros(self.size + other.size, int64)
-    #     codes[:self.size] = perm[self.codes]
-    #     codes[self.size:] = perm[other.codes + self.categories.size]
-    #     return Categorical(codes, categories)
