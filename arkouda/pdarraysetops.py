@@ -162,8 +162,8 @@ def in1d(pda1 : Union[pdarray,Strings,'Categorical'], pda2 : Union[pdarray,Strin
         raise TypeError('Both pda1 and pda2 must be pdarray, Strings, or Categorical')
 
 @typechecked
-def concatenate(arrays : Sequence[Union[pdarray,Strings,'Categorical']],
-                ordered : bool=True) -> Union[pdarray,Strings,'Categorical']: # type: ignore
+def concatenate(arrays : Sequence[Union[pdarray,Strings,'Categorical']], #type: ignore
+                ordered : bool=True) -> Union[pdarray,Strings,'Categorical']: #type: ignore
     """
     Concatenate a list or tuple of ``pdarray`` or ``Strings`` objects into 
     one ``pdarray`` or ``Strings`` object, respectively.
@@ -225,7 +225,10 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings,'Categorical']],
     if len(arrays) == 1:
         return cast(Union[pdarray,Strings,Categorical_], arrays[0])
     if hasattr(arrays[0], 'concatenate'):
-        return cast(Sequence[Union[pdarray,Strings,Categorical_]], arrays[0].concatenate(arrays[1:], ordered=ordered))
+        return cast(Sequence[Categorical_],
+                    cast(Categorical_,
+                         arrays[0]).concatenate(cast(Sequence[Categorical_],
+                                                     arrays[1:]), ordered=ordered))
     for a in arrays:
         if not isinstance(a, pdarray) and not isinstance(a, Strings):
             raise TypeError(("arrays must be an iterable of pdarrays" 

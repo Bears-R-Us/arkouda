@@ -471,7 +471,7 @@ class Categorical:
             newvals = cast(pdarray, concatenate([self.codes] + [o.codes for o in others], ordered=ordered))
             return Categorical.from_codes(newvals, self.categories)
         else:
-            g = ak.GroupBy(concatenate([self.categories] + \
+            g = GroupBy(concatenate([self.categories] + \
                                        [o.categories for o in others],
                                        ordered=False))
             newidx = g.unique_keys
