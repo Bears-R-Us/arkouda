@@ -426,7 +426,7 @@ class Categorical:
         return Categorical.from_codes(newvals, self.categories[idxperm])
     
     @typechecked
-    def merge(self, others : List[Categorical]) -> Categorical:
+    def concatenate(self, others : List[Categorical], ordered : bool=True) -> Categorical:
         """
         Merge this Categorical with other Categorical objects in the array, 
         concatenating the arrays and synchronizing the categories.
@@ -435,6 +435,11 @@ class Categorical:
         ----------
         others : List[Categorical]
             The Categorical arrays to concatenate and merge with this one
+        ordered : bool
+            If True (default), the arrays will be appended in the
+            order given. If False, array data may be interleaved
+            in blocks, which can greatly improve performance but
+            results in non-deterministic ordering of elements.
 
         Returns
         -------
