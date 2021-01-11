@@ -890,7 +890,8 @@ def lcp_array(suffixarrays : SArrays, strings : Strings) -> SArrays:
         return SArrays(*(cast(str,repMsg).split('+')))
 
 @typechecked
-def suffix_array_file(filename: str)  -> [SArrays,Strings]:
+def suffix_array_file(filename: str)  -> tuple:
+#def suffix_array_file(filename: str)  -> tuple[SArrays,Strings]:
         """
         This function is major used for testing correctness and performance
         Return the suffix array of given file name's content as a string. 
