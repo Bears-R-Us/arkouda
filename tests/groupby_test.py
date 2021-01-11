@@ -146,6 +146,17 @@ class GroupByTest(ArkoudaTest):
         :raise: AssertionError if there are any errors encountered in run_test with levels = 2
         '''
         self.assertEqual(0, run_test(2, verbose))
+
+    def test_standalone_broadcast(self):
+        segs = ak.arange(10)**2
+        vals = ak.arange(10)
+        size = 100
+        check = ((2*vals + 1)*vals).sum()
+        self.assertTrue(ak.broadcast(segs, vals, size=size).sum() == check)
+        perm = ak.arange(99, -1, -1)
+        bcast = ak.broadcast(segs, vals, permutation=perm)
+        self.assertTrue(bcast.sum() == check)
+        self.assertTrue((bcast[:-1] >= bcast[1:]).all())
         
     def test_broadcast_ints(self):
         keys,counts = self.igb.count()

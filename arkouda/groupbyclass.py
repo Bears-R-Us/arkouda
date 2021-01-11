@@ -14,7 +14,7 @@ from arkouda.numeric import cumsum
 from arkouda.logger import getArkoudaLogger
 from arkouda.dtypes import int64
 
-__all__ = ["GroupBy"]
+__all__ = ["GroupBy", "broadcast"]
 
 class GroupBy:
     """
@@ -814,6 +814,6 @@ def broadcast(segments : pdarray, values : pdarray, size : int=-1,
                                             segments.name,
                                             values.name,
                                             permute,
-                                            self.size)
+                                            size)
     repMsg = generic_msg(msg)
     return create_pdarray(repMsg)
