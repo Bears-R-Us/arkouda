@@ -890,7 +890,7 @@ def lcp_array(suffixarrays : SArrays, strings : Strings) -> SArrays:
         return SArrays(*(cast(str,repMsg).split('+')))
 
 @typechecked
-def suffix_array_file(filename: str)  -> SArrays:
+def suffix_array_file(filename: str)  -> (SArrays,Strings):
         """
         This function is major used for testing correctness and performance
         Return the suffix array of given file name's content as a string. 
@@ -932,4 +932,10 @@ def suffix_array_file(filename: str)  -> SArrays:
         """
         msg = "segmentedSAFile {}".format( filename )
         repMsg = generic_msg(msg)
-        return SArrays(*(cast(str,repMsg).split('+')))
+        tmpmsg=cast(str,repMsg).split('+')
+        sastr=tmpmsg[0:2]
+        strstr=tmpmsg[2:4]
+        suffixarray=SArrays(*(cast(str,sastr))) 
+        originalstr=Strings(*(cast(str,strstr))) 
+        return suffixarray,originalstr
+#        return SArrays(*(cast(str,repMsg).split('+')))

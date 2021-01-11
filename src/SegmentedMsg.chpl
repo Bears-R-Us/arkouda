@@ -1112,6 +1112,15 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var strArray:[startposition..endposition]uint(8);
       var r = f.reader(kind=ionative);
       r.read(strArray);
+      r.close();
+
+      var segName = st.nextName();
+      var valName = st.nextName();
+
+      var segEntry = new shared SymEntry(offsegs);
+      var valEntry = new shared SymEntry(strArray);
+      st.addEntry(segName, segEntry);
+      st.addEntry(valName, valEntry);
 
       var algorithmNum=2:int; //2:"divsufsort";1:SuffixArraySkew
 
@@ -1172,7 +1181,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
               st.addEntry(segName2, segEntry);
               st.addEntry(valName2, valEntry);
 //              st.addEntry(lcpvalName, lcpvalEntry);
-              repMsg = 'created ' + st.attrib(segName2) + '+created ' + st.attrib(valName2);
+              repMsg = 'created ' + st.attrib(segName2) + '+created ' + st.attrib(valName2) 
+                        + '+created ' + st.attrib(segName) + '+created ' + st.attrib(valName);
               return repMsg;
 
           }
