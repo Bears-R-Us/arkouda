@@ -793,6 +793,8 @@ class GroupBy:
         temp = zeros(self.size, values.dtype)
         if values.size == 0:
             return temp
-        diffs = concatenate((array([values[0]]), values[1:] - values[:-1]))
+        leading = values[1:]
+        trailing = values[:-1]
+        diffs = concatenate((array([values[0]]), leading - trailing))
         temp[self.segments] = diffs
         return cumsum(temp)
