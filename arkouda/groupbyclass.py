@@ -723,7 +723,7 @@ class GroupBy:
         return self.aggregate(values, "all")
 
     @typechecked
-    def broadcast(self, values : pdarray) -> pdarray:
+    def broadcast(self, values : pdarray, permute : bool=False) -> pdarray:
         """
         Fill each group's segment with a constant value.
 
@@ -783,19 +783,37 @@ class GroupBy:
         >>> g.broadcast(counts < 4)
         array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
         """
-        '''if values a boolean array, convert to an int64 array, which
-           is needed for now because Arkouda does not support broadcasting
-           of boolean arrays'''
-        if values.dtype == np.bool:
-            values = 1*values
         if values.size != self.segments.size:
             raise ValueError("Must have one value per segment")
-        temp = zeros(self.size, values.dtype)
-        if values.size == 0:
-            return temp
-        leading = values[1:]
-        trailing = values[:-1]
-        # diffs = concatenate((array([values[0]]), leading - trailing))
-        assign = self.segments[1:]
-        temp[assign] = leading - trailing
-        return cumsum(temp)
+        msg = "broadcast {} {} {} {} {}".format(self.permutation.name,
+                                                self.segments.name,
+                                                values.name,
+                                                permute,
+                                                self.size)
+        repMsg = generic_msg(msg)
+        return create_pdarray(repMsg)
+
+def broadcast(segments : pdarray, values : pdarray, size : int=-1,
+              permutation : Union[pdarray, None]=None):
+    if segments.size != values.size:
+        raise ValueError("segments and values arrays must be same size")
+    if segments.size == 0:
+        raise ValueError("cannot broadcast empty array")
+    if permutation is None:
+        if size == -1:
+            raise ValueError("must either supply permutation or size")
+        pname = "none"
+        permute = False
+    else:
+        pname = permutation.name
+        permute = True
+        size = permutation.size
+    if size < 1:
+        raise ValueError("result size must be greater than zero")
+    msg = "broadcast {} {} {} {} {}".format(pname,
+                                            segments.name,
+                                            values.name,
+                                            permute,
+                                            self.size)
+    repMsg = generic_msg(msg)
+    return create_pdarray(repMsg)
