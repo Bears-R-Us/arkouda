@@ -20,71 +20,49 @@ module RandArray {
   } 
 
   proc fillInt(a:[] ?t, const aMin, const aMax, const seedStr:string="None") throws where isIntType(t) {
-    coforall loc in Locales {
-      on loc {
-        ref myA = a.localSlice[a.localSubdomain()];
-        if (seedStr.toLower() == "none") {
-          fillRandom(myA);
-        } else {
-          var seed = (seedStr:int) + here.id;
-          fillRandom(myA, seed);
-        }
-        [ai in myA] if (ai < 0) { ai = -ai; }
-        if (aMax > aMin) {
-          const modulus = aMax - aMin;
-          [x in myA] x = ((x % modulus) + aMin):t;
-          //myA = (myA % modulus) + aMin:t;
-        }
+      if (seedStr.toLower() == "none") {
+        fillRandom(a);
+      } else {
+        var seed = (seedStr:int) + here.id;
+        fillRandom(a, seed);
       }
-    }
+      [ai in a] if (ai < 0) { ai = -ai; }
+      if (aMax > aMin) {
+        const modulus = aMax - aMin;
+        [x in a] x = ((x % modulus) + aMin):t;
+      }
   }
 
   proc fillUInt(a:[] ?t, const aMin, const aMax, const seedStr:string="None") throws where isUintType(t) {
-    coforall loc in Locales {
-      on loc {
-        ref myA = a.localSlice[a.localSubdomain()];
-        if (seedStr.toLower() == "none") {
-          fillRandom(myA);
-        } else {
-          var seed = (seedStr:int) + here.id;
-          fillRandom(myA, seed);
-        }
-        if (aMax > aMin) {
-          const modulus = aMax - aMin;
-          [x in myA] x = ((x % modulus) + aMin):t;
-          //myA = (myA % modulus) + aMin:t;
-        }
+      if (seedStr.toLower() == "none") {
+        fillRandom(a);
+      } else {
+        var seed = (seedStr:int) + here.id;
+        fillRandom(a, seed);
       }
-    }
+      if (aMax > aMin) {
+        const modulus = aMax - aMin;
+        [x in a] x = ((x % modulus) + aMin):t;
+      }
   }
 
   proc fillReal(a:[] real, const aMin:numeric=0.0, const aMax:numeric=1.0, const seedStr:string="None") throws {
-    coforall loc in Locales {
-      on loc {
-        ref myA = a.localSlice[a.localSubdomain()];
-        if (seedStr.toLower() == "none") {
-          fillRandom(myA);
-        } else {
-          var seed = (seedStr:int) + here.id;
-          fillRandom(myA, seed);
-        }
-        const scale = aMax - aMin;
-        myA = scale*myA + aMin;
-      }
+    if (seedStr.toLower() == "none") {
+      fillRandom(a);
+    } else {
+      var seed = (seedStr:int) + here.id;
+      fillRandom(a, seed);
     }
+    const scale = aMax - aMin;
+    a = scale*a + aMin;
   }
 
   proc fillBool(a:[] bool, const seedStr:string="None") throws {
-    coforall loc in Locales {
-      on loc {
-        ref myA = a.localSlice[a.localSubdomain()];
-        if (seedStr.toLower() == "none") {
-          fillRandom(myA);
-        } else {
-          var seed = (seedStr:int) + here.id;
-          fillRandom(myA, seed);
-        }
-      }
+    if (seedStr.toLower() == "none") {
+      fillRandom(a);
+    } else {
+      var seed = (seedStr:int) + here.id;
+      fillRandom(a, seed);
     }
   }
 
