@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import pandas as pd
 import datetime as dt
@@ -323,15 +324,20 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertEqual('type of argument "size" must be int; got str instead', 
                          cm.exception.args[0])              
 
-    def test_random_strings_uniform_with_seed(self):
-        pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10)
- 
-        self.assertTrue((ak.array(['TVKJ', 'EWAB', 'CO', 'HFMD', 'U', 'MMGT', 
+    def test_random_strings_uniform_with_seed(self):        
+        try:
+            locales = int(os.environ['ARKOUDA_NUMLOCALES'])
+        except KeyError:
+            raise OSError('NUM_LOCALES env variable must be set')
+
+        if locales <= 10:
+            pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10)
+            self.assertTrue((ak.array(['TVKJ', 'EWAB', 'CO', 'HFMD', 'U', 'MMGT', 
                         'N', 'WOQN', 'HZ', 'VSX']) == pda).any())
         
-        pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10,
+            pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10,
                                         characters='printable')
-        self.assertTrue((ak.array(['+5"f', '-P]3', '4k', '~HFF', 'F', '`,IE', 
+            self.assertTrue((ak.array(['+5"f', '-P]3', '4k', '~HFF', 'F', '`,IE', 
                         'Y', 'jkBa', '9(', '5oZ']) == pda).any())
 
     def test_random_strings_lognormal(self):
