@@ -327,12 +327,12 @@ class PdarrayCreationTest(ArkoudaTest):
         pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10)
  
         self.assertTrue((ak.array(['TVKJ', 'EWAB', 'CO', 'HFMD', 'U', 'MMGT', 
-                        'N', 'WOQN', 'HZ', 'VSX']) == pda).any())
+                        'N', 'WOQN', 'HZ', 'VSX']) == pda).all())
         
         pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10,
                                         characters='printable')
         self.assertTrue((ak.array(['+5"f', '-P]3', '4k', '~HFF', 'F', '`,IE', 
-                        'Y', 'jkBa', '9(', '5oZ']) == pda).any())
+                        'Y', 'jkBa', '9(', '5oZ']) == pda).all())
 
     def test_random_strings_lognormal(self):
         pda = ak.random_strings_lognormal(2, 0.25, 100, characters='printable')
