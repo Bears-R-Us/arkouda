@@ -64,14 +64,19 @@ module ReductionMsg
                     }
                     when "prod" {
                       ref ea = e.a;
-                      // If any element is zero, skip the computation and return 0.0
-                      var val: real = 0.0;
-                      if (&& reduce (ea != 0)) {
-                        // Cast to real to avoid int64 overflow
-                        val = * reduce ea:real;
+                      var val = 1.0;
+                      var zeros: int;
+                      forall a in ea with (*reduce val, +reduce zeros) {
+                        val *= a:real;
+                        if a == 0 then zeros += 1;
                       }
-                        // Return value is always float64 for prod
-                        return try! "float64 %.17r".format(val);
+                      if zeros > 0 then val = 0.0;
+                      // Return value is always float64 for prod
+                      // TODO should it be float64 or should it be int64? If
+                      // int64 we need some way to handle overflow, which
+                      // probably means a custom reduction and overflow checks,
+                      // which I expect to add some overhead.
+                      return try! "float64 %.17r".format(val);
                     }
                     when "min" {
                       var val = min reduce e.a;
@@ -136,7 +141,14 @@ module ReductionMsg
                         return try! "float64 %.17r".format(val);
                     }
                     when "prod" {
-                        var val = * reduce e.a;
+                        ref ea = e.a;
+                        var val = 1.0;
+                        var zeros: int;
+                        forall a in ea with (*reduce val, +reduce zeros) {
+                            val *= a:real;
+                            if a == 0 then zeros += 1;
+                        }
+                        if zeros > 0 then val = 0.0;
                         return try! "float64 %.17r".format(val);
                     }
                     when "min" {
