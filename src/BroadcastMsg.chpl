@@ -4,10 +4,16 @@ module BroadcastMsg {
   use Errors;
   use Reflection;
   use Broadcast;
-
+  
+  /* 
+   * Broadcast a value per segment of a segmented array to the
+   * full size of the array, optionally applying a permutation
+   * to return the result in the order of the original array.
+   */
   proc broadcastMsg(cmd: string, payload: bytes, st: borrowed SymTab) throws {
     var (permName, segName, valName, usePermStr, sizeStr) = payload.decode().splitMsgToTuple(5);
     const size = sizeStr: int;
+    // Segments must be an int64 array
     const gs = st.lookup(segName);
     if gs.dtype != DType.Int64 {
       throw new owned ErrorWithContext("Segments array must have dtype int64",
@@ -17,10 +23,15 @@ module BroadcastMsg {
                                        "TypeError");
     }
     const segs = toSymEntry(gs, int);
+    // Check that values exists (can be any dtype)
     const gv = st.lookup(valName);
+    // Name of result array
     const rname = st.nextName();
+    // This operation has two modes: one uses a permutation to reorder the answer,
+    // while the other does not
     const usePerm: bool = usePermStr.toLower() == 'true';
     if usePerm {
+      // If using a permutation, the array must be int64 and same size as the size parameter
       const gp = st.lookup(permName);
       if gp.dtype != DType.Int64 {
         throw new owned ErrorWithContext("Permutation array must have dtype int64",
@@ -37,6 +48,7 @@ module BroadcastMsg {
                                          "ValueError");
       }
       const perm = toSymEntry(gp, int);
+      // Select on dtype of values
       select gv.dtype {
         when DType.Int64 {
           const vals = toSymEntry(gv, int);
@@ -62,6 +74,7 @@ module BroadcastMsg {
         }
       }
     } else {
+      // If not using permutation, ignore perm array
       select gv.dtype {
         when DType.Int64 {
           const vals = toSymEntry(gv, int);
