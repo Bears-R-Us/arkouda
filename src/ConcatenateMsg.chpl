@@ -143,7 +143,7 @@ module ConcatenateMsg
                           // Segments must be rebased to start from blockValStart,
                           // which is the current pointer to this locale's chunk of
                           // the values array
-                          esegs.a[blockstarts[here.id]..#mynsegs] = mysegs - mysegs[thisSegs.aD.localSubdomain().low] + blockValStarts[here.id];
+                          esegs.a[{blockstarts[here.id]..#mynsegs}] = mysegs - mysegs[thisSegs.aD.localSubdomain().low] + blockValStarts[here.id];
                           blockstarts[here.id] += mynsegs;
                           const firstSeg = thisSegs.a[thisSegs.aD.localSubdomain().low];
                           var mybytes: int;
@@ -152,7 +152,7 @@ module ConcatenateMsg
                           } else {
                             mybytes = thisSegs.a[thisSegs.aD.localSubdomain().high + 1] - firstSeg;
                           }
-                          evals.a[blockValStarts[here.id]..#mybytes] = thisVals.a[firstSeg..#mybytes];
+                          evals.a[{blockValStarts[here.id]..#mybytes}] = thisVals.a[firstSeg..#mybytes];
                           blockValStarts[here.id] += mybytes;
                         }
                       }
@@ -189,7 +189,7 @@ module ConcatenateMsg
                               coforall loc in Locales {
                                 on loc {
                                   const size = o.aD.localSubdomain().size;
-                                  e.a[blockstarts[here.id]..#size] = o.a.localSlice[o.aD.localSubdomain()];
+                                  e.a[{blockstarts[here.id]..#size}] = o.a.localSlice[o.aD.localSubdomain()];
                                   blockstarts[here.id] += size;
                                 }
                               }
@@ -218,7 +218,7 @@ module ConcatenateMsg
                               coforall loc in Locales {
                                 on loc {
                                   const size = o.aD.localSubdomain().size;
-                                  e.a[blockstarts[here.id]..#size] = o.a.localSlice[o.aD.localSubdomain()];
+                                  e.a[{blockstarts[here.id]..#size}] = o.a.localSlice[o.aD.localSubdomain()];
                                   blockstarts[here.id] += size;
                                 }
                               }
@@ -247,7 +247,7 @@ module ConcatenateMsg
                               coforall loc in Locales {
                                 on loc {
                                   const size = o.aD.localSubdomain().size;
-                                  e.a[blockstarts[here.id]..#size] = o.a.localSlice[o.aD.localSubdomain()];
+                                  e.a[{blockstarts[here.id]..#size}] = o.a.localSlice[o.aD.localSubdomain()];
                                   blockstarts[here.id] += size;
                                 }
                               }
