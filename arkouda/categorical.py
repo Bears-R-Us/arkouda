@@ -426,7 +426,7 @@ class Categorical:
         return Categorical.from_codes(newvals, self.categories[idxperm])
     
     @typechecked
-    def merge(self, others : List[Categorical]) -> Categorical:
+    def concatenate(self, others : List[Categorical], ordered : bool=True) -> Categorical:
         """
         Merge this Categorical with other Categorical objects in the array, 
         concatenating the arrays and synchronizing the categories.
@@ -435,6 +435,11 @@ class Categorical:
         ----------
         others : List[Categorical]
             The Categorical arrays to concatenate and merge with this one
+        ordered : bool
+            If True (default), the arrays will be appended in the
+            order given. If False, array data may be interleaved
+            in blocks, which can greatly improve performance but
+            results in non-deterministic ordering of elements.
 
         Returns
         -------
@@ -463,18 +468,20 @@ class Categorical:
                                     (self.categories == c.categories).all():
                 samecategories = False
         if samecategories:
-            newvals = cast(pdarray, concatenate([self.codes] + [o.codes for o in others]))
+            newvals = cast(pdarray, concatenate([self.codes] + [o.codes for o in others], ordered=ordered))
             return Categorical.from_codes(newvals, self.categories)
         else:
             g = GroupBy(concatenate([self.categories] + \
-                                       [o.categories for o in others]))
+                                       [o.categories for o in others],
+                                       ordered=False))
             newidx = g.unique_keys
             wherediditgo = zeros(newidx.size, dtype=akint64)
             wherediditgo[g.permutation] = arange(newidx.size)
             idxsizes = np.array([self.categories.size] + \
                                 [o.categories.size for o in others])
             idxoffsets = np.cumsum(idxsizes) - idxsizes
-            oldvals = concatenate([c.codes + off for c, off in zip([self.codes] \
-                                    + [o.codes for o in others], idxoffsets)])
+            oldvals = concatenate([c.codes + off for c, off in \
+                                   zip([self.codes] + [o.codes for o in others], idxoffsets)],
+                                  ordered=ordered)
             newvals = wherediditgo[oldvals]
             return Categorical.from_codes(newvals, newidx)

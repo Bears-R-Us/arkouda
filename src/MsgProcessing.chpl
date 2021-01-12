@@ -34,6 +34,7 @@ module MsgProcessing
     public use ArraySetopsMsg;
     public use KExtremeMsg;
     public use CastMsg;
+    public use BroadcastMsg;
     
     const mpLogger = new Logger();
     

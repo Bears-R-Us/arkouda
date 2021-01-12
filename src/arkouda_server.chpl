@@ -263,6 +263,7 @@ proc main() {
                 when "countReduction"    {repMsg = countReductionMsg(cmd, payload, st);}
                 when "findSegments"      {repMsg = findSegmentsMsg(cmd, payload, st);}
                 when "segmentedReduction"{repMsg = segmentedReductionMsg(cmd, payload, st);}
+                when "broadcast"         {repMsg = broadcastMsg(cmd, payload, st);}
                 when "arange"            {repMsg = arangeMsg(cmd, payload, st);}
                 when "linspace"          {repMsg = linspaceMsg(cmd, payload, st);}
                 when "randint"           {repMsg = randintMsg(cmd, payload, st);}
