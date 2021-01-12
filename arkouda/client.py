@@ -544,7 +544,7 @@ def get_config() -> Mapping[str, Union[str, int, float]]:
         configuration into a dict
     """
     try:
-        raw_message = generic_msg("getconfig")
+        raw_message = cast(str,generic_msg("getconfig"))
         return json.loads(raw_message)
     except json.decoder.JSONDecodeError:
         raise ValueError('Returned config is not valid JSON: {}'.format(raw_message))
