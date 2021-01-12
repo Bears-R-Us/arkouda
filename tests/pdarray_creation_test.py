@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import pandas as pd
 import datetime as dt
@@ -119,17 +120,17 @@ class PdarrayCreationTest(ArkoudaTest):
 
     def test_randint_with_seed(self):
         values = ak.randint(1, 5, 10, seed=2)
-        self.assertTrue((ak.array([4, 3, 1, 3, 4, 4, 2, 4, 3, 2]) == values).any())
+        self.assertTrue((ak.array([4, 3, 1, 3, 4, 4, 2, 4, 3, 2]) == values).all())
 
         values = ak.randint(1, 5, 10, dtype=ak.float64, seed=2)
         self.assertTrue((ak.array([2.9160772326374946, 4.353429832157099, 4.5392023718621486, 
                                    4.4019932101126606, 3.3745324569952304, 1.1642002901528308, 
                                    4.4714086874555292, 3.7098921109084522, 4.5939589352472314, 
-                                   4.0337935981006172]) == values).any())
+                                   4.0337935981006172]) == values).all())
     
         values = ak.randint(1, 5, 10, dtype=ak.bool, seed=2)
         self.assertTrue((ak.array([False, True, True, True, True, False, True, True, 
-                                   True, True]) == values).any())
+                                   True, True]) == values).all())
 
     def test_uniform(self):
         testArray = ak.uniform(3)
@@ -139,7 +140,7 @@ class PdarrayCreationTest(ArkoudaTest):
 
         uArray = ak.uniform(size=3,low=0,high=5,seed=0)
         self.assertTrue((ak.array([0.30013431967121934, 0.47383036230759112, 1.0441791878997098])
-                        == uArray).any())
+                        == uArray).all())
     
         with self.assertRaises(TypeError) as cm:
             ak.uniform(low='0', high=5, size=100)
@@ -327,12 +328,12 @@ class PdarrayCreationTest(ArkoudaTest):
         pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10)
  
         self.assertTrue((ak.array(['TVKJ', 'EWAB', 'CO', 'HFMD', 'U', 'MMGT', 
-                        'N', 'WOQN', 'HZ', 'VSX']) == pda).any())
+                        'N', 'WOQN', 'HZ', 'VSX']) == pda).all())
         
         pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10,
                                         characters='printable')
         self.assertTrue((ak.array(['+5"f', '-P]3', '4k', '~HFF', 'F', '`,IE', 
-                        'Y', 'jkBa', '9(', '5oZ']) == pda).any())
+                        'Y', 'jkBa', '9(', '5oZ']) == pda).all())
 
     def test_random_strings_lognormal(self):
         pda = ak.random_strings_lognormal(2, 0.25, 100, characters='printable')
@@ -361,13 +362,13 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertTrue((ak.array(['TVKJTE', 'ABOCORHFM', 'LUDMMGTB', 'KWOQNPHZ', 
                                    'VSXRRL', 'AKOZOEEWTB', 'GOSVGEJNOW', 'BFWSIO', 
                                    'MRIEJUSA', 'OLUKRJK'])
-                        == pda).any())            
+                        == pda).all())            
 
         pda = ak.random_strings_lognormal(2, 0.25, 10, seed=1, characters='printable')
 
         self.assertTrue((ak.array(['+5"fp-', ']3Q4kC~HF', '=F=`,IE!', "DjkBa'9(", '5oZ1)=', 
                                    'T^.1@6aj";', '8b2$IX!Y7.', 'x|Y!eQ', '>1\\>2,on', '&#W":C3'])
-                        == pda).any())     
+                        == pda).all())     
     
     def test_mulitdimensional_array_creation(self):
         with self.assertRaises(RuntimeError) as cm:
