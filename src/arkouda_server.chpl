@@ -22,6 +22,15 @@ use ServerErrorStrings;
 
 const asLogger = new Logger();
 
+enum MsgType {REGULAR,WARNING,ERROR}
+enum MsgFormat {STRING,BINARY}
+
+class ReplyMsg {
+    var msg: string;
+    var msgType: MsgType;
+    var msgFormat: MsgFormat;
+}
+
 if v {
     asLogger.level = LogLevel.DEBUG;
 } else {
@@ -297,15 +306,14 @@ proc main() {
                 when "clear"             {repMsg = clearMsg(cmd, payload, st);}
                 when "connect" {
                     if authenticate {
-                        repMsg = "connected to arkouda server tcp://*:%t as user %s with token %s".format(
+                        repMsg = "connected to arkouda server tcp://*:%i as user %s with token %s".format(
                                                           ServerPort,user,token);
                     } else {
-                        repMsg = "connected to arkouda server tcp://*:%t".format(ServerPort);
-                    }
-                    
+                        repMsg = "connected to arkouda server tcp://*:%i".format(ServerPort);
+                    }                 
                 }
-                when "disconnect" {
-                    repMsg = "disconnected from arkouda server tcp://*:%t".format(ServerPort);
+                when "disconnect" {      
+                    repMsg = "disconnected from arkouda server tcp://*:%i".format(ServerPort);
                 }
                 when "noop" {
                     repMsg = "noop";
@@ -324,7 +332,16 @@ proc main() {
             if repMsg.isEmpty() {
                 sendRepMsg(binaryRepMsg);
             } else {
-                sendRepMsg(repMsg);
+                var msgType: MsgType;
+                
+                if repMsg.find('Error') > -1 {
+                    msgType = MsgType.ERROR;
+                } else if repMsg.find('Warning') > -1 {
+                    msgType = MsgType.WARNING;
+                } else {
+                    msgType = MsgType.REGULAR;
+                }
+                sendRepMsg(generateJsonReplyMsg(msg=repMsg,msgType=msgType,msgFormat=MsgFormat.STRING));
             }
 
             /*
@@ -340,13 +357,14 @@ proc main() {
                        "bytes of memory used after command %t".format(memoryUsed():uint * numLocales:uint));
             }
         } catch (e: ErrorWithMsg) {
-            sendRepMsg(e.msg);
+            sendRepMsg(generateJsonReplyMsg(msg=e.msg,msgType=MsgType.ERROR, msgFormat=MsgFormat.STRING));
             if logging {
                 asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                     "<<< %s resulted in error %s in  %.17r sec".format(cmd, e.msg, t1.elapsed() - s0));
             }
         } catch (e: Error) {
-            sendRepMsg(unknownError(e.message()));
+            sendRepMsg(generateJsonReplyMsg(msg=unknownError(e.message()),msgType=MsgType.ERROR, 
+                                                         msgFormat=MsgFormat.STRING));
             if logging {
                 asLogger.error(getModuleName(), getRoutineName(), getLineNumber(), 
                     "<<< %s resulted in error: %s in %.17r sec".format(cmd, e.message(),t1.elapsed() - s0));
@@ -360,6 +378,13 @@ proc main() {
 
     asLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
                "requests = %i responseCount = %i elapsed sec = %i".format(reqCount,repCount,t1.elapsed()));
+}
+
+/*
+ * Generates JSON-formatted reply message
+ */
+proc generateJsonReplyMsg(msg: string, msgType: MsgType, msgFormat: MsgFormat) {
+    return "%jt".format(new ReplyMsg(msg=msg,msgType=msgType, msgFormat=msgFormat));
 }
 
 /*

@@ -336,12 +336,22 @@ def _send_string_message(message : str,
         if return_message.startswith(b"Error:"): \
                                    raise RuntimeError(return_message.decode())
         elif return_message.startswith(b"Warning:"): warnings.warn(return_message)
+        return return_message
     else:
-        return_message = socket.recv_string()
-        # raise errors or warnings sent back from the server
-        if return_message.startswith("Error:"): raise RuntimeError(return_message)
-        elif return_message.startswith("Warning:"): warnings.warn(return_message)
-    return return_message
+        raw_message = socket.recv_string()
+        try:
+            return_message = json.loads(raw_message)
+            msg = return_message['msg']
+            msgType = return_message['msgType']
+
+            # raise errors or warnings sent back from the server
+            if msgType == 'ERROR':
+                raise RuntimeError(return_message['msg'])
+            if msgType == 'WARNING':
+                warnings.warn(msg)
+            return msg
+        except KeyError as ke:
+            raise ValueError('Malformed return message missing {} field'.format(ke))
 
 def _send_binary_message(message : bytes, 
                          recv_bytes : bool=False) -> Union[str, bytes]:
@@ -490,19 +500,19 @@ def generic_msg(message : Union[str,bytes], send_bytes : bool=False,
     try:
         if send_bytes:
             if recv_bytes:
-                return cast(bytes, _send_binary_message(message=cast(bytes,message), 
-                                            recv_bytes=recv_bytes))
+                return _send_binary_message(message=cast(bytes,message), 
+                                            recv_bytes=recv_bytes)
             else: 
-                return cast(str, _send_binary_message(message=cast(bytes,message), 
-                                            recv_bytes=recv_bytes))                
+                return _send_binary_message(message=cast(bytes,message), 
+                                            recv_bytes=recv_bytes)             
         else:
             logger.debug("[Python] Sending request: {}".format(cast(str,message)))
             if recv_bytes:
-                return cast(bytes, _send_string_message(message=cast(str,message), 
-                                            recv_bytes=recv_bytes))
+                return _send_string_message(message=cast(str,message), 
+                                            recv_bytes=recv_bytes)
             else:
-                return cast(str, _send_string_message(message=cast(str,message), 
-                                            recv_bytes=recv_bytes))
+                return _send_string_message(message=cast(str,message), 
+                                            recv_bytes=recv_bytes)
                 
     except KeyboardInterrupt as e:
         # if the user interrupts during command execution, the socket gets out 
@@ -533,12 +543,13 @@ def get_config() -> Mapping[str, Union[str, int, float]]:
         Raised if there's an error in parsing the JSON-formatted server
         configuration into a dict
     """
-    json_string = generic_msg("getconfig")
-
     try:
-        return json.loads(json_string)
+        raw_message = generic_msg("getconfig")
+        return json.loads(raw_message)
+    except json.decoder.JSONDecodeError:
+        raise ValueError('Returned config is not valid JSON: {}'.format(raw_message))
     except Exception as e:
-        raise ValueError(e)
+        raise RuntimeError('{} in retrieving Arkouda server config'.format(e))
 
 def get_mem_used() -> int:
     """

@@ -1,6 +1,6 @@
 import numpy as np # type: ignore
 import pandas as pd # type: ignore
-import struct
+import struct, json
 from typing import cast, Iterable, Optional, Union
 from typeguard import typechecked
 from arkouda.client import generic_msg
@@ -129,9 +129,11 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
         Raised if a is not a pdarray, np.ndarray, or Python Iterable such as a
         list, array, tuple, or deque
     RuntimeError
-        If a is not one-dimensional, nbytes > maxTransferBytes, a.dtype is
+        Raised if a is not one-dimensional, nbytes > maxTransferBytes, a.dtype is
         not supported (not in DTypes), or if the product of a size and
         a.itemsize > maxTransferBytes
+    ValueError
+        Raised if the returned message is malformed
 
     See Also
     --------
@@ -209,7 +211,14 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     req_msg = "array {} {:n} ".\
                     format(a.dtype.name, size).encode() + struct.pack(fmt, *a)
     repMsg = generic_msg(req_msg, send_bytes=True)
-    return create_pdarray(repMsg)
+
+    try:
+        return_msg = json.loads(repMsg)
+        return create_pdarray(return_msg['msg'])
+    except json.decoder.JSONDecodeError:
+        raise ValueError('{} is not valid JSON, may be server-side error')
+    except KeyError as ke:
+        raise ValueError('Malformed JSON does not contain {} field'.format(ke))
 
 def zeros(size : int, dtype : type=np.float64) -> pdarray:
     """
@@ -256,6 +265,7 @@ def zeros(size : int, dtype : type=np.float64) -> pdarray:
     if cast(np.dtype,dtype).name not in numericDTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
     repMsg = generic_msg("create {} {}".format(cast(np.dtype,dtype).name, size))
+    
     return create_pdarray(repMsg)
 
 def ones(size : int, dtype : type=float64) -> pdarray:
