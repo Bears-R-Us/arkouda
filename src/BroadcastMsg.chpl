@@ -4,6 +4,7 @@ module BroadcastMsg {
   use Errors;
   use Reflection;
   use Broadcast;
+  use ServerConfig;
   
   /* 
    * Broadcast a value per segment of a segmented array to the
