@@ -81,5 +81,5 @@ class ArkoudaTest(unittest.TestCase):
         if ArkoudaTest.full_stack_mode:
             try:
                 stop_arkouda_server()
-            except Exception as e:
+            except Exception:
                 pass
