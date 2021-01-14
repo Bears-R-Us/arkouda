@@ -4,8 +4,8 @@ from context import arkouda as ak
 from arkouda.dtypes import float64, int64
 from base_test import ArkoudaTest
 
-SIZE = 10000
-GROUPS = 64
+SIZE = 100
+GROUPS = 8
 verbose = True
 
 def groupby_to_arrays(df : pd.DataFrame, kname, vname, op, levels):
