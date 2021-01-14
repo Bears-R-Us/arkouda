@@ -91,6 +91,8 @@ jobs:
       run: |
         make check
     - name: Arkouda unit tests
+      env:
+        ARKOUDA_PYTEST_OPTIONS: "--durations=0 --durations-min=5.0"
       run: |
         make test-python
     - name: Arkouda benchmark --correctness-only
@@ -123,7 +125,7 @@ jobs:
       run: |
          ./benchmarks/run_benchmarks.py --correctness-only
 
-  unit_tests_linux:
+  chapel_unit_tests_linux:
     runs-on: ubuntu-latest
     strategy:
       matrix:
