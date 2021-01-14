@@ -129,7 +129,7 @@ class pdarray:
 
     def __repr__(self):
         from arkouda.client import pdarrayIterThresh
-        return generic_msg("repr {} {}".format(self.name,pdarrayIterThresh))
+        return generic_msg(cmd='repr',args="{} {}".format(self.name,pdarrayIterThresh))
 
     def format_other(self, other : object) -> np.dtype:
         """

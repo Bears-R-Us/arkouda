@@ -208,9 +208,9 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     # Pack binary array data into a bytes object with a command header
     # including the dtype and size
     fmt = ">{:n}{}".format(size, structDtypeCodes[a.dtype.name])
-    req_msg = "array {} {:n} ".\
+    req_msg = "{} {:n} ".\
                     format(a.dtype.name, size).encode() + struct.pack(fmt, *a)
-    repMsg = generic_msg(req_msg, send_bytes=True)
+    repMsg = generic_msg(cmd='array', args=req_msg, send_bytes=True)
 
     try:
         return_msg = json.loads(repMsg)
@@ -485,7 +485,7 @@ def arange(*args) -> pdarray:
     if isinstance(start, int) and isinstance(stop, int) and isinstance(stride, int):
         if stride < 0:
             stop = stop + 2
-        repMsg = generic_msg("arange {} {} {}".format(start, stop, stride))
+        repMsg = generic_msg(cmd='arange', message="{} {} {}".format(start, stop, stride))
         return create_pdarray(repMsg)
     else:
         raise TypeError("start,stop,stride must be type int {} {} {}".\
