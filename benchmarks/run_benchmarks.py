@@ -19,7 +19,7 @@ from util import *
 
 logging.basicConfig(level=logging.INFO)
 
-BENCHMARKS = ['stream', 'argsort', 'coargsort', 'gather', 'scatter', 'reduce',
+BENCHMARKS = ['stream', 'argsort', 'coargsort', 'groupby', 'gather', 'scatter', 'reduce',
               'scan', 'noop', 'setops', 'array_create']
 
 def get_chpl_util_dir():
