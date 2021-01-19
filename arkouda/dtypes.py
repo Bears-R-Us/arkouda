@@ -1,4 +1,4 @@
-from typing import cast, Tuple
+from typing import cast, Tuple, Union
 import numpy as np # type: ignore
 from typeguard import typechecked
 import builtins
@@ -27,8 +27,7 @@ str = np.dtype(np.str)
 DTypes = frozenset(["bool", "int64", "float64", "uint8", "str"])
 DTypeObjects = frozenset([bool, int64, float64, uint8, str])
 
-@typechecked
-def _as_dtype(dt : np.dtype) -> np.dtype:
+def _as_dtype(dt) -> np.dtype:
     if not isinstance(dt, np.dtype):
         return np.dtype(dt)
     return dt
