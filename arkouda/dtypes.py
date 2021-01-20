@@ -1,4 +1,4 @@
-from typing import cast, Tuple, Union
+from typing import cast, Tuple
 import numpy as np # type: ignore
 from typeguard import typechecked
 import builtins
