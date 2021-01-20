@@ -194,7 +194,7 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
             for i, b in enumerate(s):
                 values[o+i] = b
         # Recurse to create pdarrays for offsets and values, then return Strings object
-        return Strings(array(offsets), array(values))
+        return Strings(cast(array(offsets),pdarray), cast(array(values),pdarray))
     # If not strings, then check that dtype is supported in arkouda
     if a.dtype.name not in DTypes:
         raise RuntimeError("Unhandled dtype {}".format(a.dtype))
