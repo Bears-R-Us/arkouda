@@ -175,7 +175,7 @@ proc main() {
          * containing the JSON binary string encapsulating user, token, cmd, and args from
          * the remaining payload. Depending upon
          */
-        var (cmdRaw, payload) = reqMsgRaw.splitMsgToTuple(b"?",2);
+        var (cmdRaw, payload) = reqMsgRaw.splitMsgToTuple(b"BINARY_PAYLOAD",2);
         var user, token, cmd: string;
 
         // parse requests, execute requests, format responses

@@ -337,8 +337,9 @@ def _send_string_message(cmd : str, recv_bytes : bool=False,
         a server-side error was thrown
     """
     message = _get_message(cmd=cmd, format=MessageFormat.STRING, args=args)
-    logger.info(message)
-    #socket.send_string(_get_message(user=username, token=token, cmd=message, format=MessageFormat.STRING))
+
+    logger.debug(message)
+
     socket.send_string(json.dumps(message.asdict()))
 
     if recv_bytes:
@@ -390,16 +391,11 @@ def _send_binary_message(cmd : str, payload : bytes, recv_bytes : bool=False,
         Raised if the return message contains the word "Error", indicating 
         a server-side error was thrown
     """
-    logger.info(cmd)
-    #socket.send('{}:{}:'.format(username,token,).encode() + message)
-    #send_string = '{}**'.format(json.dumps({'user': username, 'token': token, 'cmd': 'array'}))
     send_message = _get_message(cmd=cmd, format=MessageFormat.BINARY, args=args)
-    #send_string = '{}**'.format(json.dumps({'user': username, 'token': token, 
-    #                                        'cmd': 'array', 'format': str(MessageFormat.BINARY)}))
-    #send_string = '{}**'.format(json.dumps(send_message.asdict()))
-    #logger.info(send_string)
-    #socket.send(send_string.encode() + message)
-    socket.send('{}?'.format(json.dumps(send_message.asdict())).encode() + payload)
+
+    logger.debug(send_message)
+
+    socket.send('{}BINARY_PAYLOAD'.format(json.dumps(send_message.asdict())).encode() + payload)
 
     if recv_bytes:
         binary_return_message = cast(bytes, socket.recv())
@@ -516,7 +512,6 @@ def generic_msg(cmd : str, args : Union[str,bytes]=None, send_bytes : bool=False
 
     if not connected:
         raise RuntimeError("client is not connected to a server")
-    logger.info("cmd: {} type: {}".format(cmd,type(args)))
         
     try:
         if send_bytes:
