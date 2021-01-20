@@ -9,6 +9,7 @@ from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS, \
 from arkouda.dtypes import dtype as akdtype
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.strings import Strings, SArrays
+from arkouda.graph import Graph
 
 __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", 
            "arange", "linspace", "randint", "uniform", "standard_normal",
@@ -934,6 +935,7 @@ def suffix_array_file(filename: str)  -> tuple:
         msg = "segmentedSAFile {}".format( filename )
         repMsg = generic_msg(msg)
         tmpmsg=cast(str,repMsg).split('+')
+        print(tmpmsg)
         sastr=tmpmsg[0:2]
         strstr=tmpmsg[2:4]
         suffixarray=SArrays(*(cast(str,sastr))) 

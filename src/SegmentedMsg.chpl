@@ -1200,41 +1200,113 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
 
   }
 
-}
 
-/*
-                var sasize=nBytes:int;
-                var strArray:[startposition..endposition]uint(8);
-                var r = f.reader(kind=ionative);
-                r.read(strArray);
-//                var tmparray:[1..sasize] int(32);
-                var tmparray:[0..sasize+2] int;
-                var intstrArray:[0..sasize+2] int;
-                var x:int;
-                var y:int;
-                forall (x,y) in zip ( intstrArray[0..sasize-1],strArray[startposition..endposition]) do x=y;
-                intstrArray[sasize]=0;
-                intstrArray[sasize+1]=0;
-                intstrArray[sasize+2]=0;
-                SuffixArraySkew(intstrArray,tmparray,sasize,256);
-//                divsufsort(strArray,tmparray,sasize);
-                forall (x, y) in zip(sasval[startposition..endposition], tmparray[0..sasize-1]) do
-                    x = y;
-*/
-/*
-// Here we calculate the lcp(Longest Common Prefix) array value
-                forall j in startposition+1..endposition do{
-                        var tmpcount=0:int;
-                        var tmpbefore=sasval[j-1]:int;
-                        var tmpcur=sasval[j]:int;
-                        var tmplen=min(sasize-tmpcur, sasize-tmpbefore);
-                        var tmpi:int;
-                        for tmpi in 0..tmplen-1 do {
-                             if (intstrArray[tmpbefore]!=intstrArray[tmpcur]) {
-                                   break;
-                             }
-                             tmpcount+=1;
-                        } 
-                        lcpval[j]=tmpcount;
-                }
-*/
+  proc segrmatgenMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+      var pn = Reflection.getRoutineName();
+      var (slgNv, sNe_per_v, sp, sperm )
+          = payload.decode().splitMsgToTuple(4);
+      var lgNv = slgNv: int;
+      var Ne_per_v = sNe_per_v: int;
+      var p = sp: real;
+      var perm = sperm: bool;
+
+      var Nv = 2**lgNv:int;
+      # number of edges
+      var Ne = Ne_per_v * Nv:int;
+      # probabilities
+      var a = p;
+      var b = (1.0 - a)/ 3.0;
+      var c = b;
+      var d = b;
+      var src: [0..Ne-1]int;
+      var dst: [0..Ne-1]int;
+      var e_weight: [0..Ne-1] real;
+      var v_weight: [0..Nv-1] real;
+      var neighbour: [0..Nv-1] int;
+      var directed:bool;
+      var n_vertices=Nv;
+      var n_edges=Ne;
+      src=1;
+      dst=1;
+      var dst [0..Ne-1]:int;
+      # quantites to use in edge generation loop
+      var ab = a+b:real;
+      var c_norm = c / (c + d):real;
+      var a_norm = a / (a + b):real;
+      # generate edges
+      
+      var src_bit [0..Ne-1]:int;
+      var src_bit [0..Ne-1]:int;
+      forall ib in 1..lgNv {
+          var tmpvar[0..Ne-1]:real;
+          fillRandom(tmpvar);
+          src_bit=tmpvar>ab;
+          fillRandom(tmpvar);
+          dst_bit=tmpvar>(c_norm * src_bit + a_norm * (~ src_bit));
+          src = src + ((2**(ib-1)) * src_bit);
+          dst = dst + ((2**(ib-1)) * dst_bit);
+      src=src+(src==dst);
+      # maybe: remove edges which are self-loops???
+      var iv = radixSortLSD_ranks(src);
+      # permute into sorted order
+      src = src[iv] # permute first vertex into sorted order
+      dst = dst[iv] # permute second vertex into sorted order
+      # to premute/rename vertices
+      #
+      var begin, end:int;
+      begin=0;
+      var sort=0:int;
+      while (begin < Ne-2) {
+         end=begin+1;
+         while ( end <Ne-1) {
+            if src[begin]==src[end] {
+               sort=1;
+               end+=1;
+            } else {
+               if (sort==1) {
+                 ref p=dst[begin..end];
+                 var ivx=radixSortLSD_ranks(p);
+                 dst[begin..end]=dst[ivx];
+               } else {
+                  begin+=1;
+                  break;
+
+               }
+            }
+         }
+      }
+
+      fillRandom(e_weight);
+      fillRandom(v_weight);
+      neighbour=0;
+      for i in 0..Ne-1 do {
+        length[src[i]]+=1;
+      }
+      var neighbour  = (+ scan length) - length;
+      var srcName = st.nextName();
+      var dstName = st.nextName();
+      var ewName = st.nextName();
+      var vwName = st.nextName();
+      var neiName = st.nextName();
+      var srcEntry = new shared SymEntry(src);
+      var dstEntry = new shared SymEntry(dst);
+      var ewEntry = new shared SymEntry(e_weight);
+      var vwEntry = new shared SymEntry(v_weight);
+      var neiEntry = new shared SymEntry(neighbour);
+      st.addEntry(srcName, srcEntry);
+      st.addEntry(dstName, dstEntry);
+      st.addEntry(ewName, ewEntry);
+      st.addEntry(vwName, vwEntry);
+      st.addEntry(neiName, neiEntry);
+      repMsg = 'created ' + Ne + '+created ' + Nv + '+created ' + directed + \
+               '+created ' + st.attrib(srcName) + '+created ' + st.attrib(dstName)+ \
+               '+created ' + st.attrib(neiName) + '+created ' + st.attrib(vwName)+ \
+               '+created ' + st.attrib(ewName);
+
+      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
+      return repMsg;
+  }
+
+
+
+}
