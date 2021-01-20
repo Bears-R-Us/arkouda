@@ -196,10 +196,6 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings,'Categorical']], #type: 
         Raised if 1..n array elements are dtypes for which
         concatenate has not been implemented.
 
-    Notes
-    -----
-    ak.concatenate is not supported for bool or float64 pdarrays
-
     Examples
     --------
     >>> ak.concatenate([ak.array([1, 2, 3]), ak.array([4, 5, 6])])
