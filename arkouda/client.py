@@ -308,7 +308,7 @@ def _get_message(cmd : str, format: MessageFormat, args : str=None) -> Message:
     a server-side Arkouda command
     
     """
-    return Message(user=username, token=token, cmd=cmd, format=format, args=args)
+    return Message(user=username, token=token, cmd=cmd, format=format, args=cast(str,args))
 
 def _send_string_message(cmd : str, recv_bytes : bool=False, 
                          args : str=None) -> Union[str, bytes]:
@@ -529,11 +529,11 @@ def generic_msg(cmd : str, args : Union[str,bytes]=None, send_bytes : bool=False
                                             payload=cast(bytes,args), 
                                             recv_bytes=recv_bytes)           
         else:
-            logger.debug("[Python] Sending request: cmd: {} args: {}".format(cmd,args))
+            logger.debug("[Python] Sending request: cmd: {} args: {}".format(cmd,cast(str,args)))
             if recv_bytes:
-                return _send_string_message(cmd=cmd, args=args, recv_bytes=recv_bytes)
+                return _send_string_message(cmd=cmd, args=cast(str,args), recv_bytes=recv_bytes)
             else:
-                return _send_string_message(cmd=cmd, args=args, recv_bytes=recv_bytes)
+                return _send_string_message(cmd=cmd, args=cast(str,args), recv_bytes=recv_bytes)
                 
     except KeyboardInterrupt as e:
         # if the user interrupts during command execution, the socket gets out 
@@ -565,7 +565,7 @@ def get_config() -> Mapping[str, Union[str, int, float]]:
         configuration into a dict
     """
     try:
-        raw_message = cast(str,generic_msg("getconfig"))
+        raw_message = cast(str,generic_msg(cmd="getconfig"))
         return json.loads(raw_message)
     except json.decoder.JSONDecodeError:
         raise ValueError('Returned config is not valid JSON: {}'.format(raw_message))
@@ -588,7 +588,7 @@ def get_mem_used() -> int:
     ValueError
         Raised if the returned value is not an int-formatted string
     """
-    mem_used_message = cast(str,generic_msg("getmemused"))
+    mem_used_message = cast(str,generic_msg(cmd="getmemused"))
     return int(mem_used_message)
 
 def _no_op() -> str:
@@ -610,7 +610,7 @@ def _no_op() -> str:
 def ruok() -> str:
     """
     Simply sends an "ruok" message to the server and, if the return message is
-    "imok",t his means the arkouda_server is up and operating normally. A return
+    "imok", this means the arkouda_server is up and operating normally. A return
     message of "imnotok" indicates an error occurred or the connection timed out.
     
     This method is basically a way to do a quick healthcheck in a way that does 

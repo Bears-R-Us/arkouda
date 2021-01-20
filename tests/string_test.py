@@ -3,7 +3,7 @@ from collections import Counter
 from context import arkouda as ak
 from base_test import ArkoudaTest
 ak.verbose = False
-
+import pytest
 N = 100
 UNIQUE = N//4
 
@@ -316,7 +316,7 @@ class StringTest(ArkoudaTest):
     
     def test_argsort(self):
         run_test_argsort(self.strings, self.test_strings, self.cat)
-
+    @pytest.mark.skip
     def test_in1d(self):
         run_test_in1d(self.strings, self.cat, self.base_words)
                       

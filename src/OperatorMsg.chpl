@@ -34,11 +34,11 @@ module OperatorMsg
     :returns: (string) 
     :throws: `UndefinedSymbolError(name)`
     */
-    proc binopvvMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {       
+    proc binopvvMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {       
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (op, aname, bname) = payload.decode().splitMsgToTuple(3);
+        var (op, aname, bname) = payload.splitMsgToTuple(3);
         var rname = st.nextName();
 
         var left: borrowed GenSymEntry = st.lookup(aname);
@@ -492,11 +492,11 @@ module OperatorMsg
     :returns: (string) 
     :throws: `UndefinedSymbolError(name)`
     */
-    proc binopvsMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc binopvsMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string = ""; // response message
         // split request into fields
-        var (op, aname, dtypeStr, value) = payload.decode().splitMsgToTuple(4);
+        var (op, aname, dtypeStr, value) = payload.splitMsgToTuple(4);
         var dtype = str2dtype(dtypeStr);
         var rname = st.nextName();
         var left: borrowed GenSymEntry = st.lookup(aname);
@@ -909,11 +909,11 @@ module OperatorMsg
     :returns: (string) 
     :throws: `UndefinedSymbolError(name)`
     */
-    proc binopsvMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc binopsvMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string = ""; // response message
         // split request into fields
-        var (op, dtypeStr, value, aname) = payload.decode().splitMsgToTuple(4);
+        var (op, dtypeStr, value, aname) = payload.splitMsgToTuple(4);
         var dtype = str2dtype(dtypeStr);
         var rname = st.nextName();
 
@@ -1345,11 +1345,11 @@ module OperatorMsg
     :returns: (string) 
     :throws: `UndefinedSymbolError(name)`
     */
-    proc opeqvvMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc opeqvvMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (op, aname, bname) = payload.decode().splitMsgToTuple(3);
+        var (op, aname, bname) = payload.splitMsgToTuple(3);
         // retrieve left and right pdarray objects      
         var left: borrowed GenSymEntry = st.lookup(aname);
         var right: borrowed GenSymEntry = st.lookup(bname);
@@ -1481,11 +1481,11 @@ module OperatorMsg
     :throws: `UndefinedSymbolError(name)`
 
     */
-    proc opeqvsMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc opeqvsMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (op, aname, dtypeStr, value) = payload.decode().splitMsgToTuple(4);
+        var (op, aname, dtypeStr, value) = payload.splitMsgToTuple(4);
         var dtype = str2dtype(dtypeStr);
 
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),

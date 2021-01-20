@@ -31,11 +31,11 @@ module ReductionMsg
     // these functions take an array and produce a scalar
     // parse and respond to reduction message
     // scalar = reductionop(vector)
-    proc reductionMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc reductionMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (reductionop, name) = payload.decode().splitMsgToTuple(2);
+        var (reductionop, name) = payload.splitMsgToTuple(2);
         rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                          "cmd: %s reductionop: %s name: %s".format(cmd,reductionop,name));
 
@@ -217,11 +217,11 @@ module ReductionMsg
         }
     }
 
-    proc countReductionMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc countReductionMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
       // reqMsg: segmentedReduction values segments operator
       // 'segments_name' describes the segment offsets
-      var (segments_name, sizeStr) = payload.decode().splitMsgToTuple(2);
+      var (segments_name, sizeStr) = payload.splitMsgToTuple(2);
       var size = try! sizeStr:int;
       var rname = st.nextName();
       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),

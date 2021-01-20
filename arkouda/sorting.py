@@ -57,7 +57,7 @@ def argsort(pda : Union[pdarray,Strings,'Categorical']) -> pdarray: # type: igno
         name = '{}+{}'.format(pda.offsets.name, pda.bytes.name)
     else:
         name = pda.name
-    repMsg = generic_msg("argsort {} {}".format(pda.objtype, name))
+    repMsg = generic_msg(cmd="argsort", args="{} {}".format(pda.objtype, name))
     return create_pdarray(cast(str,repMsg))
 
 @typechecked
@@ -125,12 +125,8 @@ def coargsort(arrays : Sequence[Union[Strings,pdarray]]) -> pdarray:
             raise ValueError("All pdarrays or Strings must be of the same size")
     if size == 0:
         return zeros(0, dtype=int64)
-    cmd = "coargsort"
-    reqMsg = "{} {:n} {} {}".format(cmd,
-                                    len(arrays),
-                                    ' '.join(anames),
-                                    ' '.join(atypes))
-    repMsg = generic_msg(reqMsg)
+    repMsg = generic_msg(cmd="coargsort", args="{:n} {} {}".format(len(arrays), 
+                                                ' '.join(anames), ' '.join(atypes)))
     return create_pdarray(cast(str,repMsg))
 
 @typechecked
@@ -177,5 +173,5 @@ def sort(pda : pdarray) -> pdarray:
         return zeros(0, dtype=int64)
     if pda.dtype not in numeric_dtypes:
         raise ValueError("ak.sort supports float64 or int64, not {}".format(pda.dtype))
-    repMsg = generic_msg("sort {}".format(pda.name))
+    repMsg = generic_msg(cmd="sort", args="{}".format(pda.name))
     return create_pdarray(cast(str,repMsg))

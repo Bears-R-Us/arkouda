@@ -37,11 +37,11 @@ module In1dMsg
        which implementation
        of in1d to utilize.
     */
-    proc in1dMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc in1dMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (name, sname, flag) = payload.decode().splitMsgToTuple(3);
+        var (name, sname, flag) = payload.splitMsgToTuple(3);
         var invert: bool;
         
         if flag == "True" {invert = true;}

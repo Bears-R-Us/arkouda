@@ -11,7 +11,7 @@ class MessageFormat(Enum):
     def __repr__(self):
         return self.value
 
-@dataclass(frozen=True)
+@dataclass
 class Message():
 
     user: str
@@ -21,8 +21,12 @@ class Message():
     args: str=''
 
     def asdict(self):
+        if self.args is None:
+            args = ''
+        else:
+            args = self.args
         return {'user': self.user,
                 'token': self.token,
                 'cmd': self.cmd,
                 'format': str(self.format),
-                'args' : ''}
+                'args' : args}

@@ -171,15 +171,11 @@ proc main() {
         var s0 = t1.elapsed();
         
         /*
-        Separate the first tuple, which is a string binary 
-        containing the message's user, token, and cmd from
-        the remaining payload. Depending upon the message type 
-        (string or binary) the payload is either a space-delimited
-        string or bytes
-        */
-        asLogger.info(getModuleName(),getRoutineName(),getLineNumber(),"INCOMING RAW %s".format(reqMsgRaw.decode()));
+         * Separate the first tuple, which is a string binary 
+         * containing the JSON binary string encapsulating user, token, cmd, and args from
+         * the remaining payload. Depending upon
+         */
         var (cmdRaw, payload) = reqMsgRaw.splitMsgToTuple(b"?",2);
-        //const (cmdRaw, payload) = reqMsgRaw.splitMsgToTuple(2);
         var user, token, cmd: string;
 
         // parse requests, execute requests, format responses
@@ -201,7 +197,6 @@ proc main() {
             }
 
             //parse the decoded cmdString to retrieve user,token,cmd
-            //var (user,token,cmd) = getCommandStrings(cmdStr);
             asLogger.info(getModuleName(),getRoutineName(),getLineNumber(),"INCOMING CMD %s".format(cmdStr));
             var msg    = extractCommand(cmdStr);
             var user   = msg.user;
@@ -255,75 +250,75 @@ proc main() {
             select cmd
             {
                 when "array"             {repMsg = arrayMsg(cmd, payload, st);}
-                when "tondarray"         {binaryRepMsg = tondarrayMsg(cmd, payload,st);}
-                when "cast"              {repMsg = castMsg(cmd, payload, st);}
-                when "mink"              {repMsg = minkMsg(cmd, payload, st);}
-                when "maxk"              {repMsg = maxkMsg(cmd, payload, st);}
-                when "intersect1d"       {repMsg = intersect1dMsg(cmd, payload, st);}
-                when "setdiff1d"         {repMsg = setdiff1dMsg(cmd, payload, st);}
-                when "setxor1d"          {repMsg = setxor1dMsg(cmd, payload, st);}
-                when "union1d"           {repMsg = union1dMsg(cmd, payload, st);}
-                when "segmentLengths"    {repMsg = segmentLengthsMsg(cmd, payload, st);}
-                when "segmentedHash"     {repMsg = segmentedHashMsg(cmd, payload, st);}
-                when "segmentedEfunc"    {repMsg = segmentedEfuncMsg(cmd, payload, st);}
-                when "segmentedPeel"     {repMsg = segmentedPeelMsg(cmd, payload, st);}
-                when "segmentedIndex"    {repMsg = segmentedIndexMsg(cmd, payload, st);}
-                when "segmentedBinopvv"  {repMsg = segBinopvvMsg(cmd, payload, st);}
-                when "segmentedBinopvs"  {repMsg = segBinopvsMsg(cmd, payload, st);}
-                when "segmentedGroup"    {repMsg = segGroupMsg(cmd, payload, st);}
-                when "segmentedIn1d"     {repMsg = segIn1dMsg(cmd, payload, st);}
-                when "lshdf"             {repMsg = lshdfMsg(cmd, payload, st);}
-                when "readhdf"           {repMsg = readhdfMsg(cmd, payload, st);}
-                when "readAllHdf"        {repMsg = readAllHdfMsg(cmd, payload, st);}
-                when "tohdf"             {repMsg = tohdfMsg(cmd, payload, st);}
-                when "create"            {repMsg = createMsg(cmd, payload, st);}
-                when "delete"            {repMsg = deleteMsg(cmd, payload, st);}
-                when "binopvv"           {repMsg = binopvvMsg(cmd, payload, st);}
-                when "binopvs"           {repMsg = binopvsMsg(cmd, payload, st);}
-                when "binopsv"           {repMsg = binopsvMsg(cmd, payload, st);}
-                when "opeqvv"            {repMsg = opeqvvMsg(cmd, payload, st);}
-                when "opeqvs"            {repMsg = opeqvsMsg(cmd, payload, st);}
-                when "efunc"             {repMsg = efuncMsg(cmd, payload, st);}
-                when "efunc3vv"          {repMsg = efunc3vvMsg(cmd, payload, st);}
-                when "efunc3vs"          {repMsg = efunc3vsMsg(cmd, payload, st);}
-                when "efunc3sv"          {repMsg = efunc3svMsg(cmd, payload, st);}
-                when "efunc3ss"          {repMsg = efunc3ssMsg(cmd, payload, st);}
-                when "reduction"         {repMsg = reductionMsg(cmd, payload, st);}
-                when "countReduction"    {repMsg = countReductionMsg(cmd, payload, st);}
-                when "findSegments"      {repMsg = findSegmentsMsg(cmd, payload, st);}
+                when "tondarray"         {binaryRepMsg = tondarrayMsg(cmd, args, st);}
+                when "cast"              {repMsg = castMsg(cmd, args, st);}
+                when "mink"              {repMsg = minkMsg(cmd, args, st);}
+                when "maxk"              {repMsg = maxkMsg(cmd, args, st);}
+                when "intersect1d"       {repMsg = intersect1dMsg(cmd, args, st);}
+                when "setdiff1d"         {repMsg = setdiff1dMsg(cmd, args, st);}
+                when "setxor1d"          {repMsg = setxor1dMsg(cmd, args, st);}
+                when "union1d"           {repMsg = union1dMsg(cmd, args, st);}
+                when "segmentLengths"    {repMsg = segmentLengthsMsg(cmd, args, st);}
+                when "segmentedHash"     {repMsg = segmentedHashMsg(cmd, args, st);}
+                when "segmentedEfunc"    {repMsg = segmentedEfuncMsg(cmd, args, st);}
+                when "segmentedPeel"     {repMsg = segmentedPeelMsg(cmd, args, st);}
+                when "segmentedIndex"    {repMsg = segmentedIndexMsg(cmd, args, st);}
+                when "segmentedBinopvv"  {repMsg = segBinopvvMsg(cmd, args, st);}
+                when "segmentedBinopvs"  {repMsg = segBinopvsMsg(cmd, args, st);}
+                when "segmentedGroup"    {repMsg = segGroupMsg(cmd, args, st);}
+                when "segmentedIn1d"     {repMsg = segIn1dMsg(cmd, args, st);}
+                when "lshdf"             {repMsg = lshdfMsg(cmd, args, st);}
+                when "readhdf"           {repMsg = readhdfMsg(cmd, args, st);}
+                when "readAllHdf"        {repMsg = readAllHdfMsg(cmd, args, st);}
+                when "tohdf"             {repMsg = tohdfMsg(cmd, args, st);}
+                when "create"            {repMsg = createMsg(cmd, args, st);}
+                when "delete"            {repMsg = deleteMsg(cmd, args, st);}
+                when "binopvv"           {repMsg = binopvvMsg(cmd, args, st);}
+                when "binopvs"           {repMsg = binopvsMsg(cmd, args, st);}
+                when "binopsv"           {repMsg = binopsvMsg(cmd, args, st);}
+                when "opeqvv"            {repMsg = opeqvvMsg(cmd, args, st);}
+                when "opeqvs"            {repMsg = opeqvsMsg(cmd, args, st);}
+                when "efunc"             {repMsg = efuncMsg(cmd, args, st);}
+                when "efunc3vv"          {repMsg = efunc3vvMsg(cmd, args, st);}
+                when "efunc3vs"          {repMsg = efunc3vsMsg(cmd, args, st);}
+                when "efunc3sv"          {repMsg = efunc3svMsg(cmd, args, st);}
+                when "efunc3ss"          {repMsg = efunc3ssMsg(cmd, args, st);}
+                when "reduction"         {repMsg = reductionMsg(cmd, args, st);}
+                when "countReduction"    {repMsg = countReductionMsg(cmd, args, st);}
+                when "findSegments"      {repMsg = findSegmentsMsg(cmd, args, st);}
                 when "segmentedReduction"{repMsg = segmentedReductionMsg(cmd, payload, st);}
-                when "arange"            {repMsg = arangeMsg(cmd, payload.encode(), st);}
-                when "linspace"          {repMsg = linspaceMsg(cmd, payload, st);}
-                when "randint"           {repMsg = randintMsg(cmd, payload, st);}
-                when "randomNormal"      {repMsg = randomNormalMsg(cmd, payload, st);}
-                when "randomStrings"     {repMsg = randomStringsMsg(cmd, payload, st);}
-                when "histogram"         {repMsg = histogramMsg(cmd, payload, st);}
-                when "in1d"              {repMsg = in1dMsg(cmd, payload, st);}
-                when "unique"            {repMsg = uniqueMsg(cmd, payload, st);}
-                when "value_counts"      {repMsg = value_countsMsg(cmd, payload, st);}
-                when "set"               {repMsg = setMsg(cmd, payload, st);}
-                when "info"              {repMsg = infoMsg(cmd, payload, st);}
-                when "str"               {repMsg = strMsg(cmd, args.encode(), st);}
-                when "repr"              {repMsg = reprMsg(cmd, args.encode(), st);}
-                when "[int]"             {repMsg = intIndexMsg(cmd, payload, st);}
-                when "[slice]"           {repMsg = sliceIndexMsg(cmd, payload, st);}
-                when "[pdarray]"         {repMsg = pdarrayIndexMsg(cmd, payload, st);}
-                when "[int]=val"         {repMsg = setIntIndexToValueMsg(cmd, payload, st);}
-                when "[pdarray]=val"     {repMsg = setPdarrayIndexToValueMsg(cmd, payload, st);}
-                when "[pdarray]=pdarray" {repMsg = setPdarrayIndexToPdarrayMsg(cmd, payload, st);}
-                when "[slice]=val"       {repMsg = setSliceIndexToValueMsg(cmd, payload, st);}
-                when "[slice]=pdarray"   {repMsg = setSliceIndexToPdarrayMsg(cmd, payload, st);}
+                when "arange"            {repMsg = arangeMsg(cmd, args, st);}
+                when "linspace"          {repMsg = linspaceMsg(cmd, args, st);}
+                when "randint"           {repMsg = randintMsg(cmd, args, st);}
+                when "randomNormal"      {repMsg = randomNormalMsg(cmd, args, st);}
+                when "randomStrings"     {repMsg = randomStringsMsg(cmd, args, st);}
+                when "histogram"         {repMsg = histogramMsg(cmd, args, st);}
+                when "in1d"              {repMsg = in1dMsg(cmd, args, st);}
+                when "unique"            {repMsg = uniqueMsg(cmd, args, st);}
+                when "value_counts"      {repMsg = value_countsMsg(cmd, args, st);}
+                when "set"               {repMsg = setMsg(cmd, args, st);}
+                when "info"              {repMsg = infoMsg(cmd, args, st);}
+                when "str"               {repMsg = strMsg(cmd, args, st);}
+                when "repr"              {repMsg = reprMsg(cmd, args, st);}
+                when "[int]"             {repMsg = intIndexMsg(cmd, args, st);}
+                when "[slice]"           {repMsg = sliceIndexMsg(cmd, args, st);}
+                when "[pdarray]"         {repMsg = pdarrayIndexMsg(cmd, args, st);}
+                when "[int]=val"         {repMsg = setIntIndexToValueMsg(cmd, args, st);}
+                when "[pdarray]=val"     {repMsg = setPdarrayIndexToValueMsg(cmd, args, st);}
+                when "[pdarray]=pdarray" {repMsg = setPdarrayIndexToPdarrayMsg(cmd, args, st);}
+                when "[slice]=val"       {repMsg = setSliceIndexToValueMsg(cmd, args, st);}
+                when "[slice]=pdarray"   {repMsg = setSliceIndexToPdarrayMsg(cmd, args, st);}
                 when "argsort"           {repMsg = argsortMsg(cmd, args, st);}
-                when "coargsort"         {repMsg = coargsortMsg(cmd, payload, st);}
-                when "concatenate"       {repMsg = concatenateMsg(cmd, payload, st);}
-                when "sort"              {repMsg = sortMsg(cmd, payload, st);}
-                when "joinEqWithDT"      {repMsg = joinEqWithDTMsg(cmd, payload, st);}
-                when "getconfig"         {repMsg = getconfigMsg(cmd, payload, st);}
-                when "getmemused"        {repMsg = getmemusedMsg(cmd, payload, st);}
-                when "register"          {repMsg = registerMsg(cmd, payload, st);}
-                when "attach"            {repMsg = attachMsg(cmd, payload, st);}
-                when "unregister"        {repMsg = unregisterMsg(cmd, payload, st);}
-                when "clear"             {repMsg = clearMsg(cmd, payload, st);}
+                when "coargsort"         {repMsg = coargsortMsg(cmd, args, st);}
+                when "concatenate"       {repMsg = concatenateMsg(cmd, args, st);}
+                when "sort"              {repMsg = sortMsg(cmd, args, st);}
+                when "joinEqWithDT"      {repMsg = joinEqWithDTMsg(cmd, args, st);}
+                when "getconfig"         {repMsg = getconfigMsg(cmd, args, st);}
+                when "getmemused"        {repMsg = getmemusedMsg(cmd, args, st);}
+                when "register"          {repMsg = registerMsg(cmd, args, st);}
+                when "attach"            {repMsg = attachMsg(cmd, args, st);}
+                when "unregister"        {repMsg = unregisterMsg(cmd, args, st);}
+                when "clear"             {repMsg = clearMsg(cmd, args, st);}
                 when "connect" {
                     if authenticate {
                         repMsg = "connected to arkouda server tcp://*:%i as user %s with token %s".format(

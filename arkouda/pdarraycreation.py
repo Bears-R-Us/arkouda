@@ -264,7 +264,8 @@ def zeros(size : int, dtype : type=np.float64) -> pdarray:
     # check dtype for error
     if cast(np.dtype,dtype).name not in numericDTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
-    repMsg = generic_msg("create {} {}".format(cast(np.dtype,dtype).name, size))
+    repMsg = generic_msg(cmd="create", args="{} {}".format(
+                                    cast(np.dtype,dtype).name, size))
     
     return create_pdarray(repMsg)
 
@@ -312,7 +313,8 @@ def ones(size : int, dtype : type=float64) -> pdarray:
     # check dtype for error
     if cast(np.dtype,dtype).name not in numericDTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
-    repMsg = generic_msg("create {} {}".format(cast(np.dtype,dtype).name, size))
+    repMsg = generic_msg(cmd="create", args="{} {}".format(
+                                           cast(np.dtype,dtype).name, size))
     a = create_pdarray(repMsg)
     a.fill(1)
     return a
@@ -485,7 +487,7 @@ def arange(*args) -> pdarray:
     if isinstance(start, int) and isinstance(stop, int) and isinstance(stride, int):
         if stride < 0:
             stop = stop + 2
-        repMsg = generic_msg(cmd='arange', message="{} {} {}".format(start, stop, stride))
+        repMsg = generic_msg(cmd='arange', args="{} {} {}".format(start, stop, stride))
         return create_pdarray(repMsg)
     else:
         raise TypeError("start,stop,stride must be type int {} {} {}".\
@@ -535,7 +537,7 @@ def linspace(start : Union[float,int], stop : Union[float,int], length : int) ->
     >>> ak.linspace(start=-5, stop=0, length=5)
     array([-5, -3.75, -2.5, -1.25, 0])
     """
-    repMsg = generic_msg("linspace {} {} {}".format(start, stop, length))
+    repMsg = generic_msg(cmd='linspace', args="{} {} {}".format(start, stop, length))
     return create_pdarray(repMsg)
 
 @typechecked
@@ -606,7 +608,8 @@ def randint(low : Union[int,float], high : Union[int,float], size : int,
     lowstr = NUMBER_FORMAT_STRINGS[dtype.name].format(low)
     highstr = NUMBER_FORMAT_STRINGS[dtype.name].format(high)
     sizestr = NUMBER_FORMAT_STRINGS['int64'].format(size)
-    repMsg = generic_msg("randint {} {} {} {} {}".\
+
+    repMsg = generic_msg(cmd='randint', args='{} {} {} {} {}'.\
                          format(sizestr, dtype.name, lowstr, highstr, seed))
     return create_pdarray(repMsg)
 
@@ -697,9 +700,8 @@ def standard_normal(size : int, seed : Union[None, int]=None) -> pdarray:
     """
     if size < 0:
         raise ValueError("The size parameter must be > 0")
-    msg = "randomNormal {} {}".format(NUMBER_FORMAT_STRINGS['int64'].format(size), 
-                                      seed)
-    return create_pdarray(generic_msg(msg))
+    return create_pdarray(generic_msg(cmd='randomNormal', args='{} {}'.\
+                    format(NUMBER_FORMAT_STRINGS['int64'].format(size), seed)))
 
 @typechecked
 def random_strings_uniform(minlen : int, maxlen : int, size : int, 
@@ -748,13 +750,13 @@ def random_strings_uniform(minlen : int, maxlen : int, size : int,
     if minlen < 0 or maxlen < minlen or size < 0:
         raise ValueError(("Incompatible arguments: minlen < 0, maxlen " +
                           "< minlen, or size < 0"))
-    msg = "randomStrings {} {} {} {} {} {}".\
+
+    repMsg = generic_msg(cmd="randomStrings", args="{} {} {} {} {} {}".\
           format(NUMBER_FORMAT_STRINGS['int64'].format(size),
                  "uniform", characters,
                  NUMBER_FORMAT_STRINGS['int64'].format(minlen),
                  NUMBER_FORMAT_STRINGS['int64'].format(maxlen),
-                 seed)
-    repMsg = generic_msg(msg)
+                 seed))
     return Strings(*(cast(str,repMsg).split('+')))
 
 @typechecked
@@ -812,11 +814,11 @@ def random_strings_lognormal(logmean : Union[float, int], logstd : Union[float, 
     """
     if logstd <= 0 or size < 0:
         raise ValueError("Incompatible arguments: logstd <= 0 or size < 0")
-    msg = "randomStrings {} {} {} {} {} {}".\
+
+    repMsg = generic_msg(cmd="randomStrings", args="{} {} {} {} {} {}".\
           format(NUMBER_FORMAT_STRINGS['int64'].format(size),
                  "lognormal", characters,
                  NUMBER_FORMAT_STRINGS['float64'].format(logmean),
                  NUMBER_FORMAT_STRINGS['float64'].format(logstd),
-                 seed)
-    repMsg = generic_msg(msg)
+                 seed))
     return Strings(*(cast(str,repMsg).split('+')))
