@@ -47,8 +47,8 @@ class Strings:
     BinOps = frozenset(["==", "!="])
     objtype = "str"
 
-    def __init__(self, offset_attrib : Union[pdarray,np.ndarray], 
-                 bytes_attrib : Union[pdarray,np.ndarray]) -> None:
+    def __init__(self, offset_attrib : Union[pdarray,str], 
+                 bytes_attrib : Union[pdarray,str]) -> None:
         """
         Initializes the Strings instance by setting all instance
         attributes, some of which are derived from the array parameters.
