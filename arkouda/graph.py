@@ -133,7 +133,7 @@ class Graph:
     n_edges : int
         The starting indices for each string
     directed : bool
-        The raw bytes of all strings, joined by nulls
+        The graph is directed (True) or undirected (False)
     src : pdarray
         The source of every edge in the graph
     dst : pdarray
@@ -143,8 +143,8 @@ class Graph:
     e_weight : pdarray
         The weitht of every edge in the graph
     neighbour : pdarray
-        The current vertix id v's (v<n_vertices-1) neighbours are from dst[neighbour[v]] to dst[neighbour[v+1]]
-        if v=n_vertices-1, then v's neighbours are from dst[neighbour[v+1]] to dst[n_edges-1]
+        The current vertex id v's (v<n_vertices-1) neighbours are from dst[neighbour[v]] to dst[neighbour[v+1]]
+        if v=n_vertices-1, then v's neighbours are from dst[neighbour[v]] to dst[n_edges-1]
     logger : ArkoudaLogger
         Used for all logging operations
         

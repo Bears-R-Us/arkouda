@@ -1446,6 +1446,220 @@ module SegmentedArray {
   } // class SegSArray
 
 
+  /**
+   * We use several arrays and intgers to represent a graph 
+   * Instances are ephemeral, not stored in the symbol table. Instead, attributes
+   * of this class refer to symbol table entries that persist. This class is a
+   * convenience for bundling those persistent objects and defining graph-relevant
+   * operations.
+   * Now we  copy from SegSArray, we need change more in the future to fit a graph
+   */
+  class SegGraph {
+ 
+    /*    The starting indices for each string*/
+    var n_vertices : int;
+
+    /*    The starting indices for each string*/
+    var n_edges : int;
+
+    /*    The graph is directed (True) or undirected (False)*/
+    var directed : bool;
+
+    /*    The source of every edge in the graph, name */
+    var srcName : string;
+
+    /*    The source of every edge in the graph,array value */
+    var src: borrowed SymEntry(int);
+
+    /*    The destination of every vertex in the graph,name */
+    var dstName : string;
+
+    /*    The destination of every vertex in the graph,array value */
+    var dst: borrowed SymEntry(int);
+
+
+    /*    The current vertex id v's (v<n_vertices-1) neighbours are from dst[neighbour[v]] to dst[neighbour[v+1]]
+     *   if v=n_vertices-1, then v's neighbours are from dst[neighbour[v]] to dst[n_edges-1], here is the name
+     */
+    var neighbourName : string;
+
+    /*    The current vertex id v's (v<n_vertices-1) neighbours are from dst[neighbour[v]] to dst[neighbour[v+1]]
+     *   if v=n_vertices-1, then v's neighbours are from dst[neighbour[v]] to dst[n_edges-1], here is the value
+     */
+    var neighbour : borrowed SymEntry(int);
+
+
+    /*    The weitht of every vertex in the graph,name */
+    var v_weightName : string;
+
+    /*    The weitht of every vertex in the graph,array value */
+    var v_weight: borrowed SymEntry(real);
+
+    /*    The weitht of every edge in the graph, name */
+    var e_weightName : string;
+
+    /*    The weitht of every edge in the graph, array value */
+    var e_weight : borrowed SymEntry(real);
+    /* 
+     * This is the simplest version of the init method 
+     */
+    proc init(numv:int, nume:int ) {
+      n_vertices=numv;
+      n_edges=nume;
+    }
+
+
+    /* 
+     * This is the simplest version of the init method, if directed/undirected graph 
+     */
+    proc init(numv:int, nume:int, dire:bool ) {
+      n_vertices=numv;
+      n_edges=nume;
+      directed=dire;
+    }
+
+
+    /* 
+     * The following version we will init differnt kind of arrays
+     * this is for src and dst arrays
+     */
+    proc init( numv:int, nume:int, dire:bool, srcNameA: string, dstNameA: string, 
+               st: borrowed SymTab) {
+      n_vertices=numv;
+      n_edges=nume;
+      directed=dire;
+
+      srcName = srcNameA;
+      // The try! is needed here because init cannot throw
+      var gs = try! st.lookup(srcName);
+      // I want this to be borrowed, but that throws a lifetime error
+      var src = toSymEntry(gs, int): unmanaged SymEntry(int);
+
+      dstName = dstNameA;
+      // The try! is needed here because init cannot throw
+      var ds = try! st.lookup(dstName);
+      // I want this to be borrowed, but that throws a lifetime error
+      var dst = toSymEntry(ds, int): unmanaged SymEntry(int);
+
+    }
+
+    /* 
+     * The following version we will init differnt kind of arrays
+     * this is for src ,dst and neighbour arrays
+     */
+    proc init( numv:int, nume:int, dire:bool, srcNameA: string, dstNameA: string, 
+               neiNameA: string, st: borrowed SymTab) {
+      n_vertices=numv;
+      n_edges=nume;
+      directed=dire;
+      
+
+      srcName = srcNameA;
+      // The try! is needed here because init cannot throw
+      var gs = try! st.lookup(srcName);
+      // I want this to be borrowed, but that throws a lifetime error
+      var src = toSymEntry(gs, int): unmanaged SymEntry(int);
+
+      dstName = dstNameA;
+      // The try! is needed here because init cannot throw
+      var ds = try! st.lookup(dstName);
+      // I want this to be borrowed, but that throws a lifetime error
+      var dst = toSymEntry(ds, int): unmanaged SymEntry(int);
+
+      neighbourName = neiNameA;
+      // The try! is needed here because init cannot throw
+      var neis = try! st.lookup(neighbourName);
+      // I want this to be borrowed, but that throws a lifetime error
+      var neighbour = toSymEntry(neis, int): unmanaged SymEntry(int);
+
+    }
+
+
+    /* 
+     * The following version we will init differnt kind of arrays
+     * this is for src, dst, neighbour and v_weight arrays
+     */
+    proc init( numv:int, nume:int, dire:bool, srcNameA: string, dstNameA: string, 
+               neiNameA: string, vweiNameA: string, st: borrowed SymTab) {
+      n_vertices=numv;
+      n_edges=nume;
+      directed=dire;
+      
+
+      srcName = srcNameA;
+      // The try! is needed here because init cannot throw
+      var gs = try! st.lookup(srcName);
+      // I want this to be borrowed, but that throws a lifetime error
+      var src = toSymEntry(gs, int): unmanaged SymEntry(int);
+
+      dstName = dstNameA;
+      // The try! is needed here because init cannot throw
+      var ds = try! st.lookup(dstName);
+      // I want this to be borrowed, but that throws a lifetime error
+      var dst = toSymEntry(ds, int): unmanaged SymEntry(int);
+
+      neighbourName = neiNameA;
+      // The try! is needed here because init cannot throw
+      var neis = try! st.lookup(neighbourName);
+      // I want this to be borrowed, but that throws a lifetime error
+      var neighbour = toSymEntry(neis, int): unmanaged SymEntry(int);
+
+      v_weightName = vweiNameA;
+      // The try! is needed here because init cannot throw
+      var vweis = try! st.lookup(v_weightName);
+      // I want this to be borrowed, but that throws a lifetime error
+      var v_weight = toSymEntry(vweis, real): unmanaged SymEntry(real);
+
+
+    }
+
+
+    /* 
+     * The following version we will init differnt kind of arrays
+     * this is for src, dst, neighbour, v_weight and e_weight arrays
+     */
+    proc init( numv:int, nume:int, dire:bool, srcNameA: string, dstNameA: string, 
+               neiNameA: string, vweiNameA: string, eweiNameA:string, st: borrowed SymTab) {
+      n_vertices=numv;
+      n_edges=nume;
+      directed=dire;
+      
+      srcName = srcNameA;
+      // The try! is needed here because init cannot throw
+      var gs = try! st.lookup(srcName);
+      // I want this to be borrowed, but that throws a lifetime error
+      var src = toSymEntry(gs, int): unmanaged SymEntry(int);
+
+      dstName = dstNameA;
+      // The try! is needed here because init cannot throw
+      var ds = try! st.lookup(dstName);
+      // I want this to be borrowed, but that throws a lifetime error
+      var dst = toSymEntry(ds, int): unmanaged SymEntry(int);
+
+      neighbourName = neiNameA;
+      // The try! is needed here because init cannot throw
+      var neis = try! st.lookup(neighbourName);
+      // I want this to be borrowed, but that throws a lifetime error
+      var neighbour = toSymEntry(neis, int): unmanaged SymEntry(int);
+
+      v_weightName = vweiNameA;
+      // The try! is needed here because init cannot throw
+      var vweis = try! st.lookup(v_weightName);
+      // I want this to be borrowed, but that throws a lifetime error
+      var v_weight = toSymEntry(vweis, real): unmanaged SymEntry(real);
+
+      e_weightName = eweiNameA;
+      // The try! is needed here because init cannot throw
+      var eweis = try! st.lookup(e_weightName);
+      // I want this to be borrowed, but that throws a lifetime error
+      var e_weight = toSymEntry(eweis, real): unmanaged SymEntry(real);
+
+    }
+
+
+  } // class SegGraph
+
+
 
   inline proc memcmp(const ref x: [] uint(8), const xinds, const ref y: [] uint(8), const yinds): int {
     const l = min(xinds.size, yinds.size);
