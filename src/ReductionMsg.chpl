@@ -63,13 +63,8 @@ module ReductionMsg
                         return try! "int64 %i".format(val);
                     }
                     when "prod" {
-                      ref ea = e.a;
-                      // If any element is zero, skip the computation and return 0.0
-                      var val: real = 0.0;
-                      if (&& reduce (ea != 0)) {
                         // Cast to real to avoid int64 overflow
-                        val = * reduce ea:real;
-                      }
+                        var val = * reduce e.a:real;
                         // Return value is always float64 for prod
                         return try! "float64 %.17r".format(val);
                     }

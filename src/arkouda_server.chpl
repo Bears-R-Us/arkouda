@@ -287,6 +287,7 @@ proc main() {
                 when "countReduction"    {repMsg = countReductionMsg(cmd, args, st);}
                 when "findSegments"      {repMsg = findSegmentsMsg(cmd, args, st);}
                 when "segmentedReduction"{repMsg = segmentedReductionMsg(cmd, payload, st);}
+                when "broadcast"         {repMsg = broadcastMsg(cmd, args, st);}
                 when "arange"            {repMsg = arangeMsg(cmd, args, st);}
                 when "linspace"          {repMsg = linspaceMsg(cmd, args, st);}
                 when "randint"           {repMsg = randintMsg(cmd, args, st);}
@@ -318,7 +319,7 @@ proc main() {
                 when "register"          {repMsg = registerMsg(cmd, args, st);}
                 when "attach"            {repMsg = attachMsg(cmd, args, st);}
                 when "unregister"        {repMsg = unregisterMsg(cmd, args, st);}
-                when "clear"             {repMsg = clearMsg(cmd, args, st);}
+                when "clear"             {repMsg = clearMsg(cmd, args, st);}               
                 when "connect" {
                     if authenticate {
                         repMsg = "connected to arkouda server tcp://*:%i as user %s with token %s".format(

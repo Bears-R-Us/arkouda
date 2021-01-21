@@ -162,20 +162,25 @@ def in1d(pda1 : Union[pdarray,Strings,'Categorical'], pda2 : Union[pdarray,Strin
         raise TypeError('Both pda1 and pda2 must be pdarray, Strings, or Categorical')
 
 @typechecked
-def concatenate(arrays : Sequence[Union[pdarray,Strings]]) -> Union[pdarray,Strings]:
+def concatenate(arrays : Sequence[Union[pdarray,Strings,'Categorical']], #type: ignore
+                ordered : bool=True) -> Union[pdarray,Strings,'Categorical']: #type: ignore
     """
     Concatenate a list or tuple of ``pdarray`` or ``Strings`` objects into 
     one ``pdarray`` or ``Strings`` object, respectively.
 
     Parameters
     ----------
-    arrays : Sequence[Union[pdarray,Strings]]
-        The list or tuple of pdarrays or Strings to concatenate. For pdarrays, all must 
-        have the same dtype.
+    arrays : Sequence[Union[pdarray,Strings,Categorical]]
+        The arrays to concatenate. Must all have same dtype.
+    ordered : bool
+        If True (default), the arrays will be appended in the
+        order given. If False, array data may be interleaved
+        in blocks, which can greatly improve performance but
+        results in non-deterministic ordering of elements.
 
     Returns
     -------
-    Union[pdarray,Strings]
+    Union[pdarray,Strings,Categorical]
         Single pdarray or Strings object containing all values, returned in
         the original order
         
@@ -206,15 +211,24 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings]]) -> Union[pdarray,Stri
     >>> ak.concatenate([ak.array(['one','two']),ak.array(['three','four','five'])])
     array(['one', 'two', 'three', 'four', 'five'])
     """
+    from arkouda.categorical import Categorical as Categorical_
     size = 0
     objtype = None
     dtype = None
     names = []
-    if len(cast(list,arrays)) < 1:
+    if ordered:
+        mode = 'append'
+    else:
+        mode = 'interleave'
+    if len(arrays) < 1:
         raise ValueError("concatenate called on empty iterable")
-    if len(cast(list,arrays)) == 1:
-        # there are no arrays to concatenate, so just return arrays param
-        return cast(Union[pdarray,Strings],arrays[0])
+    if len(arrays) == 1:
+        return cast(Union[pdarray,Strings,Categorical_], arrays[0])
+    if hasattr(arrays[0], 'concatenate'):
+        return cast(Sequence[Categorical_],
+                    cast(Categorical_,
+                         arrays[0]).concatenate(cast(Sequence[Categorical_],
+                                                     arrays[1:]), ordered=ordered))
     for a in arrays:
         if not isinstance(a, pdarray) and not isinstance(a, Strings):
             raise TypeError(("arrays must be an iterable of pdarrays" 
@@ -239,8 +253,9 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings]]) -> Union[pdarray,Stri
             return zeros_like(cast(pdarray,arrays[0]))
         else:
             return arrays[0]
-    repMsg = generic_msg(cmd="concatenate", args="{} {} {}".\
-                            format(len(cast(list,arrays)), objtype, ' '.join(names)))
+
+    repMsg = generic_msg(cmd="concatenate", args="{} {} {} {}".\
+                            format(len(arrays), objtype, mode, ' '.join(names)))
     if objtype == "pdarray":
         return create_pdarray(cast(str,repMsg))
     elif objtype == "str":
@@ -296,10 +311,10 @@ def union1d(pda1 : pdarray, pda2 : pdarray) -> pdarray:
     if pda1.dtype == int and pda2.dtype == int:
         repMsg = generic_msg(cmd="union1d", args="{} {}".\
                              format(pda1.name, pda2.name))
-        return cast(pdarray,create_pdarray(cast(str,repMsg)))
-    return cast(pdarray, 
-                    unique(cast(pdarray, concatenate((unique(cast(pdarray,pda1)), # type: ignore
-                                                     unique(cast(pdarray,pda2)))))))
+        return cast(pdarray,create_pdarray(repMsg))
+    return cast(pdarray,
+                unique(cast(pdarray,
+                            concatenate((unique(pda1), unique(pda2)), ordered=False)))) # type: ignore
 
 # (A1 & A2) Set Intersection: elements have to be in both arrays
 @typechecked
@@ -356,7 +371,7 @@ def intersect1d(pda1 : pdarray, pda2 : pdarray,
     if not assume_unique:
         pda1 = unique(pda1)
         pda2 = unique(pda2)
-    aux = concatenate((pda1, pda2))
+    aux = concatenate((pda1, pda2), ordered=False)
     aux_sort_indices = argsort(aux)
     aux = aux[aux_sort_indices]
     mask = aux[1:] == aux[:-1]
@@ -477,7 +492,7 @@ def setxor1d(pda1 : pdarray, pda2 : pdarray,
     if not assume_unique:
         pda1 = cast(pdarray, unique(pda1))
         pda2 = cast(pdarray, unique(pda2))
-    aux = concatenate((pda1, pda2))
+    aux = concatenate((pda1, pda2), ordered=False)
     aux_sort_indices = argsort(aux)
     aux = aux[aux_sort_indices]
     flag = concatenate((array([True]), aux[1:] != aux[:-1], array([True])))

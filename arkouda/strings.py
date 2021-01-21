@@ -47,17 +47,17 @@ class Strings:
     BinOps = frozenset(["==", "!="])
     objtype = "str"
 
-    def __init__(self, offset_attrib : Union[pdarray,np.ndarray], 
-                 bytes_attrib : Union[pdarray,np.ndarray]) -> None:
+    def __init__(self, offset_attrib : Union[pdarray,str], 
+                 bytes_attrib : Union[pdarray,str]) -> None:
         """
         Initializes the Strings instance by setting all instance
         attributes, some of which are derived from the array parameters.
         
         Parameters
         ----------
-        offset_attrib : Union[pdarray, np.ndarray,array]
+        offset_attrib : Union[pdarray, str]
             the array containing the offsets 
-        bytes_attrib : Union[pdarray, np.ndarray,array]
+        bytes_attrib : Union[pdarray, str]
             the array containing the string values    
             
         Returns
@@ -67,8 +67,8 @@ class Strings:
         Raises
         ------
         RuntimeError
-            Raised if there's an error converting a Numpy array or standard
-            Python array to either the offset_attrib or bytes_attrib   
+            Raised if there's an error converting a server-returned str-descriptor
+            or pdarray to either the offset_attrib or bytes_attrib   
         ValueError
             Raised if there's an error in generating instance attributes 
             from either the offset_attrib or bytes_attrib parameter 
