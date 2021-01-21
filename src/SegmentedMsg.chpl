@@ -13,6 +13,8 @@ module SegmentedMsg {
 
   use SymArrayDmap;
   use SACA;
+  use Random;
+  use RadixSortLSD only radixSortLSD_ranks;
 
 
   private config const DEBUG = false;
@@ -1203,82 +1205,80 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
 
   proc segrmatgenMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
       var pn = Reflection.getRoutineName();
+      var repMsg: string;
       var (slgNv, sNe_per_v, sp, sperm )
           = payload.decode().splitMsgToTuple(4);
+      writeln(slgNv, sNe_per_v, sp, sperm);
       var lgNv = slgNv: int;
       var Ne_per_v = sNe_per_v: int;
       var p = sp: real;
-      var perm = sperm: bool;
+      var perm = sperm: int;
 
       var Nv = 2**lgNv:int;
-      # number of edges
+      // number of edges
       var Ne = Ne_per_v * Nv:int;
-      # probabilities
+      // probabilities
       var a = p;
-      var b = (1.0 - a)/ 3.0;
+      var b = (1.0 - a)/ 3.0:real;
       var c = b;
       var d = b;
-      var src: [0..Ne-1]int;
-      var dst: [0..Ne-1]int;
+      var src: [0..Ne-1] int;
+      var dst: [0..Ne-1] int;
       var e_weight: [0..Ne-1] real;
       var v_weight: [0..Nv-1] real;
-      var neighbour: [0..Nv-1] int;
+      var length: [0..Nv-1] int;
       var directed:bool;
       var n_vertices=Nv;
       var n_edges=Ne;
       src=1;
       dst=1;
-      var dst [0..Ne-1]:int;
-      # quantites to use in edge generation loop
+      // quantites to use in edge generation loop
       var ab = a+b:real;
       var c_norm = c / (c + d):real;
       var a_norm = a / (a + b):real;
-      # generate edges
-      
-      var src_bit [0..Ne-1]:int;
-      var src_bit [0..Ne-1]:int;
-      forall ib in 1..lgNv {
-          var tmpvar[0..Ne-1]:real;
+      // generate edges
+      var src_bit: [0..Ne-1]int;
+      var dst_bit: [0..Ne-1]int;
+      for ib in 1..lgNv {
+          var tmpvar: [0..Ne-1] real;
           fillRandom(tmpvar);
           src_bit=tmpvar>ab;
           fillRandom(tmpvar);
           dst_bit=tmpvar>(c_norm * src_bit + a_norm * (~ src_bit));
           src = src + ((2**(ib-1)) * src_bit);
           dst = dst + ((2**(ib-1)) * dst_bit);
+      }
       src=src+(src==dst);
-      # maybe: remove edges which are self-loops???
+      // maybe: remove edges which are self-loops???
       var iv = radixSortLSD_ranks(src);
-      # permute into sorted order
-      src = src[iv] # permute first vertex into sorted order
-      dst = dst[iv] # permute second vertex into sorted order
-      # to premute/rename vertices
-      #
-      var begin, end:int;
-      begin=0;
+      // permute into sorted order
+      src = src[iv]; //# permute first vertex into sorted order
+      dst = dst[iv]; //# permute second vertex into sorted order
+      //# to premute/rename vertices
+      var startpos=0, endpos:int;
       var sort=0:int;
-      while (begin < Ne-2) {
-         end=begin+1;
-         while ( end <Ne-1) {
-            if src[begin]==src[end] {
+      while (startpos < Ne-2) {
+         endpos=startpos+1;
+         while (endpos <Ne-1) {
+            if (src[startpos]==src[endpos])  {
                sort=1;
-               end+=1;
+               endpos+=1;
             } else {
                if (sort==1) {
-                 ref p=dst[begin..end];
+                 ref p=dst[startpos..endpos];
                  var ivx=radixSortLSD_ranks(p);
-                 dst[begin..end]=dst[ivx];
+                 dst[startpos..endpos]=dst[ivx];
                } else {
-                  begin+=1;
+                  startpos+=1;
                   break;
 
                }
             }
-         }
-      }
+         }//end of while endpos
+      }//end of while startpos
 
       fillRandom(e_weight);
       fillRandom(v_weight);
-      neighbour=0;
       for i in 0..Ne-1 do {
         length[src[i]]+=1;
       }
@@ -1298,15 +1298,17 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       st.addEntry(ewName, ewEntry);
       st.addEntry(vwName, vwEntry);
       st.addEntry(neiName, neiEntry);
-      repMsg = 'created ' + Ne + '+created ' + Nv + '+created ' + directed + \
-               '+created ' + st.attrib(srcName) + '+created ' + st.attrib(dstName)+ \
-               '+created ' + st.attrib(neiName) + '+created ' + st.attrib(vwName)+ \
+      var sNe=Ne:string;
+      var sNv=Nv:string;
+      var sDirected=directed:string;
+//      repMsg =  (Ne:string) + '+ ' + (Nv:string) + '+ ' + (directed:string) + 
+      repMsg =  sNe + '+ ' + sNv + '+ ' + sDirected + 
+               '+created ' + st.attrib(srcName) + '+created ' + st.attrib(dstName)+ 
+               '+created ' + st.attrib(neiName) + '+created ' + st.attrib(vwName)+ 
                '+created ' + st.attrib(ewName);
 
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
       return repMsg;
   }
-
-
 
 }

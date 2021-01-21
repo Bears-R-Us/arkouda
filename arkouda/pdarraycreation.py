@@ -14,7 +14,8 @@ from arkouda.graph import Graph
 __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", 
            "arange", "linspace", "randint", "uniform", "standard_normal",
            "random_strings_uniform", "random_strings_lognormal", 
-           "from_series", "suffix_array","lcp_array","suffix_array_file"]
+           "from_series", "suffix_array","lcp_array","suffix_array_file",
+           "rmat_gen"]
 
 numericDTypes = frozenset(["bool", "int64", "float64"]) 
 
@@ -942,3 +943,125 @@ def suffix_array_file(filename: str)  -> tuple:
         originalstr=Strings(*(cast(str,strstr))) 
         return suffixarray,originalstr
 #        return SArrays(*(cast(str,repMsg).split('+')))
+
+
+@typechecked
+def graph_file(filename: str)  -> Graph:
+        """
+        This function is major for creating a graph from a file
+        Returns
+        -------
+        Graph
+            The Graph class to represent the data
+
+        See Also
+        --------
+
+        Notes
+        -----
+        
+        Raises
+        ------  
+        RuntimeError
+        """
+        msg = "segmentedGraphFile {}".format( filename )
+        repMsg = generic_msg(msg)
+        return Graph(*(cast(str,repMsg).split('+')))
+
+@typechecked
+def rmat_gen (lgNv:int, Ne_per_v:int, p:float, perm: int) -> Graph:
+        """
+        This function is for creating a graph using rmat graph generator
+        Returns
+        -------
+        Graph
+            The Graph class to represent the data
+
+        See Also
+        --------
+
+        Notes
+        -----
+        
+        Raises
+        ------  
+        RuntimeError
+        """
+        msg = "segmentedRMAT {} {} {} {}".format(lgNv, Ne_per_v, p, perm)
+        repMsg = generic_msg(msg)
+        print(repMsg)
+        print(cast(str,repMsg).split('+'))
+        return Graph(*(cast(str,repMsg).split('+')))
+
+@typechecked
+def graph_bfs (graph: Graph, root: int ) -> tuple:
+        """
+        This function is generating the breadth-first search vertices sequences in given graph
+        starting from the given root vertex
+        Returns
+        -------
+        pdarray
+            The bfs vertices results
+
+        See Also
+        --------
+
+        Notes
+        -----
+        
+        Raises
+        ------  
+        RuntimeError
+        """
+        msg = "segmentedGraphBFS {} {} {}".format(graph.edges.name,graph.vertices.name,root)
+        repMsg = generic_msg(msg)
+        return Graph(*(cast(str,repMsg).split('+')))
+
+
+@typechecked
+def graph_dfs (graph: Graph, root: int ) -> pdarray:
+        """
+        This function is generating the depth-first search vertices sequences in given graph
+        starting from the given root vertex
+        Returns
+        -------
+        pdarray
+            The dfs vertices results
+
+        See Also
+        --------
+
+        Notes
+        -----
+        
+        Raises
+        ------  
+        RuntimeError
+        """
+        msg = "segmentedGraphDFS {} {} {}".format(graph.edges.name,graph.vertices.name,root)
+        repMsg = generic_msg(msg)
+        return Graph(*(cast(str,repMsg).split('+')))
+
+
+@typechecked
+def components (graph: Graph ) -> int :
+        """
+        This function returns the number of components of the given graph
+        Returns
+        -------
+        int
+            The total number of components
+
+        See Also
+        --------
+
+        Notes
+        -----
+        
+        Raises
+        ------  
+        RuntimeError
+        """
+        msg = "segmentedGraphComponents {} {}".format(graph.edges.name,graph.vertices.name)
+        repMsg = generic_msg(msg)
+        return cast(int,repMsg)
