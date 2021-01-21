@@ -26,7 +26,7 @@ prototype module UnitTestArgSort
         writeReq(reqMsg);
         var d: Diags;
         d.start();
-        repMsg = argsortMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        repMsg = argsortMsg(cmd=cmd, payload=reqMsg, st);
         d.stop("argsortMsg");
         writeRep(repMsg);
 
@@ -36,7 +36,7 @@ prototype module UnitTestArgSort
         reqMsg = try! "%s %s".format(aname, ivname);
         writeReq(reqMsg);
         d.start();
-        repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg, st);
         d.stop("pdarrayIndexMsg");
         writeRep(repMsg);
 
@@ -48,7 +48,7 @@ prototype module UnitTestArgSort
         reqMsg = try! "%s %s".format(subCmd, bname);
         writeReq(reqMsg);
         d.start();
-        repMsg = reductionMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        repMsg = reductionMsg(cmd=cmd, payload=reqMsg, st);
         d.stop("reductionMsg");
         writeln("ANSWER >>> ",repMsg," <<<");
 
@@ -60,7 +60,7 @@ prototype module UnitTestArgSort
         reqMsg = try! "%i %s %s pdarray pdarray".format(2, aname, fname);
         writeReq(reqMsg);
         d.start();
-        repMsg = coargsortMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        repMsg = coargsortMsg(cmd=cmd, payload=reqMsg, st);
         d.stop("coargsortMsg");
         writeRep(repMsg);
 
@@ -70,14 +70,14 @@ prototype module UnitTestArgSort
         reqMsg = try! "%s %s".format(aname, coivname);
         writeReq(reqMsg);
         d.start();
-        repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg, st);
         d.stop("pdarrayIndexMsg");
         writeRep(repMsg);
         var coaname = parseName(repMsg);
         reqMsg = try! "%s %s".format(fname, coivname);
         writeReq(reqMsg);
         d.start();
-        repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg, st);
         d.stop("pdarrayIndexMsg");
         writeRep(repMsg);
         var cofname = parseName(repMsg);

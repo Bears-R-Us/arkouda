@@ -245,13 +245,13 @@ module ReductionMsg
       return counts;
     }
     
-    proc segmentedReductionMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc segmentedReductionMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         // reqMsg: segmentedReduction values segments operator
         // 'values_name' is the segmented array of values to be reduced
         // 'segments_name' is the sement offsets
         // 'operator' is the reduction operator
-        var (values_name, segments_name, operator, skip_nan) = payload.decode().splitMsgToTuple(4);
+        var (values_name, segments_name, operator, skip_nan) = payload.splitMsgToTuple(4);
         var skipNan = stringtobool(skip_nan);
       
         var rname = st.nextName();

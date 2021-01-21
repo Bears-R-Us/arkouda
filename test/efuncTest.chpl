@@ -21,7 +21,7 @@ prototype module efuncTest
         reqMsg = try! "%s %s".format(op, aname);
         var d: Diags;
         d.start();
-        repMsg = efuncMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        repMsg = efuncMsg(cmd=cmd, payload=reqMsg, st);
         d.stop("efuncMsg");
         writeRep(repMsg);
 
@@ -31,7 +31,7 @@ prototype module efuncTest
         var bname = parseName(repMsg); // get name from [pdarray] reply msg
         reqMsg = try! "%s %s".format(subCmd, bname);
         d.start();
-        repMsg = reductionMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        repMsg = reductionMsg(cmd=cmd, payload=reqMsg, st);
         d.stop("reductionMsg");
         //writeln("ANSWER >>> ",repMsg," <<<"); TODO 
     }
