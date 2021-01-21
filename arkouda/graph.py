@@ -59,11 +59,11 @@ class Vertex:
         raise NotImplementedError('Graph does not support iteration')
 
     def __size__(self) -> int:
-        return self.adjacency.size
+        return self.neighbours.size
 
 
     def __str__(self) -> str:
-        return "vertex id={},#adjacency={},weight={}".format(self.vertex_id,\
+        return "vertex id={},#neighbours={},weight={}".format(self.vertex_id,\
                 self.size,self.weight)
 
     def __repr__(self) -> str:
@@ -112,13 +112,9 @@ class Edge:
     def __iter__(self):
         raise NotImplementedError('Graph does not support iteration')
 
-    def __size__(self) -> int:
-        return self.adjacency.size/2
-
-
     def __str__(self) -> str:
-        return "vertex pair={},#adjacency={},weight={}".format(self.vertex_pair,\
-                self.size,self.weight)
+        return "vertex pair={},weight={},#adjacency".format(self.vertex_pair,\
+                self.weight,self.adjacency.size)
 
     def __repr__(self) -> str:
         return "{}".format(self.__str__())
@@ -239,18 +235,19 @@ class Graph:
     def __size__(self) -> int:
         return self.n_vertices
 
-
-    def add_vertice(self, x: Vertice) :
+    '''
+    def add_vertice(self, x: Vertice)->None :
         print()
 
-    def remove_vertice(self, x: int) :
+    def remove_vertice(self, x: int) ->None:
         print()
 
     def neighbours(self, x: int)->pdarray :
-        print()
+        return self.neighbour[i]
 
     def adjacent(self, x: int, y:int )->pdarray :
-        print()
+        neighbours(self,x)
+        neighbours(self,y)
 
     def get_vertice_value(self, x: int) -> Vertice:
         print()
@@ -263,4 +260,4 @@ class Graph:
 
     def remove_edge(self, x: int, y: int) :
         print()
-
+    '''
