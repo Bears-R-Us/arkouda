@@ -10,6 +10,8 @@ module SipHash {
   param cROUNDS = 2;
   param dROUNDS = 4;
 
+  private config param DEBUG = false;
+
   const defaultSipHashKey: [0..#16] uint(8) = for i in 0..#16 do i: uint(8);
 
   const shLogger = new Logger();
@@ -151,15 +153,17 @@ module SipHash {
     }
 
     inline proc TRACE() {
-        try! {
-          shLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                               "%i v0 %016xu".format(D.size, v0));
-          shLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                               "%i v1 %016xu".format(D.size, v1));
-          shLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                               "%i v2 %016xu".format(D.size, v2));
-          shLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                               "%i v3 %016xu".format(D.size, v3));
+        if DEBUG {
+            try! {
+              shLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                   "%i v0 %016xu".format(D.size, v0));
+              shLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                   "%i v1 %016xu".format(D.size, v1));
+              shLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                   "%i v2 %016xu".format(D.size, v2));
+              shLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                   "%i v3 %016xu".format(D.size, v3));
+            }
         }
     }
 
