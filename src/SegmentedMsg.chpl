@@ -1208,7 +1208,6 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var repMsg: string;
       var (slgNv, sNe_per_v, sp, sperm )
           = payload.decode().splitMsgToTuple(4);
-      writeln(slgNv, sNe_per_v, sp, sperm);
       var lgNv = slgNv: int;
       var Ne_per_v = sNe_per_v: int;
       var p = sp: real;
@@ -1268,11 +1267,9 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                  ref p=dst[startpos..endpos];
                  var ivx=radixSortLSD_ranks(p);
                  dst[startpos..endpos]=dst[ivx];
-               } else {
-                  startpos+=1;
-                  break;
-
-               }
+               } 
+               startpos+=1;
+               break;
             }
          }//end of while endpos
       }//end of while startpos

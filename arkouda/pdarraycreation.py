@@ -989,8 +989,6 @@ def rmat_gen (lgNv:int, Ne_per_v:int, p:float, perm: int) -> Graph:
         """
         msg = "segmentedRMAT {} {} {} {}".format(lgNv, Ne_per_v, p, perm)
         repMsg = generic_msg(msg)
-        print(repMsg)
-        print(cast(str,repMsg).split('+'))
         return Graph(*(cast(str,repMsg).split('+')))
 
 @typechecked

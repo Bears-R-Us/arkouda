@@ -126,7 +126,7 @@ class Edge:
 
 class Graph:
     """
-    Represents a graph whose data resides on the
+    This is an array based graph representation. The graph data resides on the
     arkouda server. The user should not call this class directly;
     rather its instances are created by other arkouda functions.
 
@@ -186,8 +186,6 @@ class Graph:
             from either the offset_attrib or bytes_attrib parameter 
         """
         try:
-            print("init the graph")
-            print(args)
             if len(args) < 2: 
                 raise ValueError
             self.n_vertices=cast(int,args[0])
@@ -229,8 +227,7 @@ class Graph:
                     except Exception as e:
                         raise RuntimeError(e)
             if len(args) > 2:
-                     self.directed=cast(int,args[2])
-                     raise ValueError
+                     self.directed=cast(bool,args[2])
         except Exception as e:
             raise RuntimeError(e)
         self.dtype = akint
