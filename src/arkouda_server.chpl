@@ -246,7 +246,6 @@ proc main() {
             var binaryRepMsg: bytes;
             var repMsg: string;
 
-            asLogger.info(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %t payload: %t".format(cmd,payload));
             select cmd
             {
                 when "array"             {repMsg = arrayMsg(cmd, payload, st);}
