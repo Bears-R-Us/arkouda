@@ -373,9 +373,15 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertEqual(100, len(pda))
         self.assertEqual(str, pda.dtype)
         
+        pda = ak.random_strings_lognormal(np.float64(2), np.float64(0.25), np.int64(100), 
+                                          characters='printable', seed=np.int64(0))
+        self.assertIsInstance(pda,ak.Strings)
+        self.assertEqual(100, len(pda))
+        self.assertEqual(str, pda.dtype)
+        
         with self.assertRaises(TypeError) as cm:          
             ak.random_strings_lognormal('2', 0.25, 100)          
-        self.assertEqual('type of argument "logmean" must be one of (float, int, int64); got str instead', 
+        self.assertEqual('both logmean and logstd must be an int, np.int64, float, or np.float64', 
                          cm.exception.args[0])   
                 
         with self.assertRaises(TypeError) as cm:          

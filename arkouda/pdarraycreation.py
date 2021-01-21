@@ -754,8 +754,8 @@ def random_strings_uniform(minlen : Union[int,np.int64], maxlen : Union[int,np.i
     return Strings(*(cast(str,repMsg).split('+')))
 
 @typechecked
-def random_strings_lognormal(logmean : Union[float, int, np.int64], 
-                             logstd : Union[float, int, np.int64], 
+def random_strings_lognormal(logmean : Union[float,int,np.int64,np.float64], 
+                             logstd : Union[float,int,np.int64,np.float64], 
                              size : Union[int,np.int64], characters : str='uppercase', 
                              seed : Union[None, Union[int,np.int64]]=None) -> Strings:
     """
@@ -764,9 +764,9 @@ def random_strings_lognormal(logmean : Union[float, int, np.int64],
 
     Parameters
     ----------
-    logmean : Union[float, int, np.int64]
+    logmean : Union[float,int,np.int64,np.float64]
         The log-mean of the length distribution
-    logstd :  Union[float, int, np.int64]
+    logstd :  Union[float,int,np.int64,np.float64]
         The log-standard-deviation of the length distribution
     size : Union[int,np.int64]
         The number of strings to generate
@@ -807,6 +807,8 @@ def random_strings_lognormal(logmean : Union[float, int, np.int64],
     >>> ak.random_strings_lognormal(2, 0.25, 5, seed=1, characters='printable')
     array(['+5"fp-', ']3Q4kC~HF', '=F=`,IE!', 'DjkBa'9(', '5oZ1)='])
     """
+    if not isSupportedNumber(logmean) or not isSupportedNumber(logstd):
+        raise TypeError('both logmean and logstd must be an int, np.int64, float, or np.float64')
     if logstd <= 0 or size < 0:
         raise ValueError("Incompatible arguments: logstd <= 0 or size < 0")
     msg = "randomStrings {} {} {} {} {} {}".\
