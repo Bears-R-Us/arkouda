@@ -77,7 +77,7 @@ class NumericTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.histogram(pda, bins='1')
-        self.assertEqual('type of argument "bins" must be int; got str instead', 
+        self.assertEqual('type of argument "bins" must be one of (int, int64); got str instead', 
                         cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:

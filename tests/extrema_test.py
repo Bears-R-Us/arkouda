@@ -81,7 +81,7 @@ class MinKTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             ak.mink(testArray, '1')
-        self.assertEqual('type of argument "k" must be int; got str instead', 
+        self.assertEqual('type of argument "k" must be one of (int, int64); got str instead', 
                          cm.exception.args[0])  
             
         with self.assertRaises(ValueError) as cm:
@@ -114,7 +114,7 @@ class MaxKTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             ak.maxk(testArray, '1')
-        self.assertEqual('type of argument "k" must be int; got str instead', 
+        self.assertEqual('type of argument "k" must be one of (int, int64); got str instead', 
                          cm.exception.args[0])  
             
         with self.assertRaises(ValueError) as cm:
@@ -147,7 +147,7 @@ class ArgMinKTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             ak.argmink(testArray, '1')
-        self.assertEqual('type of argument "k" must be int; got str instead', 
+        self.assertEqual('type of argument "k" must be one of (int, int64); got str instead', 
                          cm.exception.args[0])  
             
         with self.assertRaises(ValueError) as cm:
@@ -180,7 +180,7 @@ class ArgMaxKTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.argmaxk(testArray, '1')
-        self.assertEqual('type of argument "k" must be int; got str instead', 
+        self.assertEqual('type of argument "k" must be one of (int, int64); got str instead', 
                          cm.exception.args[0])  
             
         with self.assertRaises(ValueError) as cm:

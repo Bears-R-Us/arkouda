@@ -403,7 +403,7 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
     return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
-def histogram(pda : pdarray, bins : int=10) -> pdarray:
+def histogram(pda : pdarray, bins : Union[int,np.int64]=10) -> pdarray:
     """
     Compute a histogram of evenly spaced bins over the range of an array.
     
@@ -412,7 +412,7 @@ def histogram(pda : pdarray, bins : int=10) -> pdarray:
     pda : pdarray
         The values to histogram
 
-    bins : int
+    bins : Union[int,np.int64]
         The number of equal-size bins to use (default: 10)
 
     Returns
