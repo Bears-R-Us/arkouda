@@ -1,5 +1,7 @@
 module Message {
     use IO;
+    use Reflection;
+    use Errors;
 
     /*
      * Encapsulates state corresponding to a client request to Arkouda
@@ -20,9 +22,17 @@ module Message {
      *
      */
     proc deserialize(ref msg: CommandMsg, cmd: string) throws {
-        var newmem = try! openmem();
-        try! newmem.writer().write(cmd);
-        var nreader = try! newmem.reader();
-        try! nreader.readf("%jt", msg);
+        var newmem = openmem();
+        newmem.writer().write(cmd);
+        var nreader = newmem.reader();
+        try {
+            nreader.readf("%jt", msg);
+        } catch bfe : BadFormatError {
+            throw new owned ErrorWithContext("Incorrect JSON format %s".format(cmd),
+                                       getLineNumber(),
+                                       getRoutineName(),
+                                       getModuleName(),
+                                       "ValueError");
+        }
     }
 }
