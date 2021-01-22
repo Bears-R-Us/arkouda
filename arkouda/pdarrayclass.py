@@ -574,7 +574,7 @@ class pdarray:
         """
         return min(self)
 
-    def max(self) -> Union[float,int]:
+    def max(self) -> Union[np.float64,np.int64]:
         """
         Return the maximum value of the array.
         """
@@ -1314,7 +1314,7 @@ def min(pda : pdarray) -> Union[np.float64,np.int64]:
     return parse_single_value(cast(str,repMsg))
 
 @typechecked
-def max(pda : pdarray) -> Union[float,int]:
+def max(pda : pdarray) -> Union[np.float64,np.int64]:
     """
     Return the maximum value of the array.
     
