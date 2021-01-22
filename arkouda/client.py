@@ -139,12 +139,12 @@ def connect(server : str="localhost", port : int=5555, timeout : int=0,
         raise ConnectionError(e)
 
     # send the connect message
-    message = "connect"
-    logger.debug("[Python] Sending request: {}".format(message))
+    cmd = "connect"
+    logger.debug("[Python] Sending request: {}".format(cmd))
 
     # send connect request to server and get the response confirming if
     # the connect request succeeded and, if not not, the error message
-    return_message = _send_string_message(message)
+    return_message = _send_string_message(cmd=cmd)
     logger.debug("[Python] Received response: {}".format(str(return_message)))
     connected = True
 

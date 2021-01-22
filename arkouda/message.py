@@ -11,7 +11,7 @@ class MessageFormat(Enum):
     def __repr__(self):
         return self.value
 
-@dataclass
+@dataclass(frozen=True)
 class Message():
 
     user: str
@@ -19,6 +19,14 @@ class Message():
     cmd: str
     format: MessageFormat
     args: str=''
+
+    def __init__(self, user : str, token : str, cmd : str, format : MessageFormat, 
+                 args : str='') -> None:
+        object.__setattr__(self, 'user',user)
+        object.__setattr__(self, 'token',token)
+        object.__setattr__(self, 'cmd',cmd)
+        object.__setattr__(self, 'format',format)
+        object.__setattr__(self, 'args',args)
 
     def asdict(self):
         if self.args is None:
