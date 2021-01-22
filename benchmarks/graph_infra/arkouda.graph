@@ -10,9 +10,9 @@ files: groupby.dat, groupby.dat, groupby.dat, groupby.dat, groupby.dat, groupby.
 graphtitle: GroupBy Performance
 ylabel: Performance (GiB/s)
     
-perfkeys: Average rate =
-graphkeys: Argsort GiB/s
-files: argsort.dat
+perfkeys: int64 Average rate =, float64 Average rate =, str Average rate =
+graphkeys: int64 Argsort GiB/s, float64 Argsort GiB/s, str Argsort GiB/s
+files: argsort.dat, argsort.dat, argsort.dat
 graphtitle: Argsort Performance
 ylabel: Performance (GiB/s)
 
