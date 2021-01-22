@@ -20,8 +20,8 @@ class Message():
     format: MessageFormat
     args: str=''
 
-    def __init__(self, user : str, token : str, cmd : str, format : MessageFormat, 
-                 args : str='') -> None:
+    def __init__(self, user : str, cmd : str, token : str='',
+                 format : MessageFormat=MessageFormat.STRING, args : str='') -> None:
         object.__setattr__(self, 'user',user)
         object.__setattr__(self, 'token',token)
         object.__setattr__(self, 'cmd',cmd)

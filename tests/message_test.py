@@ -39,3 +39,9 @@ class MessageTest(unittest.TestCase):
                         json.dumps(msg.asdict()))
         
         self.assertFalse(self.assertRaises(Exception,json.loads(json.dumps(msg.asdict()))))
+        
+        minimumMsg = Message(user='user1', cmd='connect')
+        self.assertEqual('{"user": "user1", "token": "", "cmd": "connect", "format": "STRING", "args": ""}',
+                        json.dumps(minimumMsg.asdict()))
+        
+        minimumMsg = Message(user='user1', cmd='connect')       
