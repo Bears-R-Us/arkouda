@@ -31,7 +31,14 @@ Arkouda ``Strings`` objects support the following operations:
 * :ref:`setops-label`, e.g. ``unique`` and ``in1d``
 * :ref:`sorting-label`, via ``argsort`` and ``coargsort``
 * :ref:`groupby-label`, both alone and in conjunction with numeric arrays
-* Substring search
+* :ref:`cast-label` to and from numeric arrays
+* :ref:`concatenate-label` with other ``Strings``
+
+String-Specific Methods
+=======================
+
+Substring search
+----------------
   
   .. automethod:: arkouda.Strings.contains
                     
@@ -39,7 +46,8 @@ Arkouda ``Strings`` objects support the following operations:
                     
   .. automethod:: arkouda.Strings.endswith
 
-* Splitting and joining
+Splitting and joining
+---------------------
 
   .. automethod:: arkouda.Strings.peel
                   
@@ -48,4 +56,11 @@ Arkouda ``Strings`` objects support the following operations:
   .. automethod:: arkouda.Strings.stick
 
   .. automethod:: arkouda.Strings.lstick
+
+Flattening
+----------
+
+Given an array of strings where each string encodes a variable-length sequence delimited by a common substring, flattening offers a method for unpacking the sequences into a flat array of individual elements. A mapping between original strings and new array elements can be preserved, if desired. This method can be used in pipe
+  
+  .. automethod:: arkouda.Strings.flatten
 

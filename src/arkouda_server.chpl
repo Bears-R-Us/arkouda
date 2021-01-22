@@ -266,6 +266,7 @@ proc main() {
                 when "segmentedBinopvs"  {repMsg = segBinopvsMsg(cmd, args, st);}
                 when "segmentedGroup"    {repMsg = segGroupMsg(cmd, args, st);}
                 when "segmentedIn1d"     {repMsg = segIn1dMsg(cmd, args, st);}
+                when "segmentedFlatten"  {repMsg = segFlattenMsg(cmd, args, st);}
                 when "lshdf"             {repMsg = lshdfMsg(cmd, args, st);}
                 when "readhdf"           {repMsg = readhdfMsg(cmd, args, st);}
                 when "readAllHdf"        {repMsg = readAllHdfMsg(cmd, args, st);}
@@ -325,9 +326,9 @@ proc main() {
                                                           ServerPort,user,token);
                     } else {
                         repMsg = "connected to arkouda server tcp://*:%i".format(ServerPort);
-                    }                 
+                    }
                 }
-                when "disconnect" {      
+                when "disconnect" {
                     repMsg = "disconnected from arkouda server tcp://*:%i".format(ServerPort);
                 }
                 when "noop" {
@@ -398,7 +399,7 @@ proc main() {
 /*
  * Generates JSON-formatted reply message
  */
-proc generateJsonReplyMsg(msg: string, msgType: MsgType, msgFormat: MsgFormat) {
+proc generateJsonReplyMsg(msg: string, msgType: MsgType, msgFormat: MsgFormat) : string {
     return "%jt".format(new ReplyMsg(msg=msg,msgType=msgType, msgFormat=msgFormat));
 }
 

@@ -437,7 +437,7 @@ module SegmentedArray {
     proc findSubstringInBytes(const substr: string) {
       // Find the start position of every occurence of substr in the flat bytes array
       // Start by making a right-truncated subdomain representing all valid starting positions for substr of given length
-      var D: subdomain(values.aD) = values.aD[values.aD.low..#(values.size - substr.numBytes)];
+      var D: subdomain(values.aD) = values.aD[values.aD.low..#(values.size - substr.numBytes + 1)];
       // Every start position is valid until proven otherwise
       var truth: [D] bool = true;
       // Shift the flat values one byte at a time and check against corresponding byte of substr
