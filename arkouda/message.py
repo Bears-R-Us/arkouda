@@ -20,8 +20,8 @@ class Message():
     format: MessageFormat
     args: str=''
 
-    def __init__(self, user : str, cmd : str, token : str='',
-                 format : MessageFormat=MessageFormat.STRING, args : str='') -> None:
+    def __init__(self, user : str, cmd : str, token : str=None, 
+                 format : MessageFormat=MessageFormat.STRING, args : str=None) -> None:
         object.__setattr__(self, 'user',user)
         object.__setattr__(self, 'token',token)
         object.__setattr__(self, 'cmd',cmd)
@@ -29,12 +29,11 @@ class Message():
         object.__setattr__(self, 'args',args)
 
     def asdict(self):
-        if self.args is None:
-            args = ''
-        else:
-            args = self.args
+        args = self.args if self.args else ''
+        token = self.token if self.token else ''
+
         return {'user': self.user,
-                'token': self.token,
+                'token': token,
                 'cmd': self.cmd,
                 'format': str(self.format),
                 'args' : args}
