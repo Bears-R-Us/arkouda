@@ -21,7 +21,7 @@ class Message():
     args: str=''
 
     def __init__(self, user : str, token : str, cmd : str, format : MessageFormat, 
-                 args : str='') -> None:
+                 args : str='NONE') -> None:
         object.__setattr__(self, 'user',user)
         object.__setattr__(self, 'token',token)
         object.__setattr__(self, 'cmd',cmd)
