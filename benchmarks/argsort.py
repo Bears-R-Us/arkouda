@@ -19,7 +19,7 @@ def time_ak_argsort(N_per_locale, trials, dtype, seed):
         nbytes = a.size * a.itemsize
     elif dtype == 'str':
         a = ak.random_strings_uniform(1, 8, N, seed=seed)
-        nbytes = (a.offsets.size * a.offsets.itemsize) + (a.bytes.size * a.bytes.itemsize)
+        nbytes = (a.bytes.size * a.bytes.itemsize)
      
     timings = []
     for i in range(trials):
