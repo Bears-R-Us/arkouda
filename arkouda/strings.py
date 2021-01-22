@@ -421,7 +421,7 @@ class Strings:
                                        self.objtype,
                                        return_segments,
                                        json.dumps([delimiter]))
-        repMsg = generic_msg(cmd=cmd,args=args)
+        repMsg = cast(str,generic_msg(cmd=cmd,args=args))
         if return_segments:
             arrays = repMsg.split('+', maxsplit=2)
             return Strings(arrays[0], arrays[1]), create_pdarray(arrays[2])
