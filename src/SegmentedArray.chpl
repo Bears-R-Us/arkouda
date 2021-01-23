@@ -1478,6 +1478,12 @@ module SegmentedArray {
     var dst: borrowed SymEntry(int);
 
 
+    /*    The starting index  of every vertex in src and dst the ,name */
+    var startName : string;
+
+    /*    The starting index  of every vertex in src and dst the ,name */
+    var start_p: borrowed SymEntry(int);
+
     /*    The current vertex id v's (v<n_vertices-1) neighbours are from dst[neighbour[v]] to dst[neighbour[v+1]]
      *   if v=n_vertices-1, then v's neighbours are from dst[neighbour[v]] to dst[n_edges-1], here is the name
      */
@@ -1548,7 +1554,7 @@ module SegmentedArray {
      * this is for src ,dst and neighbour arrays
      */
     proc init( numv:int, nume:int, dire:bool, srcNameA: string, dstNameA: string, 
-               neiNameA: string, st: borrowed SymTab) {
+               startNameA:string, neiNameA: string, st: borrowed SymTab) {
       n_vertices=numv;
       n_edges=nume;
       directed=dire;
@@ -1565,6 +1571,12 @@ module SegmentedArray {
       var ds = try! st.lookup(dstName);
       // I want this to be borrowed, but that throws a lifetime error
       var dst = toSymEntry(ds, int): unmanaged SymEntry(int);
+
+      startName = startNameA;
+      // The try! is needed here because init cannot throw
+      var starts = try! st.lookup(startName);
+      // I want this to be borrowed, but that throws a lifetime error
+      var start_i = toSymEntry(starts, int): unmanaged SymEntry(int);
 
       neighbourName = neiNameA;
       // The try! is needed here because init cannot throw
@@ -1580,7 +1592,8 @@ module SegmentedArray {
      * this is for src, dst, neighbour and v_weight arrays
      */
     proc init( numv:int, nume:int, dire:bool, srcNameA: string, dstNameA: string, 
-               neiNameA: string, vweiNameA: string, st: borrowed SymTab) {
+               startNameA:string, neiNameA: string, vweiNameA: string, 
+               st: borrowed SymTab) {
       n_vertices=numv;
       n_edges=nume;
       directed=dire;
@@ -1597,6 +1610,12 @@ module SegmentedArray {
       var ds = try! st.lookup(dstName);
       // I want this to be borrowed, but that throws a lifetime error
       var dst = toSymEntry(ds, int): unmanaged SymEntry(int);
+
+      startName = startNameA;
+      // The try! is needed here because init cannot throw
+      var starts = try! st.lookup(startName);
+      // I want this to be borrowed, but that throws a lifetime error
+      var start_i = toSymEntry(starts, int): unmanaged SymEntry(int);
 
       neighbourName = neiNameA;
       // The try! is needed here because init cannot throw
@@ -1619,7 +1638,8 @@ module SegmentedArray {
      * this is for src, dst, neighbour, v_weight and e_weight arrays
      */
     proc init( numv:int, nume:int, dire:bool, srcNameA: string, dstNameA: string, 
-               neiNameA: string, vweiNameA: string, eweiNameA:string, st: borrowed SymTab) {
+               startNameA:string,neiNameA: string, vweiNameA: string, 
+               eweiNameA:string, st: borrowed SymTab) {
       n_vertices=numv;
       n_edges=nume;
       directed=dire;
@@ -1635,6 +1655,12 @@ module SegmentedArray {
       var ds = try! st.lookup(dstName);
       // I want this to be borrowed, but that throws a lifetime error
       var dst = toSymEntry(ds, int): unmanaged SymEntry(int);
+
+      startName = startNameA;
+      // The try! is needed here because init cannot throw
+      var starts = try! st.lookup(startName);
+      // I want this to be borrowed, but that throws a lifetime error
+      var start_i = toSymEntry(starts, int): unmanaged SymEntry(int);
 
       neighbourName = neiNameA;
       // The try! is needed here because init cannot throw

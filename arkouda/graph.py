@@ -63,8 +63,8 @@ class Vertex:
 
 
     def __str__(self) -> str:
-        return "vertex id={},#neighbours={},weight={}".format(self.vertex_id,\
-                self.size,self.weight)
+        return "vertex id={},weight={},#neighbours={}".format(self.vertex_id,\
+                self.weight, self.neighbours.size)
 
     def __repr__(self) -> str:
         return "{}".format(self.__str__())
@@ -113,7 +113,7 @@ class Edge:
         raise NotImplementedError('Graph does not support iteration')
 
     def __str__(self) -> str:
-        return "vertex pair={},weight={},#adjacency".format(self.vertex_pair,\
+        return "vertex pair={},weight={},#adjacency={}".format(self.vertex_pair,\
                 self.weight,self.adjacency.size)
 
     def __repr__(self) -> str:
@@ -138,13 +138,15 @@ class Graph:
         The source of every edge in the graph
     dst : pdarray
         The destination of every vertex in the graph
+    start : pdarray
+        The starting index of all the vertices in src and dst
+    neighbour : pdarray
+        The current vertex id v's (v<n_vertices-1) neighbours are from dst[neighbour[v]] to dst[neighbour[v+1]]
+        if v=n_vertices-1, then v's neighbours are from dst[neighbour[v]] to dst[n_edges-1]
     v_weight : pdarray
         The weitht of every vertex in the graph
     e_weight : pdarray
         The weitht of every edge in the graph
-    neighbour : pdarray
-        The current vertex id v's (v<n_vertices-1) neighbours are from dst[neighbour[v]] to dst[neighbour[v+1]]
-        if v=n_vertices-1, then v's neighbours are from dst[neighbour[v]] to dst[n_edges-1]
     logger : ArkoudaLogger
         Used for all logging operations
         
@@ -186,28 +188,32 @@ class Graph:
                 raise ValueError
             self.n_vertices=cast(int,args[0])
             self.n_edges=cast(int,args[1])
+            if len(args) > 8:
+                if isinstance(args[8],pdarray):
+                     self.e_weight=args[8]
+                else:
+                    try:
+                        self.e_weight = create_pdarray(args[8])
+                    except Exception as e:
+                        raise RuntimeError(e)
             if len(args) > 7:
                 if isinstance(args[7],pdarray):
-                     self.e_weight=args[7]
+                     self.v_weight=args[7]
                 else:
                     try:
-                        self.e_weight = create_pdarray(args[7])
+                        self.v_weight = create_pdarray(args[7])
                     except Exception as e:
                         raise RuntimeError(e)
+            if len(args) == 6:
+                raise ValueError
             if len(args) > 6:
-                if isinstance(args[6],pdarray):
-                     self.v_weight=args[6]
+                if (isinstance(args[6],pdarray) and isinstance(args[5],pdarray)) :
+                     self.start=args[5]
+                     self.neighbour=args[6]
                 else:
                     try:
-                        self.v_weight = create_pdarray(args[6])
-                    except Exception as e:
-                        raise RuntimeError(e)
-            if len(args) > 5:
-                if isinstance(args[5],pdarray):
-                     self.neighbour=args[5]
-                else:
-                    try:
-                        self.neighbour = create_pdarray(args[5])
+                        self.start = create_pdarray(args[5])
+                        self.neighbour = create_pdarray(args[6])
                     except Exception as e:
                         raise RuntimeError(e)
             if len(args) == 4:

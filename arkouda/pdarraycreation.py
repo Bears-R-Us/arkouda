@@ -1011,7 +1011,9 @@ def graph_bfs (graph: Graph, root: int ) -> tuple:
         ------  
         RuntimeError
         """
-        msg = "segmentedGraphBFS {} {} {}".format(graph.edges.name,graph.vertices.name,root)
+        msg = "segmentedGraphBFS {} {} {} {} {} {} {} {}".format(graph.n_vertices,graph.n_edges,\
+                 graph.directed,graph.src.name,graph.dst.name,\
+                 graph.start.name,graph.neighbour.name,root)
         repMsg = generic_msg(msg)
         return Graph(*(cast(str,repMsg).split('+')))
 

@@ -1208,14 +1208,181 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var repMsg: string;
       var (slgNv, sNe_per_v, sp, sperm )
           = payload.decode().splitMsgToTuple(4);
+      writeln(slgNv, sNe_per_v, sp, sperm);
       var lgNv = slgNv: int;
       var Ne_per_v = sNe_per_v: int;
       var p = sp: real;
       var perm = sperm: int;
 
+      writeln(lgNv, Ne_per_v, p, perm);
       var Nv = 2**lgNv:int;
       // number of edges
       var Ne = Ne_per_v * Nv:int;
+      // probabilities
+      var a = p;
+      var b = (1.0 - a)/ 3.0:real;
+      var c = b;
+      var d = b;
+      var src: [0..Ne-1] int;
+      var dst: [0..Ne-1] int;
+      var e_weight: [0..Ne-1] real;
+      var v_weight: [0..Nv-1] real;
+      var length: [0..Nv-1] int;
+      var start_i: [0..Nv-1] int;
+      length=0;
+      start_i=-1;
+      var directed:bool;
+      var n_vertices=Nv;
+      var n_edges=Ne;
+      src=1;
+      dst=1;
+      // quantites to use in edge generation loop
+      var ab = a+b:real;
+      var c_norm = c / (c + d):real;
+      var a_norm = a / (a + b):real;
+      // generate edges
+      var src_bit: [0..Ne-1]int;
+      var dst_bit: [0..Ne-1]int;
+      for ib in 1..lgNv {
+          var tmpvar: [0..Ne-1] real;
+          fillRandom(tmpvar);
+          src_bit=tmpvar>ab;
+          fillRandom(tmpvar);
+          dst_bit=tmpvar>(c_norm * src_bit + a_norm * (~ src_bit));
+          src = src + ((2**(ib-1)) * src_bit);
+          dst = dst + ((2**(ib-1)) * dst_bit);
+      }
+      src=src%Nv;
+      dst=dst%Nv;
+      //src=src+(src==dst);
+      // maybe: remove edges which are self-loops???
+      /*
+      writeln("before sorting");
+      writeln("src=");
+      writeln(src);
+      writeln("dst=");
+      writeln("dst=",dst);
+      */
+      var iv = radixSortLSD_ranks(src);
+      // permute into sorted order
+      var src1 = src[iv]; //# permute first vertex into sorted order
+      var dst1 = dst[iv]; //# permute second vertex into sorted order
+      /*
+      writeln("before sorting");
+      writeln("src=");
+      writeln(src);
+      writeln("dst=");
+      writeln("dst=",dst);
+      writeln("iv=");
+      writeln(iv);
+      */
+      //# to premute/rename vertices
+      var startpos=0, endpos:int;
+      var sort=0:int;
+      while (startpos < Ne-2) {
+         endpos=startpos+1;
+         sort=0;
+         //writeln("startpos=",startpos,"endpos=",endpos);
+         while (endpos <=Ne-1) {
+            if (src1[startpos]==src1[endpos])  {
+               sort=1;
+               endpos+=1;
+               continue;
+            } else {
+               break;
+            }
+         }//end of while endpos
+         if (sort==1) {
+            var tmpary:[0..endpos-startpos-1] int;
+            tmpary=dst1[startpos..endpos-1];
+            var ivx=radixSortLSD_ranks(tmpary);
+            dst1[startpos..endpos-1]=tmpary[ivx];
+            //writeln("src1=",src1,"dst1=",dst1,"ivx=",ivx);
+            sort=0;
+         } 
+         startpos+=1;
+      }//end of while startpos
+
+      //writeln("before assignment start_i=");
+      //writeln(start_i);
+      //writeln("");
+      for i in 0..Ne-1 do {
+        length[src1[i]]+=1;
+        if (start_i[src1[i]] ==-1){
+           start_i[src1[i]]=i;
+           //writeln("assign index ",i, " to vertex ",src1[i]);
+        }
+ 
+      }
+      var neighbour  = (+ scan length) - length;
+      /*
+      writeln("src=");
+      writeln(src);
+      writeln("dst=");
+      writeln(dst);
+      writeln("src1=");
+      writeln(src1);
+      writeln("dst1=");
+      writeln(dst1);
+      writeln("start_i=");
+      writeln(start_i);
+      writeln("start_i[0]=",start_i[0]);
+      writeln("neighbour=");
+      writeln(neighbour);
+      */
+      fillRandom(e_weight);
+      fillRandom(v_weight);
+      //writeln("e_weight=",e_weight,"v_weight=",v_weight);
+      var srcName = st.nextName();
+      var dstName = st.nextName();
+      var startName = st.nextName();
+      var neiName = st.nextName();
+      var ewName = st.nextName();
+      var vwName = st.nextName();
+      var srcEntry = new shared SymEntry(src1);
+      var dstEntry = new shared SymEntry(dst1);
+      var ewEntry = new shared SymEntry(e_weight);
+      var vwEntry = new shared SymEntry(v_weight);
+      var neiEntry = new shared SymEntry(neighbour);
+      var startEntry = new shared SymEntry(start_i);
+      st.addEntry(srcName, srcEntry);
+      st.addEntry(dstName, dstEntry);
+      st.addEntry(startName, startEntry);
+      st.addEntry(neiName, neiEntry);
+      st.addEntry(vwName, vwEntry);
+      st.addEntry(ewName, ewEntry);
+      var sNv=Nv:string;
+      var sNe=Ne:string;
+      var sDirected=directed:string;
+      //repMsg =  (Ne:string) + '+ ' + (Nv:string) + '+ ' + (directed:string) + 
+      repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + 
+               '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) + 
+               '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) + 
+               '+created ' + st.attrib(vwName)    + '+created ' + st.attrib(ewName);
+      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
+      return repMsg;
+  }
+
+
+
+
+  proc segBFSMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+      var pn = Reflection.getRoutineName();
+      var repMsg: string;
+      var (n_verticesN,n_edgesN,directedN,srcN, dstN, neighbourN, rootN )
+          = payload.decode().splitMsgToTuple(7);
+      var Nv=n_verticesN:int;
+      var Ne=n_edgesN:int;
+      var Directed=directedN:bool;
+      var root=rootN:int;
+
+      var agraph = new owned SegGraph(Nv,Ne,Directed,srcN,dstN,neighbourN, st);
+
+      var dep=-1:[0..Nv-1] int;
+      dep[root]=0;
+      var level=0;
+      
+/*
       // probabilities
       var a = p;
       var b = (1.0 - a)/ 3.0:real;
@@ -1306,6 +1473,24 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
 
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
       return repMsg;
+*/
+      return "test";
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
