@@ -1225,8 +1225,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var d = b;
       var src: [0..Ne-1] int;
       var dst: [0..Ne-1] int;
-      var e_weight: [0..Ne-1] real;
-      var v_weight: [0..Nv-1] real;
+      var e_weight: [0..Ne-1] int;
+      var v_weight: [0..Nv-1] int;
       var length: [0..Nv-1] int;
       var start_i: [0..Nv-1] int;
       length=0;
@@ -1369,127 +1369,65 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
   proc segBFSMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
       var pn = Reflection.getRoutineName();
       var repMsg: string;
-      var (n_verticesN,n_edgesN,directedN,srcN, dstN, neighbourN, rootN )
-          = payload.decode().splitMsgToTuple(7);
+      var (n_verticesN,n_edgesN,directedN,srcN, dstN, startN, neighbourN,vweightN,eweightN, rootN )
+          = payload.decode().splitMsgToTuple(10);
       var Nv=n_verticesN:int;
       var Ne=n_edgesN:int;
       var Directed=directedN:bool;
       var root=rootN:int;
 
-      var agraph = new owned SegGraph(Nv,Ne,Directed,srcN,dstN,neighbourN, st);
+      var ag = new owned SegGraph(Nv,Ne,Directed,srcN,dstN,startN,neighbourN,vweightN,eweightN, st);
 
-      var dep=-1:[0..Nv-1] int;
-      dep[root]=0;
-      var level=0;
-      
-/*
-      // probabilities
-      var a = p;
-      var b = (1.0 - a)/ 3.0:real;
-      var c = b;
-      var d = b;
-      var src: [0..Ne-1] int;
-      var dst: [0..Ne-1] int;
-      var e_weight: [0..Ne-1] real;
-      var v_weight: [0..Nv-1] real;
-      var length: [0..Nv-1] int;
-      var directed:bool;
-      var n_vertices=Nv;
-      var n_edges=Ne;
-      src=1;
-      dst=1;
-      // quantites to use in edge generation loop
-      var ab = a+b:real;
-      var c_norm = c / (c + d):real;
-      var a_norm = a / (a + b):real;
-      // generate edges
-      var src_bit: [0..Ne-1]int;
-      var dst_bit: [0..Ne-1]int;
-      for ib in 1..lgNv {
-          var tmpvar: [0..Ne-1] real;
-          fillRandom(tmpvar);
-          src_bit=tmpvar>ab;
-          fillRandom(tmpvar);
-          dst_bit=tmpvar>(c_norm * src_bit + a_norm * (~ src_bit));
-          src = src + ((2**(ib-1)) * src_bit);
-          dst = dst + ((2**(ib-1)) * dst_bit);
-      }
-      src=src+(src==dst);
-      // maybe: remove edges which are self-loops???
-      var iv = radixSortLSD_ranks(src);
-      // permute into sorted order
-      src = src[iv]; //# permute first vertex into sorted order
-      dst = dst[iv]; //# permute second vertex into sorted order
-      //# to premute/rename vertices
-      var startpos=0, endpos:int;
-      var sort=0:int;
-      while (startpos < Ne-2) {
-         endpos=startpos+1;
-         while (endpos <Ne-1) {
-            if (src[startpos]==src[endpos])  {
-               sort=1;
-               endpos+=1;
-            } else {
-               if (sort==1) {
-                 ref p=dst[startpos..endpos];
-                 var ivx=radixSortLSD_ranks(p);
-                 dst[startpos..endpos]=dst[ivx];
-               } 
-               startpos+=1;
-               break;
-            }
-         }//end of while endpos
-      }//end of while startpos
+      //var depth = makeDistArray(Nv, int);
+      var depth=-1: [0..Nv-1] int;
+      depth[root]=0;
+      var cur_level=0;
+      var SetCurF: domain(int);
+      var SetNextF: domain(int);
+      SetCurF.add(root);
+      var numCurF=1:int;
+      while (numCurF>0) {
+           SetNextF.clear();
+           forall i in SetCurF {
+              var numNF=-1 :int;
+              if (ag.start_i.a[i] <0 ){
+                   numNF=0;
+              } else {
+                 if (i<Nv-1) {
+                   numNF=ag.neighbour.a[i+1]-ag.neighbour.a[i];
+                 } else {
+                   numNF=Ne-1-ag.neighbour.a[i];
+                 } 
 
-      fillRandom(e_weight);
-      fillRandom(v_weight);
-      for i in 0..Ne-1 do {
-        length[src[i]]+=1;
+              }
+              if ((ag.start_i.a[i] >0) && (numNF>0)) {
+                var NF=ag.dst.a[ag.start_i.a[i]..ag.start_i.a[i]+numNF-1];
+                forall j in NF {
+                   if (depth[j]==-1) {
+                      depth[j]=cur_level+1;
+                      SetNextF.add(j);
+                   }
+                }
+              }
+           }//end forall i
+           cur_level+=1;
+           numCurF=SetNextF.size;
+           SetCurF=SetNextF;
       }
-      var neighbour  = (+ scan length) - length;
-      var srcName = st.nextName();
-      var dstName = st.nextName();
-      var ewName = st.nextName();
-      var vwName = st.nextName();
-      var neiName = st.nextName();
-      var srcEntry = new shared SymEntry(src);
-      var dstEntry = new shared SymEntry(dst);
-      var ewEntry = new shared SymEntry(e_weight);
-      var vwEntry = new shared SymEntry(v_weight);
-      var neiEntry = new shared SymEntry(neighbour);
-      st.addEntry(srcName, srcEntry);
-      st.addEntry(dstName, dstEntry);
-      st.addEntry(ewName, ewEntry);
-      st.addEntry(vwName, vwEntry);
-      st.addEntry(neiName, neiEntry);
-      var sNe=Ne:string;
-      var sNv=Nv:string;
-      var sDirected=directed:string;
-//      repMsg =  (Ne:string) + '+ ' + (Nv:string) + '+ ' + (directed:string) + 
-      repMsg =  sNe + '+ ' + sNv + '+ ' + sDirected + 
-               '+created ' + st.attrib(srcName) + '+created ' + st.attrib(dstName)+ 
-               '+created ' + st.attrib(neiName) + '+created ' + st.attrib(vwName)+ 
-               '+created ' + st.attrib(ewName);
+      var vertexValue = radixSortLSD_ranks(depth);
+      var levelValue=depth[vertexValue]; 
+
+      var levelName = st.nextName();
+      var vertexName = st.nextName();
+      var levelEntry = new shared SymEntry(levelValue);
+      var vertexEntry = new shared SymEntry(vertexValue);
+      st.addEntry(levelName, levelEntry);
+      st.addEntry(vertexName, vertexEntry);
+      repMsg =  'created ' + st.attrib(levelName) + '+created ' + st.attrib(vertexName) ;
 
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
       return repMsg;
-*/
-      return "test";
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

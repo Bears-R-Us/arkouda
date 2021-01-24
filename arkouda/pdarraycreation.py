@@ -15,7 +15,7 @@ __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like",
            "arange", "linspace", "randint", "uniform", "standard_normal",
            "random_strings_uniform", "random_strings_lognormal", 
            "from_series", "suffix_array","lcp_array","suffix_array_file",
-           "rmat_gen"]
+           "rmat_gen","graph_bfs"]
 
 numericDTypes = frozenset(["bool", "int64", "float64"]) 
 
@@ -936,7 +936,6 @@ def suffix_array_file(filename: str)  -> tuple:
         msg = "segmentedSAFile {}".format( filename )
         repMsg = generic_msg(msg)
         tmpmsg=cast(str,repMsg).split('+')
-        print(tmpmsg)
         sastr=tmpmsg[0:2]
         strstr=tmpmsg[2:4]
         suffixarray=SArrays(*(cast(str,sastr))) 
@@ -1013,9 +1012,15 @@ def graph_bfs (graph: Graph, root: int ) -> tuple:
         """
         msg = "segmentedGraphBFS {} {} {} {} {} {} {} {}".format(graph.n_vertices,graph.n_edges,\
                  graph.directed,graph.src.name,graph.dst.name,\
-                 graph.start.name,graph.neighbour.name,root)
+                 graph.start.name,graph.neighbour.name,\
+                 graph.v_weight.name,graph.e_weight.name,root)
         repMsg = generic_msg(msg)
-        return Graph(*(cast(str,repMsg).split('+')))
+        tmpmsg=cast(str,repMsg).split('+')
+        levelstr=tmpmsg[0:1]
+        vertexstr=tmpmsg[1:2]
+        levelary=create_pdarray(cast(str,levelstr)) 
+        vertexary=create_pdarray(cast(str,vertexstr)) 
+        return levelary,vertexary
 
 
 @typechecked
@@ -1038,7 +1043,9 @@ def graph_dfs (graph: Graph, root: int ) -> pdarray:
         ------  
         RuntimeError
         """
-        msg = "segmentedGraphDFS {} {} {}".format(graph.edges.name,graph.vertices.name,root)
+        msg = "segmentedGraphDFS {} {} {} {} {} {} {} {}".format(graph.n_vertices,graph.n_edges,\
+                 graph.directed,graph.src.name,graph.dst.name,\
+                 graph.start.name,graph.neighbour.name,root)
         repMsg = generic_msg(msg)
         return Graph(*(cast(str,repMsg).split('+')))
 

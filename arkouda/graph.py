@@ -138,11 +138,12 @@ class Graph:
         The source of every edge in the graph
     dst : pdarray
         The destination of every vertex in the graph
-    start : pdarray
-        The starting index of all the vertices in src and dst
+    start_i : pdarray
+        The starting index of all the vertices in src 
     neighbour : pdarray
-        The current vertex id v's (v<n_vertices-1) neighbours are from dst[neighbour[v]] to dst[neighbour[v+1]]
-        if v=n_vertices-1, then v's neighbours are from dst[neighbour[v]] to dst[n_edges-1]
+        The number of current vertex id v's (v<n_vertices-1) neighbours and the value is
+        neighbour[v+1]-neighbour[v] if v<n_vertices-1 or 
+        n_edges-neighbour[v] if v=n_vertices-1
     v_weight : pdarray
         The weitht of every vertex in the graph
     e_weight : pdarray
@@ -165,7 +166,7 @@ class Graph:
         n_edges     : must provide 
         directed    : optional  
         src,dst     : optional if no directed
-        neighbour   : optional if no src and dst
+        start_i, neighbour   : optional if no src and dst
         v_weight    : optional if no neighbour
         e_weight    : optional if no v_weight
         
@@ -208,7 +209,7 @@ class Graph:
                 raise ValueError
             if len(args) > 6:
                 if (isinstance(args[6],pdarray) and isinstance(args[5],pdarray)) :
-                     self.start=args[5]
+                     self.start_i=args[5]
                      self.neighbour=args[6]
                 else:
                     try:

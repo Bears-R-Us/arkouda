@@ -248,6 +248,7 @@ proc main() {
                 when "segmentedLCP"      {repMsg = segLCPMsg(cmd, payload, st);}
                 when "segmentedSAFile"   {repMsg = segSAFileMsg(cmd, payload, st);}
                 when "segmentedRMAT"     {repMsg = segrmatgenMsg(cmd, payload, st);}
+                when "segmentedGraphBFS" {repMsg = segBFSMsg(cmd, payload, st);}
                 when "segmentedIn1d"     {repMsg = segIn1dMsg(cmd, payload, st);}
                 when "segmentedIn1dInt"     {repMsg = segIn1dIntMsg(cmd, payload, st);}
                 when "lshdf"             {repMsg = lshdfMsg(cmd, payload, st);}
