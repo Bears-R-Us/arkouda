@@ -35,11 +35,11 @@ class Categorical:
         The permutation that groups the values in the same order as categories
     segments : pdarray, int64
         When values are grouped, the starting offset of each group
-    size : int
+    size : Union[int,np.int64]
         The number of items in the array
-    nlevels : int
+    nlevels : Union[int,np.int64]
         The number of distinct categories
-    ndim : int
+    ndim : Union[int,np.int64]
         The rank of the array (currently only rank 1 arrays supported)
     shape : tuple
         The sizes of each dimension of the array

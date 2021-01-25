@@ -1,5 +1,6 @@
-from typing import cast, Tuple
+from typing import cast, Tuple, Union
 from typeguard import typechecked
+import numpy as np # type: ignore
 from arkouda.client import generic_msg
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import resolve_scalar_dtype, NUMBER_FORMAT_STRINGS
@@ -12,8 +13,8 @@ predicates = {"true_dt":0, "abs_dt":1, "pos_dt":2}
 
 @typechecked
 def join_on_eq_with_dt(a1 : pdarray, a2 : pdarray, t1 : pdarray, 
-                       t2 : pdarray, dt : int, pred : str, 
-                       result_limit : int=1000) -> Tuple[pdarray,pdarray]:
+                       t2 : pdarray, dt : Union[int,np.int64], pred : str, 
+                       result_limit : Union[int,np.int64]=1000) -> Tuple[pdarray,pdarray]:
     """
     Performs an inner-join on equality between two integer arrays where 
     the time-window predicate is also true
@@ -28,11 +29,11 @@ def join_on_eq_with_dt(a1 : pdarray, a2 : pdarray, t1 : pdarray,
         timestamps in millis corresponding to the a1 pdarray
     t2 : pdarray, 
         timestamps in millis corresponding to the a2 pdarray
-    dt : int
+    dt : Union[int,np.int64]
         time delta
     pred : str
         time window predicate
-    result_limit : int
+    result_limit : Union[int,np.int64]
         size limit for returned result    
 
     Returns
