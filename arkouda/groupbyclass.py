@@ -30,9 +30,9 @@ class GroupBy:
 
     Attributes
     ----------
-    nkeys : int
+    nkeys : Union[int,np.int64]
         The number of key arrays (columns)
-    size : int
+    size : Union[int,np.int64]
         The length of the array(s), i.e. number of rows
     permutation : pdarray
         The permutation that sorts the keys array(s) by value (row)
@@ -793,7 +793,7 @@ class GroupBy:
         repMsg = generic_msg(msg)
         return create_pdarray(repMsg)
 
-def broadcast(segments : pdarray, values : pdarray, size : int=-1,
+def broadcast(segments : pdarray, values : pdarray, size : Union[int,np.int64]=-1,
               permutation : Union[pdarray, None]=None):
     if segments.size != values.size:
         raise ValueError("segments and values arrays must be same size")

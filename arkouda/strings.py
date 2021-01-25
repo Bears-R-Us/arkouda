@@ -24,11 +24,11 @@ class Strings:
         The starting indices for each string
     bytes : pdarray
         The raw bytes of all strings, joined by nulls
-    size : int
+    size : Union[int,np.int64]
         The number of strings in the array
-    nbytes : int
+    nbytes : Union[int,np.int64]
         The total number of bytes in all strings
-    ndim : int
+    ndim : Union[int,np.int64]
         The rank of the array (currently only rank 1 arrays supported)
     shape : tuple
         The sizes of each dimension of the array
@@ -421,7 +421,7 @@ class Strings:
             return Strings(arrays[0], arrays[1])
     
     @typechecked
-    def peel(self, delimiter : str, times : int=1, includeDelimiter : bool=False, 
+    def peel(self, delimiter : str, times : Union[int,np.int64]=1, includeDelimiter : bool=False, 
              keepPartial : bool=False, fromRight : bool=False) -> Tuple:
         """
         Peel off one or more delimited fields from each string (similar 
@@ -432,7 +432,7 @@ class Strings:
         ----------
         delimiter : str
             The separator where the split will occur
-        times : int
+        times : Union[int,np.int64]
             The number of times the delimiter is sought, i.e. skip over 
             the first (times-1) delimiters
         includeDelimiter : bool
@@ -503,7 +503,7 @@ class Strings:
         rightStr = Strings(arrays[2], arrays[3])
         return leftStr, rightStr
 
-    def rpeel(self, delimiter : str, times : int=1, includeDelimiter : bool=False, 
+    def rpeel(self, delimiter : str, times : Union[int,np.int64]=1, includeDelimiter : bool=False, 
                                       keepPartial : bool=False):
         """
         Peel off one or more delimited fields from the end of each string 
@@ -514,7 +514,7 @@ class Strings:
         ----------
         delimiter : str
             The separator where the split will occur
-        times : int
+        times : Union[int,np.int64]
             The number of times the delimiter is sought, i.e. skip over 
             the last (times-1) delimiters
         includeDelimiter : bool
