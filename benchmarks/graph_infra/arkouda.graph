@@ -34,10 +34,16 @@ files: coargsort.dat, coargsort.dat, coargsort.dat, coargsort.dat
 graphtitle: Coargsort Performance
 ylabel: Performance (GiB/S)
 
-perfkeys: Average rate =
-graphkeys: Gather GiB/s
+perfkeys: int64 Average rate =, float64 Average rate =, bool Average rate =
+graphkeys: int64 Gather GiB/s, float64 Gather GiB/s, bool Gather GiB/s
+files: gather.dat, gather.dat, gather.dat
+graphtitle: Numeric Gather Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: str Average rate =
+graphkeys: str Gather GiB/s
 files: gather.dat
-graphtitle: Gather Performance
+graphtitle: String Gather Performance
 ylabel: Performance (GiB/s)
 
 perfkeys: Average rate =

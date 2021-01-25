@@ -27,7 +27,7 @@ def time_ak_gather(isize, vsize, trials, dtype, random, seed):
             v = ak.random_strings_uniform(1, 16, Nv, seed=seed)
     else:   
         if dtype == 'str':
-            v = ak.random_strings_uniform(8, 8, Nv, seed=seed)
+            v = ak.cast(ak.arange(Nv), 'str')
         else:
             v = ak.ones(Nv, dtype=dtype)
     
@@ -39,14 +39,14 @@ def time_ak_gather(isize, vsize, trials, dtype, random, seed):
         timings.append(end - start)
     tavg = sum(timings) / trials
 
-    print("Average time = {:.4f} sec".format(tavg))
+    print("{} Average time = {:.4f} sec".format(dtype, tavg))
     if dtype == 'str':
         offsets_transferred = 3 * c.offsets.size * c.offsets.itemsize
         bytes_transferred = (c.offsets.size * c.offsets.itemsize) + (2 * c.bytes.size)
         bytes_per_sec = (offsets_transferred + bytes_transferred) / tavg
     else:
         bytes_per_sec = (c.size * c.itemsize * 3) / tavg
-    print("Average rate = {:.2f} GiB/sec".format(bytes_per_sec/2**30))
+    print("{} Average rate = {:.2f} GiB/sec".format(dtype, bytes_per_sec/2**30))
 
 def time_np_gather(Ni, Nv, trials, dtype, random, seed):
     print(">>> numpy gather")
@@ -60,6 +60,10 @@ def time_np_gather(Ni, Nv, trials, dtype, random, seed):
             v = np.random.randint(0, 2**32, Nv)
         elif dtype == 'float64':
             v = np.random.random(Nv)
+        elif dtype == 'bool':
+            v = np.random.randint(0, 1, Nv, dtype=np.bool)
+        elif dtype == 'str':
+            v = np.array(np.random.randint(0, 2**32, Nv), dtype='str')
     else:   
         v = np.ones(Nv, dtype=dtype)
     
@@ -71,9 +75,9 @@ def time_np_gather(Ni, Nv, trials, dtype, random, seed):
         timings.append(end - start)
     tavg = sum(timings) / trials
 
-    print("Average time = {:.4f} sec".format(tavg))
+    print("{} Average time = {:.4f} sec".format(dtype, tavg))
     bytes_per_sec = (c.size * c.itemsize * 3) / tavg
-    print("Average rate = {:.2f} GiB/sec".format(bytes_per_sec/2**30))
+    print("{} Average rate = {:.2f} GiB/sec".format(dtype, bytes_per_sec/2**30))
 
 def check_correctness(dtype, random, seed):
     Ni = 10**4
@@ -105,11 +109,11 @@ def create_parser():
     parser = argparse.ArgumentParser(description="Measure the performance of random gather: C = V[I]")
     parser.add_argument('hostname', help='Hostname of arkouda server')
     parser.add_argument('port', type=int, help='Port of arkouda server')
-    parser.add_argument('-n', '--size', type=int, default=10**8, help='Problem size: length of index and gather arrays')
+    parser.add_argument('-n', '--size', type=int, default=None, help='Problem size: length of index and gather arrays')
     parser.add_argument('-i', '--index-size', type=int, help='Length of index array (number of gathers to perform)')
     parser.add_argument('-v', '--value-size', type=int, help='Length of array from which values are gathered')
     parser.add_argument('-t', '--trials', type=int, default=6, help='Number of times to run the benchmark')
-    parser.add_argument('-d', '--dtype', default='int64', help='Dtype of value array ({})'.format(', '.join(TYPES)))
+    parser.add_argument('-d', '--dtype', default=None, help='Dtype of value array ({})'.format(', '.join(TYPES)))
     parser.add_argument('-r', '--randomize', default=False, action='store_true', help='Use random values instead of ones')
     parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
     parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
@@ -120,9 +124,7 @@ if __name__ == "__main__":
     import sys
     parser = create_parser()
     args = parser.parse_args()
-    args.index_size = args.size if args.index_size is None else args.index_size
-    args.value_size = args.size if args.value_size is None else args.value_size
-    if args.dtype not in TYPES:
+    if args.dtype is not None and args.dtype not in TYPES:
         raise ValueError("Dtype must be {}, not {}".format('/'.join(TYPES), args.dtype))
     ak.verbose = False
     ak.connect(args.hostname, args.port)
@@ -131,11 +133,29 @@ if __name__ == "__main__":
         for dtype in TYPES:
             check_correctness(dtype, args.randomize, args.seed)
         sys.exit(0)
-    
+    if args.size is None:
+        if args.dtype == 'str':
+            args.size = 10**7
+        else:
+            args.size = 10**8
+    args.index_size = args.size if args.index_size is None else args.index_size
+    args.value_size = args.size if args.value_size is None else args.value_size
     print("size of index array = {:,}".format(args.index_size))
     print("size of values array = {:,}".format(args.value_size))
     print("number of trials = ", args.trials)
-    time_ak_gather(args.index_size, args.value_size, args.trials, args.dtype, args.randomize, args.seed)
+    if args.dtype is None:
+        for dtype in TYPES:
+            if dtype == 'str':
+                index_size = args.index_size // 10
+                value_size = args.value_size // 10
+            else:
+                index_size = args.index_size
+                value_size = args.value_size
+            time_ak_gather(index_size, value_size, args.trials, dtype, args.randomize, args.seed)
+            if args.numpy:
+                time_np_gather(index_size, value_size, args.trials, dtype, args.randomize, args.seed)
+    else:
+        time_ak_gather(args.index_size, args.value_size, args.trials, args.dtype, args.randomize, args.seed)
     if args.numpy:
         time_np_gather(args.index_size, args.value_size, args.trials, args.dtype, args.randomize, args.seed)
         print("Verifying agreement between arkouda and NumPy on small problem... ", end="")
