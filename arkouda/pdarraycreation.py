@@ -1,6 +1,6 @@
 import numpy as np # type: ignore
 import pandas as pd # type: ignore
-import struct, json
+import struct
 from typing import cast, Iterable, Optional, Union
 from typeguard import typechecked
 from arkouda.client import generic_msg
@@ -133,7 +133,8 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
         not supported (not in DTypes), or if the product of a size and
         a.itemsize > maxTransferBytes
     ValueError
-        Raised if the returned message is malformed
+        Raised if the returned message is malformed or does not contain the fields
+        required to generate the array.
 
     See Also
     --------
@@ -211,14 +212,7 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     req_msg = "{} {:n} ".\
                     format(a.dtype.name, size).encode() + struct.pack(fmt, *a)
     repMsg = generic_msg(cmd='array', args=req_msg, send_bytes=True)
-
-    try:
-        return_msg = json.loads(repMsg)
-        return create_pdarray(return_msg['msg'])
-    except json.decoder.JSONDecodeError:
-        raise ValueError('{} is not valid JSON, may be server-side error')
-    except KeyError as ke:
-        raise ValueError('Malformed JSON does not contain {} field'.format(ke))
+    return create_pdarray(repMsg)
 
 def zeros(size : int, dtype : type=np.float64) -> pdarray:
     """

@@ -1,34 +1,93 @@
 from dataclasses import dataclass
 from enum import Enum
+from typing import Dict
 
+"""
+The MessageFormat enum provides controlled vocabulary for the message
+format which can be either a string or a binary (bytes) object.
+"""
 class MessageFormat(Enum):
     STRING = 'STRING'
     BINARY = 'BINARY'
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """
+        Overridden method returns value, which is useful in outputting
+        a MessageFormat object to JSON.
+        """
         return self.value
     
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """
+        Overridden method returns value, which is useful in outputting
+        a MessageFormat object to JSON.
+        """
         return self.value
 
+"""
+The MessageType enum provides controlled vocabulary for the message
+type which can be either NORMAL, WARNING, or ERROR.
+"""
+class MessageType(Enum):
+    NORMAL = 'NORMAL'
+    WARNING = 'WARNING'
+    ERROR = 'ERROR'
+
+    def __str__(self) -> str:
+        """
+        Overridden method returns value, which is useful in outputting
+        a MessageType object to JSON.
+        """
+        return self.value
+    
+    def __repr__(self) -> str:
+        """
+        Overridden method returns value, which is useful in outputting
+        a MessageType object to JSON.
+        """
+        return self.value
+
+"""
+The Message class encapsulates the attributes required to capture the full
+context of an Arkouda server request.
+"""
 @dataclass(frozen=True)
-class Message():
+class RequestMessage():
+    
+    __slots = ('user', 'token', 'cmd', 'format', 'args')
 
     user: str
     token: str
     cmd: str
     format: MessageFormat
-    args: str=''
+    args: str
 
     def __init__(self, user : str, cmd : str, token : str=None, 
-                 format : MessageFormat=MessageFormat.STRING, args : str=None) -> None:
+                 format : MessageFormat=MessageFormat.STRING, 
+                 args : str=None) -> None:
+        """
+        Overridden __init__ method sets instance attributes to 
+        default values if the corresponding init params are missing.
+        
+        """
         object.__setattr__(self, 'user',user)
         object.__setattr__(self, 'token',token)
         object.__setattr__(self, 'cmd',cmd)
         object.__setattr__(self, 'format',format)
         object.__setattr__(self, 'args',args)
 
-    def asdict(self):
+    def asdict(self) -> Dict:
+        """
+        Overridden asdict implementation sets the values of non-required 
+        fields to an empty space (for Chapel JSON processing) and invokes 
+        str() on the format instance attribute.
+        
+        Returns
+        -------
+        Dict
+            A dict object encapsulating ReplyMessage state 
+        """
+        # args and token logic will not be needed once Chapel supports nulls
         args = self.args if self.args else ''
         token = self.token if self.token else ''
 
@@ -37,3 +96,38 @@ class Message():
                 'cmd': self.cmd,
                 'format': str(self.format),
                 'args' : args}
+
+@dataclass(frozen=True)
+class ReplyMessage():
+
+    __slots__ = ('msg', 'msgType', 'user')
+    
+    msg: str
+    msgType: MessageType
+    user: str
+    
+    @staticmethod
+    def fromdict(values : Dict):
+        """
+        
+        Parameters
+        ----------
+        values : Dict
+            The dict object encapsulating the fields required to instantiate
+            a ReplyMessage
+            
+        Returns
+        -------
+        ReplyMessage
+            The ReplyMessage composed of values encapsulated within values dict
+        
+        Raises
+        ------
+        ValueError
+            Raised if the values Dict is missing fields or contains malformed values
+        """
+        try: 
+            return ReplyMessage(msg=values['msg'], msgType=MessageType(values['msgType']), 
+                            user=values['user'])
+        except KeyError as ke:
+            raise ValueError('values dict missing {} field'.format(ke))

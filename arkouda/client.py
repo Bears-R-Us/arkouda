@@ -4,7 +4,8 @@ import warnings, pkg_resources
 import zmq # type: ignore
 from arkouda import security, io_util
 from arkouda.logger import getArkoudaLogger
-from arkouda.message import Message, MessageFormat
+from arkouda.message import RequestMessage, MessageFormat, ReplyMessage, \
+     MessageType
 
 __all__ = ["AllSymbols", "connect", "disconnect", "shutdown", "get_config", 
            "get_mem_used", "__version__", "ruok"]
@@ -302,14 +303,6 @@ def _start_tunnel(addr : str, tunnel_server : str) -> Tuple[str,object]:
     except Exception as e:
         raise ConnectionError(e)
 
-def _get_message(cmd : str, format: MessageFormat, args : str=None) -> Message:
-    """
-    Creates the Message object encapsulating parameters required to execute
-    a server-side Arkouda command
-    
-    """
-    return Message(user=username, token=token, cmd=cmd, format=format, args=cast(str,args))
-
 def _send_string_message(cmd : str, recv_bytes : bool=False, 
                          args : str=None) -> Union[str, bytes]:
     """
@@ -335,15 +328,20 @@ def _send_string_message(cmd : str, recv_bytes : bool=False,
     RuntimeError
         Raised if the return message contains the word "Error", indicating 
         a server-side error was thrown
+    ValueError
+        Raised if the return message is malformed JSON or is missing 1..n
+        expected fields       
     """
-    message = _get_message(cmd=cmd, format=MessageFormat.STRING, args=args)
+    message = RequestMessage(user=username, token=token, cmd=cmd, 
+                                        format=MessageFormat.STRING, args=cast(str,args))
 
-    logger.debug(message)
+    logger.debug('sending message {}'.format(message))
 
     socket.send_string(json.dumps(message.asdict()))
 
     if recv_bytes:
         return_message = socket.recv()
+
         # raise errors or warnings sent back from the server
         if return_message.startswith(b"Error:"): \
                                    raise RuntimeError(return_message.decode())
@@ -352,18 +350,18 @@ def _send_string_message(cmd : str, recv_bytes : bool=False,
     else:
         raw_message = socket.recv_string()
         try:
-            return_message = json.loads(raw_message)
-            msg = return_message['msg']
-            msgType = return_message['msgType']
+            return_message = ReplyMessage.fromdict(json.loads(raw_message))
 
             # raise errors or warnings sent back from the server
-            if msgType == 'ERROR':
-                raise RuntimeError(msg)
-            if msgType == 'WARNING':
-                warnings.warn(msg)
-            return msg
+            if return_message.msgType == MessageType.ERROR:
+                raise RuntimeError(return_message.msg)
+            elif return_message.msgType == MessageType.WARNING:
+                warnings.warn(return_message.msg)
+            return return_message.msg
         except KeyError as ke:
-            raise ValueError('Malformed return message missing {} field'.format(ke))
+            raise ValueError('Return message is missing the {} field'.format(ke))
+        except json.decoder.JSONDecodeError:
+            raise ValueError('Return message is not valid JSON: {}'.format(raw_message))
 
 def _send_binary_message(cmd : str, payload : bytes, recv_bytes : bool=False,
                                             args : str=None) -> Union[str, bytes]:
@@ -390,12 +388,17 @@ def _send_binary_message(cmd : str, payload : bytes, recv_bytes : bool=False,
     RuntimeError
         Raised if the return message contains the word "Error", indicating 
         a server-side error was thrown
+    ValueError
+        Raised if the return message is malformed JSON or is missing 1..n
+        expected fields
     """
-    send_message = _get_message(cmd=cmd, format=MessageFormat.BINARY, args=args)
+    send_message = RequestMessage(user=username, token=token, cmd=cmd, 
+                                format=MessageFormat.BINARY, args=cast(str,args))
 
-    logger.debug(send_message)
+    logger.debug('sending message {}'.format(send_message))
 
-    socket.send('{}BINARY_PAYLOAD'.format(json.dumps(send_message.asdict())).encode() + payload)
+    socket.send('{}BINARY_PAYLOAD'.\
+                format(json.dumps(send_message.asdict())).encode() + payload)
 
     if recv_bytes:
         binary_return_message = cast(bytes, socket.recv())
@@ -404,12 +407,23 @@ def _send_binary_message(cmd : str, payload : bytes, recv_bytes : bool=False,
                                    raise RuntimeError(binary_return_message.decode())
         elif binary_return_message.startswith(b"Warning:"): \
                                         warnings.warn(binary_return_message.decode())
+        return binary_return_message
     else:
-        return_message = cast(str, socket.recv_string())
-        # raise errors or warnings sent back from the server
-        if return_message.startswith("Error:"): raise RuntimeError(return_message)
-        elif return_message.startswith("Warning:"): warnings.warn(return_message)
-    return return_message
+        raw_message = socket.recv_string()
+        try:
+            return_message = ReplyMessage.fromdict(json.loads(raw_message))
+
+            # raise errors or warnings sent back from the server
+            if return_message.msgType == MessageType.ERROR:
+                raise RuntimeError(return_message.msg)
+            elif return_message.msgType == MessageType.WARNING:
+                warnings.warn(return_message.msg)
+            return return_message.msg
+        except KeyError as ke:
+            raise ValueError('Return message is missing the {} field'.format(ke))
+        except json.decoder.JSONDecodeError:
+            raise ValueError('{} is not valid JSON, may be server-side error'.format(raw_message))
+  
     
 # message arkouda server the client is disconnecting from the server
 def disconnect() -> None:
@@ -556,8 +570,7 @@ def get_config() -> Mapping[str, Union[str, int, float]]:
     RuntimeError
         Raised if there is a server-side error in getting memory used
     ValueError
-        Raised if there's an error in parsing the JSON-formatted server
-        configuration into a dict
+        Raised if there's an error in parsing the JSON-formatted server config
     """
     try:
         raw_message = cast(str,generic_msg(cmd="getconfig"))

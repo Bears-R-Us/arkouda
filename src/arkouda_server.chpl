@@ -23,13 +23,14 @@ use Message;
 
 const asLogger = new Logger();
 
-enum MsgType {REGULAR,WARNING,ERROR}
+enum MsgType {NORMAL,WARNING,ERROR}
 enum MsgFormat {STRING,BINARY}
 
 class ReplyMsg {
     var msg: string;
     var msgType: MsgType;
     var msgFormat: MsgFormat;
+    var user: string;
 }
 
 if v {
@@ -155,11 +156,11 @@ proc main() {
     Sets the shutdownServer boolean to true and sends the shutdown command to socket,
     which stops the arkouda_server listener thread and closes socket.
     */
-    proc shutdown() {
+    proc shutdown(user: string) {
         shutdownServer = true;
         repCount += 1;
         socket.send(generateJsonReplyMsg(msg="shutdown server (%i req)".format(repCount), 
-                         msgType=MsgType.REGULAR,msgFormat=MsgFormat.STRING));
+                         msgType=MsgType.NORMAL,msgFormat=MsgFormat.STRING, user=user));
     }
     
     while !shutdownServer {
@@ -193,11 +194,11 @@ proc main() {
                 asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                        "illegal byte sequence in command: %t".format(cmdRaw.decode(decodePolicy.replace)));
                 sendRepMsg(generateJsonReplyMsg(msg=unknownError(e.message()),msgType=MsgType.ERROR,
-                                                 msgFormat=MsgFormat.STRING));
+                                                 msgFormat=MsgFormat.STRING, user="Unknown"));
             }
 
             //parse the decoded cmdString to retrieve user,token,cmd
-            asLogger.info(getModuleName(),getRoutineName(),getLineNumber(),"INCOMING CMD %s".format(cmdStr));
+            asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"INCOMING CMD %s".format(cmdStr));
             var msg    = extractCommand(cmdStr);
             var user   = msg.user;
             var token  = msg.token;
@@ -231,10 +232,11 @@ proc main() {
 
             // If cmd is shutdown, don't bother generating a repMsg
             if cmd == "shutdown" {
-                shutdown();
+                shutdown(user=user);
                 if (logging) {
                     asLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                                         "<<< shutdown took %.17r sec".format(t1.elapsed() - s0));
+                                         "<<< shutdown initiated by %s took %.17r sec".format(user, 
+                                                   t1.elapsed() - s0));
                 }
                 break;
             }
@@ -355,9 +357,10 @@ proc main() {
                 } else if repMsg.find('Warning') > -1 {
                     msgType = MsgType.WARNING;
                 } else {
-                    msgType = MsgType.REGULAR;
+                    msgType = MsgType.NORMAL;
                 }
-                sendRepMsg(generateJsonReplyMsg(msg=repMsg,msgType=msgType,msgFormat=MsgFormat.STRING));
+                sendRepMsg(generateJsonReplyMsg(msg=repMsg,msgType=msgType,msgFormat=MsgFormat.STRING, 
+                                                user=user));
             }
 
             /*
@@ -373,14 +376,15 @@ proc main() {
                        "bytes of memory used after command %t".format(memoryUsed():uint * numLocales:uint));
             }
         } catch (e: ErrorWithMsg) {
-            sendRepMsg(generateJsonReplyMsg(msg=e.msg,msgType=MsgType.ERROR, msgFormat=MsgFormat.STRING));
+            sendRepMsg(generateJsonReplyMsg(msg=e.msg,msgType=MsgType.ERROR, msgFormat=MsgFormat.STRING, 
+                                                        user=user));
             if logging {
                 asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                     "<<< %s resulted in error %s in  %.17r sec".format(cmd, e.msg, t1.elapsed() - s0));
             }
         } catch (e: Error) {
             sendRepMsg(generateJsonReplyMsg(msg=unknownError(e.message()),msgType=MsgType.ERROR, 
-                                                         msgFormat=MsgFormat.STRING));
+                                                         msgFormat=MsgFormat.STRING, user=user));
             if logging {
                 asLogger.error(getModuleName(), getRoutineName(), getLineNumber(), 
                     "<<< %s resulted in error: %s in %.17r sec".format(cmd, e.message(),t1.elapsed() - s0));
@@ -399,8 +403,8 @@ proc main() {
 /*
  * Generates JSON-formatted reply message
  */
-proc generateJsonReplyMsg(msg: string, msgType: MsgType, msgFormat: MsgFormat) : string {
-    return "%jt".format(new ReplyMsg(msg=msg,msgType=msgType, msgFormat=msgFormat));
+proc generateJsonReplyMsg(msg: string, msgType: MsgType, msgFormat: MsgFormat, user: string) : string {
+    return "%jt".format(new ReplyMsg(msg=msg,msgType=msgType, msgFormat=msgFormat, user=user));
 }
 
 /*

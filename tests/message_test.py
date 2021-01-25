@@ -1,7 +1,7 @@
 import unittest, json
-import dataclasses
 from context import arkouda
-from arkouda.message import Message, MessageFormat
+from arkouda.message import RequestMessage, MessageFormat, ReplyMessage, \
+     MessageType
 
 class MessageTest(unittest.TestCase):
 
@@ -13,12 +13,30 @@ class MessageTest(unittest.TestCase):
         self.assertEqual('BINARY', repr(MessageFormat.BINARY))
         self.assertEqual('STRING', repr(MessageFormat.STRING))
         
-    def testMessage(self):
-        msg = Message(user='user1', token='token', cmd='connect', 
+        with self.assertRaises(ValueError):
+            MessageFormat('STR')        
+        
+    def testMessageType(self):
+        self.assertEqual(MessageType.NORMAL, MessageType('NORMAL'))
+        self.assertEqual(MessageType.WARNING, MessageType('WARNING'))
+        self.assertEqual(MessageType.ERROR, MessageType('ERROR'))
+       
+        self.assertEqual('NORMAL', str(MessageType.NORMAL))
+        self.assertEqual('WARNING', str(MessageType.WARNING))
+        self.assertEqual('ERROR', str(MessageType.ERROR))
+        self.assertEqual('NORMAL', repr(MessageType.NORMAL))
+        self.assertEqual('WARNING', repr(MessageType.WARNING))
+        self.assertEqual('ERROR', repr(MessageType.ERROR))
+        
+        with self.assertRaises(ValueError):
+            MessageType('STANDARD')
+      
+    def testRequestMessage(self):
+        msg = RequestMessage(user='user1', token='token', cmd='connect', 
                       format=MessageFormat.STRING)
-        msgDupe = Message(user='user1', token='token', cmd='connect', 
+        msgDupe = RequestMessage(user='user1', token='token', cmd='connect', 
                       format=MessageFormat.STRING)
-        msgNonDupe = Message(user='user1', token='token', cmd='connect', 
+        msgNonDupe = RequestMessage(user='user1', token='token', cmd='connect', 
                       format=MessageFormat.BINARY)
         
         self.assertEqual('user1', msg.user)
@@ -29,10 +47,10 @@ class MessageTest(unittest.TestCase):
         self.assertEqual(msg,msgDupe)
         self.assertNotEqual(msg, msgNonDupe)
         
-        self.assertEqual("Message(user='user1', token='token', cmd='connect', format=STRING, args=None)", 
+        self.assertEqual("RequestMessage(user='user1', token='token', cmd='connect', format=STRING, args=None)", 
                          str(msg))
         
-        self.assertEqual("Message(user='user1', token='token', cmd='connect', format=STRING, args=None)", 
+        self.assertEqual("RequestMessage(user='user1', token='token', cmd='connect', format=STRING, args=None)", 
                          repr(msg))
 
         self.assertEqual('{"user": "user1", "token": "token", "cmd": "connect", "format": "STRING", "args": ""}',
@@ -40,13 +58,33 @@ class MessageTest(unittest.TestCase):
         
         self.assertFalse(self.assertRaises(Exception,json.loads(json.dumps(msg.asdict()))))
         
-        minMsg = Message(user='user1', cmd='connect')
+        minMsg = RequestMessage(user='user1', cmd='connect')
         
-        self.assertEqual("Message(user='user1', token=None, cmd='connect', format=STRING, args=None)", 
+        self.assertEqual("RequestMessage(user='user1', token=None, cmd='connect', format=STRING, args=None)", 
                          str(minMsg))
         
-        self.assertEqual("Message(user='user1', token=None, cmd='connect', format=STRING, args=None)", 
+        self.assertEqual("RequestMessage(user='user1', token=None, cmd='connect', format=STRING, args=None)", 
                          repr(minMsg))
         self.assertEqual('{"user": "user1", "token": "", "cmd": "connect", "format": "STRING", "args": ""}',
                         json.dumps(minMsg.asdict()))
+        
+    def testReplyMessage(self):
+        msg = ReplyMessage(msg='normal result',msgType=MessageType.NORMAL, user='user')
+        msgDupe = ReplyMessage(msg='normal result',msgType=MessageType.NORMAL, user='user')
+        msgNonDupe = ReplyMessage(msg='normal result 2',msgType=MessageType.NORMAL, user='user')
+        
+        self.assertEqual(msg,msgDupe)
+        self.assertNotEqual(msg, msgNonDupe)
+        
+        self.assertEqual("ReplyMessage(msg='normal result', msgType=NORMAL, user='user')", str(msg))
+        self.assertEqual("ReplyMessage(msg='normal result', msgType=NORMAL, user='user')", repr(msg))
+        
+        newMsg = ReplyMessage.fromdict({ 'msg' : 'normal result', 'msgType': 'NORMAL', 'user': 'user'})
+        self.assertEqual(msg,newMsg)    
+        
+        self.assertEqual("ReplyMessage(msg='normal result', msgType=NORMAL, user='user')", str(newMsg))
+        self.assertEqual("ReplyMessage(msg='normal result', msgType=NORMAL, user='user')", repr(newMsg))    
+        
+        with self.assertRaises(ValueError):
+            ReplyMessage.fromdict({ 'msg' : 'normal result', 'msgType': 'NORMAL'})
     
