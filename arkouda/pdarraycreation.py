@@ -15,7 +15,7 @@ __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like",
            "arange", "linspace", "randint", "uniform", "standard_normal",
            "random_strings_uniform", "random_strings_lognormal", 
            "from_series", "suffix_array","lcp_array","suffix_array_file",
-           "rmat_gen","graph_bfs"]
+           "rmat_gen","graph_bfs","graph_file_read"]
 
 numericDTypes = frozenset(["bool", "int64", "float64"]) 
 
@@ -945,9 +945,21 @@ def suffix_array_file(filename: str)  -> tuple:
 
 
 @typechecked
-def graph_file(filename: str)  -> Union[GraphD,GraphUD,GraphDW,GraphUDW]:
+def graph_file_read(Ne:int, Nv:int,Ncol:int,directed:int, filename: str)  -> Union[GraphD,GraphUD,GraphDW,GraphUDW]:
         """
-        This function is major for creating a graph from a file
+        This function is used for creating a graph from a file.
+        The file should like this
+          1   5
+          13  9
+          4   8
+          7   6
+        This file means the edges are <1,5>,<13,9>,<4,8>,<7,6>. If additional column is added, it is the weight
+        of each edge.
+        Ne : the total number of edges of the graph
+        Nv : the total number of vertices of the graph
+        Ncol: how many column of the file. Ncol=2 means just edges (so no weight and weighted=0) 
+              and Ncol=3 means there is weight for each edge (so weighted=1). 
+        directed: 0 means undirected graph and 1 means directed graph
         Returns
         -------
         Graph
@@ -963,9 +975,23 @@ def graph_file(filename: str)  -> Union[GraphD,GraphUD,GraphDW,GraphUDW]:
         ------  
         RuntimeError
         """
-        msg = "segmentedGraphFile {}".format( filename )
+        msg = "segmentedGraphFile {} {} {} {} {}".format(Ne, Nv, Ncol,directed, filename);
         repMsg = generic_msg(msg)
-        return Graph(*(cast(str,repMsg).split('+')))
+        if (int(Ncol) >2) :
+             weighted=1
+        else:
+             weighted=0
+
+        if (directed!=0)  :
+           if (weighted!=0) :
+               return GraphDW(*(cast(str,repMsg).split('+')))
+           else:
+               return GraphD(*(cast(str,repMsg).split('+')))
+        else:
+           if (weighted!=0) :
+               return GraphUDW(*(cast(str,repMsg).split('+')))
+           else:
+               return GraphUD(*(cast(str,repMsg).split('+')))
 
 @typechecked
 def rmat_gen (lgNv:int, Ne_per_v:int, p:float, directed: int,weighted:int) ->\

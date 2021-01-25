@@ -9,14 +9,12 @@ import string
 TYPES = ('int64', 'float64', 'bool', 'str')
 
 def time_ak_bfs_graph(trials:int):
-    print("Graph BFS")
-    lgNv=4
-    Ne_per_v=3
-    p=0.03
-    directed=1
+    lines=91
+    vertices=17
+    col=3
+    directed=0
     weighted=1
-    Graph=ak.rmat_gen(lgNv, Ne_per_v, p, directed, weighted)
-    '''
+    Graph=ak.graph_file_read(lines,vertices,col,directed,"kang.gr")
     print("number of vertices ={}".format(Graph.n_vertices))
     print("number of edges ={}".format(Graph.n_edges))
     print("directed graph  ={}".format(Graph.directed))
@@ -31,7 +29,6 @@ def time_ak_bfs_graph(trials:int):
     print("R neighbour   ={}".format(Graph.neighbourR))
     print("vertices weight    ={}".format(Graph.v_weight))
     print("edges weight    ={}".format(Graph.e_weight))
-    '''
     ll,ver = ak.graph_bfs(Graph,4)
     old=-2;
     visit=[]
@@ -46,11 +43,10 @@ def time_ak_bfs_graph(trials:int):
         visit.append(ver[i])
     print(visit)
     
-    '''
     print("total edges are as follows")
     for i in range(int(Graph.n_edges)):
          print("<",Graph.src[i]," -- ", Graph.dst[i],">")
-
+    '''
     print("total reverse edges are as follows")
     for i in range(int(Graph.n_edges)):
          print("<",Graph.srcR[i]," -- ", Graph.dstR[i],">")

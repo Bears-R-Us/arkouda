@@ -1203,6 +1203,212 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
   }
 
 
+
+
+// directly read a graph from given file and build the SegGraph class in memory
+  proc segGraphFileMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+      var pn = Reflection.getRoutineName();
+      var (NeS,NvS,ColS,DirectedS, FileName) = payload.decode().splitMsgToTuple(5);
+      //writeln("======================Graph Reading=====================");
+      //writeln(NeS,NvS,ColS,DirectedS, FileName);
+      var Ne=NeS:int;
+      var Nv=NvS:int;
+      var NumCol=ColS:int;
+      var directed=DirectedS:int;
+      var weighted=0:int;
+      if NumCol>2 {
+           weighted=1;
+      }
+      var src,srcR,src1,srcR1: [0..Ne-1] int;
+      var dst,dstR,dst1,dstR1: [0..Ne-1] int;
+      var e_weight: [0..Ne-1] int;
+      var v_weight: [0..Nv-1] int;
+      var neighbour: [0..Nv-1] int;
+      var neighbourR: [0..Nv-1] int;
+      var start_i: [0..Nv-1] int;
+      var start_iR: [0..Nv-1] int;
+
+      var linenum=0:int;
+
+      var repMsg: string;
+
+      var filesize:int;
+      var f = open(FileName, iomode.r);
+      var r = f.reader(kind=ionative);
+      var line:string;
+      var a,b,c:string;
+      var curline=0:int;
+      while r.readline(line) {
+          if NumCol==2 {
+            (a,b)=  line.splitMsgToTuple(2);
+          } else {
+            (a,b,c)=  line.splitMsgToTuple(3);
+             e_weight[curline]=c:int;
+          }
+          src[curline]=a:int;
+          dst[curline]=b:int;
+          curline+=1;
+      } 
+
+      r.close();
+      src=src+(src==dst);
+      src=src%Nv;
+      dst=dst%Nv;
+
+      var iv = radixSortLSD_ranks(src);
+      // permute into sorted order
+      src1 = src[iv]; //# permute first vertex into sorted order
+      dst1 = dst[iv]; //# permute second vertex into sorted order
+      var startpos=0, endpos:int;
+      var sort=0:int;
+      while (startpos < Ne-2) {
+         endpos=startpos+1;
+         sort=0;
+         while (endpos <=Ne-1) {
+            if (src1[startpos]==src1[endpos])  {
+               sort=1;
+               endpos+=1;
+               continue;
+            } else {
+               break;
+            }
+         }//end of while endpos
+         if (sort==1) {
+            var tmpary:[0..endpos-startpos-1] int;
+            tmpary=dst1[startpos..endpos-1];
+            var ivx=radixSortLSD_ranks(tmpary);
+            dst1[startpos..endpos-1]=tmpary[ivx];
+            sort=0;
+         }
+         startpos+=1;
+      }//end of while startpos
+
+      for i in 0..Ne-1 do {
+        neighbour[src1[i]]+=1;
+        if (start_i[src1[i]] ==-1){
+           start_i[src1[i]]=i;
+        }
+
+      }
+
+      if (directed==0) { //undirected graph
+
+          srcR = dst1;
+          dstR = src1;
+
+          var ivR = radixSortLSD_ranks(srcR);
+          srcR1 = srcR[ivR]; //# permute first vertex into sorted order
+          dstR1 = dstR[ivR]; //# permute second vertex into sorted order
+          startpos=0;
+          sort=0;
+          while (startpos < Ne-2) {
+              endpos=startpos+1;
+              sort=0;
+              while (endpos <=Ne-1) {
+                 if (srcR1[startpos]==srcR1[endpos])  {
+                    sort=1;
+                    endpos+=1;
+                    continue;
+                 } else {
+                    break;
+                 }
+              }//end of while endpos
+              if (sort==1) {
+                  var tmparyR:[0..endpos-startpos-1] int;
+                  tmparyR=dstR1[startpos..endpos-1];
+                  var ivxR=radixSortLSD_ranks(tmparyR);
+                  dstR1[startpos..endpos-1]=tmparyR[ivxR];
+                  sort=0;
+              }
+              startpos+=1;
+          }//end of while startpos
+          for i in 0..Ne-1 do {
+              neighbourR[srcR1[i]]+=1;
+              if (start_iR[srcR1[i]] ==-1){
+                  start_iR[srcR1[i]]=i;
+              }
+          }
+
+      }//end of undirected
+
+
+      var ewName ,vwName:string;
+      if (weighted!=0) {
+        fillInt(v_weight,1,1000);
+        //fillRandom(v_weight,0,100);
+        ewName = st.nextName();
+        vwName = st.nextName();
+        var vwEntry = new shared SymEntry(v_weight);
+        var ewEntry = new shared SymEntry(e_weight);
+        st.addEntry(vwName, vwEntry);
+        st.addEntry(ewName, ewEntry);
+      }
+      var srcName = st.nextName();
+      var dstName = st.nextName();
+      var startName = st.nextName();
+      var neiName = st.nextName();
+      var srcEntry = new shared SymEntry(src1);
+      var dstEntry = new shared SymEntry(dst1);
+      var startEntry = new shared SymEntry(start_i);
+      var neiEntry = new shared SymEntry(neighbour);
+      st.addEntry(srcName, srcEntry);
+      st.addEntry(dstName, dstEntry);
+      st.addEntry(startName, startEntry);
+      st.addEntry(neiName, neiEntry);
+      var sNv=Nv:string;
+      var sNe=Ne:string;
+      var sDirected=directed:string;
+      var sWeighted=weighted:string;
+
+      var srcNameR, dstNameR, startNameR, neiNameR:string;
+      if (directed!=0) {//for directed graph
+          if (weighted!=0) {
+              repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted +
+                    '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) +
+                    '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) +
+                    '+created ' + st.attrib(vwName)    + '+created ' + st.attrib(ewName);
+          } else {
+              repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted +
+                    '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) +
+                    '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) ;
+
+          }
+      } else {//for undirected graph
+
+          srcNameR = st.nextName();
+          dstNameR = st.nextName();
+          startNameR = st.nextName();
+          neiNameR = st.nextName();
+          var srcEntryR = new shared SymEntry(srcR1);
+          var dstEntryR = new shared SymEntry(dstR1);
+          var startEntryR = new shared SymEntry(start_iR);
+          var neiEntryR = new shared SymEntry(neighbourR);
+          st.addEntry(srcNameR, srcEntryR);
+          st.addEntry(dstNameR, dstEntryR);
+          st.addEntry(startNameR, startEntryR);
+          st.addEntry(neiNameR, neiEntryR);
+          if (weighted!=0) {
+              repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + ' +' + sWeighted +
+                    '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) +
+                    '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) +
+                    '+created ' + st.attrib(srcNameR)   + '+created ' + st.attrib(dstNameR) +
+                    '+created ' + st.attrib(startNameR) + '+created ' + st.attrib(neiNameR) +
+                    '+created ' + st.attrib(vwName)    + '+created ' + st.attrib(ewName);
+          } else {
+              repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + ' +' + sWeighted +
+                    '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) +
+                    '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) +
+                    '+created ' + st.attrib(srcNameR)   + '+created ' + st.attrib(dstNameR) +
+                    '+created ' + st.attrib(startNameR) + '+created ' + st.attrib(neiNameR) ;
+          }
+
+      }
+      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+      return repMsg;
+  }
+
+
+
   proc segrmatgenMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
       var pn = Reflection.getRoutineName();
       var repMsg: string;
@@ -1508,14 +1714,17 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       }
       var vertexValue = radixSortLSD_ranks(depth);
       var levelValue=depth[vertexValue]; 
-
+      //var depthName =st.nextName();
       var levelName = st.nextName();
       var vertexName = st.nextName();
       var levelEntry = new shared SymEntry(levelValue);
       var vertexEntry = new shared SymEntry(vertexValue);
+      //var depthEntry = new shared SymEntry(depth);
       st.addEntry(levelName, levelEntry);
       st.addEntry(vertexName, vertexEntry);
+      //st.addEntry(depthName, depthEntry);
       repMsg =  'created ' + st.attrib(levelName) + '+created ' + st.attrib(vertexName) ;
+      //repMsg =  'created ' + st.attrib(depthName);
 
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
       return repMsg;

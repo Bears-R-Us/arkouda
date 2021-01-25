@@ -8,21 +8,21 @@ import string
 
 TYPES = ('int64', 'float64', 'bool', 'str')
 
-def time_ak_rmat_graph(lgNv, Ne_per_v, p, perm):
+def time_ak_rmat_graph(lgNv, Ne_per_v, p, directed, weighted):
     print(">>> arkouda rmat graph")
     cfg = ak.get_config()
     Nv =  cfg["numLocales"]
     print("numLocales = {}".format(cfg["numLocales"]))
-    Graph = ak.rmat_gen(lgNv, Ne_per_v, p, perm)
+    Graph = ak.rmat_gen(lgNv, Ne_per_v, p, directed, weighted)
     print("number of vertices ={}".format(Graph.n_vertices))
     print("number of edges ={}".format(Graph.n_edges))
     print("directed graph  ={}".format(Graph.directed))
     print("source of edges   ={}".format(Graph.src))
     print("dest of edges   ={}".format(Graph.dst))
-    print("start   ={}".format(Graph.start))
+    print("start   ={}".format(Graph.start_i))
     print("neighbour   ={}".format(Graph.neighbour))
-    print("vertices weight    ={}".format(Graph.v_weight))
-    print("edges weight    ={}".format(Graph.e_weight))
+    #print("vertices weight    ={}".format(Graph.v_weight))
+    #print("edges weight    ={}".format(Graph.e_weight))
     timings = []
     for _ in range(trials):
         start = time.time()
@@ -43,7 +43,8 @@ def create_parser():
     parser.add_argument('-e', '--vedges', type=int, default=2,help='Number of edges per vertex')
     parser.add_argument('-p', '--possibility', type=float, default=0.01,help='Possibility ')
     parser.add_argument('-t', '--trials', type=int, default=6, help='Number of times to run the benchmark')
-    parser.add_argument('-m', '--perm', type=int, default=0 , help='if permutation ')
+    parser.add_argument('-d', '--directed', type=int, default=0 , help='if directed ')
+    parser.add_argument('-w', '--weighted', type=int, default=0 , help='if weighted ')
     parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
     parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
     return parser
@@ -64,5 +65,5 @@ if __name__ == "__main__":
         sys.exit(0)
     '''
 
-    time_ak_rmat_graph(args.logvertices, args.vedges, args.possibility, args.perm)
+    time_ak_rmat_graph(args.logvertices, args.vedges, args.possibility, args.directed,args.weighted)
     sys.exit(0)
