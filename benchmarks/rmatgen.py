@@ -23,67 +23,16 @@ def time_ak_rmat_graph(lgNv, Ne_per_v, p, perm):
     print("neighbour   ={}".format(Graph.neighbour))
     print("vertices weight    ={}".format(Graph.v_weight))
     print("edges weight    ={}".format(Graph.e_weight))
-    return
     timings = []
     for _ in range(trials):
         start = time.time()
-        c=ak.suffix_array(v)
+        Graph = ak.rmat_gen(lgNv, Ne_per_v, p, perm)
         end = time.time()
         timings.append(end - start)
     tavg = sum(timings) / trials
 
     print("Average time = {:.4f} sec".format(tavg))
-    if dtype == 'str':
-        offsets_transferred = 0 * c.offsets.size * c.offsets.itemsize
-        bytes_transferred = (c.bytes.size * c.offsets.itemsize) + (0 * c.bytes.size)
-        bytes_per_sec = (offsets_transferred + bytes_transferred) / tavg
-    else:
-        print("Wrong data type")
-    print("Average rate = {:.2f} GiB/sec".format(bytes_per_sec/2**30))
 
-
-def suffixArray(s):
-    suffixes = [(s[i:], i) for i in range(len(s))]
-    suffixes.sort(key=lambda x: x[0])
-    sa= [s[1] for s in suffixes]
-    #sa.insert(0,len(sa))
-    return sa
-
-def time_np_sa(vsize, strlen, trials, dtype):
-    s=''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(strlen))
-    timings = []
-    for _ in range(trials):
-        start = time.time()
-        sa=suffixArray(s)
-        end = time.time()
-        timings.append(end - start)
-    tavg = sum(timings) / trials
-    print("Average time = {:.4f} sec".format(tavg))
-    if dtype == 'str':
-        offsets_transferred = 0
-        bytes_transferred = len(s)
-        bytes_per_sec = (offsets_transferred + bytes_transferred) / tavg
-    else:
-        print("Wrong data type")
-    print("Average rate = {:.2f} GiB/sec".format(bytes_per_sec/2**30))
-
-def check_correctness( vsize,strlen, trials, dtype):
-    Ni = strlen
-    Nv = vsize
-
-    v = ak.random_strings_uniform(1, Ni, Nv)
-    c=ak.suffix_array(v)
-    for k in range(Nv):
-        s=v[k]
-        sa=suffixArray(s)
-        aksa=c[k]
-#        _,tmp=c[k].split(maxsplit=1)
-#        aksa=tmp.split()
-#        intaksa  = [int(numeric_string) for numeric_string in aksa]
-#        intaksa  = aksa[1:-1]
-#        print(sa)
-#        print(intaksa)
-        assert (sa==aksa)
 
 
 def create_parser():

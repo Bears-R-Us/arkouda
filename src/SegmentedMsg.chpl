@@ -1206,15 +1206,16 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
   proc segrmatgenMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
       var pn = Reflection.getRoutineName();
       var repMsg: string;
-      var (slgNv, sNe_per_v, sp, sperm )
-          = payload.decode().splitMsgToTuple(4);
-      writeln(slgNv, sNe_per_v, sp, sperm);
+      var (slgNv, sNe_per_v, sp, sdire,swei,rest )
+          = payload.decode().splitMsgToTuple(6);
+      //writeln(slgNv, sNe_per_v, sp, sdire,swei,rest);
       var lgNv = slgNv: int;
       var Ne_per_v = sNe_per_v: int;
       var p = sp: real;
-      var perm = sperm: int;
+      var directed=sdire : int;
+      var weighted=swei : int;
 
-      writeln(lgNv, Ne_per_v, p, perm);
+      //writeln(lgNv, Ne_per_v, p, directed,weighted);
       var Nv = 2**lgNv:int;
       // number of edges
       var Ne = Ne_per_v * Nv:int;
@@ -1223,15 +1224,18 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var b = (1.0 - a)/ 3.0:real;
       var c = b;
       var d = b;
-      var src: [0..Ne-1] int;
-      var dst: [0..Ne-1] int;
+      var src,srcR,src1,srcR1: [0..Ne-1] int;
+      var dst,dstR,dst1,dstR1: [0..Ne-1] int;
       var e_weight: [0..Ne-1] int;
       var v_weight: [0..Nv-1] int;
       var length: [0..Nv-1] int;
+      var lengthR: [0..Nv-1] int;
       var start_i: [0..Nv-1] int;
+      var start_iR: [0..Nv-1] int;
       length=0;
+      lengthR=0;
       start_i=-1;
-      var directed:bool;
+      start_iR=-1;
       var n_vertices=Nv;
       var n_edges=Ne;
       src=1;
@@ -1254,28 +1258,14 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       }
       src=src%Nv;
       dst=dst%Nv;
-      //src=src+(src==dst);
-      // maybe: remove edges which are self-loops???
-      /*
-      writeln("before sorting");
-      writeln("src=");
-      writeln(src);
-      writeln("dst=");
-      writeln("dst=",dst);
-      */
+      //remove self loop
+      src=src+(src==dst);
+      src=src%Nv;
+
       var iv = radixSortLSD_ranks(src);
       // permute into sorted order
-      var src1 = src[iv]; //# permute first vertex into sorted order
-      var dst1 = dst[iv]; //# permute second vertex into sorted order
-      /*
-      writeln("before sorting");
-      writeln("src=");
-      writeln(src);
-      writeln("dst=");
-      writeln("dst=",dst);
-      writeln("iv=");
-      writeln(iv);
-      */
+      src1 = src[iv]; //# permute first vertex into sorted order
+      dst1 = dst[iv]; //# permute second vertex into sorted order
       //# to premute/rename vertices
       var startpos=0, endpos:int;
       var sort=0:int;
@@ -1314,71 +1304,204 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
         }
  
       }
-      var neighbour  = (+ scan length) - length;
+      //var neighbour  = (+ scan length) - length;
+      var neighbour  = length;
+      var neighbourR  = neighbour;
+
       /*
-      writeln("src=");
-      writeln(src);
-      writeln("dst=");
-      writeln(dst);
-      writeln("src1=");
-      writeln(src1);
-      writeln("dst1=");
-      writeln(dst1);
-      writeln("start_i=");
-      writeln(start_i);
-      writeln("start_i[0]=",start_i[0]);
-      writeln("neighbour=");
-      writeln(neighbour);
+      for i in 0..Nv-1 do {
+        writeln("node ",i, " has ", neighbour[i], " neighbours", 
+                " start=",start_i[i], " they are ", dst1[start_i[i]..start_i[i]-1+neighbour[i]]);
+      }
       */
-      fillRandom(e_weight);
-      fillRandom(v_weight);
+
+      if (directed==0) { //undirected graph
+
+          srcR = dst1;
+          dstR = src1;
+
+          var ivR = radixSortLSD_ranks(srcR);
+          srcR1 = srcR[ivR]; //# permute first vertex into sorted order
+          dstR1 = dstR[ivR]; //# permute second vertex into sorted order
+          startpos=0;
+          sort=0;
+          while (startpos < Ne-2) {
+              endpos=startpos+1;
+              sort=0;
+              while (endpos <=Ne-1) {
+                 if (srcR1[startpos]==srcR1[endpos])  {
+                    sort=1;
+                    endpos+=1;
+                    continue;
+                 } else {
+                    break;
+                 } 
+              }//end of while endpos
+              if (sort==1) {
+                  var tmparyR:[0..endpos-startpos-1] int;
+                  tmparyR=dstR1[startpos..endpos-1];
+                  var ivxR=radixSortLSD_ranks(tmparyR);
+                  dstR1[startpos..endpos-1]=tmparyR[ivxR];
+                  sort=0;
+              } 
+              startpos+=1;
+          }//end of while startpos
+
+
+          for i in 0..Ne-1 do {
+              lengthR[srcR1[i]]+=1;
+              if (start_iR[srcR1[i]] ==-1){
+                  start_iR[srcR1[i]]=i;
+              }
+ 
+          }
+          //neighbourR  = (+ scan lengthR) - lengthR;
+          neighbourR  = lengthR;
+
+          /*
+          for i in 0..Nv-1 do {
+          writeln("rever node ",i, " has ", neighbourR[i], " neighbours", 
+                " start=",start_iR[i], " they are ", dstR1[start_iR[i]..start_iR[i]-1+neighbourR[i]]);
+          */
+      }
+      }//end of undirected
+
+
+      var ewName ,vwName:string;
+      if (weighted!=0) {
+        fillInt(e_weight,1,1000);
+        //fillRandom(e_weight,0,100);
+        fillInt(v_weight,1,1000);
+        //fillRandom(v_weight,0,100);
+        ewName = st.nextName();
+        vwName = st.nextName();
+        var vwEntry = new shared SymEntry(v_weight);
+        var ewEntry = new shared SymEntry(e_weight);
+        st.addEntry(vwName, vwEntry);
+        st.addEntry(ewName, ewEntry);
+      }
       //writeln("e_weight=",e_weight,"v_weight=",v_weight);
       var srcName = st.nextName();
       var dstName = st.nextName();
       var startName = st.nextName();
       var neiName = st.nextName();
-      var ewName = st.nextName();
-      var vwName = st.nextName();
       var srcEntry = new shared SymEntry(src1);
       var dstEntry = new shared SymEntry(dst1);
-      var ewEntry = new shared SymEntry(e_weight);
-      var vwEntry = new shared SymEntry(v_weight);
-      var neiEntry = new shared SymEntry(neighbour);
       var startEntry = new shared SymEntry(start_i);
+      var neiEntry = new shared SymEntry(neighbour);
       st.addEntry(srcName, srcEntry);
       st.addEntry(dstName, dstEntry);
       st.addEntry(startName, startEntry);
       st.addEntry(neiName, neiEntry);
-      st.addEntry(vwName, vwEntry);
-      st.addEntry(ewName, ewEntry);
       var sNv=Nv:string;
       var sNe=Ne:string;
       var sDirected=directed:string;
-      //repMsg =  (Ne:string) + '+ ' + (Nv:string) + '+ ' + (directed:string) + 
-      repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + 
-               '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) + 
-               '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) + 
-               '+created ' + st.attrib(vwName)    + '+created ' + st.attrib(ewName);
+      var sWeighted=weighted:string;
+
+      var srcNameR, dstNameR, startNameR, neiNameR:string;
+      if (directed!=0) {//for directed graph
+          if (weighted!=0) {
+              repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted +
+                    '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) + 
+                    '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) + 
+                    '+created ' + st.attrib(vwName)    + '+created ' + st.attrib(ewName);
+          } else {
+              repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted +
+                    '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) + 
+                    '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) ; 
+
+          }
+      } else {//for undirected graph
+
+          srcNameR = st.nextName();
+          dstNameR = st.nextName();
+          startNameR = st.nextName();
+          neiNameR = st.nextName();
+          var srcEntryR = new shared SymEntry(srcR1);
+          var dstEntryR = new shared SymEntry(dstR1);
+          var startEntryR = new shared SymEntry(start_iR);
+          var neiEntryR = new shared SymEntry(neighbourR);
+          st.addEntry(srcNameR, srcEntryR);
+          st.addEntry(dstNameR, dstEntryR);
+          st.addEntry(startNameR, startEntryR);
+          st.addEntry(neiNameR, neiEntryR);
+          /*
+          writeln("src=");
+          writeln(src1);
+          writeln("dstR=");
+          writeln(dstR1);
+          writeln("dst=");
+          writeln(dst1);
+          writeln("srcR=");
+          writeln(srcR1);
+          */
+          if (weighted!=0) {
+              repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + ' +' + sWeighted +
+                    '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) + 
+                    '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) + 
+                    '+created ' + st.attrib(srcNameR)   + '+created ' + st.attrib(dstNameR) + 
+                    '+created ' + st.attrib(startNameR) + '+created ' + st.attrib(neiNameR) + 
+                    '+created ' + st.attrib(vwName)    + '+created ' + st.attrib(ewName);
+          } else {
+              repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + ' +' + sWeighted +
+                    '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) + 
+                    '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) + 
+                    '+created ' + st.attrib(srcNameR)   + '+created ' + st.attrib(dstNameR) + 
+                    '+created ' + st.attrib(startNameR) + '+created ' + st.attrib(neiNameR) ; 
+          }
+
+      }
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
       return repMsg;
   }
 
 
-
-
   proc segBFSMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
       var pn = Reflection.getRoutineName();
       var repMsg: string;
-      var (n_verticesN,n_edgesN,directedN,srcN, dstN, startN, neighbourN,vweightN,eweightN, rootN )
-          = payload.decode().splitMsgToTuple(10);
+      //var (n_verticesN,n_edgesN,directedN,weightedN,srcN, dstN, startN, neighbourN,vweightN,eweightN, rootN )
+      //    = payload.decode().splitMsgToTuple(10);
+      var (n_verticesN,n_edgesN,directedN,weightedN,restpart )
+          = payload.decode().splitMsgToTuple(5);
       var Nv=n_verticesN:int;
       var Ne=n_edgesN:int;
-      var Directed=directedN:bool;
+      var Directed=directedN:int;
+      var Weighted=weightedN:int;
+
+
+      if (Directed!=0) {
+          if (Weighted!=0) {
+              repMsg=BFS_DW(Nv, Ne,Directed,Weighted,restpart,st);
+          } else {
+              repMsg=BFS_D(Nv, Ne,Directed,Weighted,restpart,st);
+          }
+      }
+      else {
+          if (Weighted!=0) {
+              repMsg=BFS_UDW(Nv, Ne,Directed,Weighted,restpart,st);
+          } else {
+              repMsg=BFS_UD(Nv, Ne,Directed,Weighted,restpart,st);
+          }
+      }
+      return repMsg;
+
+  }
+
+
+
+
+  proc BFS_D(Nv:int , Ne:int ,Directed:int ,Weighted:int,restpart:string ,st: borrowed SymTab): string throws {
+      var pn = Reflection.getRoutineName();
+      var repMsg: string;
+
+      var srcN, dstN, startN, neighbourN, rootN :string;
+
+      (srcN, dstN, startN, neighbourN,rootN )=restpart.splitMsgToTuple(5);
+      var ag = new owned SegGraphD(Nv,Ne,Directed,Weighted,srcN,dstN,
+                      startN,neighbourN,st);
+
+
       var root=rootN:int;
-
-      var ag = new owned SegGraph(Nv,Ne,Directed,srcN,dstN,startN,neighbourN,vweightN,eweightN, st);
-
-      //var depth = makeDistArray(Nv, int);
       var depth=-1: [0..Nv-1] int;
       depth[root]=0;
       var cur_level=0;
@@ -1386,31 +1509,29 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var SetNextF: domain(int);
       SetCurF.add(root);
       var numCurF=1:int;
+
       while (numCurF>0) {
            SetNextF.clear();
            forall i in SetCurF {
               var numNF=-1 :int;
-              if (ag.start_i.a[i] <0 ){
-                   numNF=0;
-              } else {
-                 if (i<Nv-1) {
-                   numNF=ag.neighbour.a[i+1]-ag.neighbour.a[i];
-                 } else {
-                   numNF=Ne-1-ag.neighbour.a[i];
-                 } 
-
-              }
-              if ((ag.start_i.a[i] >0) && (numNF>0)) {
-                var NF=ag.dst.a[ag.start_i.a[i]..ag.start_i.a[i]+numNF-1];
+              ref nf=ag.neighbour.a;
+              ref sf=ag.start_i.a;
+              ref df=ag.dst.a;
+              numNF=nf[i];
+              ref NF=df[sf[i]..sf[i]+numNF-1];
+              if (numNF>0) {
                 forall j in NF {
+                //for j in NF {
                    if (depth[j]==-1) {
                       depth[j]=cur_level+1;
                       SetNextF.add(j);
                    }
                 }
               }
+
            }//end forall i
            cur_level+=1;
+           //writeln("SetCurF= ", SetCurF, "SetNextF=", SetNextF, " level ", cur_level+1);
            numCurF=SetNextF.size;
            SetCurF=SetNextF;
       }
@@ -1428,6 +1549,299 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
       return repMsg;
   }
+
+
+
+
+  proc BFS_DW(Nv:int, Ne:int,Directed:int,Weighted:int,restpart:string,st: borrowed SymTab): string throws {
+      var pn = Reflection.getRoutineName();
+      var repMsg: string;
+
+      var srcN, dstN, startN, neighbourN,vweightN,eweightN, rootN :string;
+      (srcN, dstN, startN, neighbourN,vweightN,eweightN, rootN)=
+                   restpart.splitMsgToTuple(7);
+
+      var ag = new owned SegGraphDW(Nv,Ne,Directed,Weighted,srcN,dstN,
+                      startN,neighbourN,vweightN,eweightN, st);
+      var root=rootN:int;
+      var depth=-1: [0..Nv-1] int;
+      depth[root]=0;
+      var cur_level=0;
+      var SetCurF: domain(int);
+      var SetNextF: domain(int);
+      SetCurF.add(root);
+      var numCurF=1:int;
+
+      while (numCurF>0) {
+           SetNextF.clear();
+           forall i in SetCurF {
+              var numNF=-1 :int;
+              ref nf=ag.neighbour.a;
+              ref sf=ag.start_i.a;
+              ref df=ag.dst.a;
+              numNF=nf[i];
+              ref NF=df[sf[i]..sf[i]+numNF-1];
+              if (numNF>0) {
+                forall j in NF {
+                //writeln("current node ",i, " has neibours ",NF);
+                //for j in NF {
+                   if (depth[j]==-1) {
+                      depth[j]=cur_level+1;
+                      SetNextF.add(j);
+                      //writeln("add ", j, " into level ", cur_level+1);
+                   }
+                }
+              }
+
+           }//end forall i
+           cur_level+=1;
+           //writeln("SetCurF= ", SetCurF, "SetNextF=", SetNextF, " level ", cur_level+1);
+           numCurF=SetNextF.size;
+           SetCurF=SetNextF;
+      }
+      var vertexValue = radixSortLSD_ranks(depth);
+      var levelValue=depth[vertexValue]; 
+
+      var levelName = st.nextName();
+      var vertexName = st.nextName();
+      var levelEntry = new shared SymEntry(levelValue);
+      var vertexEntry = new shared SymEntry(vertexValue);
+      st.addEntry(levelName, levelEntry);
+      st.addEntry(vertexName, vertexEntry);
+      repMsg =  'created ' + st.attrib(levelName) + '+created ' + st.attrib(vertexName) ;
+
+      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
+      return repMsg;
+  }
+
+
+
+
+
+
+
+
+  proc BFS_UD(Nv:int , Ne:int ,Directed:int ,Weighted:int,restpart:string ,st: borrowed SymTab): string throws {
+      var pn = Reflection.getRoutineName();
+      var repMsg: string;
+
+
+      var srcN, dstN, startN, neighbourN, rootN :string;
+      var srcRN, dstRN, startRN, neighbourRN:string;
+
+      (srcN, dstN, startN, neighbourN,srcRN, dstRN, startRN, neighbourRN, rootN )=
+                   restpart.splitMsgToTuple(9);
+      var ag = new owned SegGraphUD(Nv,Ne,Directed,Weighted,
+                      srcN,dstN, startN,neighbourN,
+                      srcRN,dstRN, startRN,neighbourRN,
+                      st);
+
+      var root=rootN:int;
+      var depth=-1: [0..Nv-1] int;
+      depth[root]=0;
+      var cur_level=0;
+      var SetCurF: domain(int);
+      var SetNextF: domain(int);
+      SetCurF.add(root);
+      var numCurF=1:int;
+
+      //writeln("========================BSF_UD==================================");
+      while (numCurF>0) {
+           SetNextF.clear();
+           forall i in SetCurF {
+              var numNF=-1 :int;
+              ref nf=ag.neighbour.a;
+              ref sf=ag.start_i.a;
+              ref df=ag.dst.a;
+              numNF=nf[i];
+              ref NF=df[sf[i]..sf[i]+numNF-1];
+              if (numNF>0) {
+                forall j in NF {
+                //writeln("current node ",i, " has neibours ",NF);
+                //for j in NF {
+                   if (depth[j]==-1) {
+                      depth[j]=cur_level+1;
+                      SetNextF.add(j);
+                      //writeln("current node ",i, " add ", j, 
+                      //        " into level ", cur_level+1, " SetNextF=", SetNextF);
+                   }
+                }
+              }
+              // reverse direction
+              if (Directed!=1) {
+
+                  var numNFR=-1 :int;
+                  ref nfR=ag.neighbourR.a;
+                  ref sfR=ag.start_iR.a;
+                  ref dfR=ag.dstR.a;
+                  numNFR=nfR[i];
+                  ref NFR=dfR[sfR[i]..sfR[i]+numNFR-1];
+                  if (numNFR>0) {
+                      //writeln("current node ",i, " has reverse neibours ",NFR);
+                      forall j in NFR {
+                      //for j in NFR {
+                          if (depth[j]==-1) {
+                             depth[j]=cur_level+1;
+                             SetNextF.add(j);
+                             //writeln("current node ",i, " add reverse ", j, 
+                             //        " into level ", cur_level+1, " SetNextF=", SetNextF);
+                          }
+                      } 
+                  }
+              }
+
+
+           }//end forall i
+           cur_level+=1;
+           //writeln("SetCurF= ", SetCurF, "SetNextF=", SetNextF, " level ", cur_level+1);
+           numCurF=SetNextF.size;
+           SetCurF=SetNextF;
+      }
+      var vertexValue = radixSortLSD_ranks(depth);
+      var levelValue=depth[vertexValue]; 
+
+      var levelName = st.nextName();
+      var vertexName = st.nextName();
+      var levelEntry = new shared SymEntry(levelValue);
+      var vertexEntry = new shared SymEntry(vertexValue);
+      st.addEntry(levelName, levelEntry);
+      st.addEntry(vertexName, vertexEntry);
+      repMsg =  'created ' + st.attrib(levelName) + '+created ' + st.attrib(vertexName) ;
+
+      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
+      return repMsg;
+  }
+
+
+
+
+
+
+  proc BFS_UDW(Nv:int , Ne:int ,Directed:int ,Weighted:int,restpart:string ,st: borrowed SymTab): string throws {
+      var pn = Reflection.getRoutineName();
+      var repMsg: string;
+
+
+      var srcN, dstN, startN, neighbourN,vweightN,eweightN, rootN :string;
+      var srcRN, dstRN, startRN, neighbourRN:string;
+
+      (srcN, dstN, startN, neighbourN,srcRN, dstRN, startRN, neighbourRN,vweightN,eweightN, rootN )=
+                   restpart.splitMsgToTuple(11);
+      var ag = new owned SegGraphUDW(Nv,Ne,Directed,Weighted,
+                      srcN,dstN, startN,neighbourN,
+                      srcRN,dstRN, startRN,neighbourRN,
+                      vweightN,eweightN, st);
+
+      //writeln("========================BSF_UDW==================================");
+      var root=rootN:int;
+      var depth=-1: [0..Nv-1] int;
+      depth[root]=0;
+      var cur_level=0;
+      var SetCurF: domain(int);
+      var SetNextF: domain(int);
+      SetCurF.add(root);
+      var numCurF=1:int;
+
+      /*
+      writeln("Fisrt Check if the values are correct");
+      writeln("src=");
+      writeln(ag.src.a);
+      writeln("dst=");
+      writeln(ag.dst.a);
+      writeln("neighbours=");
+      writeln(ag.neighbour.a);
+      writeln("start=");
+      writeln(ag.start_i.a);
+
+      writeln("srcR=");
+      writeln(ag.srcR.a);
+      writeln("dstR=");
+      writeln(ag.dstR.a);
+      writeln("neighbours=");
+      writeln(ag.neighbourR.a);
+      writeln("startR=");
+      writeln(ag.start_iR.a);
+
+      for i in 0..ag.n_vertices-1 do {
+          writeln("node ",i, " has ", ag.neighbour.a[i], " neighbours", 
+                " start=",ag.start_i.a[i], " they are ", 
+                ag.dst.a[ag.start_i.a[i]..ag.start_i.a[i]-1+ag.neighbour.a[i]]);
+      }
+      for i in 0..ag.n_vertices-1 do {
+          writeln("reverse node ",i, " has ", ag.neighbourR.a[i], " neighbours", 
+                " start=",ag.start_iR.a[i], " they are ", 
+                ag.dstR.a[ag.start_iR.a[i]..ag.start_iR.a[i]-1+ag.neighbourR.a[i]]);
+      }
+      */
+
+      while (numCurF>0) {
+           //writeln("start loop SetCurF=", SetCurF);
+           SetNextF.clear();
+           forall i in SetCurF {
+              var numNF=-1 :int;
+              ref nf=ag.neighbour.a;
+              ref sf=ag.start_i.a;
+              ref df=ag.dst.a;
+              numNF=nf[i];
+              ref NF=df[sf[i]..sf[i]+numNF-1];
+              //writeln("current node ",i, " has ", numNF, " neighbours and  they are  ",NF);
+              if (numNF>0) {
+                forall j in NF {
+                //for j in NF {
+                   //writeln("current node ",i, " check neibour ",j, " its depth=",depth[j]);
+                   if (depth[j]==-1) {
+                      depth[j]=cur_level+1;
+                      SetNextF.add(j);
+                      //writeln("current node ",i, " add ", j, " into level ", cur_level+1, " SetNextF=", SetNextF);
+                   }
+                }
+              }
+              // reverse direction
+              if (Directed!=1) {
+                  var numNFR=-1 :int;
+                  ref nfR=ag.neighbourR.a;
+                  ref sfR=ag.start_iR.a;
+                  ref dfR=ag.dstR.a;
+                  numNFR=nfR[i];
+                  ref NFR=dfR[sfR[i]..sfR[i]+numNFR-1];
+                  //writeln("current node ",i, " has ", numNFR ," reverse neighbours and  they are  ",NFR);
+                  if ( numNFR>0) {
+                      forall j in NFR {
+                      //for j in NFR {
+                          //writeln("current node ",i, " check neibour ",j, " its depth=",depth[j]);
+                          if (depth[j]==-1) {
+                             depth[j]=cur_level+1;
+                             SetNextF.add(j);
+                             //writeln("current node ",i, " add reverse ", j, 
+                             //          " into level ", cur_level+1, " SetNextF=", SetNextF);
+                          }
+                      } 
+                  }
+              }
+
+
+           }//end forall i
+           cur_level+=1;
+           //writeln("SetCurF= ", SetCurF, "SetNextF=", SetNextF, " level ", cur_level+1);
+           numCurF=SetNextF.size;
+           SetCurF=SetNextF;
+      }
+      var vertexValue = radixSortLSD_ranks(depth);
+      var levelValue=depth[vertexValue]; 
+
+      var levelName = st.nextName();
+      var vertexName = st.nextName();
+      var levelEntry = new shared SymEntry(levelValue);
+      var vertexEntry = new shared SymEntry(vertexValue);
+      st.addEntry(levelName, levelEntry);
+      st.addEntry(vertexName, vertexEntry);
+      repMsg =  'created ' + st.attrib(levelName) + '+created ' + st.attrib(vertexName) ;
+
+      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
+      return repMsg;
+  }
+
+
 
 
 

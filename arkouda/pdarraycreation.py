@@ -9,7 +9,7 @@ from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS, \
 from arkouda.dtypes import dtype as akdtype
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.strings import Strings, SArrays
-from arkouda.graph import Graph
+from arkouda.graph import GraphD, GraphDW,GraphUD,GraphUDW
 
 __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like", 
            "arange", "linspace", "randint", "uniform", "standard_normal",
@@ -945,7 +945,7 @@ def suffix_array_file(filename: str)  -> tuple:
 
 
 @typechecked
-def graph_file(filename: str)  -> Graph:
+def graph_file(filename: str)  -> Union[GraphD,GraphUD,GraphDW,GraphUDW]:
         """
         This function is major for creating a graph from a file
         Returns
@@ -968,7 +968,8 @@ def graph_file(filename: str)  -> Graph:
         return Graph(*(cast(str,repMsg).split('+')))
 
 @typechecked
-def rmat_gen (lgNv:int, Ne_per_v:int, p:float, perm: int) -> Graph:
+def rmat_gen (lgNv:int, Ne_per_v:int, p:float, directed: int,weighted:int) ->\
+              Union[GraphD,GraphUD,GraphDW,GraphUDW]:
         """
         This function is for creating a graph using rmat graph generator
         Returns
@@ -986,12 +987,21 @@ def rmat_gen (lgNv:int, Ne_per_v:int, p:float, perm: int) -> Graph:
         ------  
         RuntimeError
         """
-        msg = "segmentedRMAT {} {} {} {}".format(lgNv, Ne_per_v, p, perm)
+        msg = "segmentedRMAT {} {} {} {} {}".format(lgNv, Ne_per_v, p, directed, weighted)
         repMsg = generic_msg(msg)
-        return Graph(*(cast(str,repMsg).split('+')))
+        if (directed!=0)  :
+           if (weighted!=0) :
+               return GraphDW(*(cast(str,repMsg).split('+')))
+           else:
+               return GraphD(*(cast(str,repMsg).split('+')))
+        else:
+           if (weighted!=0) :
+               return GraphUDW(*(cast(str,repMsg).split('+')))
+           else:
+               return GraphUD(*(cast(str,repMsg).split('+')))
 
 @typechecked
-def graph_bfs (graph: Graph, root: int ) -> tuple:
+def graph_bfs (graph: Union[GraphD,GraphDW,GraphUD,GraphUDW], root: int ) -> tuple:
         """
         This function is generating the breadth-first search vertices sequences in given graph
         starting from the given root vertex
@@ -1010,21 +1020,60 @@ def graph_bfs (graph: Graph, root: int ) -> tuple:
         ------  
         RuntimeError
         """
-        msg = "segmentedGraphBFS {} {} {} {} {} {} {} {}".format(graph.n_vertices,graph.n_edges,\
-                 graph.directed,graph.src.name,graph.dst.name,\
-                 graph.start.name,graph.neighbour.name,\
-                 graph.v_weight.name,graph.e_weight.name,root)
+        #if (cast(int,graph.directed)!=0)  :
+        if (int(graph.directed)>0)  :
+            if (int(graph.weighted)==0):
+              # directed unweighted GraphD
+              msg = "segmentedGraphBFS {} {} {} {} {} {} {} {} {}".format(
+                 graph.n_vertices,graph.n_edges,\
+                 graph.directed,graph.weighted,\
+                 graph.src.name,graph.dst.name,\
+                 graph.start_i.name,graph.neighbour.name,\
+                 root)
+            else:
+              # directed weighted GraphDW
+              msg = "segmentedGraphBFS {} {} {} {} {} {} {} {} {} {} {}".format(
+                 graph.n_vertices,graph.n_edges,\
+                 graph.directed,graph.weighted,\
+                 graph.src.name,graph.dst.name,\
+                 graph.start_i.name,graph.neighbour.name,\
+                 graph.v_weight.name,graph.e_weight.name,\
+                 root)
+        else:
+            if (int(graph.weighted)==0):
+              # undirected unweighted GraphUD
+              msg = "segmentedGraphBFS {} {} {} {} {} {} {} {} {} {} {} {} {}".format(
+                 graph.n_vertices,graph.n_edges,\
+                 graph.directed,graph.weighted,\
+                 graph.src.name,graph.dst.name,\
+                 graph.start_i.name,graph.neighbour.name,\
+                 graph.srcR.name,graph.dstR.name,\
+                 graph.start_iR.name,graph.neighbourR.name,\
+                 root)
+            else:
+              # undirected weighted GraphUDW 15
+              msg = "segmentedGraphBFS {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}".format(
+                 graph.n_vertices,graph.n_edges,\
+                 graph.directed,graph.weighted,\
+                 graph.src.name,graph.dst.name,\
+                 graph.start_i.name,graph.neighbour.name,\
+                 graph.srcR.name,graph.dstR.name,\
+                 graph.start_iR.name,graph.neighbourR.name,\
+                 graph.v_weight.name,graph.e_weight.name,\
+                 root)
+
         repMsg = generic_msg(msg)
         tmpmsg=cast(str,repMsg).split('+')
         levelstr=tmpmsg[0:1]
         vertexstr=tmpmsg[1:2]
-        levelary=create_pdarray(cast(str,levelstr)) 
-        vertexary=create_pdarray(cast(str,vertexstr)) 
-        return levelary,vertexary
+        levelary=create_pdarray(*(cast(str,levelstr)) )
+        
+        vertexary=create_pdarray(*(cast(str,vertexstr)) )
+        return (levelary,vertexary)
 
 
 @typechecked
-def graph_dfs (graph: Graph, root: int ) -> pdarray:
+def graph_dfs (graph: Union[GraphD,GraphUD,GraphDW,GraphUDW], root: int ) -> tuple:
         """
         This function is generating the depth-first search vertices sequences in given graph
         starting from the given root vertex
@@ -1045,13 +1094,19 @@ def graph_dfs (graph: Graph, root: int ) -> pdarray:
         """
         msg = "segmentedGraphDFS {} {} {} {} {} {} {} {}".format(graph.n_vertices,graph.n_edges,\
                  graph.directed,graph.src.name,graph.dst.name,\
-                 graph.start.name,graph.neighbour.name,root)
+                 graph.start_i.name,graph.neighbour.name,root)
         repMsg = generic_msg(msg)
-        return Graph(*(cast(str,repMsg).split('+')))
+        tmpmsg=cast(str,repMsg).split('+')
+        levelstr=tmpmsg[0:1]
+        vertexstr=tmpmsg[1:2]
+        levelary=create_pdarray(*(cast(str,levelstr)) )
+        
+        vertexary=create_pdarray(*(cast(str,vertexstr)) )
+        return (levelary,vertexary)
 
 
 @typechecked
-def components (graph: Graph ) -> int :
+def components (graph:  Union[GraphD,GraphUD,GraphDW,GraphUDW] ) -> int :
         """
         This function returns the number of components of the given graph
         Returns
