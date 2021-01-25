@@ -10,10 +10,10 @@ TYPES = ('int64', 'float64', 'bool', 'str')
 
 def time_ak_bfs_graph(trials:int):
     print("Graph BFS")
-    lgNv=10
+    lgNv=4
     Ne_per_v=3
     p=0.03
-    directed=0
+    directed=1
     weighted=1
     Graph=ak.rmat_gen(lgNv, Ne_per_v, p, directed, weighted)
     '''

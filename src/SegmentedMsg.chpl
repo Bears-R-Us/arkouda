@@ -1215,7 +1215,6 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var directed=sdire : int;
       var weighted=swei : int;
 
-      //writeln(lgNv, Ne_per_v, p, directed,weighted);
       var Nv = 2**lgNv:int;
       // number of edges
       var Ne = Ne_per_v * Nv:int;
@@ -1293,9 +1292,6 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
          startpos+=1;
       }//end of while startpos
 
-      //writeln("before assignment start_i=");
-      //writeln(start_i);
-      //writeln("");
       for i in 0..Ne-1 do {
         length[src1[i]]+=1;
         if (start_i[src1[i]] ==-1){
@@ -1307,13 +1303,6 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       //var neighbour  = (+ scan length) - length;
       var neighbour  = length;
       var neighbourR  = neighbour;
-
-      /*
-      for i in 0..Nv-1 do {
-        writeln("node ",i, " has ", neighbour[i], " neighbours", 
-                " start=",start_i[i], " they are ", dst1[start_i[i]..start_i[i]-1+neighbour[i]]);
-      }
-      */
 
       if (directed==0) { //undirected graph
 
@@ -1353,17 +1342,10 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
               if (start_iR[srcR1[i]] ==-1){
                   start_iR[srcR1[i]]=i;
               }
- 
           }
           //neighbourR  = (+ scan lengthR) - lengthR;
           neighbourR  = lengthR;
 
-          /*
-          for i in 0..Nv-1 do {
-          writeln("rever node ",i, " has ", neighbourR[i], " neighbours", 
-                " start=",start_iR[i], " they are ", dstR1[start_iR[i]..start_iR[i]-1+neighbourR[i]]);
-          */
-      }
       }//end of undirected
 
 
@@ -1380,7 +1362,6 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
         st.addEntry(vwName, vwEntry);
         st.addEntry(ewName, ewEntry);
       }
-      //writeln("e_weight=",e_weight,"v_weight=",v_weight);
       var srcName = st.nextName();
       var dstName = st.nextName();
       var startName = st.nextName();
@@ -1425,16 +1406,6 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
           st.addEntry(dstNameR, dstEntryR);
           st.addEntry(startNameR, startEntryR);
           st.addEntry(neiNameR, neiEntryR);
-          /*
-          writeln("src=");
-          writeln(src1);
-          writeln("dstR=");
-          writeln(dstR1);
-          writeln("dst=");
-          writeln(dst1);
-          writeln("srcR=");
-          writeln(srcR1);
-          */
           if (weighted!=0) {
               repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + ' +' + sWeighted +
                     '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) + 
@@ -1581,21 +1552,22 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
               ref df=ag.dst.a;
               numNF=nf[i];
               ref NF=df[sf[i]..sf[i]+numNF-1];
+              writeln("current node ",i, " has ", numNF, " neighbours and  they are  ",NF);
               if (numNF>0) {
                 forall j in NF {
-                //writeln("current node ",i, " has neibours ",NF);
                 //for j in NF {
+                   writeln("current node ",i, " check neibour ",j, " its depth=",depth[j]);
                    if (depth[j]==-1) {
                       depth[j]=cur_level+1;
                       SetNextF.add(j);
-                      //writeln("add ", j, " into level ", cur_level+1);
+                      writeln("current node ",i, " add ", j, " into level ", cur_level+1, " SetNextF=", SetNextF);
                    }
                 }
               }
 
            }//end forall i
            cur_level+=1;
-           //writeln("SetCurF= ", SetCurF, "SetNextF=", SetNextF, " level ", cur_level+1);
+           writeln("SetCurF= ", SetCurF, "SetNextF=", SetNextF, " level ", cur_level+1);
            numCurF=SetNextF.size;
            SetCurF=SetNextF;
       }
