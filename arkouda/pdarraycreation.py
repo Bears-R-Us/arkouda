@@ -5,7 +5,7 @@ from typing import cast, Iterable, Optional, Union
 from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS, \
-     float64, int64, DTypes
+     float64, int64, DTypes, isSupportedInt, isSupportedNumber
 from arkouda.dtypes import dtype as akdtype
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.strings import Strings
@@ -194,7 +194,7 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
             for i, b in enumerate(s):
                 values[o+i] = b
         # Recurse to create pdarrays for offsets and values, then return Strings object
-        return Strings(array(offsets), array(values))
+        return Strings(cast(pdarray, array(offsets)), cast(pdarray, array(values)))
     # If not strings, then check that dtype is supported in arkouda
     if a.dtype.name not in DTypes:
         raise RuntimeError("Unhandled dtype {}".format(a.dtype))
@@ -211,13 +211,13 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     repMsg = generic_msg(req_msg, send_bytes=True)
     return create_pdarray(repMsg)
 
-def zeros(size : int, dtype : type=np.float64) -> pdarray:
+def zeros(size : Union[int,np.int64], dtype : type=np.float64) -> pdarray:
     """
     Create a pdarray filled with zeros.
 
     Parameters
     ----------
-    size : int
+    size : Union[int,int64]
         Size of the array (only rank-1 arrays supported)
     dtype : {float64, int64, bool}
         Type of resulting array, default float64
@@ -258,13 +258,13 @@ def zeros(size : int, dtype : type=np.float64) -> pdarray:
     repMsg = generic_msg("create {} {}".format(cast(np.dtype,dtype).name, size))
     return create_pdarray(repMsg)
 
-def ones(size : int, dtype : type=float64) -> pdarray:
+def ones(size : Union[int,np.int64], dtype : type=float64) -> pdarray:
     """
     Create a pdarray filled with ones.
 
     Parameters
     ----------
-    size : int
+    size : Union[int,np.int64]
         Size of the array (only rank-1 arrays supported)
     dtype : {float64, int64, bool}
         Resulting array type, default float64
@@ -405,11 +405,11 @@ def arange(*args) -> pdarray:
 
     Parameters
     ----------
-    start : int, optional
+    start : Union[int,np.int64], optional
         Starting value (inclusive)
-    stop : int
+    stop : Union[int,np.int64]
         Stopping value (exclusive)
-    stride : int, optional
+    stride : Union[int,np.int64], optional
         The difference between consecutive elements, the default stride is 1,
         if stride is specified then start must also be specified. 
 
@@ -472,27 +472,28 @@ def arange(*args) -> pdarray:
     if stride == 0:
         raise ZeroDivisionError("division by zero")
 
-    if isinstance(start, int) and isinstance(stop, int) and isinstance(stride, int):
+    if isSupportedInt(start) and isSupportedInt(stop) and isSupportedInt(stride):
         if stride < 0:
             stop = stop + 2
         repMsg = generic_msg("arange {} {} {}".format(start, stop, stride))
         return create_pdarray(repMsg)
     else:
-        raise TypeError("start,stop,stride must be type int {} {} {}".\
+        raise TypeError("start,stop,stride must be type int or np.int64 {} {} {}".\
                                     format(start,stop,stride))
 
 @typechecked
-def linspace(start : Union[float,int], stop : Union[float,int], length : int) -> pdarray:
+def linspace(start : Union[float,np.float64,int,np.int64], 
+            stop : Union[float,np.float64,int,np.int64], length : Union[int,np.int64]) -> pdarray:
     """
     Create a pdarray of linearly-spaced floats in a closed interval.
 
     Parameters
     ----------
-    start : int
+    start : Union[float,np.float64, int, np.int64]
         Start of interval (inclusive)
-    stop : int
+    stop : Union[float,np.float64, int, np.int64]
         End of interval (inclusive)
-    length : int
+    length : Union[int,np.int64]
         Number of points
 
     Returns
@@ -525,12 +526,16 @@ def linspace(start : Union[float,int], stop : Union[float,int], length : int) ->
     >>> ak.linspace(start=-5, stop=0, length=5)
     array([-5, -3.75, -2.5, -1.25, 0])
     """
+    if not isSupportedNumber(start) or not isSupportedNumber(stop):
+        raise TypeError('both start and stop must be an int, np.int64, float, or np.float64')
+    if not isSupportedNumber(length):
+        raise TypeError('length must be an int or int64')
     repMsg = generic_msg("linspace {} {} {}".format(start, stop, length))
     return create_pdarray(repMsg)
 
 @typechecked
-def randint(low : Union[int,float], high : Union[int,float], size : int, 
-                              dtype=int64, seed : int=None) -> pdarray:
+def randint(low : Union[int,np.int64,float,np.float64], high : Union[int,np.int64,float,np.float64], 
+            size : Union[int,np.int64], dtype=int64, seed : Union[int,np.int64]=None) -> pdarray:
     """
     Generate a pdarray of randomized int, float, or bool values in a 
     specified range bounded by the low and high parameters.
@@ -541,11 +546,11 @@ def randint(low : Union[int,float], high : Union[int,float], size : int,
         The low value (inclusive) of the range
     high : Union[int,float]
         The high value (exclusive for int, inclusive for float) of the range
-    size : int
+    size : Union[int,np.int64]
         The length of the returned array
     dtype : {int64, float64, bool}
         The dtype of the array
-    seed : int
+    seed : Union[int,np.int64]
         Index for where to pull the first returned value
         
 
@@ -601,21 +606,22 @@ def randint(low : Union[int,float], high : Union[int,float], size : int,
     return create_pdarray(repMsg)
 
 @typechecked
-def uniform(size : int, low : float=0.0, high : float=1.0, 
-                                       seed: Union[None, int]=None) -> pdarray:
+def uniform(size : Union[int,np.int64], low : Union[float,np.float64]=0.0, 
+            high : Union[float,np.float64]=1.0, seed: Union[None, 
+                                               Union[int,np.int64]]=None) -> pdarray:
     """
     Generate a pdarray with uniformly distributed random float values 
     in a specified range.
 
     Parameters
     ----------
-    low : float
+    low : Union[float,np.float64]
         The low value (inclusive) of the range, defaults to 0.0
-    high : float
+    high : Union[float,np.float64]
         The high value (inclusive) of the range, defaults to 1.0
-    size : int
+    size : Union[int,np.int64]
         The length of the returned array
-    seed : int
+    seed : Union[int,np.int64], optional
         Value used to initialize the random number generator
 
     Returns
@@ -647,15 +653,15 @@ def uniform(size : int, low : float=0.0, high : float=1.0,
     return randint(low=low, high=high, size=size, dtype='float64', seed=seed)
 
 @typechecked
-def standard_normal(size : int, seed : Union[None, int]=None) -> pdarray:
+def standard_normal(size : Union[int,np.int64], seed : Union[None, Union[int,np.int64]]=None) -> pdarray:
     """
     Draw real numbers from the standard normal distribution.
 
     Parameters
     ----------
-    size : int
+    size : Union[int,np.int64]
         The number of samples to draw (size of the returned array)
-    seed : int
+    seed : Union[int,np.int64]
         Value used to initialize the random number generator
     
     Returns
@@ -692,24 +698,24 @@ def standard_normal(size : int, seed : Union[None, int]=None) -> pdarray:
     return create_pdarray(generic_msg(msg))
 
 @typechecked
-def random_strings_uniform(minlen : int, maxlen : int, size : int, 
-                           characters : str='uppercase', 
-                           seed : Union[None, int]=None) -> Strings:
+def random_strings_uniform(minlen : Union[int,np.int64], maxlen : Union[int,np.int64], 
+                        size : Union[int,np.int64], characters : str='uppercase', 
+                           seed : Union[None, Union[int,np.int64]]=None) -> Strings:
     """
     Generate random strings with lengths uniformly distributed between 
     minlen and maxlen, and with characters drawn from a specified set.
 
     Parameters
     ----------
-    minlen : int
+    minlen : Union[int,np.int64]
         The minimum allowed length of string
-    maxlen : int
+    maxlen : Union[int,np.int64]
         The maximum allowed length of string
-    size : int
+    size : Union[int,np.int64]
         The number of strings to generate
     characters : (uppercase, lowercase, numeric, printable, binary)
         The set of characters to draw from
-    seed : int
+    seed :  Union[None, Union[int,np.int64]], optional
         Value used to initialize the random number generator
 
     Returns
@@ -748,24 +754,25 @@ def random_strings_uniform(minlen : int, maxlen : int, size : int,
     return Strings(*(cast(str,repMsg).split('+')))
 
 @typechecked
-def random_strings_lognormal(logmean : Union[float, int], logstd : Union[float, int], 
-                             size : int, characters : str='uppercase', 
-                             seed : Union[None, int]=None) -> Strings:
+def random_strings_lognormal(logmean : Union[float,int,np.int64,np.float64], 
+                             logstd : Union[float,int,np.int64,np.float64], 
+                             size : Union[int,np.int64], characters : str='uppercase', 
+                             seed : Union[None, Union[int,np.int64]]=None) -> Strings:
     """
     Generate random strings with log-normally distributed lengths and 
     with characters drawn from a specified set.
 
     Parameters
     ----------
-    logmean : Union[float, int]
+    logmean : Union[float,int,np.int64,np.float64]
         The log-mean of the length distribution
-    logstd : float
+    logstd :  Union[float,int,np.int64,np.float64]
         The log-standard-deviation of the length distribution
-    size : int
+    size : Union[int,np.int64]
         The number of strings to generate
     characters : (uppercase, lowercase, numeric, printable, binary)
         The set of characters to draw from
-    seed : int
+    seed : Union[int,np.int64], optional
         Value used to initialize the random number generator
 
     Returns
@@ -800,6 +807,8 @@ def random_strings_lognormal(logmean : Union[float, int], logstd : Union[float, 
     >>> ak.random_strings_lognormal(2, 0.25, 5, seed=1, characters='printable')
     array(['+5"fp-', ']3Q4kC~HF', '=F=`,IE!', 'DjkBa'9(', '5oZ1)='])
     """
+    if not isSupportedNumber(logmean) or not isSupportedNumber(logstd):
+        raise TypeError('both logmean and logstd must be an int, np.int64, float, or np.float64')
     if logstd <= 0 or size < 0:
         raise ValueError("Incompatible arguments: logstd <= 0 or size < 0")
     msg = "randomStrings {} {} {} {} {} {}".\

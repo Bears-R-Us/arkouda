@@ -15,7 +15,8 @@ structDtypeCodes = {'int64': 'q',
 NUMBER_FORMAT_STRINGS = {'bool': '{}',
                          'int64': '{:n}',
                          'float64': '{:.17f}',
-                         'uint8': '{:n}'}
+                         'uint8': '{:n}',
+                         'np.float64': 'f'}
 
 dtype = np.dtype
 bool = np.dtype(np.bool)
@@ -27,8 +28,20 @@ str = np.dtype(np.str)
 DTypes = frozenset(["bool", "int64", "float64", "uint8", "str"])
 DTypeObjects = frozenset([bool, int64, float64, uint8, str])
 
-@typechecked
-def _as_dtype(dt : np.dtype) -> np.dtype:
+SUPPORTED_INTS = (int,np.int64)
+SUPPORTED_FLOATS = (float,np.float64)
+SUPPORTED_NUMBERS = (int,np.int64,float,np.float64)
+
+def isSupportedInt(num):
+    return isinstance(num, SUPPORTED_INTS)
+
+def isSupportedFloat(num):
+    return isinstance(num, SUPPORTED_FLOATS)
+
+def isSupportedNumber(num):
+    return isinstance(num, SUPPORTED_NUMBERS)
+
+def _as_dtype(dt) -> np.dtype:
     if not isinstance(dt, np.dtype):
         return np.dtype(dt)
     return dt

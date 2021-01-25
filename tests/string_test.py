@@ -419,3 +419,15 @@ class StringTest(ArkoudaTest):
         print(str(strings))
         self.assertEqual("['string 0', 'string 1', 'string 2', ... , 'string 98', 'string 99', 'string 100']",
                          str(strings))
+
+    def test_flatten(self):
+        orig = ak.array(['one|two', 'three|four|five', 'six'])
+        flat, mapping = orig.flatten('|', return_segments=True)
+        ans = ak.array(['one', 'two', 'three', 'four', 'five', 'six'])
+        ans2 = ak.array([0, 2, 5])
+        self.assertTrue((flat == ans).all())
+        self.assertTrue((mapping == ans2).all())
+        thirds = [ak.cast(ak.arange(i, 99, 3), 'str') for i in range(3)]
+        thickrange = thirds[0].stick(thirds[1], delimiter=', ').stick(thirds[2], delimiter=', ')
+        flatrange = thickrange.flatten(', ')
+        self.assertTrue((ak.cast(flatrange, 'int64') == ak.arange(99)).all())

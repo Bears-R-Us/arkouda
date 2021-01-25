@@ -50,13 +50,13 @@ class WhereTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.where(ak.linspace(1,10,10), [0], ak.linspace(1,10,10))
-        self.assertEqual(('type of argument "A" must be one of (int, float, pdarray); got list' +
-                         ' instead'), cm.exception.args[0]) 
+        self.assertEqual(('type of argument "A" must be one of (int, float, int64, pdarray); got list instead'), 
+                         cm.exception.args[0]) 
         
         with self.assertRaises(TypeError) as cm:
             ak.where(ak.linspace(1,10,10), ak.linspace(1,10,10), [0])
-        self.assertEqual('type of argument "B" must be one of (int, float, pdarray); got list' +
-                         ' instead', cm.exception.args[0]) 
+        self.assertEqual('both A and B must be an int, np.int64, float, np.float64, or pdarray', 
+                         cm.exception.args[0]) 
         
     def test_less_than_where_clause(self):
         n1 = np.arange(1,10)

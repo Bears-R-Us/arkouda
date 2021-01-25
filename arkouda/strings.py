@@ -24,11 +24,11 @@ class Strings:
         The starting indices for each string
     bytes : pdarray
         The raw bytes of all strings, joined by nulls
-    size : int
+    size : Union[int,np.int64]
         The number of strings in the array
-    nbytes : int
+    nbytes : Union[int,np.int64]
         The total number of bytes in all strings
-    ndim : int
+    ndim : Union[int,np.int64]
         The rank of the array (currently only rank 1 arrays supported)
     shape : tuple
         The sizes of each dimension of the array
@@ -47,17 +47,17 @@ class Strings:
     BinOps = frozenset(["==", "!="])
     objtype = "str"
 
-    def __init__(self, offset_attrib : Union[pdarray,np.ndarray], 
-                 bytes_attrib : Union[pdarray,np.ndarray]) -> None:
+    def __init__(self, offset_attrib : Union[pdarray,str], 
+                 bytes_attrib : Union[pdarray,str]) -> None:
         """
         Initializes the Strings instance by setting all instance
         attributes, some of which are derived from the array parameters.
         
         Parameters
         ----------
-        offset_attrib : Union[pdarray, np.ndarray,array]
+        offset_attrib : Union[pdarray, str]
             the array containing the offsets 
-        bytes_attrib : Union[pdarray, np.ndarray,array]
+        bytes_attrib : Union[pdarray, str]
             the array containing the string values    
             
         Returns
@@ -67,8 +67,8 @@ class Strings:
         Raises
         ------
         RuntimeError
-            Raised if there's an error converting a Numpy array or standard
-            Python array to either the offset_attrib or bytes_attrib   
+            Raised if there's an error converting a server-returned str-descriptor
+            or pdarray to either the offset_attrib or bytes_attrib   
         ValueError
             Raised if there's an error in generating instance attributes 
             from either the offset_attrib or bytes_attrib parameter 
@@ -375,8 +375,53 @@ class Strings:
                                                         json.dumps([substr]))
         return create_pdarray(generic_msg(msg))
 
+    def flatten(self, delimiter : str, return_segments : bool=False) -> Union[Strings,Tuple]:
+        """Unpack delimiter-joined substrings into a flat array.
+
+        Parameters
+        ----------
+        delimeter : str
+            Characters used to split strings into substrings
+        return_segments : bool
+            If True, also return mapping of original strings to first substring
+            in return array.
+
+        Returns
+        -------
+        Strings
+            Flattened substrings with delimiters removed
+        pdarray, int64 (optional)
+            For each original string, the index of first corresponding substring
+            in the return array
+
+        See Also
+        --------
+        peel, rpeel
+
+        Examples
+        --------
+        >>> orig = ak.array(['one|two', 'three|four|five', 'six'])
+        >>> orig.flatten('|')
+        array(['one', 'two', 'three', 'four', 'five', 'six'])
+        >>> flat, map = orig.flatten('|', return_segments=True)
+        >>> map
+        array([0, 2, 5])
+        """
+        msg = "segmentedFlatten {}+{} {} {} {}".format(self.offsets.name,
+                                                       self.bytes.name,
+                                                       self.objtype,
+                                                       return_segments,
+                                                       json.dumps([delimiter]))
+        repMsg = cast(str, generic_msg(msg))
+        if return_segments:
+            arrays = repMsg.split('+', maxsplit=2)
+            return Strings(arrays[0], arrays[1]), create_pdarray(arrays[2])
+        else:
+            arrays = repMsg.split('+', maxsplit=1)
+            return Strings(arrays[0], arrays[1])
+    
     @typechecked
-    def peel(self, delimiter : str, times : int=1, includeDelimiter : bool=False, 
+    def peel(self, delimiter : str, times : Union[int,np.int64]=1, includeDelimiter : bool=False, 
              keepPartial : bool=False, fromRight : bool=False) -> Tuple:
         """
         Peel off one or more delimited fields from each string (similar 
@@ -387,7 +432,7 @@ class Strings:
         ----------
         delimiter : str
             The separator where the split will occur
-        times : int
+        times : Union[int,np.int64]
             The number of times the delimiter is sought, i.e. skip over 
             the first (times-1) delimiters
         includeDelimiter : bool
@@ -458,7 +503,7 @@ class Strings:
         rightStr = Strings(arrays[2], arrays[3])
         return leftStr, rightStr
 
-    def rpeel(self, delimiter : str, times : int=1, includeDelimiter : bool=False, 
+    def rpeel(self, delimiter : str, times : Union[int,np.int64]=1, includeDelimiter : bool=False, 
                                       keepPartial : bool=False):
         """
         Peel off one or more delimited fields from the end of each string 
@@ -469,7 +514,7 @@ class Strings:
         ----------
         delimiter : str
             The separator where the split will occur
-        times : int
+        times : Union[int,np.int64]
             The number of times the delimiter is sought, i.e. skip over 
             the last (times-1) delimiters
         includeDelimiter : bool
