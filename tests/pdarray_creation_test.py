@@ -1,4 +1,3 @@
-import os
 import numpy as np
 import pandas as pd
 import datetime as dt
@@ -68,6 +67,18 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertEqual(ak.int64, testArray.dtype)
         self.assertEqual([5], testArray.shape)
         
+        testArray = ak.randint(np.int64(0), np.int64(10), np.int64(5))
+        self.assertIsInstance(testArray, ak.pdarray)
+        self.assertEqual(5, len(testArray))
+        self.assertEqual(ak.int64, testArray.dtype)
+        self.assertEqual([5], testArray.shape)
+        
+        testArray = ak.randint(np.float64(0), np.float64(10), np.int64(5))
+        self.assertIsInstance(testArray, ak.pdarray)
+        self.assertEqual(5, len(testArray))
+        self.assertEqual(ak.int64, testArray.dtype)
+        self.assertEqual([5], testArray.shape)
+        
         test_ndarray = testArray.to_ndarray()
         
         for value in test_ndarray:
@@ -105,18 +116,14 @@ class PdarrayCreationTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:              
             ak.randint(0,1,'1000')
-        self.assertEqual('type of argument "size" must be int; got str instead', 
+        self.assertEqual('type of argument "size" must be one of (int, int64); got str instead', 
                          cm.exception.args[0])    
 
-        with self.assertRaises(TypeError) as cm:              
+        with self.assertRaises(TypeError):              
             ak.randint('0',1,1000)
-        self.assertEqual('type of argument "low" must be one of (int, float); got str instead', 
-                         cm.exception.args[0])     
         
-        with self.assertRaises(TypeError) as cm:              
+        with self.assertRaises(TypeError):              
             ak.randint(0,'1',1000)
-        self.assertEqual('type of argument "high" must be one of (int, float); got str instead', 
-                         cm.exception.args[0])     
 
     def test_randint_with_seed(self):
         values = ak.randint(1, 5, 10, seed=2)
@@ -137,25 +144,29 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertIsInstance(testArray, ak.pdarray)
         self.assertEqual(ak.float64, testArray.dtype)
         self.assertEqual([3], testArray.shape)
+        
+        testArray = ak.uniform(np.int64(3))
+        self.assertIsInstance(testArray, ak.pdarray)
+        self.assertEqual(ak.float64, testArray.dtype)
+        self.assertEqual([3], testArray.shape)
+
 
         uArray = ak.uniform(size=3,low=0,high=5,seed=0)
         self.assertTrue((ak.array([0.30013431967121934, 0.47383036230759112, 1.0441791878997098])
                         == uArray).all())
-    
-        with self.assertRaises(TypeError) as cm:
-            ak.uniform(low='0', high=5, size=100)
-        self.assertEqual('type of argument "low" must be either float or int; got str instead', 
-                         cm.exception.args[0])   
-            
-        with self.assertRaises(TypeError) as cm:
-            ak.uniform(low=0, high='5', size=100)
-        self.assertEqual('type of argument "high" must be either float or int; got str instead', 
-                         cm.exception.args[0])   
         
-        with self.assertRaises(TypeError) as cm:
+        uArray = ak.uniform(size=np.int64(3),low=np.int64(0),high=np.int64(5),seed=np.int64(0))
+        self.assertTrue((ak.array([0.30013431967121934, 0.47383036230759112, 1.0441791878997098])
+                        == uArray).all())
+    
+        with self.assertRaises(TypeError):
+            ak.uniform(low='0', high=5, size=100)
+
+        with self.assertRaises(TypeError):
+            ak.uniform(low=0, high='5', size=100)
+
+        with self.assertRaises(TypeError):
             ak.uniform(low=0, high=5, size='100')
-        self.assertEqual('type of argument "size" must be int; got str instead', 
-                         cm.exception.args[0])  
  
     def test_zeros(self):
         intZeros = ak.zeros(5, dtype=ak.int64)
@@ -251,19 +262,23 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertEqual(5.0000, pda[0])
         self.assertEqual(0.0000, pda[5])
         
+        pda = ak.linspace(start=np.float(5.0), stop=np.float(0.0), length=np.int64(6))
+        self.assertEqual(5.0000, pda[0])
+        self.assertEqual(0.0000, pda[5])
+        
         with self.assertRaises(TypeError) as cm:        
             ak.linspace(0,'100', 1000)
-        self.assertEqual(('type of argument "stop" must be one of (float, int); got str instead'), 
+        self.assertEqual(('both start and stop must be an int, np.int64, float, or np.float64'), 
                          cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:        
             ak.linspace('0',100, 1000)
-        self.assertEqual(('type of argument "start" must be one of (float, int); got str instead'), 
+        self.assertEqual(('both start and stop must be an int, np.int64, float, or np.float64'), 
                          cm.exception.args[0])  
 
         with self.assertRaises(TypeError) as cm:          
             ak.linspace(0,100,'1000')           
-        self.assertEqual('type of argument "length" must be int; got str instead', 
+        self.assertEqual('type of argument "length" must be one of (int, int64); got str instead', 
                          cm.exception.args[0])            
 
     def test_standard_normal(self):
@@ -274,12 +289,12 @@ class PdarrayCreationTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:          
             ak.standard_normal('100')          
-        self.assertEqual('type of argument "size" must be int; got str instead', 
+        self.assertEqual('type of argument "size" must be one of (int, int64); got str instead', 
                          cm.exception.args[0]) 
    
         with self.assertRaises(TypeError) as cm:          
             ak.standard_normal(100.0)          
-        self.assertEqual('type of argument "size" must be int; got float instead', 
+        self.assertEqual('type of argument "size" must be one of (int, int64); got float instead', 
                          cm.exception.args[0])   
     
         with self.assertRaises(ValueError) as cm:          
@@ -311,21 +326,27 @@ class PdarrayCreationTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:          
             ak.random_strings_uniform(minlen='1', maxlen=5, size=10)          
-        self.assertEqual('type of argument "minlen" must be int; got str instead', 
+        self.assertEqual('type of argument "minlen" must be one of (int, int64); got str instead', 
                          cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:          
             ak.random_strings_uniform(minlen=1, maxlen='5', size=10)          
-        self.assertEqual('type of argument "maxlen" must be int; got str instead', 
+        self.assertEqual('type of argument "maxlen" must be one of (int, int64); got str instead', 
                          cm.exception.args[0])     
         
         with self.assertRaises(TypeError) as cm:          
             ak.random_strings_uniform(minlen=1, maxlen=5, size='10')          
-        self.assertEqual('type of argument "size" must be int; got str instead', 
+        self.assertEqual('type of argument "size" must be one of (int, int64); got str instead', 
                          cm.exception.args[0])              
 
     def test_random_strings_uniform_with_seed(self):
         pda = ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=10)
+ 
+        self.assertTrue((ak.array(['TVKJ', 'EWAB', 'CO', 'HFMD', 'U', 'MMGT', 
+                        'N', 'WOQN', 'HZ', 'VSX']) == pda).all())
+        
+        pda = ak.random_strings_uniform(minlen=np.int64(1), maxlen=np.int64(5), seed=np.int64(1), 
+                                        size=np.int64(10))
  
         self.assertTrue((ak.array(['TVKJ', 'EWAB', 'CO', 'HFMD', 'U', 'MMGT', 
                         'N', 'WOQN', 'HZ', 'VSX']) == pda).all())
@@ -341,14 +362,31 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertEqual(100, len(pda))
         self.assertEqual(str, pda.dtype)
         
+        pda = ak.random_strings_lognormal(np.int64(2), 0.25, np.int64(100), characters='printable')
+        self.assertIsInstance(pda,ak.Strings)
+        self.assertEqual(100, len(pda))
+        self.assertEqual(str, pda.dtype)
+        
+        pda = ak.random_strings_lognormal(np.int64(2), 0.25, np.int64(100), characters='printable', 
+                                          seed=np.int64(0))
+        self.assertIsInstance(pda,ak.Strings)
+        self.assertEqual(100, len(pda))
+        self.assertEqual(str, pda.dtype)
+        
+        pda = ak.random_strings_lognormal(np.float64(2), np.float64(0.25), np.int64(100), 
+                                          characters='printable', seed=np.int64(0))
+        self.assertIsInstance(pda,ak.Strings)
+        self.assertEqual(100, len(pda))
+        self.assertEqual(str, pda.dtype)
+        
         with self.assertRaises(TypeError) as cm:          
             ak.random_strings_lognormal('2', 0.25, 100)          
-        self.assertEqual('type of argument "logmean" must be one of (float, int); got str instead', 
+        self.assertEqual('both logmean and logstd must be an int, np.int64, float, or np.float64', 
                          cm.exception.args[0])   
                 
         with self.assertRaises(TypeError) as cm:          
             ak.random_strings_lognormal(2, 0.25, '100')          
-        self.assertEqual('type of argument "size" must be int; got str instead', 
+        self.assertEqual('type of argument "size" must be one of (int, int64); got str instead', 
                          cm.exception.args[0])       
         
         with self.assertRaises(TypeError) as cm:          

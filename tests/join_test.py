@@ -66,6 +66,15 @@ class JoinTest(ArkoudaTest):
         self.assertEqual(0, I.size)
         self.assertEqual(0, J.size)
         
+        dt = np.int64(8)
+        I,J = ak.join_on_eq_with_dt(self.a2,self.a1,self.t1,self.t2,dt,"pos_dt")
+        self.assertEqual(0, I.size)
+        self.assertEqual(0, J.size)
+        
+        I,J = ak.join_on_eq_with_dt(self.a2,self.a1,self.t1,self.t2,dt,"pos_dt", np.int(0))
+        self.assertEqual(0, I.size)
+        self.assertEqual(0, J.size)
+        
     def test_error_handling(self):
         """
         Tests error TypeError and ValueError handling

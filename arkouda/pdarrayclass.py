@@ -81,13 +81,13 @@ class pdarray:
         The server-side identifier for the array
     dtype : dtype
         The element type of the array
-    size : int
+    size : Union[int,np.int64]
         The number of elements in the array
-    ndim : int
+    ndim : Union[int,np.int64]
         The rank of the array (currently only rank 1 arrays supported)
     shape : Sequence[int]
         A list or tuple containing the sizes of each dimension of the array
-    itemsize : int
+    itemsize : Union[int,np.int64]
         The size in bytes of each element
     """
 
@@ -99,8 +99,9 @@ class pdarray:
 
     __array_priority__ = 1000
 
-    def __init__(self, name : str, mydtype : np.dtype, size : int, ndim : int, 
-                 shape: Sequence[int], itemsize : int) -> None:
+    def __init__(self, name : str, mydtype : np.dtype, size : Union[int,np.int64], 
+                 ndim : Union[int,np.int64], shape: Sequence[int], 
+                 itemsize : Union[int,np.int64]) -> None:
         self.name = name
         self.dtype = dtype(mydtype)
         self.size = size
@@ -598,13 +599,13 @@ class pdarray:
         """
         return mean(self)
 
-    def var(self, ddof : int=0) -> np.float64:
+    def var(self, ddof : Union[int,np.int64]=0) -> np.float64:
         """
         Compute the variance. See ``arkouda.var`` for details.
         
         Parameters
         ----------
-        ddof : int
+        ddof : Union[int,np.int64]
             "Delta Degrees of Freedom" used in calculating var
 
         Returns
@@ -624,13 +625,13 @@ class pdarray:
         """
         return var(self, ddof=ddof)
 
-    def std(self, ddof : int=0) -> np.float64:
+    def std(self, ddof : Union[int,np.int64]=0) -> np.float64:
         """
         Compute the standard deviation. See ``arkouda.std`` for details.
         
         Parameters
         ----------
-        ddof : int
+        ddof : Union[int,np.int64]
             "Delta Degrees of Freedom" used in calculating std
 
         Returns
@@ -647,13 +648,13 @@ class pdarray:
         """
         return std(self, ddof=ddof)
 
-    def mink(self, k : int) -> pdarray:
+    def mink(self, k : Union[int,np.int64]) -> pdarray:
         """
         Compute the minimum "k" values.
         
         Parameters
         ----------
-        k : int
+        k : Union[int,np.int64]
             The desired count of maximum values to be returned by the output.
 
         Returns
@@ -669,13 +670,13 @@ class pdarray:
         return mink(self,k)
 
     @typechecked
-    def maxk(self, k : int) -> pdarray:
+    def maxk(self, k : Union[int,np.int64]) -> pdarray:
         """
         Compute the maximum "k" values.
         
         Parameters
         ----------
-        k : int
+        k : Union[int,np.int64]
             The desired count of maximum values to be returned by the output.
 
         Returns
@@ -690,13 +691,13 @@ class pdarray:
         """
         return maxk(self,k)
 
-    def argmink(self, k : int) -> pdarray:
+    def argmink(self, k : Union[int,np.int64]) -> pdarray:
         """
         Compute the minimum "k" values.
         
         Parameters
         ----------
-        k : integer
+        k : Union[int,np.int64]
             The desired count of maximum values to be returned by the output.
 
         Returns
@@ -711,13 +712,13 @@ class pdarray:
         """
         return argmink(self,k)
 
-    def argmaxk(self, k : int) -> pdarray:
+    def argmaxk(self, k : Union[int,np.int64]) -> pdarray:
         """
         Finds the indices corresponding to the maximum "k" values.
         
         Parameters
         ----------
-        k : int
+        k : Union[int,np.int64]
             The desired count of maximum values to be returned by the output.
 
         Returns
@@ -1413,7 +1414,7 @@ def mean(pda : pdarray) -> np.float64:
     return pda.sum() / pda.size
 
 @typechecked
-def var(pda : pdarray, ddof : int=0) -> np.float64:
+def var(pda : pdarray, ddof : Union[int,np.int64]=0) -> np.float64:
     """
     Return the variance of values in the array.
 
@@ -1421,7 +1422,7 @@ def var(pda : pdarray, ddof : int=0) -> np.float64:
     ----------
     pda : pdarray
         Values for which to calculate the variance
-    ddof : int
+    ddof : Union[int,np.int64]
         "Delta Degrees of Freedom" used in calculating var
 
     Returns
@@ -1460,7 +1461,7 @@ def var(pda : pdarray, ddof : int=0) -> np.float64:
     return ((pda - m)**2).sum() / (pda.size - ddof)
 
 @typechecked
-def std(pda : pdarray, ddof : int=0) -> np.float64:
+def std(pda : pdarray, ddof : Union[int,np.int64]=0) -> np.float64:
     """
     Return the standard deviation of values in the array. The standard
     deviation is implemented as the square root of the variance.
@@ -1469,7 +1470,7 @@ def std(pda : pdarray, ddof : int=0) -> np.float64:
     ----------
     pda : pdarray
         values for which to calculate the standard deviation
-    ddof : int
+    ddof : Union[int,np.int64]
         "Delta Degrees of Freedom" used in calculating std
 
     Returns
@@ -1511,7 +1512,7 @@ def std(pda : pdarray, ddof : int=0) -> np.float64:
     return np.sqrt(var(pda, ddof=ddof))
 
 @typechecked
-def mink(pda : pdarray, k : int) -> pdarray:
+def mink(pda : pdarray, k : Union[int,np.int64]) -> pdarray:
     """
     Find the `k` minimum values of an array.
 
@@ -1521,7 +1522,7 @@ def mink(pda : pdarray, k : int) -> pdarray:
     ----------
     pda : pdarray
         Input array.
-    k : integer
+    k : Union[int,np.int64]
         The desired count of minimum values to be returned by the output.
 
     Returns
@@ -1565,7 +1566,7 @@ def mink(pda : pdarray, k : int) -> pdarray:
     return create_pdarray(cast(str,repMsg))
 
 @typechecked
-def maxk(pda : pdarray, k : int) -> pdarray:
+def maxk(pda : pdarray, k : Union[int,np.int64]) -> pdarray:
     """
     Find the `k` maximum values of an array.
 
@@ -1575,7 +1576,7 @@ def maxk(pda : pdarray, k : int) -> pdarray:
     ----------
     pda : pdarray
         Input array.
-    k : integer
+    k : Union[int,np.int64]
         The desired count of maximum values to be returned by the output.
 
     Returns
@@ -1620,7 +1621,7 @@ def maxk(pda : pdarray, k : int) -> pdarray:
     return create_pdarray(repMsg)
 
 @typechecked
-def argmink(pda : pdarray, k : int) -> pdarray:
+def argmink(pda : pdarray, k : Union[int,np.int64]) -> pdarray:
     """
     Finds the indices corresponding to the `k` minimum values of an array.
 
@@ -1628,7 +1629,7 @@ def argmink(pda : pdarray, k : int) -> pdarray:
     ----------
     pda : pdarray
         Input array.
-    k : integer
+    k : Union[int,np.int64]
         The desired count of indices corresponding to minimum array values
 
     Returns
@@ -1672,7 +1673,7 @@ def argmink(pda : pdarray, k : int) -> pdarray:
     return create_pdarray(repMsg)
 
 @typechecked
-def argmaxk(pda : pdarray, k : int) -> pdarray:
+def argmaxk(pda : pdarray, k : Union[int,np.int64]) -> pdarray:
     """
     Find the indices corresponding to the `k` maximum values of an array.
 
@@ -1682,7 +1683,7 @@ def argmaxk(pda : pdarray, k : int) -> pdarray:
     ----------
     pda : pdarray
         Input array.
-    k : integer
+    k : Union[int,np.int64]
         The desired count of indices corresponding to maxmum array values
 
     Returns

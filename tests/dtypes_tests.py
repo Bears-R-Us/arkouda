@@ -73,3 +73,27 @@ class DtypesTest(ArkoudaTest):
         self.assertEqual(dtypes.dtype('float64'), ak.ones(10).dtype)
         self.assertEqual(dtypes.dtype('str'), 
                          ak.array(['string {}'.format(i) for i in range(0,10)]).dtype)
+
+    def testIsSupportedInt(self):
+        '''
+        Tests for both True and False scenarios of the isSupportedInt method.
+        '''
+        self.assertTrue(dtypes.isSupportedInt(1))
+        self.assertTrue(dtypes.isSupportedInt(np.int64(1)))
+        self.assertTrue(dtypes.isSupportedInt(np.int64(1.0)))
+        self.assertFalse(dtypes.isSupportedInt(1.0))
+        self.assertFalse(dtypes.isSupportedInt('1'))
+        self.assertFalse(dtypes.isSupportedInt('1.0'))
+        
+    def testIsSupportedFloat(self):
+        '''
+        Tests for both True and False scenarios of the isSupportedFloat method.
+        '''
+        self.assertTrue(dtypes.isSupportedFloat(1.0))
+        self.assertTrue(dtypes.isSupportedFloat(float(1)))
+        self.assertTrue(dtypes.isSupportedFloat(np.float64(1.0)))
+        self.assertTrue(dtypes.isSupportedFloat(np.float64(1)))
+        self.assertFalse(dtypes.isSupportedFloat(np.int64(1.0)))
+        self.assertFalse(dtypes.isSupportedFloat(int(1.0)))
+        self.assertFalse(dtypes.isSupportedFloat('1'))
+        self.assertFalse(dtypes.isSupportedFloat('1.0'))

@@ -3,7 +3,7 @@ from typeguard import typechecked
 from typing import cast as type_cast
 from typing import Optional, Tuple, Union, ForwardRef
 from arkouda.client import generic_msg
-from arkouda.dtypes import resolve_scalar_dtype, DTypes
+from arkouda.dtypes import resolve_scalar_dtype, DTypes, isSupportedNumber
 from arkouda.dtypes import _as_dtype
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraysetops import unique
@@ -292,8 +292,8 @@ def cos(pda : pdarray) -> pdarray:
     return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
-def where(condition : pdarray, A : Union[Union[int,float], pdarray], 
-                        B : Union[Union[int,float], pdarray]) -> pdarray:
+def where(condition : pdarray, A : Union[Union[int,float,np.int64], pdarray], 
+                        B : Union[Union[int,float,np.float64], pdarray]) -> pdarray:
     """
     Returns an array with elements chosen from A and B based upon a 
     conditioning array. As is the case with numpy.where, the return array
@@ -305,9 +305,9 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
     ----------
     condition : pdarray
         Used to choose values from A or B
-    A : scalar or pdarray
+    A : Union[Union[int,float,np.int64], pdarray]
         Value(s) used when condition is True
-    B : scalar or pdarray
+    B : Union[Union[int,float,np.int64], pdarray]
         Value(s) used when condition is False
 
     Returns
@@ -319,8 +319,9 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
     Raises 
     ------
     TypeError
-        Raised if the condition object is not a pdarray, if pdarray dtypes are 
-        not supported or do not match, or if multiple condition clauses (see 
+        Raised if the condition object is not a pdarray, if A or B is not
+        an int, np.int64, float, np.float64, or pdarray, if pdarray dtypes 
+        are not supported or do not match, or multiple condition clauses (see 
         Notes section) are applied
     ValueError
         Raised if the shapes of the condition, A, and B pdarrays are unequal
@@ -351,6 +352,9 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
     is supported e.g., n < 5, n > 1, which is supported in numpy
     is not currently supported in Arkouda
     """
+    if (not isSupportedNumber(A) and not isinstance(A,pdarray)) or \
+                                      (not isSupportedNumber(B) and not isinstance(B,pdarray)):
+        raise TypeError('both A and B must be an int, np.int64, float, np.float64, or pdarray')
     if isinstance(A, pdarray) and isinstance(B, pdarray):
         repMsg = generic_msg(cmd="efunc3vv", args="{} {} {} {}".\
                              format("where",
@@ -404,7 +408,7 @@ def where(condition : pdarray, A : Union[Union[int,float], pdarray],
     return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
-def histogram(pda : pdarray, bins : int=10) -> pdarray:
+def histogram(pda : pdarray, bins : Union[int,np.int64]=10) -> pdarray:
     """
     Compute a histogram of evenly spaced bins over the range of an array.
     
@@ -413,7 +417,7 @@ def histogram(pda : pdarray, bins : int=10) -> pdarray:
     pda : pdarray
         The values to histogram
 
-    bins : int
+    bins : Union[int,np.int64]
         The number of equal-size bins to use (default: 10)
 
     Returns
