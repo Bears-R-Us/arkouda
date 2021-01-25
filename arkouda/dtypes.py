@@ -41,8 +41,7 @@ def isSupportedFloat(num):
 def isSupportedNumber(num):
     return isinstance(num, SUPPORTED_NUMBERS)
 
-@typechecked
-def _as_dtype(dt : np.dtype) -> np.dtype:
+def _as_dtype(dt) -> np.dtype:
     if not isinstance(dt, np.dtype):
         return np.dtype(dt)
     return dt

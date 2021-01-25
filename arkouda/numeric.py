@@ -15,7 +15,7 @@ __all__ = ["cast", "abs", "log", "exp", "cumsum", "cumprod", "sin", "cos",
            "where", "histogram", "value_counts"]    
 
 @typechecked
-def cast(pda : Union[pdarray, Strings], dt) -> Union[pdarray, Strings]:
+def cast(pda : Union[pdarray, Strings], dt: Union[np.dtype,str]) -> Union[pdarray, Strings]:
     """
     Cast an array to another dtype.
 
