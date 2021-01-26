@@ -1,0 +1,5 @@
+perfkeys: Average rate =
+graphkeys: Argsort GiB/s
+files: str-argsort.dat
+graphtitle: String Argsort Performance
+ylabel: Performance (GiB/s)
