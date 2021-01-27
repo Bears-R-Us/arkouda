@@ -1,3 +1,4 @@
+from typing import Tuple
 import numpy as np
 from collections import Counter
 from context import arkouda as ak
@@ -295,8 +296,8 @@ class StringTest(ArkoudaTest):
         ArkoudaTest.setUp(self)
         base_words1 = ak.random_strings_uniform(1, 10, UNIQUE, characters='printable')
         base_words2 = ak.random_strings_lognormal(2, 0.25, UNIQUE, characters='printable')
-        gremlins = ak.array(['"', ' ', ''])
-        self.gremlins = gremlins
+        gremlins = np.array(['"', ' ', ''])
+        self.gremlins = ak.array(gremlins)
         self.base_words = ak.concatenate((base_words1, base_words2))
         self.np_base_words = np.hstack((base_words1.to_ndarray(), base_words2.to_ndarray()))
         choices = ak.randint(0, self.base_words.size, N)
@@ -304,12 +305,20 @@ class StringTest(ArkoudaTest):
         self.test_strings = self.strings.to_ndarray()
         self.cat = ak.Categorical(self.strings)
         x, w = tuple(zip(*Counter(''.join(self.base_words.to_ndarray())).items()))
-        self.delim =  np.random.choice(x, p=(np.array(w)/sum(w)))
+        self.delim =  self._get_delimiter(x,w, gremlins)
         self.akset = set(ak.unique(self.strings).to_ndarray())
-        self.gremlins_base_words = base_words = ak.concatenate((base_words1, base_words2, gremlins))
-        self.gremlins_strings = ak.concatenate((base_words[choices], gremlins))
+        self.gremlins_base_words = base_words = ak.concatenate((base_words1, base_words2, self.gremlins))
+        self.gremlins_strings = ak.concatenate((base_words[choices], self.gremlins))
         self.gremlins_test_strings = self.gremlins_strings.to_ndarray()
         self.gremlins_cat = ak.Categorical(self.gremlins_strings)
+        
+        
+    def _get_delimiter(self, x : Tuple, w: Tuple, gremlins : np.array) -> str:
+        delim = np.random.choice(x, p=(np.array(w)/sum(w)))
+        if delim in gremlins:
+
+            self._get_delimiter(x,w,gremlins)
+        return delim        
 
     def test_compare_strings(self):
         assert compare_strings(self.base_words.to_ndarray(), self.np_base_words)
