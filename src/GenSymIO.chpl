@@ -1410,7 +1410,7 @@ module GenSymIO {
     /*
      * Writes the float, int, or bool pdarray out to hdf5
      */
-    private proc write1DDistArray(filename: string, mode: int, dsetName: string, A, 
+    proc write1DDistArray(filename: string, mode: int, dsetName: string, A,
                                                                 array_type: DType) throws {
         /* Output is 1 file per locale named <filename>_<loc>, and a dataset
         named <dsetName> is created in each one. If mode==1 (append) and the
