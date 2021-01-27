@@ -520,7 +520,7 @@ module GenSymIO {
                 return try! "Error: unknown cause";
             }
 
-            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                            "Got subdomains and total length for dataset %s".format(dsetName));
 
             select (isSegArray, dataclass) {
