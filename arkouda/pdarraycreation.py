@@ -1027,7 +1027,7 @@ def rmat_gen (lgNv:int, Ne_per_v:int, p:float, directed: int,weighted:int) ->\
                return GraphUD(*(cast(str,repMsg).split('+')))
 
 @typechecked
-def graph_bfs (graph: Union[GraphD,GraphDW,GraphUD,GraphUDW], root: int ) -> tuple:
+def graph_bfs (graph: Union[GraphD,GraphDW,GraphUD,GraphUDW], root: int ) -> pdarray:
         """
         This function is generating the breadth-first search vertices sequences in given graph
         starting from the given root vertex
@@ -1089,13 +1089,16 @@ def graph_bfs (graph: Union[GraphD,GraphDW,GraphUD,GraphUDW], root: int ) -> tup
                  root)
 
         repMsg = generic_msg(msg)
+        '''
         tmpmsg=cast(str,repMsg).split('+')
         levelstr=tmpmsg[0:1]
         vertexstr=tmpmsg[1:2]
         levelary=create_pdarray(*(cast(str,levelstr)) )
         
         vertexary=create_pdarray(*(cast(str,vertexstr)) )
-        return (levelary,vertexary)
+        '''
+        return create_pdarray(repMsg)
+        #return (levelary,vertexary)
 
 
 @typechecked

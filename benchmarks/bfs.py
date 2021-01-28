@@ -32,6 +32,9 @@ def time_ak_bfs_graph(trials:int):
     print("vertices weight    ={}".format(Graph.v_weight))
     print("edges weight    ={}".format(Graph.e_weight))
     '''
+    deparray = ak.graph_bfs(Graph,4)
+    print(deparray)
+    '''
     ll,ver = ak.graph_bfs(Graph,4)
     old=-2;
     visit=[]
@@ -45,6 +48,7 @@ def time_ak_bfs_graph(trials:int):
             visit=[]
         visit.append(ver[i])
     print(visit)
+    '''
     
     '''
     print("total edges are as follows")
@@ -58,7 +62,7 @@ def time_ak_bfs_graph(trials:int):
     timings = []
     for root in range(trials):
         start = time.time()
-        level,nodes = ak.graph_bfs(Graph,root)
+        _ = ak.graph_bfs(Graph,root)
         end = time.time()
         timings.append(end - start)
     tavg = sum(timings) / trials

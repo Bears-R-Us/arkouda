@@ -1712,6 +1712,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
            numCurF=SetNextF.size;
            SetCurF=SetNextF;
       }
+
+      /*
       var vertexValue = radixSortLSD_ranks(depth);
       var levelValue=depth[vertexValue]; 
       //var depthName =st.nextName();
@@ -1725,7 +1727,12 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       //st.addEntry(depthName, depthEntry);
       repMsg =  'created ' + st.attrib(levelName) + '+created ' + st.attrib(vertexName) ;
       //repMsg =  'created ' + st.attrib(depthName);
+      */
 
+      var depthName = st.nextName();
+      var depthEntry = new shared SymEntry(depth);
+      st.addEntry(depthName, depthEntry);
+      repMsg =  'created ' + st.attrib(depthName);
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
       return repMsg;
   }
@@ -1780,6 +1787,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
            numCurF=SetNextF.size;
            SetCurF=SetNextF;
       }
+      /*
       var vertexValue = radixSortLSD_ranks(depth);
       var levelValue=depth[vertexValue]; 
 
@@ -1790,7 +1798,11 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       st.addEntry(levelName, levelEntry);
       st.addEntry(vertexName, vertexEntry);
       repMsg =  'created ' + st.attrib(levelName) + '+created ' + st.attrib(vertexName) ;
-
+      */
+      var depthName = st.nextName();
+      var depthEntry = new shared SymEntry(depth);
+      st.addEntry(depthName, depthEntry);
+      repMsg =  'created ' + st.attrib(depthName);
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
       return repMsg;
   }
@@ -1878,6 +1890,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
            numCurF=SetNextF.size;
            SetCurF=SetNextF;
       }
+      /*
       var vertexValue = radixSortLSD_ranks(depth);
       var levelValue=depth[vertexValue]; 
 
@@ -1887,7 +1900,12 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var vertexEntry = new shared SymEntry(vertexValue);
       st.addEntry(levelName, levelEntry);
       st.addEntry(vertexName, vertexEntry);
-      repMsg =  'created ' + st.attrib(levelName) + '+created ' + st.attrib(vertexName) ;
+
+      */
+      var depthName = st.nextName();
+      var depthEntry = new shared SymEntry(depth);
+      st.addEntry(depthName, depthEntry);
+      repMsg =  'created ' + st.attrib(depthName);
 
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
       return repMsg;
@@ -2007,6 +2025,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
            numCurF=SetNextF.size;
            SetCurF=SetNextF;
       }
+      /*
       var vertexValue = radixSortLSD_ranks(depth);
       var levelValue=depth[vertexValue]; 
 
@@ -2017,7 +2036,11 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       st.addEntry(levelName, levelEntry);
       st.addEntry(vertexName, vertexEntry);
       repMsg =  'created ' + st.attrib(levelName) + '+created ' + st.attrib(vertexName) ;
-
+      */
+      var depthName = st.nextName();
+      var depthEntry = new shared SymEntry(depth);
+      st.addEntry(depthName, depthEntry);
+      repMsg =  'created ' + st.attrib(depthName);
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
       return repMsg;
   }
