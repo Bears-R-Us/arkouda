@@ -1697,8 +1697,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
               numNF=nf[i];
               ref NF=df[sf[i]..sf[i]+numNF-1];
               if (numNF>0) {
-                forall j in NF {
-                //for j in NF {
+                //forall j in NF {
+                for j in NF {
                    if (depth[j]==-1) {
                       depth[j]=cur_level+1;
                       SetNextF.add(j);
@@ -1770,8 +1770,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
               ref NF=df[sf[i]..sf[i]+numNF-1];
               writeln("current node ",i, " has ", numNF, " neighbours and  they are  ",NF);
               if (numNF>0) {
-                forall j in NF {
-                //for j in NF {
+                //forall j in NF {
+                for j in NF {
                    writeln("current node ",i, " check neibour ",j, " its depth=",depth[j]);
                    if (depth[j]==-1) {
                       depth[j]=cur_level+1;
@@ -1849,9 +1849,9 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
               numNF=nf[i];
               ref NF=df[sf[i]..sf[i]+numNF-1];
               if (numNF>0) {
-                forall j in NF {
+                //forall j in NF {
                 //writeln("current node ",i, " has neibours ",NF);
-                //for j in NF {
+                for j in NF {
                    if (depth[j]==-1) {
                       depth[j]=cur_level+1;
                       SetNextF.add(j);
@@ -1871,8 +1871,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                   ref NFR=dfR[sfR[i]..sfR[i]+numNFR-1];
                   if (numNFR>0) {
                       //writeln("current node ",i, " has reverse neibours ",NFR);
-                      forall j in NFR {
-                      //for j in NFR {
+                      //forall j in NFR {
+                      for j in NFR {
                           if (depth[j]==-1) {
                              depth[j]=cur_level+1;
                              SetNextF.add(j);
@@ -1985,8 +1985,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
               ref NF=df[sf[i]..sf[i]+numNF-1];
               //writeln("current node ",i, " has ", numNF, " neighbours and  they are  ",NF);
               if (numNF>0) {
-                forall j in NF {
-                //for j in NF {
+                //forall j in NF {
+                for j in NF {
                    //writeln("current node ",i, " check neibour ",j, " its depth=",depth[j]);
                    if (depth[j]==-1) {
                       depth[j]=cur_level+1;
