@@ -200,9 +200,9 @@ proc main() {
             //parse the decoded cmdString to retrieve user,token,cmd
             asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"INCOMING CMD %s".format(cmdStr));
             var msg    = extractCommand(cmdStr);
-            var user   = msg.user;
-            var token  = msg.token;
-            var cmd    = msg.cmd;
+            user   = msg.user;
+            token  = msg.token;
+            cmd    = msg.cmd;
             var format = msg.format;
             var args   = msg.args;
 
@@ -425,9 +425,15 @@ Deletes the serverConnetionFile on arkouda_server shutdown
 */
 proc deleteServerConnectionInfo() {
     use FileSystem;
-    if !serverConnectionInfo.isEmpty() {
-        try! {
+    try {
+        if !serverConnectionInfo.isEmpty() {
             remove(serverConnectionInfo);
         }
+    } catch fnfe : FileNotFoundError {
+        asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                              "The serverConnectionInfo file was not found %s".format(fnfe.message()));
+    } catch e : Error {
+        asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                              "Error in deleting serverConnectionInfo file %s".format(e.message()));    
     }
 }

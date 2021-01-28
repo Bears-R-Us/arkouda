@@ -304,19 +304,21 @@ def _start_tunnel(addr : str, tunnel_server : str) -> Tuple[str,object]:
         raise ConnectionError(e)
 
 def _send_string_message(cmd : str, recv_bytes : bool=False, 
-                         args : str=None) -> Union[str, bytes]:
+                                   args : str=None) -> Union[str, bytes]:
     """
-    Prepends the message string with Arkouda infrastructure elements 
-    including username and authentication token and then sends the 
-    resulting, composite string to the Arkouda server.
+    Generates a RequestMessage encapsulating command and requesting
+    user information, sends it to the Arkouda server, and returns 
+    either a string or binary depending upon the message format.
 
     Parameters
     ----------
-    message : str
-        The message including command to be sent to the Arkouda server
+    cmd : str
+        The name of the command to be executed by the Arkouda server
     recv_bytes : bool, defaults to False
         A boolean indicating whether the return message will be in bytes
         as opposed to a string
+    args : str
+        A delimited string containing 1..n command arguments
 
     Returns
     -------
@@ -333,7 +335,7 @@ def _send_string_message(cmd : str, recv_bytes : bool=False,
         expected fields       
     """
     message = RequestMessage(user=username, token=token, cmd=cmd, 
-                                        format=MessageFormat.STRING, args=cast(str,args))
+                          format=MessageFormat.STRING, args=cast(str,args))
 
     logger.debug('sending message {}'.format(message))
 
@@ -343,9 +345,10 @@ def _send_string_message(cmd : str, recv_bytes : bool=False,
         return_message = socket.recv()
 
         # raise errors or warnings sent back from the server
-        if return_message.startswith(b"Error:"): \
-                                   raise RuntimeError(return_message.decode())
-        elif return_message.startswith(b"Warning:"): warnings.warn(return_message.decode())
+        if return_message.startswith(b"Error:"): 
+            raise RuntimeError(return_message.decode())
+        elif return_message.startswith(b"Warning:"): 
+            warnings.warn(return_message.decode())
         return return_message
     else:
         raw_message = socket.recv_string()
@@ -361,22 +364,28 @@ def _send_string_message(cmd : str, recv_bytes : bool=False,
         except KeyError as ke:
             raise ValueError('Return message is missing the {} field'.format(ke))
         except json.decoder.JSONDecodeError:
-            raise ValueError('Return message is not valid JSON: {}'.format(raw_message))
+            raise ValueError('Return message is not valid JSON: {}'.\
+                             format(raw_message))
 
 def _send_binary_message(cmd : str, payload : bytes, recv_bytes : bool=False,
                                             args : str=None) -> Union[str, bytes]:
     """
-    Prepends the binary message with Arkouda infrastructure elements
-    including username and authentication token and then sends the
-    resulting, composite byte array to the Arkouda server.
+    Generates a RequestMessage encapsulating command and requesting user information,
+    information prepends the binary payload, sends the binary request to the Arkouda 
+    server, and returns either a string or binary depending upon the message format.
 
     Parameters
     ----------
-    message : bytes
-        The message including command to be sent to the Arkouda server
+    cmd : str
+        The name of the command to be executed by the Arkouda server    
+    payload : bytes
+        The bytes to be converted to a pdarray, Strings, or Categorical object
+        on the Arkouda server
     recv_bytes : bool, defaults to False
         A boolean indicating whether the return message will be in bytes
         as opposed to a string
+    args : str
+        A delimited string containing 1..n command arguments
 
     Returns
     -------
@@ -422,9 +431,9 @@ def _send_binary_message(cmd : str, payload : bytes, recv_bytes : bool=False,
         except KeyError as ke:
             raise ValueError('Return message is missing the {} field'.format(ke))
         except json.decoder.JSONDecodeError:
-            raise ValueError('{} is not valid JSON, may be server-side error'.format(raw_message))
-  
-    
+            raise ValueError('{} is not valid JSON, may be server-side error'.\
+                             format(raw_message))
+
 # message arkouda server the client is disconnecting from the server
 def disconnect() -> None:
     """
@@ -526,23 +535,18 @@ def generic_msg(cmd : str, args : Union[str,bytes]=None, send_bytes : bool=False
 
     if not connected:
         raise RuntimeError("client is not connected to a server")
-        
+    
+    logger.debug("[Python] Sending request: cmd: {} args: {}".\
+                 format(cmd,cast(str,args)))
+    
     try:
         if send_bytes:
-            if recv_bytes:
-                return _send_binary_message(cmd=cmd, 
+            return _send_binary_message(cmd=cmd, 
                                             payload=cast(bytes,args), 
-                                            recv_bytes=recv_bytes)
-            else: 
-                return _send_binary_message(cmd=cmd, 
-                                            payload=cast(bytes,args), 
-                                            recv_bytes=recv_bytes)           
+                                            recv_bytes=recv_bytes)         
         else:
-            logger.debug("[Python] Sending request: cmd: {} args: {}".format(cmd,cast(str,args)))
-            if recv_bytes:
-                return _send_string_message(cmd=cmd, args=cast(str,args), recv_bytes=recv_bytes)
-            else:
-                return _send_string_message(cmd=cmd, args=cast(str,args), recv_bytes=recv_bytes)
+            return _send_string_message(cmd=cmd, args=cast(str,args), 
+                                            recv_bytes=recv_bytes)
                 
     except KeyboardInterrupt as e:
         # if the user interrupts during command execution, the socket gets out 

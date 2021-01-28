@@ -1,3 +1,4 @@
+from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 from typing import Dict
@@ -69,6 +70,23 @@ class RequestMessage():
         Overridden __init__ method sets instance attributes to 
         default values if the corresponding init params are missing.
         
+        Parameters
+        ----------
+        
+        user : str
+            The user the request corresponds to
+        cmd : str
+            The Arkouda server command name
+        token : str, defaults to None
+            The authentication token corresponding to the user
+        format : MessageFormat
+            The request message format 
+        args : str
+            The delimited string containing the command arguments
+            
+        Returns
+        -------
+        None
         """
         object.__setattr__(self, 'user',user)
         object.__setattr__(self, 'token',token)
@@ -97,6 +115,10 @@ class RequestMessage():
                 'format': str(self.format),
                 'args' : args}
 
+'''
+The ReplyMessage class encapsulates the data and metadata corresponding to
+a message returned by the Arkouda server
+'''
 @dataclass(frozen=True)
 class ReplyMessage():
 
@@ -107,8 +129,10 @@ class ReplyMessage():
     user: str
     
     @staticmethod
-    def fromdict(values : Dict):
+    def fromdict(values : Dict) -> ReplyMessage:
         """
+        Generates a ReplyMessage from a dict encapsulating the data and
+        metadata from a reply returned by the Arkouda server.
         
         Parameters
         ----------
@@ -127,7 +151,7 @@ class ReplyMessage():
             Raised if the values Dict is missing fields or contains malformed values
         """
         try: 
-            return ReplyMessage(msg=values['msg'], msgType=MessageType(values['msgType']), 
-                            user=values['user'])
+            return ReplyMessage(msg=values['msg'], 
+                        msgType=MessageType(values['msgType']), user=values['user'])
         except KeyError as ke:
             raise ValueError('values dict missing {} field'.format(ke))
