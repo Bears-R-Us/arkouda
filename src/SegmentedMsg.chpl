@@ -15,6 +15,7 @@ module SegmentedMsg {
   use SACA;
   use Random;
   use RadixSortLSD only radixSortLSD_ranks;
+  use Set;
 
 
   private config const DEBUG = false;
