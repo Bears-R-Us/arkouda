@@ -10,11 +10,11 @@ TYPES = ('int64', 'float64', 'bool', 'str')
 
 def time_ak_bfs_graph(trials:int):
     print("Graph BFS")
-    lgNv=4
-    Ne_per_v=3
+    lgNv=14
+    Ne_per_v=5
     p=0.03
     directed=1
-    weighted=1
+    weighted=0
     Graph=ak.rmat_gen(lgNv, Ne_per_v, p, directed, weighted)
     '''
     print("number of vertices ={}".format(Graph.n_vertices))
@@ -67,6 +67,8 @@ def time_ak_bfs_graph(trials:int):
         timings.append(end - start)
     tavg = sum(timings) / trials
     print("Average time = {:.4f} sec".format(tavg))
+    print("number of vertices ={}".format(Graph.n_vertices))
+    print("number of edges ={}".format(Graph.n_edges))
     print("Average Edges = {:.4f} K/s".format(int(Graph.n_edges)/tavg/1024))
     print("Average Vertices = {:.4f} K/s".format(int(Graph.n_vertices)/tavg/1024))
     '''
