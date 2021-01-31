@@ -1682,14 +1682,14 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var depth=-1: [0..Nv-1] int;
       depth[root]=0;
       var cur_level=0;
-      var SetCurF: domain(int);
-      var SetNextF: domain(int);
+      var SetCurF= new set(int,parSafe = true);
+      var SetNextF= new set(int,parSafe = true);
       SetCurF.add(root);
       var numCurF=1:int;
 
       while (numCurF>0) {
            SetNextF.clear();
-           forall i in SetCurF {
+           forall i in SetCurF with (ref SetNextF) {
               var numNF=-1 :int;
               ref nf=ag.neighbour.a;
               ref sf=ag.start_i.a;
@@ -1754,36 +1754,36 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var depth=-1: [0..Nv-1] int;
       depth[root]=0;
       var cur_level=0;
-      var SetCurF: domain(int);
-      var SetNextF: domain(int);
+      var SetCurF= new set(int,parSafe = true);
+      var SetNextF= new set(int,parSafe = true);
       SetCurF.add(root);
       var numCurF=1:int;
 
       while (numCurF>0) {
            SetNextF.clear();
-           forall i in SetCurF {
+           forall i in SetCurF with (ref SetNextF) {
               var numNF=-1 :int;
               ref nf=ag.neighbour.a;
               ref sf=ag.start_i.a;
               ref df=ag.dst.a;
               numNF=nf[i];
               ref NF=df[sf[i]..sf[i]+numNF-1];
-              writeln("current node ",i, " has ", numNF, " neighbours and  they are  ",NF);
+              //writeln("current node ",i, " has ", numNF, " neighbours and  they are  ",NF);
               if (numNF>0) {
                 //forall j in NF {
                 for j in NF {
-                   writeln("current node ",i, " check neibour ",j, " its depth=",depth[j]);
+                   //writeln("current node ",i, " check neibour ",j, " its depth=",depth[j]);
                    if (depth[j]==-1) {
                       depth[j]=cur_level+1;
                       SetNextF.add(j);
-                      writeln("current node ",i, " add ", j, " into level ", cur_level+1, " SetNextF=", SetNextF);
+                      //writeln("current node ",i, " add ", j, " into level ", cur_level+1, " SetNextF=", SetNextF);
                    }
                 }
               }
 
            }//end forall i
            cur_level+=1;
-           writeln("SetCurF= ", SetCurF, "SetNextF=", SetNextF, " level ", cur_level+1);
+           //writeln("SetCurF= ", SetCurF, "SetNextF=", SetNextF, " level ", cur_level+1);
            numCurF=SetNextF.size;
            SetCurF=SetNextF;
       }
@@ -1833,15 +1833,15 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var depth=-1: [0..Nv-1] int;
       depth[root]=0;
       var cur_level=0;
-      var SetCurF: domain(int);
-      var SetNextF: domain(int);
+      var SetCurF= new set(int,parSafe = true);
+      var SetNextF= new set(int,parSafe = true);
       SetCurF.add(root);
       var numCurF=1:int;
 
       //writeln("========================BSF_UD==================================");
       while (numCurF>0) {
            SetNextF.clear();
-           forall i in SetCurF {
+           forall i in SetCurF with (ref SetNextF) {
               var numNF=-1 :int;
               ref nf=ag.neighbour.a;
               ref sf=ag.start_i.a;
@@ -1936,8 +1936,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var depth=-1: [0..Nv-1] int;
       depth[root]=0;
       var cur_level=0;
-      var SetCurF: domain(int);
-      var SetNextF: domain(int);
+      var SetCurF= new set(int,parSafe = true);
+      var SetNextF= new set(int,parSafe = true);
       SetCurF.add(root);
       var numCurF=1:int;
 
@@ -1976,7 +1976,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       while (numCurF>0) {
            //writeln("start loop SetCurF=", SetCurF);
            SetNextF.clear();
-           forall i in SetCurF {
+           forall i in SetCurF with (ref SetNextF) {
               var numNF=-1 :int;
               ref nf=ag.neighbour.a;
               ref sf=ag.start_i.a;
@@ -2005,8 +2005,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                   ref NFR=dfR[sfR[i]..sfR[i]+numNFR-1];
                   //writeln("current node ",i, " has ", numNFR ," reverse neighbours and  they are  ",NFR);
                   if ( numNFR>0) {
-                      forall j in NFR {
-                      //for j in NFR {
+                      //forall j in NFR {
+                      for j in NFR {
                           //writeln("current node ",i, " check neibour ",j, " its depth=",depth[j]);
                           if (depth[j]==-1) {
                              depth[j]=cur_level+1;
