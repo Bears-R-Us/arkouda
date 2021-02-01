@@ -28,7 +28,8 @@ series_dtypes = {'string' : np.str_,
                  "<class 'numpy.float64'>" : np.float64,                   
                  'bool' : np.bool,
                  "<class 'bool'>" : np.bool,
-                 'datetime64[ns]' : np.int64
+                 'datetime64[ns]' : np.int64,
+                 'timedelta64[ns]' : np.int64
                 }
 
 @typechecked
@@ -57,7 +58,7 @@ def from_series(series : pd.Series,
     TypeError
         Raised if series is not a Pandas Series object
     ValueError
-        Raised if the Series dtype is not bool, float64, int64, string, or datetime
+        Raised if the Series dtype is not bool, float64, int64, string, datetime, or timedelta
 
     Examples
     --------
@@ -94,7 +95,7 @@ def from_series(series : pd.Series,
     The supported datatypes are bool, float64, int64, string, and datetime64[ns]. The
     data type is either inferred from the the Series or is set via the dtype parameter. 
     
-    Series of datetime are converted to Arkouda arrays of dtype int64 (date in milliseconds)
+    Series of datetime or timedelta are converted to Arkouda arrays of dtype int64 (nanoseconds)
     """ 
     if not dtype:   
         dt = series.dtype.name
@@ -104,7 +105,7 @@ def from_series(series : pd.Series,
         n_array = series.to_numpy(dtype=series_dtypes[dt])
     except KeyError:
         raise ValueError(('dtype {} is unsupported. Supported dtypes are bool, ' +
-                          'float64, int64, string, and datetime64[ns]').format(dt))
+                          'float64, int64, string, datetime64[ns], and timedelta64[ns]').format(dt))
     return array(n_array)
 
 def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
