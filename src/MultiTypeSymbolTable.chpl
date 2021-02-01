@@ -9,9 +9,8 @@ module MultiTypeSymbolTable
     
     use MultiTypeSymEntry;
     use Map;
-    use Random;
     use RadixSortLSD only radixSortLSD_ranks;
-    use RandArray;
+    use RandArray only fillInt;
 
 
     
