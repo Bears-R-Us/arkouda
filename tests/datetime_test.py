@@ -227,3 +227,12 @@ class DatetimeTest(ArkoudaTest):
         self.assertEqual(self.tdvec1.argmax(), 0)
         self.assertEqual(self.tdvec1.sum(), pd.Timedelta(self.tdvec1.size, unit='s'))
         self.assertTrue(((-self.tdvec1).abs() == self.tdvec1).all())
+
+    def test_scalars(self):
+        self.assertTrue((self.dtscalar <= self.dtvec1).all()) # pandas.Timestamp
+        self.assertTrue((self.dtscalar.to_pydatetime() <= self.dtvec1).all()) # datetime.datetime
+        # self.assertTrue((self.dtscalar.to_numpy() <= self.dtvec1).all()) # numpy.datetime64
+        self.assertTrue((self.onesecond == self.tdvec1).all()) # pandas.Timedelta
+        self.assertTrue((self.onesecond.to_pytimedelta() == self.tdvec1).all()) # datetime.timedelta
+        # self.assertTrue((self.onesecond.to_numpy() == self.tdvec1).all()) # numpy.timedelta64
+        

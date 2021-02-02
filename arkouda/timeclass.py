@@ -1,9 +1,10 @@
 from arkouda.pdarrayclass import pdarray
-from pandas import Series, Timestamp, Timedelta as pdTimedelta, date_range as pd_date_range, timedelta_range as pd_timedelta_range, to_datetime, to_datetime # type: ignore
+from pandas import Series, Timestamp, Timedelta as pdTimedelta, date_range as pd_date_range, timedelta_range as pd_timedelta_range, to_datetime, to_timedelta # type: ignore
 from arkouda.dtypes import int64, isSupportedInt
 from arkouda.pdarraycreation import from_series, array as ak_array
 from arkouda.numeric import cast, abs as akabs
 import numpy as np # type: ignore
+import datetime
 
 _BASE_UNIT = 'ns'
 
@@ -26,9 +27,11 @@ def _identity(x, **kwargs):
 
 class _Timescalar:
     def __init__(self, scalar):
-        if isinstance(scalar, Timestamp) or isinstance(scalar, pdTimedelta):
-            scalar = scalar.to_numpy()
-        self.unit = np.datetime_data(scalar)[0]
+        if isinstance(scalar, np.datetime64) or isinstance(scalar, datetime.datetime):
+            scalar = to_datetime(scalar).to_numpy()
+        elif isinstance(scalar, np.timedelta64) or isinstance(scalar, datetime.timedelta):
+            scalar = to_timedelta(scalar).to_numpy()
+        self.unit = np.datetime_data(scalar.dtype)[0]
         self._factor = _get_factor(self.unit)
         # int64 in nanoseconds
         self._data = self._factor * scalar.astype('int64')
@@ -155,7 +158,7 @@ class _AbstractBaseTime(pdarray):
         # First case is pdarray <op> self
         if (isinstance(other, pdarray) and other.dtype == int64):
             if op not in self.supported_with_r_pdarray:
-                raise TypeError("{} not supported between {} and integer".format(op, self.__class__.__name__))
+                raise TypeError("{} not supported between int64 and {}".format(op, self.__class__.__name__))
             callback = self._get_callback('pdarray', op)
             # Need to use other._binop because self._data._r_binop can only handle scalars
             return callback(other._binop(self._data, op))
@@ -172,7 +175,7 @@ class _AbstractBaseTime(pdarray):
             otherdata = _Timescalar(other)._data
         elif isSupportedInt(other):
             if op not in self.supported_with_r_pdarray:
-                raise TypeError("{} not supported between {} and integer".format(op, self.__class__.__name__))
+                raise TypeError("{} not supported between int64 and {}".format(op, self.__class__.__name__))
             otherclass = 'pdarray'
             otherdata = other
         else:
@@ -195,11 +198,15 @@ class _AbstractBaseTime(pdarray):
 
     @staticmethod
     def _is_datetime_scalar(scalar):
-        return isinstance(scalar, Timestamp) or isinstance(scalar, np.datetime64)
+        return (isinstance(scalar, Timestamp) or
+                (isinstance(scalar, np.datetime64) and np.isscalar(scalar)) or
+                isinstance(scalar, datetime.datetime))
 
     @staticmethod
     def _is_timedelta_scalar(scalar):
-        return isinstance(scalar, pdTimedelta) or isinstance(scalar, np.timedelta64)
+        return (isinstance(scalar, pdTimedelta) or
+                (isinstance(scalar, np.timedelta64) and np.isscalar(scalar)) or
+                isinstance(scalar, datetime.timedelta))
 
     # def _normalize_scalar(self, scalar):
     #     scalar = _Timescalar(scalar)
