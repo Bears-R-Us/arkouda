@@ -1,7 +1,8 @@
 from arkouda.pdarrayclass import pdarray
-from pandas import Series, Timestamp, Timedelta as pdTimedelta, date_range as pd_date_range, timedelta_range as pd_timedelta_range, to_datetime
+from pandas import Series, Timestamp, Timedelta as pdTimedelta, date_range as pd_date_range, timedelta_range as pd_timedelta_range, to_datetime, to_datetime
 from arkouda.dtypes import int64, isSupportedInt
 from arkouda.pdarraycreation import from_series, array as ak_array
+from arkouda.numeric import cast, abs as akabs
 import numpy as np
 
 _BASE_UNIT = 'ns'
@@ -95,8 +96,13 @@ class _AbstractBaseTime(pdarray):
 
     def round(self, freq):
         f = _get_factor(freq)
-        offset = (f + 1) // 2
-        return self.__class__((self._data + offset) // f, unit=freq)
+        offset = self._data + ((f + 1) // 2)
+        rounded = offset // f
+        # Halfway values are supposed to round to the nearest even integer
+        # Need to figure out which ones ended up odd and fix them
+        decrement = ((offset % f) == 0) & ((rounded % 2) == 1)
+        rounded[decrement] = rounded[decrement] - 1
+        return self.__class__(rounded, unit=freq)
 
     def to_ndarray(self):
         return np.array(self._data.to_ndarray(), dtype="{}64[ns]".format(self.__class__.__name__.lower()))
@@ -104,27 +110,21 @@ class _AbstractBaseTime(pdarray):
     def __str__(self):
         from arkouda.client import pdarrayIterThresh
         if self.size <= pdarrayIterThresh:
-            vals = ["{}".format(self[i]) for i in range(self.size)]
+            vals = ["'{}'".format(self[i]) for i in range(self.size)]
         else:
-            vals = ["{}".format(self[i]) for i in range(3)]
+            vals = ["'{}'".format(self[i]) for i in range(3)]
             vals.append('... ')
-            vals.extend(["{}".format(self[i]) for i in range(self.size-3, self.size)])
-        return "[{}]".format(', '.join(vals))
+            vals.extend(["'{}'".format(self[i]) for i in range(self.size-3, self.size)])
+        spaces = ' '*(len(self.__class__.__name__)+1)
+        return "{}([{}],\n{}dtype='{}64[ns]')".format(self.__class__.__name__,
+                                                      ',\n{} '.format(spaces).join(vals),
+                                                      spaces,
+                                                      self.__class__.__name__.lower())
     
     def __repr__(self) -> str:
-        return "array({}, dtype='{}64[ns]')".format(self.__str__(), self.__class__.__name__.lower())
+        return self.__str__()
 
     def _binop(self, other, op):
-        # def adjust_and_compute(callback):
-        #     if self._factor > other._factor:
-        #         adjustment = self._factor // other._factor
-        #         return callback((adjustment*self._data)._binop(other._data, op), unit=other.unit)
-        #     elif self._factor < other._factor:
-        #         adjustment = other._factor // self._factor
-        #         return callback(self._data._binop(adjustment*other._data, op), unit=self.unit)
-        #     else:
-        #         return callback(self._data._binop(other._data, op), unit=self.unit)
-        
         if isinstance(other, Datetime) or self._is_datetime_scalar(other):
             if op not in self.supported_with_datetime:
                 raise TypeError("{} not supported between {} and Datetime".format(op, self.__class__.__name__))
@@ -152,7 +152,15 @@ class _AbstractBaseTime(pdarray):
         return callback(self._data._binop(otherdata, op))
 
     def _r_binop(self, other, op):
-        if self._is_datetime_scalar(other):
+        # First case is pdarray <op> self
+        if (isinstance(other, pdarray) and other.dtype == int64):
+            if op not in self.supported_with_r_pdarray:
+                raise TypeError("{} not supported between {} and integer".format(op, self.__class__.__name__))
+            callback = self._get_callback('pdarray', op)
+            # Need to use other._binop because self._data._r_binop can only handle scalars
+            return callback(other._binop(self._data, op))
+        # All other cases are scalars, so can use self._data._r_binop
+        elif self._is_datetime_scalar(other):
             if op not in self.supported_with_r_datetime:
                 raise TypeError("{} not supported between scalar datetime and {}".format(op, self.__class__.__name__))
             otherclass = 'Datetime'
@@ -162,26 +170,18 @@ class _AbstractBaseTime(pdarray):
                 raise TypeError("{} not supported between scalar timedelta and {}".format(op, self.__class__.__name__))
             otherclass = 'Timedelta'
             otherdata = _Timescalar(other)._data
-        elif (isinstance(other, pdarray) and other.dtype == int64) or isSupportedInt(other):
+        elif isSupportedInt(other):
             if op not in self.supported_with_r_pdarray:
                 raise TypeError("{} not supported between {} and integer".format(op, self.__class__.__name__))
             otherclass = 'pdarray'
             otherdata = other
         else:
+            # If here, type is not handled
             return NotImplemented
         callback = self._get_callback(otherclass, op)
         return callback(self._data._r_binop(otherdata, op))
 
     def opeq(self, other, op):
-        # def adjust_and_compute():
-        #     if self._factor != other._factor:
-        #         if self._factor < other._factor:
-        #             warnings.warn("Inplace operation {} discarding precision from operand".format(op))
-        #         self._data.opeq((other._factor * other._data) // self._factor, op)
-        #         return self
-        #     else:
-        #         self._data.opeq(other._data, op)
-        #         return self
         if isinstance(other, Timedelta) or self._is_timedelta_scalar(other):
             if op not in self.supported_opeq:
                 raise TypeError("{} {} Timedelta not supported".format(self.__class__.__name__, op))
@@ -232,6 +232,18 @@ class _AbstractBaseTime(pdarray):
         else:
             return NotImplemented
 
+    def min(self):
+        return self._scalar_callback(self._data.min())
+
+    def max(self):
+        return self._scalar_callback(self._data.max())
+
+    def mink(self, k):
+        return self.__class__(self._data.mink(k))
+
+    def maxk(self, k):
+        return self.__class__(self._data.maxk(k))
+
 class Datetime(_AbstractBaseTime):
 
     supported_with_datetime = frozenset(('==', '!=', '<', '<=', '>', '>=', '-'))
@@ -246,17 +258,23 @@ class Datetime(_AbstractBaseTime):
     def _get_callback(cls, otherclass, op): 
         callbacks = {('Datetime', '-'): Timedelta,
                      ('Timedelta', '+'): cls,
-                     ('Timedelta', '-'): cls}
+                     ('Timedelta', '-'): cls,
+                     ('Timedelta', '%'): Timedelta}
         return callbacks.get((otherclass, op), _identity)
     
     def _scalar_callback(self, scalar):
         # Formats a scalar return value
-        return np.datetime64(int(scalar), _BASE_UNIT)
+        return Timestamp(int(scalar), unit=_BASE_UNIT)
 
     @staticmethod
     def _is_supported_scalar(scalar):
         return self.is_datetime_scalar(scalar)
 
+    def to_pandas(self):
+        return to_datetime(self.to_ndarray())
+
+    def sum(self):
+        raise TypeError("Cannot sum datetime64 values")
                 
 class Timedelta(_AbstractBaseTime):
 
@@ -273,17 +291,27 @@ class Timedelta(_AbstractBaseTime):
         callbacks = {('Timedelta', '-'): cls,
                      ('Timedelta', '+'): cls,
                      ('Datetime', '+'): Datetime,
+                     ('Datetime', '-'): Datetime,
                      ('Timedelta', '%'): cls,
                      ('pdarray', '//'): cls,   # Td // pdarray -> Td
                      ('pdarray', '*'): cls}
         return callbacks.get((otherclass, op), _identity)
     
     def _scalar_callback(self, scalar):
-        return np.timedelta64(int(scalar), _BASE_UNIT)
+        return pdTimedelta(int(scalar), unit=_BASE_UNIT)
 
     @staticmethod
     def _is_supported_scalar(scalar):
         return self.is_timedelta_scalar(scalar)
+
+    def to_pandas(self):
+        return to_timedelta(self.to_ndarray())
+
+    def sum(self):
+        return self._scalar_callback(self._data.sum())
+
+    def abs(self):
+        return self.__class__(cast(akabs(self._data), 'int64'))
     
     
 def date_range(start=None, end=None, periods=None, freq=None,
