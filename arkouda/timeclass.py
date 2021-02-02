@@ -1,9 +1,9 @@
 from arkouda.pdarrayclass import pdarray
-from pandas import Series, Timestamp, Timedelta as pdTimedelta, date_range as pd_date_range, timedelta_range as pd_timedelta_range, to_datetime, to_datetime
+from pandas import Series, Timestamp, Timedelta as pdTimedelta, date_range as pd_date_range, timedelta_range as pd_timedelta_range, to_datetime, to_datetime # type: ignore
 from arkouda.dtypes import int64, isSupportedInt
 from arkouda.pdarraycreation import from_series, array as ak_array
 from arkouda.numeric import cast, abs as akabs
-import numpy as np
+import numpy as np # type: ignore
 
 _BASE_UNIT = 'ns'
 
@@ -36,7 +36,7 @@ class _Timescalar:
 
 class _AbstractBaseTime(pdarray):
     
-    def __init__(self, array, unit : str=_BASE_UNIT):
+    def __init__(self, array, unit : str=_BASE_UNIT): # type: ignore
         # Convert the input to int64 pdarray of nanoseconds
         if isinstance(array, pdarray):
             if array.dtype != int64:
@@ -67,11 +67,11 @@ class _AbstractBaseTime(pdarray):
             elif isinstance(array, np.ndarray):
                 # Numpy datetime64 and timedelta64
                 # Force through pandas.Series
-                self.__init__(to_datetime(array).to_series())
+                self.__init__(to_datetime(array).to_series()) # type: ignore
             elif hasattr(array, 'to_series'):
                 # Pandas DatetimeIndex
                 # Force through pandas.Series
-                self.__init__(array.to_series())
+                self.__init__(array.to_series()) # type: ignore
         else:
             raise TypeError("Unsupported type: {}".format(type(array)))
         # Now that self._data is correct, init self with same metadata
@@ -251,8 +251,8 @@ class Datetime(_AbstractBaseTime):
     supported_with_timedelta = frozenset(('+', '-', '/', '//', '%'))
     supported_with_r_timedelta = frozenset(('+'))
     supported_opeq = frozenset(('+=', '-='))
-    supported_with_pdarray = frozenset(())
-    supported_with_r_pdarray = frozenset(())
+    supported_with_pdarray = frozenset(())  # type: ignore
+    supported_with_r_pdarray = frozenset(()) # type: ignore
 
     @classmethod
     def _get_callback(cls, otherclass, op): 
