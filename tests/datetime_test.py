@@ -235,4 +235,31 @@ class DatetimeTest(ArkoudaTest):
         self.assertTrue((self.onesecond == self.tdvec1).all()) # pandas.Timedelta
         self.assertTrue((self.onesecond.to_pytimedelta() == self.tdvec1).all()) # datetime.timedelta
         # self.assertTrue((self.onesecond.to_numpy() == self.tdvec1).all()) # numpy.timedelta64
-        
+
+    def test_units(self):
+        def check_equal(pdunit, akunit):
+            pdval = pd.Timestamp(1, unit=pdunit)
+            akval = ak.Datetime(ak.ones(10, dtype=ak.int64), unit=akunit)[0]
+            try:
+                self.assertEqual(pdval, akval)
+            except AssertionError:
+                logging.getLogger().error("pandas {} ({}) != arkouda {} ({})".format(pdunit, pdval, akunit, akval))
+            pdval = pd.Timedelta(1, unit=pdunit)
+            akval = ak.Timedelta(ak.ones(10, dtype=ak.int64), unit=akunit)[0]
+            try:
+                self.assertEqual(pdval, akval)
+            except AssertionError:
+                logging.getLogger().error("pandas {} ({}) != arkouda {} ({})".format(pdunit, pdval, akunit, akval))
+
+        unitmap = {'W': ('weeks', 'w', 'week'),
+                   'D': ('days', 'd', 'day'),
+                   'h': ('hours', 'H', 'hr', 'hrs'),
+                   'T': ('minutes', 'minute', 'min', 'm'),
+                   'L': ('milliseconds', 'millisecond', 'milli', 'ms', 'l'),
+                   'U': ('microseconds', 'microsecond', 'micro', 'us', 'u'),
+                   'N': ('nanoseconds', 'nanosecond', 'nano', 'ns', 'n')}
+        for pdunit, aliases in unitmap.items():
+            #check_equal(pdunit, pdunit)
+            for akunit in (pdunit,)+aliases:
+                check_equal(pdunit, akunit)
+                
