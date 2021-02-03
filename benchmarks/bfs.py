@@ -10,8 +10,8 @@ TYPES = ('int64', 'float64', 'bool', 'str')
 
 def time_ak_bfs_graph(trials:int):
     print("Graph BFS")
-    lgNv=14
-    Ne_per_v=5
+    lgNv=5
+    Ne_per_v=3
     p=0.03
     directed=1
     weighted=0
@@ -49,16 +49,15 @@ def time_ak_bfs_graph(trials:int):
         visit.append(ver[i])
     print(visit)
     '''
-    
-    '''
     print("total edges are as follows")
     for i in range(int(Graph.n_edges)):
          print("<",Graph.src[i]," -- ", Graph.dst[i],">")
 
+    '''
     print("total reverse edges are as follows")
     for i in range(int(Graph.n_edges)):
          print("<",Graph.srcR[i]," -- ", Graph.dstR[i],">")
-    '''
+    
     timings = []
     for root in range(trials):
         start = time.time()
@@ -71,7 +70,6 @@ def time_ak_bfs_graph(trials:int):
     print("number of edges ={}".format(Graph.n_edges))
     print("Average Edges = {:.4f} K/s".format(int(Graph.n_edges)/tavg/1024))
     print("Average Vertices = {:.4f} K/s".format(int(Graph.n_vertices)/tavg/1024))
-    '''
     #print("Average rate = {:.2f} GiB/sec".format(bytes_per_sec/2**30))
     '''
 

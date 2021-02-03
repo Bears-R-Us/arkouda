@@ -14,9 +14,9 @@ module SegmentedMsg {
   use SymArrayDmap;
   use SACA;
   use Random;
-  use RadixSortLSD only radixSortLSD_ranks;
+  use RadixSortLSD;
   use Set;
-
+  public use ArgSortMsg;
 
   private config const DEBUG = false;
   const smLogger = new Logger();
@@ -1426,208 +1426,387 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       // number of edges
       var Ne = Ne_per_v * Nv:int;
       // probabilities
-      var a = p;
-      var b = (1.0 - a)/ 3.0:real;
-      var c = b;
-      var d = b;
-      var src,srcR,src1,srcR1: [0..Ne-1] int;
-      var dst,dstR,dst1,dstR1: [0..Ne-1] int;
-      var e_weight: [0..Ne-1] int;
-      var v_weight: [0..Nv-1] int;
+      var src: [0..Ne-1] int;
+      var dst: [0..Ne-1] int;
+      var iv: [0..Ne-1] int;
+
       var length: [0..Nv-1] int;
-      var lengthR: [0..Nv-1] int;
       var start_i: [0..Nv-1] int;
-      var start_iR: [0..Nv-1] int;
+      var neighbour:[0..Nv-1] int;
       length=0;
-      lengthR=0;
       start_i=-1;
-      start_iR=-1;
+      neighbour=0;
       var n_vertices=Nv;
       var n_edges=Ne;
       src=1;
       dst=1;
-      // quantites to use in edge generation loop
-      var ab = a+b:real;
-      var c_norm = c / (c + d):real;
-      var a_norm = a / (a + b):real;
-      // generate edges
-      var src_bit: [0..Ne-1]int;
-      var dst_bit: [0..Ne-1]int;
-      for ib in 1..lgNv {
-          var tmpvar: [0..Ne-1] real;
-          fillRandom(tmpvar);
-          src_bit=tmpvar>ab;
-          fillRandom(tmpvar);
-          dst_bit=tmpvar>(c_norm * src_bit + a_norm * (~ src_bit));
-          src = src + ((2**(ib-1)) * src_bit);
-          dst = dst + ((2**(ib-1)) * dst_bit);
+      var srcName:string ;
+      var dstName:string ;
+      var startName:string ;
+      var neiName:string ;
+      var sNv:string;
+      var sNe:string;
+      var sDirected:string;
+      var sWeighted:string;
+
+
+      proc rmat_gen() {
+             var a = p;
+             var b = (1.0 - a)/ 3.0:real;
+             var c = b;
+             var d = b;
+             var ab=a+b;
+             var c_norm = c / (c + d):real;
+             var a_norm = a / (a + b):real;
+             // generate edges
+             var src_bit: [0..Ne-1]int;
+             var dst_bit: [0..Ne-1]int;
+             for ib in 1..lgNv {
+                 var tmpvar: [0..Ne-1] real;
+                 fillRandom(tmpvar);
+                 src_bit=tmpvar>ab;
+                 fillRandom(tmpvar);
+                 dst_bit=tmpvar>(c_norm * src_bit + a_norm * (~ src_bit));
+                 src = src + ((2**(ib-1)) * src_bit);
+                 dst = dst + ((2**(ib-1)) * dst_bit);
+             }
+             src=src%Nv;
+             dst=dst%Nv;
+             //remove self loop
+             src=src+(src==dst);
+             src=src%Nv;
       }
-      src=src%Nv;
-      dst=dst%Nv;
-      //remove self loop
-      src=src+(src==dst);
-      src=src%Nv;
+      proc combine_sort(){
 
-      var iv = radixSortLSD_ranks(src);
-      // permute into sorted order
-      src1 = src[iv]; //# permute first vertex into sorted order
-      dst1 = dst[iv]; //# permute second vertex into sorted order
-      //# to premute/rename vertices
-      var startpos=0, endpos:int;
-      var sort=0:int;
-      while (startpos < Ne-2) {
-         endpos=startpos+1;
-         sort=0;
-         //writeln("startpos=",startpos,"endpos=",endpos);
-         while (endpos <=Ne-1) {
-            if (src1[startpos]==src1[endpos])  {
-               sort=1;
-               endpos+=1;
-               continue;
-            } else {
-               break;
-            }
-         }//end of while endpos
-         if (sort==1) {
-            var tmpary:[0..endpos-startpos-1] int;
-            tmpary=dst1[startpos..endpos-1];
-            var ivx=radixSortLSD_ranks(tmpary);
-            dst1[startpos..endpos-1]=tmpary[ivx];
-            //writeln("src1=",src1,"dst1=",dst1,"ivx=",ivx);
-            sort=0;
-         } 
-         startpos+=1;
-      }//end of while startpos
+             /* we cannot use the coargsort version because it will break the memory limit */ 
+             // coargsort
+             param bitsPerDigit = RSLSD_bitsPerDigit;
+             var bitWidths: [0..1] int;
+             var negs: [0..1] bool;
+             var totalDigits: int;
+             var size=Nv: int;
 
-      for i in 0..Ne-1 do {
-        length[src1[i]]+=1;
-        if (start_i[src1[i]] ==-1){
-           start_i[src1[i]]=i;
-           //writeln("assign index ",i, " to vertex ",src1[i]);
-        }
+             for (bitWidth, ary, neg) in zip(bitWidths, [src,dst], negs) {
+                       (bitWidth, neg) = getBitWidth(ary); 
+                       totalDigits += (bitWidth + (bitsPerDigit-1)) / bitsPerDigit;
+             }
+             proc mergedArgsort(param numDigits) throws {
+
+                    //overMemLimit(((4 + 3) * size * (numDigits * bitsPerDigit / 8))
+                    //             + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+                    var merged = makeDistArray(size, numDigits*uint(bitsPerDigit));
+                    var curDigit = RSLSD_tupleLow + numDigits - totalDigits;
+                    for (ary , nBits, neg) in zip([src,dst], bitWidths, negs) {
+                        proc mergeArray(type t) {
+                            ref A = ary;
+                            const r = 0..#nBits by bitsPerDigit;
+                            for rshift in r {
+                                 const myDigit = (r.high - rshift) / bitsPerDigit;
+                                 const last = myDigit == 0;
+                                 forall (m, a) in zip(merged, A) {
+                                     m[curDigit+myDigit] =  getDigit(a, rshift, last, neg):uint(bitsPerDigit);
+                                 }
+                            }
+                            curDigit += r.size;
+                        }
+                        mergeArray(int); 
+                    }
+                    var iv = argsortDefault(merged);
+                    return iv;
+             }
+
+             if totalDigits <=  4 { 
+                  iv = mergedArgsort( 4); 
+             }
+
+             if totalDigits <=  8 { 
+                  iv =  mergedArgsort( 8); 
+             }
+             if totalDigits <= 16 { 
+                  iv = mergedArgsort(16); 
+             }
+
+      }
+
+      proc twostep_sort(){
+             iv = radixSortLSD_ranks(src);
+             // permute into sorted order
+             var tmpedge=src;
+             tmpedge=src[iv];
+             src=tmpedge;
+             tmpedge=dst[iv];
+             dst=tmpedge;
+             //# to premute/rename vertices
+             var startpos=0, endpos:int;
+             var sort=0:int;
+             while (startpos < Ne-2) {
+                     endpos=startpos+1;
+                     sort=0;
+                     //writeln("startpos=",startpos,"endpos=",endpos);
+                     while (endpos <=Ne-1) {
+                         if (src[startpos]==src[endpos])  {
+                              sort=1;
+                              endpos+=1;
+                              continue;
+                         } else {
+                              break;
+                         }
+                     }//end of while endpos
+                     if (sort==1) {
+                         var tmpary:[0..endpos-startpos-1] int;
+                         tmpary=dst[startpos..endpos-1];
+                         var ivx=radixSortLSD_ranks(tmpary);
+                         dst[startpos..endpos-1]=tmpary[ivx];
+                         //writeln("src1=",src1,"dst1=",dst1,"ivx=",ivx);
+                         sort=0;
+                     } 
+                     startpos+=1;
+             }//end of while startpos
+      }
+      proc set_neighbour(){
+             for i in 0..Ne-1 do {
+                 length[src[i]]+=1;
+                 if (start_i[src[i]] ==-1){
+                      start_i[src[i]]=i;
+                      //writeln("assign index ",i, " to vertex ",src[i]);
+                 }
  
+             }
+             neighbour  = length;
       }
-      //var neighbour  = (+ scan length) - length;
-      var neighbour  = length;
-      var neighbourR  = neighbour;
-
-      if (directed==0) { //undirected graph
-
-          srcR = dst1;
-          dstR = src1;
-
-          var ivR = radixSortLSD_ranks(srcR);
-          srcR1 = srcR[ivR]; //# permute first vertex into sorted order
-          dstR1 = dstR[ivR]; //# permute second vertex into sorted order
-          startpos=0;
-          sort=0;
-          while (startpos < Ne-2) {
-              endpos=startpos+1;
-              sort=0;
-              while (endpos <=Ne-1) {
-                 if (srcR1[startpos]==srcR1[endpos])  {
-                    sort=1;
-                    endpos+=1;
-                    continue;
-                 } else {
-                    break;
-                 } 
-              }//end of while endpos
-              if (sort==1) {
-                  var tmparyR:[0..endpos-startpos-1] int;
-                  tmparyR=dstR1[startpos..endpos-1];
-                  var ivxR=radixSortLSD_ranks(tmparyR);
-                  dstR1[startpos..endpos-1]=tmparyR[ivxR];
-                  sort=0;
-              } 
-              startpos+=1;
-          }//end of while startpos
-
-
-          for i in 0..Ne-1 do {
-              lengthR[srcR1[i]]+=1;
-              if (start_iR[srcR1[i]] ==-1){
-                  start_iR[srcR1[i]]=i;
-              }
-          }
-          //neighbourR  = (+ scan lengthR) - lengthR;
-          neighbourR  = lengthR;
-
-      }//end of undirected
-
-
-      var ewName ,vwName:string;
-      if (weighted!=0) {
-        fillInt(e_weight,1,1000);
-        //fillRandom(e_weight,0,100);
-        fillInt(v_weight,1,1000);
-        //fillRandom(v_weight,0,100);
-        ewName = st.nextName();
-        vwName = st.nextName();
-        var vwEntry = new shared SymEntry(v_weight);
-        var ewEntry = new shared SymEntry(e_weight);
-        st.addEntry(vwName, vwEntry);
-        st.addEntry(ewName, ewEntry);
+      //proc set_common_symtable(): string throws {
+      proc set_common_symtable() {
+             srcName = st.nextName();
+             dstName = st.nextName();
+             startName = st.nextName();
+             neiName = st.nextName();
+             var srcEntry = new shared SymEntry(src);
+             var dstEntry = new shared SymEntry(dst);
+             var startEntry = new shared SymEntry(start_i);
+             var neiEntry = new shared SymEntry(neighbour);
+             try! st.addEntry(srcName, srcEntry);
+             try! st.addEntry(dstName, dstEntry);
+             try! st.addEntry(startName, startEntry);
+             try! st.addEntry(neiName, neiEntry);
+             sNv=Nv:string;
+             sNe=Ne:string;
+             sDirected=directed:string;
+             sWeighted=weighted:string;
       }
-      var srcName = st.nextName();
-      var dstName = st.nextName();
-      var startName = st.nextName();
-      var neiName = st.nextName();
-      var srcEntry = new shared SymEntry(src1);
-      var dstEntry = new shared SymEntry(dst1);
-      var startEntry = new shared SymEntry(start_i);
-      var neiEntry = new shared SymEntry(neighbour);
-      st.addEntry(srcName, srcEntry);
-      st.addEntry(dstName, dstEntry);
-      st.addEntry(startName, startEntry);
-      st.addEntry(neiName, neiEntry);
-      var sNv=Nv:string;
-      var sNe=Ne:string;
-      var sDirected=directed:string;
-      var sWeighted=weighted:string;
+      if (directed!=0) {// for directed graph
+          if (weighted!=0) { // for weighted graph
+             var e_weight: [0..Ne-1] int;
+             var v_weight: [0..Nv-1] int;
+             rmat_gen();
+             twostep_sort();
+             set_neighbour();
 
-      var srcNameR, dstNameR, startNameR, neiNameR:string;
-      if (directed!=0) {//for directed graph
-          if (weighted!=0) {
-              repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted +
+             var ewName ,vwName:string;
+             fillInt(e_weight,1,1000);
+             //fillRandom(e_weight,0,100);
+             fillInt(v_weight,1,1000);
+             //fillRandom(v_weight,0,100);
+             ewName = st.nextName();
+             vwName = st.nextName();
+             var vwEntry = new shared SymEntry(v_weight);
+             var ewEntry = new shared SymEntry(e_weight);
+             try! st.addEntry(vwName, vwEntry);
+             try! st.addEntry(ewName, ewEntry);
+      
+             set_common_symtable();
+             repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted +
                     '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) + 
                     '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) + 
                     '+created ' + st.attrib(vwName)    + '+created ' + st.attrib(ewName);
+
           } else {
-              repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted +
+             rmat_gen();
+             twostep_sort();
+             set_neighbour();
+             set_common_symtable();
+             repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted +
                     '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) + 
                     '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) ; 
+          }
+      }
+      else {
+          // only for undirected graph, we only declare R variables here
+          var srcR: [0..Ne-1] int;
+          var dstR: [0..Ne-1] int;
+          ref  ivR=iv;
+          var start_iR: [0..Nv-1] int;
+          var lengthR: [0..Nv-1] int;
+          var neighbourR: [0..Nv-1] int;
+          start_iR=-1;
+          lengthR=0;
+          neighbourR=0;
+          var srcNameR, dstNameR, startNameR, neiNameR:string;
+        
+          proc combine_sortR(){
+
+             /* we cannot use the coargsort version because it will break the memory limit */
+             param bitsPerDigit = RSLSD_bitsPerDigit;
+             var bitWidths: [0..1] int;
+             var negs: [0..1] bool;
+             var totalDigits: int;
+             var size=Nv: int;
+             for (bitWidth, ary, neg) in zip(bitWidths, [srcR,dstR], negs) {
+                 (bitWidth, neg) = getBitWidth(ary); 
+                 totalDigits += (bitWidth + (bitsPerDigit-1)) / bitsPerDigit;
+
+             }
+             proc mergedArgsort(param numDigits) throws {
+
+               //overMemLimit(((4 + 3) * size * (numDigits * bitsPerDigit / 8))
+               //          + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+               var merged = makeDistArray(size, numDigits*uint(bitsPerDigit));
+               var curDigit = RSLSD_tupleLow + numDigits - totalDigits;
+               for (ary , nBits, neg) in zip([src,dst], bitWidths, negs) {
+                  proc mergeArray(type t) {
+                     ref A = ary;
+                     const r = 0..#nBits by bitsPerDigit;
+                     for rshift in r {
+                        const myDigit = (r.high - rshift) / bitsPerDigit;
+                        const last = myDigit == 0;
+                        forall (m, a) in zip(merged, A) {
+                             m[curDigit+myDigit] =  getDigit(a, rshift, last, neg):uint(bitsPerDigit);
+                        }
+                     }
+                     curDigit += r.size;
+                  }
+                  mergeArray(int); 
+               }
+               var iv = argsortDefault(merged);
+               return iv;
+             } 
+
+             if totalDigits <=  4 { 
+               ivR = mergedArgsort( 4); 
+             }
+
+             if totalDigits <=  8 { 
+               ivR =  mergedArgsort( 8); 
+             }
+             if totalDigits <= 16 { 
+               ivR = mergedArgsort(16); 
+             }
+
 
           }
-      } else {//for undirected graph
 
-          srcNameR = st.nextName();
-          dstNameR = st.nextName();
-          startNameR = st.nextName();
-          neiNameR = st.nextName();
-          var srcEntryR = new shared SymEntry(srcR1);
-          var dstEntryR = new shared SymEntry(dstR1);
-          var startEntryR = new shared SymEntry(start_iR);
-          var neiEntryR = new shared SymEntry(neighbourR);
-          st.addEntry(srcNameR, srcEntryR);
-          st.addEntry(dstNameR, dstEntryR);
-          st.addEntry(startNameR, startEntryR);
-          st.addEntry(neiNameR, neiEntryR);
+          proc   twostep_sortR() {
+             ivR = radixSortLSD_ranks(srcR);
+             var tmpedges = srcR[ivR]; //# permute first vertex into sorted order
+             srcR=tmpedges;
+             tmpedges = dstR[ivR]; //# permute second vertex into sorted order
+             dstR=tmpedges;
+             var startpos=0:int;
+             var endpos:int;
+             var sort=0;
+             while (startpos < Ne-2) {
+                endpos=startpos+1;
+                sort=0;
+                while (endpos <=Ne-1) {
+                   if (srcR[startpos]==srcR[endpos])  {
+                      sort=1;
+                      endpos+=1;
+                      continue;
+                   } else {
+                      break;
+                   } 
+                }//end of while endpos
+                if (sort==1) {
+                    var tmparyR:[0..endpos-startpos-1] int;
+                    tmparyR=dstR[startpos..endpos-1];
+                    var ivxR=radixSortLSD_ranks(tmparyR);
+                    dstR[startpos..endpos-1]=tmparyR[ivxR];
+                    sort=0;
+                } 
+                startpos+=1;
+             } //end of while startpos
+          }
+          proc    set_neighbourR(){
+             for i in 0..Ne-1 do {
+                lengthR[srcR[i]]+=1;
+                if (start_iR[srcR[i]] ==-1){
+                    start_iR[srcR[i]]=i;
+                }
+             }
+             neighbourR  = lengthR;
+
+          }
+          //proc   set_common_symtableR():string throws {
+          proc   set_common_symtableR() {
+             srcNameR = st.nextName();
+             dstNameR = st.nextName();
+             startNameR = st.nextName();
+             neiNameR = st.nextName();
+             var srcEntryR = new shared SymEntry(srcR);
+             var dstEntryR = new shared SymEntry(dstR);
+             var startEntryR = new shared SymEntry(start_iR);
+             var neiEntryR = new shared SymEntry(neighbourR);
+             try! st.addEntry(srcNameR, srcEntryR);
+             try! st.addEntry(dstNameR, dstEntryR);
+             try! st.addEntry(startNameR, startEntryR);
+             try! st.addEntry(neiNameR, neiEntryR);
+          }
+
+
           if (weighted!=0) {
-              repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + ' +' + sWeighted +
+             rmat_gen();
+             twostep_sort();
+             set_neighbour();
+             srcR = dst;
+             dstR = src;
+             twostep_sortR(); 
+             set_neighbourR();
+
+             //only for weighted  graph
+             var ewName ,vwName:string;
+             var e_weight: [0..Ne-1] int;
+             var v_weight: [0..Nv-1] int;
+
+             fillInt(e_weight,1,1000);
+             //fillRandom(e_weight,0,100);
+             fillInt(v_weight,1,1000);
+             //fillRandom(v_weight,0,100);
+             ewName = st.nextName();
+             vwName = st.nextName();
+             var vwEntry = new shared SymEntry(v_weight);
+             var ewEntry = new shared SymEntry(e_weight);
+             st.addEntry(vwName, vwEntry);
+             st.addEntry(ewName, ewEntry);
+             // end of weighted!=0
+      
+             set_common_symtable();
+             set_common_symtableR();
+ 
+             repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + ' +' + sWeighted +
                     '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) + 
                     '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) + 
                     '+created ' + st.attrib(srcNameR)   + '+created ' + st.attrib(dstNameR) + 
                     '+created ' + st.attrib(startNameR) + '+created ' + st.attrib(neiNameR) + 
                     '+created ' + st.attrib(vwName)    + '+created ' + st.attrib(ewName);
+
+
           } else {
-              repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + ' +' + sWeighted +
+
+             rmat_gen();
+             twostep_sort();
+             set_neighbour();
+             srcR = dst;
+             dstR = src;
+             twostep_sortR(); 
+             set_neighbourR();
+
+             repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + ' +' + sWeighted +
                     '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) + 
                     '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) + 
                     '+created ' + st.attrib(srcNameR)   + '+created ' + st.attrib(dstNameR) + 
                     '+created ' + st.attrib(startNameR) + '+created ' + st.attrib(neiNameR) ; 
-          }
 
+
+          }
       }
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
       return repMsg;
@@ -1645,20 +1824,120 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var Ne=n_edgesN:int;
       var Directed=directedN:int;
       var Weighted=weightedN:int;
+      var depthName:string;
+      var depth=-1: [0..Nv-1] int;
+      var root:int;
+      depth[root]=0;
+      var srcN, dstN, startN, neighbourN,vweightN,eweightN, rootN :string;
+      var srcRN, dstRN, startRN, neighbourRN:string;
 
+      //proc bfs_kernel(nei:[?D1] int, start_i:[?D2] int,dst:[?D3] int):string throws{
+      proc bfs_kernel(nei:[?D1] int, start_i:[?D2] int,dst:[?D3] int){
+          root=try! rootN:int;
+          var cur_level=0;
+          var SetCurF= try! new set(int,parSafe = true);
+          var SetNextF=try!  new set(int,parSafe = true);
+          try! SetCurF.add(root);
+          var numCurF=1:int;
 
+          while (numCurF>0) {
+               SetNextF.clear();
+               forall i in SetCurF with (ref SetNextF) {
+                  var numNF=-1 :int;
+                  ref nf=nei;
+                  ref sf=start_i;
+                  ref df=dst;
+                  numNF=nf[i];
+                  ref NF=df[sf[i]..sf[i]+numNF-1];
+                  if (numNF>0) {
+                    //forall j in NF {
+                    for j in NF {
+                       if (depth[j]==-1) {
+                          depth[j]=cur_level+1;
+                          SetNextF.add(j);
+                       }
+                    }
+                  }
+
+               }//end forall i
+               cur_level+=1;
+               //writeln("SetCurF= ", SetCurF, "SetNextF=", SetNextF, " level ", cur_level+1);
+               numCurF=SetNextF.size;
+               SetCurF=SetNextF;
+          }  
+      }
+
+      //proc return_depth(): string throws{
+      proc return_depth(){
+          var depthName = st.nextName();
+          var depthEntry = new shared SymEntry(depth);
+          try! st.addEntry(depthName, depthEntry);
+          repMsg =  'created ' + (try! st.attrib(depthName));
+      }
+
+      //proc return_pair():string throws{
+      proc return_pair(){
+          var vertexValue = radixSortLSD_ranks(depth);
+          var levelValue=depth[vertexValue]; 
+          var levelName = st.nextName();
+          var vertexName = st.nextName();
+          var levelEntry = new shared SymEntry(levelValue);
+          var vertexEntry = new shared SymEntry(vertexValue);
+          try! st.addEntry(levelName, levelEntry);
+          try! st.addEntry(vertexName, vertexEntry);
+          repMsg =  'created ' + st.attrib(levelName) + '+created ' + st.attrib(vertexName) ;
+
+      }
       if (Directed!=0) {
           if (Weighted!=0) {
-              repMsg=BFS_DW(Nv, Ne,Directed,Weighted,restpart,st);
+              //repMsg=BFS_DW(Nv, Ne,Directed,Weighted,restpart,st);
+              //var pn = Reflection.getRoutineName();
+               (srcN, dstN, startN, neighbourN,vweightN,eweightN, rootN)=
+                   restpart.splitMsgToTuple(7);
+
+              var ag = new owned SegGraphDW(Nv,Ne,Directed,Weighted,srcN,dstN,
+                                 startN,neighbourN,vweightN,eweightN, st);
+              bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.dst.a);
+              return_depth();
+
           } else {
-              repMsg=BFS_D(Nv, Ne,Directed,Weighted,restpart,st);
+              //repMsg=BFS_D(Nv, Ne,Directed,Weighted,restpart,st);
+
+              (srcN, dstN, startN, neighbourN,rootN )=restpart.splitMsgToTuple(5);
+              var ag = new owned SegGraphD(Nv,Ne,Directed,Weighted,srcN,dstN,
+                      startN,neighbourN,st);
+
+
+              bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.dst.a);
+              return_depth();
+
           }
       }
       else {
           if (Weighted!=0) {
-              repMsg=BFS_UDW(Nv, Ne,Directed,Weighted,restpart,st);
+              //repMsg=BFS_UDW(Nv, Ne,Directed,Weighted,restpart,st);
+
+               (srcN, dstN, startN, neighbourN,srcRN, dstRN, startRN, neighbourRN,vweightN,eweightN, rootN )=
+                   restpart.splitMsgToTuple(11);
+               var ag = new owned SegGraphUDW(Nv,Ne,Directed,Weighted,
+                      srcN,dstN, startN,neighbourN,
+                      srcRN,dstRN, startRN,neighbourRN,
+                      vweightN,eweightN, st);
+              bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.dst.a);
+              return_depth();
+
           } else {
-              repMsg=BFS_UD(Nv, Ne,Directed,Weighted,restpart,st);
+              //repMsg=BFS_UD(Nv, Ne,Directed,Weighted,restpart,st);
+
+              (srcN, dstN, startN, neighbourN,srcRN, dstRN, startRN, neighbourRN, rootN )=
+                   restpart.splitMsgToTuple(9);
+              var ag = new owned SegGraphUD(Nv,Ne,Directed,Weighted,
+                      srcN,dstN, startN,neighbourN,
+                      srcRN,dstRN, startRN,neighbourRN,
+                      st);
+
+              bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.dst.a);
+              return_depth();
           }
       }
       return repMsg;
