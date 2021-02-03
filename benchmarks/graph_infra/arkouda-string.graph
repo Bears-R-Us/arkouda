@@ -5,6 +5,12 @@ graphtitle: String Argsort Performance
 ylabel: Performance (GiB/s)
 
 perfkeys: 1-array Average rate =, 2-array Average rate =, 8-array Average rate =, 16-array Average rate =
+graphkeys: 1 array Coargsort GiB/s, 2 array Coargsort GiB/s, 8 array Coargsort GiB/s, 16 array Coargsort GiB/s
+files: str-coargsort.dat, str-coargsort.dat, str-coargsort.dat, str-coargsort.dat
+graphtitle: String Coargsort Performance
+ylabel: Performance (GiB/S)
+
+perfkeys: 1-array Average rate =, 2-array Average rate =, 8-array Average rate =, 16-array Average rate =
 graphkeys: 1 array Groupby GiB/s, 2 array Groupby GiB/s, 8 array Groupby GiB/s, 16 array Groupby GiB/s
 files: str-groupby.dat, str-groupby.dat, str-groupby.dat, str-groupby.dat
 graphtitle: String Groupby Performance
