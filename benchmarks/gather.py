@@ -4,7 +4,7 @@ import time, argparse
 import numpy as np
 import arkouda as ak
 
-TYPES = ('int64', 'float64', 'bool', 'str')
+TYPES = ('int64', 'float64', 'bool')
 
 def time_ak_gather(isize, vsize, trials, dtype, random, seed):
     print(">>> arkouda {} gather".format(dtype))
@@ -27,7 +27,7 @@ def time_ak_gather(isize, vsize, trials, dtype, random, seed):
             v = ak.random_strings_uniform(1, 16, Nv, seed=seed)
     else:   
         if dtype == 'str':
-            v = ak.random_strings_uniform(8, 8, Nv, seed=seed)
+            v = ak.cast(ak.arange(Nv), 'str')
         else:
             v = ak.ones(Nv, dtype=dtype)
     
@@ -60,6 +60,10 @@ def time_np_gather(Ni, Nv, trials, dtype, random, seed):
             v = np.random.randint(0, 2**32, Nv)
         elif dtype == 'float64':
             v = np.random.random(Nv)
+        elif dtype == 'bool':
+            v = np.random.randint(0, 1, Nv, dtype=np.bool)
+        elif dtype == 'str':
+            v = np.array(np.random.randint(0, 2**32, Nv), dtype='str')
     else:   
         v = np.ones(Nv, dtype=dtype)
     
