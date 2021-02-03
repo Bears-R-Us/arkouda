@@ -1223,7 +1223,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
 
       var src=makeDistArray(Ne,int);
       var dst=makeDistArray(Ne,int);
-      var length=makeDistArray(Nv,int);
+      //var length=makeDistArray(Nv,int);
       var neighbour=makeDistArray(Nv,int);
       var start_i=makeDistArray(Nv,int);
 
@@ -1234,7 +1234,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
 
       var srcR=makeDistArray(Ne,int);
       var dstR=makeDistArray(Ne,int);
-      var lengthR=makeDistArray(Nv,int);
+      //var lengthR=makeDistArray(Nv,int);
       var neighbourR=makeDistArray(Nv,int);
       var start_iR=makeDistArray(Nv,int);
       ref  ivR=iv;
@@ -1442,7 +1442,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
 
       var src=makeDistArray(Ne,int);
       var dst=makeDistArray(Ne,int);
-      var length=makeDistArray(Nv,int);
+      //var length=makeDistArray(Nv,int);
       var neighbour=makeDistArray(Nv,int);
       var start_i=makeDistArray(Nv,int);
 
@@ -1452,7 +1452,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       //var v_weight=makeDistArray(Nv,int);
 
 
-      length=0;
+      //length=0;
       start_i=-1;
       neighbour=0;
       var n_vertices=Nv;
@@ -1554,11 +1554,11 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       proc twostep_sort(){
              iv = radixSortLSD_ranks(src);
              // permute into sorted order
-             var tmpedge=src;
-             tmpedge=src[iv];
-             src=tmpedge;
-             tmpedge=dst[iv];
-             dst=tmpedge;
+             var tmpedges=src;
+             tmpedges=src[iv];
+             src=tmpedges;
+             tmpedges=dst[iv];
+             dst=tmpedges;
              //# to premute/rename vertices
              var startpos=0, endpos:int;
              var sort=0:int;
@@ -1588,14 +1588,14 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       }
       proc set_neighbour(){
              for i in 0..Ne-1 do {
-                 length[src[i]]+=1;
+                 neighbour[src[i]]+=1;
                  if (start_i[src[i]] ==-1){
                       start_i[src[i]]=i;
                       //writeln("assign index ",i, " to vertex ",src[i]);
                  }
  
              }
-             neighbour  = length;
+             //neighbour  = length;
       }
       //proc set_common_symtable(): string throws {
       proc set_common_symtable() {
@@ -1658,12 +1658,12 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
           // only for undirected graph, we only declare R variables here
           var srcR=makeDistArray(Ne,int);
           var dstR=makeDistArray(Ne,int);
-          var lengthR=makeDistArray(Nv,int);
+          //var lengthR=makeDistArray(Nv,int);
           var neighbourR=makeDistArray(Nv,int);
           var start_iR=makeDistArray(Nv,int);
           ref  ivR=iv;
           start_iR=-1;
-          lengthR=0;
+          //lengthR=0;
           neighbourR=0;
           var srcNameR, dstNameR, startNameR, neiNameR:string;
         
@@ -1752,12 +1752,12 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
           }
           proc    set_neighbourR(){
              for i in 0..Ne-1 do {
-                lengthR[srcR[i]]+=1;
+                neighbourR[srcR[i]]+=1;
                 if (start_iR[srcR[i]] ==-1){
                     start_iR[srcR[i]]=i;
                 }
              }
-             neighbourR  = lengthR;
+             //neighbourR  = lengthR;
 
           }
           //proc   set_common_symtableR():string throws {

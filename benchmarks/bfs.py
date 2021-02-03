@@ -10,17 +10,17 @@ TYPES = ('int64', 'float64', 'bool', 'str')
 
 def time_ak_bfs_graph(trials:int):
     print("Graph BFS")
-    lgNv=5
+    lgNv=11
     Ne_per_v=3
     p=0.03
     directed=1
     weighted=0
     Graph=ak.rmat_gen(lgNv, Ne_per_v, p, directed, weighted)
-    '''
     print("number of vertices ={}".format(Graph.n_vertices))
     print("number of edges ={}".format(Graph.n_edges))
     print("directed graph  ={}".format(Graph.directed))
     print("weighted graph  ={}".format(Graph.weighted))
+    '''
     print("source of edges   ={}".format(Graph.src))
     print("R dest of edges   ={}".format(Graph.dstR))
     print("dest of edges   ={}".format(Graph.dst))
@@ -58,6 +58,7 @@ def time_ak_bfs_graph(trials:int):
     for i in range(int(Graph.n_edges)):
          print("<",Graph.srcR[i]," -- ", Graph.dstR[i],">")
     
+    '''
     timings = []
     for root in range(trials):
         start = time.time()
@@ -71,7 +72,6 @@ def time_ak_bfs_graph(trials:int):
     print("Average Edges = {:.4f} K/s".format(int(Graph.n_edges)/tavg/1024))
     print("Average Vertices = {:.4f} K/s".format(int(Graph.n_vertices)/tavg/1024))
     #print("Average rate = {:.2f} GiB/sec".format(bytes_per_sec/2**30))
-    '''
 
 
 def create_parser():
