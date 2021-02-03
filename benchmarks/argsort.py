@@ -7,7 +7,7 @@ import arkouda as ak
 TYPES = ('int64', 'float64')
 
 def time_ak_argsort(N_per_locale, trials, dtype, seed):
-    print(">>> arkouda argsort")
+    print(">>> arkouda {} argsort".format(dtype))
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
@@ -30,7 +30,7 @@ def time_ak_argsort(N_per_locale, trials, dtype, seed):
     print("Average rate = {:.4f} GiB/sec".format(bytes_per_sec/2**30))
 
 def time_np_argsort(N, trials, dtype, seed):
-    print(">>> numpy argsort")
+    print(">>> numpy {} argsort".format(dtype))
     print("N = {:,}".format(N))
     if seed is not None:
         np.random.seed(seed)

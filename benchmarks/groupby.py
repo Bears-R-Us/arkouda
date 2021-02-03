@@ -25,7 +25,7 @@ def generate_arrays(N, numArrays, dtype, seed):
     return arrays, totalbytes
 
 def time_ak_groupby(N_per_locale, trials, dtype, seed):
-    print(">>> arkouda groupby")
+    print(">>> arkouda {} groupby".format(dtype))
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))

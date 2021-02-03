@@ -7,7 +7,7 @@ import arkouda as ak
 TYPES = ('int64', 'float64', 'bool', 'str')
 
 def time_ak_gather(isize, vsize, trials, dtype, random, seed):
-    print(">>> arkouda gather")
+    print(">>> arkouda {} gather".format(dtype))
     cfg = ak.get_config()
     Ni = isize * cfg["numLocales"]
     Nv = vsize * cfg["numLocales"]
@@ -49,7 +49,7 @@ def time_ak_gather(isize, vsize, trials, dtype, random, seed):
     print("Average rate = {:.2f} GiB/sec".format(bytes_per_sec/2**30))
 
 def time_np_gather(Ni, Nv, trials, dtype, random, seed):
-    print(">>> numpy gather")
+    print(">>> numpy {} gather".format(dtype))
     print("num_indices = {:,} ; num_values = {:,}".format(Ni, Nv))
     # Index vector is always random
     if seed is not None:
