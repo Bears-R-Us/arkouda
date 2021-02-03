@@ -1859,7 +1859,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var srcRN, dstRN, startRN, neighbourRN:string;
 
       //proc bfs_kernel(nei:[?D1] int, start_i:[?D2] int,dst:[?D3] int):string throws{
-      proc bfs_kernel(nei:[?D1] int, start_i:[?D2] int,dst:[?D3] int){
+      proc bfs_kernel(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int){
           root=try! rootN:int;
           var cur_level=0;
           var SetCurF= try! new set(int,parSafe = true);
@@ -1876,6 +1876,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                        ref nf=nei;
                        ref sf=start_i;
                        ref df=dst;
+                       ref srcf=src;
 
                        var ld=srcf.localSubdomain();
                        //writeln("the local subdomain is");
@@ -1940,7 +1941,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
 
               var ag = new owned SegGraphDW(Nv,Ne,Directed,Weighted,srcN,dstN,
                                  startN,neighbourN,vweightN,eweightN, st);
-              bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.dst.a);
+              bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a);
               return_depth();
 
           } else {
@@ -1951,7 +1952,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                       startN,neighbourN,st);
 
 
-              bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.dst.a);
+              bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a);
               return_depth();
 
           }
@@ -1966,7 +1967,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                       srcN,dstN, startN,neighbourN,
                       srcRN,dstRN, startRN,neighbourRN,
                       vweightN,eweightN, st);
-              bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.dst.a);
+              bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a);
               return_depth();
 
           } else {
@@ -1979,7 +1980,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                       srcRN,dstRN, startRN,neighbourRN,
                       st);
 
-              bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.dst.a);
+              bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a);
               return_depth();
           }
       }
