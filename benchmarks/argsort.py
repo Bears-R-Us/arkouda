@@ -7,14 +7,19 @@ import arkouda as ak
 TYPES = ('int64', 'float64')
 
 def time_ak_argsort(N_per_locale, trials, dtype, seed):
-    print(">>> arkouda argsort")
+    print(">>> arkouda {} argsort".format(dtype))
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
     if dtype == 'int64':
         a = ak.randint(0, 2**32, N, seed=seed)
+        nbytes = a.size * a.itemsize
     elif dtype == 'float64':
         a = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
+        nbytes = a.size * a.itemsize
+    elif dtype == 'str':
+        a = ak.random_strings_uniform(1, 8, N, seed=seed)
+        nbytes = (a.bytes.size * a.bytes.itemsize)
      
     timings = []
     for i in range(trials):
@@ -24,13 +29,14 @@ def time_ak_argsort(N_per_locale, trials, dtype, seed):
         timings.append(end - start)
     tavg = sum(timings) / trials
 
-    assert ak.is_sorted(a[perm])
+    if dtype in ('int64', 'float64'):
+        assert ak.is_sorted(a[perm])
     print("Average time = {:.4f} sec".format(tavg))
-    bytes_per_sec = (a.size * a.itemsize) / tavg
+    bytes_per_sec = nbytes / tavg
     print("Average rate = {:.4f} GiB/sec".format(bytes_per_sec/2**30))
 
 def time_np_argsort(N, trials, dtype, seed):
-    print(">>> numpy argsort")
+    print(">>> numpy {} argsort".format(dtype))
     print("N = {:,}".format(N))
     if seed is not None:
         np.random.seed(seed)
@@ -38,6 +44,8 @@ def time_np_argsort(N, trials, dtype, seed):
         a = np.random.randint(0, 2**32, N)
     elif dtype == 'float64':
         a = np.random.random(N)
+    elif dtype == 'str':
+        a = np.cast['str'](np.random.randint(0, 2**32, N))
      
     timings = []
     for i in range(trials):
@@ -57,9 +65,12 @@ def check_correctness(dtype, seed):
         a = ak.randint(0, 2**32, N, seed=seed)
     elif dtype == 'float64':
         a = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
+    elif dtype == 'str':
+        a = ak.random_strings_uniform(1, 8, N, seed=seed)
 
     perm = ak.argsort(a)
-    assert ak.is_sorted(a[perm])
+    if dtype in ('int64', 'float64'):
+        assert ak.is_sorted(a[perm])
 
 def create_parser():
     parser = argparse.ArgumentParser(description="Measure performance of sorting an array of random values.")

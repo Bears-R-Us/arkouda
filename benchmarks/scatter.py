@@ -7,7 +7,7 @@ import arkouda as ak
 TYPES = ('int64', 'float64', 'bool')
 
 def time_ak_scatter(isize, vsize, trials, dtype, random, seed):
-    print(">>> arkouda scatter")
+    print(">>> arkouda {} scatter".format(dtype))
     cfg = ak.get_config()
     Ni = isize * cfg["numLocales"]
     Nv = vsize * cfg["numLocales"]
@@ -40,7 +40,7 @@ def time_ak_scatter(isize, vsize, trials, dtype, random, seed):
     print("Average rate = {:.2f} GiB/sec".format(bytes_per_sec/2**30))
 
 def time_np_scatter(Ni, Nv, trials, dtype, random, seed):
-    print(">>> numpy scatter")
+    print(">>> numpy {} scatter".format(dtype))
     print("num_indices = {:,} ; num_values = {:,}".format(Ni, Nv))
     if seed is not None:
         np.random.seed(seed)
