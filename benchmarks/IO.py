@@ -8,7 +8,7 @@ from glob import glob
 TYPES = ('int64', 'float64')
 
 def time_ak_write_read(N_per_locale, trials, dtype, path, seed):
-    print(">>> arkouda write/read")
+    print(">>> arkouda {} write/read".format(dtype))
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))

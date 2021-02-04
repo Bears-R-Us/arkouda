@@ -4,14 +4,14 @@ import time, argparse
 import numpy as np
 import arkouda as ak
 
-TYPES = ('int64', 'str', 'both')
+TYPES = ('int64',)
 
 def generate_arrays(N, numArrays, dtype, seed):
     totalbytes = 0
     arrays = []
     for i in range(numArrays):
-        if dtype == 'int64' or (i % 2 == 0 and dtype == 'both'):
-            a = ak.randint(0, N//16, N//numArrays, seed=seed)
+        if dtype == 'int64' or (i % 2 == 0 and dtype == 'mixed'):
+            a = ak.randint(0, N//8, N//numArrays, seed=seed)
             arrays.append(a)
             totalbytes += a.size * a.itemsize
         else:
@@ -25,11 +25,13 @@ def generate_arrays(N, numArrays, dtype, seed):
     return arrays, totalbytes
 
 def time_ak_groupby(N_per_locale, trials, dtype, seed):
-    print(">>> arkouda groupby")
+    print(">>> arkouda {} groupby".format(dtype))
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
     for numArrays in (1, 2, 8, 16):
+        if dtype == "mixed" and numArrays == 1:
+            continue
         arrays, totalbytes = generate_arrays(N, numArrays, dtype, seed)
         timings = []
         for i in range(trials):
@@ -51,10 +53,10 @@ def check_correctness(dtype, seed):
     assert (g.segments == g2.segments).all()
 
 def create_parser():
-    parser = argparse.ArgumentParser(description="Measure performance of grouping two arrays of random values.")
+    parser = argparse.ArgumentParser(description="Measure performance of grouping arrays of random values.")
     parser.add_argument('hostname', help='Hostname of arkouda server')
     parser.add_argument('port', type=int, help='Port of arkouda server')
-    parser.add_argument('-n', '--size', type=int, default=10**8, help='Per-locale problem size: combined length of both arrays to group')
+    parser.add_argument('-n', '--size', type=int, default=10**8, help='Problem size: total length of all arrays to group')
     parser.add_argument('-t', '--trials', type=int, default=1, help='Number of times to run the benchmark')
     parser.add_argument('-d', '--dtype', default='int64', help='Dtype of array ({})'.format(', '.join(TYPES)))
     parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')

@@ -8,7 +8,7 @@ OPS = ('cumsum', 'cumprod')
 TYPES = ('int64', 'float64')
 
 def time_ak_scan(N_per_locale, trials, dtype, random, seed):
-    print(">>> arkouda scan")
+    print(">>> arkouda {} scan".format(dtype))
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
@@ -41,7 +41,7 @@ def time_ak_scan(N_per_locale, trials, dtype, random, seed):
         print("  {} Average rate = {:.2f} GiB/sec".format(op, bytes_per_sec/2**30))
 
 def time_np_scan(N, trials, dtype, random, seed):
-    print(">>> numpy scan")
+    print(">>> numpy {} scan".format(dtype))
     print("N = {:,}".format(N))
     if seed is not None:
         np.random.seed(seed)
