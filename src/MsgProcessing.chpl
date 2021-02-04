@@ -99,8 +99,9 @@ module MsgProcessing
         var repMsg: string; // response message
         // split request into fields
         var (name) = payload.decode().splitMsgToTuple(1);
+        
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                                        "cmd: %s name: %s".format(cmd,name));
+                                               "cmd: %s array: %s".format(cmd,st.attrib(name)));
         // delete entry from symbol table
         st.deleteEntry(name);
         return try! "deleted %s".format(name);

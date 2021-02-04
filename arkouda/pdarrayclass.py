@@ -112,6 +112,7 @@ class pdarray:
     def __del__(self):
         try:
             generic_msg("delete {}".format(self.name))
+            logger.debug('deleting pdarray with name {}'.format(self.name))
         except:
             pass
 

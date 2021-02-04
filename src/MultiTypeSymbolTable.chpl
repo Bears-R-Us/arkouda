@@ -50,12 +50,11 @@ module MultiTypeSymbolTable
                                    lineNumber=getLineNumber(),
                                    routineName=getRoutineName(),
                                    moduleName=getModuleName(),
-                                   errorClass="ErrorWithContext");
+                                   errorClass="UnknownSymbolError");
             }
 
             // check to see if userDefinedName is defined
-            if (registry.contains(userDefinedName))
-            {
+            if (registry.contains(userDefinedName)) {
                 mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                      "regName: redefined symbol: %s ".format(userDefinedName));
             }
@@ -77,7 +76,7 @@ module MultiTypeSymbolTable
                                    lineNumber=getLineNumber(),
                                    routineName=getRoutineName(),
                                    moduleName=getModuleName(),
-                                   errorClass="ErrorWithContext");
+                                   errorClass="UnknownSymbolError");
             }
             //tab.remove(name); // clear out entry for name
             registry -= name; // take name out of registry
@@ -162,7 +161,7 @@ module MultiTypeSymbolTable
                                    lineNumber=getLineNumber(),
                                    routineName=getRoutineName(),
                                    moduleName=getModuleName(),
-                                   errorClass="ErrorWithContext");
+                                   errorClass="IllegalArgumentError");
                 }
             }
         }
@@ -173,20 +172,25 @@ module MultiTypeSymbolTable
         :arg name: name of the array
         :type name: string
         */
-        proc deleteEntry(name: string) {
+        proc deleteEntry(name: string) throws {
             if (tab.contains(name) && !registry.contains(name)) {
                 tab.remove(name);
             }
             else {
-                try! mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                "deleteEntry: unknown symbol %s".format(name));
+                var errorMsg = "deleteEntry: unknown symbol %s".format(name);
+                throw getErrorWithContext(
+                                   msg=errorMsg,
+                                   lineNumber=getLineNumber(),
+                                   routineName=getRoutineName(),
+                                   moduleName=getModuleName(),
+                                   errorClass="UnknownSymbolError");
             }
         }
 
         /*
         Clears all unregistered entries from the symTable
         */
-        proc clear() {
+        proc clear() throws {
             for n in tab.keysToArray() { deleteEntry(n); }
         }
 
@@ -210,7 +214,7 @@ module MultiTypeSymbolTable
                                    lineNumber=getLineNumber(),
                                    routineName=getRoutineName(),
                                    moduleName=getModuleName(),
-                                   errorClass="ErrorWithContext");
+                                   errorClass="UnknownSymbolError");
             } else {
                 return tab.getBorrowed(name);
             }
@@ -229,7 +233,7 @@ module MultiTypeSymbolTable
                     lineNumber=getLineNumber(),
                     routineName=getRoutineName(),
                     moduleName=getModuleName(),
-                    errorClass="ErrorWithContext");
+                    errorClass="UnknownSymbolError");
             } 
         }
         
