@@ -520,7 +520,7 @@ module GenSymIO {
                 return try! "Error: unknown cause";
             }
 
-            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                            "Got subdomains and total length for dataset %s".format(dsetName));
 
             select (isSegArray, dataclass) {
@@ -1410,7 +1410,7 @@ module GenSymIO {
     /*
      * Writes the float, int, or bool pdarray out to hdf5
      */
-    private proc write1DDistArray(filename: string, mode: int, dsetName: string, A, 
+    proc write1DDistArray(filename: string, mode: int, dsetName: string, A,
                                                                 array_type: DType) throws {
         /* Output is 1 file per locale named <filename>_<loc>, and a dataset
         named <dsetName> is created in each one. If mode==1 (append) and the

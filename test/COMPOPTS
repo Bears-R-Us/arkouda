@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+if [[ -n $CHPL_HOME ]]; then
+  export PATH="$PATH:$CHPL_HOME/bin/$CHPL_HOST_BIN_SUBDIR"
+fi
+
 PARENT_DIR=$(dirname $(cd $(dirname $0) ; pwd))
 ARKOUDA_HOME=${ARKOUDA_HOME:-$PARENT_DIR}
 
