@@ -1912,9 +1912,11 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       //proc return_depth(): string throws{
       proc return_depth(){
           var depthName = st.nextName();
-          var depthEntry = new shared SymEntry(depth);
+          var depthEntry = try! new shared SymEntry(depth);
           try! st.addEntry(depthName, depthEntry);
-          repMsg =  'created ' + st.attrib(depthName);
+          var tmpstr=try! st.attrib(depthName);
+          //repMsg =  'created ' + st.attrib(depthName);
+          repMsg =  'created ' + tmpstr;
       }
 
       //proc return_pair():string throws{
@@ -1927,9 +1929,17 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
           var vertexEntry = new shared SymEntry(vertexValue);
           try! st.addEntry(levelName, levelEntry);
           try! st.addEntry(vertexName, vertexEntry);
-          repMsg =  'created ' + st.attrib(levelName) + '+created ' + st.attrib(vertexName) ;
+          var tmpstr1=try! st.attrib(levelName);
+          var tmpstr2=try! st.attrib(vertexName);
+
+          //repMsg =  'created ' + st.attrib(levelName) + '+created ' + st.attrib(vertexName) ;
+          repMsg =  'created ' + tmpstr1 + '+created ' + tmpstr2 ;
 
       }
+      depthName = st.nextName();
+      var depthEntry = new shared SymEntry(depth);
+      st.addEntry(depthName, depthEntry);
+      repMsg =  'created ' + st.attrib(depthName);
       if (Directed!=0) {
           if (Weighted!=0) {
               //repMsg=BFS_DW(Nv, Ne,Directed,Weighted,restpart,st);
@@ -1940,7 +1950,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
               var ag = new owned SegGraphDW(Nv,Ne,Directed,Weighted,srcN,dstN,
                                  startN,neighbourN,vweightN,eweightN, st);
               bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a);
-              return_depth();
+              //return_depth();
 
           } else {
               //repMsg=BFS_D(Nv, Ne,Directed,Weighted,restpart,st);
@@ -1950,7 +1960,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                       startN,neighbourN,st);
               root=rootN:int;
               bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a);
-              return_depth();
+              //return_depth();
 
           }
       }
@@ -1966,7 +1976,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                       vweightN,eweightN, st);
               root=rootN:int;
               bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a);
-              return_depth();
+              //return_depth();
 
           } else {
               //repMsg=BFS_UD(Nv, Ne,Directed,Weighted,restpart,st);
@@ -1980,7 +1990,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
 
               root=rootN:int;
               bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a);
-              return_depth();
+              //return_depth();
           }
       }
       return repMsg;
