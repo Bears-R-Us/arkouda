@@ -31,7 +31,7 @@ def create_np_array(N, op, dtype, seed):
     return a
 
 def time_ak_array_create(N_per_locale, trials, dtype, random, seed):
-    print(">>> arkouda array creation")
+    print(">>> arkouda {} array creation".format(dtype))
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
@@ -51,7 +51,7 @@ def time_ak_array_create(N_per_locale, trials, dtype, random, seed):
         print("  {} Average rate = {:.2f} GiB/sec".format(op, bytes_per_sec/2**30))
 
 def time_np_array_create(N, trials, dtype, random, seed):
-    print(">>> numpy array creation")
+    print(">>> numpy {} array creation".format(dtype))
     print("N = {:,}".format(N))
 
     timings = {op: [] for op in OPS}

@@ -7,7 +7,7 @@ import arkouda as ak
 TYPES = ('int64', 'float64')
 
 def time_ak_stream(N_per_locale, trials, alpha, dtype, random, seed):
-    print(">>> arkouda stream")
+    print(">>> arkouda {} stream".format(dtype))
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
@@ -35,7 +35,7 @@ def time_ak_stream(N_per_locale, trials, alpha, dtype, random, seed):
     print("Average rate = {:.2f} GiB/sec".format(bytes_per_sec/2**30))
 
 def time_np_stream(N, trials, alpha, dtype, random, seed):
-    print(">>> numpy stream")
+    print(">>> numpy {} stream".format(dtype))
     print("N = {:,}".format(N))
     if seed is not None:
         np.random.seed(seed)

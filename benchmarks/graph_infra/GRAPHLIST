@@ -1,4 +1,6 @@
-# suite: Execution Performance
+# suite: Benchmarks
 arkouda.graph
-# suite: Build Time
+# suite: String Benchmarks
+arkouda-string.graph
+# suite: Build Stats
 arkouda-comp.graph

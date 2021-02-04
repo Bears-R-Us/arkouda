@@ -16,6 +16,12 @@ files: coargsort.dat, coargsort.dat, coargsort.dat, coargsort.dat
 graphtitle: Coargsort Performance
 ylabel: Performance (GiB/S)
 
+perfkeys: 1-array Average rate =, 2-array Average rate =, 8-array Average rate =, 16-array Average rate =
+graphkeys: 1 array Groupby GiB/s, 2 array Groupby GiB/s, 8 array Groupby GiB/s, 16 array Groupby GiB/s
+files: groupby.dat, groupby.dat, groupby.dat, groupby.dat
+graphtitle: Groupby Performance
+ylabel: Performance (GiB/S)
+
 perfkeys: Average rate =
 graphkeys: Gather GiB/s
 files: gather.dat
@@ -47,9 +53,15 @@ graphtitle: Set Operations Performance
 ylabel: Performance (GiB/s)
 
 perfkeys: zeros Average rate =, ones Average rate =, randint Average rate =
-graphkeys: zeros GiB/s, ones GiB/s, randint GiB/s
+graphkeys: Zeros GiB/s, Ones GiB/s, Randint GiB/s
 files: array_create.dat, array_create.dat, array_create.dat
 graphtitle: Array Creation Performance
+ylabel: Performance (GiB/s)
+
+perfkeys: write Average rate =, read Average rate =
+graphkeys: Write GiB/s, Read GiB/s
+files: IO.dat, IO.dat
+graphtitle: IO Performance
 ylabel: Performance (GiB/s)
 
 perfkeys: Average rate =

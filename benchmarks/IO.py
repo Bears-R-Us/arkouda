@@ -8,7 +8,7 @@ from glob import glob
 TYPES = ('int64', 'float64')
 
 def time_ak_write_read(N_per_locale, trials, dtype, path, seed):
-    print(">>> arkouda write/read")
+    print(">>> arkouda {} write/read".format(dtype))
     cfg = ak.get_config()
     N = N_per_locale * cfg["numLocales"]
     print("numLocales = {}, N = {:,}".format(cfg["numLocales"], N))
@@ -33,12 +33,12 @@ def time_ak_write_read(N_per_locale, trials, dtype, path, seed):
     avgwrite = sum(writetimes) / trials
     avgread = sum(readtimes) / trials
 
-    print("Write times: min = {:.4f} sec, max = {:.4f} sec, avg = {:.4f} sec".format(min(writetimes), max(writetimes), avgwrite))
-    print("Read times : min = {:.4f} sec, max = {:.4f} sec, avg = {:.4f} sec".format(min(readtimes), max(readtimes), avgread))
+    print("write Average time = {:.4f} sec".format(avgwrite))
+    print("read Average time = {:.4f} sec".format(avgread))
 
     nb = a.size * a.itemsize
-    print("Write rates: min = {:.4f} GiB/sec, max = {:.4f} GiB/sec, avg = {:.4f} GiB/sec".format(nb/2**30/max(writetimes), nb/2**30/min(writetimes), nb/2**30/avgwrite))
-    print("Read rates : min = {:.4f} GiB/sec, max = {:.4f} GiB/sec, avg = {:.4f} GiB/sec".format(nb/2**30/max(readtimes), nb/2**30/min(readtimes), nb/2**30/avgread))
+    print("write Average rate = {:.2f} GiB/sec".format(nb/2**30/avgwrite))
+    print("read Average rate = {:.2f} GiB/sec".format(nb/2**30/avgread))
 
 def check_correctness(dtype, path, seed):
     N = 10**4
@@ -58,7 +58,7 @@ def create_parser():
     parser.add_argument('hostname', help='Hostname of arkouda server')
     parser.add_argument('port', type=int, help='Port of arkouda server')
     parser.add_argument('-n', '--size', type=int, default=10**8, help='Problem size: length of array to write/read')
-    parser.add_argument('-t', '--trials', type=int, default=3, help='Number of times to run the benchmark')
+    parser.add_argument('-t', '--trials', type=int, default=1, help='Number of times to run the benchmark')
     parser.add_argument('-d', '--dtype', default='int64', help='Dtype of array ({})'.format(', '.join(TYPES)))
     parser.add_argument('-p', '--path', default=os.getcwd()+'ak-io-test', help='Target path for measuring read/write rates')
     parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
