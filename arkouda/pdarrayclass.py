@@ -191,6 +191,9 @@ class pdarray:
             a supported dtype
         
         """
+        # For pdarray subclasses like ak.Datetime and ak.Timedelta, defer to child logic
+        if type(other) != pdarray and issubclass(type(other), pdarray):
+            return NotImplemented
         if op not in self.BinOps:
             raise ValueError("bad operator {}".format(op))
         # pdarray binop pdarray
