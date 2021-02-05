@@ -1942,10 +1942,10 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
           return lrepMsg;
 
       }
-      depthName = st.nextName();
-      var depthEntry = new shared SymEntry(depth);
-      st.addEntry(depthName, depthEntry);
-      repMsg =  'created ' + st.attrib(depthName);
+      //depthName = st.nextName();
+      //var depthEntry = new shared SymEntry(depth);
+      //st.addEntry(depthName, depthEntry);
+      //repMsg =  'created ' + st.attrib(depthName);
       if (Directed!=0) {
           if (Weighted!=0) {
               //repMsg=BFS_DW(Nv, Ne,Directed,Weighted,restpart,st);
@@ -1956,7 +1956,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
               var ag = new owned SegGraphDW(Nv,Ne,Directed,Weighted,srcN,dstN,
                                  startN,neighbourN,vweightN,eweightN, st);
               bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a);
-              //return_depth();
+              repMsg=return_depth();
 
           } else {
               //repMsg=BFS_D(Nv, Ne,Directed,Weighted,restpart,st);
@@ -1966,7 +1966,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                       startN,neighbourN,st);
               root=rootN:int;
               bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a);
-              //return_depth();
+              repMsg=return_depth();
 
           }
       }
@@ -1982,7 +1982,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                       vweightN,eweightN, st);
               root=rootN:int;
               bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a);
-              //return_depth();
+              repMsg=return_depth();
 
           } else {
               //repMsg=BFS_UD(Nv, Ne,Directed,Weighted,restpart,st);
@@ -1996,7 +1996,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
 
               root=rootN:int;
               bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a);
-              //return_depth();
+              repMsg=return_depth();
           }
       }
       return repMsg;

@@ -10,14 +10,15 @@ TYPES = ('int64', 'float64', 'bool', 'str')
 
 def time_ak_bfs_graph(trials:int):
     print("Graph BFS")
-    lgNv=8
+    lgNv=4
     Ne_per_v=3
     p=0.03
-    directed=0
-    weighted=0
+    directed=1
+    weighted=1
     start = time.time()
+    Graph=ak.graph_file_read(91,20,3,directed,"kang.gr")
     #Graph=ak.graph_file_read(393176,131072,2,directed,"delaunay_n17.gr")
-    Graph=ak.rmat_gen(lgNv, Ne_per_v, p, directed, weighted)
+    #Graph=ak.rmat_gen(lgNv, Ne_per_v, p, directed, weighted)
     end = time.time()
     print("Building the graph takes {:.4f} seconds".format(end-start))
     print("number of vertices ={}".format(Graph.n_vertices))
