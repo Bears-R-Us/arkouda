@@ -1500,7 +1500,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
              src=src+(src==dst);
              src=src%Nv;
       }
-      proc combine_sort(){
+      proc combine_sort() {
              /* we cannot use the coargsort version because it will break the memory limit */ 
              // coargsort
              param bitsPerDigit = RSLSD_bitsPerDigit;
@@ -1597,8 +1597,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
              }
              //neighbour  = length;
       }
-      //proc set_common_symtable(): string throws {
-      proc set_common_symtable() {
+      proc set_common_symtable(): string throws {
+      //proc set_common_symtable() {
              srcName = st.nextName();
              dstName = st.nextName();
              startName = st.nextName();
@@ -1607,14 +1607,15 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
              var dstEntry = new shared SymEntry(dst);
              var startEntry = new shared SymEntry(start_i);
              var neiEntry = new shared SymEntry(neighbour);
-             try! st.addEntry(srcName, srcEntry);
-             try! st.addEntry(dstName, dstEntry);
-             try! st.addEntry(startName, startEntry);
-             try! st.addEntry(neiName, neiEntry);
+             st.addEntry(srcName, srcEntry);
+             st.addEntry(dstName, dstEntry);
+             st.addEntry(startName, startEntry);
+             st.addEntry(neiName, neiEntry);
              sNv=Nv:string;
              sNe=Ne:string;
              sDirected=directed:string;
              sWeighted=weighted:string;
+             return "success";
       }
       if (directed!=0) {// for directed graph
           if (weighted!=0) { // for weighted graph
@@ -1760,8 +1761,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
              //neighbourR  = lengthR;
 
           }
-          //proc   set_common_symtableR():string throws {
-          proc   set_common_symtableR() {
+          proc   set_common_symtableR():string throws {
+          //proc   set_common_symtableR() {
              srcNameR = st.nextName();
              dstNameR = st.nextName();
              startNameR = st.nextName();
@@ -1770,10 +1771,11 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
              var dstEntryR = new shared SymEntry(dstR);
              var startEntryR = new shared SymEntry(start_iR);
              var neiEntryR = new shared SymEntry(neighbourR);
-             try! st.addEntry(srcNameR, srcEntryR);
-             try! st.addEntry(dstNameR, dstEntryR);
-             try! st.addEntry(startNameR, startEntryR);
-             try! st.addEntry(neiNameR, neiEntryR);
+             st.addEntry(srcNameR, srcEntryR);
+             st.addEntry(dstNameR, dstEntryR);
+             st.addEntry(startNameR, startEntryR);
+             st.addEntry(neiNameR, neiEntryR);
+             return "success";
           }
 
 
@@ -1825,6 +1827,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
              dstR = src;
              twostep_sortR(); 
              set_neighbourR();
+             set_common_symtable();
+             set_common_symtableR();
 
              repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + ' +' + sWeighted +
                     '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) + 
@@ -1857,8 +1861,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var srcN, dstN, startN, neighbourN,vweightN,eweightN, rootN :string;
       var srcRN, dstRN, startRN, neighbourRN:string;
 
-      //proc bfs_kernel(nei:[?D1] int, start_i:[?D2] int,dst:[?D3] int):string throws{
-      proc bfs_kernel(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int){
+      proc bfs_kernel(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int):string throws{
+      //proc bfs_kernel(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int){
           var cur_level=0;
           var SetCurF= try! new set(int,parSafe = true);
           var SetNextF=try!  new set(int,parSafe = true);
@@ -1869,7 +1873,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                 SetNextF.clear();
                 //writeln("SetCurF=");
                 //writeln(SetCurF.these());
-                forall loc in Locales  with (ref SetNextF) {
+                coforall loc in Locales  with (ref SetNextF) {
                    on loc {
                        ref nf=nei;
                        ref sf=start_i;
@@ -1907,20 +1911,21 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                numCurF=SetNextF.size;
                SetCurF=SetNextF;
           }//end while  
+          return "success";
       }
 
-      //proc return_depth(): string throws{
-      proc return_depth(){
+      proc return_depth(): string throws{
+      //proc return_depth(){
           var depthName = st.nextName();
           var depthEntry = try! new shared SymEntry(depth);
           try! st.addEntry(depthName, depthEntry);
           var tmpstr=try! st.attrib(depthName);
-          //repMsg =  'created ' + st.attrib(depthName);
-          repMsg =  'created ' + tmpstr;
+          var lrepMsg =  'created ' + st.attrib(depthName);
+          return lrepMsg;
       }
 
-      //proc return_pair():string throws{
-      proc return_pair(){
+      proc return_pair():string throws{
+      //proc return_pair(){
           var vertexValue = radixSortLSD_ranks(depth);
           var levelValue=depth[vertexValue]; 
           var levelName = st.nextName();
@@ -1929,11 +1934,12 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
           var vertexEntry = new shared SymEntry(vertexValue);
           try! st.addEntry(levelName, levelEntry);
           try! st.addEntry(vertexName, vertexEntry);
-          var tmpstr1=try! st.attrib(levelName);
-          var tmpstr2=try! st.attrib(vertexName);
+          //var tmpstr1=try! st.attrib(levelName);
+          //var tmpstr2=try! st.attrib(vertexName);
 
-          //repMsg =  'created ' + st.attrib(levelName) + '+created ' + st.attrib(vertexName) ;
-          repMsg =  'created ' + tmpstr1 + '+created ' + tmpstr2 ;
+          var lrepMsg =  'created ' + st.attrib(levelName) + '+created ' + st.attrib(vertexName) ;
+          //var lrepMsg =  'created ' + tmpstr1 + '+created ' + tmpstr2 ;
+          return lrepMsg;
 
       }
       depthName = st.nextName();
