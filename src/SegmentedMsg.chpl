@@ -16,6 +16,7 @@ module SegmentedMsg {
   use Random;
   use RadixSortLSD;
   use Set;
+  use DistributedBag;
   public use ArgSortMsg;
 
   private config const DEBUG = false;
@@ -1864,12 +1865,16 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       proc bfs_kernel(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int):string throws{
       //proc bfs_kernel(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int){
           var cur_level=0;
+          //var SetCurF=  new DistBag(int);
+          //var SetNextF=  new DistBag(int);
           var SetCurF= try! new set(int,parSafe = true);
           var SetNextF=try!  new set(int,parSafe = true);
-          try! SetCurF.add(root);
+          SetCurF.add(root);
+          //try! SetCurF.add(root);
           var numCurF=1:int;
 
-          while (!SetCurF.isEmpty()) {
+          //while (!SetCurF.isEmpty()) {
+          while (numCurF>0) {
                 SetNextF.clear();
                 //writeln("SetCurF=");
                 //writeln(SetCurF.these());
@@ -1908,6 +1913,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                }//end forall loc
                cur_level+=1;
                //writeln("SetCurF= ", SetCurF, "SetNextF=", SetNextF, " level ", cur_level+1);
+               //numCurF=SetNextF.getSize();
                numCurF=SetNextF.size;
                SetCurF=SetNextF;
           }//end while  
@@ -1953,6 +1959,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                (srcN, dstN, startN, neighbourN,vweightN,eweightN, rootN)=
                    restpart.splitMsgToTuple(7);
               root=rootN:int;
+              depth[root]=0;
               var ag = new owned SegGraphDW(Nv,Ne,Directed,Weighted,srcN,dstN,
                                  startN,neighbourN,vweightN,eweightN, st);
               bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a);
@@ -1965,6 +1972,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
               var ag = new owned SegGraphD(Nv,Ne,Directed,Weighted,srcN,dstN,
                       startN,neighbourN,st);
               root=rootN:int;
+              depth[root]=0;
               bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a);
               repMsg=return_depth();
 
@@ -1981,6 +1989,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                       srcRN,dstRN, startRN,neighbourRN,
                       vweightN,eweightN, st);
               root=rootN:int;
+              depth[root]=0;
               bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a);
               repMsg=return_depth();
 
@@ -1995,6 +2004,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                       st);
 
               root=rootN:int;
+              depth[root]=0;
               bfs_kernel(ag.neighbour.a, ag.start_i.a,ag.src.a,ag.dst.a);
               repMsg=return_depth();
           }
