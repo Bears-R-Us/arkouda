@@ -66,8 +66,8 @@ def time_ak_bfs_graph(trials:int):
     
     '''
     timings = []
-    #for root in range(trials):
-    for root in range(len(Graph.n_vertices)):
+    trials=int(Graph.n_vertices)
+    for root in range(trials):
         start = time.time()
         _ = ak.graph_bfs(Graph,root)
         end = time.time()

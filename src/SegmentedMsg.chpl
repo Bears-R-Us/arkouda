@@ -1865,17 +1865,16 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       proc bfs_kernel(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int):string throws{
       //proc bfs_kernel(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int){
           var cur_level=0;
-          //var SetCurF=  new DistBag(int);
-          //var SetNextF=  new DistBag(int);
-          var SetCurF= try! new set(int,parSafe = true);
-          var SetNextF=try!  new set(int,parSafe = true);
+          var SetCurF=  new DistBag(int,Locales);
+          var SetNextF=  new DistBag(int,Locales);
+          //var SetCurF= try! new set(int,parSafe = true);
+          //var SetNextF=try!  new set(int,parSafe = true);
           SetCurF.add(root);
           //try! SetCurF.add(root);
           var numCurF=1:int;
 
           //while (!SetCurF.isEmpty()) {
           while (numCurF>0) {
-                SetNextF.clear();
                 //writeln("SetCurF=");
                 //writeln(SetCurF.these());
                 coforall loc in Locales  with (ref SetNextF) {
@@ -1910,12 +1909,13 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                               }
                        }
                    }//end on loc
-               }//end forall loc
-               cur_level+=1;
+                }//end forall loc
+                cur_level+=1;
                //writeln("SetCurF= ", SetCurF, "SetNextF=", SetNextF, " level ", cur_level+1);
-               //numCurF=SetNextF.getSize();
-               numCurF=SetNextF.size;
-               SetCurF=SetNextF;
+                numCurF=SetNextF.getSize();
+                //numCurF=SetNextF.size;
+                SetCurF=SetNextF;
+                SetNextF.clear();
           }//end while  
           return "success";
       }
