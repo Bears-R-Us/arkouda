@@ -1245,35 +1245,66 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var repMsg: string;
 
       var filesize:int;
-      var f = open(FileName, iomode.r);
-      var r = f.reader(kind=ionative);
-      var line:string;
-      var a,b,c:string;
-      var curline=0:int;
-      while r.readline(line) {
-          if NumCol==2 {
-            (a,b)=  line.splitMsgToTuple(2);
-          } else {
-            (a,b,c)=  line.splitMsgToTuple(3);
-             e_weight[curline]=c:int;
-          }
-          src[curline]=a:int;
-          dst[curline]=b:int;
-          curline+=1;
-      } 
+      coforall loc in Locales  {
+           on loc {
+              var f = open(FileName, iomode.r);
+              var r = f.reader(kind=ionative);
+              var line:string;
+              var a,b,c:string;
+              var curline=0:int;
+              var srclocal=src.localSubdomain();
+              var dstlocal=dst.localSubdomain();
+              var ewlocal=e_weight.localSubdomain();
+              while r.readline(line) {
+                  if NumCol==2 {
+                      (a,b)=  line.splitMsgToTuple(2);
+                  } else {
+                      (a,b,c)=  line.splitMsgToTuple(3);
+                      if ewlocal.contains(curline) {
+                          e_weight[curline]=c:int;
+                      }
+                      //e_weight[curline]=c:int;
+                  }
+                  if srclocal.contains(curline) {
+                       src[curline]=a:int;
+                  }
+                  if dstlocal.contains(curline) {
+                       dst[curline]=b:int;
+                  }
+                  curline+=1;
+              } 
 
-      r.close();
-      src=src+(src==dst);
-      src=src%Nv;
-      dst=dst%Nv;
-
+              r.close();
+              forall i in srclocal {
+                   src[i]=src[i]+(src[i]==dst[i]);
+                   src[i]=src[i]%Nv;
+                   dst[i]=dst[i]%Nv;
+              }
+           }
+      }
       iv = radixSortLSD_ranks(src);
       // permute into sorted order
       var tmpedges=src;
-      tmpedges = src[iv]; //# permute first vertex into sorted order
-      src=tmpedges;
-      tmpedges = dst[iv]; //# permute second vertex into sorted order
-      dst=tmpedges;
+      coforall loc in Locales  {
+           on loc {
+              forall i in tmpedges.localSubdomain(){
+                   tmpedges[i] = src[iv[i]]; //# permute first vertex into sorted order
+              }
+              forall i in src.localSubdomain(){
+                   src[i] = tmpedges[i]; //# permute first vertex into sorted order
+              }
+              forall i in tmpedges.localSubdomain(){
+                   tmpedges[i] = dst[iv[i]]; //# permute first vertex into sorted order
+              }
+              forall i in dst.localSubdomain(){
+                   dst[i] = tmpedges[i]; //# permute first vertex into sorted order
+              }
+           }
+      }
+      //tmpedges = src[iv]; //# permute first vertex into sorted order
+      //src=tmpedges;
+      //tmpedges = dst[iv]; //# permute second vertex into sorted order
+      //dst=tmpedges;
       var startpos=0, endpos:int;
       var sort=0:int;
       while (startpos < Ne-2) {
@@ -1441,6 +1472,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var Ne = Ne_per_v * Nv:int;
       // probabilities
 
+      var n_vertices=Nv;
+      var n_edges=Ne;
       var src=makeDistArray(Ne,int);
       var dst=makeDistArray(Ne,int);
       //var length=makeDistArray(Nv,int);
@@ -1454,12 +1487,26 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
 
 
       //length=0;
-      start_i=-1;
-      neighbour=0;
-      var n_vertices=Nv;
-      var n_edges=Ne;
-      src=1;
-      dst=1;
+      coforall loc in Locales  {
+          on loc {
+              forall i in src.localSubdomain() {
+                  src[i]=1;
+              }
+              forall i in dst.localSubdomain() {
+                  dst[i]=0;
+              }
+              forall i in start_i.localSubdomain() {
+                  start_i[i]=-1;
+              }
+              forall i in neighbour.localSubdomain() {
+                  neighbour[i]=0;
+              }
+          }
+      }
+      //start_i=-1;
+      //neighbour=0;
+      //src=1;
+      //dst=1;
       var srcName:string ;
       var dstName:string ;
       var startName:string ;
@@ -1488,18 +1535,51 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                  //var tmpvar: [0..Ne-1] real;
                  var tmpvar=src;
                  fillRandom(tmpvar);
-                 src_bit=tmpvar>ab;
+                 coforall loc in Locales  {
+                       on loc {
+                           forall i in src_bit.localSubdomain() {
+                                 src_bit[i]=tmpvar[i]>ab;
+                           }       
+                       }
+                 }
+                 //src_bit=tmpvar>ab;
                  fillRandom(tmpvar);
-                 dst_bit=tmpvar>(c_norm * src_bit + a_norm * (~ src_bit));
-                 src = src + ((2**(ib-1)) * src_bit);
-                 dst = dst + ((2**(ib-1)) * dst_bit);
+                 coforall loc in Locales  {
+                       on loc {
+                           forall i in dst_bit.localSubdomain() {
+                                 dst_bit[i]=tmpvar[i]>(c_norm * src_bit[i] + a_norm * (~ src_bit[i]));
+                           }       
+                       }
+                 }
+                 //dst_bit=tmpvar>(c_norm * src_bit + a_norm * (~ src_bit));
+                 coforall loc in Locales  {
+                       on loc {
+                           forall i in dst.localSubdomain() {
+                                 dst[i]=dst[i]+ ((2**(ib-1)) * dst_bit[i]);
+                           }       
+                           forall i in src.localSubdomain() {
+                                 src[i]=src[i]+ ((2**(ib-1)) * src_bit[i]);
+                           }       
+                       }
+                 }
+                 //src = src + ((2**(ib-1)) * src_bit);
+                 //dst = dst + ((2**(ib-1)) * dst_bit);
              }
-             src=src%Nv;
-             dst=dst%Nv;
+             coforall loc in Locales  {
+                       on loc {
+                           forall i in src_bit.localSubdomain() {
+                                 src[i]=src[i]+(src[i]==dst[i]);
+                                 src[i]=src[i]%Nv;
+                                 dst[i]=dst[i]%Nv;
+                           }       
+                       }
+             }
+             //src=src%Nv;
+             //dst=dst%Nv;
 
              //remove self loop
-             src=src+(src==dst);
-             src=src%Nv;
+             //src=src+(src==dst);
+             //src=src%Nv;
       }
       proc combine_sort() {
              /* we cannot use the coargsort version because it will break the memory limit */ 
@@ -1664,9 +1744,20 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
           var neighbourR=makeDistArray(Nv,int);
           var start_iR=makeDistArray(Nv,int);
           ref  ivR=iv;
-          start_iR=-1;
+
+          coforall loc in Locales  {
+                       on loc {
+                           forall i in start_iR.localSubdomain() {
+                                 start_iR[i]=-1;
+                           }       
+                           forall i in neighbourR.localSubdomain() {
+                                 neighbourR=0;
+                           }       
+                       }
+          }
+          //start_iR=-1;
           //lengthR=0;
-          neighbourR=0;
+          //neighbourR=0;
           var srcNameR, dstNameR, startNameR, neiNameR:string;
         
           proc combine_sortR(){
@@ -1784,8 +1875,16 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
              rmat_gen();
              twostep_sort();
              set_neighbour();
-             srcR = dst;
-             dstR = src;
+             coforall loc in Locales  {
+                       on loc {
+                           forall i in srcR.localSubdomain() {
+                                 srcR[i]=dst[i];
+                                 dstR[i]=src[i];
+                           }       
+                       }
+             }
+             //srcR = dst;
+             //dstR = src;
              twostep_sortR(); 
              set_neighbourR();
 
@@ -1824,8 +1923,16 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
              rmat_gen();
              twostep_sort();
              set_neighbour();
-             srcR = dst;
-             dstR = src;
+             coforall loc in Locales  {
+                       on loc {
+                           forall i in srcR.localSubdomain() {
+                                 srcR[i]=dst[i];
+                                 dstR[i]=src[i];
+                           }       
+                       }
+             }
+             //srcR = dst;
+             //dstR = src;
              twostep_sortR(); 
              set_neighbourR();
              set_common_symtable();
@@ -1857,7 +1964,15 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var Directed=directedN:int;
       var Weighted=weightedN:int;
       var depthName:string;
-      var depth=-1: [0..Nv-1] int;
+      var depth=makeDistArray(Nv,int);
+      coforall loc in Locales  {
+                       on loc {
+                           forall i in depth.localSubdomain() {
+                                 depth[i]=-1;
+                           }       
+                       }
+      }
+      //var depth=-1: [0..Nv-1] int;
       var root:int;
       var srcN, dstN, startN, neighbourN,vweightN,eweightN, rootN :string;
       var srcRN, dstRN, startRN, neighbourRN:string;
@@ -1908,6 +2023,18 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                                    }
                               }
                        }
+                       /*
+                       var dld=depth.localSubdomain();
+                       myele.clear();
+                       for i in SetNextF{
+                           if dld.contains(i) {
+                               myele.add(i);
+                           }
+                       }
+                       forall i in myele {
+                           depth[i]=cur_level+1;
+                       }
+                       */
                    }//end on loc
                 }//end forall loc
                 cur_level+=1;
