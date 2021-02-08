@@ -376,7 +376,7 @@ By default, the server listens on port `5555`. This value can be overridden with
 
 Memory tracking is turned on by default and turned off by using the  `--memTrack=false` flag
 
-Logging messages are turned on by default and turned off by using the `--logging=false` flag
+Trace logging messages are turned on by default and turned off by using the `--trace=false` flag
 
 Other command line options are available and can be viewed by using the `--help` flag
 
