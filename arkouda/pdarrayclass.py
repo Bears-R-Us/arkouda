@@ -17,7 +17,7 @@ __all__ = ["pdarray", "info", "clear", "any", "all", "is_sorted", "sum", "prod",
            "maxk", "argmink", "argmaxk", "register_pdarray", "attach_pdarray", 
            "unregister_pdarray"]
 
-logger = getArkoudaLogger(name='pdarray')    
+logger = getArkoudaLogger(name='pdarrayclass')    
 
 @typechecked
 def parse_single_value(msg : str) -> object:
@@ -1831,7 +1831,7 @@ def attach_pdarray(user_defined_name : str) -> pdarray:
 def unregister_pdarray(pda : Union[str,pdarray]) -> None:
     """
     Unregister a pdarray in the arkouda server which was previously 
-    registered using register_pdarray() and/or attahced to using attach_pdarray()
+    registered using register_pdarray() and/or attached to using attach_pdarray()
     
     Parameters
     ----------
@@ -1870,3 +1870,4 @@ def unregister_pdarray(pda : Union[str,pdarray]) -> None:
 
     if isinstance(pda, str):
         repMsg = generic_msg("unregister {}".format(pda))
+    logger.debug(repMsg)

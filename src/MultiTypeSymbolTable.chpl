@@ -174,16 +174,18 @@ module MultiTypeSymbolTable
         */
         proc deleteEntry(name: string) throws {
             if (tab.contains(name) && !registry.contains(name)) {
+                mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                           "Deleting unregistered entry: %s".format(name)); 
                 tab.remove(name);
-            }
-            else {
-                var errorMsg = "deleteEntry: unknown symbol %s".format(name);
-                throw getErrorWithContext(
-                                   msg=errorMsg,
-                                   lineNumber=getLineNumber(),
-                                   routineName=getRoutineName(),
-                                   moduleName=getModuleName(),
-                                   errorClass="UnknownSymbolError");
+            } else if (tab.contains(name) && registry.contains(name)) {
+                mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                           "Skipping registered entry: %s".format(name));             
+            } else if (!tab.contains(name) && registry.contains(name)){
+                mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                                     "Registered entry is not in SymTab: %s".format(name));
+            } else {
+                mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                                     "Unregistered entry is not in SymTab: %s".format(name));               
             }
         }
 
