@@ -1245,65 +1245,83 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
 
       var repMsg: string;
 
-      var filesize:int;
-      var f = open(FileName, iomode.r);
-      var r = f.reader(kind=ionative);
-      var dataarray:[0..Ne-1,0..NumCol-1] int;
-      r.read(dataarray);
-      r.close();
-      f.close();
       var startpos, endpos:int;
       var sort:int;
-      coforall loc in Locales  {
-           on loc {
-              var srclocal=src.localSubdomain();
-              var dstlocal=dst.localSubdomain();
-              var ewlocal=e_weight.localSubdomain();
-              /*
-              var f = open(FileName, iomode.r);
-              var r = f.reader(kind=ionative);
-              var line:string;
-              var a,b,c:string;
-              var curline=0:int;
-              while r.readline(line) {
-                  if NumCol==2 {
-                      (a,b)=  line.splitMsgToTuple(2);
-                  } else {
-                      (a,b,c)=  line.splitMsgToTuple(3);
-                      if ewlocal.contains(curline) {
-                          e_weight[curline]=c:int;
-                      }
-                      //e_weight[curline]=c:int;
-                  }
-                  if srclocal.contains(curline) {
-                       src[curline]=a:int;
-                  }
-                  if dstlocal.contains(curline) {
-                       dst[curline]=b:int;
-                  }
-                  curline+=1;
-              } 
+      var filesize:int;
 
-              r.close();
-              */
-              forall i in srclocal {
-                   src[i]=dataarray[i,0];
-              }
-              forall i in dstlocal {
-                   dst[i]=dataarray[i,1];
-              }
-              if NumCol==3 {
-                  forall i in ewlocal {
-                      e_weight[i]=dataarray[i,2];
+      proc readComplete() throws {
+           var f = open(FileName, iomode.r);
+           var r = f.reader(kind=ionative);
+           var dataarray:[0..Ne-1,0..NumCol-1] int;
+           r.read(dataarray);
+           r.close();
+           f.close();
+           coforall loc in Locales  {
+              on loc {
+                  var srclocal=src.localSubdomain();
+                  var dstlocal=dst.localSubdomain();
+                  var ewlocal=e_weight.localSubdomain();
+                  forall i in srclocal {
+                       src[i]=dataarray[i,0];
                   }
-              }
-              forall i in srclocal {
-                   src[i]=src[i]+(src[i]==dst[i]);
-                   src[i]=src[i]%Nv;
-                   dst[i]=dst[i]%Nv;
-              }
-           }
-      }
+                  forall i in dstlocal {
+                       dst[i]=dataarray[i,1];
+                  }
+                  if NumCol==3 {
+                      forall i in ewlocal {
+                          e_weight[i]=dataarray[i,2];
+                      }
+                  }
+                  forall i in srclocal {
+                       src[i]=src[i]+(src[i]==dst[i]);
+                       src[i]=src[i]%Nv;
+                       dst[i]=dst[i]%Nv;
+                  }
+              }//end on loc
+           }//end coforall
+      }// end readComplete
+
+      proc readLinebyLine() throws {
+           coforall loc in Locales  {
+              on loc {
+                  var f = open(FileName, iomode.r);
+                  var r = f.reader(kind=ionative);
+                  var line:string;
+                  var a,b,c:string;
+                  var curline=0:int;
+                  var srclocal=src.localSubdomain();
+                  var dstlocal=dst.localSubdomain();
+                  var ewlocal=e_weight.localSubdomain();
+
+                  while r.readline(line) {
+                      if NumCol==2 {
+                           (a,b)=  line.splitMsgToTuple(2);
+                      } else {
+                           (a,b,c)=  line.splitMsgToTuple(3);
+                            if ewlocal.contains(curline){
+                                e_weight[curline]=c:int;
+                            }
+                      }
+                      if srclocal.contains(curline) {
+                          src[curline]=a:int;
+                      }
+                      if dstlocal.contains(curline) {
+                          dst[curline]=b:int;
+                      }
+                      curline+=1;
+                  } 
+                  forall i in srclocal {
+                       src[i]=src[i]+(src[i]==dst[i]);
+                       src[i]=src[i]%Nv;
+                       dst[i]=dst[i]%Nv;
+                  }
+                  r.close();
+                  f.close();
+               }// end on loc
+           }//end coforall
+      }//end readLinebyLine
+      
+      readLinebyLine();
       timer.stop();
       //writeln("$$$$$$$$$$$$ Reading File takes ", timer.elapsed()," $$$$$$$$$$$$$$$$$$$$$$$");
       timer.start();
@@ -1597,7 +1615,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
           }
 
       }
-      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+      //smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
       timer.stop();
       //writeln("$$$$$$$$$$$$Sorting Edges takes ", timer.elapsed()," $$$$$$$$$$$$$$$$$$$$$$$");
       return repMsg;
@@ -2125,7 +2143,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       }// end undirected graph
       timer.stop();
       //writeln("$$$$$$$$$$$$$$$$$ sorting RMAT graph takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
-      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
+      //smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
       return repMsg;
   }
 

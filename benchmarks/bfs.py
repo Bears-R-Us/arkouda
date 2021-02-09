@@ -10,7 +10,7 @@ TYPES = ('int64', 'float64', 'bool', 'str')
 
 def time_ak_bfs_graph(trials:int):
     print("Graph BFS")
-    lgNv=6
+    lgNv=8
     Ne_per_v=3
     p=0.03
     directed=0
@@ -19,8 +19,8 @@ def time_ak_bfs_graph(trials:int):
     #Graph=ak.graph_file_read(91,20,3,directed,"kang.gr")
     #Graph=ak.graph_file_read(393176,131072,2,directed,"delaunay_n17.gr")
     #Graph=ak.rmat_gen(lgNv, Ne_per_v, p, directed, weighted)
-    #Graph=ak.graph_file_read(103689,8276,2,directed,"data/graphs/wiki")
-    Graph=ak.graph_file_read(2981,2888,2,directed,"data/graphs/fb")
+    Graph=ak.graph_file_read(103689,8276,2,directed,"data/graphs/wiki")
+    #Graph=ak.graph_file_read(2981,2888,2,directed,"data/graphs/fb")
     end = time.time()
     print("Building the graph takes {:.4f} seconds".format(end-start))
     print("number of vertices ={}".format(Graph.n_vertices))
@@ -61,7 +61,6 @@ def time_ak_bfs_graph(trials:int):
     print("total edges are as follows")
     for i in range(int(Graph.n_edges)):
          print("<",Graph.src[i]," -- ", Graph.dst[i],">")
-
     print("total reverse edges are as follows")
     for i in range(int(Graph.n_edges)):
          print("<",Graph.srcR[i]," -- ", Graph.dstR[i],">")
