@@ -16,7 +16,7 @@ SRC_DIR=$(cd $ARKOUDA_HOME && make print-ARKOUDA_SOURCE_DIR)
 # Location of the configuration file, so we always include it and disable extra
 # debugging that might make noise in the tests
 CONFIG_FILE="${SRC_DIR}/ServerConfig.chpl"
-CONFIG_OPTS="${CONFIG_FILE} -sv=false -slogging=false"
+CONFIG_OPTS="${CONFIG_FILE} -sv=false -strace=false"
 
 TEST_OPTS="-sprintTimes=false -sprintDiags=false -sprintDiagsSum=false"
 
