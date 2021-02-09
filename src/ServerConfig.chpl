@@ -16,9 +16,9 @@ module ServerConfig
     use Logging;
 
     /*
-    Logging flag
+    Trace logging flag
     */
-    config const logging = true;
+    config const trace = true;
 
     /*
     Verbose debug flag
@@ -148,7 +148,7 @@ module ServerConfig
         if (memTrack) {
             // this is a per locale total
             var total = memoryUsed() + (additionalAmount:uint / numLocales:uint);
-            if (logging) {
+            if (trace) {
                 if (total > memHighWater) {
                     memHighWater = total;
                     scLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
