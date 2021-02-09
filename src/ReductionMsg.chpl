@@ -250,14 +250,14 @@ module ReductionMsg
         // reqMsg: segmentedReduction values segments operator
         // 'values_name' is the segmented array of values to be reduced
         // 'segments_name' is the sement offsets
-        // 'operator' is the reduction operator
-        var (values_name, segments_name, operator, skip_nan) = payload.decode().splitMsgToTuple(4);
+        // 'op' is the reduction operator
+        var (values_name, segments_name, op, skip_nan) = payload.decode().splitMsgToTuple(4);
         var skipNan = stringtobool(skip_nan);
       
         var rname = st.nextName();
         rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                       "cmd: %s values_name: %s segments_name: %s operator: %s skipNan: %s".format(
-                                       cmd,values_name,segments_name,operator,skipNan));
+                                       cmd,values_name,segments_name,op,skipNan));
         var gVal: borrowed GenSymEntry = st.lookup(values_name);
         var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
         var segments = toSymEntry(gSeg, int);
@@ -269,7 +269,7 @@ module ReductionMsg
         select (gVal.dtype) {
             when (DType.Int64) {
                 var values = toSymEntry(gVal, int);
-                select operator {
+                select op {
                     when "sum" {
                         var res = segSum(values.a, segments.a);
                         st.addEntry(rname, new shared SymEntry(res));
@@ -303,7 +303,7 @@ module ReductionMsg
                         st.addEntry(rname, new shared SymEntry(res));
                     }
                     otherwise {
-                        var errorMsg = notImplementedError(pn,operator,gVal.dtype);
+                        var errorMsg = notImplementedError(pn,op,gVal.dtype);
                         rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                         return errorMsg;  
                     }                       
@@ -311,7 +311,7 @@ module ReductionMsg
             }
             when (DType.Float64) {
                 var values = toSymEntry(gVal, real);
-                select operator {
+                select op {
                     when "sum" {
                         var res = segSum(values.a, segments.a, skipNan);
                         st.addEntry(rname, new shared SymEntry(res));
@@ -341,7 +341,7 @@ module ReductionMsg
                         st.addEntry(rname, new shared SymEntry(locs));
                     }
                     otherwise {
-                        var errorMsg = notImplementedError(pn,operator,gVal.dtype);
+                        var errorMsg = notImplementedError(pn,op,gVal.dtype);
                         rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);         
                         return errorMsg;
                     }
@@ -349,7 +349,7 @@ module ReductionMsg
            }
            when (DType.Bool) {
                var values = toSymEntry(gVal, bool);
-               select operator {
+               select op {
                    when "sum" {
                       var res = segSum(values.a, segments.a);
                       st.addEntry(rname, new shared SymEntry(res));
@@ -367,7 +367,7 @@ module ReductionMsg
                       st.addEntry(rname, new shared SymEntry(res));
                    }
                    otherwise {
-                       var errorMsg = notImplementedError(pn,operator,gVal.dtype);
+                       var errorMsg = notImplementedError(pn,op,gVal.dtype);
                        rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                        return errorMsg;                 
                    }
@@ -385,7 +385,7 @@ module ReductionMsg
           
     /* Segmented Reductions of the form: seg<Op>(values:[] t, segments: [] int)
        Use <segments> as the boundary indices to divide <values> into chunks, 
-       and then reduce over each chunk uisng the operator <Op>. The return array 
+       and then reduce over each chunk using the operator <Op>. The return array 
        of reduced values is the same size as <segments>.
      */
     proc segSum(values:[] ?t, segments:[?D] int, skipNan=false): [D] t {
