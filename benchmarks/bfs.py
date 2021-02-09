@@ -58,12 +58,10 @@ def time_ak_bfs_graph(trials:int):
             visit=[]
         visit.append(ver[i])
     print(visit)
-    '''
     print("total edges are as follows")
     for i in range(int(Graph.n_edges)):
          print("<",Graph.src[i]," -- ", Graph.dst[i],">")
 
-    '''
     print("total reverse edges are as follows")
     for i in range(int(Graph.n_edges)):
          print("<",Graph.srcR[i]," -- ", Graph.dstR[i],">")

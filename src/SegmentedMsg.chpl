@@ -18,6 +18,7 @@ module SegmentedMsg {
   use Set;
   use DistributedBag;
   public use ArgSortMsg;
+  use Time;
 
   private config const DEBUG = false;
   const smLogger = new Logger();
@@ -1205,11 +1206,9 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
   }
 
 
-
-
 // directly read a graph from given file and build the SegGraph class in memory
   proc segGraphFileMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
-      var pn = Reflection.getRoutineName();
+      //var pn = Reflection.getRoutineName();
       var (NeS,NvS,ColS,DirectedS, FileName) = payload.decode().splitMsgToTuple(5);
       //writeln("======================Graph Reading=====================");
       //writeln(NeS,NvS,ColS,DirectedS, FileName);
@@ -1218,10 +1217,12 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var NumCol=ColS:int;
       var directed=DirectedS:int;
       var weighted=0:int;
+      var timer: Timer;
       if NumCol>2 {
            weighted=1;
       }
 
+      timer.start();
       var src=makeDistArray(Ne,int);
       var dst=makeDistArray(Ne,int);
       //var length=makeDistArray(Nv,int);
@@ -1245,16 +1246,25 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var repMsg: string;
 
       var filesize:int;
+      var f = open(FileName, iomode.r);
+      var r = f.reader(kind=ionative);
+      var dataarray:[0..Ne-1,0..NumCol-1] int;
+      r.read(dataarray);
+      r.close();
+      f.close();
+      var startpos, endpos:int;
+      var sort:int;
       coforall loc in Locales  {
            on loc {
+              var srclocal=src.localSubdomain();
+              var dstlocal=dst.localSubdomain();
+              var ewlocal=e_weight.localSubdomain();
+              /*
               var f = open(FileName, iomode.r);
               var r = f.reader(kind=ionative);
               var line:string;
               var a,b,c:string;
               var curline=0:int;
-              var srclocal=src.localSubdomain();
-              var dstlocal=dst.localSubdomain();
-              var ewlocal=e_weight.localSubdomain();
               while r.readline(line) {
                   if NumCol==2 {
                       (a,b)=  line.splitMsgToTuple(2);
@@ -1275,6 +1285,18 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
               } 
 
               r.close();
+              */
+              forall i in srclocal {
+                   src[i]=dataarray[i,0];
+              }
+              forall i in dstlocal {
+                   dst[i]=dataarray[i,1];
+              }
+              if NumCol==3 {
+                  forall i in ewlocal {
+                      e_weight[i]=dataarray[i,2];
+                  }
+              }
               forall i in srclocal {
                    src[i]=src[i]+(src[i]==dst[i]);
                    src[i]=src[i]%Nv;
@@ -1282,10 +1304,14 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
               }
            }
       }
-      iv = radixSortLSD_ranks(src);
-      // permute into sorted order
-      var tmpedges=src;
-      coforall loc in Locales  {
+      timer.stop();
+      //writeln("$$$$$$$$$$$$ Reading File takes ", timer.elapsed()," $$$$$$$$$$$$$$$$$$$$$$$");
+      timer.start();
+      proc twostep_sort() {
+        iv = radixSortLSD_ranks(src);
+        // permute into sorted order
+        var tmpedges=src;
+        coforall loc in Locales  {
            on loc {
               forall i in tmpedges.localSubdomain(){
                    tmpedges[i] = src[iv[i]]; //# permute first vertex into sorted order
@@ -1300,80 +1326,202 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                    dst[i] = tmpedges[i]; //# permute first vertex into sorted order
               }
            }
-      }
-      //tmpedges = src[iv]; //# permute first vertex into sorted order
-      //src=tmpedges;
-      //tmpedges = dst[iv]; //# permute second vertex into sorted order
-      //dst=tmpedges;
-      var startpos=0, endpos:int;
-      var sort=0:int;
-      while (startpos < Ne-2) {
-         endpos=startpos+1;
-         sort=0;
-         while (endpos <=Ne-1) {
-            if (src[startpos]==src[endpos])  {
-               sort=1;
-               endpos+=1;
-               continue;
-            } else {
-               break;
-            }
-         }//end of while endpos
-         if (sort==1) {
-            var tmpary:[0..endpos-startpos-1] int;
-            tmpary=dst[startpos..endpos-1];
-            var ivx=radixSortLSD_ranks(tmpary);
-            dst[startpos..endpos-1]=tmpary[ivx];
-            sort=0;
-         }
-         startpos+=1;
-      }//end of while startpos
-
-      for i in 0..Ne-1 do {
-        neighbour[src[i]]+=1;
-        if (start_i[src[i]] ==-1){
-           start_i[src[i]]=i;
         }
+        //tmpedges = src[iv]; //# permute first vertex into sorted order
+        //src=tmpedges;
+        //tmpedges = dst[iv]; //# permute second vertex into sorted order
+        //dst=tmpedges;
+        startpos=0;
+        sort=0;
+        while (startpos < Ne-2) {
+           endpos=startpos+1;
+           sort=0;
+           while (endpos <=Ne-1) {
+              if (src[startpos]==src[endpos])  {
+                 sort=1;
+                 endpos+=1;
+                 continue;
+              } else {
+                 break;
+              }
+           }//end of while endpos
+           if (sort==1) {
+              var tmpary:[0..endpos-startpos-1] int;
+              tmpary=dst[startpos..endpos-1];
+              var ivx=radixSortLSD_ranks(tmpary);
+              dst[startpos..endpos-1]=tmpary[ivx];
+              sort=0;
+           }
+           startpos+=1;
+        }//end of while startpos
+      }// end of twostep_sort()
 
+      proc combine_sort() throws {
+             param bitsPerDigit = RSLSD_bitsPerDigit;
+             var bitWidths: [0..1] int;
+             var negs: [0..1] bool;
+             var totalDigits: int;
+             var size=Ne: int;
+
+             for (bitWidth, ary, neg) in zip(bitWidths, [src,dst], negs) {
+                       (bitWidth, neg) = getBitWidth(ary); 
+                       totalDigits += (bitWidth + (bitsPerDigit-1)) / bitsPerDigit;
+             }
+             proc mergedArgsort(param numDigits) throws {
+                    //overMemLimit(((4 + 3) * size * (numDigits * bitsPerDigit / 8))
+                    //             + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+                    var merged = makeDistArray(size, numDigits*uint(bitsPerDigit));
+                    var curDigit = RSLSD_tupleLow + numDigits - totalDigits;
+                    for (ary , nBits, neg) in zip([src,dst], bitWidths, negs) {
+                        proc mergeArray(type t) {
+                            ref A = ary;
+                            const r = 0..#nBits by bitsPerDigit;
+                            for rshift in r {
+                                 const myDigit = (r.high - rshift) / bitsPerDigit;
+                                 const last = myDigit == 0;
+                                 forall (m, a) in zip(merged, A) {
+                                     m[curDigit+myDigit] =  getDigit(a, rshift, last, neg):uint(bitsPerDigit);
+                                 }
+                            }
+                            curDigit += r.size;
+                        }
+                        mergeArray(int); 
+                    }
+                    var tmpiv = argsortDefault(merged);
+                    return tmpiv;
+             }
+
+             if totalDigits <=  4 { 
+                  iv = mergedArgsort( 4); 
+             }
+
+             if totalDigits <=  8 { 
+                  iv =  mergedArgsort( 8); 
+             }
+             if totalDigits <= 16 { 
+                  iv = mergedArgsort(16); 
+             }
+             var tmpedges=src[iv];
+             src=tmpedges;
+             tmpedges=dst[iv];
+             dst=tmpedges;
+
+      }//end combine_sort
+
+      proc set_neighbour(){ 
+          for i in 0..Ne-1 do {
+             neighbour[src[i]]+=1;
+             if (start_i[src[i]] ==-1){
+                 start_i[src[i]]=i;
+             }
+
+          }
       }
+
+      //twostep_sort();
+      combine_sort();
+      set_neighbour();
 
       if (directed==0) { //undirected graph
-
-          var ivR = radixSortLSD_ranks(srcR);
-          var tmpedges=src;
-          tmpedges = srcR[ivR]; //# permute first vertex into sorted order
-          srcR=tmpedges;
-          tmpedges = dstR[ivR]; //# permute second vertex into sorted order
-          dstR=tmpedges;
-          startpos=0;
-          sort=0;
-          while (startpos < Ne-2) {
-              endpos=startpos+1;
-              sort=0;
-              while (endpos <=Ne-1) {
-                 if (srcR[startpos]==srcR[endpos])  {
-                    sort=1;
-                    endpos+=1;
-                    continue;
-                 } else {
-                    break;
+          proc twostep_sortR(){
+             var ivR = radixSortLSD_ranks(srcR);
+             var tmpedges=src;
+             tmpedges = srcR[ivR]; //# permute first vertex into sorted order
+             srcR=tmpedges;
+             tmpedges = dstR[ivR]; //# permute second vertex into sorted order
+             dstR=tmpedges;
+             startpos=0;
+             sort=0;
+             while (startpos < Ne-2) {
+                 endpos=startpos+1;
+                 sort=0;
+                 while (endpos <=Ne-1) {
+                     if (srcR[startpos]==srcR[endpos])  {
+                        sort=1;
+                        endpos+=1;
+                        continue;
+                      } else {
+                          break;
+                      }
+                 }//end of while endpos
+                 if (sort==1) {
+                     var tmparyR:[0..endpos-startpos-1] int;
+                     tmparyR=dstR[startpos..endpos-1];
+                     var ivxR=radixSortLSD_ranks(tmparyR);
+                     dstR[startpos..endpos-1]=tmparyR[ivxR];
+                     sort=0;
                  }
-              }//end of while endpos
-              if (sort==1) {
-                  var tmparyR:[0..endpos-startpos-1] int;
-                  tmparyR=dstR[startpos..endpos-1];
-                  var ivxR=radixSortLSD_ranks(tmparyR);
-                  dstR[startpos..endpos-1]=tmparyR[ivxR];
-                  sort=0;
-              }
-              startpos+=1;
-          }//end of while startpos
-          for i in 0..Ne-1 do {
-              neighbourR[srcR[i]]+=1;
-              if (start_iR[srcR[i]] ==-1){
-                  start_iR[srcR[i]]=i;
-              }
+                 startpos+=1;
+             }//end of while startpos
+          }// end of two step R
+
+
+          proc combine_sortR() throws {
+             /* we cannot use the coargsort version because it will break the memory limit */
+             param bitsPerDigit = RSLSD_bitsPerDigit;
+             var bitWidths: [0..1] int;
+             var negs: [0..1] bool;
+             var totalDigits: int;
+             var size=Ne: int;
+             for (bitWidth, ary, neg) in zip(bitWidths, [srcR,dstR], negs) {
+                 (bitWidth, neg) = getBitWidth(ary); 
+                 totalDigits += (bitWidth + (bitsPerDigit-1)) / bitsPerDigit;
+
+             }
+             proc mergedArgsort(param numDigits) throws {
+               //overMemLimit(((4 + 3) * size * (numDigits * bitsPerDigit / 8))
+               //          + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
+               var merged = makeDistArray(size, numDigits*uint(bitsPerDigit));
+               var curDigit = RSLSD_tupleLow + numDigits - totalDigits;
+               for (ary , nBits, neg) in zip([src,dst], bitWidths, negs) {
+                  proc mergeArray(type t) {
+                     ref A = ary;
+                     const r = 0..#nBits by bitsPerDigit;
+                     for rshift in r {
+                        const myDigit = (r.high - rshift) / bitsPerDigit;
+                        const last = myDigit == 0;
+                        forall (m, a) in zip(merged, A) {
+                             m[curDigit+myDigit] =  getDigit(a, rshift, last, neg):uint(bitsPerDigit);
+                        }
+                     }
+                     curDigit += r.size;
+                  }
+                  mergeArray(int); 
+               }
+               var tmpiv = argsortDefault(merged);
+               return tmpiv;
+             } 
+
+             if totalDigits <=  4 { 
+               ivR = mergedArgsort( 4); 
+             }
+
+             if totalDigits <=  8 { 
+               ivR =  mergedArgsort( 8); 
+             }
+             if totalDigits <= 16 { 
+               ivR = mergedArgsort(16); 
+             }
+
+             var tmpedges = srcR[ivR]; 
+             srcR=tmpedges;
+             tmpedges = dstR[ivR]; 
+             dstR=tmpedges;
+
+          }// end combine_sortR
+
+
+          proc set_neighbourR(){
+             for i in 0..Ne-1 do {
+                neighbourR[srcR[i]]+=1;
+                if (start_iR[srcR[i]] ==-1){
+                    start_iR[srcR[i]]=i;
+                }
+             }
           }
+          //twostep_sortR();
+          combine_sortR();
+          set_neighbourR();
 
       }//end of undirected
 
@@ -1450,13 +1598,15 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
 
       }
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+      timer.stop();
+      //writeln("$$$$$$$$$$$$Sorting Edges takes ", timer.elapsed()," $$$$$$$$$$$$$$$$$$$$$$$");
       return repMsg;
   }
 
 
 
   proc segrmatgenMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
-      var pn = Reflection.getRoutineName();
+      //var pn = Reflection.getRoutineName();
       var repMsg: string;
       var (slgNv, sNe_per_v, sp, sdire,swei,rest )
           = payload.decode().splitMsgToTuple(6);
@@ -1472,6 +1622,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var Ne = Ne_per_v * Nv:int;
       // probabilities
 
+      var timer:Timer;
+      timer.start();
       var n_vertices=Nv;
       var n_edges=Ne;
       var src=makeDistArray(Ne,int);
@@ -1580,22 +1732,20 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
              //remove self loop
              //src=src+(src==dst);
              //src=src%Nv;
-      }
-      proc combine_sort() {
-             /* we cannot use the coargsort version because it will break the memory limit */ 
-             // coargsort
+      }//end rmat_gen
+      
+      proc combine_sort() throws {
              param bitsPerDigit = RSLSD_bitsPerDigit;
              var bitWidths: [0..1] int;
              var negs: [0..1] bool;
              var totalDigits: int;
-             var size=Nv: int;
+             var size=Ne: int;
 
              for (bitWidth, ary, neg) in zip(bitWidths, [src,dst], negs) {
                        (bitWidth, neg) = getBitWidth(ary); 
                        totalDigits += (bitWidth + (bitsPerDigit-1)) / bitsPerDigit;
              }
              proc mergedArgsort(param numDigits) throws {
-
                     //overMemLimit(((4 + 3) * size * (numDigits * bitsPerDigit / 8))
                     //             + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
                     var merged = makeDistArray(size, numDigits*uint(bitsPerDigit));
@@ -1615,8 +1765,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                         }
                         mergeArray(int); 
                     }
-                    var iv = argsortDefault(merged);
-                    return iv;
+                    var tmpiv = argsortDefault(merged);
+                    return tmpiv;
              }
 
              if totalDigits <=  4 { 
@@ -1629,8 +1779,12 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
              if totalDigits <= 16 { 
                   iv = mergedArgsort(16); 
              }
+             var tmpedges=src[iv];
+             src=tmpedges;
+             tmpedges=dst[iv];
+             dst=tmpedges;
 
-      }
+      }//end combine_sort
 
       proc twostep_sort(){
              iv = radixSortLSD_ranks(src);
@@ -1666,7 +1820,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                      } 
                      startpos+=1;
              }//end of while startpos
-      }
+      }// end twostep_sort
+
       proc set_neighbour(){
              for i in 0..Ne-1 do {
                  neighbour[src[i]]+=1;
@@ -1679,7 +1834,6 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
              //neighbour  = length;
       }
       proc set_common_symtable(): string throws {
-      //proc set_common_symtable() {
              srcName = st.nextName();
              dstName = st.nextName();
              startName = st.nextName();
@@ -1698,6 +1852,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
              sWeighted=weighted:string;
              return "success";
       }
+
+
       if (directed!=0) {// for directed graph
           if (weighted!=0) { // for weighted graph
              //var e_weight: [0..Ne-1] int;
@@ -1705,7 +1861,11 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
              var e_weight = makeDistArray(Ne,int);
              var v_weight = makeDistArray(Nv,int);
              rmat_gen();
-             twostep_sort();
+             timer.stop();
+             //writeln("$$$$$$$$$$$$$$$$$ RMAT generate the graph takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
+             timer.start();
+             //twostep_sort();
+             combine_sort();
              set_neighbour();
 
              var ewName ,vwName:string;
@@ -1728,14 +1888,18 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
 
           } else {
              rmat_gen();
-             twostep_sort();
+             timer.stop();
+             //writeln("$$$$$$$$$$$$$$$$$ RMAT generate the graph takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
+             timer.start();
+             //twostep_sort();
+             combine_sort();
              set_neighbour();
              set_common_symtable();
              repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + '+ ' + sWeighted +
                     '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) + 
                     '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) ; 
           }
-      }
+      }// end for directed graph
       else {
           // only for undirected graph, we only declare R variables here
           var srcR=makeDistArray(Ne,int);
@@ -1760,21 +1924,19 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
           //neighbourR=0;
           var srcNameR, dstNameR, startNameR, neiNameR:string;
         
-          proc combine_sortR(){
-
+          proc combine_sortR() throws {
              /* we cannot use the coargsort version because it will break the memory limit */
              param bitsPerDigit = RSLSD_bitsPerDigit;
              var bitWidths: [0..1] int;
              var negs: [0..1] bool;
              var totalDigits: int;
-             var size=Nv: int;
+             var size=Ne: int;
              for (bitWidth, ary, neg) in zip(bitWidths, [srcR,dstR], negs) {
                  (bitWidth, neg) = getBitWidth(ary); 
                  totalDigits += (bitWidth + (bitsPerDigit-1)) / bitsPerDigit;
 
              }
              proc mergedArgsort(param numDigits) throws {
-
                //overMemLimit(((4 + 3) * size * (numDigits * bitsPerDigit / 8))
                //          + (2 * here.maxTaskPar * numLocales * 2**16 * 8));
                var merged = makeDistArray(size, numDigits*uint(bitsPerDigit));
@@ -1794,8 +1956,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                   }
                   mergeArray(int); 
                }
-               var iv = argsortDefault(merged);
-               return iv;
+               var tmpiv = argsortDefault(merged);
+               return tmpiv;
              } 
 
              if totalDigits <=  4 { 
@@ -1809,8 +1971,12 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                ivR = mergedArgsort(16); 
              }
 
+             var tmpedges = srcR[ivR]; 
+             srcR=tmpedges;
+             tmpedges = dstR[ivR]; 
+             dstR=tmpedges;
 
-          }
+          }// end combine_sortR
 
           proc   twostep_sortR() {
              ivR = radixSortLSD_ranks(srcR);
@@ -1842,7 +2008,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                 } 
                 startpos+=1;
              } //end of while startpos
-          }
+          }// end twostep_sort
+
           proc    set_neighbourR(){
              for i in 0..Ne-1 do {
                 neighbourR[srcR[i]]+=1;
@@ -1851,8 +2018,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                 }
              }
              //neighbourR  = lengthR;
-
           }
+
           proc   set_common_symtableR():string throws {
           //proc   set_common_symtableR() {
              srcNameR = st.nextName();
@@ -1873,7 +2040,11 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
 
           if (weighted!=0) {
              rmat_gen();
-             twostep_sort();
+             timer.stop();
+             //writeln("$$$$$$$$$$$$$$$$$ RMAT generate the graph takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
+             timer.start();
+             //twostep_sort();
+             combine_sort();
              set_neighbour();
              coforall loc in Locales  {
                        on loc {
@@ -1885,7 +2056,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
              }
              //srcR = dst;
              //dstR = src;
-             twostep_sortR(); 
+             //twostep_sortR(); 
+             combine_sortR();
              set_neighbourR();
 
              //only for weighted  graph
@@ -1921,7 +2093,11 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
           } else {
 
              rmat_gen();
-             twostep_sort();
+             timer.stop();
+             //writeln("$$$$$$$$$$$$$$$$$ RMAT generate the graph takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
+             timer.start();
+             //twostep_sort();
+             combine_sort();
              set_neighbour();
              coforall loc in Locales  {
                        on loc {
@@ -1933,11 +2109,11 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
              }
              //srcR = dst;
              //dstR = src;
-             twostep_sortR(); 
+             //twostep_sortR(); 
+             combine_sortR();
              set_neighbourR();
              set_common_symtable();
              set_common_symtableR();
-
              repMsg =  sNv + '+ ' + sNe + '+ ' + sDirected + ' +' + sWeighted +
                     '+created ' + st.attrib(srcName)   + '+created ' + st.attrib(dstName) + 
                     '+created ' + st.attrib(startName) + '+created ' + st.attrib(neiName) + 
@@ -1945,15 +2121,17 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                     '+created ' + st.attrib(startNameR) + '+created ' + st.attrib(neiNameR) ; 
 
 
-          }
-      }
+          }// end unweighted graph
+      }// end undirected graph
+      timer.stop();
+      //writeln("$$$$$$$$$$$$$$$$$ sorting RMAT graph takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
       return repMsg;
   }
 
 
   proc segBFSMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
-      var pn = Reflection.getRoutineName();
+      //var pn = Reflection.getRoutineName();
       var repMsg: string;
       //var (n_verticesN,n_edgesN,directedN,weightedN,srcN, dstN, startN, neighbourN,vweightN,eweightN, rootN )
       //    = payload.decode().splitMsgToTuple(10);
@@ -1964,13 +2142,15 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var Directed=directedN:int;
       var Weighted=weightedN:int;
       var depthName:string;
+      var timer:Timer;
+      timer.start();
       var depth=makeDistArray(Nv,int);
       coforall loc in Locales  {
-                       on loc {
+                  on loc {
                            forall i in depth.localSubdomain() {
                                  depth[i]=-1;
                            }       
-                       }
+                  }
       }
       //var depth=-1: [0..Nv-1] int;
       var root:int;
@@ -1978,7 +2158,6 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       var srcRN, dstRN, startRN, neighbourRN:string;
 
       proc bfs_kernel(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int):string throws{
-      //proc bfs_kernel(nei:[?D1] int, start_i:[?D2] int,src:[?D3] int, dst:[?D4] int){
           var cur_level=0;
           var SetCurF=  new DistBag(int,Locales);
           var SetNextF=  new DistBag(int,Locales);
@@ -2048,31 +2227,14 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       }
 
       proc return_depth(): string throws{
-      //proc return_depth(){
           var depthName = st.nextName();
           var depthEntry = try! new shared SymEntry(depth);
           try! st.addEntry(depthName, depthEntry);
-          var tmpstr=try! st.attrib(depthName);
-          var lrepMsg =  'created ' + st.attrib(depthName);
-          return lrepMsg;
-      }
+          //try! st.addEntry(vertexName, vertexEntry);
 
-      proc return_pair():string throws{
-      //proc return_pair(){
-          var vertexValue = radixSortLSD_ranks(depth);
-          var levelValue=depth[vertexValue]; 
-          var levelName = st.nextName();
-          var vertexName = st.nextName();
-          var levelEntry = new shared SymEntry(levelValue);
-          var vertexEntry = new shared SymEntry(vertexValue);
-          try! st.addEntry(levelName, levelEntry);
-          try! st.addEntry(vertexName, vertexEntry);
-          //var tmpstr1=try! st.attrib(levelName);
-          //var tmpstr2=try! st.attrib(vertexName);
-
-          var lrepMsg =  'created ' + st.attrib(levelName) + '+created ' + st.attrib(vertexName) ;
-          //var lrepMsg =  'created ' + tmpstr1 + '+created ' + tmpstr2 ;
-          return lrepMsg;
+          var depMsg =  'created ' + st.attrib(depthName);
+          //var lrepMsg =  'created ' + st.attrib(levelName) + '+created ' + st.attrib(vertexName) ;
+          return depMsg;
 
       }
       //depthName = st.nextName();
@@ -2136,9 +2298,17 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
               repMsg=return_depth();
           }
       }
+      timer.stop();
+      //writeln("$$$$$$$$$$$$$$$$$ graph BFS takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
       return repMsg;
 
   }
+
+
+
+
+
+
 
 
 
