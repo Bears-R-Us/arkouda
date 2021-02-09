@@ -1113,8 +1113,8 @@ def create_pdarray(repMsg : str) -> pdarray:
         itemsize = int(fields[6])
     except Exception as e:
         raise ValueError(e)
-    logger.debug("{} {} {} {} {} {}".format(name, mydtype, size, 
-                                    ndim, shape, itemsize))
+    logger.debug(("created Chapel array with name: {} dtype: {} size: {} ndim: {} shape: {} " +
+                  "itemsize: {}").format(name, mydtype, size, ndim, shape, itemsize))
     return pdarray(name, mydtype, size, ndim, shape, itemsize)
 
 @typechecked

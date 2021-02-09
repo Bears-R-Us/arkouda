@@ -101,9 +101,12 @@ module MsgProcessing
         var (name) = payload.decode().splitMsgToTuple(1);
         
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                               "cmd: %s array: %s".format(cmd,st.attrib(name)));
+                                     "cmd: %s array: %s".format(cmd,st.attrib(name)));
         // delete entry from symbol table
         st.deleteEntry(name);
+        var msg =  "deleted %s".format(name);
+        
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),msg);       
         return try! "deleted %s".format(name);
     }
 
