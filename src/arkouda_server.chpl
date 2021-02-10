@@ -105,7 +105,7 @@ proc main() {
     */
     proc sendRepMsg(repMsg: ?t) where t==string || t==bytes {
         repCount += 1;
-        if logging {
+        if trace {
           if t==bytes {
               asLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
                                                         "repMsg: <binary-data>");
@@ -215,7 +215,7 @@ proc main() {
                 authenticateUser(token);
             }
 
-            if (logging) {
+            if (trace) {
               try {
                 if (cmd != "array") {
                   asLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
@@ -233,7 +233,7 @@ proc main() {
             // If cmd is shutdown, don't bother generating a repMsg
             if cmd == "shutdown" {
                 shutdown(user=user);
-                if (logging) {
+                if (trace) {
                     asLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
                                          "<<< shutdown initiated by %s took %.17r sec".format(user, 
                                                    t1.elapsed() - s0));
@@ -367,25 +367,25 @@ proc main() {
              * log that the request message has been handled and reply message has been sent along with 
              * the time to do so
              */
-            if logging {
+            if trace {
                 asLogger.info(getModuleName(),getRoutineName(),getLineNumber(), 
                                                   "<<< %s took %.17r sec".format(cmd, t1.elapsed() - s0));
             }
-            if (logging && memTrack) {
+            if (trace && memTrack) {
                 asLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
                        "bytes of memory used after command %t".format(memoryUsed():uint * numLocales:uint));
             }
         } catch (e: ErrorWithMsg) {
             sendRepMsg(generateJsonReplyMsg(msg=e.msg,msgType=MsgType.ERROR, msgFormat=MsgFormat.STRING, 
                                                         user=user));
-            if logging {
+            if trace {
                 asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                     "<<< %s resulted in error %s in  %.17r sec".format(cmd, e.msg, t1.elapsed() - s0));
             }
         } catch (e: Error) {
             sendRepMsg(generateJsonReplyMsg(msg=unknownError(e.message()),msgType=MsgType.ERROR, 
                                                          msgFormat=MsgFormat.STRING, user=user));
-            if logging {
+            if trace {
                 asLogger.error(getModuleName(), getRoutineName(), getLineNumber(), 
                     "<<< %s resulted in error: %s in %.17r sec".format(cmd, e.message(),t1.elapsed() - s0));
             }
