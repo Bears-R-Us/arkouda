@@ -352,12 +352,11 @@ class StringTest(ArkoudaTest):
         run_test_ends_with(self.strings, self.test_strings, self.delim)
         
         # Test for expected errors for gremlins delimiters
-        with self.assertRaises(AttributeError):
-            run_test_ends_with(self.gremlins_strings, self.test_strings, ' ')       
-        with self.assertRaises(AttributeError):
-            run_test_ends_with(self.gremlins_strings, self.test_strings, '')     
-        with self.assertRaises(AttributeError):
-            run_test_ends_with(self.gremlins_strings, self.test_strings, '"') 
+        run_test_ends_with(self.gremlins_strings, self.gremlins_test_strings, ' ')        
+        run_test_ends_with(self.gremlins_strings, self.gremlins_test_strings, '"')
+        with self.assertRaises(AssertionError):
+            self.assertFalse(run_test_ends_with(self.gremlins_strings, 
+                                            self.gremlins_test_strings, ''))
     
     def test_ends_with_delimiter_match(self):
         strings = ak.array(['string{} '.format(i) for i in range(0,5)])
