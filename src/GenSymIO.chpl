@@ -1635,25 +1635,20 @@ module GenSymIO {
               warnFlag = false;
           }
 
-          for loc in 0..#A.targetLocales().size {
-              /*
-               * When done with a coforall over locales, only locale 0's file gets created
-               * correctly, whereas hhe other locales' files have corrupted headers.
-               */
-              //filenames[loc] = try! "%s_LOCALE%s%s".format(prefix, loc:string, extension);
+          coforall loc in A.targetLocales() do on loc {
               var file_id: C_HDF5.hid_t;
 
               gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                              "Creating or truncating file");
 
-              file_id = C_HDF5.H5Fcreate(filenames[loc].c_str(), C_HDF5.H5F_ACC_TRUNC,
+              file_id = C_HDF5.H5Fcreate(filenames[loc.id].localize().c_str(), C_HDF5.H5F_ACC_TRUNC,
                                                         C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
               
               prepareGroup(file_id, group);
 
               if file_id < 0 { // Negative file_id means error
                   throw getErrorWithContext(
-                                    msg="The file %s does not exist".format(filenames[loc]),
+                                    msg="The file %s does not exist".format(filenames[loc.id]),
                                     lineNumber=getLineNumber(), 
                                     routineName=getRoutineName(), 
                                     moduleName=getModuleName(), 
@@ -1736,23 +1731,18 @@ module GenSymIO {
               warnFlag = false;
           }
 
-          for loc in 0..#A.targetLocales().size {
-              /*
-               * When done with a coforall over locales, only locale 0's file gets created
-               * correctly, whereas hhe other locales' files have corrupted headers.
-               */
-              //filenames[loc] = try! "%s_LOCALE%s%s".format(prefix, loc:string, extension);
+          coforall loc in A.targetLocales() do on loc {
               var file_id: C_HDF5.hid_t;
 
               gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                               "Creating or truncating file");
 
-              file_id = C_HDF5.H5Fcreate(filenames[loc].c_str(), C_HDF5.H5F_ACC_TRUNC,
+              file_id = C_HDF5.H5Fcreate(filenames[loc.id].localize().c_str(), C_HDF5.H5F_ACC_TRUNC,
                                                       C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
 
               if file_id < 0 { // Negative file_id means error
                   throw getErrorWithContext(
-                                     msg="The file %s does not exist".format(filenames[loc]),
+                                     msg="The file %s does not exist".format(filenames[loc.id]),
                                      lineNumber=getLineNumber(), 
                                      routineName=getRoutineName(), 
                                      moduleName=getModuleName(), 
