@@ -187,7 +187,7 @@ def run_test_peel(strings, test_strings, delim):
         ltest, rtest = rmunge(triples, inc, part)
         assert((ltest == ls.to_ndarray()).all() and (rtest == rs.to_ndarray()).all())
 
-def run_test_stick(strings, test_strings, base_words, delim):
+def run_test_stick(strings, test_strings, base_words, delim, N):
     test_strings2 = np.random.choice(base_words.to_ndarray(), N, replace=True)
     strings2 = ak.array(test_strings2)
     stuck = strings.stick(strings2, delimiter=delim).to_ndarray()
@@ -350,10 +350,10 @@ class StringTest(ArkoudaTest):
 
     def test_ends_with(self):
         run_test_ends_with(self.strings, self.test_strings, self.delim)
-        
-        # Test for expected errors for gremlins delimiters
         run_test_ends_with(self.gremlins_strings, self.gremlins_test_strings, ' ')        
         run_test_ends_with(self.gremlins_strings, self.gremlins_test_strings, '"')
+
+        # Test for expected errors for gremlins delimiters
         with self.assertRaises(AssertionError):
             self.assertFalse(run_test_ends_with(self.gremlins_strings, 
                                             self.gremlins_test_strings, ''))
@@ -421,15 +421,13 @@ class StringTest(ArkoudaTest):
         # Passing in '"' or ' ' as a delimiter causes the Arkouda server to hang
 
     def test_stick(self):
-        run_test_stick(self.strings, self.test_strings, self.base_words, self.delim)
- 
-        # Test for expected errors for gremlins delimiters    
-        with self.assertRaises(RuntimeError):   
-            run_test_stick(self.gremlins_strings, self.gremlins_test_strings, self.base_words, ' ')
-        with self.assertRaises(RuntimeError):   
-            run_test_stick(self.gremlins_strings, self.gremlins_test_strings, self.base_words, '')
-        with self.assertRaises(RuntimeError):   
-            run_test_stick(self.gremlins_strings, self.gremlins_test_strings, self.base_words, '"')
+        run_test_stick(self.strings, self.test_strings, self.base_words, self.delim, 100)
+        run_test_stick(self.gremlins_strings, self.gremlins_test_strings, 
+                       self.gremlins_base_words, ' ', 103) 
+        run_test_stick(self.gremlins_strings, self.gremlins_test_strings, 
+                       self.gremlins_base_words, '', 103)  
+        run_test_stick(self.gremlins_strings, self.gremlins_test_strings, 
+                       self.gremlins_base_words, '"', 103)
         
     def test_str_output(self):
         strings = ak.array(['string {}'.format(i) for i in range (0,101)])
