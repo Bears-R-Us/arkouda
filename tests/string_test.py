@@ -358,7 +358,20 @@ class StringTest(ArkoudaTest):
             run_test_ends_with(self.gremlins_strings, self.test_strings, '')     
         with self.assertRaises(AttributeError):
             run_test_ends_with(self.gremlins_strings, self.test_strings, '"') 
+    
+    def test_ends_with_delimiter_match(self):
+        strings = ak.array(['string{} '.format(i) for i in range(0,5)])
+        self.assertTrue((strings.endswith(' ').to_ndarray()).all())
         
+        strings = ak.array(['string{}"'.format(i) for i in range(0,5)])
+        self.assertTrue((strings.endswith('"').to_ndarray()).all())
+
+        strings = ak.array(['string{}$'.format(i) for i in range(0,5)])
+        self.assertTrue((strings.endswith('$').to_ndarray()).all())   
+        
+        strings = ak.array(['string{}yyz'.format(i) for i in range(0,5)])
+        self.assertTrue((strings.endswith('z').to_ndarray()).all())        
+    
     def test_error_handling(self):
         stringsOne = ak.random_strings_uniform(1, 10, UNIQUE, 
                                             characters='printable')
