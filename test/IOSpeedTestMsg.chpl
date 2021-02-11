@@ -17,7 +17,7 @@ proc main() {
     d.start();
     var cmd = "tohdf";
     var payload = "A array 0 [\"file\"] int64";
-    tohdfMsg(cmd, payload.encode(), st);
+    tohdfMsg(cmd, payload, st);
     d.stop(printTime=false);
     if printTimes then writeln("write: %.2dr GiB/s (%.2drs)".format(GiB/d.elapsed(), d.elapsed()));
   }
@@ -26,7 +26,7 @@ proc main() {
     d.start();
     var cmd = "readAllHdf";
     var payload = "True 1 1 [\"array\"] | [\"file_LOCALE*\"]";
-    var repMsg = readAllHdfMsg(cmd, payload.encode(), st);
+    var repMsg = readAllHdfMsg(cmd, payload, st);
     var B = toSymEntry(st.lookup(parseName(repMsg)), int);
     d.stop(printTime=false);
     if printTimes then writeln("read: %.2dr GiB/s (%.2drs)".format(GiB/d.elapsed(), d.elapsed()));

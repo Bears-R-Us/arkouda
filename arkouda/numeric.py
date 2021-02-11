@@ -62,8 +62,9 @@ def cast(pda : Union[pdarray, Strings], dt: Union[np.dtype,str]) -> Union[pdarra
 
     dt = _as_dtype(dt)
     opt = ""
-    msg = "cast {} {} {} {}".format(name, objtype, dt.name, opt)
-    repMsg = generic_msg(msg)
+    cmd = "cast"
+    args= "{} {} {} {}".format(name, objtype, dt.name, opt)
+    repMsg = generic_msg(cmd=cmd,args=args)
     if dt.name.startswith("str"):
         return Strings(*(type_cast(str,repMsg).split("+")))
     else:
@@ -96,7 +97,7 @@ def abs(pda : pdarray) -> pdarray:
     >>> ak.abs(ak.linspace(-5,-1,5))
     array([5, 4, 3, 2, 1])    
     """
-    repMsg = generic_msg("efunc {} {}".format("abs", pda.name))
+    repMsg = generic_msg(cmd="efunc", args="{} {}".format("abs", pda.name))
     return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
@@ -136,7 +137,7 @@ def log(pda : pdarray) -> pdarray:
     >>> ak.log(A) / np.log(2)
     array([0, 3.3219280948873626, 6.6438561897747253])
     """
-    repMsg = generic_msg("efunc {} {}".format("log", pda.name))
+    repMsg = generic_msg(cmd="efunc", args="{} {}".format("log", pda.name))
     return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
@@ -168,7 +169,7 @@ def exp(pda : pdarray) -> pdarray:
     array([11.84010843172504, 46.454368507659211, 5.5571769623557188, 
            33.494295836924771, 13.478894913238722])
     """
-    repMsg = generic_msg("efunc {} {}".format("exp", pda.name))
+    repMsg = generic_msg(cmd="efunc", args="{} {}".format("exp", pda.name))
     return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
@@ -206,7 +207,7 @@ def cumsum(pda : pdarray) -> pdarray:
     >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool))
     array([0, 1, 1, 2, 3])
     """
-    repMsg = generic_msg("efunc {} {}".format("cumsum", pda.name))
+    repMsg = generic_msg(cmd="efunc", args="{} {}".format("cumsum", pda.name))
     return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
@@ -241,7 +242,7 @@ def cumprod(pda : pdarray) -> pdarray:
     array([1.5728783400481925, 7.0472855509390593, 33.78523998586553, 
            134.05309592737584, 450.21589865655358])
     """
-    repMsg = generic_msg("efunc {} {}".format("cumprod", pda.name))
+    repMsg = generic_msg(cmd="efunc", args="{} {}".format("cumprod", pda.name))
     return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
@@ -264,7 +265,7 @@ def sin(pda : pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    repMsg = generic_msg("efunc {} {}".format("sin",pda.name))
+    repMsg = generic_msg(cmd="efunc", args="{} {}".format("sin",pda.name))
     return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
@@ -287,7 +288,7 @@ def cos(pda : pdarray) -> pdarray:
     TypeError
         Raised if the parameter is not a pdarray
     """
-    repMsg = type_cast(str, generic_msg("efunc {} {}".format("cos",pda.name)))
+    repMsg = type_cast(str, generic_msg(cmd="efunc", args="{} {}".format("cos",pda.name)))
     return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
@@ -355,21 +356,21 @@ def where(condition : pdarray, A : Union[Union[int,float,np.int64], pdarray],
                                       (not isSupportedNumber(B) and not isinstance(B,pdarray)):
         raise TypeError('both A and B must be an int, np.int64, float, np.float64, or pdarray')
     if isinstance(A, pdarray) and isinstance(B, pdarray):
-        repMsg = generic_msg("efunc3vv {} {} {} {}".\
+        repMsg = generic_msg(cmd="efunc3vv", args="{} {} {} {}".\
                              format("where",
                                     condition.name,
                                     A.name,
                                     B.name))
     # For scalars, try to convert it to the array's dtype
     elif isinstance(A, pdarray) and np.isscalar(B):
-        repMsg = generic_msg("efunc3vs {} {} {} {} {}".\
+        repMsg = generic_msg(cmd="efunc3vs", args="{} {} {} {} {}".\
                              format("where",
                                     condition.name,
                                     A.name,
                                     A.dtype.name,
                                     A.format_other(B)))
     elif isinstance(B, pdarray) and np.isscalar(A):
-        repMsg = generic_msg("efunc3sv {} {} {} {} {}".\
+        repMsg = generic_msg(cmd="efunc3sv", args="{} {} {} {} {}".\
                              format("where",
                                     condition.name,
                                     B.dtype.name,
@@ -397,7 +398,7 @@ def where(condition : pdarray, A : Union[Union[int,float,np.int64], pdarray],
         else:
             raise TypeError(("Cannot cast between scalars {} and {} to " +
                             "supported dtype").format(A, B))
-        repMsg = generic_msg("efunc3ss {} {} {} {} {} {}".\
+        repMsg = generic_msg(cmd="efunc3ss", args="{} {} {} {} {} {}".\
                              format("where",
                                     condition.name,
                                     dt,
@@ -461,7 +462,7 @@ def histogram(pda : pdarray, bins : Union[int,np.int64]=10) -> pdarray:
     """
     if bins < 1:
         raise ValueError('bins must be 1 or greater')
-    repMsg = generic_msg("histogram {} {}".format(pda.name, bins))
+    repMsg = generic_msg(cmd="histogram", args="{} {}".format(pda.name, bins))
     return create_pdarray(type_cast(str,repMsg))
 
 @typechecked

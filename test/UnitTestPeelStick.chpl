@@ -129,7 +129,7 @@ proc testMessageLayer(substr, n, minLen, maxLen) throws {
   d.stop("make_strings");
   var reqMsg = "peel str %s %s str 1 True True True %jt".format(strings.offsetName, strings.valueName, [substr]);
   writeReq(reqMsg);
-  var repMsg = segmentedPeelMsg(cmd="segmentedPeel", payload=reqMsg.encode(), st);
+  var repMsg = segmentedPeelMsg(cmd="segmentedPeel", payload=reqMsg, st);
   writeRep(repMsg);
   var (loAttribs,lvAttribs,roAttribs,rvAttribs) = repMsg.splitMsgToTuple('+', 4);
   var loname = parseName(loAttribs);
@@ -138,7 +138,7 @@ proc testMessageLayer(substr, n, minLen, maxLen) throws {
   var rvname = parseName(rvAttribs);
   reqMsg = "stick str %s %s str %s %s False %jt".format(loname, lvname, roname, rvname, [""]);
   writeReq(reqMsg);
-  repMsg = segBinopvvMsg(cmd="segBinopvv", payload=reqMsg.encode(), st);
+  repMsg = segBinopvvMsg(cmd="segBinopvv", payload=reqMsg, st);
   writeRep(repMsg);
   var (rtoAttribs,rtvAttribs) = repMsg.splitMsgToTuple('+', 2);
   var rtoname = parseName(rtoAttribs);

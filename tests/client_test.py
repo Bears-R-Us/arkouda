@@ -4,6 +4,7 @@ from context import arkouda as ak
 '''
 Tests basic Arkouda client functionality
 '''
+from util.test.util import start_arkouda_server
 class ClientTest(ArkoudaTest):
     
     def test_client_connected(self):
@@ -32,11 +33,21 @@ class ClientTest(ArkoudaTest):
         self.assertTrue(ak.client.connected)
         
     def test_disconnect_on_disconnected_client(self):
-        
+        '''
+        Tests the ak.disconnect() method invoked on a client that is already
+        disconnect to ensure there is no error
+        '''
         ak.disconnect()
         self.assertFalse(ak.client.connected)
         ak.disconnect()
         ak.connect(server=ArkoudaTest.server, port=ArkoudaTest.port)
+        
+    def test_shutdown(self):
+        '''
+        Tests the ak.shutdown() method
+        '''
+        ak.shutdown()
+        start_arkouda_server(numlocales=1)
         
     def test_client_get_config(self):
         '''

@@ -39,11 +39,11 @@ module ArraySetopsMsg
     :type st: borrowed SymTab
     :returns: (string) response message
     */
-    proc intersect1dMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc intersect1dMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (name, name2, assume_unique) = payload.decode().splitMsgToTuple(3);
+        var (name, name2, assume_unique) = payload.splitMsgToTuple(3);
         var isUnique = stringtobool(assume_unique);
         
         var vname = st.nextName();
@@ -89,11 +89,11 @@ module ArraySetopsMsg
     :type st: borrowed SymTab
     :returns: (string) response message
     */
-    proc setxor1dMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc setxor1dMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (name, name2, assume_unique) = payload.decode().splitMsgToTuple(3);
+        var (name, name2, assume_unique) = payload.splitMsgToTuple(3);
         var isUnique = stringtobool(assume_unique);
 
         var vname = st.nextName();
@@ -139,11 +139,11 @@ module ArraySetopsMsg
     :type st: borrowed SymTab
     :returns: (string) response message
     */
-    proc setdiff1dMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc setdiff1dMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (name, name2, assume_unique) = payload.decode().splitMsgToTuple(3);
+        var (name, name2, assume_unique) = payload.splitMsgToTuple(3);
         var isUnique = stringtobool(assume_unique);
 
         var vname = st.nextName();
@@ -189,11 +189,11 @@ module ArraySetopsMsg
     :type st: borrowed SymTab
     :returns: (string) response message
     */
-    proc union1dMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc union1dMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string; // response message
         // split request into fields
-      var (name, name2) = payload.decode().splitMsgToTuple(2);
+      var (name, name2) = payload.splitMsgToTuple(2);
 
       var vname = st.nextName();
 

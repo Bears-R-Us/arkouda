@@ -35,11 +35,11 @@ module FindSegmentsMsg
     :throws: `UndefinedSymbolError(name)`
 
     */
-    proc findSegmentsMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc findSegmentsMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (pname, nkeysStr, rest) = payload.decode().splitMsgToTuple(3);
+        var (pname, nkeysStr, rest) = payload.splitMsgToTuple(3);
         var nkeys = nkeysStr:int; // number of key arrays
         var fields = rest.split(); // split request into fields
         if (fields.size != 2*nkeys) { 

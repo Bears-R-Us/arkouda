@@ -225,11 +225,11 @@ module JoinEqWithDTMsg
        pred: is the dt-predicate ("absDT","posDT","trueDT")
        resLimit: is how many answers can you tolerate ;-)
     */
-    proc joinEqWithDTMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc joinEqWithDTMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var (a1_name, g2Seg_name, g2Ukeys_name, g2Perm_name, t1_name,
-             t2_name, dtStr, predStr, resLimitStr) = payload.decode().splitMsgToTuple(9);
+             t2_name, dtStr, predStr, resLimitStr) = payload.splitMsgToTuple(9);
         var dt = try! dtStr:int;
         var pred = predStr:int;
         var resLimit = try! resLimitStr:int;
