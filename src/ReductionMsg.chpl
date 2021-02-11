@@ -388,7 +388,8 @@ module ReductionMsg
        and then reduce over each chunk using the operator <Op>. The return array 
        of reduced values is the same size as <segments>.
      */
-    proc segSum(values:[] ?t, segments:[?D] int, skipNan=false): [D] t {
+    proc segSum(values:[] ?intype, segments:[?D] int, skipNan=false) {
+      type t = if intype == bool then int else intype;
       var res: [D] t;
       if (D.size == 0) { return res; }
       var cumsum;
@@ -400,42 +401,43 @@ module ReductionMsg
         cumsum = + scan values;
       }
       // Iterate over segments
-      forall (i, r) in zip(D, res) {
+      var rightvals: [D] t;
+      forall (i, r) in zip(D, rightvals) with (var agg = newSrcAggregator(t)) {
         // Find the segment boundaries
-        var vl: t, vr: t;
-        if (i > D.low) {
-          vl = cumsum[segments[i] - 1]:t;
-        }
+        /* if (i > D.low) { */
+        /*   agg.copy(vl, cumsum[segments[i] - 1]); */
+        /* } */
         if (i == D.high) {
-          vr = cumsum[values.domain.high]:t;
+          agg.copy(r, cumsum[values.domain.high]);
         } else {
-          vr = cumsum[segments[i+1] -1]:t;
+          agg.copy(r, cumsum[segments[i+1] - 1]);
         }
-        r = vr - vl;
       }
+      res[D.low] = rightvals[D.low];
+      res[D.low+1..] = rightvals[D.low+1..] - rightvals[..D.high-1];
       return res;
     }
 
-    proc segSum(values:[] bool, segments:[?D] int): [D] int {
-      var res: [D] int;
-      if (D.size == 0) { return res; }
-      var cumsum = + scan values;
-      // Iterate over segments
-      forall (i, r) in zip(D, res) {
-        // Find the values to the left of the segment boundaries
-        var vl: int, vr: int;
-        if (i > D.low) {
-          vl = cumsum[segments[i] - 1];
-        }
-        if (i == D.high) {
-          vr = cumsum[values.domain.high];
-        } else {
-          vr = cumsum[segments[i+1] -1];
-        }
-        r = vr - vl;
-      }
-      return res;
-    }
+    /* proc segSum(values:[] bool, segments:[?D] int): [D] int { */
+    /*   var res: [D] int; */
+    /*   if (D.size == 0) { return res; } */
+    /*   var cumsum = + scan values; */
+    /*   // Iterate over segments */
+    /*   forall (i, r) in zip(D, res) { */
+    /*     // Find the values to the left of the segment boundaries */
+    /*     var vl: int, vr: int; */
+    /*     if (i > D.low) { */
+    /*       vl = cumsum[segments[i] - 1]; */
+    /*     } */
+    /*     if (i == D.high) { */
+    /*       vr = cumsum[values.domain.high]; */
+    /*     } else { */
+    /*       vr = cumsum[segments[i+1] -1]; */
+    /*     } */
+    /*     r = vr - vl; */
+    /*   } */
+    /*   return res; */
+    /* } */
 
     proc segProduct(values:[] ?t, segments:[?D] int, skipNan=false): [D] real {
       /* Compute the product of values in each segment. The logic here 
@@ -496,11 +498,11 @@ module ReductionMsg
         
         // find cumulative nans at segment boundaries
         var segnans: [D] int;
-        forall si in D {
+        forall (si, sn) in zip(D, segnans) with (var agg = newSrcAggregator(int)) {
           if si == D.high {
-              segnans[si] = cumnans[cumnans.domain.high];
+              agg.copy(sn, cumnans[cumnans.domain.high]; 
           } else {
-              segnans[si] = cumnans[segments[si+1]-1];
+              agg.copy(sn, cumnans[segments[si+1]-1]);
           }
         }
         
@@ -537,7 +539,7 @@ module ReductionMsg
         kv = [(k, v) in zip(keys, values)] (-k, v);
       }
       var cummin = min scan kv;
-      forall (i, r, low) in zip(D, res, segments) {
+      forall (i, r, low) in zip(D, res, segments) with (var agg = newSrcAggregator(t)) {
         var vi: int;
         if (i < D.high) {
           vi = segments[i+1] - 1;
@@ -545,7 +547,7 @@ module ReductionMsg
           vi = values.domain.high;
         }
         if (vi >= low) {
-          (_,r) = cummin[vi];
+          agg.copy(r, cummin[vi][1]);
         }
       }
       return res;
@@ -564,7 +566,7 @@ module ReductionMsg
       }
       var cummax = max scan kv;
       
-      forall (i, r, low) in zip(D, res, segments) {
+      forall (i, r, low) in zip(D, res, segments) with (var agg = newSrcAggregator(t)) {
         var vi: int;
         if (i < D.high) {
           vi = segments[i+1] - 1;
@@ -572,7 +574,7 @@ module ReductionMsg
           vi = values.domain.high;
         }
         if (vi >= low) {
-          (_,r) = cummax[vi];
+          agg.copy(r, cummax[vi][1]);
         }
       }
       return res;
@@ -585,7 +587,8 @@ module ReductionMsg
       var keys = expandKeys(vD, segments);
       var kvi = [(k, v, i) in zip(keys, values, vD)] ((-k, v), i);
       var cummin = minloc scan kvi;
-      forall (l, v, low, i) in zip(locs, vals, segments, D) {
+      forall (l, v, low, i) in zip(locs, vals, segments, D)
+        with (var locagg = newSrcAggregator(int), valagg = newSrcAggregator(t)) {
         var vi: int;
         if (i < D.high) {
           vi = segments[i+1] - 1;
@@ -593,8 +596,10 @@ module ReductionMsg
           vi = values.domain.high;
         }
         if (vi >= low) {
-          ((_,v),_) = cummin[vi];
-          (_    ,l) = cummin[vi];
+          // ((_,v),_) = cummin[vi];
+          valagg.copy(v, cummin[vi][0][1]);
+          // (_    ,l) = cummin[vi];
+          locagg.copy(l, cummin[vi][1]);
         }
       }
       return (vals, locs);
@@ -607,7 +612,8 @@ module ReductionMsg
       var keys = expandKeys(vD, segments);
       var kvi = [(k, v, i) in zip(keys, values, vD)] ((k, v), i);
       var cummax = maxloc scan kvi;
-      forall (l, v, low, i) in zip(locs, vals, segments, D) {
+      forall (l, v, low, i) in zip(locs, vals, segments, D)
+        with (var locagg = newSrcAggregator(int), valagg = newSrcAggregator(t)) {
         var vi: int;
         if (i < D.high) {
           vi = segments[i+1] - 1;
@@ -615,8 +621,10 @@ module ReductionMsg
           vi = values.domain.high;
         }
         if (vi >= low) {
-          ((_,v),_) = cummax[vi];
-          (_,    l) = cummax[vi];
+          // ((_,v),_) = cummax[vi];
+          valagg.copy(v, cummax[vi][0][1]);
+          // (_,    l) = cummax[vi];
+          locagg.copy(l, cummax[vi][1]);
         }
       }
       return (vals, locs);
@@ -625,30 +633,17 @@ module ReductionMsg
     proc segAny(values:[] bool, segments:[?D] int): [D] bool {
       var res: [D] bool;
       if (D.size == 0) { return res; }
-      forall (r, low, i) in zip(res, segments, D) {
-        var high: int;
-        if (i < D.high) {
-          high = segments[i+1] - 1;
-        } else {
-          high = values.domain.high;
-        }
-        r = || reduce values[low..high];
-      }
+      const sums = segSum(values, segments);
+      res = (sums > 0);
       return res;
     }
 
     proc segAll(values:[] bool, segments:[?D] int): [D] bool {
       var res: [D] bool;
       if (D.size == 0) { return res; }
-      forall (r, low, i) in zip(res, segments, D) {
-        var high: int;
-        if (i < D.high) {
-          high = segments[i+1] - 1;
-        } else {
-          high = values.domain.high;
-        }
-        r = && reduce values[low..high];
-      }
+      const sums = segSum(values, segments);
+      const lengths = segCount(segments, values.domain.high + 1);
+      res = (sums == lengths);
       return res;
     }
 
