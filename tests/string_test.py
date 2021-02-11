@@ -332,9 +332,10 @@ class StringTest(ArkoudaTest):
         run_test_groupby(self.strings, self.cat, self.akset)
 
     def test_index(self):
-        run_test_index(self.strings, self.test_strings, self.cat, range(-len(self.gremlins), 0))
-        run_test_index(self.gremlins_strings, self.gremlins_test_strings, self.gremlins_cat, 
+        run_test_index(self.strings, self.test_strings, self.cat, 
                        range(-len(self.gremlins), 0))
+        run_test_index(self.gremlins_strings, self.gremlins_test_strings, 
+                       self.gremlins_cat, range(-len(self.gremlins), 0))
         
     def test_slice(self):
         run_test_slice(self.strings, self.test_strings, self.cat)
@@ -350,10 +351,10 @@ class StringTest(ArkoudaTest):
 
     def test_ends_with(self):
         run_test_ends_with(self.strings, self.test_strings, self.delim)
+
+        # Test gremlins delimiters
         run_test_ends_with(self.gremlins_strings, self.gremlins_test_strings, ' ')        
         run_test_ends_with(self.gremlins_strings, self.gremlins_test_strings, '"')
-
-        # Test for expected errors for gremlins delimiters
         with self.assertRaises(AssertionError):
             self.assertFalse(run_test_ends_with(self.gremlins_strings, 
                                             self.gremlins_test_strings, ''))
@@ -415,13 +416,16 @@ class StringTest(ArkoudaTest):
     def test_peel(self):
         run_test_peel(self.strings, self.test_strings, self.delim)
         
-        # Test for expected errors for gremlins delimiters 
+        # Test gremlins delimiters 
         with self.assertRaises(ValueError):
             run_test_peel(self.gremlins_strings, self.gremlins_test_strings, '')  
-        # Passing in '"' or ' ' as a delimiter causes the Arkouda server to hang
+        run_test_peel(self.gremlins_strings, self.gremlins_test_strings, '"')  
+        run_test_peel(self.gremlins_strings, self.gremlins_test_strings, ' ') 
 
     def test_stick(self):
         run_test_stick(self.strings, self.test_strings, self.base_words, self.delim, 100)
+        
+        # Test gremlins delimiters 
         run_test_stick(self.gremlins_strings, self.gremlins_test_strings, 
                        self.gremlins_base_words, ' ', 103) 
         run_test_stick(self.gremlins_strings, self.gremlins_test_strings, 
