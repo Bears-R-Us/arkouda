@@ -500,9 +500,9 @@ module ReductionMsg
         var segnans: [D] int;
         forall (si, sn) in zip(D, segnans) with (var agg = newSrcAggregator(int)) {
           if si == D.high {
-              agg.copy(sn, cumnans[cumnans.domain.high]; 
+            agg.copy(sn, cumnans[cumnans.domain.high]); 
           } else {
-              agg.copy(sn, cumnans[segments[si+1]-1]);
+            agg.copy(sn, cumnans[segments[si+1]-1]);
           }
         }
         
@@ -588,7 +588,7 @@ module ReductionMsg
       var kvi = [(k, v, i) in zip(keys, values, vD)] ((-k, v), i);
       var cummin = minloc scan kvi;
       forall (l, v, low, i) in zip(locs, vals, segments, D)
-        with (var locagg = newSrcAggregator(int), valagg = newSrcAggregator(t)) {
+        with (var locagg = newSrcAggregator(int), var valagg = newSrcAggregator(t)) {
         var vi: int;
         if (i < D.high) {
           vi = segments[i+1] - 1;
@@ -613,7 +613,7 @@ module ReductionMsg
       var kvi = [(k, v, i) in zip(keys, values, vD)] ((k, v), i);
       var cummax = maxloc scan kvi;
       forall (l, v, low, i) in zip(locs, vals, segments, D)
-        with (var locagg = newSrcAggregator(int), valagg = newSrcAggregator(t)) {
+        with (var locagg = newSrcAggregator(int), var valagg = newSrcAggregator(t)) {
         var vi: int;
         if (i < D.high) {
           vi = segments[i+1] - 1;
