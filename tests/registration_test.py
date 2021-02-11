@@ -64,7 +64,7 @@ class RegistrationTest(ArkoudaTest):
                                       aar_array.to_ndarray()).all())
         
         ak.disconnect()
-        ak.connect()
+        ak.connect(server=ArkoudaTest.server, port=ArkoudaTest.port)
         aar_array = ak.attach_pdarray('test_int64_a')
         
         self.assertEqual(ar_array.name, aar_array.name)
