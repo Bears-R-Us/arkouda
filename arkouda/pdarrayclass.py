@@ -1874,9 +1874,4 @@ def unregister_pdarray(pda : Union[str,pdarray]) -> None:
         repMsg = generic_msg(cmd="unregister", args="{}".format(pda.name))
 
     if isinstance(pda, str):
-<<<<<<< HEAD
-        repMsg = generic_msg("unregister {}".format(pda))
-    logger.debug(repMsg)
-=======
         repMsg = generic_msg(cmd="unregister", args="{}".format(pda))
->>>>>>> 52d639ab899aa48050955e4b1351a6a36d819620
