@@ -11,8 +11,8 @@ module BroadcastMsg {
    * full size of the array, optionally applying a permutation
    * to return the result in the order of the original array.
    */
-  proc broadcastMsg(cmd: string, payload: bytes, st: borrowed SymTab) throws {
-    var (permName, segName, valName, usePermStr, sizeStr) = payload.decode().splitMsgToTuple(5);
+  proc broadcastMsg(cmd: string, payload: string, st: borrowed SymTab) throws {
+    var (permName, segName, valName, usePermStr, sizeStr) = payload.splitMsgToTuple(5);
     const size = sizeStr: int;
     // Segments must be an int64 array
     const gs = st.lookup(segName);

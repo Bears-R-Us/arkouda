@@ -24,7 +24,7 @@ def ls_hdf(filename : str) -> str:
     str
         The string output of `h5ls <filename>` from the server
     """
-    return cast(str,generic_msg("lshdf {}".format(json.dumps([filename]))))
+    return cast(str,generic_msg(cmd="lshdf", args="{}".format(json.dumps([filename]))))
 
 @typechecked
 def read_hdf(dsetName : str, filenames : Union[str,List[str]],
@@ -155,7 +155,7 @@ def read_all(filenames : Union[str,List[str]],
     if iterative == True: # iterative calls to server readhdf
         return {dset:read_hdf(dset, filenames, strictTypes=strictTypes) for dset in datasets}
     else:  # single call to server readAllHdf
-        rep_msg = generic_msg("readAllHdf {} {:n} {:n} {} | {}".\
+        rep_msg = generic_msg(cmd="readAllHdf", args="{} {:n} {:n} {} | {}".\
                 format(strictTypes, len(datasets), len(filenames), json.dumps(datasets), 
                        json.dumps(filenames)))
         if ',' in rep_msg:

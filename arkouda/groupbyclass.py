@@ -143,12 +143,11 @@ class GroupBy:
                 keyobjs.append(k)
                 keynames.append(k.name)
                 keytypes.append(k.objtype)
-        reqMsg = "{} {} {:n} {} {}".format(cmd,
-                                             self.permutation.name,
-                                             effectiveKeys,
-                                             ' '.join(keynames),
-                                             ' '.join(keytypes))
-        repMsg = generic_msg(message=cast(str,reqMsg))
+        args = "{} {:n} {} {}".format(self.permutation.name,
+                                           effectiveKeys,
+                                           ' '.join(keynames),
+                                           ' '.join(keytypes))
+        repMsg = generic_msg(cmd=cmd,args=args)
         segAttr, uniqAttr = cast(str,repMsg).split("+")
         self.logger.debug('{},{}'.format(segAttr, uniqAttr))
         self.segments = cast(pdarray, create_pdarray(repMsg=cast(str,segAttr)))
@@ -190,8 +189,8 @@ class GroupBy:
         array([1, 2, 4, 3])        
         '''
         cmd = "countReduction"
-        reqMsg = "{} {} {}".format(cmd, cast(pdarray, self.segments).name, self.size)
-        repMsg = cast(str, generic_msg(reqMsg))
+        args = "{} {}".format(cast(pdarray, self.segments).name, self.size)
+        repMsg = generic_msg(cmd=cmd, args=args)
         self.logger.debug(repMsg)
         return self.unique_keys, create_pdarray(repMsg)
     
@@ -252,14 +251,14 @@ class GroupBy:
             permuted_values = values
         else:
             permuted_values = values[cast(pdarray, self.permutation)]
-        cmd = "segmentedReduction"
 
-        reqMsg = "{} {} {} {} {}".format(cmd,
+        cmd = "segmentedReduction"
+        args = "{} {} {} {} {}".format(cmd,
                                          permuted_values.name,
                                          self.segments.name,
                                          operator,
                                          skipna)
-        repMsg = generic_msg(reqMsg)
+        repMsg = generic_msg(cmd,args)
         self.logger.debug(repMsg)
         if operator.startswith('arg'):
             return (self.unique_keys, 
@@ -785,12 +784,13 @@ class GroupBy:
         """
         if values.size != self.segments.size:
             raise ValueError("Must have one value per segment")
-        msg = "broadcast {} {} {} {} {}".format(self.permutation.name,
+        cmd = "broadcast"
+        args = "{} {} {} {} {}".format(self.permutation.name,
                                                 self.segments.name,
                                                 values.name,
                                                 permute,
                                                 self.size)
-        repMsg = generic_msg(msg)
+        repMsg = generic_msg(cmd=cmd,args=args)
         return create_pdarray(repMsg)
 
 def broadcast(segments : pdarray, values : pdarray, size : Union[int,np.int64]=-1,
@@ -810,10 +810,11 @@ def broadcast(segments : pdarray, values : pdarray, size : Union[int,np.int64]=-
         size = permutation.size
     if size < 1:
         raise ValueError("result size must be greater than zero")
-    msg = "broadcast {} {} {} {} {}".format(pname,
+    cmd = "broadcast"
+    args = "{} {} {} {} {}".format(pname,
                                             segments.name,
                                             values.name,
                                             permute,
                                             size)
-    repMsg = generic_msg(msg)
+    repMsg = generic_msg(cmd=cmd,args=args)
     return create_pdarray(repMsg)

@@ -152,15 +152,17 @@ class Strings:
             if self.size != other.size:
                 raise ValueError("Strings: size mismatch {} {}".\
                                  format(self.size, other.size))
-            msg = "segmentedBinopvv {} {} {} {} {} {} {}".format(op,
-                                                                 self.objtype,
-                                                                 self.offsets.name,
-                                                                 self.bytes.name,
-                                                                 other.objtype,
-                                                                 other.offsets.name,
-                                                                 other.bytes.name)
+            cmd = "segmentedBinopvv"
+            args = "{} {} {} {} {} {} {}".format(op,
+                                                 self.objtype,
+                                                 self.offsets.name,
+                                                 self.bytes.name,
+                                                 other.objtype,
+                                                 other.offsets.name,
+                                                 other.bytes.name)
         elif resolve_scalar_dtype(other) == 'str':
-            msg = "segmentedBinopvs {} {} {} {} {} {}".format(op,
+            cmd = "segmentedBinopvs"
+            args = "{} {} {} {} {} {}".format(op,
                                                               self.objtype,
                                                               self.offsets.name,
                                                               self.bytes.name,
@@ -169,7 +171,7 @@ class Strings:
         else:
             raise ValueError("Strings: {} not supported between Strings and {}"\
                              .format(op, other.__class__.__name__))
-        return create_pdarray(generic_msg(msg))
+        return create_pdarray(generic_msg(cmd=cmd,args=args))
 
     def __eq__(self, other) -> bool:
         return self._binop(other, "==")
@@ -184,12 +186,13 @@ class Strings:
                 # Interpret negative key as offset from end of array
                 key += self.size
             if (key >= 0 and key < self.size):
-                msg = "segmentedIndex {} {} {} {} {}".format('intIndex',
-                                                             self.objtype,
-                                                             self.offsets.name,
-                                                             self.bytes.name,
-                                                             key)
-                repMsg = generic_msg(msg)
+                cmd = "segmentedIndex"
+                args = " {} {} {} {} {}".format('intIndex',
+                                                self.objtype,
+                                                self.offsets.name,
+                                                self.bytes.name,
+                                                key)
+                repMsg = generic_msg(cmd=cmd,args=args)
                 _, value = repMsg.split(maxsplit=1)
                 return parse_single_value(value)
             else:
@@ -198,14 +201,15 @@ class Strings:
         elif isinstance(key, slice):
             (start,stop,stride) = key.indices(self.size)
             self.logger.debug('start: {}; stop: {}; stride: {}'.format(start,stop,stride))
-            msg = "segmentedIndex {} {} {} {} {} {} {}".format('sliceIndex',
-                                                               self.objtype,
-                                                               self.offsets.name,
-                                                               self.bytes.name,
-                                                               start,
-                                                               stop,
-                                                               stride)
-            repMsg = generic_msg(msg)
+            cmd = "segmentedIndex"
+            args = " {} {} {} {} {} {} {}".format('sliceIndex',
+                                                  self.objtype,
+                                                  self.offsets.name,
+                                                  self.bytes.name,
+                                                  start,
+                                                  stop,
+                                                  stride)
+            repMsg = generic_msg(cmd=cmd, args=args)
             offsets, values = repMsg.split('+')
             return Strings(offsets, values);
         elif isinstance(key, pdarray):
@@ -214,12 +218,13 @@ class Strings:
                 raise TypeError("unsupported pdarray index type {}".format(key.dtype))
             if kind == "bool" and self.size != key.size:
                 raise ValueError("size mismatch {} {}".format(self.size,key.size))
-            msg = "segmentedIndex {} {} {} {} {}".format('pdarrayIndex',
+            cmd = "segmentedIndex"
+            args = "{} {} {} {} {}".format('pdarrayIndex',
                                                          self.objtype,
                                                          self.offsets.name,
                                                          self.bytes.name,
                                                          key.name)
-            repMsg = generic_msg(msg)
+            repMsg = generic_msg(cmd,args)
             offsets, values = repMsg.split('+')
             return Strings(offsets, values)
         else:
@@ -279,13 +284,14 @@ class Strings:
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
-        msg = "segmentedEfunc {} {} {} {} {} {}".format("contains",
+        cmd = "segmentedEfunc"
+        args = "{} {} {} {} {} {}".format("contains",
                                                         self.objtype,
                                                         self.offsets.name,
                                                         self.bytes.name,
                                                         "str",
                                                         json.dumps([substr]))
-        return create_pdarray(generic_msg(msg))
+        return create_pdarray(generic_msg(cmd=cmd,args=args))
 
     @typechecked
     def startswith(self, substr : Union[str, bytes]) -> pdarray:
@@ -323,13 +329,14 @@ class Strings:
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
-        msg = "segmentedEfunc {} {} {} {} {} {}".format("startswith",
+        cmd = "segmentedEfunc"
+        args = "{} {} {} {} {} {}".format("startswith",
                                                         self.objtype,
                                                         self.offsets.name,
                                                         self.bytes.name,
                                                         "str",
                                                         json.dumps([substr]))
-        return create_pdarray(generic_msg(msg))
+        return create_pdarray(generic_msg(cmd=cmd,args=args))
 
     @typechecked
     def endswith(self, substr : Union[str,bytes]) -> pdarray:
@@ -367,13 +374,14 @@ class Strings:
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
-        msg = "segmentedEfunc {} {} {} {} {} {}".format("endswith",
-                                                        self.objtype,
-                                                        self.offsets.name,
-                                                        self.bytes.name,
-                                                        "str",
-                                                        json.dumps([substr]))
-        return create_pdarray(generic_msg(msg))
+        cmd = "segmentedEfunc"
+        args = "{} {} {} {} {} {}".format("endswith",
+                                          self.objtype,
+                                          self.offsets.name,
+                                          self.bytes.name,
+                                          "str",
+                                          json.dumps([substr]))
+        return create_pdarray(generic_msg(cmd=cmd,args=args))
 
     def flatten(self, delimiter : str, return_segments : bool=False) -> Union[Strings,Tuple]:
         """Unpack delimiter-joined substrings into a flat array.
@@ -407,12 +415,13 @@ class Strings:
         >>> map
         array([0, 2, 5])
         """
-        msg = "segmentedFlatten {}+{} {} {} {}".format(self.offsets.name,
-                                                       self.bytes.name,
-                                                       self.objtype,
-                                                       return_segments,
-                                                       json.dumps([delimiter]))
-        repMsg = cast(str, generic_msg(msg))
+        cmd = "segmentedFlatten"
+        args = "{}+{} {} {} {}".format(self.offsets.name,
+                                       self.bytes.name,
+                                       self.objtype,
+                                       return_segments,
+                                       json.dumps([delimiter]))
+        repMsg = cast(str,generic_msg(cmd=cmd,args=args))
         if return_segments:
             arrays = repMsg.split('+', maxsplit=2)
             return Strings(arrays[0], arrays[1]), create_pdarray(arrays[2])
@@ -487,7 +496,8 @@ class Strings:
             delimiter = delimiter.decode()
         if times < 1:
             raise ValueError("times must be >= 1")
-        msg = "segmentedPeel {} {} {} {} {} {} {} {} {} {}".format("peel",
+        cmd = "segmentedPeel"
+        args = "{} {} {} {} {} {} {} {} {} {}".format("peel",
                             self.objtype,
                             self.offsets.name,
                             self.bytes.name,
@@ -497,7 +507,7 @@ class Strings:
                             NUMBER_FORMAT_STRINGS['bool'].format(keepPartial),
                             NUMBER_FORMAT_STRINGS['bool'].format(not fromRight),
                             json.dumps([delimiter]))
-        repMsg = generic_msg(msg)
+        repMsg = generic_msg(cmd=cmd,args=args)
         arrays = cast(str,repMsg).split('+', maxsplit=3)
         leftStr = Strings(arrays[0], arrays[1])
         rightStr = Strings(arrays[2], arrays[3])
@@ -605,7 +615,8 @@ class Strings:
         """
         if isinstance(delimiter, bytes):
             delimiter = delimiter.decode()
-        msg = "segmentedBinopvv {} {} {} {} {} {} {} {} {}".\
+        cmd = "segmentedBinopvv"
+        args = "{} {} {} {} {} {} {} {} {}".\
                             format("stick",
                             self.objtype,
                             self.offsets.name,
@@ -615,7 +626,7 @@ class Strings:
                             other.bytes.name,
                             NUMBER_FORMAT_STRINGS['bool'].format(toLeft),
                             json.dumps([delimiter]))
-        repMsg = generic_msg(msg)
+        repMsg = generic_msg(cmd,args)
         return Strings(*cast(str,repMsg).split('+'))
 
     def __add__(self, other : Strings) -> Strings:
@@ -681,9 +692,10 @@ class Strings:
         to about 10**15), the probability of a collision between two 128-bit hash
         values is negligible.
         """
-        msg = "segmentedHash {} {} {}".format(self.objtype, self.offsets.name, 
+        cmd = "segmentedHash"
+        args = "{} {} {}".format(self.objtype, self.offsets.name, 
                                               self.bytes.name)
-        repMsg = generic_msg(msg)
+        repMsg = generic_msg(cmd=cmd,args=args)
         h1, h2 = cast(str,repMsg).split('+')
         return create_pdarray(h1), create_pdarray(h2)
 
@@ -717,9 +729,10 @@ class Strings:
             Raised if there is a server-side error in executing group request or
             creating the pdarray encapsulating the return message
         """
-        msg = "segmentedGroup {} {} {}".\
+        cmd = "segmentedGroup"
+        args = "{} {} {}".\
                            format(self.objtype, self.offsets.name, self.bytes.name)
-        return create_pdarray(generic_msg(msg))
+        return create_pdarray(generic_msg(cmd,args))
 
     def to_ndarray(self) -> np.ndarray:
         """

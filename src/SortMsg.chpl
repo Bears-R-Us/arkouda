@@ -30,10 +30,10 @@ module SortMsg
     }
 
     /* sort takes pdarray and returns a sorted copy of the array */
-    proc sortMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc sortMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string; // response message
-      var (name) = payload.decode().splitMsgToTuple(1);
+      var (name) = payload.splitMsgToTuple(1);
 
       // get next symbol name
       var sortedName = st.nextName();

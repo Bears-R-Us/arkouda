@@ -65,7 +65,7 @@ def unique(pda : Union[pdarray,Strings,'Categorical'], # type: ignore
     if hasattr(pda, 'unique'):
         return cast(Categorical_,pda).unique()
     elif isinstance(pda, pdarray):
-        repMsg = generic_msg("unique {} {} {}".\
+        repMsg = generic_msg(cmd="unique", args="{} {} {}".\
                              format(pda.objtype, pda.name, return_counts))
         if return_counts:
             vc = cast(str,repMsg).split("+")
@@ -75,7 +75,7 @@ def unique(pda : Union[pdarray,Strings,'Categorical'], # type: ignore
             return create_pdarray(cast(str,repMsg))
     elif isinstance(pda, Strings):
         name = '{}+{}'.format(pda.offsets.name, pda.bytes.name)
-        repMsg = cast(str,generic_msg("unique {} {} {}".\
+        repMsg = cast(str,generic_msg(cmd="unique", args="{} {} {}".\
                              format(pda.objtype, name, return_counts)))
         vc = repMsg.split('+')
         logger.debug(vc)
@@ -145,11 +145,11 @@ def in1d(pda1 : Union[pdarray,Strings,'Categorical'], pda2 : Union[pdarray,Strin
     if hasattr(pda1, 'in1d'):
         return cast(Categorical_,pda1).in1d(pda2)
     elif isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
-        repMsg = generic_msg("in1d {} {} {}".\
+        repMsg = generic_msg(cmd="in1d", args="{} {} {}".\
                              format(pda1.name, pda2.name, invert))
         return create_pdarray(cast(str,repMsg))
     elif isinstance(pda1, Strings) and isinstance(pda2, Strings):
-        repMsg = generic_msg("segmentedIn1d {} {} {} {} {} {} {}".\
+        repMsg = generic_msg(cmd="segmentedIn1d", args="{} {} {} {} {} {} {}".\
                                     format(pda1.objtype,
                                     pda1.offsets.name,
                                     pda1.bytes.name,
@@ -249,7 +249,8 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings,'Categorical']], #type: 
             return zeros_like(cast(pdarray,arrays[0]))
         else:
             return arrays[0]
-    repMsg = generic_msg("concatenate {} {} {} {}".\
+
+    repMsg = generic_msg(cmd="concatenate", args="{} {} {} {}".\
                             format(len(arrays), objtype, mode, ' '.join(names)))
     if objtype == "pdarray":
         return create_pdarray(cast(str,repMsg))
@@ -304,7 +305,7 @@ def union1d(pda1 : pdarray, pda2 : pdarray) -> pdarray:
     if pda2.size == 0:
         return pda1 # union is pda1
     if pda1.dtype == int and pda2.dtype == int:
-        repMsg = generic_msg("union1d {} {}".\
+        repMsg = generic_msg(cmd="union1d", args="{} {}".\
                              format(pda1.name, pda2.name))
         return cast(pdarray,create_pdarray(repMsg))
     return cast(pdarray,
@@ -360,7 +361,7 @@ def intersect1d(pda1 : pdarray, pda2 : pdarray,
     if pda2.size == 0:
         return pda2 # nothing in the intersection
     if pda1.dtype == int and pda2.dtype == int:
-        repMsg = generic_msg("intersect1d {} {} {}".\
+        repMsg = generic_msg(cmd="intersect1d", args="{} {} {}".\
                              format(pda1.name, pda2.name, assume_unique))
         return create_pdarray(cast(str,repMsg))
     if not assume_unique:
@@ -424,7 +425,7 @@ def setdiff1d(pda1 : pdarray, pda2 : pdarray,
     if pda2.size == 0:
         return pda1 # subtracting nothing return orig pdarray
     if pda1.dtype == int and pda2.dtype == int:
-        repMsg = generic_msg("setdiff1d {} {} {}".\
+        repMsg = generic_msg(cmd="setdiff1d", args="{} {} {}".\
                             format(pda1.name, pda2.name, assume_unique))
         return create_pdarray(cast(str,repMsg))
     if not assume_unique:
@@ -481,7 +482,7 @@ def setxor1d(pda1 : pdarray, pda2 : pdarray,
     if pda2.size == 0:
         return pda1 # return other pdarray if pda2 is empty
     if pda1.dtype == int and pda2.dtype == int:
-        repMsg = generic_msg("setxor1d {} {} {}".\
+        repMsg = generic_msg(cmd="setxor1d", args="{} {} {}".\
                              format(pda1.name, pda2.name, assume_unique))
         return create_pdarray(cast(str,repMsg))
     if not assume_unique:

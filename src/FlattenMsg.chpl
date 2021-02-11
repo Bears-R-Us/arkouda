@@ -8,8 +8,8 @@ module FlattenMsg {
   use SegmentedArray;
   use GenSymIO;
 
-  proc segFlattenMsg(cmd: string, payload: bytes, st: borrowed SymTab) throws {
-    var (name, objtype, returnSegsStr, delimJson) = payload.decode().splitMsgToTuple(4);
+  proc segFlattenMsg(cmd: string, payload: string, st: borrowed SymTab) throws {
+    var (name, objtype, returnSegsStr, delimJson) = payload.splitMsgToTuple(4);
     const returnSegs: bool = returnSegsStr.toLower() == "true";
     const arr = jsonToPdArray(delimJson, 1);
     const delim: string = arr[arr.domain.low];

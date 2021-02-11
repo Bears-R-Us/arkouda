@@ -9,7 +9,7 @@ proc testBroadcast() {
   var vals = st.addEntry("vals", 3, int);
   vals.a = [-1, 2, -3];
   var reqMsg = "perm segs vals False 9";
-  var repMsg = broadcastMsg(cmd="broadcast", payload=reqMsg.encode(), st);
+  var repMsg = broadcastMsg(cmd="broadcast", payload=reqMsg, st);
   var resName = parseName(repMsg);
   var res = toSymEntry(st.lookup(resName), int);
   var testvec = makeDistArray(9, int);
@@ -19,7 +19,7 @@ proc testBroadcast() {
   var perm = st.addEntry("perm", 9, int);
   perm.a = [0, 3, 6, 1, 4, 7, 2, 5, 8];
   reqMsg = "perm segs vals True 9";
-  repMsg = broadcastMsg(cmd="broadcast", payload=reqMsg.encode(), st);
+  repMsg = broadcastMsg(cmd="broadcast", payload=reqMsg, st);
   var res2Name = parseName(repMsg);
   var res2 = toSymEntry(st.lookup(res2Name), int);
   var testvec2 = makeDistArray(9, int);

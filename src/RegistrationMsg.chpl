@@ -30,10 +30,10 @@ module RegistrationMsg
 
     :returns: (string) response message
     */
-    proc registerMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc registerMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         // split request into fields
-        var (name, userDefinedName) = payload.decode().splitMsgToTuple(2);
+        var (name, userDefinedName) = payload.splitMsgToTuple(2);
 
         // if verbose print action
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -57,10 +57,10 @@ module RegistrationMsg
 
     :returns: (string) response message
     */
-    proc attachMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc attachMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         // split request into fields
-        var (name) = payload.decode().splitMsgToTuple(1);
+        var (name) = payload.splitMsgToTuple(1);
 
         // if verbose print action
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -84,10 +84,10 @@ module RegistrationMsg
 
     :returns: (string) response message
     */
-    proc unregisterMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc unregisterMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         // split request into fields
-        var (name) = payload.decode().splitMsgToTuple(1);
+        var (name) = payload.splitMsgToTuple(1);
 
         // if verbose print action
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),

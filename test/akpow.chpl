@@ -19,7 +19,7 @@ prototype module efuncTest
         reqMsg = try! "%s %i".format(dtype2str(dtype), len);
         var d: Diags;
         d.start();
-        repMsg = createMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        repMsg = createMsg(cmd=cmd, payload=reqMsg, st);
         d.stop("createMsg");
         writeRep(repMsg);
 
@@ -29,7 +29,7 @@ prototype module efuncTest
         var v2= 2;
         reqMsg = try! "%s %s %i".format(name, dtype2str(dtype), v2);
         d.start();
-        repMsg = setMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        repMsg = setMsg(cmd=cmd, payload=reqMsg, st);
         d.stop("setMsg");
         writeRep(repMsg);
 
@@ -40,7 +40,7 @@ prototype module efuncTest
         dtype = DType.Int64;
         reqMsg = try! "%s %i".format(dtype2str(dtype), len);
         d.start();
-        repMsg = createMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        repMsg = createMsg(cmd=cmd, payload=reqMsg, st);
         d.stop("createMsg");
         writeRep(repMsg);
 
@@ -50,7 +50,7 @@ prototype module efuncTest
         v2= -2;
         reqMsg = try! "%s %s %i".format(name, dtype2str(dtype), v2);
         d.start();
-        repMsg = setMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        repMsg = setMsg(cmd=cmd, payload=reqMsg, st);
         d.stop("setMsg");
         writeRep(repMsg);
         
@@ -63,7 +63,7 @@ prototype module efuncTest
         var value=-1;
         reqMsg = try! "%s %s %s".format(op, aname,bname);
         d.start();
-        repMsg = opeqvvMsg(cmd=cmd, payload=reqMsg.encode(), st);
+        repMsg = opeqvvMsg(cmd=cmd, payload=reqMsg, st);
         d.stop("opeqvvMsg");
         writeRep(repMsg);
         st.pretty();
