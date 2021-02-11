@@ -147,6 +147,12 @@ class GroupByTest(ArkoudaTest):
         '''
         self.assertEqual(0, run_test(2, verbose))
 
+    def test_bitwise_aggregations(self):
+        revs = ak.arange(self.igb.size) % 2
+        self.assertTrue((self.igb.OR(revs)[1] == self.igb.max(revs)[1]).all())
+        self.assertTrue((self.igb.AND(revs)[1] == self.igb.min(revs)[1]).all())
+        self.assertTrue((self.igb.XOR(revs)[1] == (self.igb.sum(revs)[1] % 2)).all())
+        
     def test_standalone_broadcast(self):
         segs = ak.arange(10)**2
         vals = ak.arange(10)

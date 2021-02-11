@@ -58,7 +58,8 @@ class GroupBy:
     """
     Reductions = frozenset(['sum', 'prod', 'mean',
                             'min', 'max', 'argmin', 'argmax',
-                            'nunique', 'any', 'all'])
+                            'nunique', 'any', 'all',
+                            'or', 'and', 'xor'])
 
     def __init__(self, keys : Union[pdarray,Strings,'Categorical', 
                                     List[Union[pdarray,np.int64,Strings]]], 
@@ -245,6 +246,7 @@ class GroupBy:
         if values.size != self.size:
             raise ValueError(("Attempt to group array using key array of " +
                              "different length"))
+        operator = operator.lower()
         if operator not in self.Reductions:
             raise ValueError(("Unsupported reduction: {}\nMust be one of {}")\
                                   .format(operator, self.Reductions))
@@ -721,6 +723,117 @@ class GroupBy:
             raise TypeError('all is only supported for pdarrays of dtype bool')
 
         return self.aggregate(values, "all")
+
+    def OR(self, values : pdarray) \
+                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+        """
+        Bitwise OR of values in each segment.
+        
+        Using the permutation stored in the GroupBy instance, group  
+        another array of values and perform a bitwise OR reduction on 
+        each group. 
+
+        Parameters
+        ----------
+        values : pdarray, int64
+            The values to group and reduce with OR
+
+        Returns
+        -------
+        unique_keys : (list of) pdarray or Strings
+            The unique keys, in grouped order
+        result : pdarray, int64
+            Bitwise OR of values in segments corresponding to keys
+            
+        Raises
+        ------
+        TypeError
+            Raised if the values array is not a pdarray or if the pdarray
+            dtype is not int64
+        ValueError
+            Raised if the key array size does not match the values size or
+            if the operator is not in the GroupBy.Reductions array
+        RuntimeError
+            Raised if all is not supported for the values dtype
+        """
+        if values.dtype != int64:
+            raise TypeError('OR is only supported for pdarrays of dtype int64')
+
+        return self.aggregate(values, "or")
+
+    def AND(self, values : pdarray) \
+                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+        """
+        Bitwise AND of values in each segment.
+        
+        Using the permutation stored in the GroupBy instance, group  
+        another array of values and perform a bitwise AND reduction on 
+        each group. 
+
+        Parameters
+        ----------
+        values : pdarray, int64
+            The values to group and reduce with AND
+
+        Returns
+        -------
+        unique_keys : (list of) pdarray or Strings
+            The unique keys, in grouped order
+        result : pdarray, int64
+            Bitwise AND of values in segments corresponding to keys
+            
+        Raises
+        ------
+        TypeError
+            Raised if the values array is not a pdarray or if the pdarray
+            dtype is not int64
+        ValueError
+            Raised if the key array size does not match the values size or
+            if the operator is not in the GroupBy.Reductions array
+        RuntimeError
+            Raised if all is not supported for the values dtype
+        """
+        if values.dtype != int64:
+            raise TypeError('AND is only supported for pdarrays of dtype int64')
+
+        return self.aggregate(values, "and")
+
+    def XOR(self, values : pdarray) \
+                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+        """
+        Bitwise XOR of values in each segment.
+        
+        Using the permutation stored in the GroupBy instance, group  
+        another array of values and perform a bitwise XOR reduction on 
+        each group. 
+
+        Parameters
+        ----------
+        values : pdarray, int64
+            The values to group and reduce with XOR
+
+        Returns
+        -------
+        unique_keys : (list of) pdarray or Strings
+            The unique keys, in grouped order
+        result : pdarray, int64
+            Bitwise XOR of values in segments corresponding to keys
+            
+        Raises
+        ------
+        TypeError
+            Raised if the values array is not a pdarray or if the pdarray
+            dtype is not int64
+        ValueError
+            Raised if the key array size does not match the values size or
+            if the operator is not in the GroupBy.Reductions array
+        RuntimeError
+            Raised if all is not supported for the values dtype
+        """
+        if values.dtype != int64:
+            raise TypeError('XOR is only supported for pdarrays of dtype int64')
+
+        return self.aggregate(values, "xor")
 
     @typechecked
     def broadcast(self, values : pdarray, permute : bool=False) -> pdarray:

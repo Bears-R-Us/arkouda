@@ -298,6 +298,18 @@ module ReductionMsg
                         var (vals, locs) = segArgmax(values.a, segments.a);
                         st.addEntry(rname, new shared SymEntry(locs));
                     }
+                    when "or" {
+                        var res = segOr(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "and" {
+                        var res = segAnd(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "xor" {
+                        var res = segXor(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
                     when "nunique" {
                         var res = segNumUnique(values.a, segments.a);
                         st.addEntry(rname, new shared SymEntry(res));
@@ -644,6 +656,89 @@ module ReductionMsg
       const sums = segSum(values, segments);
       const lengths = segCount(segments, values.domain.high + 1);
       res = (sums == lengths);
+      return res;
+    }
+
+    proc segOr(values:[?vD] int, segments:[?D] int): [D] int {
+      // Bitwise OR does not have an inverse, so this cannot be
+      // done with a scan. Each segment's values must be reduced
+      // separately.
+      var res: [D] int;
+      if (D.size == 0) { return res; }
+      forall (i, s, r) in zip(D, segments, res) {
+        // Find segment end
+        var e: int;
+        if i < D.high {
+          e = segments[i+1];
+        } else {
+          e = vD.high;
+        }
+        // Run computation on locale where segment values start
+        // At most, numLocales-1 segments will have to get remote values
+        // Some results will have to be sent to remote locales
+        ref start = values[s];
+        const startLocale = start.locale.id;
+        const hereLocale = here.id;
+        if startLocale == hereLocale {
+          r = | reduce values[s..e];
+        } else {
+          on startLocale {
+            r = | reduce values[s..e];
+          }
+        }
+      }
+      return res;
+    }
+
+    proc segAnd(values:[?vD] int, segments:[?D] int): [D] int {
+      // Bitwise AND does not have an inverse, so this cannot be
+      // done with a scan. Each segment's values must be reduced
+      // separately.
+      var res: [D] int;
+      if (D.size == 0) { return res; }
+      forall (i, s, r) in zip(D, segments, res) {
+        // Find segment end
+        var e: int;
+        if i < D.high {
+          e = segments[i+1];
+        } else {
+          e = vD.high;
+        }
+        // Run computation on locale where segment values start
+        // At most, numLocales-1 segments will have to get remote values
+        // Some results will have to be sent to remote locales
+        ref start = values[s];
+        const startLocale = start.locale.id;
+        const hereLocale = here.id;
+        if startLocale == hereLocale {
+          r = & reduce values[s..e];
+        } else {
+          on startLocale {
+            r = & reduce values[s..e];
+          }
+        }
+      }
+      return res;
+    }
+
+    proc segXor(values:[] int, segments:[?D] int) {
+      // Because XOR has an inverse (itself), this can be
+      // done with a scan like segSum
+      var res: [D] int;
+      if (D.size == 0) { return res; }
+      var cumxor = ^ scan values;
+      // Iterate over segments
+      var rightvals: [D] int;
+      forall (i, r) in zip(D, rightvals) with (var agg = newSrcAggregator(int)) {
+        // Find the segment boundaries
+        if (i == D.high) {
+          agg.copy(r, cumxor[values.domain.high]);
+        } else {
+          agg.copy(r, cumxor[segments[i+1] - 1]);
+        }
+      }
+      res[D.low] = rightvals[D.low];
+      res[D.low+1..] = rightvals[D.low+1..] ^ rightvals[..D.high-1];
       return res;
     }
 
