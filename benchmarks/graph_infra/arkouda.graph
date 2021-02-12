@@ -22,6 +22,18 @@ files: groupby.dat, groupby.dat, groupby.dat, groupby.dat
 graphtitle: Groupby Performance
 ylabel: Performance (GiB/S)
 
+perfkeys: sum Average rate =, prod Average rate =, min Average rate =, max Average rate =, argmin Average rate =, argmax Average rate =, any Average rate =, all Average rate =, xor Average rate =
+graphkeys: sum (GiB/s), prod (GiB/s), min (GiB/s), max (GiB/s), argmin (GiB/s), argmax (GiB/s), any (GiB/s), all (GiB/s), xor (GiB/s)
+files: aggregate.dat
+graphtitle: Grouped Aggregation Performance (Tier 1)
+ylabel: Performance (GiB/s)
+
+perfkeys: and Average rate =, or Average rate =, nunique Average rate =
+graphkeys: and (GiB/s), or (GiB/s), nunique (GiB/s)
+files: aggregate.dat
+graphtitle: Grouped Aggregation Performance (Tier 2)
+ylabel: Performance (GiB/s)
+    
 perfkeys: Average rate =
 graphkeys: Gather GiB/s
 files: gather.dat
