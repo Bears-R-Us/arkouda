@@ -416,9 +416,6 @@ module ReductionMsg
       var rightvals: [D] t;
       forall (i, r) in zip(D, rightvals) with (var agg = newSrcAggregator(t)) {
         // Find the segment boundaries
-        /* if (i > D.low) { */
-        /*   agg.copy(vl, cumsum[segments[i] - 1]); */
-        /* } */
         if (i == D.high) {
           agg.copy(r, cumsum[values.domain.high]);
         } else {
@@ -429,27 +426,6 @@ module ReductionMsg
       res[D.low+1..] = rightvals[D.low+1..] - rightvals[..D.high-1];
       return res;
     }
-
-    /* proc segSum(values:[] bool, segments:[?D] int): [D] int { */
-    /*   var res: [D] int; */
-    /*   if (D.size == 0) { return res; } */
-    /*   var cumsum = + scan values; */
-    /*   // Iterate over segments */
-    /*   forall (i, r) in zip(D, res) { */
-    /*     // Find the values to the left of the segment boundaries */
-    /*     var vl: int, vr: int; */
-    /*     if (i > D.low) { */
-    /*       vl = cumsum[segments[i] - 1]; */
-    /*     } */
-    /*     if (i == D.high) { */
-    /*       vr = cumsum[values.domain.high]; */
-    /*     } else { */
-    /*       vr = cumsum[segments[i+1] -1]; */
-    /*     } */
-    /*     r = vr - vl; */
-    /*   } */
-    /*   return res; */
-    /* } */
 
     proc segProduct(values:[] ?t, segments:[?D] int, skipNan=false): [D] real {
       /* Compute the product of values in each segment. The logic here 
