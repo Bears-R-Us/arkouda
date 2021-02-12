@@ -27,11 +27,11 @@ module RandMsg
 
     :arg reqMsg: message to process (contains cmd,aMin,aMax,len,dtype)
     */
-    proc randintMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc randintMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (lenStr,dtypeStr,aMinStr,aMaxStr,seed) = payload.decode().splitMsgToTuple(5);
+        var (lenStr,dtypeStr,aMinStr,aMaxStr,seed) = payload.splitMsgToTuple(5);
         var len = lenStr:int;
         var dtype = str2dtype(dtypeStr);
 
@@ -108,9 +108,9 @@ module RandMsg
         return repMsg;
     }
 
-    proc randomNormalMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc randomNormalMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         var pn = Reflection.getRoutineName();
-        var (lenStr, seed) = payload.decode().splitMsgToTuple(2);
+        var (lenStr, seed) = payload.splitMsgToTuple(2);
         var len = lenStr:int;
         // Result + 2 scratch arrays
         overMemLimit(3*8*len);

@@ -41,7 +41,7 @@ proc testConcat(n:int, minLen:int, maxLen:int) {
   var reqMsg = "2 str append %s+%s %s+%s".format(s1Name, v1Name, s2Name, v2Name);
   writeReq(reqMsg);
   d.start();
-  var repMsg = concatenateMsg(cmd="concatenate", payload=reqMsg.encode(), st);
+  var repMsg = concatenateMsg(cmd="concatenate", payload=reqMsg, st);
   d.stop("concatenate (append)");
   writeRep(repMsg);
   var (resSegAttribStr, resValAttribStr) = repMsg.splitMsgToTuple('+', 2);
@@ -62,7 +62,7 @@ proc testConcat(n:int, minLen:int, maxLen:int) {
   reqMsg = "2 str interleave %s+%s %s+%s".format(s1Name, v1Name, s2Name, v2Name);
   writeReq(reqMsg);
   d.start();
-  repMsg = concatenateMsg(cmd="concatenate", payload=reqMsg.encode(), st);
+  repMsg = concatenateMsg(cmd="concatenate", payload=reqMsg, st);
   d.stop("concatenate (interleave)");
   writeRep(repMsg);
   (resSegAttribStr, resValAttribStr) = repMsg.splitMsgToTuple('+', 2);
@@ -94,7 +94,7 @@ proc testInterleave(n: int) {
   var reqMsg = "2 pdarray append %s %s".format(aname, bname);
   writeReq(reqMsg);
   t.start();
-  var repMsg = concatenateMsg(cmd="concatenate", payload=reqMsg.encode(), st);
+  var repMsg = concatenateMsg(cmd="concatenate", payload=reqMsg, st);
   t.stop("concatenate (append)");
   writeRep(repMsg);
   var cname = parseName(repMsg);
@@ -105,7 +105,7 @@ proc testInterleave(n: int) {
   reqMsg = "2 pdarray interleave %s %s".format(aname, bname);
   writeReq(reqMsg);
   t.start();
-  repMsg = concatenateMsg(cmd="concatenate", payload=reqMsg.encode(), st);
+  repMsg = concatenateMsg(cmd="concatenate", payload=reqMsg, st);
   t.stop("concatenate (interleave)");
   writeRep(repMsg);
   var dname = parseName(repMsg);

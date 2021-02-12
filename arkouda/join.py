@@ -81,7 +81,7 @@ def join_on_eq_with_dt(a1 : pdarray, a2 : pdarray, t1 : pdarray,
     # groupby on a2
     g2 = GroupBy(a2)
     # pass result into server joinEqWithDT operation
-    repMsg = generic_msg("joinEqWithDT {} {} {} {} {} {} {} {} {}".\
+    repMsg = generic_msg(cmd="joinEqWithDT", args="{} {} {} {} {} {} {} {} {}".\
                          format(a1.name,
                                 cast(pdarray, g2.segments).name,  # type: ignore
                                 cast(pdarray, g2.unique_keys).name,  # type: ignore

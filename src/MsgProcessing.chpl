@@ -49,17 +49,17 @@ module MsgProcessing
     Parse, execute, and respond to a create message 
 
     :arg : payload
-    :type bytes: containing (dtype,size)
+    :type string: containing (dtype,size)
 
     :arg st: SymTab to act on
     :type st: borrowed SymTab 
 
     :returns: (string) response message
     */
-    proc createMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc createMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         // split request into fields
-        var (dtypestr, sizestr) = payload.decode().splitMsgToTuple(2);
+        var (dtypestr, sizestr) = payload.splitMsgToTuple(2);
         var dtype = str2dtype(dtypestr);
         var size = try! sizestr:int;
         if (dtype == DType.UInt8) || (dtype == DType.Bool) {
@@ -95,14 +95,17 @@ module MsgProcessing
 
     :returns: (string) response message
     */
-    proc deleteMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc deleteMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         // split request into fields
-        var (name) = payload.decode().splitMsgToTuple(1);
+        var (name) = payload.splitMsgToTuple(1);
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                                        "cmd: %s name: %s".format(cmd,name));
+                                     "cmd: %s array: %s".format(cmd,st.attrib(name)));
         // delete entry from symbol table
         st.deleteEntry(name);
+        var msg =  "deleted %s".format(name);
+        
+        mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),msg);       
         return try! "deleted %s".format(name);
     }
 
@@ -117,9 +120,9 @@ module MsgProcessing
 
     :returns: (string)
      */
-    proc clearMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc clearMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
-        var (_) = payload.decode().splitMsgToTuple(1); // split request into fields
+        var (_) = payload.splitMsgToTuple(1); // split request into fields
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "cmd: %s".format(cmd));
         st.clear();
         return "success";
@@ -137,10 +140,10 @@ module MsgProcessing
 
     :returns: (string)
      */
-    proc infoMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc infoMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         // split request into fields
-        var (name) = payload.decode().splitMsgToTuple(1);
+        var (name) = payload.splitMsgToTuple(1);
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                                          "cmd: %s name: %s".format(cmd,name));
         // if name == "__AllSymbols__" passes back info on all symbols
@@ -158,9 +161,9 @@ module MsgProcessing
 
     :returns: (string)
      */
-    proc getconfigMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc getconfigMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
-        var (_) = payload.decode().splitMsgToTuple(1); // split request into fields
+        var (_) = payload.splitMsgToTuple(1); // split request into fields
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".format(cmd));
         return getConfig();
     }
@@ -176,9 +179,9 @@ module MsgProcessing
 
     :returns: (string)
      */
-    proc getmemusedMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc getmemusedMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
-        var (_) = payload.decode().splitMsgToTuple(1); // split request into fields
+        var (_) = payload.splitMsgToTuple(1); // split request into fields
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".format(cmd));
         if (memTrack) {
             return (memoryUsed():uint * numLocales:uint):string;
@@ -199,10 +202,10 @@ module MsgProcessing
 
     :returns: (string)
    */
-    proc strMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc strMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         // split request into fields
-        var (name, ptstr) = payload.decode().splitMsgToTuple(2);
+        var (name, ptstr) = payload.splitMsgToTuple(2);
         var printThresh = try! ptstr:int;
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                               "cmd: %s name: %s threshold: %i".format(
@@ -221,10 +224,10 @@ module MsgProcessing
 
        :returns: (string)
       */ 
-    proc reprMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc reprMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
         // split request into fields
-        var (name, ptstr) = payload.decode().splitMsgToTuple(2);
+        var (name, ptstr) = payload.splitMsgToTuple(2);
         var printThresh = try! ptstr:int;
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                               "cmd: %s name: %s threshold: %i".format(
@@ -244,10 +247,9 @@ module MsgProcessing
 
     :returns: (string)
     */
-    proc arangeMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc arangeMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
-//        var (cmd, start, stop, stride) = try! (reqMsg.splitMsgToTuple(4): (string, int, int, int));
-        var (startstr, stopstr, stridestr) = payload.decode().splitMsgToTuple(3);
+        var (startstr, stopstr, stridestr) = payload.splitMsgToTuple(3);
         var start = try! startstr:int;
         var stop = try! stopstr:int;
         var stride = try! stridestr:int;
@@ -288,10 +290,9 @@ module MsgProcessing
 
     :returns: (string)
     */
-    proc linspaceMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc linspaceMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         var repMsg: string; // response message
-//        var (start, stop, len) = try! (payload.decode().splitMsgToTuple(3): (real, real, int));
-        var (startstr, stopstr, lenstr) = payload.decode().splitMsgToTuple(3);
+        var (startstr, stopstr, lenstr) = payload.splitMsgToTuple(3);
         var start = try! startstr:real;
         var stop = try! stopstr:real;
         var len = try! lenstr:int;
@@ -335,10 +336,10 @@ module MsgProcessing
     :returns: (string)
     :throws: `UndefinedSymbolError(name)`
     */
-    proc setMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc setMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
-        var (name, dtypestr, value) = payload.decode().splitMsgToTuple(3);
+        var (name, dtypestr, value) = payload.splitMsgToTuple(3);
         var dtype = str2dtype(dtypestr);
 
         var gEnt: borrowed GenSymEntry = st.lookup(name);

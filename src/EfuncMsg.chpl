@@ -39,11 +39,11 @@ module EfuncMsg
       :throws: `UndefinedSymbolError(name)`
       */
 
-    proc efuncMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc efuncMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (efunc, name) = payload.decode().splitMsgToTuple(2);
+        var (efunc, name) = payload.splitMsgToTuple(2);
         var rname = st.nextName();
         
         var gEnt: borrowed GenSymEntry = st.lookup(name);
@@ -173,11 +173,11 @@ module EfuncMsg
     :returns: (string)
     :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3vvMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc efunc3vvMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (efunc, name1, name2, name3) = payload.decode().splitMsgToTuple(4);
+        var (efunc, name1, name2, name3) = payload.splitMsgToTuple(4);
         var rname = st.nextName();
 
         var g1: borrowed GenSymEntry = st.lookup(name1);
@@ -261,11 +261,11 @@ module EfuncMsg
     :returns: (string)
     :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3vsMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc efunc3vsMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var (efunc, name1, name2, dtypestr, value)
-              = payload.decode().splitMsgToTuple(5); // split request into fields
+              = payload.splitMsgToTuple(5); // split request into fields
         var dtype = str2dtype(dtypestr);
         var rname = st.nextName();
 
@@ -354,11 +354,11 @@ module EfuncMsg
     :returns: (string)
     :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3svMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc efunc3svMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var (efunc, name1, dtypestr, value, name2)
-              = payload.decode().splitMsgToTuple(5); // split request into fields
+              = payload.splitMsgToTuple(5); // split request into fields
         var dtype = str2dtype(dtypestr);
         var rname = st.nextName();
 
@@ -447,11 +447,11 @@ module EfuncMsg
     :returns: (string)
     :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3ssMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc efunc3ssMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var (efunc, name1, dtype1str, value1, dtype2str, value2)
-              = payload.decode().splitMsgToTuple(6); // split request into fields
+              = payload.splitMsgToTuple(6); // split request into fields
         var dtype1 = str2dtype(dtype1str);
         var dtype2 = str2dtype(dtype2str);
         var rname = st.nextName();

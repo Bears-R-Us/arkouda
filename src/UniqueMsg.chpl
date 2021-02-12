@@ -34,11 +34,11 @@ module UniqueMsg
     }
     
     /* unique take a pdarray and returns a pdarray with the unique values */
-    proc uniqueMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc uniqueMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (objtype, name, returnCountsStr) = payload.decode().splitMsgToTuple(3);
+        var (objtype, name, returnCountsStr) = payload.splitMsgToTuple(3);
         // flag to return counts of each unique value
         // same size as unique array
         var returnCounts: bool;
@@ -59,7 +59,18 @@ module UniqueMsg
                           "cmd: %s name: %s returnCounts: %t: vname: %s cname: %s".format(
                           cmd,name,returnCounts,vname,cname));
         
-                var gEnt: borrowed GenSymEntry = st.lookup(name);
+                var gEnt: borrowed GenSymEntry;
+                
+                try {  
+                    gEnt = st.lookup(name);
+                } catch e: Error {
+                    throw new owned ErrorWithContext("lookup for %s failed".format(name),
+                                       getLineNumber(),
+                                       getRoutineName(),
+                                       getModuleName(),
+                                       "UnknownSymbolError");                
+                }
+
                 // the upper limit here is the same as argsort/radixSortLSD_keys
                 // check and throw if over memory limit
                 overMemLimit(((4 + 1) * gEnt.size * gEnt.itemsize)
@@ -142,11 +153,11 @@ module UniqueMsg
     }
     
     /* value_counts takes a pdarray and returns two pdarrays unique values and counts for each value */
-    proc value_countsMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc value_countsMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (name) = payload.decode().splitMsgToTuple(1);
+        var (name) = payload.splitMsgToTuple(1);
 
         // get next symbol name
         var vname = st.nextName();
@@ -154,7 +165,17 @@ module UniqueMsg
         umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                        "cmd: %s name: %s vname: %s cname: %s".format(cmd, name, vname, cname));
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
+        var gEnt: borrowed GenSymEntry;
+        
+        try {  
+            gEnt = st.lookup(name);
+        } catch e: Error {
+            throw new owned ErrorWithContext("lookup for %s failed".format(name),
+                               getLineNumber(),
+                               getRoutineName(),
+                               getModuleName(),
+                               "UnknownSymbolError");    
+        }
 
         select (gEnt.dtype) {
             when (DType.Int64) {

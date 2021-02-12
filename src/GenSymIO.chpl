@@ -119,11 +119,10 @@ module GenSymIO {
      * Outputs the pdarray as a Numpy ndarray in the form of a 
      * Chapel Bytes object
      */
-    proc tondarrayMsg(cmd: string, payload: bytes, st: 
+    proc tondarrayMsg(cmd: string, payload: string, st: 
                                           borrowed SymTab): bytes throws {
         var arrayBytes: bytes;
-        var entryStr = payload.decode();
-        var entry = st.lookup(entryStr);
+        var entry = st.lookup(payload);
         overMemLimit(2*entry.size*entry.itemsize);
         var tmpf: file;
         try {
@@ -187,13 +186,13 @@ module GenSymIO {
      * Spawns a separate Chapel process that executes and returns the 
      * result of the h5ls command
      */
-    proc lshdfMsg(cmd: string, payload: bytes,
+    proc lshdfMsg(cmd: string, payload: string,
                                 st: borrowed SymTab): string throws {
         // reqMsg: "lshdf [<json_filename>]"
         use Spawn;
         const tmpfile = "/tmp/arkouda.lshdf.output";
         var repMsg: string;
-        var (jsonfile) = payload.decode().splitMsgToTuple(1);
+        var (jsonfile) = payload.splitMsgToTuple(1);
 
         var filename: string;
         try {
@@ -254,10 +253,10 @@ module GenSymIO {
     }
 
     /* Read dataset from HDF5 files into arkouda symbol table. */
-    proc readhdfMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc readhdfMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         var repMsg: string;
         // reqMsg = "readhdf <dsetName> <nfiles> [<json_filenames>]"
-        var (dsetName, strictFlag, nfilesStr, jsonfiles) = payload.decode().splitMsgToTuple(4);
+        var (dsetName, strictFlag, nfilesStr, jsonfiles) = payload.splitMsgToTuple(4);
         var strictTypes: bool = true;
         if (strictFlag.toLower() == "false") {
           strictTypes = false;
@@ -405,11 +404,11 @@ module GenSymIO {
     /* 
      * Reads all datasets from 1..n HDF5 files into an Arkouda symbol table. 
      */
-    proc readAllHdfMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc readAllHdfMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         // reqMsg = "readAllHdf <ndsets> <nfiles> [<json_dsetname>] | [<json_filenames>]"
         var repMsg: string;
         // May need a more robust delimiter then " | "
-        var (strictFlag, ndsetsStr, nfilesStr, arraysStr) = payload.decode().splitMsgToTuple(4);
+        var (strictFlag, ndsetsStr, nfilesStr, arraysStr) = payload.splitMsgToTuple(4);
         var strictTypes: bool = true;
         if (strictFlag.toLower() == "false") {
           strictTypes = false;
@@ -1001,9 +1000,9 @@ module GenSymIO {
         return {low..high by stride};
     }
 
-    proc tohdfMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc tohdfMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         var (arrayName, dsetName, modeStr, jsonfile, dataType)
-            = payload.decode().splitMsgToTuple(5);
+            = payload.splitMsgToTuple(5);
 
         var mode = try! modeStr: int;
         var filename: string;

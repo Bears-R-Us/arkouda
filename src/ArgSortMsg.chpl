@@ -462,10 +462,10 @@ module ArgSortMsg
     /* Find the permutation that sorts multiple arrays, treating each array as a
        new level of the sorting key.
      */
-    proc coargsortMsg(cmd: string, payload: bytes, st: borrowed SymTab) throws {
+    proc coargsortMsg(cmd: string, payload: string, st: borrowed SymTab) throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string;
-      var (nstr, rest) = payload.decode().splitMsgToTuple(2);
+      var (nstr, rest) = payload.splitMsgToTuple(2);
       var n = nstr:int; // number of arrays to sort
       var fields = rest.split();
       asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
@@ -643,11 +643,11 @@ module ArgSortMsg
     }
     
     /* argsort takes pdarray and returns an index vector iv which sorts the array */
-    proc argsortMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc argsortMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (objtype, name) = payload.decode().splitMsgToTuple(2);
+        var (objtype, name) = payload.splitMsgToTuple(2);
 
         // get next symbol name
         var ivname = st.nextName();

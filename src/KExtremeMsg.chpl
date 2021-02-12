@@ -38,11 +38,11 @@ module KExtremeMsg
     :type st: borrowed SymTab
     :returns: (string) response message
     */
-    proc minkMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc minkMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (name, k, returnIndices) = payload.decode().splitMsgToTuple(3);
+        var (name, k, returnIndices) = payload.splitMsgToTuple(3);
 
         var vname = st.nextName();
 
@@ -102,11 +102,11 @@ module KExtremeMsg
     :type st: borrowed SymTab
     :returns: (string) response message
     */
-    proc maxkMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+    proc maxkMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
-        var (name, k, returnIndices) = payload.decode().splitMsgToTuple(3);
+        var (name, k, returnIndices) = payload.splitMsgToTuple(3);
 
         var vname = st.nextName();
 

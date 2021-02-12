@@ -4,12 +4,15 @@ import warnings, pkg_resources
 import zmq # type: ignore
 from arkouda import security, io_util
 from arkouda.logger import getArkoudaLogger
+from arkouda.message import RequestMessage, MessageFormat, ReplyMessage, \
+     MessageType
 
 __all__ = ["AllSymbols", "connect", "disconnect", "shutdown", "get_config", 
            "get_mem_used", "__version__", "ruok"]
 
 # Try to read the version from the file located at ../VERSION
-VERSIONFILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "VERSION")
+VERSIONFILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
+                           "VERSION")
 if os.path.isfile(VERSIONFILE):
     with open(VERSIONFILE, 'r') as f:
         __version__ = f.read().strip()
@@ -137,12 +140,12 @@ def connect(server : str="localhost", port : int=5555, timeout : int=0,
         raise ConnectionError(e)
 
     # send the connect message
-    message = "connect"
-    logger.debug("[Python] Sending request: {}".format(message))
+    cmd = "connect"
+    logger.debug("[Python] Sending request: {}".format(cmd))
 
     # send connect request to server and get the response confirming if
     # the connect request succeeded and, if not not, the error message
-    return_message = _send_string_message(message)
+    return_message = _send_string_message(cmd=cmd)
     logger.debug("[Python] Received response: {}".format(str(return_message)))
     connected = True
 
@@ -300,20 +303,22 @@ def _start_tunnel(addr : str, tunnel_server : str) -> Tuple[str,object]:
     except Exception as e:
         raise ConnectionError(e)
 
-def _send_string_message(message : str, 
-                         recv_bytes : bool=False) -> Union[str, bytes]:
+def _send_string_message(cmd : str, recv_bytes : bool=False, 
+                                   args : str=None) -> Union[str, bytes]:
     """
-    Prepends the message string with Arkouda infrastructure elements 
-    including username and authentication token and then sends the 
-    resulting, composite string to the Arkouda server.
+    Generates a RequestMessage encapsulating command and requesting
+    user information, sends it to the Arkouda server, and returns 
+    either a string or binary depending upon the message format.
 
     Parameters
     ----------
-    message : str
-        The message including command to be sent to the Arkouda server
+    cmd : str
+        The name of the command to be executed by the Arkouda server
     recv_bytes : bool, defaults to False
         A boolean indicating whether the return message will be in bytes
         as opposed to a string
+    args : str
+        A delimited string containing 1..n command arguments
 
     Returns
     -------
@@ -325,38 +330,62 @@ def _send_string_message(message : str,
     RuntimeError
         Raised if the return message contains the word "Error", indicating 
         a server-side error was thrown
+    ValueError
+        Raised if the return message is malformed JSON or is missing 1..n
+        expected fields       
     """
-    message = '{}:{}:{}'.format(username, token, message)
+    message = RequestMessage(user=username, token=token, cmd=cmd, 
+                          format=MessageFormat.STRING, args=cast(str,args))
 
-    socket.send_string(message)
+    logger.debug('sending message {}'.format(message))
+
+    socket.send_string(json.dumps(message.asdict()))
 
     if recv_bytes:
         return_message = socket.recv()
-        # raise errors or warnings sent back from the server
-        if return_message.startswith(b"Error:"): \
-                                   raise RuntimeError(return_message.decode())
-        elif return_message.startswith(b"Warning:"): warnings.warn(return_message)
-    else:
-        return_message = socket.recv_string()
-        # raise errors or warnings sent back from the server
-        if return_message.startswith("Error:"): raise RuntimeError(return_message)
-        elif return_message.startswith("Warning:"): warnings.warn(return_message)
-    return return_message
 
-def _send_binary_message(message : bytes, 
-                         recv_bytes : bool=False) -> Union[str, bytes]:
+        # raise errors or warnings sent back from the server
+        if return_message.startswith(b"Error:"): 
+            raise RuntimeError(return_message.decode())
+        elif return_message.startswith(b"Warning:"): 
+            warnings.warn(return_message.decode())
+        return return_message
+    else:
+        raw_message = socket.recv_string()
+        try:
+            return_message = ReplyMessage.fromdict(json.loads(raw_message))
+
+            # raise errors or warnings sent back from the server
+            if return_message.msgType == MessageType.ERROR:
+                raise RuntimeError(return_message.msg)
+            elif return_message.msgType == MessageType.WARNING:
+                warnings.warn(return_message.msg)
+            return return_message.msg
+        except KeyError as ke:
+            raise ValueError('Return message is missing the {} field'.format(ke))
+        except json.decoder.JSONDecodeError:
+            raise ValueError('Return message is not valid JSON: {}'.\
+                             format(raw_message))
+
+def _send_binary_message(cmd : str, payload : bytes, recv_bytes : bool=False,
+                                            args : str=None) -> Union[str, bytes]:
     """
-    Prepends the binary message with Arkouda infrastructure elements
-    including username and authentication token and then sends the
-    resulting, composite byte array to the Arkouda server.
+    Generates a RequestMessage encapsulating command and requesting user information,
+    information prepends the binary payload, sends the binary request to the Arkouda 
+    server, and returns either a string or binary depending upon the message format.
 
     Parameters
     ----------
-    message : bytes
-        The message including command to be sent to the Arkouda server
+    cmd : str
+        The name of the command to be executed by the Arkouda server    
+    payload : bytes
+        The bytes to be converted to a pdarray, Strings, or Categorical object
+        on the Arkouda server
     recv_bytes : bool, defaults to False
         A boolean indicating whether the return message will be in bytes
         as opposed to a string
+    args : str
+        A delimited string containing 1..n command arguments
 
     Returns
     -------
@@ -368,8 +397,17 @@ def _send_binary_message(message : bytes,
     RuntimeError
         Raised if the return message contains the word "Error", indicating 
         a server-side error was thrown
+    ValueError
+        Raised if the return message is malformed JSON or is missing 1..n
+        expected fields
     """
-    socket.send('{}:{}:'.format(username,token,).encode() + message)
+    send_message = RequestMessage(user=username, token=token, cmd=cmd, 
+                                format=MessageFormat.BINARY, args=cast(str,args))
+
+    logger.debug('sending message {}'.format(send_message))
+
+    socket.send('{}BINARY_PAYLOAD'.\
+                format(json.dumps(send_message.asdict())).encode() + payload)
 
     if recv_bytes:
         binary_return_message = cast(bytes, socket.recv())
@@ -378,13 +416,24 @@ def _send_binary_message(message : bytes,
                                    raise RuntimeError(binary_return_message.decode())
         elif binary_return_message.startswith(b"Warning:"): \
                                         warnings.warn(binary_return_message.decode())
+        return binary_return_message
     else:
-        return_message = cast(str, socket.recv_string())
-        # raise errors or warnings sent back from the server
-        if return_message.startswith("Error:"): raise RuntimeError(return_message)
-        elif return_message.startswith("Warning:"): warnings.warn(return_message)
-    return return_message
-    
+        raw_message = socket.recv_string()
+        try:
+            return_message = ReplyMessage.fromdict(json.loads(raw_message))
+
+            # raise errors or warnings sent back from the server
+            if return_message.msgType == MessageType.ERROR:
+                raise RuntimeError(return_message.msg)
+            elif return_message.msgType == MessageType.WARNING:
+                warnings.warn(return_message.msg)
+            return return_message.msg
+        except KeyError as ke:
+            raise ValueError('Return message is missing the {} field'.format(ke))
+        except json.decoder.JSONDecodeError:
+            raise ValueError('{} is not valid JSON, may be server-side error'.\
+                             format(raw_message))
+
 # message arkouda server the client is disconnecting from the server
 def disconnect() -> None:
     """
@@ -453,7 +502,7 @@ def shutdown() -> None:
         raise RuntimeError(e)
     connected = False
 
-def generic_msg(message : Union[str,bytes], send_bytes : bool=False, 
+def generic_msg(cmd : str, args : Union[str,bytes]=None, send_bytes : bool=False, 
                 recv_bytes : bool=False) -> Union[str, bytes]:
     """
     Sends the binary or string message to the arkouda_server and returns 
@@ -486,23 +535,18 @@ def generic_msg(message : Union[str,bytes], send_bytes : bool=False,
 
     if not connected:
         raise RuntimeError("client is not connected to a server")
-
+    
+    logger.debug("[Python] Sending request: cmd: {} args: {}".\
+                 format(cmd,cast(str,args)))
+    
     try:
         if send_bytes:
-            if recv_bytes:
-                return cast(bytes, _send_binary_message(message=cast(bytes,message), 
-                                            recv_bytes=recv_bytes))
-            else: 
-                return cast(str, _send_binary_message(message=cast(bytes,message), 
-                                            recv_bytes=recv_bytes))                
+            return _send_binary_message(cmd=cmd, 
+                                            payload=cast(bytes,args), 
+                                            recv_bytes=recv_bytes)         
         else:
-            logger.debug("[Python] Sending request: {}".format(cast(str,message)))
-            if recv_bytes:
-                return cast(bytes, _send_string_message(message=cast(str,message), 
-                                            recv_bytes=recv_bytes))
-            else:
-                return cast(str, _send_string_message(message=cast(str,message), 
-                                            recv_bytes=recv_bytes))
+            return _send_string_message(cmd=cmd, args=cast(str,args), 
+                                            recv_bytes=recv_bytes)
                 
     except KeyboardInterrupt as e:
         # if the user interrupts during command execution, the socket gets out 
@@ -530,15 +574,15 @@ def get_config() -> Mapping[str, Union[str, int, float]]:
     RuntimeError
         Raised if there is a server-side error in getting memory used
     ValueError
-        Raised if there's an error in parsing the JSON-formatted server
-        configuration into a dict
+        Raised if there's an error in parsing the JSON-formatted server config
     """
-    json_string = generic_msg("getconfig")
-
     try:
-        return json.loads(json_string)
+        raw_message = cast(str,generic_msg(cmd="getconfig"))
+        return json.loads(raw_message)
+    except json.decoder.JSONDecodeError:
+        raise ValueError('Returned config is not valid JSON: {}'.format(raw_message))
     except Exception as e:
-        raise ValueError(e)
+        raise RuntimeError('{} in retrieving Arkouda server config'.format(e))
 
 def get_mem_used() -> int:
     """
@@ -556,7 +600,7 @@ def get_mem_used() -> int:
     ValueError
         Raised if the returned value is not an int-formatted string
     """
-    mem_used_message = cast(str,generic_msg("getmemused"))
+    mem_used_message = cast(str,generic_msg(cmd="getmemused"))
     return int(mem_used_message)
 
 def _no_op() -> str:
@@ -578,7 +622,7 @@ def _no_op() -> str:
 def ruok() -> str:
     """
     Simply sends an "ruok" message to the server and, if the return message is
-    "imok",t his means the arkouda_server is up and operating normally. A return
+    "imok", this means the arkouda_server is up and operating normally. A return
     message of "imnotok" indicates an error occurred or the connection timed out.
     
     This method is basically a way to do a quick healthcheck in a way that does 

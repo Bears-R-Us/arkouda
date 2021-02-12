@@ -17,10 +17,10 @@ module CastMsg {
       castLogger.level = LogLevel.INFO;    
   }
 
-  proc castMsg(cmd: string, payload: bytes, st: borrowed SymTab): string throws {
+  proc castMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
     use ServerConfig; // for string.splitMsgToTuple
     param pn = Reflection.getRoutineName();
-    var (name, objtype, targetDtype, opt) = payload.decode().splitMsgToTuple(4);
+    var (name, objtype, targetDtype, opt) = payload.splitMsgToTuple(4);
     castLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
           "name: %s obgtype: %t targetDtype: %t opt: %t".format(
                                                  name,objtype,targetDtype,opt));

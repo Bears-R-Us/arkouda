@@ -494,7 +494,7 @@ module SegmentedArray {
         // Position where substr aligns with end of segment must be a hit
         // -1 for null byte
         hits[oD.interior(-(oD.size-1))] = truth[oa[oD.interior(oD.size-1)] - substr.numBytes - 1];
-        hits[oD.high] = truth[D.high];
+        hits[oD.high] = truth[D.high-1];
       }
       if v {
           t.stop(); 

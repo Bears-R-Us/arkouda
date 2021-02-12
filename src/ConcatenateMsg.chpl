@@ -26,10 +26,10 @@ module ConcatenateMsg
     /* Concatenate a list of arrays together
        to form one array
      */
-    proc concatenateMsg(cmd: string, payload: bytes, st: borrowed SymTab) throws {
+    proc concatenateMsg(cmd: string, payload: string, st: borrowed SymTab) throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
-        var (nstr, objtype, mode, rest) = payload.decode().splitMsgToTuple(4);
+        var (nstr, objtype, mode, rest) = payload.splitMsgToTuple(4);
         var n = try! nstr:int; // number of arrays to sort
         var fields = rest.split();
         const low = fields.domain.low;
@@ -60,9 +60,18 @@ module ConcatenateMsg
                 when "str" {
                     var valName: string;
                     (name, valName) = rawName.splitMsgToTuple('+', 2);
-                    var gval = st.lookup(valName);
-                    nbytes += gval.size;
-                    valSize = gval.size;
+                    try { 
+                        var gval = st.lookup(valName);
+                        nbytes += gval.size;
+                        valSize = gval.size;
+                    } catch e: Error {
+                        throw getErrorWithContext(
+                           msg="lookup for %s failed".format(name),
+                           lineNumber=getLineNumber(),
+                           routineName=getRoutineName(), 
+                           moduleName=getModuleName(),
+                           errorClass="UnknownSymbolError");                    
+                    }
                     cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                              "name: %s valName: %s".format(name,valName));
                 }
@@ -77,7 +86,18 @@ module ConcatenateMsg
                     return errorMsg;                    
                 }
             }
-            var g: borrowed GenSymEntry = st.lookup(name);
+            var g: borrowed GenSymEntry;
+            
+            try { 
+                g = st.lookup(name);
+            } catch e : Error {
+                throw getErrorWithContext(
+                           msg="lookup for %s failed".format(name),
+                           lineNumber=getLineNumber(),
+                           routineName=getRoutineName(), 
+                           moduleName=getModuleName(),
+                           errorClass="UnknownSymbolError");
+            }
             if (i == 1) {dtype = g.dtype;}
             else {
                 if (dtype != g.dtype) {
