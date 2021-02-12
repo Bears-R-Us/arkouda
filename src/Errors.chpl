@@ -143,10 +143,23 @@ module Errors {
 
         proc init(){ super.init(); }
     }
+    
+    /*
+     * The UnknownSymbolError is thrown if there is not entry in the SymTab.
+     */
+    class UnknownSymbolError: ErrorWithContext { 
+
+        proc init(msg : string, lineNumber: int, routineName: string, 
+                                                           moduleName: string) { 
+           super.init(msg,lineNumber,routineName,moduleName,errorClass='UnknownSymbolError'); 
+        } 
+
+        proc init(){ super.init(); }
+    }
 
     /*
-     * This function is used to generate a detailed, context-rich error message for errors such as
-     * instances of built-in Chapel Errors in a format that matches the Arkouda ErrorWithContext
+     * Generatea a detailed, context-rich error message for errors such as instances of 
+     * built-in Chapel Errors in a format that matches the Arkouda ErrorWithContext
      * error message format. 
      */
     proc generateErrorContext(msg: string, lineNumber: int, moduleName: string, routineName: string, 
@@ -217,7 +230,12 @@ module Errors {
                                                           lineNumber=lineNumber,
                                                           routineName=routineName,
                                                           moduleName=moduleName, 
-                                                          errorClass=errorClass)); }                                                                                                                               
+                                                          errorClass=errorClass)); }
+            when "UnknownSymbolError"            { return new owned 
+                                                          UnknownSymbolError(msg=msg,
+                                                          lineNumber=lineNumber,
+                                                          routineName=routineName,
+                                                          moduleName=moduleName); }                                                                                                                 
             otherwise                            { return new owned 
                                                           Error(generateErrorContext(
                                                           msg=msg,

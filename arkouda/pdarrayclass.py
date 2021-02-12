@@ -17,7 +17,7 @@ __all__ = ["pdarray", "info", "clear", "any", "all", "is_sorted", "sum", "prod",
            "maxk", "argmink", "argmaxk", "register_pdarray", "attach_pdarray", 
            "unregister_pdarray"]
 
-logger = getArkoudaLogger(name='pdarray')    
+logger = getArkoudaLogger(name='pdarrayclass')    
 
 @typechecked
 def parse_single_value(msg : str) -> object:
@@ -111,6 +111,7 @@ class pdarray:
 
     def __del__(self):
         try:
+            logger.debug('deleting pdarray with name {}'.format(self.name))
             generic_msg(cmd='delete', args='{}'.format(self.name))
         except:
             pass
@@ -1116,8 +1117,8 @@ def create_pdarray(repMsg : str) -> pdarray:
         itemsize = int(fields[6])
     except Exception as e:
         raise ValueError(e)
-    logger.debug("{} {} {} {} {} {}".format(name, mydtype, size, 
-                                    ndim, shape, itemsize))
+    logger.debug(("created Chapel array with name: {} dtype: {} size: {} ndim: {} shape: {} " +
+                  "itemsize: {}").format(name, mydtype, size, ndim, shape, itemsize))
     return pdarray(name, mydtype, size, ndim, shape, itemsize)
 
 @typechecked
@@ -1835,7 +1836,7 @@ def attach_pdarray(user_defined_name : str) -> pdarray:
 def unregister_pdarray(pda : Union[str,pdarray]) -> None:
     """
     Unregister a pdarray in the arkouda server which was previously 
-    registered using register_pdarray() and/or attahced to using attach_pdarray()
+    registered using register_pdarray() and/or attached to using attach_pdarray()
     
     Parameters
     ----------

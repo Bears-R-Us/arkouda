@@ -59,7 +59,18 @@ module UniqueMsg
                           "cmd: %s name: %s returnCounts: %t: vname: %s cname: %s".format(
                           cmd,name,returnCounts,vname,cname));
         
-                var gEnt: borrowed GenSymEntry = st.lookup(name);
+                var gEnt: borrowed GenSymEntry;
+                
+                try {  
+                    gEnt = st.lookup(name);
+                } catch e: Error {
+                    throw new owned ErrorWithContext("lookup for %s failed".format(name),
+                                       getLineNumber(),
+                                       getRoutineName(),
+                                       getModuleName(),
+                                       "UnknownSymbolError");                
+                }
+
                 // the upper limit here is the same as argsort/radixSortLSD_keys
                 // check and throw if over memory limit
                 overMemLimit(((4 + 1) * gEnt.size * gEnt.itemsize)
@@ -154,7 +165,17 @@ module UniqueMsg
         umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                        "cmd: %s name: %s vname: %s cname: %s".format(cmd, name, vname, cname));
 
-        var gEnt: borrowed GenSymEntry = st.lookup(name);
+        var gEnt: borrowed GenSymEntry;
+        
+        try {  
+            gEnt = st.lookup(name);
+        } catch e: Error {
+            throw new owned ErrorWithContext("lookup for %s failed".format(name),
+                               getLineNumber(),
+                               getRoutineName(),
+                               getModuleName(),
+                               "UnknownSymbolError");    
+        }
 
         select (gEnt.dtype) {
             when (DType.Int64) {
