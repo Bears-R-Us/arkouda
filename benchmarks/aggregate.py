@@ -34,9 +34,9 @@ def time_ak_aggregate(N_per_locale, trials, seed):
             end = time.time()
             timings.append(end - start)
         tavg = sum(timings) / trials
-        print("{} Average time = {:.4f} sec".format(op, tavg))
+        print("Aggregate {} Average time = {:.4f} sec".format(op, tavg))
         bytes_per_sec = totalbytes / tavg
-        print("{} Average rate = {:.4f} GiB/sec".format(op, bytes_per_sec/2**30))
+        print("Aggregate {} Average rate = {:.4f} GiB/sec".format(op, bytes_per_sec/2**30))
 
 def check_correctness():
     keys = ak.arange(1000) % 10
@@ -58,7 +58,7 @@ def create_parser():
     parser = argparse.ArgumentParser(description="Measure performance of aggregations on grouped arrays.")
     parser.add_argument('hostname', help='Hostname of arkouda server')
     parser.add_argument('port', type=int, help='Port of arkouda server')
-    parser.add_argument('-n', '--size', type=int, default=10**8, help='Problem size: total length of all arrays to group')
+    parser.add_argument('-n', '--size', type=int, default=10**7, help='Problem size: total length of all arrays to group')
     parser.add_argument('-t', '--trials', type=int, default=1, help='Number of times to run the benchmark')
     parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
     parser.add_argument('-s', '--seed', default=None, type=int, help='Value to initialize random number generator')
