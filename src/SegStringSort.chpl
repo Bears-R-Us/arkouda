@@ -184,49 +184,46 @@ module SegStringSort {
   proc radixSortLSD_raw(const ref offsets: [?aD] int, const ref lengths: [aD] int, const ref values: [] uint(8), const ref inds: [aD] int, const pivot: int): [aD] int throws {
     const numBuckets = 2**16;
     type state = (uint(8), uint(8), int, int, int);
-    inline proc copyDigit(ref k: state, const off: int, const len: int, const rank: int, const right: int) {
-      // TODO can we only use the aggregated version?
-      use UnorderedCopy;
+    inline proc copyDigit(ref k: state, const off: int, const len: int, const rank: int, const right: int, ref agg) {
       ref (k0,k1,k2,k3,k4) = k;
       if (right > 0) {
         if (len >= right) {
-          unorderedCopy(k0, values[off+right-2]);
-          unorderedCopy(k1, values[off+right-1]);
+          agg.copy(k0, values[off+right-2]);
+          agg.copy(k1, values[off+right-1]);
         } else if (len == right - 1) {
-          unorderedCopy(k0, values[off+right-2]);
-          unorderedCopy(k1, 0: uint(8));
+          agg.copy(k0, values[off+right-2]);
+          k1 = 0: uint(8);
         } else {
-          unorderedCopy(k0, 0: uint(8));
-          unorderedCopy(k1, 0: uint(8));
+          k0 = 0: uint(8);
+          k1 = 0: uint(8);
         }
       }
-      unorderedCopy(k2, off);
-      unorderedCopy(k3, len);
-      unorderedCopy(k4, rank);
+      k2 = off;
+      k3 = len;
+      k4 = rank;
     }
 
-    inline proc copyDigit(ref k1: state, ref k0: state, const right: int, ref aggregator) {
+    inline proc copyDigit(ref k0: state, const right: int, ref agg) {
       const (_,_,off,len,_) = k0;
       ref (ka,kb,_,_,_) = k0;
       if (right > 0) {
         if (len >= right) {
-          ka = values[off+right-2];
-          kb = values[off+right-1];
+          agg.copy(ka, values[off+right-2]);
+          agg.copy(kb, values[off+right-1]);
         } else if (len == right - 1) {
-          ka = values[off+right-2];
+          agg.copy(ka, values[off+right-2]);
           kb = 0;
         } else {
           ka = 0: uint(8);
           kb = 0: uint(8);
         }
       }
-      aggregator.copy(k1, k0);
     }
     
     var kr0: [aD] state;
     ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"rshift = 0");
-    forall (k, rank) in zip(kr0, inds) {
-      copyDigit(k, offsets[rank], lengths[rank], rank, pivot);
+    forall (k, rank) in zip(kr0, inds) with (var agg = newSrcAggregator(uint(8))) {
+      copyDigit(k, offsets[rank], lengths[rank], rank, pivot, agg);
     }
     var kr1: [aD] state;
     // create a global count array to scan
@@ -290,16 +287,24 @@ module SegStringSort {
               }
               aggregator.flush();
             }
-            // calc new position and put (key,rank) pair there in kr1
+            // calculate the new position from old values/digits
+            var buckets: [tD] int = for i in tD do (kr0[i][0]:int << 8) | (kr0[i][1]:int);
+            // copy in current values/digits
+            {
+              var aggregator = newSrcAggregator(uint(8));
+              for i in tD {
+                copyDigit(kr0[i], pivot - rshift, aggregator);
+              }
+              aggregator.flush();
+            }
+            // put (key,rank) pair into new position in kr1
             {
               var aggregator = newDstAggregator(state);
               for i in tD {
-                var kr0i0, kr0i1: int;
-                (kr0i0, kr0i1, _, _, _) = kr0[i];
-                var bucket = (kr0i0:int << 8) | (kr0i1:int); // calc bucket from key
+                var bucket = buckets[i];
                 var pos = taskBucketPos[bucket];
                 taskBucketPos[bucket] += 1;
-                copyDigit(kr1[pos], kr0[i], pivot - rshift, aggregator);
+                aggregator.copy(kr1[pos], kr0[i]);
               }
               aggregator.flush();
             }
