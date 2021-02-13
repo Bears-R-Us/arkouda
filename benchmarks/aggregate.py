@@ -41,7 +41,7 @@ def time_ak_aggregate(N_per_locale, trials, seed):
 def check_correctness():
     keys = ak.arange(1000) % 10
     ones = ak.ones_like(keys)
-    g = ak.GroupBy(keys, assume_sorted=True)
+    g = ak.GroupBy(keys)
     # Make sure keys are correct
     assert (g.unique_keys == ak.arange(10)).all()
     # Check value of sums
