@@ -706,7 +706,7 @@ module SegmentedArray {
       return (&& reduce (ediff() >= 0));
     }
 
-    proc argsort(checkSorted:bool=true): [offsets.aD] int throws {
+    proc argsort(checkSorted:bool=false): [offsets.aD] int throws {
       const ref D = offsets.aD;
       const ref va = values.a;
       if checkSorted && isSorted() {
