@@ -255,11 +255,10 @@ class GroupBy:
             permuted_values = values[cast(pdarray, self.permutation)]
 
         cmd = "segmentedReduction"
-        args = "{} {} {} {} {}".format(cmd,
-                                         permuted_values.name,
-                                         self.segments.name,
-                                         operator,
-                                         skipna)
+        args = "{} {} {} {}".format(permuted_values.name,
+                                    self.segments.name,
+                                    operator,
+                                    skipna)
         repMsg = generic_msg(cmd,args)
         self.logger.debug(repMsg)
         if operator.startswith('arg'):
