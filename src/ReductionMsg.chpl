@@ -647,9 +647,9 @@ module ReductionMsg
       const scanresult = ResettingOrScanOp scan flagvalues;
       // Read the results from the last element of each segment
       forall (r, s) in zip(res[..D.high-1], segments[D.low+1..]) with (var agg = newSrcAggregator(int)) {
-        agg.copy(r, scanresult[s-1]);
+        agg.copy(r, scanresult[s-1](1));
       }
-      res[D.high] = scanresult[vD.high];
+      res[D.high] = scanresult[vD.high](1);
       return res;
     }
 
@@ -682,12 +682,11 @@ module ReductionMsg
       }
 
       proc generate() {
-        const (reset, val) = value;
-        return val;
+        return value;
       }
 
       proc clone() {
-        return new unmanaged ResettingOrScanOp(eltType);
+        return new unmanaged ResettingOrScanOp(eltType=eltType);
       }
     }
 
@@ -703,9 +702,9 @@ module ReductionMsg
       const scanresult = ResettingAndScanOp scan flagvalues;
       // Read the results from the last element of each segment
       forall (r, s) in zip(res[..D.high-1], segments[D.low+1..]) with (var agg = newSrcAggregator(int)) {
-        agg.copy(r, scanresult[s-1]);
+        agg.copy(r, scanresult[s-1](1));
       }
-      res[D.high] = scanresult[vD.high];
+      res[D.high] = scanresult[vD.high](1);
       return res;
     }
 
@@ -738,12 +737,11 @@ module ReductionMsg
       }
 
       proc generate() {
-        const (reset, val) = value;
-        return val;
+        return value;
       }
 
       proc clone() {
-        return new unmanaged ResettingOrScanOp(eltType);
+        return new unmanaged ResettingOrScanOp(eltType=eltType);
       }
     }
 
