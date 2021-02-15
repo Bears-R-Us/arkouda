@@ -126,7 +126,7 @@ module CommAggregation {
       unorderedCopyTaskFence();
     }
     inline proc copy(ref dst: elemType, const in srcVal: elemType) {
-      unorderedCopyWrapper(dst, srcVal);
+      unorderedCopy(dst, srcVal);
     }
   }
 
@@ -246,7 +246,7 @@ module CommAggregation {
     }
     inline proc copy(ref dst: elemType, const ref src: elemType) {
       assert(dst.locale.id == here.id);
-      unorderedCopyWrapper(dst, src);
+      unorderedCopy(dst, src);
     }
   }
 
@@ -343,23 +343,6 @@ module CommAggregation {
   //
   // Helper routines
   //
-
-  // Unordered copy wrapper that also supports tuples. In 1.20 this will call
-  // unorderedCopy for each tuple element, but in 1.21 it is a single call.
-  private inline proc unorderedCopyWrapper(ref dst, const ref src): void {
-    use Reflection;
-    // Always resolves in 1.21, only resolves for numeric/bool types in 1.20
-    if canResolve("unorderedCopy", dst, src) {
-      unorderedCopy(dst, src);
-    } else if isTuple(dst) && isTuple(src) {
-      for param i in 1..dst.size {
-        unorderedCopyWrapper(dst(i), src(i));
-      }
-    } else {
-      compilerWarning("Missing optimized unorderedCopy for " + dst.type:string);
-      dst = src;
-    }
-  }
 
   private proc getEnvInt(name: string, default: int): int {
     extern proc getenv(name : c_string) : c_string;
