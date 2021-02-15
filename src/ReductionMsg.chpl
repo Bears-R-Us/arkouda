@@ -637,11 +637,15 @@ module ReductionMsg
 
     proc segOr(values:[?vD] int, segments:[?D] int): [D] int {
       var res: [D] int;
+      // Set reset flag at segment boundaries
       var flagvalues: [vD] (bool, int) = [v in values] (false, v);
       forall s in segments with (var agg = newDstAggregator(bool)) {
         agg.copy(flagvalues[s][0], true);
       }
+      // Scan with custom operator, which resets the bitwise AND
+      // at segment boundaries.
       const scanresult = ResettingOrScanOp scan flagvalues;
+      // Read the results from the last element of each segment
       forall (r, s) in zip(res[..D.high-1], segments[D.low+1..]) with (var agg = newSrcAggregator(int)) {
         agg.copy(r, scanresult[s-1]);
       }
@@ -649,6 +653,10 @@ module ReductionMsg
       return res;
     }
 
+    /* Performs a bitwise OR scan, controlled by a reset flag. While
+     * the reset flag is false, the accumulation of values proceeds as 
+     * normal. When a true is encountered, the state resets to the
+     * identity. */
     class ResettingOrScanOp: ReduceScanOp {
       type eltType;
       var value = (false, 0);
@@ -685,11 +693,15 @@ module ReductionMsg
 
     proc segAnd(values:[?vD] int, segments:[?D] int): [D] int {
       var res: [D] int;
+      // Set reset flag at segment boundaries
       var flagvalues: [vD] (bool, int) = [v in values] (false, v);
       forall s in segments with (var agg = newDstAggregator(bool)) {
         agg.copy(flagvalues[s][0], true);
       }
+      // Scan with custom operator, which resets the bitwise AND
+      // at segment boundaries.
       const scanresult = ResettingAndScanOp scan flagvalues;
+      // Read the results from the last element of each segment
       forall (r, s) in zip(res[..D.high-1], segments[D.low+1..]) with (var agg = newSrcAggregator(int)) {
         agg.copy(r, scanresult[s-1]);
       }
@@ -697,6 +709,10 @@ module ReductionMsg
       return res;
     }
 
+    /* Performs a bitwise AND scan, controlled by a reset flag. While
+     * the reset flag is false, the accumulation of values proceeds as 
+     * normal. When a true is encountered, the state resets to the
+     * identity. */
     class ResettingAndScanOp: ReduceScanOp {
       type eltType;
       var value = (false, 0xffffffffffffffff:int);
