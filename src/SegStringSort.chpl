@@ -8,9 +8,10 @@ module SegStringSort {
   use PrivateDist;
   use Reflection;
   use Logging;
+  use ServerConfig;
 
-  private config const SSS_v = true;
-  private const v = SSS_v;
+  private config const SSS_v = false;
+  private const vv = SSS_v;
   private config const SSS_numTasks = here.maxTaskPar;
   private const numTasks = SSS_numTasks;
   private config const SSS_MINBYTES = 8;
@@ -38,14 +39,14 @@ module SegStringSort {
     const lengths = ss.getLengths();
     ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                        "Found lengths in %t seconds".format(getCurrentTime() - t));
-    if v { t = getCurrentTime(); }
+    t = getCurrentTime();
     // Compute length survival function and choose a pivot length
     const (pivot, nShort) = getPivot(lengths);
     ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                        "Computed pivot in %t seconds".format(getCurrentTime() - t)); 
     ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                        "Pivot = %t, nShort = %t".format(pivot, nShort)); 
-    if v {t = getCurrentTime(); }
+    t = getCurrentTime();
     const longStart = ss.offsets.aD.low + nShort;
     const isLong = (lengths >= pivot);
     var locs = [i in ss.offsets.aD] i;
@@ -71,14 +72,14 @@ module SegStringSort {
 
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                            "Gathered long strings in %t seconds".format(getCurrentTime() - tl));
-      if v { tl = getCurrentTime(); }
+      tl = getCurrentTime();
       // Sort the strings, but bring the inds along for the ride
       const myComparator = new StringIntComparator();
       sort(stringsWithInds, comparator=myComparator);
 
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                              "Sorted long strings in %t seconds".format(getCurrentTime() - tl));
-      if v { tl = getCurrentTime(); }
+      tl = getCurrentTime();
 
       forall (h, s) in zip(highDom, stringsWithInds.domain) with (var agg = newDstAggregator(int)) {
         const (_,val) = stringsWithInds[s];
@@ -87,7 +88,7 @@ module SegStringSort {
       ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                               "Permuted long inds in %t seconds".format(getCurrentTime() - tl));
     }
-    if v { t = getCurrentTime(); }
+    t = getCurrentTime();
     const ranks = radixSortLSD_raw(ss.offsets.a, lengths, ss.values.a, gatherInds, pivot);
     ssLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                           "Sorted ranks in %t seconds".format(getCurrentTime() - t));
