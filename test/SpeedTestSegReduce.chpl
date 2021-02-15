@@ -27,13 +27,13 @@ proc main() {
   var (segments, values, answers) = makeArrays(NINPUTS);
   d.start();
   var res1 = segOr1(values, segments);
-  d.stop("Method 1 (on startLocale): ", printTime=true);
+  d.stop("Method 1 (on startLocale): ");
   if (&& reduce (res1 == answers)) {
     writeln(">>> Incorrect result from Method 1 <<<");
   }
   d.start();
   var res2 = segOr2(values, segments);
-  d.stop("Method 2 (custom scan class): ", printTime=true);
+  d.stop("Method 2 (custom scan class): ");
   if (&& reduce (res2 == answers)) {
     writeln(">>> Incorrect result from Method 2 <<<");
   }
