@@ -13,9 +13,6 @@ module RadixSortLSD
     private param numBuckets = 1 << bitsPerDigit; // these need to be const for comms/performance reasons
     private param maskDigit = numBuckets-1; // these need to be const for comms/performance reasons
 
-    // Hack to determine tuple lower bound across 1.20-1.22
-    const RSLSD_tupleLow = [1..1].domain.low;
-
     use BlockDist;
     use BitOps;
     use AryUtil;
@@ -67,7 +64,7 @@ module RadixSortLSD
     inline proc getBitWidth(a: [?aD] ?t): (int, bool)
         where isHomogeneousTuple(t) && t == t.size*uint(bitsPerDigit) {
       for digit in 0..t.size-1 {
-        const m = max reduce [ai in a] ai[RSLSD_tupleLow+digit];
+        const m = max reduce [ai in a] ai(digit);
         if m > 0 then return ((t.size-digit) * bitsPerDigit, false);
       }
       return (t.size * bitsPerDigit, false);
@@ -115,7 +112,7 @@ module RadixSortLSD
 
     inline proc getDigit(key: _tuple, rshift: int, last: bool, negs: bool): int
         where isHomogeneousTuple(key) && key.type == key.size*uint(bitsPerDigit) {
-      const keyHigh = key.size - (1-RSLSD_tupleLow);
+      const keyHigh = key.size - 1;
       return key[keyHigh - rshift/bitsPerDigit]:int;
     }
 
