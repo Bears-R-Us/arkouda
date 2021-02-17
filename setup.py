@@ -135,7 +135,7 @@ setup(
     #
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['numpy>=1.16.5,<=1.19.5', 'pandas>=1.1.0', 'zmq', 'typeguard'],  # Optional
+    install_requires=['numpy>=1.16.5,<=1.19.5', 'pandas>=1.1.0', 'zmq', 'typeguard==2.10.0'],  # Optional
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
