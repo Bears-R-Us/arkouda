@@ -8,42 +8,120 @@ import string
 
 TYPES = ('int64', 'float64', 'bool', 'str')
 
-def time_ak_bfs_graph(trials:int):
+def time_ak_bfs_graph(lgNv:int, Ne_per_v:int, p:float,directed:int,weighted:int):
     print("Graph BFS")
-    lgNv=8
+    cfg = ak.get_config()
+    print("server Hostname =",cfg["serverHostname"])
+    print("Number of Locales=",cfg["numLocales"])
+    print("number of PUs =",cfg["numPUs"])
+    print("Max Tasks =",cfg["maxTaskPar"])
+    print("Memory =",cfg["physicalMemory"])
+    
+    lgNv=10
     Ne_per_v=3
-    p=0.03
+    p=0.40
     directed=0
     weighted=0
+    '''
+    filename="delaunay_n17"
+    f = open("../../arkouda/data/delaunay/"+filename+"/"+filename+".mtx")
+    Line = f.readline()
+    while not(Line[1]>='0' and Line[0]<='9'):
+         Line = f.readline()
+         b = Line.split(" ")
+    edges=int(b[2])
+    vertices=max(int(b[0]),int(b[1]))
+
+
+    '''
+    print(lgNv,Ne_per_v,p,directed,weighted)
     start = time.time()
+    #Graph=ak.graph_file_read(edges,vertices,2,directed,"../arkouda/data/delaunay/"+filename+"/"+filename+".gr")
     #Graph=ak.graph_file_read(91,20,3,directed,"kang.gr")
-    #Graph=ak.graph_file_read(393176,131072,2,directed,"delaunay_n17.gr")
+    #Graph=ak.graph_file_read(3056,1024,2,directed,"../arkouda/data/"+filename)
+    #Graph=ak.graph_file_read(393176,131072,2,directed,"../arkouda/data/"+filename)
+    #Graph=ak.graph_file_read(786396,262144,2,directed,"../arkouda/data/delaunay/delaunay_n18.gr")
     #Graph=ak.rmat_gen(lgNv, Ne_per_v, p, directed, weighted)
-    Graph=ak.graph_file_read(103689,8276,2,directed,"data/graphs/wiki")
+    #Graph=ak.graph_file_read(103689,8276,2,directed,"data/graphs/wiki")
     #Graph=ak.graph_file_read(2981,2888,2,directed,"data/graphs/fb")
+    Graph=ak.graph_file_read(1000,1001,2,directed,"data/line.gr")
+    #Graph=ak.graph_file_read(2000,1002,2,directed,"data/2.gr")
+    #Graph=ak.graph_file_read(3000,1003,2,directed,"data/3.gr")
+    #Graph=ak.graph_file_read(150,53,2,directed,"data/3-50.gr")
     end = time.time()
-    print("Building the graph takes {:.4f} seconds".format(end-start))
-    print("number of vertices ={}".format(Graph.n_vertices))
-    print("number of edges ={}".format(Graph.n_edges))
+    print("Building RMAT Graph takes {:.4f} seconds".format(end-start))
     print("directed graph  ={}".format(Graph.directed))
     print("weighted graph  ={}".format(Graph.weighted))
-    '''
     print("source of edges   ={}".format(Graph.src))
-    print("R dest of edges   ={}".format(Graph.dstR))
     print("dest of edges   ={}".format(Graph.dst))
-    print("R source of edges   ={}".format(Graph.srcR))
     print("start   ={}".format(Graph.start_i))
-    print("R start   ={}".format(Graph.start_iR))
     print(" neighbour   ={}".format(Graph.neighbour))
-    print("R neighbour   ={}".format(Graph.neighbourR))
+    print("source of edges R  ={}".format(Graph.srcR))
+    print("dest of edges R  ={}".format(Graph.dstR))
+    print("start R  ={}".format(Graph.start_iR))
+    print("neighbour R  ={}".format(Graph.neighbourR))
+    print("from src to dst")
+    for i in range(int(Graph.n_edges)):
+         print("<",Graph.src[i]," -- ", Graph.dst[i],">")
+    print("vertex, neighbour, start")
+    for i in range(int(Graph.n_vertices)):
+         print("<",i,"--", Graph.neighbour[i],"--", Graph.start_i[i], ">")
+    print("from srcR to dstR")
+    for i in range(int(Graph.n_edges)):
+         print("<",Graph.srcR[i]," -- ", Graph.dstR[i],">")
+    print("vertex, neighbourR, startR")
+    for i in range(int(Graph.n_vertices)):
+         print("<",i,"--", Graph.neighbourR[i],"--", Graph.start_iR[i], ">")
+    '''
     print("vertices weight    ={}".format(Graph.v_weight))
     print("edges weight    ={}".format(Graph.e_weight))
-    '''
     start = time.time()
-    deparray = ak.graph_bfs(Graph,4)
+    deparray = ak.graph_bfs(Graph,0)
     end = time.time()
+    print("----------------------")
+    print("deparray = ak.graph_bfs(Graph,0)")
     print(deparray)
     print("BFS  the graph takes {:.4f} seconds".format(end-start))
+    '''
+    start = time.time()
+    deparray = ak.graph_bfs(Graph,int((int(Graph.n_vertices)-1)/2))
+    end = time.time()
+    print("----------------------")
+    print("deparray = ak.graph_bfs(Graph,int((int(Graph.n_vertices)-1)/2)")
+    print("root=",int(Graph.n_vertices)-1)
+    print(deparray)
+    print("BFS  the graph takes {:.4f} seconds".format(end-start))
+    return
+    '''
+    start = time.time()
+    deparray = ak.graph_bfs(Graph,1)
+    end = time.time()
+    print("----------------------")
+    print("deparray = ak.graph_bfs(Graph,1)")
+    print(deparray)
+    print("BFS  the graph takes {:.4f} seconds".format(end-start))
+    start = time.time()
+    deparray = ak.graph_bfs(Graph,int(Graph.n_vertices)-2)
+    end = time.time()
+    print("----------------------")
+    print("deparray = ak.graph_bfs(Graph,Graph.n_vertices-2)")
+    print(deparray)
+    print("BFS  the graph takes {:.4f} seconds".format(end-start))
+    start = time.time()
+    deparray = ak.graph_bfs(Graph,2)
+    end = time.time()
+    print("----------------------")
+    print("deparray = ak.graph_bfs(Graph,2)")
+    print(deparray)
+    print("BFS  the graph takes {:.4f} seconds".format(end-start))
+    start = time.time()
+    deparray = ak.graph_bfs(Graph,int(Graph.n_vertices)-3)
+    end = time.time()
+    print("deparray = ak.graph_bfs(Graph,Graph.n_vertices-3)")
+    print(deparray)
+    print("BFS  the graph takes {:.4f} seconds".format(end-start))
+    return
+    '''
     '''
     ll,ver = ak.graph_bfs(Graph,4)
     old=-2;
@@ -67,18 +145,23 @@ def time_ak_bfs_graph(trials:int):
     
     '''
     timings = []
-    trials=int(Graph.n_vertices)
-    for root in range(trials):
+    totalV=int(Graph.n_vertices)
+    trials=20
+    selectroot = np.random.randint(0, totalV-1, trials)
+    #selectroot[0]=0
+    #for root in range(trials):
+    for root in selectroot:
         start = time.time()
-        _ = ak.graph_bfs(Graph,root)
+        _ = ak.graph_bfs(Graph,int(root))
         end = time.time()
         timings.append(end - start)
     tavg = sum(timings) / trials
-    print("Average time = {:.4f} s for {} executions".format(tavg,trials))
+    print("Average BFS time = {:.4f} s for {} executions".format(tavg,trials))
     print("number of vertices ={}".format(Graph.n_vertices))
     print("number of edges ={}".format(Graph.n_edges))
-    print("Average Edges = {:.4f} K/s".format(int(Graph.n_edges)/tavg/1024))
-    print("Average Vertices = {:.4f} K/s".format(int(Graph.n_vertices)/tavg/1024))
+    print("Average BFS Edges = {:.4f} M/s".format(int(Graph.n_edges)/tavg/1024/1024))
+    print("Average BFS Vertices = {:.4f} M/s".format(int(Graph.n_vertices)/tavg/1024/1024))
+    print("Ne_per_v=",Ne_per_v, " p=" ,p)
     #print("Average rate = {:.2f} GiB/sec".format(bytes_per_sec/2**30))
 
 
@@ -110,6 +193,14 @@ if __name__ == "__main__":
         print("CORRECT")
         sys.exit(0)
     '''
-
+    time_ak_bfs_graph(1,2,3.0,0,0)
+    '''
+    for i in range(10,25,2):
+        for j in range(3,30,4):
+           for k in np.arange(0.4,0.7,0.15):
+               for d in range(0,2):
+                   for w in range(0,1):
+                      time_ak_bfs_graph(i,j,k,d,w)
     time_ak_bfs_graph(args.trials)
     sys.exit(0)
+    '''
