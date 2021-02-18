@@ -659,26 +659,51 @@ module ReductionMsg
      * identity. */
     class ResettingOrScanOp: ReduceScanOp {
       type eltType;
+      /* value is a tuple comprising a flag and the actual result of 
+         segmented bitwise OR. 
+
+         The meaning of the flag depends on whether it belongs to an 
+         array element yet to be scanned or to an element that has 
+         already been scanned (including the internal state of a class
+         instance doing the scanning). For elements yet to be scanned,
+         the flag means "reset to the identity here". For elements that
+         have already been scanned, or for internal state, the flag means 
+         "there has already been a reset in the computation of this value".
+      */
       var value = (false, 0);
 
       proc identity return (false, 0);
 
       proc accumulate(x) {
+        // Assume x is an element that has not yet been scanned, and
+        // that it comes after the current state.
         const (reset, other) = x;
-        const (_, v) = value;
-        value = (reset, if reset then other else (v | other));
+        const (hasReset, v) = value;
+        // x's reset flag controls whether value gets replaced or combined
+        // also update this instance's "hasReset" flag with x's reset flag
+        value = (hasReset | reset, if reset then other else (v | other));
       }
 
       proc accumulateOntoState(ref state, x) {
-        const (reset, other) = x;
-        const (_, v) = state;
-        state = (reset, if reset then other else (v | other));
+        // Assume state is an element that has already been scanned,
+        // and x is an update from a previous boundary.
+        const (_, other) = x;
+        const (hasReset, v) = state;
+        // x's hasReset flag does not matter
+        // If state has already encountered a reset, then it should
+        // ignore x's value
+        state = (hasReset, if hasReset then v else (v | other));
       }
 
       proc combine(x) {
-        const (reset, other) = x.value;
-        const (_, v) = value;
-        value = (reset, if reset then other else (v | other));
+        // Assume x is an instance that scanned a prior chunk.
+        const (xHasReset, other) = x.value;
+        const (hasReset, v) = value;
+        // Since current instance is absorbing x's history,
+        // xHasReset flag should be ORed in.
+        // But if current instance has already encountered a reset,
+        // then it should ignore x's value.
+        value = (hasReset | xHasReset, if hasReset then v else (v | other));
       }
 
       proc generate() {
@@ -714,26 +739,51 @@ module ReductionMsg
      * identity. */
     class ResettingAndScanOp: ReduceScanOp {
       type eltType;
+      /* value is a tuple comprising a flag and the actual result of 
+         segmented bitwise AND. 
+
+         The meaning of the flag depends on
+         whether it belongs to an array element yet to be scanned or 
+         to an element that has already been scanned (or the state of
+         an instance doing the scanning). For elements yet to be scanned,
+         the flag means "reset to the identity here". For elements that
+         have already been scanned, or for internal state, the flag means 
+         "there has already been a reset in the computation of this value".
+      */
       var value = (false, 0xffffffffffffffff:int);
 
       proc identity return (false, 0xffffffffffffffff:int);
 
       proc accumulate(x) {
+        // Assume x is an element that has not yet been scanned, and
+        // that it comes after the current state.
         const (reset, other) = x;
-        const (_, v) = value;
-        value = (reset, if reset then other else (v & other));
+        const (hasReset, v) = value;
+        // x's reset flag controls whether value gets replaced or combined
+        // also update this instance's "hasReset" flag with x's reset flag
+        value = (hasReset | reset, if reset then other else (v & other));
       }
 
       proc accumulateOntoState(ref state, x) {
-        const (reset, other) = x;
-        const (_, v) = state;
-        state = (reset, if reset then other else (v & other));
+        // Assume state is an element that has already been scanned,
+        // and x is an update from a previous boundary.
+        const (_, other) = x;
+        const (hasReset, v) = state;
+        // x's hasReset flag does not matter
+        // If state has already encountered a reset, then it should
+        // ignore x's value
+        state = (hasReset, if hasReset then v else (v & other));
       }
 
       proc combine(x) {
-        const (reset, other) = x.value;
-        const (_, v) = value;
-        value = (reset, if reset then other else (v & other));
+        // Assume x is an instance that scanned a prior chunk.
+        const (xHasReset, other) = x.value;
+        const (hasReset, v) = value;
+        // Since current instance is absorbing x's history,
+        // xHasReset flag should be ORed in.
+        // But if current instance has already encountered a reset,
+        // then it should ignore x's value.
+        value = (hasReset | xHasReset, if hasReset then v else (v & other));
       }
 
       proc generate() {
@@ -741,9 +791,10 @@ module ReductionMsg
       }
 
       proc clone() {
-        return new unmanaged ResettingOrScanOp(eltType=eltType);
+        return new unmanaged ResettingAndScanOp(eltType=eltType);
       }
     }
+    
 
     proc segXor(values:[] int, segments:[?D] int) {
       // Because XOR has an inverse (itself), this can be
