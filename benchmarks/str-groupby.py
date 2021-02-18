@@ -10,7 +10,7 @@ def create_parser():
     parser = argparse.ArgumentParser(description="Measure performance of grouping arrays of random values.")
     parser.add_argument('hostname', help='Hostname of arkouda server')
     parser.add_argument('port', type=int, help='Port of arkouda server')
-    parser.add_argument('-n', '--size', type=int, default=10**7, help='Problem size: total length of all arrays to group')
+    parser.add_argument('-n', '--size', type=int, default=10**8, help='Problem size: total length of all arrays to group')
     parser.add_argument('-t', '--trials', type=int, default=1, help='Number of times to run the benchmark')
     parser.add_argument('-d', '--dtype', default='str', help='Dtype of array ({})'.format(', '.join(TYPES)))
     parser.add_argument('--correctness-only', default=False, action='store_true', help='Only check correctness, not performance.')
