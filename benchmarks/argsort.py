@@ -18,7 +18,7 @@ def time_ak_argsort(N_per_locale, trials, dtype, seed):
         a = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
         nbytes = a.size * a.itemsize
     elif dtype == 'str':
-        a = ak.random_strings_uniform(1, 8, N, seed=seed)
+        a = ak.random_strings_uniform(1, 16, N, seed=seed)
         nbytes = (a.bytes.size * a.bytes.itemsize)
      
     timings = []
@@ -66,7 +66,7 @@ def check_correctness(dtype, seed):
     elif dtype == 'float64':
         a = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
     elif dtype == 'str':
-        a = ak.random_strings_uniform(1, 8, N, seed=seed)
+        a = ak.random_strings_uniform(1, 16, N, seed=seed)
 
     perm = ak.argsort(a)
     if dtype in ('int64', 'float64'):

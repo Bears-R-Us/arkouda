@@ -23,7 +23,7 @@ def time_ak_coargsort(N_per_locale, trials, dtype, seed):
             arrs = [ak.randint(0, 1, N//numArrays, dtype=ak.float64, seed=s) for s in seeds]
             nbytes = sum(a.size * a.itemsize for a in arrs)
         elif dtype == 'str':
-            arrs = [ak.random_strings_uniform(1, 8, N//numArrays, seed=s) for s in seeds]
+            arrs = [ak.random_strings_uniform(1, 16, N//numArrays, seed=s) for s in seeds]
             nbytes = sum(a.bytes.size * a.bytes.itemsize for a in arrs)
 
         timings = []
@@ -78,7 +78,7 @@ def check_correctness(dtype, seed):
         a = ak.randint(0, 1, N, dtype=ak.float64, seed=seed)
         z = ak.zeros(N, dtype=dtype)
     elif dtype == 'str':
-        a = ak.random_strings_uniform(1, 8, N, seed=seed)
+        a = ak.random_strings_uniform(1, 16, N, seed=seed)
         z = ak.cast(ak.zeros(N), 'str')
 
     perm = ak.coargsort([a, z])
