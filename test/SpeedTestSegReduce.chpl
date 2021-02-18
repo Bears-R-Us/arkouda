@@ -1,7 +1,7 @@
 use TestBase;
 use CommAggregation;
 
-config const NINPUTS = 10_000_000;
+config const NINPUTS = 10_000;
 config const DEBUG = false;
 config const TOY = false;
 
