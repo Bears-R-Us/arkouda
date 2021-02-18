@@ -95,20 +95,6 @@ module SegStringSort {
     return ranks;
   }
   
-  proc getHeads(ss: SegString, lengths: [?D] int, pivot: int) {
-    ref va = ss.values.a;
-    var heads: [D] [0..#pivot] uint(8);
-    forall (o, l, h) in zip(ss.offsets.a, lengths, heads) {
-      const len = min(l, pivot);
-      for j in 0..#len {
-        // TODO which one is local
-        use UnorderedCopy;
-        unorderedCopy(h[j], va[o+j]);
-      }
-    }
-    return heads;
-  }
-  
   proc getPivot(lengths: [?D] int): 2*int {
     const NBINS = 2**16;
     const BINDOM = {0..#NBINS};
