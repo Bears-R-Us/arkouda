@@ -1236,7 +1236,6 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
 
       var srcR=makeDistArray(Ne,int);
       var dstR=makeDistArray(Ne,int);
-      //var lengthR=makeDistArray(Nv,int);
       var neighbourR=makeDistArray(Nv,int);
       var start_iR=makeDistArray(Nv,int);
       ref  ivR=iv;
@@ -1318,15 +1317,21 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                       //}
                       curline+=1;
                   } 
-                  forall i in srclocal {
+                  forall i in src.localSubdomain() {
                        src[i]=src[i]+(src[i]==dst[i]);
                        src[i]=src[i]%Nv;
                        dst[i]=dst[i]%Nv;
-                       //srcR[i]=dst[i];
-                       //dstR[i]=src[i];
+                  }
+                  forall i in start_i.localSubdomain()  {
                        start_i[i]=-1;
-                       start_iR[i]=-1;
+                  }
+                  forall i in neighbour.localSubdomain()  {
                        neighbour[i]=0;
+                  }
+                  forall i in start_iR.localSubdomain()  {
+                       start_iR[i]=-1;
+                  }
+                  forall i in neighbourR.localSubdomain()  {
                        neighbourR[i]=0;
                   }
                   r.close();
@@ -2272,10 +2277,45 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                        //var myele:domain(int);
                        var myele = new set(int,parSafe = true);
                        for i in SetCurF{
-                           if ld.contains(i) {
+                           writeln("src domain=",ld );
+                           proc binary_Search(ary:[?D1] int,e:int):bool {
+                                if (e<ary[D1.low] || e> ary[D1.high] ){ 
+                                      return(false);
+                                } else {
+                                   if (e==ary[D1.low] || e== ary[D1.high] ){ 
+                                      return(true);
+                                   } else {  
+                                       var mid=(D1.low+D1.high)/2:int;
+                                       if (ary[mid]==e) {
+                                           return (true);
+                                       } else {
+                                          if (ary[mid]<e ) {
+                                             if ( mid< D1.high) {
+                                                 return binary_Search(ary[mid+1..D1.high],e);
+                                             } else  {
+                                                return false;
+                                             }
+                                          }
+                                          else {
+                                             if ( mid> D1.low) {
+                                                 return binary_Search(ary[D1.low..mid-1],e);
+                                             } else {
+                                                  return false;
+                                             }
+                                          }
+                                       }
+                                   }
+                                }
+                           }
+                           if ( binary_Search(src(ld),i) ) {
                                myele.add(i);// add the vertex in current frontier and on my locales into myele
                            }
                        }
+                       //for i in SetCurF{
+                       //    if ld.contains(i) {
+                       //        myele.add(i);// add the vertex in current frontier and on my locales into myele
+                       //    }
+                       //}
                        //writeln("current locale=",loc, " has elements =", myele);
                        forall i in myele with (ref SetNextF) {
                               var numNF=-1 :int;
@@ -2328,18 +2368,19 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
 
           //while (!SetCurF.isEmpty()) {
           while (numCurF>0) {
-                writeln("SetCurF=");
-                writeln(SetCurF);
+                //writeln("SetCurF=");
+                //writeln(SetCurF);
                 coforall loc in Locales  with (ref SetNextF) {
                    on loc {
+                       ref srcf=src;
+                       ref df=dst;
                        ref nf=nei;
                        ref sf=start_i;
-                       ref df=dst;
-                       ref srcf=src;
+
+                       ref srcfR=srcR;
+                       ref dfR=dstR;
                        ref nfR=neiR;
                        ref sfR=start_iR;
-                       ref dfR=dstR;
-                       ref srcfR=srcR;
 
                        var ld=srcf.localSubdomain();
                        var ldR=srcfR.localSubdomain();
@@ -2349,12 +2390,42 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
 
                        var myele = new set(int,parSafe = true);
                        for i in SetCurF{
-                           if (ld.contains(i) || ldR.contains(i)) {
+                           writeln("src domain=",ld, " srcR domian=",ldR);
+                           proc binary_Search(ary:[?D1] int,e:int):bool {
+                                if (e<ary[D1.low] || e> ary[D1.high] ){ 
+                                      return(false);
+                                } else {
+                                   if (e==ary[D1.low] || e== ary[D1.high] ){ 
+                                      return(true);
+                                   } else {  
+                                       var mid=(D1.low+D1.high)/2:int;
+                                       if (ary[mid]==e) {
+                                           return (true);
+                                       } else {
+                                          if (ary[mid]<e ) {
+                                             if ( mid< D1.high) {
+                                                 return binary_Search(ary[mid+1..D1.high],e);
+                                             } else  {
+                                                return false;
+                                             }
+                                          }
+                                          else {
+                                             if ( mid> D1.low) {
+                                                 return binary_Search(ary[D1.low..mid-1],e);
+                                             } else {
+                                                  return false;
+                                             }
+                                          }
+                                       }
+                                   }
+                                }
+                           }
+                           if ( binary_Search(src(ld),i) || binary_Search(srcR(ldR),i) ) {
                                myele.add(i);// add the vertex in current frontier and on my locales into myele
                            }
                        }
 
-                       writeln("current locale=",loc, " has elements =", myele);
+                       //writeln("current locale=",loc, " has elements =", myele);
                        forall i in myele with (ref SetNextF) {
                        //forall i in SetCurF with (ref SetNextF){
                               var numNF=-1 :int;
@@ -2389,7 +2460,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                 cur_level+=1;
                 numCurF=SetNextF.getSize();
                 //numCurF=SetNextF.size;
-                writeln("SetCurF= ", SetCurF, " SetNextF=", SetNextF, " level ", cur_level+1," numCurf=", numCurF);
+                //writeln("SetCurF= ", SetCurF, " SetNextF=", SetNextF, " level ", cur_level+1," numCurf=", numCurF);
                 //numCurF=SetNextF.size;
                 //SetCurF=SetNextF;
                 SetCurF.clear();
