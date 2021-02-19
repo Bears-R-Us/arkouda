@@ -18,7 +18,9 @@ module SegStringSort {
   private const MINBYTES = SSS_MINBYTES;
   private config const SSS_MEMFACTOR = 5;
   private const MEMFACTOR = SSS_MEMFACTOR;
-  
+  private config const SSS_PARTITION_LONG_STRING = false;
+  private const PARTITION_LONG_STRING = SSS_PARTITION_LONG_STRING;
+ 
   
   const ssLogger = new Logger();
   if v {
@@ -96,36 +98,43 @@ module SegStringSort {
   }
   
   proc getPivot(lengths: [?D] int): 2*int {
-    const NBINS = 2**16;
-    const BINDOM = {0..#NBINS};
-    var pBins: [PrivateSpace][BINDOM] int;
-    coforall loc in Locales {
-      on loc {
-        const lD = D.localSubdomain();
-        ref locLengths = lengths.localSlice[lD];
-        var locBins: [0..#numTasks][BINDOM] int;
-        coforall task in 0..#numTasks {
-          const tD = calcBlock(task, lD.low, lD.high);
-          for i in tD {
-            var bin = min(locLengths[i], NBINS-1);
-            // Count number of *bytes* in bin, not the number of strings
-            locBins[task][bin] += locLengths[i];
+    if !PARTITION_LONG_STRING {
+      var pivot = max reduce lengths + 1;
+      pivot = max(pivot + (pivot % 2), MINBYTES);
+      const nShort = D.size;
+      return (pivot, nShort);
+    } else {
+      const NBINS = 2**16;
+      const BINDOM = {0..#NBINS};
+      var pBins: [PrivateSpace][BINDOM] int;
+      coforall loc in Locales {
+        on loc {
+          const lD = D.localSubdomain();
+          ref locLengths = lengths.localSlice[lD];
+          var locBins: [0..#numTasks][BINDOM] int;
+          coforall task in 0..#numTasks {
+            const tD = calcBlock(task, lD.low, lD.high);
+            for i in tD {
+              var bin = min(locLengths[i], NBINS-1);
+              // Count number of *bytes* in bin, not the number of strings
+              locBins[task][bin] += locLengths[i];
+            }
           }
+          pBins[here.id] = + reduce [task in 0..#numTasks] locBins[task];
         }
-        pBins[here.id] = + reduce [task in 0..#numTasks] locBins[task];
       }
+      const bins = + reduce [loc in PrivateSpace] pBins[loc];
+      // Number of bytes in strings longer than or equal to the current bin
+      const tailPop = (+ reduce bins) - (+ scan bins) + bins;
+      // Find the largest value of "long" such that long strings fit in one local subdomain
+      const singleLocale = (tailPop < (MEMFACTOR * D.localSubdomain().size));
+      var (dummy, pivot) = maxloc reduce zip(singleLocale, BINDOM);
+      // Pivot should be even and not less than MINBYTES
+      pivot = max(pivot + (pivot % 2), MINBYTES);
+      // How many strings are "short"?
+      const nShort = + reduce (lengths < pivot);
+      return (pivot, nShort);
     }
-    const bins = + reduce [loc in PrivateSpace] pBins[loc];
-    // Number of bytes in strings longer than or equal to the current bin
-    const tailPop = (+ reduce bins) - (+ scan bins) + bins;
-    // Find the largest value of "long" such that long strings fit in one local subdomain
-    const singleLocale = (tailPop < (MEMFACTOR * D.localSubdomain().size));
-    var (dummy, pivot) = maxloc reduce zip(singleLocale, BINDOM);
-    // Pivot should be even and not less than MINBYTES
-    pivot = max(pivot + (pivot % 2), MINBYTES);
-    // How many strings are "short"?
-    const nShort = + reduce (lengths < pivot);
-    return (pivot, nShort);
   }
   
   proc gatherLongStrings(ss: SegString, lengths: [] int, longInds: [?D] int): [] (string, int) {
