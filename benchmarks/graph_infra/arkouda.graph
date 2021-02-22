@@ -14,14 +14,32 @@ perfkeys: 1-array Average rate =, 2-array Average rate =, 8-array Average rate =
 graphkeys: 1 array Coargsort GiB/s, 2 array Coargsort GiB/s, 8 array Coargsort GiB/s, 16 array Coargsort GiB/s
 files: coargsort.dat, coargsort.dat, coargsort.dat, coargsort.dat
 graphtitle: Coargsort Performance
-ylabel: Performance (GiB/S)
+ylabel: Performance (GiB/s)
 
 perfkeys: 1-array Average rate =, 2-array Average rate =, 8-array Average rate =, 16-array Average rate =
 graphkeys: 1 array Groupby GiB/s, 2 array Groupby GiB/s, 8 array Groupby GiB/s, 16 array Groupby GiB/s
 files: groupby.dat, groupby.dat, groupby.dat, groupby.dat
 graphtitle: Groupby Performance
-ylabel: Performance (GiB/S)
+ylabel: Performance (GiB/s)
 
+perfkeys: Aggregate sum Average rate =, Aggregate xor Average rate =, Aggregate and Average rate =, Aggregate or Average rate =, Aggregate mean Average rate =
+graphkeys: sum (GiB/s), xor (GiB/s), and (GiB/s), or (GiB/s), mean (GiB/s)
+files: aggregate.dat, aggregate.dat, aggregate.dat, aggregate.dat, aggregate.dat
+graphtitle: Grouped Aggregation Performance (Tier 1)
+ylabel: Performance (GiB/s)
+
+perfkeys: Aggregate min Average rate =, Aggregate max Average rate =, Aggregate argmin Average rate =, Aggregate argmax Average rate =, Aggregate prod Average rate =
+graphkeys: min (GiB/s), max (GiB/s), argmin (GiB/s), argmax (GiB/s), prod (GiB/s)
+files: aggregate.dat, aggregate.dat, aggregate.dat, aggregate.dat, aggregate.dat
+graphtitle: Grouped Aggregation Performance (Tier 2)
+ylabel: Performance (GiB/s)
+
+perfkeys: Aggregate any Average rate =, Aggregate all Average rate =, Aggregate nunique Average rate =
+graphkeys: any (GiB/s), all (GiB/s), nunique (GiB/s)
+files: aggregate.dat, aggregate.dat, aggregate.dat
+graphtitle: Grouped Aggregation Performance (Tier 3)
+ylabel: Performance (GiB/s)
+    
 perfkeys: Average rate =
 graphkeys: Gather GiB/s
 files: gather.dat

@@ -298,6 +298,18 @@ module ReductionMsg
                         var (vals, locs) = segArgmax(values.a, segments.a);
                         st.addEntry(rname, new shared SymEntry(locs));
                     }
+                    when "or" {
+                        var res = segOr(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "and" {
+                        var res = segAnd(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
+                    when "xor" {
+                        var res = segXor(values.a, segments.a);
+                        st.addEntry(rname, new shared SymEntry(res));
+                    }
                     when "nunique" {
                         var res = segNumUnique(values.a, segments.a);
                         st.addEntry(rname, new shared SymEntry(res));
@@ -388,7 +400,8 @@ module ReductionMsg
        and then reduce over each chunk using the operator <Op>. The return array 
        of reduced values is the same size as <segments>.
      */
-    proc segSum(values:[] ?t, segments:[?D] int, skipNan=false): [D] t {
+    proc segSum(values:[] ?intype, segments:[?D] int, skipNan=false) {
+      type t = if intype == bool then int else intype;
       var res: [D] t;
       if (D.size == 0) { return res; }
       var cumsum;
@@ -400,40 +413,17 @@ module ReductionMsg
         cumsum = + scan values;
       }
       // Iterate over segments
-      forall (i, r) in zip(D, res) {
+      var rightvals: [D] t;
+      forall (i, r) in zip(D, rightvals) with (var agg = newSrcAggregator(t)) {
         // Find the segment boundaries
-        var vl: t, vr: t;
-        if (i > D.low) {
-          vl = cumsum[segments[i] - 1]:t;
-        }
         if (i == D.high) {
-          vr = cumsum[values.domain.high]:t;
+          agg.copy(r, cumsum[values.domain.high]);
         } else {
-          vr = cumsum[segments[i+1] -1]:t;
+          agg.copy(r, cumsum[segments[i+1] - 1]);
         }
-        r = vr - vl;
       }
-      return res;
-    }
-
-    proc segSum(values:[] bool, segments:[?D] int): [D] int {
-      var res: [D] int;
-      if (D.size == 0) { return res; }
-      var cumsum = + scan values;
-      // Iterate over segments
-      forall (i, r) in zip(D, res) {
-        // Find the values to the left of the segment boundaries
-        var vl: int, vr: int;
-        if (i > D.low) {
-          vl = cumsum[segments[i] - 1];
-        }
-        if (i == D.high) {
-          vr = cumsum[values.domain.high];
-        } else {
-          vr = cumsum[segments[i+1] -1];
-        }
-        r = vr - vl;
-      }
+      res[D.low] = rightvals[D.low];
+      res[D.low+1..] = rightvals[D.low+1..] - rightvals[..D.high-1];
       return res;
     }
 
@@ -496,11 +486,11 @@ module ReductionMsg
         
         // find cumulative nans at segment boundaries
         var segnans: [D] int;
-        forall si in D {
+        forall (si, sn) in zip(D, segnans) with (var agg = newSrcAggregator(int)) {
           if si == D.high {
-              segnans[si] = cumnans[cumnans.domain.high];
+            agg.copy(sn, cumnans[cumnans.domain.high]); 
           } else {
-              segnans[si] = cumnans[segments[si+1]-1];
+            agg.copy(sn, cumnans[segments[si+1]-1]);
           }
         }
         
@@ -537,7 +527,7 @@ module ReductionMsg
         kv = [(k, v) in zip(keys, values)] (-k, v);
       }
       var cummin = min scan kv;
-      forall (i, r, low) in zip(D, res, segments) {
+      forall (i, r, low) in zip(D, res, segments) with (var agg = newSrcAggregator(t)) {
         var vi: int;
         if (i < D.high) {
           vi = segments[i+1] - 1;
@@ -545,7 +535,7 @@ module ReductionMsg
           vi = values.domain.high;
         }
         if (vi >= low) {
-          (_,r) = cummin[vi];
+          agg.copy(r, cummin[vi][1]);
         }
       }
       return res;
@@ -564,7 +554,7 @@ module ReductionMsg
       }
       var cummax = max scan kv;
       
-      forall (i, r, low) in zip(D, res, segments) {
+      forall (i, r, low) in zip(D, res, segments) with (var agg = newSrcAggregator(t)) {
         var vi: int;
         if (i < D.high) {
           vi = segments[i+1] - 1;
@@ -572,7 +562,7 @@ module ReductionMsg
           vi = values.domain.high;
         }
         if (vi >= low) {
-          (_,r) = cummax[vi];
+          agg.copy(r, cummax[vi][1]);
         }
       }
       return res;
@@ -585,7 +575,8 @@ module ReductionMsg
       var keys = expandKeys(vD, segments);
       var kvi = [(k, v, i) in zip(keys, values, vD)] ((-k, v), i);
       var cummin = minloc scan kvi;
-      forall (l, v, low, i) in zip(locs, vals, segments, D) {
+      forall (l, v, low, i) in zip(locs, vals, segments, D)
+        with (var locagg = newSrcAggregator(int), var valagg = newSrcAggregator(t)) {
         var vi: int;
         if (i < D.high) {
           vi = segments[i+1] - 1;
@@ -593,8 +584,10 @@ module ReductionMsg
           vi = values.domain.high;
         }
         if (vi >= low) {
-          ((_,v),_) = cummin[vi];
-          (_    ,l) = cummin[vi];
+          // ((_,v),_) = cummin[vi];
+          valagg.copy(v, cummin[vi][0][1]);
+          // (_    ,l) = cummin[vi];
+          locagg.copy(l, cummin[vi][1]);
         }
       }
       return (vals, locs);
@@ -607,7 +600,8 @@ module ReductionMsg
       var keys = expandKeys(vD, segments);
       var kvi = [(k, v, i) in zip(keys, values, vD)] ((k, v), i);
       var cummax = maxloc scan kvi;
-      forall (l, v, low, i) in zip(locs, vals, segments, D) {
+      forall (l, v, low, i) in zip(locs, vals, segments, D)
+        with (var locagg = newSrcAggregator(int), var valagg = newSrcAggregator(t)) {
         var vi: int;
         if (i < D.high) {
           vi = segments[i+1] - 1;
@@ -615,8 +609,10 @@ module ReductionMsg
           vi = values.domain.high;
         }
         if (vi >= low) {
-          ((_,v),_) = cummax[vi];
-          (_,    l) = cummax[vi];
+          // ((_,v),_) = cummax[vi];
+          valagg.copy(v, cummax[vi][0][1]);
+          // (_,    l) = cummax[vi];
+          locagg.copy(l, cummax[vi][1]);
         }
       }
       return (vals, locs);
@@ -625,30 +621,199 @@ module ReductionMsg
     proc segAny(values:[] bool, segments:[?D] int): [D] bool {
       var res: [D] bool;
       if (D.size == 0) { return res; }
-      forall (r, low, i) in zip(res, segments, D) {
-        var high: int;
-        if (i < D.high) {
-          high = segments[i+1] - 1;
-        } else {
-          high = values.domain.high;
-        }
-        r = || reduce values[low..high];
-      }
+      const sums = segSum(values, segments);
+      res = (sums > 0);
       return res;
     }
 
     proc segAll(values:[] bool, segments:[?D] int): [D] bool {
       var res: [D] bool;
       if (D.size == 0) { return res; }
-      forall (r, low, i) in zip(res, segments, D) {
-        var high: int;
-        if (i < D.high) {
-          high = segments[i+1] - 1;
-        } else {
-          high = values.domain.high;
-        }
-        r = && reduce values[low..high];
+      const sums = segSum(values, segments);
+      const lengths = segCount(segments, values.domain.high + 1);
+      res = (sums == lengths);
+      return res;
+    }
+
+    proc segOr(values:[?vD] int, segments:[?D] int): [D] int {
+      var res: [D] int;
+      // Set reset flag at segment boundaries
+      var flagvalues: [vD] (bool, int) = [v in values] (false, v);
+      forall s in segments with (var agg = newDstAggregator(bool)) {
+        agg.copy(flagvalues[s][0], true);
       }
+      // Scan with custom operator, which resets the bitwise AND
+      // at segment boundaries.
+      const scanresult = ResettingOrScanOp scan flagvalues;
+      // Read the results from the last element of each segment
+      forall (r, s) in zip(res[..D.high-1], segments[D.low+1..]) with (var agg = newSrcAggregator(int)) {
+        agg.copy(r, scanresult[s-1](1));
+      }
+      res[D.high] = scanresult[vD.high](1);
+      return res;
+    }
+
+    /* Performs a bitwise OR scan, controlled by a reset flag. While
+     * the reset flag is false, the accumulation of values proceeds as 
+     * normal. When a true is encountered, the state resets to the
+     * identity. */
+    class ResettingOrScanOp: ReduceScanOp {
+      type eltType;
+      /* value is a tuple comprising a flag and the actual result of 
+         segmented bitwise OR. 
+
+         The meaning of the flag depends on whether it belongs to an 
+         array element yet to be scanned or to an element that has 
+         already been scanned (including the internal state of a class
+         instance doing the scanning). For elements yet to be scanned,
+         the flag means "reset to the identity here". For elements that
+         have already been scanned, or for internal state, the flag means 
+         "there has already been a reset in the computation of this value".
+      */
+      var value = (false, 0);
+
+      proc identity return (false, 0);
+
+      proc accumulate(x) {
+        // Assume x is an element that has not yet been scanned, and
+        // that it comes after the current state.
+        const (reset, other) = x;
+        const (hasReset, v) = value;
+        // x's reset flag controls whether value gets replaced or combined
+        // also update this instance's "hasReset" flag with x's reset flag
+        value = (hasReset | reset, if reset then other else (v | other));
+      }
+
+      proc accumulateOntoState(ref state, x) {
+        // Assume state is an element that has already been scanned,
+        // and x is an update from a previous boundary.
+        const (_, other) = x;
+        const (hasReset, v) = state;
+        // x's hasReset flag does not matter
+        // If state has already encountered a reset, then it should
+        // ignore x's value
+        state = (hasReset, if hasReset then v else (v | other));
+      }
+
+      proc combine(x) {
+        // Assume x is an instance that scanned a prior chunk.
+        const (xHasReset, other) = x.value;
+        const (hasReset, v) = value;
+        // Since current instance is absorbing x's history,
+        // xHasReset flag should be ORed in.
+        // But if current instance has already encountered a reset,
+        // then it should ignore x's value.
+        value = (hasReset | xHasReset, if hasReset then v else (v | other));
+      }
+
+      proc generate() {
+        return value;
+      }
+
+      proc clone() {
+        return new unmanaged ResettingOrScanOp(eltType=eltType);
+      }
+    }
+
+    proc segAnd(values:[?vD] int, segments:[?D] int): [D] int {
+      var res: [D] int;
+      // Set reset flag at segment boundaries
+      var flagvalues: [vD] (bool, int) = [v in values] (false, v);
+      forall s in segments with (var agg = newDstAggregator(bool)) {
+        agg.copy(flagvalues[s][0], true);
+      }
+      // Scan with custom operator, which resets the bitwise AND
+      // at segment boundaries.
+      const scanresult = ResettingAndScanOp scan flagvalues;
+      // Read the results from the last element of each segment
+      forall (r, s) in zip(res[..D.high-1], segments[D.low+1..]) with (var agg = newSrcAggregator(int)) {
+        agg.copy(r, scanresult[s-1](1));
+      }
+      res[D.high] = scanresult[vD.high](1);
+      return res;
+    }
+
+    /* Performs a bitwise AND scan, controlled by a reset flag. While
+     * the reset flag is false, the accumulation of values proceeds as 
+     * normal. When a true is encountered, the state resets to the
+     * identity. */
+    class ResettingAndScanOp: ReduceScanOp {
+      type eltType;
+      /* value is a tuple comprising a flag and the actual result of 
+         segmented bitwise AND. 
+
+         The meaning of the flag depends on
+         whether it belongs to an array element yet to be scanned or 
+         to an element that has already been scanned (or the state of
+         an instance doing the scanning). For elements yet to be scanned,
+         the flag means "reset to the identity here". For elements that
+         have already been scanned, or for internal state, the flag means 
+         "there has already been a reset in the computation of this value".
+      */
+      var value = (false, 0xffffffffffffffff:int);
+
+      proc identity return (false, 0xffffffffffffffff:int);
+
+      proc accumulate(x) {
+        // Assume x is an element that has not yet been scanned, and
+        // that it comes after the current state.
+        const (reset, other) = x;
+        const (hasReset, v) = value;
+        // x's reset flag controls whether value gets replaced or combined
+        // also update this instance's "hasReset" flag with x's reset flag
+        value = (hasReset | reset, if reset then other else (v & other));
+      }
+
+      proc accumulateOntoState(ref state, x) {
+        // Assume state is an element that has already been scanned,
+        // and x is an update from a previous boundary.
+        const (_, other) = x;
+        const (hasReset, v) = state;
+        // x's hasReset flag does not matter
+        // If state has already encountered a reset, then it should
+        // ignore x's value
+        state = (hasReset, if hasReset then v else (v & other));
+      }
+
+      proc combine(x) {
+        // Assume x is an instance that scanned a prior chunk.
+        const (xHasReset, other) = x.value;
+        const (hasReset, v) = value;
+        // Since current instance is absorbing x's history,
+        // xHasReset flag should be ORed in.
+        // But if current instance has already encountered a reset,
+        // then it should ignore x's value.
+        value = (hasReset | xHasReset, if hasReset then v else (v & other));
+      }
+
+      proc generate() {
+        return value;
+      }
+
+      proc clone() {
+        return new unmanaged ResettingAndScanOp(eltType=eltType);
+      }
+    }
+    
+
+    proc segXor(values:[] int, segments:[?D] int) {
+      // Because XOR has an inverse (itself), this can be
+      // done with a scan like segSum
+      var res: [D] int;
+      if (D.size == 0) { return res; }
+      var cumxor = ^ scan values;
+      // Iterate over segments
+      var rightvals: [D] int;
+      forall (i, r) in zip(D, rightvals) with (var agg = newSrcAggregator(int)) {
+        // Find the segment boundaries
+        if (i == D.high) {
+          agg.copy(r, cumxor[values.domain.high]);
+        } else {
+          agg.copy(r, cumxor[segments[i+1] - 1]);
+        }
+      }
+      res[D.low] = rightvals[D.low];
+      res[D.low+1..] = rightvals[D.low+1..] ^ rightvals[..D.high-1];
       return res;
     }
 
