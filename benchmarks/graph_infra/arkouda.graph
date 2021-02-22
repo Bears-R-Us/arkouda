@@ -14,13 +14,13 @@ perfkeys: 1-array Average rate =, 2-array Average rate =, 8-array Average rate =
 graphkeys: 1 array Coargsort GiB/s, 2 array Coargsort GiB/s, 8 array Coargsort GiB/s, 16 array Coargsort GiB/s
 files: coargsort.dat, coargsort.dat, coargsort.dat, coargsort.dat
 graphtitle: Coargsort Performance
-ylabel: Performance (GiB/S)
+ylabel: Performance (GiB/s)
 
 perfkeys: 1-array Average rate =, 2-array Average rate =, 8-array Average rate =, 16-array Average rate =
 graphkeys: 1 array Groupby GiB/s, 2 array Groupby GiB/s, 8 array Groupby GiB/s, 16 array Groupby GiB/s
 files: groupby.dat, groupby.dat, groupby.dat, groupby.dat
 graphtitle: Groupby Performance
-ylabel: Performance (GiB/S)
+ylabel: Performance (GiB/s)
 
 perfkeys: Aggregate sum Average rate =, Aggregate xor Average rate =, Aggregate and Average rate =, Aggregate or Average rate =, Aggregate mean Average rate =
 graphkeys: sum (GiB/s), xor (GiB/s), and (GiB/s), or (GiB/s), mean (GiB/s)
