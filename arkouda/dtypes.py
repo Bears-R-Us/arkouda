@@ -1,4 +1,5 @@
 from typing import cast, Tuple
+from enum import Enum
 import numpy as np # type: ignore
 from typeguard import typechecked
 import builtins
@@ -45,6 +46,25 @@ def _as_dtype(dt) -> np.dtype:
     if not isinstance(dt, np.dtype):
         return np.dtype(dt)
     return dt
+
+class DType(Enum):
+    
+    BOOL = 'bool'
+    INT64 = 'int64'
+    FLOAT64 = 'float64'
+    UINT8 = 'uint8'
+    STR = 'str'
+
+class DTypeObject(Enum):
+
+    BOOL = bool
+    INT64 = int64
+    FLOAT64 = float64
+    UINT8 = uint8
+    STR = str
+
+DTypes = frozenset([member.value for _, member in DType.__members__.items()])
+DTypeObjects = frozenset([member.value for _, member in DTypeObject.__members__.items()])
 
 @typechecked
 def check_np_dtype(dt : np.dtype) -> None:

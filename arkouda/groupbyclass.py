@@ -1,4 +1,5 @@
 from __future__ import annotations
+import enum
 from typing import cast, List, Sequence, Tuple, Union, TYPE_CHECKING
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
@@ -14,7 +15,25 @@ from arkouda.numeric import cumsum
 from arkouda.logger import getArkoudaLogger
 from arkouda.dtypes import int64
 
-__all__ = ["GroupBy", "broadcast"]
+__all__ = ["GroupBy", "broadcast", "GROUPBY_REDUCTION_TYPES"]
+
+class GroupByReductionType(enum.Enum):
+    SUM = 'sum'
+    PROD = 'prod' 
+    MEAN = 'mean'
+    MIN = 'min'
+    MAX = 'max'
+    ARGMIN = 'argmin'
+    ARGMAX = 'argmax'
+    NUNUNIQUE = 'nunique'
+    ANY = 'any'
+    ALL = 'all'
+    OR = 'or'
+    AND = 'and'
+    XOR = 'xor'
+    
+GROUPBY_REDUCTION_TYPES = frozenset([member.value for _, member 
+                                  in GroupByReductionType.__members__.items()])
 
 class GroupBy:
     """
@@ -56,10 +75,7 @@ class GroupBy:
     Only accepts pdarrays of int64 dtype or Strings.
 
     """
-    Reductions = frozenset(['sum', 'prod', 'mean',
-                            'min', 'max', 'argmin', 'argmax',
-                            'nunique', 'any', 'all',
-                            'or', 'and', 'xor'])
+    Reductions = GROUPBY_REDUCTION_TYPES
 
     def __init__(self, keys : Union[pdarray,Strings,'Categorical', 
                                     List[Union[pdarray,np.int64,Strings]]], 

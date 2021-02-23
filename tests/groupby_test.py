@@ -3,6 +3,7 @@ import pandas as pd
 from context import arkouda as ak
 from arkouda.dtypes import float64, int64
 from base_test import ArkoudaTest
+from arkouda.groupbyclass import GroupByReductionType
 
 SIZE = 100
 GROUPS = 8
@@ -199,6 +200,18 @@ class GroupByTest(ArkoudaTest):
         
         self.assertTrue((np.array([1,2,3,4,5]) == keys.to_ndarray()).all())
         self.assertTrue((np.array([1,4,2,1,2]) == counts.to_ndarray()).all())
+        
+        
+    def test_groupby_reduction_type(self):
+        self.assertEqual('any', GroupByReductionType.ANY.value) 
+        self.assertEqual(GroupByReductionType.ANY, GroupByReductionType('any'))
+        
+        with self.assertRaises(ValueError):
+            GroupByReductionType('an')
+        
+        self.assertIsInstance(ak.GROUPBY_REDUCTION_TYPES, frozenset)
+        self.assertTrue('any' in ak.GROUPBY_REDUCTION_TYPES)
+        
         
     def test_error_handling(self):
         d = make_arrays()
