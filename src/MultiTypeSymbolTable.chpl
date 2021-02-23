@@ -174,11 +174,11 @@ module MultiTypeSymbolTable
                 otherwise { 
                     var errorMsg = "addEntry not implemented for %t".format(dtype); 
                     throw getErrorWithContext(
-                                   msg=errorMsg,
-                                   lineNumber=getLineNumber(),
-                                   routineName=getRoutineName(),
-                                   moduleName=getModuleName(),
-                                   errorClass="IllegalArgumentError");
+                        msg=errorMsg,
+                        lineNumber=getLineNumber(),
+                        routineName=getRoutineName(),
+                        moduleName=getModuleName(),
+                        errorClass="IllegalArgumentError");
                 }
             }
         }
@@ -230,16 +230,13 @@ module MultiTypeSymbolTable
         :throws: `unkownSymbolError(name)`
         */
         proc lookup(name: string): borrowed GenSymEntry throws {
-            if (!tab.contains(name))
-            {
-                mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                                                "undefined symbol: %s".format(name));
+            if (!tab.contains(name)) {
                 throw getErrorWithContext(
-                                   msg=unknownSymbolError("", name),
-                                   lineNumber=getLineNumber(),
-                                   routineName=getRoutineName(),
-                                   moduleName=getModuleName(),
-                                   errorClass="UnknownSymbolError");
+                    msg=unknownSymbolError(pname="lookup", sname=name),
+                    lineNumber=getLineNumber(),
+                    routineName=getRoutineName(),
+                    moduleName=getModuleName(),
+                    errorClass="UnknownSymbolError");
             } else {
                 mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                 "found symbol: %s".format(name));
@@ -251,12 +248,11 @@ module MultiTypeSymbolTable
         checks to see if a symbol is defined if it is not it throws an exception 
         */
         proc check(name: string) throws { 
-            if (!tab.contains(name)) 
-            { 
+            if (!tab.contains(name)) { 
                 mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                                                 "undefined symbol: %s".format(name));
                 throw getErrorWithContext(
-                    msg=unknownSymbolError("", name),
+                    msg=unknownSymbolError(pname="check", sname=name),
                     lineNumber=getLineNumber(),
                     routineName=getRoutineName(),
                     moduleName=getModuleName(),
@@ -292,12 +288,17 @@ module MultiTypeSymbolTable
         :type name: string
         */
         proc dump(name:string): string throws {
-            if name == "__AllSymbols__" {return "%jt".format(this);}
-            else if (tab.contains(name)) {return "%jt %jt".format(name, tab.getReference(name));}
-            else {
-                var errorMsg = "Error: dump: undefined name: %s".format(name);
-                mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);           
-                return errorMsg;
+            if name == "__AllSymbols__" {
+                return "%jt".format(this);
+            } else if (tab.contains(name)) {
+                return "%jt %jt".format(name, tab.getReference(name));
+            } else {
+                throw getErrorWithContext(
+                    msg=unknownSymbolError(pname="dump",sname=name),
+                    lineNumber=getLineNumber(),
+                    routineName=getRoutineName(),
+                    moduleName=getModuleName(),
+                    errorClass="UnknownSymbolError");
             }
         }
         
@@ -321,9 +322,7 @@ module MultiTypeSymbolTable
                               tab.getBorrowed(n).ndim, tab.getBorrowed(n).shape, 
                               tab.getBorrowed(n).itemsize);
                 }
-            }
-            else
-            {
+            } else {
                 if (tab.contains(name)) {
                     s = "name:%t dtype:%t size:%t ndim:%t shape:%t itemsize:%t\n".format(name, 
                               dtype2str(tab.getBorrowed(name).dtype), tab.getBorrowed(name).size, 
@@ -331,8 +330,12 @@ module MultiTypeSymbolTable
                               tab.getBorrowed(name).itemsize);
                 }
                 else {
-                    s = unknownSymbolError("info",name);
-                    mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),s);                   
+                    throw getErrorWithContext(
+                        msg=unknownSymbolError(pname="info",sname=name),
+                        lineNumber=getLineNumber(),
+                        routineName=getRoutineName(),
+                        moduleName=getModuleName(),
+                        errorClass="UnknownSymbolError");                
                 }
             }
             return s;
@@ -355,8 +358,12 @@ module MultiTypeSymbolTable
                           tab.getBorrowed(name).shape, tab.getBorrowed(name).itemsize);
             }
             else {
-                s = unknownSymbolError("attrib",name);
-                mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),s);                 
+                throw getErrorWithContext(
+                    msg=unknownSymbolError("attrib",name),
+                    lineNumber=getLineNumber(),
+                    routineName=getRoutineName(),
+                    moduleName=getModuleName(),
+                    errorClass="UnknownSymbolError");                   
             }
             return s;
         }
@@ -438,8 +445,12 @@ module MultiTypeSymbolTable
                 }
             }
             else {
-                s = unknownSymbolError("datastr",name);
-                mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),s);             
+                throw getErrorWithContext(
+                    msg=unknownSymbolError("datastr",name),
+                    lineNumber=getLineNumber(),
+                    routineName=getRoutineName(),
+                    moduleName=getModuleName(),
+                    errorClass="UnknownSymbolError");                          
             }
             return s;
         }
@@ -515,17 +526,24 @@ module MultiTypeSymbolTable
                         s = s.replace("false","False");
                     }
                     otherwise {
-                        s = unrecognizedTypeError("datarepr",dtype2str(u.dtype));
-                        mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),s);                         
+                        throw getErrorWithContext(
+                            msg=unrecognizedTypeError("datarepr",dtype2str(u.dtype)),
+                            lineNumber=getLineNumber(),
+                            routineName=getRoutineName(),
+                            moduleName=getModuleName(),
+                            errorClass="TypeError");                            
                     }
                 }
             }
             else {
-                s = unknownSymbolError("datarepr",name);
-                mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),s);                 
+                throw getErrorWithContext(
+                    msg=unknownSymbolError("datarepr",name),
+                    lineNumber=getLineNumber(),
+                    routineName=getRoutineName(),
+                    moduleName=getModuleName(),
+                    errorClass="UnknownSymbolError");                  
             }
             return s;
         }
     }      
 }
-

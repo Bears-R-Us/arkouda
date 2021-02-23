@@ -8,6 +8,7 @@ module JoinEqWithDTMsg
     use Reflection;
     use Errors;
     use Logging;
+    use Message;
     use PrivateDist;
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -225,7 +226,7 @@ module JoinEqWithDTMsg
        pred: is the dt-predicate ("absDT","posDT","trueDT")
        resLimit: is how many answers can you tolerate ;-)
     */
-    proc joinEqWithDTMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+    proc joinEqWithDTMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var (a1_name, g2Seg_name, g2Ukeys_name, g2Perm_name, t1_name,
@@ -367,7 +368,9 @@ module JoinEqWithDTMsg
         st.addEntry(resI_name, new shared SymEntry(resI));
         st.addEntry(resJ_name, new shared SymEntry(resJ));
         
-        return try! "created " + st.attrib(resI_name) + " +created " + st.attrib(resJ_name);
+        repMsg = "created " + st.attrib(resI_name) + " +created " + st.attrib(resJ_name);
+        jeLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
     }// end joinEqWithDTMsg()
     
 }// end module JoinEqWithDTMsg

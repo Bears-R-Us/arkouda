@@ -5,13 +5,23 @@ module BroadcastMsg {
   use Reflection;
   use Broadcast;
   use ServerConfig;
+  use Logging;
+  use Message;
+  
+  const bmLogger = new Logger();
+
+  if v {
+        bmLogger.level = LogLevel.DEBUG;
+  } else {
+        bmLogger.level = LogLevel.INFO;
+  }
   
   /* 
    * Broadcast a value per segment of a segmented array to the
    * full size of the array, optionally applying a permutation
    * to return the result in the order of the original array.
    */
-  proc broadcastMsg(cmd: string, payload: string, st: borrowed SymTab) throws {
+  proc broadcastMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var (permName, segName, valName, usePermStr, sizeStr) = payload.splitMsgToTuple(5);
     const size = sizeStr: int;
     // Segments must be an int64 array
@@ -101,7 +111,8 @@ module BroadcastMsg {
         }
       }
     }
-    return "created " + st.attrib(rname); 
+    var repMsg = "created " + st.attrib(rname); 
+    bmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+    return new MsgTuple(repMsg, MsgType.NORMAL);    
   }
-
 }

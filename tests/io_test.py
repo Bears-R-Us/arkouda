@@ -196,7 +196,7 @@ class IOTest(ArkoudaTest):
             ak.read_hdf(dsetName='in_tens_pdarray', 
                     filenames=['{}/iotest_single_column_LOCALE0000'.format(IOTest.io_test_dir),
                                '{}/iotest_single_column_dupe_LOCALE0000'.format(IOTest.io_test_dir)])       
-        self.assertTrue('Error: The dataset in_tens_pdarray does not exist in the file' in  
+        self.assertTrue('Dataset in_tens_pdarray not found in file' in  
                          cm.exception.args[0])
         
         with self.assertRaises(RuntimeError) as cm:
@@ -445,7 +445,7 @@ class IOTest(ArkoudaTest):
                 f.create_dataset('floats', data=fdata)
         with self.assertRaises(RuntimeError) as cm:
             a = ak.read_all(prefix+'*')
-        self.assertTrue('Error: inconsistent precision or sign' in cm.exception.args[0])
+        self.assertTrue('Inconsistent precision or sign' in cm.exception.args[0])
         a = ak.read_all(prefix+'*', strictTypes=False)
         self.assertTrue((a['integers'] == ak.arange(len(inttypes)*N)).all())
         self.assertTrue(np.allclose(a['floats'].to_ndarray(), np.arange(len(floattypes)*N, dtype=np.float64)))

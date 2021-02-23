@@ -5,6 +5,7 @@ module CastMsg {
   use SegmentedArray;
   use Errors;
   use Logging;
+  use Message;
   use SysError;
   use ServerErrorStrings;
   use ServerConfig;
@@ -17,7 +18,7 @@ module CastMsg {
       castLogger.level = LogLevel.INFO;    
   }
 
-  proc castMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+  proc castMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     use ServerConfig; // for string.splitMsgToTuple
     param pn = Reflection.getRoutineName();
     var (name, objtype, targetDtype, opt) = payload.splitMsgToTuple(4);
@@ -28,100 +29,100 @@ module CastMsg {
       when "pdarray" {
         var gse: borrowed GenSymEntry = st.lookup(name);
         select (gse.dtype, targetDtype) {
-        when (DType.Int64, "int64") {
-          return castGenSymEntry(gse, st, int, int);
-        }
-        when (DType.Int64, "uint8") {
-          return castGenSymEntry(gse, st, int, uint(8));
-        }
-        when (DType.Int64, "float64") {
-          return castGenSymEntry(gse, st, int, real);
-        }
-        when (DType.Int64, "bool") {
-          return castGenSymEntry(gse, st, int, bool);
-        }
-        when (DType.Int64, "str") {
-          return castGenSymEntryToString(gse, st, int);
-        }
-        when (DType.UInt8, "int64") {
-          return castGenSymEntry(gse, st, uint(8), int);        
-        }
-        when (DType.UInt8, "uint8") {
-          return castGenSymEntry(gse, st, uint(8), uint(8));        
-        }
-        when (DType.UInt8, "float64") {
-          return castGenSymEntry(gse, st, uint(8), real);          
-        }
-        when (DType.UInt8, "bool") {
-          return castGenSymEntry(gse, st, uint(8), bool);                  
-        }
-        when (DType.UInt8, "str") {
-          return castGenSymEntryToString(gse, st, uint(8));
-        }
-        when (DType.Float64, "int64") {
-          return castGenSymEntry(gse, st, real, int);                  
-        }
-        when (DType.Float64, "uint8") {
-          return castGenSymEntry(gse, st, real, uint(8));
-        }
-        when (DType.Float64, "float64") {
-          return castGenSymEntry(gse, st, real, real);
-        }
-        when (DType.Float64, "bool") {
-          return castGenSymEntry(gse, st, real, bool);
-        }
-        when (DType.Float64, "str") {
-          return castGenSymEntryToString(gse, st, real);
-        }
-        when (DType.Bool, "int64") {
-          return castGenSymEntry(gse, st, bool, int);
-        }
-        when (DType.Bool, "uint8") {
-          return castGenSymEntry(gse, st, bool, uint(8));
-        }
-        when (DType.Bool, "float64") {
-          return castGenSymEntry(gse, st, bool, real);
-        }
-        when (DType.Bool, "bool") {
-          return castGenSymEntry(gse, st, bool, bool);
-        }
-        when (DType.Bool, "str") {
-          return castGenSymEntryToString(gse, st, bool);
-        }
-        otherwise {
-            var errorMsg = notImplementedError(pn,gse.dtype:string,":",targetDtype);
-            castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                    
-            return errorMsg;
-        }
+            when (DType.Int64, "int64") {
+                return new MsgTuple(castGenSymEntry(gse, st, int, int), MsgType.NORMAL);
+            }
+            when (DType.Int64, "uint8") {
+                return new MsgTuple(castGenSymEntry(gse, st, int, uint(8)), MsgType.NORMAL);
+            }
+            when (DType.Int64, "float64") {
+                return new MsgTuple(castGenSymEntry(gse, st, int, real), MsgType.NORMAL);
+            }
+            when (DType.Int64, "bool") {
+                return new MsgTuple(castGenSymEntry(gse, st, int, bool), MsgType.NORMAL);
+            }
+            when (DType.Int64, "str") {
+                return new MsgTuple(castGenSymEntryToString(gse, st, int), MsgType.NORMAL);
+            }
+            when (DType.UInt8, "int64") {
+                return new MsgTuple(castGenSymEntry(gse, st, uint(8), int), MsgType.NORMAL);        
+            }
+            when (DType.UInt8, "uint8") {
+                return new MsgTuple(castGenSymEntry(gse, st, uint(8), uint(8)), MsgType.NORMAL);        
+            }
+            when (DType.UInt8, "float64") {
+                return new MsgTuple(castGenSymEntry(gse, st, uint(8), real), MsgType.NORMAL);          
+            }
+            when (DType.UInt8, "bool") {
+                return new MsgTuple(castGenSymEntry(gse, st, uint(8), bool), MsgType.NORMAL);                 
+            }
+            when (DType.UInt8, "str") {
+                return new MsgTuple(castGenSymEntryToString(gse, st, uint(8)), MsgType.NORMAL);
+            }
+            when (DType.Float64, "int64") {
+                return new MsgTuple(castGenSymEntry(gse, st, real, int), MsgType.NORMAL);                  
+            }
+            when (DType.Float64, "uint8") {
+                return new MsgTuple(castGenSymEntry(gse, st, real, uint(8)), MsgType.NORMAL);
+            }
+            when (DType.Float64, "float64") {
+                return new MsgTuple(castGenSymEntry(gse, st, real, real), MsgType.NORMAL);
+            }
+            when (DType.Float64, "bool") {
+                return new MsgTuple(castGenSymEntry(gse, st, real, bool), MsgType.NORMAL);
+            }
+            when (DType.Float64, "str") {
+                return new MsgTuple(castGenSymEntryToString(gse, st, real), MsgType.NORMAL);
+            }
+            when (DType.Bool, "int64") {
+                return new MsgTuple(castGenSymEntry(gse, st, bool, int), MsgType.NORMAL);
+            }
+            when (DType.Bool, "uint8") {
+                return new MsgTuple(castGenSymEntry(gse, st, bool, uint(8)), MsgType.NORMAL);
+            }
+            when (DType.Bool, "float64") {
+                return new MsgTuple(castGenSymEntry(gse, st, bool, real), MsgType.NORMAL);
+            } 
+            when (DType.Bool, "bool") {
+                return new MsgTuple(castGenSymEntry(gse, st, bool, bool), MsgType.NORMAL);
+            }
+            when (DType.Bool, "str") {
+                return new MsgTuple(castGenSymEntryToString(gse, st, bool), MsgType.NORMAL);
+            }
+            otherwise {
+                var errorMsg = notImplementedError(pn,gse.dtype:string,":",targetDtype);
+                castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                    
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
         }
       }
       when "str" {
-        const (segName, valName) = name.splitMsgToTuple("+", 2);
-        const strings = new owned SegString(segName, valName, st);
-        select targetDtype {
-          when "int64" {
-            return castStringToSymEntry(strings, st, int);
-          }
-          when "uint8" {
-            return castStringToSymEntry(strings, st, uint(8));
-          }
-          when "float64" {
-            return castStringToSymEntry(strings, st, real);
-          }
-          when "bool" {
-            return castStringToSymEntry(strings, st, bool);
-          }
-          otherwise {
-            var errorMsg = notImplementedError(pn,"str",":",targetDtype);
-            castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return errorMsg;
-          }
+          const (segName, valName) = name.splitMsgToTuple("+", 2);
+          const strings = new owned SegString(segName, valName, st);
+          select targetDtype {
+              when "int64" {
+                  return new MsgTuple(castStringToSymEntry(strings, st, int), MsgType.NORMAL);
+              }
+              when "uint8" {
+                  return new MsgTuple(castStringToSymEntry(strings, st, uint(8)), MsgType.NORMAL);
+              }
+              when "float64" {
+                  return new MsgTuple(castStringToSymEntry(strings, st, real), MsgType.NORMAL);
+              }
+              when "bool" {
+                  return new MsgTuple(castStringToSymEntry(strings, st, bool), MsgType.NORMAL);
+              }
+              otherwise {
+                 var errorMsg = notImplementedError(pn,"str",":",targetDtype);
+                 castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                 return new MsgTuple(errorMsg, MsgType.ERROR);
+              }
           }
       }
       otherwise {
         var errorMsg = notImplementedError(pn,objtype);
         castLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                      
-        return errorMsg;
+        return new MsgTuple(errorMsg, MsgType.ERROR);
       }
       }
   }

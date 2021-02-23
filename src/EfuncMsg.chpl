@@ -8,7 +8,7 @@ module EfuncMsg
     use Reflection;
     use Errors;
     use Logging;
-    
+    use Message;
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
@@ -39,7 +39,7 @@ module EfuncMsg
       :throws: `UndefinedSymbolError(name)`
       */
 
-    proc efuncMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+    proc efuncMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
@@ -87,7 +87,7 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
                         eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                                               
-                        return errorMsg;
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 }
             }
@@ -126,7 +126,7 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
                         eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-                        return errorMsg;                     
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                     
                     }
                 }
             }
@@ -147,17 +147,20 @@ module EfuncMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
                         eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                        
-                        return errorMsg;
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 }
             }
             otherwise {
                 var errorMsg = unrecognizedTypeError(pn, dtype2str(gEnt.dtype));
                 eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                  
-                return errorMsg;    
+                return new MsgTuple(errorMsg, MsgType.ERROR);    
             }
         }
-        return try! "created " + st.attrib(rname);
+
+        repMsg = "created " + st.attrib(rname);
+        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
+        return new MsgTuple(repMsg, MsgType.NORMAL);         
     }
 
     /*
@@ -173,7 +176,7 @@ module EfuncMsg
     :returns: (string)
     :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3vvMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+    proc efunc3vvMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
@@ -184,9 +187,9 @@ module EfuncMsg
         var g2: borrowed GenSymEntry = st.lookup(name2);
         var g3: borrowed GenSymEntry = st.lookup(name3);
         if !((g1.size == g2.size) && (g2.size == g3.size)) {
-            var errorMsg = "Error: size mismatch in arguments to "+pn;
+            var errorMsg = "size mismatch in arguments to "+pn;
             eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-            return errorMsg; 
+            return new MsgTuple(errorMsg, MsgType.ERROR); 
         }
         select (g1.dtype, g2.dtype, g3.dtype) {
             when (DType.Bool, DType.Int64, DType.Int64) {
@@ -202,7 +205,7 @@ module EfuncMsg
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                            g2.dtype,g3.dtype);
                         eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-                        return errorMsg; 
+                        return new MsgTuple(errorMsg, MsgType.ERROR); 
                     }                
                 } 
             }
@@ -219,7 +222,7 @@ module EfuncMsg
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                        g2.dtype,g3.dtype);
                         eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-                        return errorMsg;
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 } 
             }
@@ -236,17 +239,20 @@ module EfuncMsg
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                        g2.dtype,g3.dtype);
                         eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                                                      
-                        return errorMsg;
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 } 
             }
             otherwise {
                var errorMsg = notImplementedError(pn,efunc,g1.dtype,g2.dtype,g3.dtype);
                eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);       
-               return errorMsg;
+               return new MsgTuple(errorMsg, MsgType.ERROR);
             }
         }
-        return try! "created " + st.attrib(rname);
+
+        repMsg = "created " + st.attrib(rname);
+        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
+        return new MsgTuple(repMsg, MsgType.NORMAL); 
     }
 
     /*
@@ -261,7 +267,7 @@ module EfuncMsg
     :returns: (string)
     :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3vsMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+    proc efunc3vsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var (efunc, name1, name2, dtypestr, value)
@@ -276,9 +282,9 @@ module EfuncMsg
         var g1: borrowed GenSymEntry = st.lookup(name1);
         var g2: borrowed GenSymEntry = st.lookup(name2);
         if !(g1.size == g2.size) {
-            var errorMsg = "Error: size mismatch in arguments to "+pn;
+            var errorMsg = "size mismatch in arguments to "+pn;
             eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
-            return errorMsg;
+            return new MsgTuple(errorMsg, MsgType.ERROR);
         }
         select (g1.dtype, g2.dtype, dtype) {
             when (DType.Bool, DType.Int64, DType.Int64) {
@@ -294,7 +300,7 @@ module EfuncMsg
                       var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                          g2.dtype,dtype);
                       eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-                      return errorMsg;
+                      return new MsgTuple(errorMsg, MsgType.ERROR);
                   }
                } 
             }
@@ -311,7 +317,7 @@ module EfuncMsg
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                           g2.dtype,dtype);
                         eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-                        return errorMsg;
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 }
             } 
@@ -328,7 +334,7 @@ module EfuncMsg
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                            g2.dtype,dtype);
                         eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                         
-                        return errorMsg;
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 } 
             }
@@ -336,10 +342,13 @@ module EfuncMsg
                 var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                    g2.dtype,dtype);
                 eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-                return errorMsg;            
+                return new MsgTuple(errorMsg, MsgType.ERROR);            
             }
         }
-        return try! "created " + st.attrib(rname);
+
+        repMsg = "created " + st.attrib(rname);
+        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
+        return new MsgTuple(repMsg, MsgType.NORMAL); 
     }
 
     /*
@@ -354,7 +363,7 @@ module EfuncMsg
     :returns: (string)
     :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3svMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+    proc efunc3svMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var (efunc, name1, dtypestr, value, name2)
@@ -369,9 +378,9 @@ module EfuncMsg
         var g1: borrowed GenSymEntry = st.lookup(name1);
         var g2: borrowed GenSymEntry = st.lookup(name2);
         if !(g1.size == g2.size) {
-            var errorMsg = "Error: size mismatch in arguments to "+pn;
+            var errorMsg = "size mismatch in arguments to "+pn;
             eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
-            return errorMsg;
+            return new MsgTuple(errorMsg, MsgType.ERROR);
         }
         select (g1.dtype, dtype, g2.dtype) {
             when (DType.Bool, DType.Int64, DType.Int64) {
@@ -387,7 +396,7 @@ module EfuncMsg
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                            dtype,g2.dtype);
                         eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                  
-                        return errorMsg;
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
                     }   
                } 
             }
@@ -404,7 +413,7 @@ module EfuncMsg
                       var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                            dtype,g2.dtype);
                       eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-                      return errorMsg;
+                      return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 } 
             }
@@ -421,7 +430,7 @@ module EfuncMsg
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                            dtype,g2.dtype);
                         eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-                        return errorMsg;                    
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                    
                     }
                } 
             }
@@ -429,10 +438,13 @@ module EfuncMsg
                 var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                    dtype,g2.dtype);
                 eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                                                 
-                return errorMsg;
+                return new MsgTuple(errorMsg, MsgType.ERROR);
             }
         }
-        return try! "created " + st.attrib(rname);
+
+        repMsg = "created " + st.attrib(rname);
+        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
+        return new MsgTuple(repMsg, MsgType.NORMAL); 
     }
 
     /*
@@ -447,7 +459,7 @@ module EfuncMsg
     :returns: (string)
     :throws: `UndefinedSymbolError(name)`
     */
-    proc efunc3ssMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+    proc efunc3ssMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         var (efunc, name1, dtype1str, value1, dtype2str, value2)
@@ -475,7 +487,7 @@ module EfuncMsg
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                       dtype1,dtype2);
                         eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-                        return errorMsg;
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 } 
             }
@@ -492,7 +504,7 @@ module EfuncMsg
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                         dtype1,dtype2);
                         eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-                        return errorMsg;                                                     
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                                                     
                     }
                 } 
             }
@@ -509,7 +521,7 @@ module EfuncMsg
                         var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                        dtype1,dtype2);
                         eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-                        return errorMsg;      
+                        return new MsgTuple(errorMsg, MsgType.ERROR);      
                    }
                } 
             }
@@ -517,10 +529,13 @@ module EfuncMsg
                 var errorMsg = notImplementedError(pn,efunc,g1.dtype,
                                                dtype1,dtype2);
                 eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-                return errorMsg;                                             
+                return new MsgTuple(errorMsg, MsgType.ERROR);                                             
             }
         }
-        return try! "created " + st.attrib(rname);
+
+        repMsg = "created " + st.attrib(rname);
+        eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
+        return new MsgTuple(repMsg, MsgType.NORMAL); 
     }
 
     /* The 'where' function takes a boolean array and two other arguments A and B, and 

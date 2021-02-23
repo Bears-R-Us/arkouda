@@ -13,6 +13,7 @@ module OperatorMsg
     use ServerErrorStrings; 
     use Reflection;
     use Logging;
+    use Message;
     
     const omLogger = new Logger();
     if v {
@@ -34,7 +35,7 @@ module OperatorMsg
     :returns: (string) 
     :throws: `UndefinedSymbolError(name)`
     */
-    proc binopvvMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {       
+    proc binopvvMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {       
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
@@ -141,9 +142,9 @@ module OperatorMsg
                     when "**" { 
                         if || reduce (r.a<0){
                             //instead of error, could we paste the below code but of type float?
-                            var errorMsg = "Error: Attempt to exponentiate base of type Int64 to negative exponent";
+                            var errorMsg = "Attempt to exponentiate base of type Int64 to negative exponent";
                             omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
-                            return errorMsg;                               
+                            return new MsgTuple(errorMsg, MsgType.ERROR);                                
                         }
                         var e = st.addEntry(rname, l.size, int);
                         e.a= l.a**r.a;
@@ -151,7 +152,7 @@ module OperatorMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                              
-                        return errorMsg;
+                        return new MsgTuple(errorMsg, MsgType.ERROR); 
                     }
                 }
             }
@@ -214,7 +215,7 @@ module OperatorMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
-                        return errorMsg;                            
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                             
                     }
                 }
             }
@@ -277,7 +278,7 @@ module OperatorMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);    
-                        return errorMsg;                         
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                          
                     }
                 }
             }
@@ -340,7 +341,7 @@ module OperatorMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
-                        return errorMsg;
+                        return new MsgTuple(errorMsg, MsgType.ERROR); 
                     }
                 }
             }
@@ -371,7 +372,7 @@ module OperatorMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);   
-                        return errorMsg;                         
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                          
                     }
                 }
             }
@@ -394,7 +395,7 @@ module OperatorMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
-                        return errorMsg;                            
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                             
                     }
                 }
             }
@@ -417,7 +418,7 @@ module OperatorMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
-                        return errorMsg;  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);  
                     }
                 }
             }
@@ -440,7 +441,7 @@ module OperatorMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
-                        return errorMsg;                               
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                               
                     }
                 }
             }
@@ -463,7 +464,7 @@ module OperatorMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
-                        return errorMsg;       
+                        return new MsgTuple(errorMsg, MsgType.ERROR);        
                     }
                 }
             }
@@ -471,13 +472,13 @@ module OperatorMsg
                 var errorMsg = unrecognizedTypeError(pn,
                                   "("+dtype2str(left.dtype)+","+dtype2str(right.dtype)+")");
                 omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
-                return errorMsg;                                         
+                return new MsgTuple(errorMsg, MsgType.ERROR);                                          
             }
         }
-        omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                    "created pdarray %t".format(st.attrib(rname)));
 
-        return try! "created %s".format(st.attrib(rname));
+        repMsg = "created %s".format(st.attrib(rname));
+        omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     /*
     Parse and respond to binopvs message.
@@ -492,7 +493,7 @@ module OperatorMsg
     :returns: (string) 
     :throws: `UndefinedSymbolError(name)`
     */
-    proc binopvsMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+    proc binopvsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string = ""; // response message
         // split request into fields
@@ -585,9 +586,9 @@ module OperatorMsg
                     }
                     when "**" { 
                         if (val<0){
-                            var errorMsg = "Error: Attempt to exponentiate base of type Int64 to negative exponent";
+                            var errorMsg = "Attempt to exponentiate base of type Int64 to negative exponent";
                             omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                                                             
-                            return errorMsg;
+                            return new MsgTuple(errorMsg, MsgType.ERROR); 
                         }
                         var e = st.addEntry(rname, l.size, int);
                         e.a= l.a**val;
@@ -595,7 +596,7 @@ module OperatorMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);       
-                        return errorMsg;                        
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                         
                     }
                 }
             }
@@ -657,7 +658,7 @@ module OperatorMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                                
-                        return errorMsg; 
+                        return new MsgTuple(errorMsg, MsgType.ERROR);  
                     }
                 }
             }
@@ -719,7 +720,7 @@ module OperatorMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);        
-                        return errorMsg;                        
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                         
                     }
                 }
             }
@@ -781,7 +782,7 @@ module OperatorMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                          
-                        return errorMsg;                            
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                             
                     }
                 }
             }
@@ -804,7 +805,7 @@ module OperatorMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);   
-                        return errorMsg;                           
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                            
                     }
                 }
             }
@@ -824,7 +825,11 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, int);
                         e.a = l.a:int * val;
                     }
-                    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
+                    otherwise {
+                         var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                         omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                        
+                         return new MsgTuple(errorMsg, MsgType.ERROR); 
+                    }
                 }
             }
             when (DType.Int64, DType.Bool) {
@@ -843,7 +848,11 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, int);
                         e.a = l.a * val:int;
                     }
-                    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                        
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                         
+                    }
                 }
             }
             when (DType.Bool, DType.Float64) {
@@ -862,7 +871,11 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, real);
                         e.a = l.a:real * val;
                     }
-                    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                        
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                           
+                    }
                 }
             }
             when (DType.Float64, DType.Bool) {
@@ -881,19 +894,26 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, real);
                         e.a = l.a * val:real;
                     }
-                    otherwise {return notImplementedError(pn,left.dtype,op,dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                        
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                         
+                    }
                 }
             }
-            otherwise {return unrecognizedTypeError(pn,
-                                          "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");}
+            otherwise {
+                 var errorMsg = unrecognizedTypeError(pn, 
+                                            "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");
+                 omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                        
+                 return new MsgTuple(errorMsg, MsgType.ERROR);                      
+            }
         }
         
-        var message = "created %s".format(st.attrib(rname));
-
+        repMsg = "created %s".format(st.attrib(rname));
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
              "created pdarray %t from %s with scalar %t on pdarray".format(
                                                                     st.attrib(rname),op,value));
-        return message;
+        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
     /*
@@ -909,7 +929,7 @@ module OperatorMsg
     :returns: (string) 
     :throws: `UndefinedSymbolError(name)`
     */
-    proc binopsvMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+    proc binopsvMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string = ""; // response message
         // split request into fields
@@ -1003,17 +1023,17 @@ module OperatorMsg
                     }
                     when "**" { 
                         if || reduce (r.a<0){
-                            var msg = "Error: Attempt to exponentiate base of type Int64 to negative exponent";
-                            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
-                            return msg;
+                            var errorMsg = "Attempt to exponentiate base of type Int64 to negative exponent";
+                            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                            return new MsgTuple(errorMsg, MsgType.ERROR); 
                         }
                         var e = st.addEntry(rname, r.size, int);
                         e.a= val**r.a;
                     }
                     otherwise {
-                        var msg = notImplementedError(pn,dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
-                        return msg;
+                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR); 
                     }
                 }
             }
@@ -1073,9 +1093,9 @@ module OperatorMsg
                         e.a= val**r.a;
                     }
                     otherwise {
-                        var msg = notImplementedError(pn,dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
-                        return msg;                    
+                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                     
                     }
                 }
             }
@@ -1135,9 +1155,9 @@ module OperatorMsg
                         e.a= val**r.a;
                     }
                     otherwise {
-                        var msg = notImplementedError(pn,dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
-                        return msg;
+                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR); 
                     }
                 }
             }
@@ -1197,9 +1217,9 @@ module OperatorMsg
                         e.a= val**r.a;
                     }
                     otherwise {
-                        var msg = notImplementedError(pn,dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
-                        return msg;
+                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR); 
                     }                        
                 }
             }
@@ -1220,9 +1240,9 @@ module OperatorMsg
                          e.a = val ^ r.a;
                     }
                     otherwise {
-                        var msg = notImplementedError(pn,dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
-                        return msg;
+                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR); 
                     }
                 }
             }
@@ -1243,9 +1263,9 @@ module OperatorMsg
                         e.a = val:int * r.a;
                     }
                     otherwise {
-                        var msg = notImplementedError(pn,dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
-                        return msg;
+                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR); 
                     }
                 }
             }
@@ -1266,9 +1286,9 @@ module OperatorMsg
                         e.a = val * r.a:int;
                     }
                     otherwise {
-                        var msg = notImplementedError(pn,dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
-                        return msg;
+                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR); 
                     }
                 }
             }
@@ -1289,9 +1309,9 @@ module OperatorMsg
                         e.a = val:real * r.a;
                     }
                     otherwise {
-                        var msg = notImplementedError(pn,dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
-                        return msg;
+                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR); 
                     }
                 }
             }
@@ -1312,24 +1332,23 @@ module OperatorMsg
                         e.a = val * r.a:real;
                     }
                     otherwise {
-                        var msg = notImplementedError(pn,dtype,op,right.dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
-                        return msg;
+                        var errorMsg = notImplementedError(pn,dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR); 
                     }
                 }
             }
             otherwise {
-                var msg = unrecognizedTypeError(pn,
+                var errorMsg = unrecognizedTypeError(pn,
                                      "("+dtype2str(dtype)+","+dtype2str(right.dtype)+")");
-                omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
-                return msg;
+                omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR); 
             }
         }
         
-        var message = "created %s".format(st.attrib(rname));
-
-        omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),message);
-        return try! message;
+        repMsg = "created %s".format(st.attrib(rname));
+        omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
     /*
@@ -1345,7 +1364,7 @@ module OperatorMsg
     :returns: (string) 
     :throws: `UndefinedSymbolError(name)`
     */
-    proc opeqvvMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+    proc opeqvvMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
@@ -1355,7 +1374,8 @@ module OperatorMsg
         var right: borrowed GenSymEntry = st.lookup(bname);
 
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "cmd: %s op: %s left pdarray: %s right pdarray: %s".format(cmd,op,st.attrib(aname),st.attrib(bname)));
+                    "cmd: %s op: %s left pdarray: %s right pdarray: %s".format(cmd,op,
+                                                         st.attrib(aname),st.attrib(bname)));
 
         select (left.dtype, right.dtype) {
             when (DType.Int64, DType.Int64) {
@@ -1380,21 +1400,31 @@ module OperatorMsg
                     }
                     when "**=" { 
                         if || reduce (r.a<0){
-                            return "Error: Attempt to exponentiate base of type Int64 to negative exponent";
+                            var errorMsg =  "Attempt to exponentiate base of type Int64 to negative exponent";
+                            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                            return new MsgTuple(errorMsg, MsgType.ERROR);                              
                         }
                         else{ l.a **= r.a; }
                     }
-                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                          
+                    }
                 }
             }
             when (DType.Int64, DType.Float64) {
                 var l = toSymEntry(left,int);
                 var r = toSymEntry(right,real);
-                return notImplementedError(pn,left.dtype,op,right.dtype);
+
+                var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);  
             }
             when (DType.Float64, DType.Int64) {
                 var l = toSymEntry(left,real);
                 var r = toSymEntry(right,int);
+
                 select op
                 {
                     when "+=" {l.a += r.a;}
@@ -1407,7 +1437,11 @@ module OperatorMsg
                         [(li,ri) in zip(la,ra)] li = if ri != 0 then floor(li / ri) else NAN;
                     }
                     when "**=" { l.a **= r.a; }
-                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);  
+                    }
                 }
             }
             when (DType.Float64, DType.Float64) {
@@ -1425,7 +1459,11 @@ module OperatorMsg
                         [(li,ri) in zip(la,ra)] li = if ri != 0 then floor(li / ri) else NAN;
                     }
                     when "**=" { l.a **= r.a; }
-                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);      
+                    }
                 }
             }
             when (DType.Bool, DType.Bool) {
@@ -1436,7 +1474,11 @@ module OperatorMsg
                     when "|=" {l.a |= r.a;}
                     when "&=" {l.a &= r.a;}
                     when "^=" {l.a ^= r.a;}
-                    otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                          
+                    }
                 }
             }
             when (DType.Int64, DType.Bool) {
@@ -1447,7 +1489,11 @@ module OperatorMsg
                     when "+=" {l.a += r.a:int;}
                     when "-=" {l.a -= r.a:int;}
                     when "*=" {l.a *= r.a:int;}
-                      otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                          
+                    }
                 }
             }
             when (DType.Float64, DType.Bool) {
@@ -1458,13 +1504,21 @@ module OperatorMsg
                     when "+=" {l.a += r.a:real;}
                     when "-=" {l.a -= r.a:real;}
                     when "*=" {l.a *= r.a:real;}
-                      otherwise {return notImplementedError(pn,left.dtype,op,right.dtype);}
+                    otherwise {
+                        var errorMsg = notImplementedError(pn,left.dtype,op,right.dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                          
+                    }
                 }
             }
-            otherwise {return unrecognizedTypeError(pn,
-                                                    "("+dtype2str(left.dtype)+","+dtype2str(right.dtype)+")");}
+            otherwise {
+                var errorMsg = unrecognizedTypeError(pn,
+                                  "("+dtype2str(left.dtype)+","+dtype2str(right.dtype)+")");
+                omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);                                 
+            }
         }
-        return "opeqvv success";
+        return new MsgTuple("opeqvv success", MsgType.NORMAL);
     }
 
     /*
@@ -1481,7 +1535,7 @@ module OperatorMsg
     :throws: `UndefinedSymbolError(name)`
 
     */
-    proc opeqvsMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+    proc opeqvsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
@@ -1513,22 +1567,26 @@ module OperatorMsg
                     }
                     when "**=" { 
                         if (val<0){
-                            return "Error: Attempt to exponentiate base of type Int64 to negative exponent";
+                            var errorMsg = "Attempt to exponentiate base of type Int64 to negative exponent";
+                            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                            return new MsgTuple(errorMsg, MsgType.ERROR);                              
                         }
                         else{ l.a **= val; }
 
                     }
                     otherwise {
-                        var msg = notImplementedError(pn,left.dtype,op,dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
-                        return msg;                        
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                         
                     }
                 }
             }
             when (DType.Int64, DType.Float64) {
                 var l = toSymEntry(left,int);
                 var val = try! value:real;
-                return notImplementedError(pn,left.dtype,op,dtype);
+                var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);  
             }
             when (DType.Float64, DType.Int64) {
                 var l = toSymEntry(left,real);
@@ -1544,9 +1602,9 @@ module OperatorMsg
                     }
                     when "**=" { l.a **= val; }
                     otherwise {
-                        var msg = notImplementedError(pn,left.dtype,op,dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
-                        return msg;                        
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                          
                     }
                 }
             }
@@ -1564,9 +1622,9 @@ module OperatorMsg
                     }
                     when "**=" { l.a **= val; }
                     otherwise {
-                        var msg = notImplementedError(pn,left.dtype,op,dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
-                        return msg;                        
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                         
                     }
                 }
             }
@@ -1578,9 +1636,9 @@ module OperatorMsg
                     when "-=" {l.a -= val:int;}
                     when "*=" {l.a *= val:int;}
                     otherwise {
-                        var msg = notImplementedError(pn,left.dtype,op,dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
-                        return msg;                        
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                         
                     }
                 }
             }
@@ -1592,9 +1650,9 @@ module OperatorMsg
                     when "-=" {l.a -= val:real;}
                     when "*=" {l.a *= val:real;}
                     otherwise {
-                        var msg = notImplementedError(pn,left.dtype,op,dtype);
-                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
-                        return msg;                        
+                        var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
+                        omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                          
                     }
                 }
             }
@@ -1602,9 +1660,11 @@ module OperatorMsg
                 var errorMsg = unrecognizedTypeError(pn,
                                    "("+dtype2str(left.dtype)+","+dtype2str(dtype)+")");
                 omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                                           
-                return errorMsg;               
+                return new MsgTuple(errorMsg, MsgType.ERROR);                
             }
         }
-        return "opeqvs success";
+        repMsg = "opeqvs success";
+        omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 }
