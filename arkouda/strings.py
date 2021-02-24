@@ -118,7 +118,7 @@ class Strings:
         return "array({})".format(self.__str__())
 
     @typechecked
-    def _binop(self, other : Union[Strings,np.str_], op : str) -> pdarray:
+    def _binop(self, other : Union[Strings,np.str_,str], op : str) -> pdarray:
         """
         Executes the requested binop on this Strings instance and the
         parameter Strings object and returns the results within
@@ -126,7 +126,7 @@ class Strings:
 
         Parameters
         ----------
-        other : Strings or np.str_
+        other : Strings, np.str_, or str
             the other object is a Strings object
         op : str
             name of the binary operation to be performed 
