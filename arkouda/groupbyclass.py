@@ -32,6 +32,20 @@ class GroupByReductionType(enum.Enum):
     AND = 'and'
     XOR = 'xor'
     
+    def __str__(self) -> str:
+        """
+        Overridden method returns value, which is useful in outputting
+        a GroupByReductionType as a request parameter
+        """
+        return self.value
+    
+    def __repr__(self) -> str:
+        """
+        Overridden method returns value, which is useful in outputting
+        a GroupByReductionType as a request parameter
+        """
+        return self.value
+    
 GROUPBY_REDUCTION_TYPES = frozenset([member.value for _, member 
                                   in GroupByReductionType.__members__.items()])
 

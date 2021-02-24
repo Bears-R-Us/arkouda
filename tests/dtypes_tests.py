@@ -99,11 +99,11 @@ class DtypesTest(ArkoudaTest):
         self.assertFalse(dtypes.isSupportedFloat('1.0'))
         
     def test_dtype_enum(self):
-        self.assertEqual('bool', dtypes.DType.BOOL.value)
-        self.assertEqual('float64', dtypes.DType.FLOAT64.value)
-        self.assertEqual('int64', dtypes.DType.INT64.value)
-        self.assertEqual('str', dtypes.DType.STR.value)
-        self.assertEqual('uint8', dtypes.DType.UINT8.value)
+        self.assertEqual('bool', str(dtypes.DType.BOOL))
+        self.assertEqual('float64', str(dtypes.DType.FLOAT64))
+        self.assertEqual('int64', str(dtypes.DType.INT64))
+        self.assertEqual('str', str(dtypes.DType.STR))
+        self.assertEqual('uint8', str(dtypes.DType.UINT8))
     
     def test_dtype_object_enum(self):
         self.assertEqual(dtypes.bool, dtypes.DTypeObject.BOOL.value)

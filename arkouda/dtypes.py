@@ -54,6 +54,20 @@ class DType(Enum):
     FLOAT64 = 'float64'
     UINT8 = 'uint8'
     STR = 'str'
+    
+    def __str__(self) -> str:
+        """
+        Overridden method returns value, which is useful in outputting
+        a DType as a request parameter
+        """
+        return self.value
+    
+    def __repr__(self) -> str:
+        """
+        Overridden method returns value, which is useful in outputting
+        a DType as a request parameter
+        """
+        return self.value
 
 class DTypeObject(Enum):
 

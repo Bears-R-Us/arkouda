@@ -203,7 +203,8 @@ class GroupByTest(ArkoudaTest):
         
         
     def test_groupby_reduction_type(self):
-        self.assertEqual('any', GroupByReductionType.ANY.value) 
+        self.assertEqual('any', str(GroupByReductionType.ANY)) 
+        self.assertEqual('all', str(GroupByReductionType.ALL))         
         self.assertEqual(GroupByReductionType.ANY, GroupByReductionType('any'))
         
         with self.assertRaises(ValueError):
