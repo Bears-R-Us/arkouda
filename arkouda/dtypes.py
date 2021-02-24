@@ -55,14 +55,14 @@ class DType(Enum):
     UINT8 = 'uint8'
     STR = 'str'
     
-    def __str__(self) -> str:
+    def __str__(self) -> str: # type: ignore
         """
         Overridden method returns value, which is useful in outputting
         a DType as a request parameter
         """
         return self.value
     
-    def __repr__(self) -> str:
+    def __repr__(self) -> str: # type: ignore
         """
         Overridden method returns value, which is useful in outputting
         a DType as a request parameter
