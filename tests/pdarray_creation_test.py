@@ -550,7 +550,22 @@ class PdarrayCreationTest(ArkoudaTest):
                          cm.exception.args[0])    
 
         with self.assertRaises(ValueError) as cm:          
-            ak.from_series(pd.Series(np.random.randint(0,10,10), dtype=np.int8))        
+            ak.from_series(pd.Series(np.random.randint(0,10,10), dtype=np.int8))      
         self.assertEqual(('dtype int8 is unsupported. Supported dtypes are bool, ' +
                           'float64, int64, string, datetime64[ns], and timedelta64[ns]'), 
-                         cm.exception.args[0])    
+                         cm.exception.args[0])            
+            
+    def test_fill(self):
+        ones = ak.ones(100)
+
+        ones.fill(2)
+        self.assertTrue((2 == ones.to_ndarray()).all())
+        
+        ones.fill(np.int64(2))  
+        self.assertTrue((np.int64(2) == ones.to_ndarray()).all())     
+        
+        ones.fill(np.float(2))  
+        self.assertTrue((float(2) == ones.to_ndarray()).all())  
+        
+        ones.fill(np.float64(2))  
+        self.assertTrue((np.float64(2) == ones.to_ndarray()).all())  
