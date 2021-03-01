@@ -12,6 +12,7 @@ __pycache__/
 .ipynb_checkpoints/
 .vscode/
 .local/
+.idea/
 doc/
 docs/
 test-bin/
