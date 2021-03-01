@@ -449,7 +449,18 @@ class IOTest(ArkoudaTest):
         a = ak.read_all(prefix+'*', strictTypes=False)
         self.assertTrue((a['integers'] == ak.arange(len(inttypes)*N)).all())
         self.assertTrue(np.allclose(a['floats'].to_ndarray(), np.arange(len(floattypes)*N, dtype=np.float64)))
-                
+    
+    def testTo_ndarray(self):
+        ones = ak.ones(10)
+        n_ones = ones.to_ndarray()
+        new_ones = ak.array(n_ones)
+        self.assertTrue((ones.to_ndarray() == new_ones.to_ndarray()).all())
+        
+        empty_ones = ak.ones(0)
+        n_empty_ones = empty_ones.to_ndarray()
+        new_empty_ones = ak.array(n_empty_ones)
+        self.assertTrue((empty_ones.to_ndarray() == new_empty_ones.to_ndarray()).all())
+
     def tearDown(self):
         super(IOTest, self).tearDown()
         for f in glob.glob('{}/*'.format(IOTest.io_test_dir)):

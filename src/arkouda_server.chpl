@@ -328,16 +328,16 @@ proc main() {
             }
 
             /*
-             * 1. Determine if the reply message is binary or a string
-             * 2. If a string, instantiate a ReplyMsg and serialize into a JSON-formatted reply string
-             * 3. Invoke the sendRepMsg message
+             * 1. Determine if the reply message is binary or a string via the repTuple.msg attribute
+             * 2. If a string, invoke serialize to generate a JSON-formatted reply string
+             * 3. Invoke the sendRepMsg function
              */          
-            if !binaryRepMsg.isEmpty() {
-                // Since the binaryRepMsg is not empty, this is a binary reply message
+            if repTuple.msg.isEmpty() {
+                // Since the repTuple.msg attribute is empty, this is a binary reply message
                 sendRepMsg(binaryRepMsg);
             } else {
-                sendRepMsg(serialize(msg=repTuple.msg,msgType=repTuple.msgType,msgFormat=MsgFormat.STRING, 
-                                                user=user));
+                sendRepMsg(serialize(msg=repTuple.msg,msgType=repTuple.msgType,
+                                                              msgFormat=MsgFormat.STRING, user=user));
             }
 
             /*
@@ -346,11 +346,11 @@ proc main() {
              */
             if trace {
                 asLogger.info(getModuleName(),getRoutineName(),getLineNumber(), 
-                                                  "<<< %s took %.17r sec".format(cmd, t1.elapsed() - s0));
+                                              "<<< %s took %.17r sec".format(cmd, t1.elapsed() - s0));
             }
             if (trace && memTrack) {
                 asLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                       "bytes of memory used after command %t".format(memoryUsed():uint * numLocales:uint));
+                    "bytes of memory used after command %t".format(memoryUsed():uint * numLocales:uint));
             }
         } catch (e: ErrorWithMsg) {
             // Generate a ReplyMsg of type ERROR and serialize to a JSON-formatted string
@@ -366,7 +366,8 @@ proc main() {
                                                          msgFormat=MsgFormat.STRING, user=user));
             if trace {
                 asLogger.error(getModuleName(), getRoutineName(), getLineNumber(), 
-                    "<<< %s resulted in error: %s in %.17r sec".format(cmd, e.message(),t1.elapsed() - s0));
+                    "<<< %s resulted in error: %s in %.17r sec".format(cmd, e.message(),
+                                                                                 t1.elapsed() - s0));
             }
         }
     }
@@ -376,7 +377,8 @@ proc main() {
     deleteServerConnectionInfo();
 
     asLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
-               "requests = %i responseCount = %i elapsed sec = %i".format(reqCount,repCount,t1.elapsed()));
+               "requests = %i responseCount = %i elapsed sec = %i".format(reqCount,repCount,
+                                                                                 t1.elapsed()));
 }
 
 /*

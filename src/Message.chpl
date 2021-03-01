@@ -59,7 +59,7 @@ module Message {
     }
     
    /*
-    * Serializes a ReplyMsg object into a JSON-formatted reply message
+    * Generates a ReplyMsg object and serializes it into a JSON-formatted reply message
     */
    proc serialize(msg: string, msgType: MsgType, msgFormat: MsgFormat, 
                                                                  user: string) : string throws {
