@@ -81,10 +81,20 @@ proc main() {
     }
 
     socket.bind("tcp://*:%t".format(ServerPort));
-
-    const boundary = "**************************************************************************" +
-                   "**************************";
-
+    
+    const buff = '         ';
+    const boundarySize = serverMessage.size + 20;
+    
+    var boundary = "*";
+    var i = 0;
+    
+    while i < boundarySize {
+        boundary += "*";
+        i+=1;
+    }
+    
+    serverMessage = "%s %s %s %s %s".format('*',buff,serverMessage,buff,'*');
+    
     asLogger.info(getModuleName(), getRoutineName(), getLineNumber(), boundary);
     asLogger.info(getModuleName(), getRoutineName(), getLineNumber(), serverMessage);
     asLogger.info(getModuleName(), getRoutineName(), getLineNumber(), boundary);
