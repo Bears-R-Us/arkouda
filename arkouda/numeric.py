@@ -292,8 +292,8 @@ def cos(pda : pdarray) -> pdarray:
     return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
-def where(condition : pdarray, A : Union[Union[int,float,np.int64], pdarray], 
-                        B : Union[Union[int,float,np.float64], pdarray]) -> pdarray:
+def where(condition : pdarray, A : Union[Union[int,float,np.int64,np.float64], pdarray], 
+                        B : Union[Union[int,float,np.int64,np.float64], pdarray]) -> pdarray:
     """
     Returns an array with elements chosen from A and B based upon a 
     conditioning array. As is the case with numpy.where, the return array
@@ -305,9 +305,9 @@ def where(condition : pdarray, A : Union[Union[int,float,np.int64], pdarray],
     ----------
     condition : pdarray
         Used to choose values from A or B
-    A : Union[Union[int,float,np.int64], pdarray]
+    A : Union[Union[int,float,np.int64,np.float64], pdarray]
         Value(s) used when condition is True
-    B : Union[Union[int,float,np.int64], pdarray]
+    B : Union[Union[int,float,np.int64,np.float64], pdarray]
         Value(s) used when condition is False
 
     Returns
