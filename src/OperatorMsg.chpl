@@ -1401,7 +1401,6 @@ module OperatorMsg
                     when "**=" { 
                         if || reduce (r.a<0){
                             var errorMsg =  "Attempt to exponentiate base of type Int64 to negative exponent";
-                            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                             return new MsgTuple(errorMsg, MsgType.ERROR);                              
                         }
                         else{ l.a **= r.a; }

@@ -1109,7 +1109,6 @@ module GenSymIO {
         }
         if warnFlag {
              var warnMsg = "Warning: possibly overwriting existing files matching filename pattern";
-             gsLogger.warn(getModuleName(),getRoutineName(),getLineNumber(),warnMsg);
              return new MsgTuple(warnMsg, MsgType.WARNING);
         } else {
             var repMsg = "wrote array to file";
