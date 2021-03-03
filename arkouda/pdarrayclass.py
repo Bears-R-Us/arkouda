@@ -510,18 +510,18 @@ class pdarray:
                             format(key, type(key)))
 
     @typechecked
-    def fill(self, value : Union[int,float,str]) -> None:
+    def fill(self, value : Union[int,np.int64,float,np.float64]) -> None:
         """
         Fill the array (in place) with a constant value.
         
         Parameters
         ----------
-        value : Union[int,float,str]
+        value : Union[int,np.int64,float,np.float64]
         
         Raises
         -------
         TypeError
-            Raised if value is not an int, float, or str         
+            Raised if value is not an int, int64, float, or float64         
         """
         generic_msg(cmd="set", args="{} {} {}".format(self.name, 
                                         self.dtype.name, self.format_other(value)))

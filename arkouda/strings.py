@@ -118,7 +118,7 @@ class Strings:
         return "array({})".format(self.__str__())
 
     @typechecked
-    def _binop(self, other : Union[Strings,np.str_], op : str) -> pdarray:
+    def _binop(self, other : Union[Strings,np.str_,str], op : str) -> pdarray:
         """
         Executes the requested binop on this Strings instance and the
         parameter Strings object and returns the results within
@@ -126,7 +126,7 @@ class Strings:
 
         Parameters
         ----------
-        other : Strings or np.str_
+        other : Strings, np.str_, or str
             the other object is a Strings object
         op : str
             name of the binary operation to be performed 
@@ -249,13 +249,13 @@ class Strings:
         return create_pdarray(generic_msg(msg))
 
     @typechecked
-    def contains(self, substr : Union[str, bytes]) -> pdarray:
+    def contains(self, substr : Union[str, bytes, np.str_]) -> pdarray:
         """
         Check whether each element contains the given substring.
 
         Parameters
         ----------
-        substr : Union[str, bytes]
+        substr : Union[str, bytes, np.str_]
             The substring in the form of string or byte array to search for
 
         Returns
@@ -266,7 +266,7 @@ class Strings:
         Raises
         ------
         TypeError
-            Raised if the substr parameter is neither bytes nor a str
+            Raised if the substr parameter is not a str, bytes, or np.str_
         RuntimeError
             Raised if there is a server-side error thrown
 
@@ -294,13 +294,13 @@ class Strings:
         return create_pdarray(generic_msg(cmd=cmd,args=args))
 
     @typechecked
-    def startswith(self, substr : Union[str, bytes]) -> pdarray:
+    def startswith(self, substr : Union[str, bytes, np.str_]) -> pdarray:
         """
         Check whether each element starts with the given substring.
 
         Parameters
         ----------
-        substr : str
+        substr : Union[str,bytes,np.str_]
             The prefix to search for
 
         Returns
@@ -311,7 +311,7 @@ class Strings:
         Raises
         ------
         TypeError
-            Raised if the substr parameter is neither bytes nor a str
+            Raised if the substr parameter is not a str, bytes, or np.str_
         RuntimeError
             Raised if there is a server-side error thrown
 
@@ -339,13 +339,13 @@ class Strings:
         return create_pdarray(generic_msg(cmd=cmd,args=args))
 
     @typechecked
-    def endswith(self, substr : Union[str,bytes]) -> pdarray:
+    def endswith(self, substr : Union[str,bytes,np.str_]) -> pdarray:
         """
         Check whether each element ends with the given substring.
 
         Parameters
         ----------
-        substr : str or bytes
+        substr : Union[str,bytes,np.str_]
             The suffix to search for
 
         Returns
@@ -356,7 +356,7 @@ class Strings:
         Raises
         ------
         TypeError
-            Raised if the substr parameter is not a str
+            Raised if the substr parameter is not a str, bytes, or np.str_
         RuntimeError
             Raised if there is a server-side error thrown
 
@@ -430,8 +430,9 @@ class Strings:
             return Strings(arrays[0], arrays[1])
     
     @typechecked
-    def peel(self, delimiter : str, times : Union[int,np.int64]=1, includeDelimiter : bool=False, 
-             keepPartial : bool=False, fromRight : bool=False) -> Tuple:
+    def peel(self, delimiter : Union[str,bytes,np.str_], times : Union[int,np.int64]=1, 
+             includeDelimiter : bool=False, keepPartial : bool=False, 
+                                                 fromRight : bool=False) -> Tuple:
         """
         Peel off one or more delimited fields from each string (similar 
         to string.partition), returning two new arrays of strings.
@@ -439,7 +440,7 @@ class Strings:
 
         Parameters
         ----------
-        delimiter : str
+        delimiter :  Union[str,bytes,np.str_]
             The separator where the split will occur
         times : Union[int,np.int64]
             The number of times the delimiter is sought, i.e. skip over 
@@ -468,7 +469,7 @@ class Strings:
         Raises
         ------
         TypeError
-            Raised if the delmiter parameter is neither bytes nor a str, if
+            Raised if the delimiter parameter is not str, bytes, or np.str_, if
             times is not int64, or if includeDelimiter, keepPartial, or 
             fromRight is not bool
         ValueError
@@ -513,8 +514,8 @@ class Strings:
         rightStr = Strings(arrays[2], arrays[3])
         return leftStr, rightStr
 
-    def rpeel(self, delimiter : str, times : Union[int,np.int64]=1, includeDelimiter : bool=False, 
-                                      keepPartial : bool=False):
+    def rpeel(self, delimiter : Union[str,bytes,np.str_], times : Union[int,np.int64]=1, 
+              includeDelimiter : bool=False, keepPartial : bool=False):
         """
         Peel off one or more delimited fields from the end of each string 
         (similar to string.rpartition), returning two new arrays of strings.
@@ -522,7 +523,7 @@ class Strings:
 
         Parameters
         ----------
-        delimiter : str
+        delimiter :  Union[str,bytes,np.str_]
             The separator where the split will occur
         times : Union[int,np.int64]
             The number of times the delimiter is sought, i.e. skip over 
@@ -546,7 +547,7 @@ class Strings:
         Raises
         ------
         TypeError
-            Raised if the delmiter parameter is neither bytes nor a str or
+            Raised if the delimiter parameter is not str, bytes, or np.str_ or
             if times is not int64
         ValueError
             Raised if times is < 1
@@ -570,7 +571,7 @@ class Strings:
                          keepPartial=keepPartial, fromRight=True)
 
     @typechecked
-    def stick(self, other : Strings, delimiter : str="", 
+    def stick(self, other : Strings, delimiter : Union[str,bytes,np.str_] ="", 
                                         toLeft : bool=False) -> Strings:
         """
         Join the strings from another array onto one end of the strings 
@@ -595,8 +596,8 @@ class Strings:
         Raises
         ------
         TypeError
-            Raised if the delmiter parameter is neither bytes nor a str or if
-            the other parameter is not a Strings instance
+            Raised if the delimiter parameter is not str, bytes, or np.str_
+            or if the other parameter is not a Strings instance
         ValueError
             Raised if times is < 1
         RuntimeError
@@ -632,7 +633,7 @@ class Strings:
     def __add__(self, other : Strings) -> Strings:
         return self.stick(other)
 
-    def lstick(self, other : Strings, delimiter : str="") -> Strings:
+    def lstick(self, other : Strings, delimiter : Union[str,bytes,np.str_] ="") -> Strings:
         """
         Join the strings from another array onto the left of the strings 
         of this array, optionally inserting a delimiter.
@@ -642,7 +643,7 @@ class Strings:
         ----------
         other : Strings
             The strings to join onto self's strings
-        delimiter : str
+        delimiter : Union[str,bytes,np.str_]
             String inserted between self and other
 
         Returns
