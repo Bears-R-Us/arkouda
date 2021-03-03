@@ -138,6 +138,10 @@ class PdarrayCreationTest(ArkoudaTest):
         values = ak.randint(1, 5, 10, dtype=ak.bool, seed=2)
         self.assertTrue((ak.array([False, True, True, True, True, False, True, True, 
                                    True, True]) == values).all())
+        
+        values = ak.randint(1, 5, 10, dtype=bool, seed=2)
+        self.assertTrue((ak.array([False, True, True, True, True, False, True, True, 
+                                   True, True]) == values).all())
 
     def test_uniform(self):
         testArray = ak.uniform(3)
@@ -172,10 +176,16 @@ class PdarrayCreationTest(ArkoudaTest):
         intZeros = ak.zeros(5, dtype=ak.int64)
         self.assertIsInstance(intZeros, ak.pdarray)
         self.assertEqual(ak.int64,intZeros.dtype)
-        
+
+        floatZeros = ak.zeros(5, dtype=float)
+        self.assertEqual(float,floatZeros.dtype)
+
         floatZeros = ak.zeros(5, dtype=ak.float64)
         self.assertEqual(ak.float64,floatZeros.dtype)
-        
+
+        boolZeros = ak.zeros(5, dtype=bool)
+        self.assertEqual(bool,boolZeros.dtype)
+
         boolZeros = ak.zeros(5, dtype=ak.bool)
         self.assertEqual(ak.bool,boolZeros.dtype)
         
@@ -188,13 +198,22 @@ class PdarrayCreationTest(ArkoudaTest):
         with self.assertRaises(TypeError):
             ak.zeros(5, dtype=str)        
             
-    def test_ones(self):
-        intOnes = ak.ones(5, dtype=ak.int64)
+    def test_ones(self):   
+        intOnes = ak.ones(5, dtype=int)
         self.assertIsInstance(intOnes, ak.pdarray)
+        self.assertEqual(int,intOnes.dtype)
+       
+        intOnes = ak.ones(5, dtype=ak.int64)
         self.assertEqual(ak.int64,intOnes.dtype)
+
+        floatOnes = ak.ones(5, dtype=float)
+        self.assertEqual(float,floatOnes.dtype)
         
         floatOnes = ak.ones(5, dtype=ak.float64)
         self.assertEqual(ak.float64,floatOnes.dtype)
+
+        boolOnes = ak.ones(5, dtype=bool)
+        self.assertEqual(bool,boolOnes.dtype)
         
         boolOnes = ak.ones(5, dtype=ak.bool)
         self.assertEqual(ak.bool,boolOnes.dtype)
@@ -286,6 +305,22 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertIsInstance(pda, ak.pdarray)
         self.assertEqual(100,len(pda))
         self.assertEqual(float,pda.dtype)
+        
+        pda = ak.standard_normal(np.int64(100))
+        self.assertIsInstance(pda, ak.pdarray)
+        self.assertEqual(100,len(pda))
+        self.assertEqual(float,pda.dtype)
+        
+        pda = ak.standard_normal(np.int64(100), np.int64(1))
+        self.assertIsInstance(pda, ak.pdarray)
+        self.assertEqual(100,len(pda))
+        self.assertEqual(float,pda.dtype)
+        
+        npda = pda.to_ndarray()
+        pda = ak.standard_normal(np.int64(100), np.int64(1))
+        
+        self.assertTrue((npda ==  pda.to_ndarray()).all())
+        
 
         with self.assertRaises(TypeError) as cm:          
             ak.standard_normal('100')          
@@ -313,6 +348,15 @@ class PdarrayCreationTest(ArkoudaTest):
             self.assertTrue(len(string) >= 1 and len(string) <= 5)
             self.assertTrue(string.isupper())
             
+        pda = ak.random_strings_uniform(minlen=np.int64(1), maxlen=np.int64(5), size=np.int64(100))
+        nda = pda.to_ndarray()
+
+        self.assertIsInstance(pda, ak.Strings)
+        self.assertEqual(100, len(pda))
+        self.assertEqual(str, pda.dtype)
+        for string in nda:
+            self.assertTrue(len(string) >= 1 and len(string) <= 5)
+            self.assertTrue(string.isupper())
         
         with self.assertRaises(ValueError) as cm:          
             ak.random_strings_uniform(maxlen=1,minlen=5, size=100)          
@@ -367,7 +411,18 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertEqual(100, len(pda))
         self.assertEqual(str, pda.dtype)
         
-        pda = ak.random_strings_lognormal(np.int64(2), 0.25, np.int64(100), characters='printable', 
+        pda = ak.random_strings_lognormal(np.int64(2), np.float(0.25), np.int64(100), characters='printable')
+        self.assertIsInstance(pda,ak.Strings)
+        self.assertEqual(100, len(pda))
+        self.assertEqual(str, pda.dtype)
+        
+        pda = ak.random_strings_lognormal(logmean=np.int64(2), logstd=0.25, size=np.int64(100), characters='printable', 
+                                          seed=np.int64(0))
+        self.assertIsInstance(pda,ak.Strings)
+        self.assertEqual(100, len(pda))
+        self.assertEqual(str, pda.dtype)
+        
+        pda = ak.random_strings_lognormal(logmean=np.float64(2), logstd=np.float64(0.25), size=np.int64(100), characters='printable', 
                                           seed=np.int64(0))
         self.assertIsInstance(pda,ak.Strings)
         self.assertEqual(100, len(pda))
@@ -400,13 +455,26 @@ class PdarrayCreationTest(ArkoudaTest):
         self.assertTrue((ak.array(['TVKJTE', 'ABOCORHFM', 'LUDMMGTB', 'KWOQNPHZ', 
                                    'VSXRRL', 'AKOZOEEWTB', 'GOSVGEJNOW', 'BFWSIO', 
                                    'MRIEJUSA', 'OLUKRJK'])
-                        == pda).all())            
+                        == pda).all())   
+        
+        pda = ak.random_strings_lognormal(np.int64(2), np.float64(0.25), np.int64(10), seed=1)
+        
+        self.assertTrue((ak.array(['TVKJTE', 'ABOCORHFM', 'LUDMMGTB', 'KWOQNPHZ', 
+                                   'VSXRRL', 'AKOZOEEWTB', 'GOSVGEJNOW', 'BFWSIO', 
+                                   'MRIEJUSA', 'OLUKRJK'])
+                        == pda).all())          
 
         pda = ak.random_strings_lognormal(2, 0.25, 10, seed=1, characters='printable')
 
         self.assertTrue((ak.array(['+5"fp-', ']3Q4kC~HF', '=F=`,IE!', "DjkBa'9(", '5oZ1)=', 
                                    'T^.1@6aj";', '8b2$IX!Y7.', 'x|Y!eQ', '>1\\>2,on', '&#W":C3'])
-                        == pda).all())     
+                        == pda).all())   
+        
+        pda = ak.random_strings_lognormal(np.int64(2), np.float64(0.25), np.int64(10), seed=1, characters='printable')
+
+        self.assertTrue((ak.array(['+5"fp-', ']3Q4kC~HF', '=F=`,IE!', "DjkBa'9(", '5oZ1)=', 
+                                   'T^.1@6aj";', '8b2$IX!Y7.', 'x|Y!eQ', '>1\\>2,on', '&#W":C3'])
+                        == pda).all())      
     
     def test_mulitdimensional_array_creation(self):
         with self.assertRaises(RuntimeError) as cm:
@@ -446,7 +514,7 @@ class PdarrayCreationTest(ArkoudaTest):
                                            dtype='object'), dtype=np.float64)
 
         self.assertIsInstance(p_f_objects_array,ak.pdarray)
-        self.assertEqual(np.float64, p_f_objects_array.dtype)          
+        self.assertEqual(np.float64, p_f_objects_array.dtype)  
         
         p_array = ak.from_series(pd.Series(np.random.choice([True, False],size=10)))
 
@@ -482,7 +550,22 @@ class PdarrayCreationTest(ArkoudaTest):
                          cm.exception.args[0])    
 
         with self.assertRaises(ValueError) as cm:          
-            ak.from_series(pd.Series(np.random.randint(0,10,10), dtype=np.int8))        
+            ak.from_series(pd.Series(np.random.randint(0,10,10), dtype=np.int8))      
         self.assertEqual(('dtype int8 is unsupported. Supported dtypes are bool, ' +
                           'float64, int64, string, datetime64[ns], and timedelta64[ns]'), 
-                         cm.exception.args[0])    
+                         cm.exception.args[0])            
+            
+    def test_fill(self):
+        ones = ak.ones(100)
+
+        ones.fill(2)
+        self.assertTrue((2 == ones.to_ndarray()).all())
+        
+        ones.fill(np.int64(2))  
+        self.assertTrue((np.int64(2) == ones.to_ndarray()).all())     
+        
+        ones.fill(np.float(2))  
+        self.assertTrue((float(2) == ones.to_ndarray()).all())  
+        
+        ones.fill(np.float64(2))  
+        self.assertTrue((np.float64(2) == ones.to_ndarray()).all())  
