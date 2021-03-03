@@ -38,7 +38,7 @@ module ArraySetopsMsg
     :type reqMsg: string
     :arg st: SymTab to act on
     :type st: borrowed SymTab
-    :returns: (string) response message
+    :returns: (MsgTuple) response message
     */
     proc intersect1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
@@ -88,7 +88,7 @@ module ArraySetopsMsg
     :type reqMsg: string
     :arg st: SymTab to act on
     :type st: borrowed SymTab
-    :returns: (string) response message
+    :returns: (MsgTuple) response message
     */
     proc setxor1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
@@ -138,7 +138,7 @@ module ArraySetopsMsg
     :type reqMsg: string
     :arg st: SymTab to act on
     :type st: borrowed SymTab
-    :returns: (string) response message
+    :returns: (MsgTuple) response message
     */
     proc setdiff1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
@@ -188,7 +188,7 @@ module ArraySetopsMsg
     :type reqMsg: string
     :arg st: SymTab to act on
     :type st: borrowed SymTab
-    :returns: (string) response message
+    :returns: (MsgTuple) response message
     */
     proc union1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       param pn = Reflection.getRoutineName();

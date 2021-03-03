@@ -55,7 +55,7 @@ module MsgProcessing
     :arg st: SymTab to act on
     :type st: borrowed SymTab 
 
-    :returns: (string) response message
+    :returns: (MsgTuple) response message
     */
     proc createMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string; // response message

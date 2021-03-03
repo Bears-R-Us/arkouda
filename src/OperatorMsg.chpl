@@ -32,16 +32,17 @@ module OperatorMsg
     :arg st: SymTab to act on
     :type st: borrowed SymTab 
 
-    :returns: (string) 
+    :returns: (MsgTuple) 
     :throws: `UndefinedSymbolError(name)`
     */
     proc binopvvMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {       
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
+
         // split request into fields
         var (op, aname, bname) = payload.splitMsgToTuple(3);
-        var rname = st.nextName();
 
+        var rname = st.nextName();
         var left: borrowed GenSymEntry = st.lookup(aname);
         var right: borrowed GenSymEntry = st.lookup(bname);
         
@@ -490,14 +491,16 @@ module OperatorMsg
     :arg st: SymTab to act on
     :type st: borrowed SymTab 
 
-    :returns: (string) 
+    :returns: (MsgTuple) 
     :throws: `UndefinedSymbolError(name)`
     */
     proc binopvsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string = ""; // response message
+
         // split request into fields
         var (op, aname, dtypeStr, value) = payload.splitMsgToTuple(4);
+
         var dtype = str2dtype(dtypeStr);
         var rname = st.nextName();
         var left: borrowed GenSymEntry = st.lookup(aname);
@@ -926,17 +929,18 @@ module OperatorMsg
     :arg st: SymTab to act on
     :type st: borrowed SymTab 
 
-    :returns: (string) 
+    :returns: (MsgTuple) 
     :throws: `UndefinedSymbolError(name)`
     */
     proc binopsvMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string = ""; // response message
+
         // split request into fields
         var (op, dtypeStr, value, aname) = payload.splitMsgToTuple(4);
+
         var dtype = str2dtype(dtypeStr);
         var rname = st.nextName();
-
         var right: borrowed GenSymEntry = st.lookup(aname);
         
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -1361,14 +1365,16 @@ module OperatorMsg
     :arg st: SymTab to act on
     :type st: borrowed SymTab 
 
-    :returns: (string) 
+    :returns: (MsgTuple) 
     :throws: `UndefinedSymbolError(name)`
     */
     proc opeqvvMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
+
         // split request into fields
         var (op, aname, bname) = payload.splitMsgToTuple(3);
+
         // retrieve left and right pdarray objects      
         var left: borrowed GenSymEntry = st.lookup(aname);
         var right: borrowed GenSymEntry = st.lookup(bname);
@@ -1517,7 +1523,10 @@ module OperatorMsg
                 return new MsgTuple(errorMsg, MsgType.ERROR);                                 
             }
         }
-        return new MsgTuple("opeqvv success", MsgType.NORMAL);
+
+        repMsg = "opeqvv success";
+        omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
     /*
@@ -1530,13 +1539,13 @@ module OperatorMsg
     :arg st: SymTab to act on
     :type st: borrowed SymTab 
 
-    :returns: (string) 
+    :returns: (MsgTuple)
     :throws: `UndefinedSymbolError(name)`
-
     */
     proc opeqvsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
+
         // split request into fields
         var (op, aname, dtypeStr, value) = payload.splitMsgToTuple(4);
         var dtype = str2dtype(dtypeStr);
@@ -1567,7 +1576,8 @@ module OperatorMsg
                     when "**=" { 
                         if (val<0){
                             var errorMsg = "Attempt to exponentiate base of type Int64 to negative exponent";
-                            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                            omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                                                                              errorMsg);
                             return new MsgTuple(errorMsg, MsgType.ERROR);                              
                         }
                         else{ l.a **= val; }
@@ -1581,8 +1591,6 @@ module OperatorMsg
                 }
             }
             when (DType.Int64, DType.Float64) {
-                var l = toSymEntry(left,int);
-                var val = try! value:real;
                 var errorMsg = notImplementedError(pn,left.dtype,op,dtype);
                 omLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);  
@@ -1662,6 +1670,7 @@ module OperatorMsg
                 return new MsgTuple(errorMsg, MsgType.ERROR);                
             }
         }
+
         repMsg = "opeqvs success";
         omLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);

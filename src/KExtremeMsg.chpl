@@ -37,7 +37,7 @@ module KExtremeMsg
     :type reqMsg: string
     :arg st: SymTab to act on
     :type st: borrowed SymTab
-    :returns: (string) response message
+    :returns: (MsgTuple) response message
     */
     proc minkMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
@@ -99,7 +99,7 @@ module KExtremeMsg
     :type reqMsg: string
     :arg st: SymTab to act on
     :type st: borrowed SymTab
-    :returns: (string) response message
+    :returns: (MsgTuple) response message
     */
     proc maxkMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();

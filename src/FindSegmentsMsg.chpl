@@ -32,7 +32,7 @@ module FindSegmentsMsg
     :arg st: SymTab to act on
     :type st: borrowed SymTab 
 
-    :returns: (string) 
+    :returns: (MsgTuple) 
     :throws: `UndefinedSymbolError(name)`
 
     */

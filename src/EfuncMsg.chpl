@@ -35,7 +35,7 @@ module EfuncMsg
       :arg st: SymTab to act on
       :type st: borrowed SymTab 
 
-      :returns: (string)
+      :returns: (MsgTuple)
       :throws: `UndefinedSymbolError(name)`
       */
 
@@ -173,7 +173,7 @@ module EfuncMsg
     :arg st: SymTab to act on
     :type st: borrowed SymTab 
 
-    :returns: (string)
+    :returns: (MsgTuple)
     :throws: `UndefinedSymbolError(name)`
     */
     proc efunc3vvMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
@@ -264,7 +264,7 @@ module EfuncMsg
     :arg st: SymTab to act on
     :type st: borrowed SymTab 
 
-    :returns: (string)
+    :returns: (MsgTuple)
     :throws: `UndefinedSymbolError(name)`
     */
     proc efunc3vsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
@@ -360,7 +360,7 @@ module EfuncMsg
     :arg st: SymTab to act on
     :type st: borrowed SymTab 
 
-    :returns: (string)
+    :returns: (MsgTuple)
     :throws: `UndefinedSymbolError(name)`
     */
     proc efunc3svMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
@@ -456,7 +456,7 @@ module EfuncMsg
     :arg st: SymTab to act on
     :type st: borrowed SymTab 
 
-    :returns: (string)
+    :returns: (MsgTuple)
     :throws: `UndefinedSymbolError(name)`
     */
     proc efunc3ssMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
