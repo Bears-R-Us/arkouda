@@ -4,8 +4,8 @@ import struct
 from typing import cast, Iterable, Optional, Union
 from typeguard import typechecked
 from arkouda.client import generic_msg
-from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS, \
-     float64, int64, DTypes, isSupportedInt, isSupportedNumber
+from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS, float64, int64, \
+     DTypes, isSupportedInt, isSupportedNumber, NumericDTypes, SeriesDTypes
 from arkouda.dtypes import dtype as akdtype
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.strings import Strings
@@ -15,22 +15,6 @@ __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like",
            "random_strings_uniform", "random_strings_lognormal", 
            "from_series"
           ]
-
-numericDTypes = frozenset(["bool", "int64", "float64", "int", "float"]) 
-
-RANDINT_TYPES = {'int64','float64',"int","float"}
-
-series_dtypes = {'string' : np.str_,
-                 "<class 'str'>" : np.str_,
-                 'int64' : np.int64,
-                 "<class 'numpy.int64'>" : np.int64,                
-                 'float64' : np.float64,
-                 "<class 'numpy.float64'>" : np.float64,                   
-                 'bool' : np.bool,
-                 "<class 'bool'>" : np.bool,
-                 'datetime64[ns]' : np.int64,
-                 'timedelta64[ns]' : np.int64
-                }
 
 @typechecked
 def from_series(series : pd.Series, 
@@ -102,7 +86,7 @@ def from_series(series : pd.Series,
     else:
         dt = str(dtype)
     try:
-        n_array = series.to_numpy(dtype=series_dtypes[dt])
+        n_array = series.to_numpy(dtype=SeriesDTypes[dt])
     except KeyError:
         raise ValueError(('dtype {} is unsupported. Supported dtypes are bool, ' +
                           'float64, int64, string, datetime64[ns], and timedelta64[ns]').format(dt))
@@ -257,7 +241,7 @@ def zeros(size : Union[int,np.int64], dtype : type=np.float64) -> pdarray:
                                      format(size.__class__.__name__))
     dtype = akdtype(dtype) # normalize dtype
     # check dtype for error
-    if cast(np.dtype,dtype).name not in numericDTypes:
+    if cast(np.dtype,dtype).name not in NumericDTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
     repMsg = generic_msg(cmd="create", args="{} {}".format(
                                     cast(np.dtype,dtype).name, size))
@@ -306,7 +290,7 @@ def ones(size : Union[int,np.int64], dtype : type=float64) -> pdarray:
                                             format(size.__class__.__name__))
     dtype = akdtype(dtype) # normalize dtype
     # check dtype for error
-    if cast(np.dtype,dtype).name not in numericDTypes:
+    if cast(np.dtype,dtype).name not in NumericDTypes:
         raise TypeError("unsupported dtype {}".format(dtype))
     repMsg = generic_msg(cmd="create", args="{} {}".format(
                                            cast(np.dtype,dtype).name, size))

@@ -6,7 +6,7 @@ import builtins
 
 __all__ = ["DTypes", "DTypeObjects", "dtype", "bool", "int64", "float64", 
            "uint8", "str_", "check_np_dtype", "translate_np_dtype", 
-           "resolve_scalar_dtype"]
+           "resolve_scalar_dtype", "ARKOUDA_SUPPORTED_DTYPES"]
 
 # supported dtypes
 structDtypeCodes = {'int64': 'q',
@@ -26,34 +26,19 @@ float64 = np.dtype(np.float64)
 uint8 = np.dtype(np.uint8)
 str_ = np.dtype(np.str_)
 str = np.dtype(np.str)
-DTypes = frozenset(["bool", "int64", "float64", "uint8", "str"])
-DTypeObjects = frozenset([bool, int64, float64, uint8, str])
 
-SUPPORTED_INTS = (int,np.int64)
-SUPPORTED_FLOATS = (float,np.float64)
-SUPPORTED_NUMBERS = (int,np.int64,float,np.float64)
-
-def isSupportedInt(num):
-    return isinstance(num, SUPPORTED_INTS)
-
-def isSupportedFloat(num):
-    return isinstance(num, SUPPORTED_FLOATS)
-
-def isSupportedNumber(num):
-    return isinstance(num, SUPPORTED_NUMBERS)
-
-def _as_dtype(dt) -> np.dtype:
-    if not isinstance(dt, np.dtype):
-        return np.dtype(dt)
-    return dt
-
+'''
+The DType enum defines the supported Arkouda data types in string form.
+'''
 class DType(Enum):
     
     BOOL = 'bool'
-    INT64 = 'int64'
+    FLOAT = 'float'
     FLOAT64 = 'float64'
-    UINT8 = 'uint8'
+    INT = 'int'
+    INT64 = 'int64'
     STR = 'str'
+    UINT8 = 'uint8'
     
     def __str__(self) -> str: # type: ignore
         """
@@ -69,16 +54,40 @@ class DType(Enum):
         """
         return self.value
 
-class DTypeObject(Enum):
-
-    BOOL = bool
-    INT64 = int64
-    FLOAT64 = float64
-    UINT8 = uint8
-    STR = str
+ARKOUDA_SUPPORTED_INTS = (int,np.int64)
+ARKOUDA_SUPPORTED_FLOATS = (float,np.float64)
+ARKOUDA_SUPPORTED_NUMBERS = (int,np.int64,float,np.float64)
+ARKOUDA_SUPPORTED_DTYPES = frozenset([member.value for _, 
+                                      member in DType.__members__.items()])
 
 DTypes = frozenset([member.value for _, member in DType.__members__.items()])
-DTypeObjects = frozenset([member.value for _, member in DTypeObject.__members__.items()])
+DTypeObjects = frozenset([bool, float, float64, int, int64, str, str_, uint8])
+NumericDTypes = frozenset(['bool', 'float', 'float64', 'int', 'int64'])
+SeriesDTypes = {'string' : np.str_,
+                 "<class 'str'>" : np.str_,
+                 'int64' : np.int64,
+                 "<class 'numpy.int64'>" : np.int64,                
+                 'float64' : np.float64,
+                 "<class 'numpy.float64'>" : np.float64,                   
+                 'bool' : np.bool,
+                 "<class 'bool'>" : np.bool,
+                 'datetime64[ns]' : np.int64,
+                 'timedelta64[ns]' : np.int64
+                }
+
+def isSupportedInt(num):
+    return isinstance(num, ARKOUDA_SUPPORTED_INTS)
+
+def isSupportedFloat(num):
+    return isinstance(num, ARKOUDA_SUPPORTED_FLOATS)
+
+def isSupportedNumber(num):
+    return isinstance(num, ARKOUDA_SUPPORTED_NUMBERS)
+
+def _as_dtype(dt) -> np.dtype:
+    if not isinstance(dt, np.dtype):
+        return np.dtype(dt)
+    return dt
 
 @typechecked
 def check_np_dtype(dt : np.dtype) -> None:
