@@ -80,7 +80,7 @@ module SegmentedMsg {
 
     select objtype {
       when "str" {
-        var strings = new owned SegString(segName, valName, st);
+        var strings = getSegString(segName, valName, st);
         var lengths = st.addEntry(rname, strings.size, int);
         // Do not include the null terminator in the length
         lengths.a = strings.getLengths() - 1;
@@ -117,7 +117,7 @@ module SegmentedMsg {
     
         select (objtype, valtype) {
           when ("str", "str") {
-            var strings = new owned SegString(segName, valName, st);
+            var strings = getSegString(segName, valName, st);
             select subcmd {
                 when "contains" {
                 var truth = st.addEntry(rname, strings.size, bool);
@@ -166,7 +166,7 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
 
     select (objtype, valtype) {
     when ("str", "str") {
-      var strings = new owned SegString(segName, valName, st);
+      var strings = getSegString(segName, valName, st);
       select subcmd {
         when "peel" {
           var times = valStr:int;
@@ -270,7 +270,7 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
 
     select objtype {
         when "str" {
-            var strings = new owned SegString(segName, valName, st);
+            var strings = getSegString(segName, valName, st);
             var hashes = strings.hash();
             var name1 = st.nextName();
             var hash1 = st.addEntry(name1, hashes.size, int);
@@ -354,7 +354,7 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
       select objtype {
           when "str" {
               // Make a temporary strings array
-              var strings = new owned SegString(args[1], args[2], st);
+              var strings = getSegString(args[1], args[2], st);
               // Parse the index
               var idx = args[3]:int;
               // TO DO: in the future, we will force the client to handle this
@@ -394,7 +394,7 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
     select objtype {
       when "str" {
         // Make a temporary string array
-        var strings = new owned SegString(args[1], args[2], st);
+        var strings = getSegString(args[1], args[2], st);
         // Parse the slice parameters
         var start = args[3]:int;
         var stop = args[4]:int;
@@ -456,7 +456,7 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
     
     select objtype {
         when "str" {
-            var strings = new owned SegString(args[1], args[2], st);
+            var strings = getSegString(args[1], args[2], st);
             var iname = args[3];
             var gIV: borrowed GenSymEntry = st.lookup(iname);
             try {
@@ -520,8 +520,8 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
 
     select (ltype, rtype) {
     when ("str", "str") {
-      var lstrings = new owned SegString(lsegName, lvalName, st);
-      var rstrings = new owned SegString(rsegName, rvalName, st);
+      var lstrings = getSegString(lsegName, lvalName, st);
+      var rstrings = getSegString(rsegName, rvalName, st);
       select op {
         when "==" {
           var rname = st.nextName();
@@ -576,7 +576,7 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
     var rname = st.nextName();
     select (objtype, valtype) {
     when ("str", "str") {
-      var strings = new owned SegString(segName, valName, st);
+      var strings = getSegString(segName, valName, st);
       select op {
         when "==" {
           var e = st.addEntry(rname, strings.size, bool);
@@ -614,8 +614,8 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
     var rname = st.nextName();
     select (mainObjtype, testObjtype) {
     when ("str", "str") {
-      var mainStr = new owned SegString(mainSegName, mainValName, st);
-      var testStr = new owned SegString(testSegName, testValName, st);
+      var mainStr = getSegString(mainSegName, mainValName, st);
+      var testStr = getSegString(testSegName, testValName, st);
       var e = st.addEntry(rname, mainStr.size, bool);
       if invert {
         e.a = !in1d(mainStr, testStr);
@@ -643,7 +643,7 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
       var rname = st.nextName();
       select (objtype) {
           when "str" {
-              var strings = new owned SegString(segName, valName, st);
+              var strings = getSegString(segName, valName, st);
               var iv = st.addEntry(rname, strings.size, int);
               iv.a = strings.argGroup();
           }

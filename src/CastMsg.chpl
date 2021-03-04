@@ -97,7 +97,7 @@ module CastMsg {
       }
       when "str" {
         const (segName, valName) = name.splitMsgToTuple("+", 2);
-        const strings = new owned SegString(segName, valName, st);
+        const strings = getSegString(segName, valName, st);
         select targetDtype {
           when "int64" {
             return castStringToSymEntry(strings, st, int);
