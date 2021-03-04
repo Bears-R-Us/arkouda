@@ -50,7 +50,7 @@ class WhereTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             ak.where(ak.linspace(1,10,10), [0], ak.linspace(1,10,10))
-        self.assertEqual(('type of argument "A" must be one of (int, float, int64, pdarray); got list instead'), 
+        self.assertEqual(('both A and B must be an int, np.int64, float, np.float64, or pdarray'), 
                          cm.exception.args[0]) 
         
         with self.assertRaises(TypeError) as cm:

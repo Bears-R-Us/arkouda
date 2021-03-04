@@ -76,9 +76,36 @@ the shared memory paradigm and scales its operations to dataframes with over
 operations on columns of one trillion elements running on 512 compute nodes.
 This yielded a >20TB dataframe in Arkouda.
 
-## Installation
+<a id="toc"></a>
+# Table of Contents
+ 
+1. [Prerequisites](#prereq-main)
+   - [Requirements](#prereq-reqs)
+   - [MacOS](#prereq-mac)
+     - [Installing Chapel](#prereq-mac-chapel)
+     - [Python environment - Anaconda](#prereq-mac-anaconda)
+   - [Linux](#prereq-linux)
+     - [Install Chapel](#prereq-linux-chapel)
+     - [Python environment - Anaconda](#prereq-linux-anaconda)
+2. [Building Arkouda](#build-ak)
+   - [Building the source](#build-ak-source)
+   - [Building the docs](#build-ak-docs)
+3. [Testing Arkouda](#test-ak)
+4. [Installing Arkouda Python libs and deps](#install-ak)
+5. [Running arkouda_server](#run-ak)
+   - [Sanity check](#run-ak-sanity)
+   - [Token-Based Authentication](#run-ak-token-auth)
+   - [Connecting to Arkouda](#run-ak-connect)
+6. [Logging](#log-ak)
+7. [Type Checking in Arkouda](#typecheck-ak)
+8. [Contributing](#contrib-ak)
 
-### Requirements:
+
+<a id="prereq-main"></a>
+## Prerequisites <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+
+<a id="prereq-reqs"></a>
+### Requirements: <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
  * requires chapel 1.23.0
  * requires zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * requires hdf5 
@@ -89,9 +116,16 @@ This yielded a >20TB dataframe in Arkouda.
  * requires pytest, pytest-env, and h5py to execute the Python test harness
  * requires sphinx, sphinx-argparse, and sphinx-autoapi to generate docs
 
-### MacOS Environment Installation
+<a id="prereq-mac"></a>
+### MacOS Environment <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
-It is usually very simple to get things going on a mac:
+<a id="prereq-mac-chapel"></a>
+#### Installing Chapel <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+
+Option 1: Setup using brew
+
+<details>
+ <summary>(click to see more)</summary>
 
 ```bash
 brew install zeromq
@@ -100,21 +134,14 @@ brew install hdf5
 
 brew install chapel
 
-# Although not required, is is highly recommended to install Anaconda to provide a 
-# Python 3 environment and manage Python dependencies:
-wget https://repo.anaconda.com/archive/Anaconda3-2020.07-MacOSX-x86_64.sh
-sh Anaconda3-2020.07-MacOSX-x86_64.sh
-source ~/.bashrc
-
-# Otherwise, Python 3 can be installed with brew
-brew install python3
-
-# these packages are nice but not a requirement
-pip3 install pandas
-pip3 install jupyter
 ```
 
-If it is preferred to build Chapel instead of using the brew install, the process is as follows:
+</details>
+
+Option 2: Build Chapel from source
+
+<details>
+ <summary>(click to see more)</summary>
 
 ```bash
 # build chapel in the user home directory with these settings...
@@ -137,7 +164,11 @@ make chpldoc
 export PATH=$CHPL_HOME/bin/linux64-x86_64/:$PATH
 ```
 
-While not required, it is highly recommended to [install Anaconda](https://docs.anaconda.com/anaconda/install/mac-os/) to provide a Python environment and manage Python dependencies. Otherwise, python can be installed via brew.
+</details>
+
+<a id="prereq-mac-anaconda"></a>
+#### Mac - Python / Anaconda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+While not required, it is highly recommended to [install Anaconda](https://docs.anaconda.com/anaconda/install/mac-os/) to provide a Python3 environment and manage Python dependencies. Otherwise, python can be installed via brew.
 
 ```
 # The recommended Python install is via Anaconda:
@@ -153,10 +184,16 @@ pip3 install pandas
 pip3 install jupyter
 ```
 
-### Linux Environment Installation
+<a id="prereq-linux"></a>
+### Linux Environment <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
+<a id="prereq-linux-chapel"></a>
+#### Installing Chapel on Linux <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 There is no Linux Chapel install, so the first two steps in the Linux Arkouda install are 
-to install the Chapel dependencies followed by downloading and building Chapel:
+to install the Chapel dependencies followed by downloading and building Chapel.
+
+<details>
+ <summary>(click to see more)</summary>
 
 ```bash
 # Update Linux kernel and install Chapel dependencies
@@ -191,7 +228,14 @@ export PATH=$CHPL_HOME/bin/linux64-x86_64/:$PATH
 
 ```
 
+</details>
+
+<a id="prereq-linux-anaconda"></a> 
+#### Python environment setup - Anaconda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 As is the case with the MacOS install, it is highly recommended to [install Anaconda](https://docs.anaconda.com/anaconda/install/linux/) to provide a Python environment and manage Python dependencies:
+
+<details>
+ <summary>(click to see more)</summary>
 
 ```
  wget https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh
@@ -199,11 +243,15 @@ As is the case with the MacOS install, it is highly recommended to [install Anac
  source ~/.bashrc
 ```
 
-## Building Arkouda
+</details>
 
+<a id="build-ak"></a>
+## Building Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 Download, clone, or fork the [arkouda repo](https://github.com/mhmerrill/arkouda). Further instructions assume 
 that the current directory is the top-level directory of the repo.
 
+<a id="build-ak-source"></a>
+### Build the source <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 If your environment requires non-system paths to find dependencies (e.g., if using the ZMQ and HDF5 bundled 
 with [Anaconda]), append each path to a new file `Makefile.paths` like so:
 
@@ -225,90 +273,12 @@ make install-deps
 make
 ```
 
-Now that the arkouda\_server is built and tested, install the Python library
+<a id="build-ak-docs"></a>
+### Building the Arkouda documentation <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+The Arkouda documentation is hosted on [Read-the-Docs](https://arkouda.readthedocs.io/en/latest/).
 
-## Installing the Arkouda Python Library and Dependencies
-
-The Arkouda Python library along with it's dependent libraries are installed with pip. There are four types of 
-Python dependencies for the Arkouda developer to install: requires, dev, test, and doc. The required libraries, 
-which are the runtime dependencies of the Arkouda python library, are installed as follows:
-
-```bash
- pip3 install -e .
-```
-
-Arkouda and the Python libaries required for development, test, and doc generation activities are installed
-as follows:
-
-```bash
-pip3 install -e .[dev]
-```
-
-## Testing Arkouda
-
-There are two unit test suites for Arkouda, one for Python and one for Chapel. As mentioned above, the Arkouda  
-Python test harness leverages multiple libraries such as [pytest](https://docs.pytest.org/en/latest/) and 
-[pytest-env](https://pypi.org/project/pytest-env/) that must be installed via `pip3 install -e .[dev]`, 
-whereas the Chapel test harness does not require any external librares.
-
-The default Arkouda test executes the Python test harness and is invoked as follows:
-
-```bash
-make test
-```
-
-The Chapel unit tests can be executed as follows:
-
-```bash
-make test-chapel
-```
-
-Both the Python and Chapel unit tests are executed as follows:
-
-```bash
-make test-all
-```
-
-For more details regarding Arkouda testing, please consult the Python test [README](tests/README.md) and Chapel test
-[README](test/README.md), respectively.
-
-## Type Checking in Arkouda
-
-Both static and runtime type checking are becoming increasingly popular in Python, especially for large Python code bases 
-such as those found at [dropbox](https://dropbox.tech/application/our-journey-to-type-checking-4-million-lines-of-python). 
-Arkouda uses [mypy](https://mypy.readthedocs.io/en/stable/) for static type checking and [typeguard](https://typeguard.readthedocs.io/en/latest/) 
-for runtime type checking.
-
-Enabling runtime as well as static type checking in Python starts with adding [type hints](https://www.python.org/dev/peps/pep-0484/), 
-as shown below to a method signature:
-
-```
-def connect(server : str="localhost", port : int=5555, timeout : int=0, 
-                           access_token : str=None, connect_url=None) -> None:
-```
-
-mypy static type checking can be invoked either directly via the mypy command or via make:
-
-```
-$ mypy arkouda
-Success: no issues found in 16 source files
-$ make mypy
-python3 -m mypy arkouda
-Success: no issues found in 16 source files
-```
-
-Runtime type checking is enabled at the Python method level by annotating the method if interest with the @typechecked decorator, an 
-example of which is shown below:
-
-```
-@typechecked
-def save(self, prefix_path : str, dataset : str='array', mode : str='truncate') -> str:
-```
-
-Type checking in Arkouda is implemented on an "opt-in" basis. Accordingly, Arkouda continues to support [duck typing](https://en.wikipedia.org/wiki/Duck_typing) for parts of the Arkouda API where type checking is too confining to be useful. As detailed above, both runtime and static 
-type checking require type hints. Consequently, to opt-out of type checking, simply leave type hints out of any method declarations where duck typing is desired.
-
-## Building the Arkouda documentation
+<details>
+<summary><b>(click to see more)</b></summary>
 
 First ensure that all Python doc dependencies including sphinx and sphinx extensions have been installed as detailed 
 above. _Important: if Chapel was built locally, ```make chpldoc``` must be executed as detailed above to enable 
@@ -339,9 +309,7 @@ arkouda/docs/server # Chapel backend server documentation
 To view the Arkouda documentation locally, type the following url into the browser of choice:
  `file:///path/to/arkouda/docs/index.html`, substituting the appropriate path for the Arkouda directory configuration.
 
-The Arkouda documentation is hosted on [Read-the-Docs](https://arkouda.readthedocs.io/en/latest/). The `make doc` target
-detailed above prepares the Arkouda Python and Chapel docs for
-hosting both locally and on Read-the-Docs.
+The `make doc` target detailed above prepares the Arkouda Python and Chapel docs for hosting both locally and on Read-the-Docs.
 
 There are three easy steps to hosting Arkouda docs on Github Pages. First, the Arkouda docs generated via `make doc` 
 are pushed to the Arkouda or Arkouda fork _master branch_. Next, navigate to the Github project home and click the 
@@ -349,7 +317,64 @@ are pushed to the Arkouda or Arkouda fork _master branch_. Next, navigate to the
 option. The Github Pages docs url will be displayed once the source option is selected. Click on the link and the
 Arkouda documentation homepage will be displayed.
 
-## Running arkouda\_server
+</details>
+
+<a id="test-ak"></a>
+## Testing Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+
+<details>
+<summary><b>(click to see more)</b></summary>
+
+There are two unit test suites for Arkouda, one for Python and one for Chapel. As mentioned above, the Arkouda  
+Python test harness leverages multiple libraries such as [pytest](https://docs.pytest.org/en/latest/) and 
+[pytest-env](https://pypi.org/project/pytest-env/) that must be installed via `pip3 install -e .[dev]`, 
+whereas the Chapel test harness does not require any external librares.
+
+The default Arkouda test executes the Python test harness and is invoked as follows:
+
+```bash
+make test
+```
+
+The Chapel unit tests can be executed as follows:
+
+```bash
+make test-chapel
+```
+
+Both the Python and Chapel unit tests are executed as follows:
+
+```bash
+make test-all
+```
+
+</details>
+
+For more details regarding Arkouda testing, please consult the Python test [README](tests/README.md) and Chapel test
+[README](test/README.md), respectively.
+
+
+<a id="install-ak"></a>
+## Installing the Arkouda Python Library and Dependencies <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+Now that the arkouda\_server is built and tested, install the Python library.
+
+The Arkouda Python library along with it's dependent libraries are installed with pip. There are four types of 
+Python dependencies for the Arkouda developer to install: requires, dev, test, and doc. The required libraries, 
+which are the runtime dependencies of the Arkouda python library, are installed as follows:
+
+```bash
+ pip3 install -e .
+```
+
+Arkouda and the Python libaries required for development, test, and doc generation activities are installed
+as follows:
+
+```bash
+pip3 install -e .[dev]
+```
+
+<a id="run-ak"></a>
+## Running arkouda\_server <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
 The command-line invocation depends on whether you built a single-locale version (with `CHPL_COMM=none`) or 
 multi-locale version (with `CHPL_COMM` set to the desired number of locales).
@@ -384,7 +409,24 @@ Other command line options are available and can be viewed by using the `--help`
 ./arkouda-server --help
 ```
 
-## Token-Based Authentication in Arkouda
+<a id="run-ak-sanity"></a>
+### Sanity check arkouda\_server <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+
+To sanity check the arkouda server, you can run
+
+```bash
+make check
+```
+
+This will start the server, run a few computations, and shut the server down. In addition, the check script can be executed 
+against a running server by running the following Python command:
+
+```bash
+python3 tests/check.py localhost 5555
+```
+
+<a id="run-ak-token-auth"></a>
+### Token-Based Authentication in Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
 Arkouda features a token-based authentication mechanism analogous to Jupyter, where a randomized alphanumeric string is
 generated or loaded at arkouda\_server startup. The command to start arkouda\_server with token authentication is as follows:
@@ -398,7 +440,8 @@ working directory the arkouda\_server is launched from. The arkouda\_server will
 .arkouda/tokens.txt file is removed, which forces arkouda\_server to generate a new token and corresponding
 tokens.txt file.
 
-## Connecting to Arkouda
+<a id="run-ak-connect"></a>
+### Connecting to Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
 The client connects to the arkouda\_server either by supplying a host and port or by providing a connect\_url connect string:
 
@@ -419,22 +462,9 @@ Note: once a client has successfully connected to an authentication-enabled arko
 user's $ARKOUDA\_HOME .arkouda/tokens.txt file. As long as the arkouda_server token remains the same, the user can
 connect without specifying the token via the access_token parameter or token url argument.
 
-## Testing arkouda\_server
 
-To sanity check the arkouda server, you can run
-
-```bash
-make check
-```
-
-This will start the server, run a few computations, and shut the server down. In addition, the check script can be executed 
-against a running server by running the following Python command:
-
-```bash
-python3 tests/check.py localhost 5555
-```
-
-## Logging
+<a id="log-ak"></a>
+## Logging <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
 The Arkouda server features a Chapel logging framework that prints out the module name, routine name and line number
 for all logged messages. Available logging levels are ERROR, CRITICAL, WARN, INFO, and DEBUG. 
@@ -442,6 +472,50 @@ for all logged messages. Available logging levels are ERROR, CRITICAL, WARN, INF
 The default logging level is INFO where all messages at the ERROR, CRITICAL, WARN, and INFO levels are printed. For debugging, 
 the DEBUG level is enabled by passing in the --v flag upon arkouda\_server startup.
 
-## Contributing to Arkouda
+<a id="typecheck-ak"></a>
+## Type Checking in Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+
+Both static and runtime type checking are becoming increasingly popular in Python, especially for large Python code bases 
+such as those found at [dropbox](https://dropbox.tech/application/our-journey-to-type-checking-4-million-lines-of-python). 
+Arkouda uses [mypy](https://mypy.readthedocs.io/en/stable/) for static type checking and [typeguard](https://typeguard.readthedocs.io/en/latest/) 
+for runtime type checking.
+
+<details>
+ <summary><b>(click to see more)</b></summary>
+
+Enabling runtime as well as static type checking in Python starts with adding [type hints](https://www.python.org/dev/peps/pep-0484/), 
+as shown below to a method signature:
+
+```
+def connect(server : str="localhost", port : int=5555, timeout : int=0, 
+                           access_token : str=None, connect_url=None) -> None:
+```
+
+mypy static type checking can be invoked either directly via the mypy command or via make:
+
+```
+$ mypy arkouda
+Success: no issues found in 16 source files
+$ make mypy
+python3 -m mypy arkouda
+Success: no issues found in 16 source files
+```
+
+Runtime type checking is enabled at the Python method level by annotating the method if interest with the @typechecked decorator, an 
+example of which is shown below:
+
+```
+@typechecked
+def save(self, prefix_path : str, dataset : str='array', mode : str='truncate') -> str:
+```
+
+Type checking in Arkouda is implemented on an "opt-in" basis. Accordingly, Arkouda continues to support [duck typing](https://en.wikipedia.org/wiki/Duck_typing) for parts of the Arkouda API where type checking is too confining to be useful. As detailed above, both runtime and static 
+type checking require type hints. Consequently, to opt-out of type checking, simply leave type hints out of any method declarations where duck typing is desired.
+
+</details>
+
+
+<a id="contrib-ak"></a>
+## Contributing to Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
 If you'd like to contribute, please see [CONTRIBUTING.md](CONTRIBUTING.md).

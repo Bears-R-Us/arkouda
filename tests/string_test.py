@@ -114,16 +114,22 @@ def run_test_groupby(strings, cat, akset):
 
 
 def run_test_contains(strings, test_strings, delim):
+    if isinstance(delim,bytes):
+        delim = delim.decode()
     found = strings.contains(delim).to_ndarray()
     npfound = np.array([s.count(delim) > 0 for s in test_strings])
     assert((found == npfound).all())
 
-def run_test_starts_with(strings, test_strings, delim):
+def run_test_starts_with(strings, test_strings, delim):    
+    if isinstance(delim,bytes):
+        delim = delim.decode()
     found = strings.startswith(delim).to_ndarray()
     npfound = np.array([s.startswith(delim) for s in test_strings])
     assert((found == npfound).all())
 
 def run_test_ends_with(strings, test_strings, delim):
+    if isinstance(delim,bytes):
+        delim = delim.decode()
     found = strings.endswith(delim).to_ndarray()
     npfound = np.array([s.endswith(delim) for s in test_strings])
     if len(found) != len(npfound):
@@ -131,6 +137,8 @@ def run_test_ends_with(strings, test_strings, delim):
     assert((found == npfound).all())
 
 def run_test_peel(strings, test_strings, delim):
+    if isinstance(delim,bytes):
+        delim = delim.decode()
     import itertools as it
     tf = (True, False)
     def munge(triple, inc, part):
@@ -188,6 +196,8 @@ def run_test_peel(strings, test_strings, delim):
         assert((ltest == ls.to_ndarray()).all() and (rtest == rs.to_ndarray()).all())
 
 def run_test_stick(strings, test_strings, base_words, delim, N):
+    if isinstance(delim,bytes):
+        delim = delim.decode()
     test_strings2 = np.random.choice(base_words.to_ndarray(), N, replace=True)
     strings2 = ak.array(test_strings2)
     stuck = strings.stick(strings2, delimiter=delim).to_ndarray()
@@ -345,12 +355,18 @@ class StringTest(ArkoudaTest):
 
     def test_contains(self):
         run_test_contains(self.strings, self.test_strings, self.delim)
+        run_test_contains(self.strings, self.test_strings, np.str_(self.delim))
+        run_test_contains(self.strings, self.test_strings, str.encode(str(self.delim)))
         
     def test_starts_with(self):
         run_test_starts_with(self.strings, self.test_strings, self.delim)
+        run_test_starts_with(self.strings, self.test_strings, np.str_(self.delim))
+        run_test_starts_with(self.strings, self.test_strings, str.encode(str(self.delim)))
 
     def test_ends_with(self):
         run_test_ends_with(self.strings, self.test_strings, self.delim)
+        run_test_ends_with(self.strings, self.test_strings, np.str_(self.delim))
+        run_test_ends_with(self.strings, self.test_strings, str.encode(str(self.delim)))
 
         # Test gremlins delimiters
         run_test_ends_with(self.gremlins_strings, self.gremlins_test_strings, ' ')        
@@ -380,7 +396,7 @@ class StringTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             stringsOne.lstick(stringsTwo, delimiter=1)
-        self.assertEqual('type of argument "delimiter" must be str; got int instead', 
+        self.assertEqual('type of argument "delimiter" must be one of (str, bytes, str_); got int instead', 
                          cm.exception.args[0])
         
         with self.assertRaises(TypeError) as cm:
@@ -390,22 +406,22 @@ class StringTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.startswith(1)
-        self.assertEqual('type of argument "substr" must be one of (str, bytes); got int instead', 
+        self.assertEqual('type of argument "substr" must be one of (str, bytes, str_); got int instead', 
                          cm.exception.args[0])    
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.endswith(1)
-        self.assertEqual('type of argument "substr" must be one of (str, bytes); got int instead', 
+        self.assertEqual('type of argument "substr" must be one of (str, bytes, str_); got int instead', 
                          cm.exception.args[0])   
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.contains(1)
-        self.assertEqual('type of argument "substr" must be one of (str, bytes); got int instead', 
+        self.assertEqual('type of argument "substr" must be one of (str, bytes, str_); got int instead', 
                          cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.peel(1)
-        self.assertEqual('type of argument "delimiter" must be str; got int instead', 
+        self.assertEqual('type of argument "delimiter" must be one of (str, bytes, str_); got int instead', 
                          cm.exception.args[0])  
 
         with self.assertRaises(ValueError) as cm:
@@ -415,6 +431,8 @@ class StringTest(ArkoudaTest):
 
     def test_peel(self):
         run_test_peel(self.strings, self.test_strings, self.delim)
+        run_test_peel(self.strings, self.test_strings, np.str_(self.delim))
+        run_test_peel(self.strings, self.test_strings, str.encode(str(self.delim)))
         
         # Test gremlins delimiters 
         with self.assertRaises(ValueError):
@@ -423,7 +441,12 @@ class StringTest(ArkoudaTest):
         run_test_peel(self.gremlins_strings, self.gremlins_test_strings, ' ') 
 
     def test_stick(self):
-        run_test_stick(self.strings, self.test_strings, self.base_words, self.delim, 100)
+        run_test_stick(self.strings, self.test_strings, self.base_words, 
+                       self.delim, 100)
+        run_test_stick(self.strings, self.test_strings, self.base_words, 
+                       np.str_(self.delim), 100)
+        run_test_stick(self.strings, self.test_strings, self.base_words, 
+                       str.encode(str(self.delim)), 100)
         
         # Test gremlins delimiters 
         run_test_stick(self.gremlins_strings, self.gremlins_test_strings, 

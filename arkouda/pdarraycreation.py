@@ -16,9 +16,9 @@ __all__ = ["array", "zeros", "ones", "zeros_like", "ones_like",
            "from_series"
           ]
 
-numericDTypes = frozenset(["bool", "int64", "float64"]) 
+numericDTypes = frozenset(["bool", "int64", "float64", "int", "float"]) 
 
-RANDINT_TYPES = {'int64','float64'}
+RANDINT_TYPES = {'int64','float64',"int","float"}
 
 series_dtypes = {'string' : np.str_,
                  "<class 'str'>" : np.str_,
@@ -34,7 +34,7 @@ series_dtypes = {'string' : np.str_,
 
 @typechecked
 def from_series(series : pd.Series, 
-                    dtype : Optional[type]=None) -> Union[pdarray,Strings]:
+                    dtype : Optional[Union[type,str]]=None) -> Union[pdarray,Strings]:
     """
     Converts a Pandas Series to an Arkouda pdarray or Strings object. If
     dtype is None, the dtype is inferred from the Pandas Series. Otherwise,
@@ -223,7 +223,7 @@ def zeros(size : Union[int,np.int64], dtype : type=np.float64) -> pdarray:
     ----------
     size : Union[int,int64]
         Size of the array (only rank-1 arrays supported)
-    dtype : {float64, int64, bool}
+    dtype : Union[float, np.float64, int, np.int64, bool, np.bool}
         Type of resulting array, default float64
 
     Returns
@@ -272,7 +272,7 @@ def ones(size : Union[int,np.int64], dtype : type=float64) -> pdarray:
     ----------
     size : Union[int,np.int64]
         Size of the array (only rank-1 arrays supported)
-    dtype : {float64, int64, bool}
+    dtype : Union[float64, int64, bool]
         Resulting array type, default float64
 
     Returns
@@ -490,7 +490,7 @@ def arange(*args) -> pdarray:
 
 @typechecked
 def linspace(start : Union[float,np.float64,int,np.int64], 
-            stop : Union[float,np.float64,int,np.int64], length : Union[int,np.int64]) -> pdarray:
+             stop : Union[float,np.float64,int,np.int64], length : Union[int,np.int64]) -> pdarray:
     """
     Create a pdarray of linearly-spaced floats in a closed interval.
 
@@ -549,13 +549,13 @@ def randint(low : Union[int,np.int64,float,np.float64], high : Union[int,np.int6
 
     Parameters
     ----------
-    low : Union[int,float]
+    low : Union[int,np.int64,float,np.float64]
         The low value (inclusive) of the range
-    high : Union[int,float]
+    high : Union[int,np.int64,float,np.float64]
         The high value (exclusive for int, inclusive for float) of the range
     size : Union[int,np.int64]
         The length of the returned array
-    dtype : {int64, float64, bool}
+    dtype : Union[int64, float64, bool]
         The dtype of the array
     seed : Union[int,np.int64]
         Index for where to pull the first returned value
@@ -761,8 +761,8 @@ def random_strings_uniform(minlen : Union[int,np.int64], maxlen : Union[int,np.i
     return Strings(*(cast(str,repMsg).split('+')))
 
 @typechecked
-def random_strings_lognormal(logmean : Union[float,int,np.int64,np.float64], 
-                             logstd : Union[float,int,np.int64,np.float64], 
+def random_strings_lognormal(logmean : Union[int,np.int64,float,np.float64], 
+                             logstd : Union[int,np.int64,float,np.float64], 
                              size : Union[int,np.int64], characters : str='uppercase', 
                              seed : Union[None, Union[int,np.int64]]=None) -> Strings:
     """
@@ -771,9 +771,9 @@ def random_strings_lognormal(logmean : Union[float,int,np.int64,np.float64],
 
     Parameters
     ----------
-    logmean : Union[float,int,np.int64,np.float64]
+    logmean : Union[int,np.int64,float,np.float64]
         The log-mean of the length distribution
-    logstd :  Union[float,int,np.int64,np.float64]
+    logstd :  Union[int,np.int64,float,np.float64]
         The log-standard-deviation of the length distribution
     size : Union[int,np.int64]
         The number of strings to generate
