@@ -46,6 +46,31 @@ proc initArkoudaDirectory() {
 }
 
 proc main() {
+
+    proc printServerSpashMessage() throws {
+        var arkDirectory = initArkoudaDirectory();
+        var version = "arkouda server version = %s".format(arkoudaVersion);
+        var directory = "initialized the .arkouda directory %s".format(arkDirectory);
+        var memLimit =  "getMemLimit() %i".format(getMemLimit());
+        var memUsed = "bytes of memoryUsed() = %i".format(memoryUsed());
+        var serverMessage: string;
+        var serverToken: string;
+    
+        if authenticate {
+            serverToken = getArkoudaToken('%s%s%s'.format(arkDirectory, pathSep, 'tokens.txt'));
+            serverMessage = ">>>>>>>>>>>>>>> server listening on tcp://%s:%t?token=%s " +
+                        "<<<<<<<<<<<<<<<".format(serverHostname, ServerPort, serverToken);
+        } else {
+            serverMessage = ">>>>>>>>>>>>>>> server listening on tcp://%s:%t <<<<<<<<<<<<<<<".format(
+                                        serverHostname, ServerPort);
+        }
+        
+        var smPadding = 50 - serverMessage.size;
+        writeln('***************************************************');
+        
+        writeln('***************************************************');
+    }
+
     asLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
                                                "arkouda server version = %s".format(arkoudaVersion));
     asLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
@@ -81,13 +106,23 @@ proc main() {
     }
 
     socket.bind("tcp://*:%t".format(ServerPort));
-
-    const boundary = "**************************************************************************" +
-                   "**************************";
-
-    asLogger.info(getModuleName(), getRoutineName(), getLineNumber(), boundary);
-    asLogger.info(getModuleName(), getRoutineName(), getLineNumber(), serverMessage);
-    asLogger.info(getModuleName(), getRoutineName(), getLineNumber(), boundary);
+    
+    const buff = '         ';
+    const boundarySize = serverMessage.size + 20;
+    
+    var boundary = "*";
+    var i = 0;
+    
+    while i < boundarySize {
+        boundary += "*";
+        i+=1;
+    }
+    
+    serverMessage = "%s %s %s %s %s".format('*',buff,serverMessage,buff,'*');
+    
+    writeln(boundary);
+    writeln(serverMessage);
+    writeln(boundary);
     
     createServerConnectionInfo();
 
