@@ -6,6 +6,7 @@ module In1dMsg
     use Reflection;
     use Errors;
     use Logging;
+    use Message;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -37,7 +38,7 @@ module In1dMsg
        which implementation
        of in1d to utilize.
     */
-    proc in1dMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+    proc in1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
@@ -49,7 +50,7 @@ module In1dMsg
         else {
             var errorMsg = "Error: %s: %s".format(pn,flag);
             iLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return errorMsg;         
+            return new MsgTuple(errorMsg, MsgType.ERROR);         
         }
 
         // get next symbol name
@@ -101,11 +102,11 @@ module In1dMsg
             otherwise {
                 var errorMsg = notImplementedError(pn,gAr1.dtype,"in",gAr2.dtype);
                 iLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return errorMsg;
+                return new MsgTuple(errorMsg, MsgType.ERROR);
             }
         }
         repMsg = "created " + st.attrib(rname);
         iLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return repMsg;
+        return new MsgTuple(repMsg, MsgType.NORMAL);
     }   
 }

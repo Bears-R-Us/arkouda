@@ -7,6 +7,7 @@ module ConcatenateMsg
     use Reflection;
     use Errors;
     use Logging;
+    use Message;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -26,7 +27,7 @@ module ConcatenateMsg
     /* Concatenate a list of arrays together
        to form one array
      */
-    proc concatenateMsg(cmd: string, payload: string, st: borrowed SymTab) throws {
+    proc concatenateMsg(cmd: string, payload: string, st: borrowed SymTab) : MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string;
         var (nstr, objtype, mode, rest) = payload.splitMsgToTuple(4);
@@ -43,7 +44,7 @@ module ConcatenateMsg
             var errorMsg = incompatibleArgumentsError(pn, 
                              "Expected %i arrays but got %i".format(n, names.size)); 
             cmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                               
-            return errorMsg;
+            return new MsgTuple(errorMsg, MsgType.ERROR);
         }
         /* var arrays: [0..#n] borrowed GenSymEntry; */
         var size: int = 0;
@@ -83,7 +84,7 @@ module ConcatenateMsg
                 otherwise { 
                     var errorMsg = notImplementedError(pn, objtype); 
                     cmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
-                    return errorMsg;                    
+                    return new MsgTuple(errorMsg,MsgType.ERROR);                  
                 }
             }
             var g: borrowed GenSymEntry;
@@ -105,7 +106,7 @@ module ConcatenateMsg
                              "Expected %s dtype but got %s dtype".format(dtype2str(dtype), 
                                     dtype2str(g.dtype)));
                     cmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                    return errorMsg;
+                    return new MsgTuple(errorMsg,MsgType.ERROR);
                 }
             }
             // accumulate size from each array size
@@ -190,7 +191,7 @@ module ConcatenateMsg
                 var repMsg = "created " + st.attrib(segName) + "+created " + st.attrib(valName);
                 cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                   "created concatenated pdarray %s".format(st.attrib(valName)));
-                return repMsg;
+                return new MsgTuple(repMsg, MsgType.NORMAL);
             }
             when "pdarray" {
                 var rname = st.nextName();
@@ -287,17 +288,18 @@ module ConcatenateMsg
                     otherwise {
                         var errorMsg = notImplementedError("concatenate",dtype);
                         cmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-                        return errorMsg;                         
+                        return new MsgTuple(errorMsg,MsgType.ERROR);                      
                     }
                 }
+
                 repMsg = "created " + st.attrib(rname);
                 cmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-                return repMsg;
+                return new MsgTuple(repMsg, MsgType.NORMAL);
             }
             otherwise { 
                 var errorMsg = notImplementedError(pn, objtype); 
                 cmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return errorMsg;
+                return new MsgTuple(errorMsg, MsgType.ERROR);
             }
         }
     }

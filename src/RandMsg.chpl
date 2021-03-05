@@ -7,6 +7,7 @@ module RandMsg
     use Reflection;
     use Errors;
     use Logging;
+    use Message;
     use RandArray;
     
     use MultiTypeSymbolTable;
@@ -27,7 +28,7 @@ module RandMsg
 
     :arg reqMsg: message to process (contains cmd,aMin,aMax,len,dtype)
     */
-    proc randintMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+    proc randintMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
@@ -100,15 +101,16 @@ module RandMsg
             otherwise {
                 var errorMsg = notImplementedError(pn,dtype);
                 randLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
             }
         }
 
         repMsg = "created " + st.attrib(rname);
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return repMsg;
+        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
-    proc randomNormalMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+    proc randomNormalMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         var pn = Reflection.getRoutineName();
         var (lenStr, seed) = payload.splitMsgToTuple(2);
         var len = lenStr:int;
@@ -121,7 +123,6 @@ module RandMsg
 
         var repMsg = "created " + st.attrib(rname);
         randLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return repMsg;
+        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
-
 }

@@ -27,6 +27,9 @@ class RegistrationTest(ArkoudaTest):
         ak.clear()
         str(ar_array)
         
+        with self.assertRaises(RuntimeError):
+            str(self.a_array)
+        
     def test_unregister(self):
         '''
         Tests the following:
@@ -44,6 +47,9 @@ class RegistrationTest(ArkoudaTest):
         
         with self.assertRaises(RuntimeError):
             str(ar_array)
+            
+        with self.assertRaises(RuntimeError):            
+            repr(ar_array)
     
     def test_attach(self):
         '''
@@ -76,13 +82,16 @@ class RegistrationTest(ArkoudaTest):
         
         with self.assertRaises(RuntimeError):            
             str(aar_array)
+            
+        with self.assertRaises(RuntimeError):            
+            repr(aar_array)
     
     def test_clear(self): 
         '''
         Tests the following:
         
         1. clear() removes server-side pdarrays that are unregistered
-        2. Registered pdarrays remain after ak.cclear()
+        2. Registered pdarrays remain after ak.clear()
         3. All cleared pdarrays throw RuntimeError upon method invocation
         4. Method invocation on registered arrays succeeds after ak.clear()
         '''

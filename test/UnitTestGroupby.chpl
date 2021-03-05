@@ -90,7 +90,7 @@ prototype module UnitTestGroupby
       cmd = "findSegments";
       reqMsg = try! "%s %i %s %s".format(ivname, 1, kname, "pdarray");
       d.start();
-      repMsg = findSegmentsMsg(cmd=cmd, payload=reqMsg, st);
+      repMsg = findSegmentsMsg(cmd=cmd, payload=reqMsg, st).msg;
       d.stop("findSegmentsMsg");
     }
     var (segname, ukiname) = parseTwoNames(repMsg);
@@ -103,7 +103,7 @@ prototype module UnitTestGroupby
     cmd = "[pdarray]";
     reqMsg = try! "%s %s".format(kname, ukiname);
     d.start();
-    repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg, st);
+    repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg, st).msg;
     d.stop("pdarrayIndexMsg");
     writeRep(repMsg);
     var ukname = parseName(repMsg);
@@ -118,7 +118,7 @@ prototype module UnitTestGroupby
     cmd = "[pdarray]";
     reqMsg = try! "%s %s".format(vname, ivname);
     d.start();
-    repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg, st);
+    repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg, st).msg;
     d.stop("pdarrayIndexMsg");
     writeRep(repMsg);
     var svname = parseName(repMsg);
@@ -136,7 +136,7 @@ prototype module UnitTestGroupby
       reqMsg = try! "%s %s %s %s".format(svname, segname, OPERATOR, skip_nan);
       //writeReq(reqMsg);
       d.start();
-      repMsg = segmentedReductionMsg(cmd=cmd, payload=reqMsg, st);
+      repMsg = segmentedReductionMsg(cmd=cmd, payload=reqMsg, st).msg;
       d.stop("segmentedReductionMsg");
     } 
     writeRep(repMsg);

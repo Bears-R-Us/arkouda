@@ -28,6 +28,7 @@ module ArgSortMsg
     use Reflection;
     use Errors;
     use Logging;
+    use Message;
 
     const asLogger = new Logger();
 
@@ -131,7 +132,7 @@ module ArgSortMsg
     /* Find the permutation that sorts multiple arrays, treating each array as a
        new level of the sorting key.
      */
-    proc coargsortMsg(cmd: string, payload: string, st: borrowed SymTab) throws {
+    proc coargsortMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string;
       var (nstr, rest) = payload.splitMsgToTuple(2);
@@ -144,7 +145,7 @@ module ArgSortMsg
           var errorMsg = incompatibleArgumentsError(pn, 
                         "Expected %i arrays but got %i".format(n, fields.size/2 - 1));
           asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-          return errorMsg;
+          return new MsgTuple(errorMsg, MsgType.ERROR);
       }
       const low = fields.domain.low;
       var names = fields[low..#n];
@@ -167,10 +168,10 @@ module ArgSortMsg
             thisSize = g.size;
             hasStr = true;
           }
-          otherwise {return unrecognizedTypeError(pn, objtype);
+          otherwise {
               var errorMsg = unrecognizedTypeError(pn, objtype);
               asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
-              return errorMsg;
+              return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
         
@@ -181,7 +182,7 @@ module ArgSortMsg
                 var errorMsg = incompatibleArgumentsError(pn, 
                                                "Arrays must all be same size");
                 asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return errorMsg;
+                return new MsgTuple(errorMsg, MsgType.ERROR);
             }
         }
         
@@ -209,15 +210,15 @@ module ArgSortMsg
           select g.dtype {
               when DType.Int64   { (bitWidth, neg) = getBitWidth(toSymEntry(g, int ).a); }
               when DType.Float64 { (bitWidth, neg) = getBitWidth(toSymEntry(g, real).a); }
-              otherwise          { 
-                                     throw getErrorWithContext(
-                                         msg=dtype2str(g.dtype),
-                                         lineNumber=getLineNumber(),
-                                         routineName=getRoutineName(),
-                                         moduleName=getModuleName(),
-                                         errorClass="ErrorWithContext"
-                                     );
-                                 }
+              otherwise { 
+                  throw getErrorWithContext(
+                      msg=dtype2str(g.dtype),
+                      lineNumber=getLineNumber(),
+                      routineName=getRoutineName(),
+                      moduleName=getModuleName(),
+                      errorClass="TypeError"
+                  );
+              }
           }
           totalDigits += (bitWidth + (bitsPerDigit-1)) / bitsPerDigit;
         }
@@ -250,29 +251,31 @@ module ArgSortMsg
               select g.dtype {
                 when DType.Int64   { mergeArray(int); }
                 when DType.Float64 { mergeArray(real); }
-                otherwise          { 
-                                       throw getErrorWithContext(
-                                                msg=dtype2str(g.dtype),
-                                                lineNumber=getLineNumber(),
-                                                routineName=getRoutineName(),
-                                                moduleName=getModuleName(),
-                                                errorClass="IllegalArgumentError"
-                                       ); 
-                                     
-                                   }
+                otherwise { 
+                    throw getErrorWithContext(
+                        msg=dtype2str(g.dtype),
+                        lineNumber=getLineNumber(),
+                        routineName=getRoutineName(),
+                        moduleName=getModuleName(),
+                        errorClass="IllegalArgumentError"
+                    ); 
+                }
               }
           }
 
           var iv = argsortDefault(merged);
           st.addEntry(ivname, new shared SymEntry(iv));
-          return try! "created " + st.attrib(ivname);
+
+          var repMsg = "created " + st.attrib(ivname);
+          asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+          return repMsg;
         }
 
         // Since we're using tuples, we have to stamp out for each size we want to
         // support. For now support 8, 16, and 32 byte sorting.
-        if totalDigits <=  4 { return mergedArgsort( 4); }
-        if totalDigits <=  8 { return mergedArgsort( 8); }
-        if totalDigits <= 16 { return mergedArgsort(16); }
+        if totalDigits <=  4 { return new MsgTuple(mergedArgsort( 4), MsgType.NORMAL); }
+        if totalDigits <=  8 { return new MsgTuple(mergedArgsort( 8), MsgType.NORMAL); }
+        if totalDigits <= 16 { return new MsgTuple(mergedArgsort(16), MsgType.NORMAL); }
       }
 
       // check and throw if over memory limit
@@ -297,7 +300,9 @@ module ArgSortMsg
           iv.a = incrementalArgSort(g, iv.a);
         }
       }
-      return try! "created " + st.attrib(rname);
+      repMsg = "created " + st.attrib(rname);
+      asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+      return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     
     proc argsortDefault(A:[?D] ?t):[D] int {
@@ -312,7 +317,7 @@ module ArgSortMsg
     }
     
     /* argsort takes pdarray and returns an index vector iv which sorts the array */
-    proc argsortMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+    proc argsortMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
@@ -344,7 +349,7 @@ module ArgSortMsg
                 otherwise {
                     var errorMsg = notImplementedError(pn,gEnt.dtype);
                     asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);               
-                    return errorMsg;
+                    return new MsgTuple(errorMsg, MsgType.ERROR);
                 }
             }
           }
@@ -360,11 +365,12 @@ module ArgSortMsg
           otherwise {
               var errorMsg = notImplementedError(pn, objtype);
               asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                    
-              return errorMsg;
+              return new MsgTuple(errorMsg, MsgType.ERROR);
           }
         }
+
         repMsg = "created " + st.attrib(ivname);
         asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return repMsg;
+        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 }

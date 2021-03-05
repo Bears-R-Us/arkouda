@@ -13,6 +13,7 @@ module SortMsg
     use RadixSortLSD;
     use AryUtil;
     use Logging;
+    use Message;
     
     const sortLogger = new Logger();
   
@@ -30,7 +31,7 @@ module SortMsg
     }
 
     /* sort takes pdarray and returns a sorted copy of the array */
-    proc sortMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+    proc sortMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       param pn = Reflection.getRoutineName();
       var repMsg: string; // response message
       var (name) = payload.splitMsgToTuple(1);
@@ -65,12 +66,12 @@ module SortMsg
               var errorMsg = notImplementedError(pn,gEnt.dtype);
               sortLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                                                      errorMsg);
-              return errorMsg;
+              return new MsgTuple(errorMsg, MsgType.ERROR);
           }            
       }// end select(gEnt.dtype)
-      repMsg = "created " + st.attrib(sortedName);
 
+      repMsg = "created " + st.attrib(sortedName);
       sortLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
-      return repMsg;
+      return new MsgTuple(repMsg, MsgType.NORMAL);
     }// end sortMsg()
 }// end module SortMsg

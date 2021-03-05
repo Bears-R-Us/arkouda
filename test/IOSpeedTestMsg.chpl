@@ -26,7 +26,7 @@ proc main() {
     d.start();
     var cmd = "readAllHdf";
     var payload = "True 1 1 [\"array\"] | [\"file_LOCALE*\"]";
-    var repMsg = readAllHdfMsg(cmd, payload, st);
+    var repMsg = readAllHdfMsg(cmd, payload, st).msg;
     var B = toSymEntry(st.lookup(parseName(repMsg)), int);
     d.stop(printTime=false);
     if printTimes then writeln("read: %.2dr GiB/s (%.2drs)".format(GiB/d.elapsed(), d.elapsed()));
