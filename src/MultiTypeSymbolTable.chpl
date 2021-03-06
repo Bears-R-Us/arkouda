@@ -9,7 +9,12 @@ module MultiTypeSymbolTable
     
     use MultiTypeSymEntry;
     use Map;
+    use RadixSortLSD only radixSortLSD_ranks;
+    use RandArray only fillInt;
+
+
     
+    var FilteringPattern=0:int;
     var mtLogger = new Logger();
     if v {
         mtLogger.level = LogLevel.DEBUG;
@@ -392,18 +397,74 @@ module MultiTypeSymbolTable
                     {
                         var e = toSymEntry(u,int);
                         if e.size == 0 {s =  "[]";}
-                        else if e.size < thresh || e.size <= 6 {
+                        else if e.size < thresh+4 || e.size <= 6 {
                             s =  "[";
                             for i in 0..(e.size-2) {s += try! "%t ".format(e.a[i]);}
                             s += try! "%t]".format(e.a[e.size-1]);
                         }
                         else {
-                            s = try! "[%t %t %t ... %t %t %t]".format(e.a[0],e.a[1],e.a[2],
-                                                                      e.a[e.size-3],
-                                                                      e.a[e.size-2],
-                                                                      e.a[e.size-1]);
-                        }
-                    }
+                            select FilteringPattern  
+                            {
+                                 when 0 //HeadAndTail 
+                                 {
+                                      var half=thresh/2:int;
+                                      s =  "[";
+                                      for i in 0..(half-2) {s += try! "%t ".format(e.a[i]);}
+                                      s += try! "%t ... ".format(e.a[half-1]);
+                                      for i in e.size-2-half..(e.size-2) {s += try! "%t ".format(e.a[i]);}
+                                      s += try! "%t]".format(e.a[e.size-1]);
+
+                                      //s = try! "[%t %t %t ... %t %t %t]".format(e.a[0],e.a[1],e.a[2],
+                                      //                                e.a[e.size-3],
+                                      //                                e.a[e.size-2],
+                                      //                                e.a[e.size-1]);
+                                 }
+                                 when 1 //Head
+                                 {
+                                      s =  "[";
+                                      for i in 0..thresh-2 {s += try! "%t ".format(e.a[i]);}
+                                      s += try! "%t ...] ".format(e.a[thresh-1]);
+                                 }
+                                 when 2 //Tail
+                                 {
+                                      s =  "[... ";
+                                      for i in e.size-1-thresh..e.size-2  {s += try! "%t ".format(e.a[i]);}
+                                      s += try! "%t]".format(e.a[e.size-1]);
+                                 }
+                                 when 3 //Middle 
+                                 {
+                                      var startM=e.size-1-thresh/2:int;
+                                      s =  "[... ";
+                                      for i in startM..startM+thresh-2  {s += try! "%t ".format(e.a[i]);}
+                                      s += try! "%t ...]".format(e.a[startM+thresh-1]);
+                                       
+                                 }
+                                 when 4 //Uniform
+                                 {
+                                      var stride =(e.size-1)/thresh:int;
+                                      s =  "[... ";
+                                      for i in 0..thresh-2  {s += try! "%t ".format(e.a[i*stride]);}
+                                      s += try! "%t ...]".format(e.a[ stride*(thresh-1)]);
+                                 }
+                                 when 5 //Random
+                                 {
+                                      var samplearray:[0..thresh-1]int;
+                                      var indexarray:[0..thresh-1]int;
+                                      fillInt(samplearray,0,e.size-1);
+                                      var iv = radixSortLSD_ranks(samplearray);
+                                      indexarray=samplearray[iv]:int;
+                                      s =  "[... ";
+                                      for i in 0..thresh-2  {
+                                          if (e.a[indexarray[i]]!=e.a[indexarray[i+1]]) {
+                                               s += try! "%t ".format(e.a[indexarray[i]]);
+                                          }
+                                          s += try! "%t ...]".format(e.a[indexarray[thresh-1]]);
+                                      }
+                                 }
+
+                            }//end select
+                        }//end else
+                    }//end DType.Int64
                     when DType.Float64
                     {
                         var e = toSymEntry(u,real);

@@ -52,8 +52,8 @@ print("ii(min,max) = ", (ii.min(), ii.max()))
 print("jj = ", (jj.size, jj))
 print("jj(min,max) = ", (jj.min(), jj.max()))
 
-#plt.scatter(ii,jj)
-#plt.show()
+plt.scatter(ii,jj)
+plt.show()
 
 df = pd.DataFrame({"ii":ii, "jj":jj})
 

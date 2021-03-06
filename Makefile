@@ -12,6 +12,9 @@ default: $(DEFAULT_TARGET)
 
 VERBOSE ?= 0
 
+#define ARKOUDA_QUICK_COMPILE
+#CHPL_FLAGS += --no-checks --no-loop-invariant-code-motion --no-fast-followers --ccflags="-O0"
+#endef
 CHPL := chpl
 CHPL_DEBUG_FLAGS += --print-passes
 ifdef ARKOUDA_DEVELOPER

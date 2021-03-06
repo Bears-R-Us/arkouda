@@ -337,6 +337,19 @@ proc main() {
                 when "attach"            {repTuple = attachMsg(cmd, args, st);}
                 when "unregister"        {repTuple = unregisterMsg(cmd, args, st);}
                 when "clear"             {repTuple = clearMsg(cmd, args, st);}               
+
+
+                when "segmentedSuffixAry"{repTuple = segSuffixArrayMsg(cmd, payload, st);}
+                when "segmentedLCP"      {repTuple = segLCPMsg(cmd, payload, st);}
+                when "segmentedSAFile"   {repTuple = segSAFileMsg(cmd, payload, st);}
+                when "segmentedGraphFile"   {repTuple = segGraphFileMsg(cmd, payload, st);}
+                when "segmentedRMAT"     {repTuple = segrmatgenMsg(cmd, payload, st);}
+                when "segmentedGraphBFS" {repTuple = segBFSMsg(cmd, payload, st);}
+                when "segmentedIn1dInt"  {repTuple = segIn1dIntMsg(cmd, payload, st);}
+
+
+
+
                 when "connect" {
                     if authenticate {
                         repTuple = new MsgTuple("connected to arkouda server tcp://*:%i as user %s with token %s".format(
