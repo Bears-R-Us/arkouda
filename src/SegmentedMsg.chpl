@@ -1442,15 +1442,27 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                     return tmpiv;
              }
 
-             if totalDigits <=  4 { 
-                  iv = mergedArgsort( 4); 
-             }
+             try {
+                 if totalDigits <=  4 { 
+                      iv = mergedArgsort( 4); 
+                 }
+                 if (totalDigits >  4) && ( totalDigits <=  8) { 
+                      iv =  mergedArgsort( 8); 
+                 }
+                 if (totalDigits >  8) && ( totalDigits <=  16) { 
+                      iv = mergedArgsort(16); 
+                 }
+                 if (totalDigits >  16) && ( totalDigits <=  32) { 
+                      iv = mergedArgsort(32); 
+                 }
+                 if (totalDigits >32) {    
+                      return "Error, TotalDigits >32";
+                 }
 
-             if totalDigits <=  8 { 
-                  iv =  mergedArgsort( 8); 
-             }
-             if totalDigits <= 16 { 
-                  iv = mergedArgsort(16); 
+             } catch e: Error {
+                  smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                      e.message());
+                    return "Error: %t".format(e.message());
              }
              var tmpedges=src[iv];
              src=tmpedges;
@@ -1461,6 +1473,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                 e_weight=tmpedges;
              }
 
+             return "success";
       }//end combine_sort
 
       proc set_neighbour(){ 
@@ -1546,21 +1559,30 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                return tmpiv;
              } 
 
-             if totalDigits <=  4 { 
-               ivR = mergedArgsort( 4); 
-             }
-
-             if totalDigits <=  8 { 
-               ivR =  mergedArgsort( 8); 
-             }
-             if totalDigits <= 16 { 
-               ivR = mergedArgsort(16); 
+             try {
+                 if totalDigits <=  4 { 
+                      ivR = mergedArgsort( 4); 
+                 }
+                 if (totalDigits >  4) && ( totalDigits <=  8) { 
+                      ivR =  mergedArgsort( 8); 
+                 }
+                 if (totalDigits >  8) && ( totalDigits <=  16) { 
+                      ivR = mergedArgsort(16); 
+                 }
+                 if (totalDigits >  16) && ( totalDigits <=  32) { 
+                      ivR = mergedArgsort(32); 
+                 }
+             } catch e: Error {
+                  smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                      e.message());
+                    return "Error: %t".format(e.message());
              }
 
              var tmpedges = srcR[ivR]; 
              srcR=tmpedges;
              tmpedges = dstR[ivR]; 
              dstR=tmpedges;
+             return "success";
 
           }// end combine_sortR
 
@@ -1831,15 +1853,27 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                     return tmpiv;
              }
 
-             if totalDigits <=  4 { 
-                  iv = mergedArgsort( 4); 
-             }
+             try {
+                 if totalDigits <=  4 { 
+                      iv = mergedArgsort( 4); 
+                 }
+                 if (totalDigits >  4) && ( totalDigits <=  8) { 
+                      iv =  mergedArgsort( 8); 
+                 }
+                 if (totalDigits >  8) && ( totalDigits <=  16) { 
+                      iv = mergedArgsort(16); 
+                 }
+                 if (totalDigits >  16) && ( totalDigits <=  32) { 
+                      iv = mergedArgsort(32); 
+                 }
+                 if (totalDigits >32)  {
+                       return "Error, TotalDigits >32";
+                 }
 
-             if totalDigits <=  8 { 
-                  iv =  mergedArgsort( 8); 
-             }
-             if totalDigits <= 16 { 
-                  iv = mergedArgsort(16); 
+             } catch e: Error {
+                  smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                      e.message());
+                    return "Error: %t".format(e.message());
              }
              var tmpedges=src[iv];
              src=tmpedges;
@@ -1850,6 +1884,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
              //   tmpedges=e_weight[iv];
              //   e_weight=tmpedges;
              //}
+             return "success";
 
       }//end combine_sort
 
@@ -2040,21 +2075,29 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                return tmpiv;
              } 
 
-             if totalDigits <=  4 { 
-               ivR = mergedArgsort( 4); 
+             try {
+                 if totalDigits <=  4 { 
+                      ivR = mergedArgsort( 4); 
+                 }
+                 if (totalDigits >  4) && ( totalDigits <=  8) { 
+                      ivR =  mergedArgsort( 8); 
+                 }
+                 if (totalDigits >  8) && ( totalDigits <=  16) { 
+                      ivR = mergedArgsort(16); 
+                 }
+                 if (totalDigits >  16) && ( totalDigits <=  32) { 
+                      ivR = mergedArgsort(32); 
+                 }
+             } catch e: Error {
+                  smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                      e.message());
+                    return "Error: %t".format(e.message());
              }
-
-             if totalDigits <=  8 { 
-               ivR =  mergedArgsort( 8); 
-             }
-             if totalDigits <= 16 { 
-               ivR = mergedArgsort(16); 
-             }
-
-             var tmpedges = srcR[ivR]; 
+             var tmpedges=srcR[ivR];
              srcR=tmpedges;
              tmpedges = dstR[ivR]; 
              dstR=tmpedges;
+             return "success";
              
 
           }// end combine_sortR
@@ -2253,8 +2296,8 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
           var cur_level=0;
           //var SetCurF: domain(int);//use domain to keep the current frontier
           //var SetNextF:domain(int);//use domain to keep the next frontier
-          //var SetCurF=  new DistBag(int,Locales);//use bag to keep the current frontier
-          //var SetNextF=  new DistBag(int,Locales); //use bag to keep the next frontier
+          var SetCurF=  new DistBag(int,Locales);//use bag to keep the current frontier
+          var SetNextF=  new DistBag(int,Locales); //use bag to keep the next frontier
           //var SetCurF= new set(int,parSafe = true);//use set to keep the current frontier
           //var SetNextF=new set(int,parSafe = true);//use set to keep the next fromtier
           SetCurF.add(root);
@@ -2277,7 +2320,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                        //var myele:domain(int);
                        var myele = new set(int,parSafe = true);
                        for i in SetCurF{
-                           writeln("src domain=",ld );
+                           //writeln("src domain=",ld );
                            proc binary_Search(ary:[?D1] int,e:int):bool {
                                 if (e<ary[D1.low] || e> ary[D1.high] ){ 
                                       return(false);
@@ -2334,15 +2377,15 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                    }//end on loc
                 }//end forall loc
                 cur_level+=1;
-                //numCurF=SetNextF.getSize();
-                numCurF=SetNextF.size;
+                numCurF=SetNextF.getSize();
+                //numCurF=SetNextF.size;
                 //writeln("SetCurF= ", SetCurF, " SetNextF=", SetNextF, " level ", cur_level+1," numCurf=", numCurF);
                 //numCurF=SetNextF.size;
-                //SetCurF.clear();
-                //SetCurF<=>SetNextF;
+                SetCurF.clear();
+                SetCurF<=>SetNextF;
                 //SetNextF.clear();
-                SetCurF=SetNextF;
-                SetNextF.clear();
+                //SetCurF=SetNextF;
+                //SetNextF.clear();
           }//end while  
           writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
           writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
@@ -2359,10 +2402,10 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
           var cur_level=0;
           //var SetCurF: domain(int);//use domain to keep the current frontier
           //var SetNextF:domain(int);//use domain to keep the next frontier
-          //var SetCurF=  new DistBag(int,Locales);//use bag to keep the current frontier
-          //var SetNextF=  new DistBag(int,Locales); //use bag to keep the next frontier
-          var SetCurF= new set(int,parSafe = true);//use set to keep the current frontier
-          var SetNextF=new set(int,parSafe = true);//use set to keep the next fromtier
+          var SetCurF=  new DistBag(int,Locales);//use bag to keep the current frontier
+          var SetNextF=  new DistBag(int,Locales); //use bag to keep the next frontier
+          //var SetCurF= new set(int,parSafe = true);//use set to keep the current frontier
+          //var SetNextF=new set(int,parSafe = true);//use set to keep the next fromtier
           SetCurF.add(root);
           var numCurF=1:int;
 
@@ -2458,14 +2501,14 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
                    }//end on loc
                 }//end coforall loc
                 cur_level+=1;
-                //numCurF=SetNextF.getSize();
+                numCurF=SetNextF.getSize();
                 //numCurF=SetNextF.size;
                 //writeln("SetCurF= ", SetCurF, " SetNextF=", SetNextF, " level ", cur_level+1," numCurf=", numCurF);
-                numCurF=SetNextF.size;
-                SetCurF=SetNextF;
-                //SetCurF.clear();
-                //SetCurF<=>SetNextF;
-                SetNextF.clear();
+                //numCurF=SetNextF.size;
+                //SetCurF=SetNextF;
+                SetCurF.clear();
+                SetCurF<=>SetNextF;
+                //SetNextF.clear();
           }//end while  
           writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
           writeln("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
@@ -2543,7 +2586,7 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
       }
       timer.stop();
       writeln("$$$$$$$$$$$$$$$$$ graph BFS takes ",timer.elapsed(), "$$$$$$$$$$$$$$$$$$");
-      smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
+      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
       return repMsg;
 
   }
