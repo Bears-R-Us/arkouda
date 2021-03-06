@@ -114,7 +114,7 @@ This yielded a >20TB dataframe in Arkouda.
  * requires typeguard for runtime type checking
  * requires pandas for testing and conversion utils
  * requires pytest, pytest-env, and h5py to execute the Python test harness
- * requires sphinx, sphinx-argparse, and sphinx-autoapi to generate docs
+ * requires sphinx, sphinx-argparse, sphinx-autoapi, sphinx-rtd-theme, sphinxcontrib-chapeldomain to generate docs
 
 <a id="prereq-mac"></a>
 ### MacOS Environment <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>

@@ -1,6 +1,8 @@
 Sphinx
 sphinx-argparse
 sphinx-autoapi
+sphinxcontrib-chapeldomain
+sphinx-rtd-theme
 h5py
 pandas
 pexpect
