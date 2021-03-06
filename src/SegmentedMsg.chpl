@@ -2593,7 +2593,6 @@ proc segmentedPeelMsg(cmd: string, payload: bytes, st: borrowed SymTab): string 
 
 
 
-
 }
 
 
