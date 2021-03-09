@@ -404,8 +404,6 @@ def _send_binary_message(cmd : str, payload : bytes, recv_bytes : bool=False,
     send_message = RequestMessage(user=username, token=token, cmd=cmd, 
                                 format=MessageFormat.BINARY, args=cast(str,args))
 
-    logger.debug('sending message {}'.format(send_message))
-
     socket.send('{}BINARY_PAYLOAD'.\
                 format(json.dumps(send_message.asdict())).encode() + payload)
 
