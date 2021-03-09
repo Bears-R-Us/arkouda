@@ -13,6 +13,7 @@ module ReductionMsg
     use Reflection;
     use Errors;
     use Logging;
+    use Message;
 
     use AryUtil;
     use PrivateDist;
@@ -31,9 +32,9 @@ module ReductionMsg
     // these functions take an array and produce a scalar
     // parse and respond to reduction message
     // scalar = reductionop(vector)
-    proc reductionMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+    proc reductionMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
-        var repMsg: string; // response message
+        var repMsg: string = ""; // response message
         // split request into fields
         var (reductionop, name) = payload.splitMsgToTuple(2);
         rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -50,46 +51,46 @@ module ReductionMsg
                         var val:string;
                         var sum = + reduce (e.a != 0);
                         if sum != 0 {val = "True";} else {val = "False";}
-                        return try! "bool %s".format(val);
+                        repMsg = "bool %s".format(val);
                     }
                     when "all" {
                         var val:string;
                         var sum = + reduce (e.a != 0);
                         if sum == e.aD.size {val = "True";} else {val = "False";}
-                        return try! "bool %s".format(val);
+                       repMsg = "bool %s".format(val);
                     }
                     when "sum" {
                         var val = + reduce e.a;
-                        return try! "int64 %i".format(val);
+                        repMsg = "int64 %i".format(val);
                     }
                     when "prod" {
                         // Cast to real to avoid int64 overflow
                         var val = * reduce e.a:real;
                         // Return value is always float64 for prod
-                        return try! "float64 %.17r".format(val);
+                        repMsg = "float64 %.17r".format(val);
                     }
                     when "min" {
                       var val = min reduce e.a;
-                      return try! "int64 %i".format(val);
+                      repMsg = "int64 %i".format(val);
                     }
                     when "max" {
                         var val = max reduce e.a;
-                        return try! "int64 %i".format(val);
+                        repMsg = "int64 %i".format(val);
                     }
                     when "argmin" {
                         var (minVal, minLoc) = minloc reduce zip(e.a,e.aD);
-                        return try! "int64 %i".format(minLoc);
+                        repMsg = "int64 %i".format(minLoc);
                     }
                     when "argmax" {
                         var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.aD);
-                        return try! "int64 %i".format(maxLoc);
+                        repMsg = "int64 %i".format(maxLoc);
                     }
                     when "is_sorted" {
                         ref ea = e.a;
                         var sorted = isSorted(ea);
                         var val: string;
                         if sorted {val = "True";} else {val = "False";}
-                        return try! "bool %s".format(val);
+                        repMsg = "bool %s".format(val);
                     }
                     when "is_locally_sorted" {
                       var locSorted: [LocaleSpace] bool;
@@ -99,14 +100,18 @@ module ReductionMsg
                           locSorted[here.id] = isSorted(myA);
                         }
                       }
+
                       var val: string;
                       if (& reduce locSorted) {val = "True";} else {val = "False";}
-                      return try! "bool %s".format(val);
+
+                      repMsg = "bool %s".format(val);
+                      rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+                      return new MsgTuple(repMsg, MsgType.NORMAL); 
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
                         rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return errorMsg;                      
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                      
                     }
                 }
             }
@@ -118,48 +123,48 @@ module ReductionMsg
                         var val:string;
                         var sum = + reduce (e.a != 0.0);
                         if sum != 0.0 {val = "True";} else {val = "False";}
-                        return try! "bool %s".format(val);
+                        repMsg = "bool %s".format(val);
                     }
                     when "all" {
                         var val:string;
                         var sum = + reduce (e.a != 0.0);
                         if sum == e.aD.size {val = "True";} else {val = "False";}
-                        return try! "bool %s".format(val);
+                        repMsg = "bool %s".format(val);
                     }
                     when "sum" {
                         var val = + reduce e.a;
-                        return try! "float64 %.17r".format(val);
+                        repMsg = "float64 %.17r".format(val);
                     }
                     when "prod" {
                         var val = * reduce e.a;
-                        return try! "float64 %.17r".format(val);
+                        repMsg =  "float64 %.17r".format(val);
                     }
                     when "min" {
                         var val = min reduce e.a;
-                        return try! "float64 %.17r".format(val);
+                        repMsg = "float64 %.17r".format(val);
                     }
                     when "max" {
                         var val = max reduce e.a;
-                        return try! "float64 %.17r".format(val);
+                        repMsg = "float64 %.17r".format(val);
                     }
                     when "argmin" {
                         var (minVal, minLoc) = minloc reduce zip(e.a,e.aD);
-                        return try! "int64 %i".format(minLoc);
+                        repMsg = "int64 %i".format(minLoc);
                     }
                     when "argmax" {
                         var (maxVal, maxLoc) = maxloc reduce zip(e.a,e.aD);
-                        return try! "int64 %i".format(maxLoc);
+                        repMsg = "int64 %i".format(maxLoc);
                     }
                     when "is_sorted" {
                         var sorted = isSorted(e.a);
                         var val:string;
                         if sorted {val = "True";} else {val = "False";}
-                        return try! "bool %s".format(val);
+                        repMsg = "bool %s".format(val);
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
                         rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return errorMsg;                    
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                    
                     }
                 }
             }
@@ -171,48 +176,50 @@ module ReductionMsg
                         var val:string;
                         var any = | reduce e.a;
                         if any {val = "True";} else {val = "False";}
-                        return try! "bool %s".format(val);
+                        repMsg = "bool %s".format(val);
                     }
                     when "all" {
                         var val:string;
                         var all = & reduce e.a;
                         if all {val = "True";} else {val = "False";}
-                        return try! "bool %s".format(val);
+                        repMsg = "bool %s".format(val);
                     }
                     when "sum" {
                         var val = + reduce e.a:int;
-                        return try! "int64 %i".format(val);
+                        repMsg = "int64 %i".format(val);
                     }
                     when "prod" {
                         var val = * reduce e.a:int;
-                        return try! "int64 %i".format(val);
+                        repMsg = "int64 %i".format(val);
                     }
                     when "min" {
                         var val:string;
                         if (& reduce e.a) { val = "True"; } else { val = "False"; }
-                        return try! "bool %s".format(val);
+                        repMsg = "bool %s".format(val);
                     }
                     when "max" {
                         var val:string;
                         if (| reduce e.a) { val = "True"; } else { val = "False"; }
-                        return try! "bool %s".format(val);
+                        repMsg = "bool %s".format(val);
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,reductionop,gEnt.dtype);
                         rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return errorMsg;                       
+                        return new MsgTuple(errorMsg, MsgType.ERROR);                        
                     }
                 }
             }
             otherwise {
                 var errorMsg = unrecognizedTypeError(pn, dtype2str(gEnt.dtype));
                 rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);       
-                return errorMsg;       
+                return new MsgTuple(errorMsg, MsgType.ERROR);       
             }
         }
+        rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);       
+        return new MsgTuple(repMsg, MsgType.NORMAL);          
     }
 
-    proc countReductionMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+    proc countReductionMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
       // reqMsg: segmentedReduction values segments operator
       // 'segments_name' describes the segment offsets
@@ -224,10 +231,17 @@ module ReductionMsg
 
       var gSeg: borrowed GenSymEntry = st.lookup(segments_name);
       var segments = toSymEntry(gSeg, int);
-      if (segments == nil) {return "Error: array of segment offsets must be int dtype";}
+      if (segments == nil) {    
+          var errorMsg = "Array of segment offsets must be int dtype";
+          rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);       
+          return new MsgTuple(errorMsg, MsgType.ERROR); 
+      }
       var counts = segCount(segments.a, size);
       st.addEntry(rname, new shared SymEntry(counts));
-      return try! "created " + st.attrib(rname);
+
+      var repMsg = "created " + st.attrib(rname);
+      rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);       
+      return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
     proc segCount(segments:[?D] int, upper: int):[D] int {
@@ -245,7 +259,7 @@ module ReductionMsg
       return counts;
     }
     
-    proc segmentedReductionMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+    proc segmentedReductionMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         // reqMsg: segmentedReduction values segments operator
         // 'values_name' is the segmented array of values to be reduced
@@ -264,7 +278,7 @@ module ReductionMsg
         if (segments == nil) {
             var errorMsg = "Error: array of segment offsets must be int dtype";
             rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
-            return errorMsg;        
+            return new MsgTuple(errorMsg, MsgType.ERROR);        
         }
         select (gVal.dtype) {
             when (DType.Int64) {
@@ -317,7 +331,7 @@ module ReductionMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,op,gVal.dtype);
                         rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                        return errorMsg;  
+                        return new MsgTuple(errorMsg, MsgType.ERROR);  
                     }                       
                 }    
             }
@@ -355,7 +369,7 @@ module ReductionMsg
                     otherwise {
                         var errorMsg = notImplementedError(pn,op,gVal.dtype);
                         rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);         
-                        return errorMsg;
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                }
            }
@@ -381,17 +395,19 @@ module ReductionMsg
                    otherwise {
                        var errorMsg = notImplementedError(pn,op,gVal.dtype);
                        rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                       return errorMsg;                 
+                       return new MsgTuple(errorMsg, MsgType.ERROR);                 
                    }
                }
            }
            otherwise {
                var errorMsg = unrecognizedTypeError(pn, dtype2str(gVal.dtype));
                rmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-               return errorMsg;
+               return new MsgTuple(errorMsg, MsgType.ERROR);
            }
        }
-       return try! "created " + st.attrib(rname);
+       var repMsg = "created " + st.attrib(rname);
+       rmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 
           

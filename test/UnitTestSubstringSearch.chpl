@@ -10,7 +10,7 @@ proc make_strings(substr, n, minLen, maxLen, characters, mode, st) {
   const nb = substr.numBytes;
   const sbytes: [0..#nb] uint(8) = for b in substr.chpl_bytes() do b;
   var (segs, vals) = newRandStringsUniformLength(n, minLen, maxLen, characters);
-  var strings = new owned SegString(segs, vals, st);
+  var strings = getSegString(segs, vals, st);
   var lengths = strings.getLengths() - 1;
   var r: [segs.domain] int;
   fillInt(r, 0, 100);
@@ -53,7 +53,7 @@ proc test_search(substr:string, n:int, minLen:int, maxLen:int, characters:charSe
   if DEBUG && (nFound > 0) {
     writeln("Found %t strings containing %s".format(nFound, substr)); stdout.flush();
     var (mSegs, mVals) = strings[truth];
-    var matches = new owned SegString(mSegs, mVals, st);
+    var matches = getSegString(mSegs, mVals, st);
     matches.show(5);
     writeln("Seeded with ",  + reduce answer, " values");
   }

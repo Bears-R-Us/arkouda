@@ -5,6 +5,7 @@ module HistogramMsg
     use Reflection;
     use Errors;
     use Logging;
+    use Message;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -23,7 +24,7 @@ module HistogramMsg
     private config const mBound = 2**25;
 
     /* histogram takes a pdarray and returns a pdarray with the histogram in it */
-    proc histogramMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+    proc histogramMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
@@ -71,10 +72,13 @@ module HistogramMsg
             when (DType.Float64) {histogramHelper(real);}
             otherwise {
                 var errorMsg = notImplementedError(pn,gEnt.dtype);
-                hgmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);               
+                hgmLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+                return new MsgTuple(errorMsg, MsgType.ERROR);             
             }
         }
         
-        return try! "created " + st.attrib(rname);
+        repMsg = "created " + st.attrib(rname);
+        hgmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 }

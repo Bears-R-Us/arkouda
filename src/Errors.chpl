@@ -143,7 +143,21 @@ module Errors {
 
         proc init(){ super.init(); }
     }
-    
+
+    /*
+     * The NotImplementedError is thrown if the requested operation has not been implemented
+     * for the specified data type(s) and/or command type.
+     */
+    class NotImplementedError: ErrorWithContext { 
+
+        proc init(msg : string, lineNumber: int, routineName: string, 
+                                                           moduleName: string) { 
+           super.init(msg,lineNumber,routineName,moduleName,errorClass='NotImplementedError'); 
+        } 
+
+        proc init(){ super.init(); }
+    }
+
     /*
      * The UnknownSymbolError is thrown if there is not entry in the SymTab.
      */
