@@ -351,7 +351,7 @@ print-%:
 	@echo "$($*)"
 
 test-python: 
-	python3 -m pytest $(ARKOUDA_PYTEST_OPTIONS) -c pytest.ini
+	python3 -m pytest $(ARKOUDA_PYTEST_OPTIONS) -c pytest.ini -s
 
 CLEAN_TARGETS += test-clean
 .PHONY: test-clean
