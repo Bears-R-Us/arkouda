@@ -34,7 +34,7 @@ proc make_strings(substr, n, minLen, maxLen, characters, mode, st) {
       vals[{(o+i)..#nb}] = sbytes;
     }
   }
-  var strings2 = new shared SegString(segs, vals, st);
+  var strings2 = getSegString(segs, vals, st);
   return (present, strings2);
 }
 

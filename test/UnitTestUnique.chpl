@@ -51,7 +51,7 @@ prototype module UnitTestUnique
       var inds = makeDistArray(n, int);
       fillRandInt(inds, 0, nUnique - 1);
       var (segs, vals) = uStr[inds];
-      var str = new shared SegString(segs, vals, st);
+      var str = getSegString(segs, vals, st);
       d.stop("createRandomStrings");
       writeSegString("str", str);
       return str;

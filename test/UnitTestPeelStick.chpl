@@ -37,7 +37,7 @@ proc make_strings(substr, n, minLen, maxLen, characters, st) {
       }
     }
   }
-  var strings2 = new shared SegString(segs, vals, st);
+  var strings2 = getSegString(segs, vals, st);
   return (splits, strings2);
 }
 

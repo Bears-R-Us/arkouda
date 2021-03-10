@@ -47,7 +47,7 @@ module SegmentedArray {
    * offset and value SymTab lookup names to the alternate init method
    */
   proc getSegString(segments: [] int, values: [] uint(8), 
-                                          st: borrowed SymTab): owned SegString throws {
+                                          st: borrowed SymTab): SegString throws {
       var offsetName = st.nextName();
       var offsetEntry = new shared SymEntry(segments);
       st.addEntry(offsetName, offsetEntry);
@@ -56,7 +56,7 @@ module SegmentedArray {
       var valEntry = new shared SymEntry(values);
       st.addEntry(valName, valEntry);
 
-      return new owned SegString(offsetEntry, offsetName, valEntry, valName, st);
+      return new SegString(offsetEntry, offsetName, valEntry, valName, st);
   }
 
   /**
