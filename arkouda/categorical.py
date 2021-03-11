@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import cast, List
+from typing import cast, List, Union
 import numpy as np # type: ignore
 from typeguard import typechecked
 from arkouda.strings import Strings
@@ -163,16 +163,16 @@ class Categorical:
         return "array({})".format(self.__str__())
 
     @typechecked
-    def _binop(self, other : Categorical, op : str) -> pdarray:
+    def _binop(self, other : Union[Categorical,str,np.str_], op : Union[str,np.str_]) -> pdarray:
         """
         Executes the requested binop on this Categorical instance and returns 
         the results within a pdarray object.
 
         Parameters
         ----------
-        other : Categorical
-            the other object is a Categorical object
-        op : str
+        other : Union[Categorical,str,np.str_]
+            the other object is a Categorical object of string scalar
+        op : Union[str,np.str_]
             name of the binary operation to be performed 
       
         Returns
@@ -210,16 +210,17 @@ class Categorical:
                                 "Consider converting operands to Categorical."))
 
     @typechecked
-    def _r_binop(self, other : Categorical, op : str) -> pdarray:
+    def _r_binop(self, other : Union[Categorical,str,np.str_], 
+                                              op : Union[str,np.str]) -> pdarray:
         """
         Executes the requested reverse binop on this Categorical instance and 
         returns the results within a pdarray object.
 
         Parameters
         ----------
-        other : Categorical
-            the other object is a Categorical object
-        op : str
+        other : Union[Categorical,str,np.str_]
+            the other object is a Categorical object or string scalar
+        op : Union[str,np.str_]
             name of the binary operation to be performed 
       
         Returns

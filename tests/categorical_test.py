@@ -1,12 +1,15 @@
+import numpy as np
 from context import arkouda as ak
 from base_test import ArkoudaTest
-
+from arkouda import Strings
 
 class CategoricalTest(ArkoudaTest):
     
+    def _getStrings(self) -> Strings:
+        return ak.array(['string {}'.format(i) for i in range(1,11)])
     
     def testBaseCategorical(self):
-        strings = ak.array(['string {}'.format(i) for i in range(1,11)])
+        strings = self._getStrings()
         cat = ak.Categorical(strings)
 
         self.assertTrue((ak.array([7,5,9,8,2,1,4,0,3,6]) == cat.codes).all())
@@ -28,11 +31,26 @@ class CategoricalTest(ArkoudaTest):
         self.assertTrue((categories == cat.categories).all())
         
     def testContains(self):
-        strings = ak.array(['string {}'.format(i) for i in range(1,11)])
+        strings = self._getStrings()
         cat = ak.Categorical(strings)
         self.assertTrue(cat.contains('string').all())
         
     def testGroup(self):
-        strings = ak.array(['string {}'.format(i) for i in range(1,11)])
+        strings = self._getStrings()
         cat = ak.Categorical(strings)
         self.assertTrue((ak.array([7,5,4,8,6,1,9,0,3,2]) == cat.group()).all())
+        
+    def testBinop(self):
+        strings = self._getStrings()
+        cat = ak.Categorical(strings)
+
+        self.assertTrue((ak.array([True,False,False,False,False,False,False,False,False,False]) ==
+                   cat._binop('string 1', '==')).all())
+        self.assertTrue((ak.array([True,False,False,False,False,False,False,False,False,False]) ==
+                   cat._binop(np.str_('string 1'), '==')).all())
+        
+        self.assertTrue((ak.array([False,True,True,True,True,True,True,True,True,True]) ==
+                   cat._binop('string 1', '!=')).all())
+        self.assertTrue((ak.array([False,True,True,True,True,True,True,True,True,True]) ==
+                   cat._binop(np.str_('string 1'), '!=')).all())
+        
