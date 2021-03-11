@@ -195,15 +195,11 @@ class Categorical:
         if np.isscalar(other) and resolve_scalar_dtype(other) == "str":
             idxresult = self.categories._binop(other, op)
             return idxresult[self.codes]
-        if self.size != other.size:
+        if self.size != cast(Categorical,other).size:
             raise ValueError("Categorical {}: size mismatch {} {}".\
-                             format(op, self.size, other.size))
+                             format(op, self.size, cast(Categorical,other).size))
         if isinstance(other, Categorical):
-            if self.categories.name == other.categories.name:
-                return self.codes.binop(other.codes, op)
-            else:
-                raise NotImplementedError(("Operations between Categoricals " +
-                                    "with different indices not yet implemented"))
+            return self.codes._binop(other.codes, op)
         else:
             raise NotImplementedError(("Operations between Categorical and " +
                                 "non-Categorical not yet implemented. " +
@@ -242,7 +238,7 @@ class Categorical:
     def __eq__(self, other):
         return self._binop(other, "==")
 
-    def __neq__(self, other):
+    def __ne__(self, other):
         return self._binop(other, "!=")
 
     def __getitem__(self, key) -> Categorical:
