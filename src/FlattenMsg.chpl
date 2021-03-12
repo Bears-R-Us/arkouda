@@ -31,7 +31,7 @@ module FlattenMsg {
         const rValName = st.nextName();
         const optName: string = if returnSegs then st.nextName() else "";
         var (segName, valName) = name.splitMsgToTuple('+', 2);
-        const strings = new owned SegString(segName, valName, st);
+        const strings = getSegString(segName, valName, st);
         var (off, val, segs) = strings.flatten(delim, returnSegs);
         st.addEntry(rSegName, new shared SymEntry(off));
         st.addEntry(rValName, new shared SymEntry(val));

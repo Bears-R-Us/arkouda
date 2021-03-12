@@ -401,13 +401,13 @@ def _send_binary_message(cmd : str, payload : bytes, recv_bytes : bool=False,
         Raised if the return message is malformed JSON or is missing 1..n
         expected fields
     """
-    send_message = RequestMessage(user=username, token=token, cmd=cmd, 
+    message = RequestMessage(user=username, token=token, cmd=cmd, 
                                 format=MessageFormat.BINARY, args=cast(str,args))
 
-    logger.debug('sending message {}'.format(send_message))
+    logger.debug('sending message {}'.format(message))
 
     socket.send('{}BINARY_PAYLOAD'.\
-                format(json.dumps(send_message.asdict())).encode() + payload)
+                format(json.dumps(message.asdict())).encode() + payload)
 
     if recv_bytes:
         binary_return_message = cast(bytes, socket.recv())
@@ -535,9 +535,6 @@ def generic_msg(cmd : str, args : Union[str,bytes]=None, send_bytes : bool=False
 
     if not connected:
         raise RuntimeError("client is not connected to a server")
-    
-    logger.debug("[Python] Sending request: cmd: {} args: {}".\
-                 format(cmd,cast(str,args)))
     
     try:
         if send_bytes:

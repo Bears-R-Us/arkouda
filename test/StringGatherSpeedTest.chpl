@@ -11,7 +11,7 @@ proc testPermute(n:int, meanLen: numeric) {
   const logMean = log(meanLen:real)/2;
   const logStd = sqrt(2*logMean);
   var (segs, vals) = newRandStringsLogNormalLength(n, logMean, logStd);
-  var strings = new owned SegString(segs, vals, st);
+  var strings = getSegString(segs, vals, st);
   var rint: [segs.domain] int;
   fillInt(rint, 0, max(int));
   var perm = radixSortLSD_ranks(rint);

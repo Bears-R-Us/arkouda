@@ -10,7 +10,17 @@ proc make_strings(substr, n, minLen, maxLen, characters, mode, st) {
   const nb = substr.numBytes;
   const sbytes: [0..#nb] uint(8) = for b in substr.chpl_bytes() do b;
   var (segs, vals) = newRandStringsUniformLength(n, minLen, maxLen, characters);
-  var strings = new owned SegString(segs, vals, st);
+  
+  var offsetName = st.nextName();
+  var offsetEntry = new shared SymEntry(segs);
+  st.addEntry(offsetName, offsetEntry);
+
+  var valName = st.nextName();
+  var valEntry = new shared SymEntry(vals);
+  st.addEntry(valName, valEntry);
+
+  var strings = new owned SegString(offsetEntry, offsetName, valEntry, valName, st);
+
   var lengths = strings.getLengths() - 1;
   var r: [segs.domain] int;
   fillInt(r, 0, 100);
@@ -34,7 +44,16 @@ proc make_strings(substr, n, minLen, maxLen, characters, mode, st) {
       vals[{(o+i)..#nb}] = sbytes;
     }
   }
-  var strings2 = new shared SegString(segs, vals, st);
+  
+  offsetName = st.nextName();
+  offsetEntry = new shared SymEntry(segs);
+  st.addEntry(offsetName, offsetEntry);
+
+  valName = st.nextName();
+  valEntry = new shared SymEntry(vals);
+  st.addEntry(valName, valEntry);
+
+  var strings2 = new shared SegString(offsetEntry, offsetName, valEntry, valName, st);
   return (present, strings2);
 }
 
@@ -53,7 +72,7 @@ proc test_search(substr:string, n:int, minLen:int, maxLen:int, characters:charSe
   if DEBUG && (nFound > 0) {
     writeln("Found %t strings containing %s".format(nFound, substr)); stdout.flush();
     var (mSegs, mVals) = strings[truth];
-    var matches = new owned SegString(mSegs, mVals, st);
+    var matches = getSegString(mSegs, mVals, st);
     matches.show(5);
     writeln("Seeded with ",  + reduce answer, " values");
   }

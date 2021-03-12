@@ -26,7 +26,7 @@ proc testConcat(n:int, minLen:int, maxLen:int) {
   var v1Name = st.nextName();
   var v1e = st.addEntry(v1Name, v1.size, uint(8));
   v1e.a = v1;
-  var str1 = new owned SegString(s1Name, v1Name, st);
+  var str1 = getSegString(s1Name, v1Name, st);
   writeSegString("Str 1, %i elem, %i bytes".format(str1.size, str1.nBytes), str1);
   var s2Name = st.nextName();
   var s2e = st.addEntry(s2Name, s2.size, int);
@@ -34,7 +34,7 @@ proc testConcat(n:int, minLen:int, maxLen:int) {
   var v2Name = st.nextName();
   var v2e = st.addEntry(v2Name, v2.size, uint(8));
   v2e.a = v2;
-  var str2 = new owned SegString(s2Name, v2Name, st);
+  var str2 = getSegString(s2Name, v2Name, st);
 
   writeSegString("\nStr 2, %i elem, %i bytes".format(str2.size, str2.nBytes), str2);
 
@@ -47,7 +47,7 @@ proc testConcat(n:int, minLen:int, maxLen:int) {
   var (resSegAttribStr, resValAttribStr) = repMsg.splitMsgToTuple('+', 2);
   var resSegAttrib = parseName(resSegAttribStr);
   var resValName = parseName(resValAttribStr);
-  var resStr = new owned SegString(resSegAttrib, resValName, st);
+  var resStr = getSegString(resSegAttrib, resValName, st);
   writeSegString("\nResult, %i elem, %i bytes".format(resStr.size, resStr.nBytes), resStr);
 
   var correct = true;
@@ -68,7 +68,7 @@ proc testConcat(n:int, minLen:int, maxLen:int) {
   (resSegAttribStr, resValAttribStr) = repMsg.splitMsgToTuple('+', 2);
   resSegAttrib = parseName(resSegAttribStr);
   resValName = parseName(resValAttribStr);
-  resStr = new owned SegString(resSegAttrib, resValName, st);
+  resStr = getSegString(resSegAttrib, resValName, st);
   writeSegString("\nResult, %i elem, %i bytes".format(resStr.size, resStr.nBytes), resStr);
   correct = true;
   // All offsets should be monotonically increasing.

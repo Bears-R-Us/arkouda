@@ -32,18 +32,18 @@ prototype module UnitTestIn1d
       fillRandInt(uVals, 65:uint(8), 90:uint(8)); // ascii uppercase
       // Terminate with null bytes
       [(s, l) in zip(uSegs, uLens)] uVals[s+l-1] = 0:uint(8);
-      var uStr = new owned SegString(uSegs, uVals, st);
+      var uStr: SegString = getSegString(uSegs, uVals, st);
       // Indices to sample from unique strings
       var inds = makeDistArray(n, int);
       fillRandInt(inds, 0, nVals);
       var (segs, vals) = uStr[inds];
-      var str1 = new shared SegString(segs, vals, st);
+      var str1: SegString = getSegString(segs, vals, st);
       writeSegString("str1 = ", str1);
       var inds2 = makeDistArray(m, int);
       // [(i, ii) in zip(inds2.domain, inds2)] ii = i;
       inds2 = 0..#m;
       var (segs2, vals2) = uStr[inds2];
-      var str2 = new shared SegString(segs2, vals2, st);
+      var str2 : SegString = getSegString(segs2, vals2, st);
       writeSegString("str2 = ", str2);
       return (str1, str2);
     }
@@ -91,7 +91,7 @@ prototype module UnitTestIn1d
 
     proc test_strings(n: int, m: int, minLen: int, maxLen: int, coverage: real, thorough: bool) throws {
         var st = new owned SymTab();
-        var (str1, str2) = createRandomStrings(n, m, minLen, maxLen, coverage, st);
+        var (str1, str2): (borrowed SegString,borrowed SegString) = createRandomStrings(n, m, minLen, maxLen, coverage, st);
         var expected: real = coverage*n;
 
         writeln(">>> in1d");
