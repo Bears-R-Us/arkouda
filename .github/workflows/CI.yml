@@ -42,33 +42,33 @@ jobs:
       run: |
         make doc
 
-  arkouda_python_portability:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.x']
-    container:
-      image: chapel/chapel:1.23.0
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip
-        echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" > Makefile.paths
-    - name: Build/Install Arkouda
-      run: |
-        make
-        python3 -m pip install -e .[dev]
-    - name: Arkouda make check
-      run: |
-        make check
-    - name: Arkouda unit tests
-      run: |
-        make test-python
+  #arkouda_python_portability:
+  #  runs-on: ubuntu-latest
+  #  strategy:
+  #    matrix:
+  #      python-version: ['3.7', '3.8', '3.9', '3.x']
+  #  container:
+  #    image: chapel/chapel:1.23.0
+  #  steps:
+  #  - uses: actions/checkout@v2
+  #  - name: Set up Python ${{ matrix.python-version }}
+  #    uses: actions/setup-python@v2
+  #    with:
+  #      python-version: ${{ matrix.python-version }}
+  #  - name: Install dependencies
+  #    run: |
+  #      apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip
+  #      echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" > Makefile.paths
+  #  - name: Build/Install Arkouda
+  #    run: |
+  #      make
+  #      python3 -m pip install -e .[dev]
+  #  - name: Arkouda make check
+  #    run: |
+  #      make check
+  #  - name: Arkouda unit tests
+  #    run: |
+  #      make test-python
 
   arkouda_tests_linux:
     runs-on: ubuntu-latest
