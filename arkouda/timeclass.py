@@ -1,3 +1,4 @@
+from typing import cast as typing_cast
 from arkouda.pdarrayclass import pdarray
 from pandas import Series, Timestamp, Timedelta as pdTimedelta, date_range as pd_date_range, timedelta_range as pd_timedelta_range, to_datetime, to_timedelta # type: ignore
 from arkouda.dtypes import int64, isSupportedInt
@@ -65,8 +66,13 @@ class _AbstractBaseTime(pdarray):
     so that all resulting operations are transparent.
     '''
     def __init__(self, array, unit : str=_BASE_UNIT): # type: ignore
+        
+        if isinstance(array, Datetime) or isinstance(array, Timedelta):
+            self.unit = array.unit
+            self._factor = array._factor
+            self._data  = array._data
         # Convert the input to int64 pdarray of nanoseconds
-        if isinstance(array, pdarray):
+        elif isinstance(array, pdarray):
             if array.dtype != int64:
                 raise TypeError("{} array must have int64 dtype".format(self.__class__.__name__))
             # Already int64 pdarray, just scale
