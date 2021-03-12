@@ -1,9 +1,17 @@
 from context import arkouda as ak
 from base_test import ArkoudaTest
+from context import arkouda as ak
 
 
 class CategoricalTest(ArkoudaTest):
     
+    def _getCategorical(self) -> ak.Categorical:
+        return ak.Categorical(ak.array(['string {}'.format(i) for i in range(1,11)]))
+
+    def _getRandomizedCategorical(self) -> ak.Categorical:
+        return ak.Categorical(ak.array(['string', 'string1', 'non-string', 'non-string2', 
+                                        'string', 'non-string', 'string3','non-string2', 
+                                        'string', 'non-string']))
     
     def testBaseCategorical(self):
         strings = ak.array(['string {}'.format(i) for i in range(1,11)])
@@ -24,8 +32,12 @@ class CategoricalTest(ArkoudaTest):
                                     'string 4', 'string 3'])
         
         cat = ak.Categorical.from_codes(codes, categories)
+
         self.assertTrue((codes == cat.codes).all())
         self.assertTrue((categories == cat.categories).all())
+
+        self.assertFalse(cat.permutation)
+        self.assertFalse(cat.segments)
         
     def testContains(self):
         strings = ak.array(['string {}'.format(i) for i in range(1,11)])
@@ -36,3 +48,17 @@ class CategoricalTest(ArkoudaTest):
         strings = ak.array(['string {}'.format(i) for i in range(1,11)])
         cat = ak.Categorical(strings)
         self.assertTrue((ak.array([7,5,4,8,6,1,9,0,3,2]) == cat.group()).all())
+        
+    def testConcatenate(self):
+        catOne = self._getCategorical()
+        catTwo = self._getRandomizedCategorical()
+        
+        resultCat = catOne.concatenate([catTwo])
+        self.assertEqual('category', resultCat.objtype)
+        self.assertIsInstance(resultCat, ak.Categorical)
+        self.assertEqual(20,resultCat.size)
+
+        # Since Categorical.concatenate uses Categorical.from_codes method, confirm
+        # that both permutation and segments are None
+        self.assertFalse(resultCat.permutation)
+        self.assertFalse(resultCat.segments)

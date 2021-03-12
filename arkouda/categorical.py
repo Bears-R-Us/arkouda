@@ -480,7 +480,7 @@ class Categorical:
             idxsizes = np.array([self.categories.size] + \
                                 [o.categories.size for o in others])
             idxoffsets = np.cumsum(idxsizes) - idxsizes
-            oldvals = concatenate([c.codes + off for c, off in \
+            oldvals = concatenate([c + off for c, off in \
                                    zip([self.codes] + [o.codes for o in others], idxoffsets)],
                                   ordered=ordered)
             newvals = wherediditgo[oldvals]
