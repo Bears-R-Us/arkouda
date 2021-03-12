@@ -129,7 +129,7 @@ module UniqueMsg
               var offsetName = st.nextName();
               var valueName = st.nextName();
               var (names1,names2) = name.splitMsgToTuple('+', 2);
-              var str = new owned SegString(names1, names2, st);
+              var str = getSegString(names1, names2, st);
 
               /*
                * The upper limit here is the similar to argsort/radixSortLSD_keys, but with 

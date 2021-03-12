@@ -12,7 +12,17 @@ proc make_strings(substr, n, minLen, maxLen, characters, st) {
   const nb = substr.numBytes;
   const sbytes: [0..#nb] uint(8) = for b in substr.chpl_bytes() do b;
   var (segs, vals) = newRandStringsUniformLength(n, minLen, maxLen, characters);
-  var strings = new owned SegString(segs, vals, st);
+    
+  var offsetName = st.nextName();
+  var offsetEntry = new shared SymEntry(segs);
+  st.addEntry(offsetName, offsetEntry);
+
+  var valName = st.nextName();
+  var valEntry = new shared SymEntry(vals);
+  st.addEntry(valName, valEntry);
+
+  var strings = new owned SegString(offsetEntry, offsetName, valEntry, valName, st);
+  
   var lengths = strings.getLengths() - 1;
   var r: [segs.domain] int;
   fillInt(r, 0, 100);
@@ -37,7 +47,15 @@ proc make_strings(substr, n, minLen, maxLen, characters, st) {
       }
     }
   }
-  var strings2 = new shared SegString(segs, vals, st);
+  offsetName = st.nextName();
+  offsetEntry = new shared SymEntry(segs);
+  st.addEntry(offsetName, offsetEntry);
+
+  valName = st.nextName();
+  valEntry = new shared SymEntry(vals);
+  st.addEntry(valName, valEntry);
+
+  var strings2 = new shared SegString(offsetEntry, offsetName, valEntry, valName, st);
   return (splits, strings2);
 }
 
@@ -61,8 +79,8 @@ proc testPeel(substr:string, n:int, minLen:int, maxLen:int, characters:charSet =
           d.start();
           var (leftOffsets, leftVals, rightOffsets, rightVals) = strings.peel(substr, times, includeDelimiter, keepPartial, left);
           d.stop("peel");
-          var lstr = new owned SegString(leftOffsets, leftVals, st);
-          var rstr = new owned SegString(rightOffsets, rightVals, st);
+          var lstr = getSegString(leftOffsets, leftVals, st);
+          var rstr = getSegString(rightOffsets, rightVals, st);
           if DEBUG {
             var llen = lstr.getLengths();
             var rlen = rstr.getLengths();
@@ -90,10 +108,10 @@ proc testPeel(substr:string, n:int, minLen:int, maxLen:int, characters:charSet =
           var temp: owned SegString?;
           if left {
             var (roundOff, roundVals) = lstr.stick(rstr, delim, true);
-            temp = new owned SegString(roundOff, roundVals, st);
+            temp = getSegString(roundOff, roundVals, st);
           } else {
             var (roundOff, roundVals) = rstr.stick(lstr, delim, false);
-            temp = new owned SegString(roundOff, roundVals, st);
+            temp = getSegString(roundOff, roundVals, st);
           }
           var roundTrip: borrowed SegString = temp!;
           var eq = (strings == roundTrip) | (answer < times);
@@ -143,7 +161,7 @@ proc testMessageLayer(substr, n, minLen, maxLen) throws {
   var (rtoAttribs,rtvAttribs) = repMsg.splitMsgToTuple('+', 2);
   var rtoname = parseName(rtoAttribs);
   var rtvname = parseName(rtvAttribs);
-  var roundTrip = new owned SegString(rtoname, rtvname, st);
+  var roundTrip = getSegString(rtoname, rtvname, st);
   var success = && reduce (strings == roundTrip);
   writeln("Round trip successful? >>> %t <<<".format(success));
 }

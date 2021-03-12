@@ -30,6 +30,35 @@ module SegmentedArray {
   
   class OutOfBoundsError: Error {}
 
+  /* 
+   * This version of the getSegString method is the most common and is only used 
+   * when the names of the segments (offsets) and values SymEntries are known.
+   */
+  proc getSegString(offsetName: string, valName: string, 
+                                          st: borrowed SymTab): owned SegString throws {
+      var offsetEntry = st.lookup(offsetName);
+      var valEntry = st.lookup(valName);
+      return new owned SegString(offsetEntry, offsetName, valEntry, valName, st);
+  }
+
+  /*
+   * This version of the getSegString method takes segments and values arrays as
+   * inputs, generates the SymEntry objects for each and passes the
+   * offset and value SymTab lookup names to the alternate init method
+   */
+  proc getSegString(segments: [] int, values: [] uint(8), 
+                                          st: borrowed SymTab): SegString throws {
+      var offsetName = st.nextName();
+      var offsetEntry = new shared SymEntry(segments);
+      st.addEntry(offsetName, offsetEntry);
+
+      var valName = st.nextName();
+      var valEntry = new shared SymEntry(values);
+      st.addEntry(valName, valEntry);
+
+      return new SegString(offsetEntry, offsetName, valEntry, valName, st);
+  }
+
   /**
    * Represents an array of strings, implemented as a segmented array of bytes.
    * Instances are ephemeral, not stored in the symbol table. Instead, attributes
@@ -47,7 +76,7 @@ module SegmentedArray {
 
     /**
      * The pdarray containing the offsets, which are the start indices of
-     * the bytearrays, each of whichs corresponds to an individual string.
+     * the bytearrays, each of which corresponds to an individual string.
      */ 
     var offsets: borrowed SymEntry(int);
 
@@ -58,7 +87,7 @@ module SegmentedArray {
     var valueName: string;
 
     /**
-     * The pdaray containing the complete byte array composed of bytes
+     * The pdarray containing the complete byte array composed of bytes
      * corresponding to each string, joined by nulls. Note: the null byte
      * is uint(8) value of zero.
      */ 
@@ -77,38 +106,21 @@ module SegmentedArray {
     var nBytes: int;
 
     /* 
-     * This version of the init method is the most common and is only used 
-     * when the names of the segments (offsets) and values SymEntries are known.
+     * This method should not be called directly. Instead, call one of the
+     * getSegString factory methods.
      */
-    proc init(segName: string, valName: string, st: borrowed SymTab) {
-      offsetName = segName;
-      // The try! is needed here because init cannot throw
-      var gs = try! st.lookup(segName);
-      // I want this to be borrowed, but that throws a lifetime error
-      var segs = toSymEntry(gs, int): unmanaged SymEntry(int);
-      offsets = segs;
+    proc init(offsetEntry: borrowed GenSymEntry, segsName: string, 
+                   valEntry: borrowed GenSymEntry, valName: string, st: borrowed SymTab) {
+      offsetName = segsName;
+      //Must be unmanaged because borrowed throws a lifetime error
+      offsets = toSymEntry(offsetEntry, int): unmanaged SymEntry(int);
+
       valueName = valName;
+      //Must be unmanaged because borrowed throws a lifetime error
+      values = toSymEntry(valEntry, uint(8)): unmanaged SymEntry(uint(8));
 
-      var vs = try! st.lookup(valName);
-      var vals = toSymEntry(vs, uint(8)): unmanaged SymEntry(uint(8));
-      values = vals;
-      size = segs.size;
-      nBytes = vals.size;
-    }
-
-    /*
-     * This version of init method takes segments and values arrays as
-     * inputs, generates the SymEntry objects for each and passes the
-     * offset and value SymTab lookup names to the alternate init method
-     */
-    proc init(segments: [] int, values: [] uint(8), st: borrowed SymTab) {
-      var oName = st.nextName();
-      var segEntry = new shared SymEntry(segments);
-      try! st.addEntry(oName, segEntry);
-      var vName = st.nextName();
-      var valEntry = new shared SymEntry(values);
-      try! st.addEntry(vName, valEntry);
-      this.init(oName, vName, st);
+      size = offsets.size;
+      nBytes = values.size;
     }
 
     proc show(n: int = 3) throws {

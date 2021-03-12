@@ -46,12 +46,12 @@ prototype module UnitTestUnique
       fillRandInt(uVals, 32:uint(8), 126:uint(8)); // printable ascii
       // Terminate with null bytes
       [(s, l) in zip(uSegs, uLens)] uVals[s+l-1] = 0:uint(8);
-      var uStr = new owned SegString(uSegs, uVals, st);
+      var uStr = getSegString(uSegs, uVals, st);
       // Indices to sample from unique strings
       var inds = makeDistArray(n, int);
       fillRandInt(inds, 0, nUnique - 1);
       var (segs, vals) = uStr[inds];
-      var str = new shared SegString(segs, vals, st);
+      var str = getSegString(segs, vals, st);
       d.stop("createRandomStrings");
       writeSegString("str", str);
       return str;
@@ -128,7 +128,7 @@ prototype module UnitTestUnique
         d.stop("uniqueGroup");
 
         // var uStr1 = strFromArrays(uo1, uv1, st);
-        var uStr1 = new owned SegString(uo1, uv1, st);
+        var uStr1 = getSegString(uo1, uv1, st);
         writeSegString("Unique strings:", uStr1);
         
         //writeln("uStr1.size = ",uStr1.size);
@@ -136,11 +136,11 @@ prototype module UnitTestUnique
         writeln("testing return_inverse...");
         var (uo2, uv2, c2, inv2) = uniqueGroup(str, returnInverse=true);
         // var uStr2 = strFromArrays(uo2, uv2, st);
-        var uStr2 = new owned SegString(uo2, uv2, st);
+        var uStr2 = getSegString(uo2, uv2, st);
         writeln("offsets, values, and counts match? >>> ", (&& reduce (uo2 == uo1)) && (&& reduce (uv2 == uv1)) && (&& reduce (c2 == c1)), " <<<" );
         var (rtSegs, rtVals) = uStr2[inv2];
         // var roundTrip = strFromArrays(rtSegs, rtVals, st);
-        var roundTrip = new owned SegString(rtSegs, rtVals, st);
+        var roundTrip = getSegString(rtSegs, rtVals, st);
         writeln("original array correctly reconstructed from inverse? >>> ", && reduce (str == roundTrip), " <<<");
     }
 
