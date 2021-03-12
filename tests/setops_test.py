@@ -77,8 +77,6 @@ class SetOpsTest(ArkoudaTest):
         pdaTwo = ak.array([2, 3, 5, 7, 5])
         expected = ak.array([1, 4, 5, 7])
         
-        repr(pdaOne)
-        
         self.assertTrue((expected == ak.setxor1d(pdaOne,pdaTwo)).all())
         
         with self.assertRaises(RuntimeError) as cm:
