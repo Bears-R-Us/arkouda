@@ -3,6 +3,7 @@ ARKOUDA_PROJECT_DIR := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 
 PROJECT_NAME := arkouda
 ARKOUDA_SOURCE_DIR := $(ARKOUDA_PROJECT_DIR)/src
+ARKOUDA_LOCAL_SOURCE_DIR := src
 ARKOUDA_MAIN_MODULE := arkouda_server
 ARKOUDA_MAKEFILES := Makefile Makefile.paths
 
@@ -267,7 +268,7 @@ doc-server: ${DOC_DIR} $(DOC_SERVER_OUTPUT_DIR)/index.html
 $(DOC_SERVER_OUTPUT_DIR)/index.html: $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES) | $(DOC_SERVER_OUTPUT_DIR)
 	@echo "Building documentation for: Server"
 	@# Build the documentation to the Chapel output directory
-	$(CHPLDOC) $(CHPLDOC_FLAGS) $(ARKOUDA_MAIN_SOURCE) -o $(DOC_SERVER_OUTPUT_DIR)
+	$(CHPLDOC) $(CHPLDOC_FLAGS) $(ARKOUDA_LOCAL_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl -o $(DOC_SERVER_OUTPUT_DIR)
 	@# Create the .nojekyll file needed for github pages in the  Chapel output directory
 	touch $(DOC_SERVER_OUTPUT_DIR)/.nojekyll
 	@echo "Completed building documentation for: Server"
