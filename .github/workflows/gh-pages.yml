@@ -1,4 +1,4 @@
-name: CI
+name: docs-gh-pages
 
 # Only publish docs when master changes
 on:
@@ -11,6 +11,7 @@ env:
 
 jobs:
   docs:
+    if: github.repository == 'mhmerrill/arkouda'
     runs-on: ubuntu-latest
     container:
       image: chapel/chapel:1.23.0
