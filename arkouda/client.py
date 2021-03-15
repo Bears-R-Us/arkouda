@@ -43,6 +43,9 @@ AllSymbols = "__AllSymbols__"
 logger = getArkoudaLogger(name='Arkouda Client') 
 clientLogger = getArkoudaLogger(name='Arkouda User Logger', logFormat='%(message)s')   
 
+import pyfiglet
+print('{} version {}'.format(pyfiglet.figlet_format('Arkouda'),__version__))
+
 # reset settings to default values
 def set_defaults() -> None:
     """
