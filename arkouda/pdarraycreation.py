@@ -853,10 +853,11 @@ def suffix_array(strings : Strings) -> SArrays:
             Raised if there is a server-side error in executing group request or
             creating the pdarray encapsulating the return message
         """
-        msg = "segmentedSuffixAry {} {} {}".format( strings.objtype,
+        cmd=  "segmentedSuffixAry"
+        args = "segmentedSuffixAry {} {} {}".format( strings.objtype,
                                                         strings.offsets.name,
                                                         strings.bytes.name) 
-        repMsg = generic_msg(msg)
+        repMsg = generic_msg(cmd=cmd,args=args)
         return SArrays(*(cast(str,repMsg).split('+')))
 
 
@@ -881,12 +882,13 @@ def lcp_array(suffixarrays : SArrays, strings : Strings) -> SArrays:
             Raised if there is a server-side error in executing group request or
             creating the pdarray encapsulating the return message
         """
-        msg = "segmentedLCP {} {} {} {} {}".format( suffixarrays.objtype,
+        cmd = "segmentedLCP"
+        args = "{} {} {} {} {}".format( suffixarrays.objtype,
                                                         suffixarrays.offsets.name,
                                                         suffixarrays.bytes.name, 
                                                         strings.offsets.name,
                                                         strings.bytes.name) 
-        repMsg = generic_msg(msg)
+        repMsg = generic_msg(cmd=cmd,args=args)
         return SArrays(*(cast(str,repMsg).split('+')))
 
 @typechecked
@@ -931,8 +933,9 @@ def suffix_array_file(filename: str)  -> tuple:
             Raised if there is a server-side error in executing group request or
             creating the pdarray encapsulating the return message
         """
-        msg = "segmentedSAFile {}".format( filename )
-        repMsg = generic_msg(msg)
+        cmd = "segmentedSAFile"
+        args = "{}".format( filename )
+        repMsg = generic_msg(cmd=cmd,args=args)
         tmpmsg=cast(str,repMsg).split('+')
         sastr=tmpmsg[0:2]
         strstr=tmpmsg[2:4]

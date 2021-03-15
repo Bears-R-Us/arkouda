@@ -406,7 +406,9 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
               // TO DO: in the future, we will force the client to handle this
               idx = convertPythonIndexToChapel(idx, arrays.size);
               var s = arrays[idx];
-              return "item %s %jt".format("int", s);
+              var repMsg="item %s %jt".format("int", s);
+              smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
+              return new MsgTuple(repMsg, MsgType.NORMAL);
           }
           otherwise { 
               var errorMsg = notImplementedError(pn, objtype); 
@@ -591,13 +593,14 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
                         var errorMsg = "("+objtype+","+dtype2str(gIV.dtype)+")";
                         smLogger.error(getModuleName(),getRoutineName(),
                                                       getLineNumber(),errorMsg); 
-                        return notImplementedError(pn,errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);          
                     }
                 }
             } catch e: Error {
+                var errorMsg= "Error: %t".format(e.message());
                 smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                       e.message());
-                return "Error: %t".format(e.message());
+                return new MsgTuple(errorMsg, MsgType.ERROR);          
             }
         }
         otherwise {
@@ -700,7 +703,7 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
     select (ltype, rtype) {
         when ("int", "int") {
           var lsa = new owned SegSArray(lsegName, lvalName, st);
-          var rsa = new owned SegString(rsegName, rvalName, st);
+          var rsa = new owned SegSArray(rsegName, rvalName, st);
           select op {
               when "==" {
                 var rname = st.nextName();
@@ -869,11 +872,11 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
   }
 
   // this function is added for suffix array
-  proc segIn1dIntMsg(cmd: string, payload: bytes, st: borrowed SymTab): MsgTuple throws {
+  proc segIn1dIntMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
     var (mainObjtype, mainSegName, mainValName, testObjtype, testSegName,
-         testValName, invertStr) = payload.decode().splitMsgToTuple(7);
+         testValName, invertStr) = payload.splitMsgToTuple(7);
 
     // check to make sure symbols defined
     st.check(mainSegName);
@@ -941,7 +944,7 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
 
 
 
-  proc segSuffixArrayMsg(cmd: string, payload: bytes, st: borrowed SymTab): MsgTuple throws {
+  proc segSuffixArrayMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var (objtype, segName, valName) = payload.splitMsgToTuple(3);
       var repMsg: string;
@@ -950,7 +953,8 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
       st.check(segName);
       st.check(valName);
 
-      var strings = new owned SegString(segName, valName, st);
+      //var strings = new owned SegString(segName, valName, st);
+      var strings = getSegString(segName, valName, st);
       var size=strings.size;
       var nBytes = strings.nBytes;
       var length=strings.getLengths();
@@ -1066,7 +1070,7 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
 
   }
 
-  proc segLCPMsg(cmd: string, payload: bytes, st: borrowed SymTab): MsgTuple throws {
+  proc segLCPMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var (objtype, segName1, valName1,segName2,valName2) = payload.splitMsgToTuple(5);
       var repMsg: string;
@@ -1084,7 +1088,8 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
       var offsegs = (+ scan length) - length;
 
 
-      var strings = new owned SegString(segName2, valName2, st);
+      //var strings = new owned SegString(segName2, valName2, st);
+      var strings = getSegString(segName2, valName2, st);
 
       select (objtype) {
           when "int" {

@@ -341,9 +341,9 @@ proc main() {
 
                 when "segmentedBinopvvInt"  {repTuple = segBinopvvIntMsg(cmd, args, st);}
                 when "segmentedBinopvsInt"  {repTuple = segBinopvsIntMsg(cmd, args, st);}
-                when "segmentedSuffixAry"{repTuple = segSuffixArrayMsg(cmd, args, st);}
-                when "segmentedLCP"      {repTuple = segLCPMsg(cmd, args, st);}
-                when "segmentedSAFile"   {repTuple = segSAFileMsg(cmd, args, st);}
+                when "segmentedSuffixAry"   {repTuple = segSuffixArrayMsg(cmd, args, st);}
+                when "segmentedLCP"         {repTuple = segLCPMsg(cmd, args, st);}
+                when "segmentedSAFile"      {repTuple = segSAFileMsg(cmd, args, st);}
                 when "segmentedIn1dInt"     {repTuple = segIn1dIntMsg(cmd, args, st);}
 
 
