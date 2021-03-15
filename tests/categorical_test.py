@@ -1,14 +1,14 @@
 import numpy as np
 from context import arkouda as ak
 from base_test import ArkoudaTest
-from arkouda import Strings
+
 
 class CategoricalTest(ArkoudaTest):
     
-    def _getCategorical(self) -> Strings:
+    def _getCategorical(self) -> ak.Categorical:
         return ak.Categorical(ak.array(['string {}'.format(i) for i in range(1,11)]))
     
-    def _getRandomizedCategorical(self):
+    def _getRandomizedCategorical(self) -> ak.Categorical:
         return ak.Categorical(ak.array(['string', 'string1', 'non-string', 'non-string2', 
                                         'string', 'non-string', 'string3','non-string2', 
                                         'string', 'non-string']))
@@ -106,4 +106,37 @@ class CategoricalTest(ArkoudaTest):
         
         with self.assertRaises(NotImplementedError):
             cat._binop('string 1', '===')
+            
+    def testConcatenate(self):
+        catOne = self._getCategorical()
+        catTwo = self._getRandomizedCategorical()
         
+        resultCat = catOne.concatenate([catTwo])
+        self.assertEqual('category', resultCat.objtype)
+        self.assertIsInstance(resultCat, ak.Categorical)
+        self.assertEqual(20,resultCat.size)
+
+        # Since Categorical.concatenate uses Categorical.from_codes method, confirm
+        # that both permutation and segments are None
+        self.assertFalse(resultCat.permutation)
+        self.assertFalse(resultCat.segments)
+
+        resultCat = ak.concatenate([catOne,catOne])
+        self.assertEqual('category', resultCat.objtype)
+        self.assertIsInstance(resultCat, ak.Categorical)
+        self.assertEqual(20,resultCat.size)
+
+        # Since Categorical.concatenate uses Categorical.from_codes method, confirm
+        # that both permutation and segments are None
+        self.assertFalse(resultCat.permutation)
+        self.assertFalse(resultCat.segments)
+        
+        resultCat = ak.concatenate([catOne,catOne], ordered=False)
+        self.assertEqual('category', resultCat.objtype)
+        self.assertIsInstance(resultCat, ak.Categorical)
+        self.assertEqual(20,resultCat.size)
+
+        # Since Categorical.concatenate uses Categorical.from_codes method, confirm
+        # that both permutation and segments are None
+        self.assertFalse(resultCat.permutation)
+        self.assertFalse(resultCat.segments)
