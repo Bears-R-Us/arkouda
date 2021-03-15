@@ -10,7 +10,9 @@ For example, imagine a dataset with two columns, ``userID`` and ``dayOfWeek``. T
 
 .. code-block:: python
 
-   byDayOfWeek = ak.GroupBy(dayOfWeek)
+   # Note: The GroupBy arg should be the values of the dayOfWeek column
+   #       and must be an Arkouda compatible data structure i.e. `pdarray`
+   byDayOfWeek = ak.GroupBy(data['dayOfWeek'])
    day, numIDs = byDayOfWeek.aggregate(userID, 'nunique')
 
 
