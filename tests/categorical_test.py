@@ -1,13 +1,20 @@
+import numpy as np
 from context import arkouda as ak
 from base_test import ArkoudaTest
-
+from arkouda import Strings
 
 class CategoricalTest(ArkoudaTest):
     
+    def _getCategorical(self) -> Strings:
+        return ak.Categorical(ak.array(['string {}'.format(i) for i in range(1,11)]))
+    
+    def _getRandomizedCategorical(self):
+        return ak.Categorical(ak.array(['string', 'string1', 'non-string', 'non-string2', 
+                                        'string', 'non-string', 'string3','non-string2', 
+                                        'string', 'non-string']))
     
     def testBaseCategorical(self):
-        strings = ak.array(['string {}'.format(i) for i in range(1,11)])
-        cat = ak.Categorical(strings)
+        cat = self._getCategorical()
 
         self.assertTrue((ak.array([7,5,9,8,2,1,4,0,3,6]) == cat.codes).all())
         self.assertTrue((ak.array([0,1,2,3,4,5,6,7,8,9]) == cat.segments).all())
@@ -16,6 +23,11 @@ class CategoricalTest(ArkoudaTest):
                                     'string 4', 'string 3']) == cat.categories).all())
         self.assertEqual(10,cat.size)
         self.assertEqual('category',cat.objtype)
+        
+        with self.assertRaises(ValueError) as cm:
+            ak.Categorical(ak.arange(0,5,10))
+        self.assertEqual('Categorical: inputs other than Strings not yet supported', 
+                         cm.exception.args[0])        
         
     def testCategoricalFromCodesAndCategories(self):
         codes = ak.array([7,5,9,8,2,1,4,0,3,6])
@@ -28,11 +40,70 @@ class CategoricalTest(ArkoudaTest):
         self.assertTrue((categories == cat.categories).all())
         
     def testContains(self):
-        strings = ak.array(['string {}'.format(i) for i in range(1,11)])
-        cat = ak.Categorical(strings)
+        cat = self._getCategorical()
         self.assertTrue(cat.contains('string').all())
         
+    def testEndsWith(self):
+        cat = self._getCategorical()
+        self.assertTrue(cat.endswith('1').any())
+        
+    def testStartsWith(self):
+        cat = self._getCategorical()
+        self.assertTrue(cat.startswith('string').all())
+        
     def testGroup(self):
-        strings = ak.array(['string {}'.format(i) for i in range(1,11)])
-        cat = ak.Categorical(strings)
-        self.assertTrue((ak.array([7,5,4,8,6,1,9,0,3,2]) == cat.group()).all())
+        group = self._getRandomizedCategorical().group()
+        self.assertTrue((ak.array([2,5,9,6,1,3,7,0,4,8]) == group).all())
+        
+    def testUnique(self):
+        cat = self._getRandomizedCategorical()
+        
+        self.assertTrue((ak.Categorical(ak.array(['non-string', 'string3', 'string1', 
+                                        'non-string2', 'string'])).to_ndarray() 
+                                                  == cat.unique().to_ndarray()).all())  
+        
+    def testToNdarray(self):
+        cat = self._getRandomizedCategorical()
+        ndcat = np.array(['string', 'string1', 'non-string', 'non-string2', 
+                            'string', 'non-string', 'string3','non-string2', 
+                            'string', 'non-string'])
+        self.assertTrue((cat.to_ndarray() == ndcat).all())
+        
+    def testEquality(self):
+        cat = self._getCategorical()
+        catDupe = self._getCategorical()
+        catNonDupe = self._getRandomizedCategorical()
+        
+        self.assertTrue((cat == catDupe).all())
+        self.assertTrue((cat != catNonDupe).all())
+        
+    def testBinop(self):
+        cat = self._getCategorical()
+        catDupe = self._getCategorical()
+        catNonDupe = self._getRandomizedCategorical()
+
+        
+        self.assertTrue((cat._binop(catDupe,'==')).all())
+        self.assertTrue((cat._binop(catNonDupe,'!=')).all())
+        
+        self.assertTrue((ak.array([True,True,True,True,True,True,True,
+                                   True,True,True]) == cat._binop(catDupe,'==')).all())
+        
+        self.assertTrue((ak.array([False,False,False,False,False,False,
+                                   False,False,False,False]) == cat._binop(catDupe,'!=')).all())
+
+        self.assertTrue((ak.array([True,False,False,False,False,False,
+                                   False,False,False,False]) == 
+                                   cat._binop('string 1', '==')).all())
+        self.assertTrue((ak.array([True,False,False,False,False,False,
+                                   False,False,False,False]) == 
+                                   cat._binop(np.str_('string 1'), '==')).all())
+        
+        self.assertTrue((ak.array([False,True,True,True,True,True,True,True,True,True]) ==
+                   cat._binop('string 1', '!=')).all())
+        self.assertTrue((ak.array([False,True,True,True,True,True,True,True,True,True]) ==
+                   cat._binop(np.str_('string 1'), '!=')).all())
+        
+        with self.assertRaises(NotImplementedError):
+            cat._binop('string 1', '===')
+        

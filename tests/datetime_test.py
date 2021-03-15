@@ -32,7 +32,11 @@ class DatetimeTest(ArkoudaTest):
     def test_creation(self):
         self.assertTrue((self.dtvec1 == self.dtvec2).all())
         self.assertTrue((self.tdvec1 == self.tdvec2).all())
-        
+    
+    def test_noop_creation(self):
+        self.assertTrue((ak.Datetime(self.dtvec1) == self.dtvec1).all())
+        self.assertTrue((ak.Timedelta(self.tdvec1) == self.tdvec1).all())
+    
     def test_roundtrip(self):
         d = ak.Datetime(self.dtvec1.to_ndarray())
         self.assertTrue((d == self.dtvec1).all())

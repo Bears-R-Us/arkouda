@@ -7,8 +7,19 @@ module FlattenMsg {
   use ServerConfig;
   use SegmentedArray;
   use GenSymIO;
+  use Logging;
+  use Message;
+  
+  const fmLogger = new Logger();
+  
+  if v {
+        fmLogger.level = LogLevel.DEBUG;
+  } else {
+        fmLogger.level = LogLevel.INFO;
+  } 
+  
 
-  proc segFlattenMsg(cmd: string, payload: string, st: borrowed SymTab) throws {
+  proc segFlattenMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var (name, objtype, returnSegsStr, delimJson) = payload.splitMsgToTuple(4);
     const returnSegs: bool = returnSegsStr.toLower() == "true";
     const arr = jsonToPdArray(delimJson, 1);
@@ -20,7 +31,7 @@ module FlattenMsg {
         const rValName = st.nextName();
         const optName: string = if returnSegs then st.nextName() else "";
         var (segName, valName) = name.splitMsgToTuple('+', 2);
-        const strings = new owned SegString(segName, valName, st);
+        const strings = getSegString(segName, valName, st);
         var (off, val, segs) = strings.flatten(delim, returnSegs);
         st.addEntry(rSegName, new shared SymEntry(off));
         st.addEntry(rValName, new shared SymEntry(val));
@@ -37,6 +48,8 @@ module FlattenMsg {
                                          "TypeError");
       }
     }
-    return repMsg;
+
+    fmLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);         
+    return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 }

@@ -2,6 +2,7 @@ module SegmentedMsg {
   use Reflection;
   use Errors;
   use Logging;
+  use Message;
   use SegmentedArray;
   use ServerErrorStrings;
   use ServerConfig;
@@ -19,7 +20,7 @@ module SegmentedMsg {
       smLogger.level = LogLevel.INFO;
   }
 
-  proc randomStringsMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+  proc randomStringsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var (lenStr, dist, charsetStr, arg1str, arg2str, seedStr)
           = payload.splitMsgToTuple(6);
@@ -56,16 +57,18 @@ module SegmentedMsg {
               repMsg = 'created ' + st.attrib(segName) + '+created ' + st.attrib(valName);
           }
           otherwise { 
-              repMsg = notImplementedError(pn, dist);       
-              smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
+              var errorMsg = notImplementedError(pn, dist);      
+              smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  
+              return new MsgTuple(errorMsg, MsgType.ERROR);    
           }
       }
+
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);      
-      return repMsg;
+      return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
   proc segmentLengthsMsg(cmd: string, payload: string, 
-                                          st: borrowed SymTab): string throws {
+                                          st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var (objtype, segName, valName) = payload.splitMsgToTuple(3);
 
@@ -80,7 +83,7 @@ module SegmentedMsg {
 
     select objtype {
       when "str" {
-        var strings = new owned SegString(segName, valName, st);
+        var strings = getSegString(segName, valName, st);
         var lengths = st.addEntry(rname, strings.size, int);
         // Do not include the null terminator in the length
         lengths.a = strings.getLengths() - 1;
@@ -88,16 +91,16 @@ module SegmentedMsg {
       otherwise {
           var errorMsg = notImplementedError(pn, "%s".format(objtype));
           smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                      
-          return errorMsg;
+          return new MsgTuple(errorMsg, MsgType.ERROR);
       }
     }
-    var returnMsg = "created "+st.attrib(rname);
-    
-    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),returnMsg);
-    return returnMsg;
+
+    var repMsg = "created "+st.attrib(rname);
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+    return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segmentedEfuncMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+  proc segmentedEfuncMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var repMsg: string;
       var (subcmd, objtype, segName, valName, valtype, valStr) = 
@@ -117,7 +120,7 @@ module SegmentedMsg {
     
         select (objtype, valtype) {
           when ("str", "str") {
-            var strings = new owned SegString(segName, valName, st);
+            var strings = getSegString(segName, valName, st);
             select subcmd {
                 when "contains" {
                 var truth = st.addEntry(rname, strings.size, bool);
@@ -135,22 +138,25 @@ module SegmentedMsg {
                 repMsg = "created "+st.attrib(rname);
             }
             otherwise {
-               return notImplementedError(pn, "subcmd: %s, (%s, %s)".format(
+               var errorMsg = notImplementedError(pn, "subcmd: %s, (%s, %s)".format(
                          subcmd, objtype, valtype));
+               smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+               return new MsgTuple(errorMsg, MsgType.ERROR);
             }
           }
         }
         otherwise {
           var errorMsg = "(%s, %s)".format(objtype, valtype);
-          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-          return notImplementedError(pn, errorMsg);
+          smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
         }
       }
+
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-      return repMsg;
+      return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
     var (subcmd, objtype, segName, valName, valtype, valStr,
@@ -166,7 +172,7 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
 
     select (objtype, valtype) {
     when ("str", "str") {
-      var strings = new owned SegString(segName, valName, st);
+      var strings = getSegString(segName, valName, st);
       select subcmd {
         when "peel" {
           var times = valStr:int;
@@ -232,7 +238,7 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
               var errorMsg = notImplementedError(pn, 
                                "subcmd: %s, (%s, %s)".format(subcmd, objtype, valtype));
               smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
-              return errorMsg;                            
+              return new MsgTuple(errorMsg, MsgType.ERROR);                            
               }
           }
           repMsg = "created %s+created %s+created %s+created %s".format(st.attrib(loname),
@@ -244,22 +250,22 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
             var errorMsg = notImplementedError(pn, 
                               "subcmd: %s, (%s, %s)".format(subcmd, objtype, valtype));
             smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
-            return errorMsg;                                          
+            return new MsgTuple(errorMsg, MsgType.ERROR);                                          
         }
       }
     }
     otherwise {
         var errorMsg = notImplementedError(pn, "(%s, %s)".format(objtype, valtype));
         smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
-        return errorMsg;       
+        return new MsgTuple(errorMsg, MsgType.ERROR);       
       }
     }
     
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-    return repMsg;
+    return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segmentedHashMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+  proc segmentedHashMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
     var (objtype, segName, valName) = payload.splitMsgToTuple(3);
@@ -270,7 +276,7 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
 
     select objtype {
         when "str" {
-            var strings = new owned SegString(segName, valName, st);
+            var strings = getSegString(segName, valName, st);
             var hashes = strings.hash();
             var name1 = st.nextName();
             var hash1 = st.addEntry(name1, hashes.size, int);
@@ -281,12 +287,12 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
             }
             var repMsg = "created " + st.attrib(name1) + "+created " + st.attrib(name2);
             smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-            return repMsg;
+            return new MsgTuple(repMsg, MsgType.NORMAL);
         }
         otherwise {
             var errorMsg = notImplementedError(pn, objtype);
             smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
-            return errorMsg;
+            return new MsgTuple(errorMsg, MsgType.ERROR);
         }
     }
   }
@@ -302,7 +308,7 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
    * 2. sliceIndex : segSliceIndex
    * 3. pdarrayIndex : segPdarrayIndex
   */ 
-  proc segmentedIndexMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+  proc segmentedIndexMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
     // 'subcmd' is the type of indexing to perform
@@ -324,19 +330,19 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
                 return segPdarrayIndex(objtype, args, st);
             }
             otherwise {
-                var errorMsg = "Error: in %s, nknown subcommand %s".format(pn, subcmd);
+                var errorMsg = "Error in %s, unknown subcommand %s".format(pn, subcmd);
                 smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
-                return errorMsg;
+                return new MsgTuple(errorMsg, MsgType.ERROR);
             }
         }
     } catch e: OutOfBoundsError {
-        var errorMsg = "Error: index out of bounds";
+        var errorMsg = "index out of bounds";
         smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
-        return errorMsg;
+        return new MsgTuple(errorMsg, MsgType.ERROR);
     } catch e: Error {
-        var errorMsg = "Error: unknown cause %t".format(e);
+        var errorMsg = "unknown cause %t".format(e);
         smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
-        return errorMsg;
+        return new MsgTuple(errorMsg, MsgType.ERROR);
     }
   }
  
@@ -344,7 +350,7 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
   Returns the object corresponding to the index
   */ 
   proc segIntIndex(objtype: string, args: [] string, 
-                                         st: borrowed SymTab): string throws {
+                                         st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
 
       // check to make sure symbols defined
@@ -354,7 +360,7 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
       select objtype {
           when "str" {
               // Make a temporary strings array
-              var strings = new owned SegString(args[1], args[2], st);
+              var strings = getSegString(args[1], args[2], st);
               // Parse the index
               var idx = args[3]:int;
               // TO DO: in the future, we will force the client to handle this
@@ -363,12 +369,12 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
 
               var repMsg = "item %s %jt".format("str", s);
               smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
-              return repMsg;
+              return new MsgTuple(repMsg, MsgType.NORMAL);
           }
           otherwise { 
               var errorMsg = notImplementedError(pn, objtype); 
               smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
-              return errorMsg;                          
+              return new MsgTuple(errorMsg, MsgType.ERROR);                          
           }
       }
   }
@@ -384,7 +390,8 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
     return chplIdx;
   }
 
-  proc segSliceIndex(objtype: string, args: [] string, st: borrowed SymTab): string throws {
+  proc segSliceIndex(objtype: string, args: [] string, 
+                                         st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
 
     // check to make sure symbols defined
@@ -392,41 +399,43 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
     st.check(args[2]);
 
     select objtype {
-      when "str" {
-        // Make a temporary string array
-        var strings = new owned SegString(args[1], args[2], st);
-        // Parse the slice parameters
-        var start = args[3]:int;
-        var stop = args[4]:int;
-        var stride = args[5]:int;
-        // Only stride-1 slices are allowed for now
-        if (stride != 1) { 
-            var errorMsg = notImplementedError(pn, "stride != 1"); 
-            smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
-            return errorMsg;
-        }
-        // TO DO: in the future, we will force the client to handle this
-        var slice: range(stridable=true) = convertPythonSliceToChapel(start, stop, stride);
-        var newSegName = st.nextName();
-        var newValName = st.nextName();
-        // Compute the slice
-        var (newSegs, newVals) = strings[slice];
-        // Store the resulting offsets and bytes arrays
-        var newSegsEntry = new shared SymEntry(newSegs);
-        var newValsEntry = new shared SymEntry(newVals);
-        st.addEntry(newSegName, newSegsEntry);
-        st.addEntry(newValName, newValsEntry);
+        when "str" {
+            // Make a temporary string array
+            var strings = getSegString(args[1], args[2], st);
+
+            // Parse the slice parameters
+            var start = args[3]:int;
+            var stop = args[4]:int;
+            var stride = args[5]:int;
+
+            // Only stride-1 slices are allowed for now
+            if (stride != 1) { 
+                var errorMsg = notImplementedError(pn, "stride != 1"); 
+                smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
+            // TO DO: in the future, we will force the client to handle this
+            var slice: range(stridable=true) = convertPythonSliceToChapel(start, stop, stride);
+            var newSegName = st.nextName();
+            var newValName = st.nextName();
+            // Compute the slice
+            var (newSegs, newVals) = strings[slice];
+            // Store the resulting offsets and bytes arrays
+            var newSegsEntry = new shared SymEntry(newSegs);
+            var newValsEntry = new shared SymEntry(newVals);
+            st.addEntry(newSegName, newSegsEntry);
+            st.addEntry(newValName, newValsEntry);
         
-        var repMsg = "created " + st.attrib(newSegName) + " +created " + st.attrib(newValName);
-        smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
-        return repMsg;
-      }
-      otherwise {
-          var errorMsg = notImplementedError(pn, objtype);
-          smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
-          return errorMsg;          
+            var repMsg = "created " + st.attrib(newSegName) + " +created " + st.attrib(newValName);
+            smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
+            return new MsgTuple(repMsg, MsgType.NORMAL);
         }
-      }
+        otherwise {
+            var errorMsg = notImplementedError(pn, objtype);
+            smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
+            return new MsgTuple(errorMsg, MsgType.ERROR);          
+        }
+    }
   }
 
   proc convertPythonSliceToChapel(start:int, stop:int, stride:int=1): range(stridable=true) {
@@ -441,7 +450,8 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
     return slice;
   }
 
-  proc segPdarrayIndex(objtype: string, args: [] string, st: borrowed SymTab): string throws {
+  proc segPdarrayIndex(objtype: string, args: [] string, 
+                                 st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
 
     // check to make sure symbols defined
@@ -456,7 +466,7 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
     
     select objtype {
         when "str" {
-            var strings = new owned SegString(args[1], args[2], st);
+            var strings = getSegString(args[1], args[2], st);
             var iname = args[3];
             var gIV: borrowed GenSymEntry = st.lookup(iname);
             try {
@@ -481,28 +491,28 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
                         var errorMsg = "("+objtype+","+dtype2str(gIV.dtype)+")";
                         smLogger.error(getModuleName(),getRoutineName(),
                                                       getLineNumber(),errorMsg); 
-                        return notImplementedError(pn,errorMsg);
+                        return new MsgTuple(notImplementedError(pn,errorMsg), MsgType.ERROR);
                     }
                 }
             } catch e: Error {
-                smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                      e.message());
-                return "Error: %t".format(e.message());
+                var errorMsg =  e.message();
+                smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
             }
         }
         otherwise {
             var errorMsg = "unsupported objtype: %t".format(objtype);
             smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return notImplementedError(pn, objtype);
+            return new MsgTuple(notImplementedError(pn, objtype), MsgType.ERROR);
         }
     }
     var repMsg = "created " + st.attrib(newSegName) + "+created " + st.attrib(newValName);
-
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-    return "created " + st.attrib(newSegName) + "+created " + st.attrib(newValName);
+
+    return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segBinopvvMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+  proc segBinopvvMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
     var (op,
@@ -519,120 +529,150 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
     st.check(rvalName);
 
     select (ltype, rtype) {
-    when ("str", "str") {
-      var lstrings = new owned SegString(lsegName, lvalName, st);
-      var rstrings = new owned SegString(rsegName, rvalName, st);
-      select op {
-        when "==" {
-          var rname = st.nextName();
-          var e = st.addEntry(rname, lstrings.size, bool);
-          e.a = (lstrings == rstrings);
-          repMsg = "created " + st.attrib(rname);
-        }
-        when "!=" {
-          var rname = st.nextName();
-          var e = st.addEntry(rname, lstrings.size, bool);
-          e.a = (lstrings != rstrings);
-          repMsg = "created " + st.attrib(rname);
-        }
-        when "stick" {
-          var left = (leftStr.toLower() != "false");
-          var json = jsonToPdArray(jsonStr, 1);
-          const delim = json[json.domain.low];
-          var oname = st.nextName();
-          var vname = st.nextName();
-          if left {
-            var (newOffsets, newVals) = lstrings.stick(rstrings, delim, false);
-            st.addEntry(oname, new shared SymEntry(newOffsets));
-            st.addEntry(vname, new shared SymEntry(newVals));
-          } else {
-            var (newOffsets, newVals) = lstrings.stick(rstrings, delim, true);
-            st.addEntry(oname, new shared SymEntry(newOffsets));
-            st.addEntry(vname, new shared SymEntry(newVals));
-          }
-          repMsg = "created %s+created %s".format(st.attrib(oname), st.attrib(vname));
-          smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        }
-        otherwise {return notImplementedError(pn, ltype, op, rtype);}
-        }
+        when ("str", "str") {
+            var lstrings = getSegString(lsegName, lvalName, st);
+            var rstrings = getSegString(rsegName, rvalName, st);
+
+            select op {
+                when "==" {
+                    var rname = st.nextName();
+                    var e = st.addEntry(rname, lstrings.size, bool);
+                    e.a = (lstrings == rstrings);
+                    repMsg = "created " + st.attrib(rname);
+                }
+                when "!=" {
+                    var rname = st.nextName();
+                    var e = st.addEntry(rname, lstrings.size, bool);
+                    e.a = (lstrings != rstrings);
+                    repMsg = "created " + st.attrib(rname);
+                }
+                when "stick" {
+                    var left = (leftStr.toLower() != "false");
+                    var json = jsonToPdArray(jsonStr, 1);
+                    const delim = json[json.domain.low];
+                    var oname = st.nextName();
+                    var vname = st.nextName();
+                    if left {
+                        var (newOffsets, newVals) = lstrings.stick(rstrings, delim, false);
+                        st.addEntry(oname, new shared SymEntry(newOffsets));
+                        st.addEntry(vname, new shared SymEntry(newVals));
+                    } else {
+                        var (newOffsets, newVals) = lstrings.stick(rstrings, delim, true);
+                        st.addEntry(oname, new shared SymEntry(newOffsets));
+                        st.addEntry(vname, new shared SymEntry(newVals));
+                    }
+                    repMsg = "created %s+created %s".format(st.attrib(oname), st.attrib(vname));
+                    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+                }
+                otherwise {
+                    var errorMsg = notImplementedError(pn, ltype, op, rtype);
+                    smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                }
+              }
+           }
+       otherwise {
+           var errorMsg = unrecognizedTypeError(pn, "("+ltype+", "+rtype+")");
+           smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+           return new MsgTuple(errorMsg, MsgType.ERROR);
+       } 
     }
-    otherwise {return unrecognizedTypeError(pn, "("+ltype+", "+rtype+")");} 
-    }
-    return repMsg;
+
+    return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segBinopvsMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
-    var pn = Reflection.getRoutineName();
-    var repMsg: string;
-    var (op, objtype, segName, valName, valtype, encodedVal)
+  proc segBinopvsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+      var pn = Reflection.getRoutineName();
+      var repMsg: string;
+      var (op, objtype, segName, valName, valtype, encodedVal)
           = payload.splitMsgToTuple(6);
 
-    // check to make sure symbols defined
-    st.check(segName);
-    st.check(valName);
+      // check to make sure symbols defined
+      st.check(segName);
+      st.check(valName);
 
-    var json = jsonToPdArray(encodedVal, 1);
-    var value = json[json.domain.low];
-    var rname = st.nextName();
-    select (objtype, valtype) {
-    when ("str", "str") {
-      var strings = new owned SegString(segName, valName, st);
-      select op {
-        when "==" {
-          var e = st.addEntry(rname, strings.size, bool);
-          e.a = (strings == value);
-        }
-        when "!=" {
-          var e = st.addEntry(rname, strings.size, bool);
-          e.a = (strings != value);
-        }
-        otherwise {return notImplementedError(pn, objtype, op, valtype);}
-        }
-    }
-    otherwise {return unrecognizedTypeError(pn, "("+objtype+", "+valtype+")");} 
-    }
-    return "created " + st.attrib(rname);
+      var json = jsonToPdArray(encodedVal, 1);
+      var value = json[json.domain.low];
+      var rname = st.nextName();
+
+      select (objtype, valtype) {
+          when ("str", "str") {
+              var strings = getSegString(segName, valName, st);
+              select op {
+                  when "==" {
+                      var e = st.addEntry(rname, strings.size, bool);
+                      e.a = (strings == value);
+                  }
+                  when "!=" {
+                      var e = st.addEntry(rname, strings.size, bool);
+                      e.a = (strings != value);
+                  }
+                  otherwise {
+                      var errorMsg = notImplementedError(pn, objtype, op, valtype);
+                      smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                      return new MsgTuple(errorMsg, MsgType.ERROR);
+                  }
+              }
+          }
+          otherwise {
+              var errorMsg = unrecognizedTypeError(pn, "("+objtype+", "+valtype+")");
+              smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
+          } 
+      }
+
+      repMsg = "created %s".format(st.attrib(rname));
+      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), repMsg);
+      return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segIn1dMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
-    var pn = Reflection.getRoutineName();
-    var repMsg: string;
-    var (mainObjtype, mainSegName, mainValName, testObjtype, testSegName,
+  proc segIn1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+      var pn = Reflection.getRoutineName();
+      var repMsg: string;
+      var (mainObjtype, mainSegName, mainValName, testObjtype, testSegName,
          testValName, invertStr) = payload.splitMsgToTuple(7);
 
-    // check to make sure symbols defined
-    st.check(mainSegName);
-    st.check(mainValName);
-    st.check(testSegName);
-    st.check(testValName);
+      // check to make sure symbols defined
+      st.check(mainSegName);
+      st.check(mainValName);
+      st.check(testSegName);
+      st.check(testValName);
 
-    var invert: bool;
-    if invertStr == "True" {invert = true;}
-    else if invertStr == "False" {invert = false;}
-    else {return "Error: Invalid argument in %s: %s (expected True or False)".format(pn, invertStr);}
-    
-    var rname = st.nextName();
-    select (mainObjtype, testObjtype) {
-    when ("str", "str") {
-      var mainStr = new owned SegString(mainSegName, mainValName, st);
-      var testStr = new owned SegString(testSegName, testValName, st);
-      var e = st.addEntry(rname, mainStr.size, bool);
-      if invert {
-        e.a = !in1d(mainStr, testStr);
+      var invert: bool;
+      if invertStr == "True" {invert = true;
+      } else if invertStr == "False" {invert = false;
       } else {
-        e.a = in1d(mainStr, testStr);
+          var errorMsg = "Invalid argument in %s: %s (expected True or False)".format(pn, invertStr);
+          smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
       }
-    }
-    otherwise {
-        var errorMsg = unrecognizedTypeError(pn, "("+mainObjtype+", "+testObjtype+")");
-        smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
-        return errorMsg;            
+    
+      var rname = st.nextName();
+ 
+      select (mainObjtype, testObjtype) {
+          when ("str", "str") {
+              var mainStr = getSegString(mainSegName, mainValName, st);
+              var testStr = getSegString(testSegName, testValName, st);
+              var e = st.addEntry(rname, mainStr.size, bool);
+              if invert {
+                  e.a = !in1d(mainStr, testStr);
+              } else {
+                  e.a = in1d(mainStr, testStr);
+              }
+          }
+          otherwise {
+              var errorMsg = unrecognizedTypeError(pn, "("+mainObjtype+", "+testObjtype+")");
+              smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
+              return new MsgTuple(errorMsg, MsgType.ERROR);            
+          }
       }
-    }
-    return "created " + st.attrib(rname);
+
+      repMsg = "created " + st.attrib(rname);
+      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+      return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segGroupMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+  proc segGroupMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var (objtype, segName, valName) = payload.splitMsgToTuple(3);
 
@@ -643,16 +683,19 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): string
       var rname = st.nextName();
       select (objtype) {
           when "str" {
-              var strings = new owned SegString(segName, valName, st);
+              var strings = getSegString(segName, valName, st);
               var iv = st.addEntry(rname, strings.size, int);
               iv.a = strings.argGroup();
           }
           otherwise {
               var errorMsg = notImplementedError(pn, "("+objtype+")");
               smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
-              return errorMsg;            
+              return new MsgTuple(errorMsg, MsgType.ERROR);            
           }
       }
-      return "created " + st.attrib(rname);
+
+      var repMsg =  "created " + st.attrib(rname);
+      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+      return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 }

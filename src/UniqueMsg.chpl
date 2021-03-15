@@ -17,6 +17,7 @@ module UniqueMsg
     use Reflection;
     use Errors;
     use Logging;
+    use Message;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -34,7 +35,7 @@ module UniqueMsg
     }
     
     /* unique take a pdarray and returns a pdarray with the unique values */
-    proc uniqueMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+    proc uniqueMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
@@ -47,7 +48,7 @@ module UniqueMsg
         else {
             var errorMsg = "Error: %s: %s".format(pn,returnCountsStr);
             umLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);              
-            return errorMsg;
+            return new MsgTuple(errorMsg, MsgType.ERROR);
         }
         select objtype {
             when "pdarray" {
@@ -105,26 +106,30 @@ module UniqueMsg
 
                     var (aV,aC) = uniqueSort(e.a);
                     st.addEntry(vname, new shared SymEntry(aV));
-                    if returnCounts {st.addEntry(cname, new shared SymEntry(aC));}
-                    
+                    if returnCounts {
+                        st.addEntry(cname, new shared SymEntry(aC));
+                    }                  
                 }
                 otherwise {
                     var errorMsg = notImplementedError("unique",gEnt.dtype);
                     umLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);                
-                    return errorMsg;
+                    return new MsgTuple(errorMsg, MsgType.ERROR);
                 }
             }
         
-            var s = try! "created " + st.attrib(vname);
-            if returnCounts {s += " +created " + st.attrib(cname);}
-            umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),s);  
-            return s;
+            repMsg = "created " + st.attrib(vname);
+
+            if returnCounts {
+                repMsg += " +created " + st.attrib(cname);
+            }
+            umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);  
+            return new MsgTuple(repMsg, MsgType.NORMAL);
           }
           when "str" {
               var offsetName = st.nextName();
               var valueName = st.nextName();
               var (names1,names2) = name.splitMsgToTuple('+', 2);
-              var str = new owned SegString(names1, names2, st);
+              var str = getSegString(names1, names2, st);
 
               /*
                * The upper limit here is the similar to argsort/radixSortLSD_keys, but with 
@@ -135,25 +140,28 @@ module UniqueMsg
               var (uo, uv, c, inv) = uniqueGroup(str);
               st.addEntry(offsetName, new shared SymEntry(uo));
               st.addEntry(valueName, new shared SymEntry(uv));
-              var s = "created " + st.attrib(offsetName) + " +created " + st.attrib(valueName);
+
+              repMsg = "created " + st.attrib(offsetName) + " +created " + st.attrib(valueName);
+
               if returnCounts {
                   var countName = st.nextName();
                   st.addEntry(countName, new shared SymEntry(c));
-                  s += " +created " + st.attrib(countName);
+                  repMsg += " +created " + st.attrib(countName);
               }
-              umLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), s);
-              return s;
+
+              umLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
+              return new MsgTuple(repMsg, MsgType.NORMAL);
           }
           otherwise { 
              var errorMsg = notImplementedError(Reflection.getRoutineName(), objtype);
              umLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errorMsg);
-             return errorMsg;              
+             return new MsgTuple(errorMsg, MsgType.ERROR);              
            }
         }
     }
     
     /* value_counts takes a pdarray and returns two pdarrays unique values and counts for each value */
-    proc value_countsMsg(cmd: string, payload: string, st: borrowed SymTab): string throws {
+    proc value_countsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
         var repMsg: string; // response message
         // split request into fields
@@ -217,11 +225,11 @@ module UniqueMsg
             otherwise {
                 var errorMsg = notImplementedError(pn,gEnt.dtype);
                 umLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return errorMsg;                 
+                return new MsgTuple(errorMsg, MsgType.ERROR);                 
             }
         }
         repMsg = "created " + st.attrib(vname) + " +created " + st.attrib(cname);
         umLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return repMsg;
+        return new MsgTuple(repMsg, MsgType.NORMAL);
     }
 }

@@ -26,7 +26,7 @@ prototype module UnitTestArgSort
         writeReq(reqMsg);
         var d: Diags;
         d.start();
-        repMsg = argsortMsg(cmd=cmd, payload=reqMsg, st);
+        repMsg = argsortMsg(cmd=cmd, payload=reqMsg, st).msg;
         d.stop("argsortMsg");
         writeRep(repMsg);
 
@@ -36,7 +36,7 @@ prototype module UnitTestArgSort
         reqMsg = try! "%s %s".format(aname, ivname);
         writeReq(reqMsg);
         d.start();
-        repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg, st);
+        repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg, st).msg;
         d.stop("pdarrayIndexMsg");
         writeRep(repMsg);
 
@@ -48,7 +48,7 @@ prototype module UnitTestArgSort
         reqMsg = try! "%s %s".format(subCmd, bname);
         writeReq(reqMsg);
         d.start();
-        repMsg = reductionMsg(cmd=cmd, payload=reqMsg, st);
+        repMsg = reductionMsg(cmd=cmd, payload=reqMsg, st).msg;
         d.stop("reductionMsg");
         writeln("ANSWER >>> ",repMsg," <<<");
 
@@ -60,7 +60,7 @@ prototype module UnitTestArgSort
         reqMsg = try! "%i %s %s pdarray pdarray".format(2, aname, fname);
         writeReq(reqMsg);
         d.start();
-        repMsg = coargsortMsg(cmd=cmd, payload=reqMsg, st);
+        repMsg = coargsortMsg(cmd=cmd, payload=reqMsg, st).msg;
         d.stop("coargsortMsg");
         writeRep(repMsg);
 
@@ -70,14 +70,14 @@ prototype module UnitTestArgSort
         reqMsg = try! "%s %s".format(aname, coivname);
         writeReq(reqMsg);
         d.start();
-        repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg, st);
+        repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg, st).msg;
         d.stop("pdarrayIndexMsg");
         writeRep(repMsg);
         var coaname = parseName(repMsg);
         reqMsg = try! "%s %s".format(fname, coivname);
         writeReq(reqMsg);
         d.start();
-        repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg, st);
+        repMsg = pdarrayIndexMsg(cmd=cmd, payload=reqMsg, st).msg;
         d.stop("pdarrayIndexMsg");
         writeRep(repMsg);
         var cofname = parseName(repMsg);

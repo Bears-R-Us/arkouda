@@ -23,16 +23,6 @@ use Message;
 
 const asLogger = new Logger();
 
-enum MsgType {NORMAL,WARNING,ERROR}
-enum MsgFormat {STRING,BINARY}
-
-class ReplyMsg {
-    var msg: string;
-    var msgType: MsgType;
-    var msgFormat: MsgFormat;
-    var user: string;
-}
-
 if v {
     asLogger.level = LogLevel.DEBUG;
 } else {
@@ -46,6 +36,80 @@ proc initArkoudaDirectory() {
 }
 
 proc main() {
+ 
+    proc printServerSpashMessage(token: string, arkDirectory: string) throws {
+        var verMessage = "arkouda server version = %s".format(arkoudaVersion);
+        var dirMessage = ".arkouda directory %s".format(arkDirectory);
+        var memLimMessage =  "getMemLimit() %i".format(getMemLimit());
+        var memUsedMessage = "bytes of memoryUsed() = %i".format(memoryUsed());
+        var serverMessage: string;
+    
+        const buff = '                         ';
+    
+        proc adjustMsg(msg: string) throws {
+            if msg.size % 2 != 0 {
+                return msg + ' ';
+            } else {
+                return msg;
+            }   
+        }
+    
+        if token.isEmpty() {
+            serverMessage = "server listening on tcp://%s:%t".format(
+                                        serverHostname, ServerPort);
+        } else {
+            serverMessage = "server listening on tcp://%s:%t?token=%s".format(
+                                        serverHostname, ServerPort, token);
+        }
+        
+        
+        
+        serverMessage = adjustMsg(serverMessage);
+        verMessage = adjustMsg(verMessage);
+        
+        serverMessage = "%s %s %s".format(buff,serverMessage,buff);
+        writeln("servermessage size: %i".format(serverMessage.size));
+        
+        verMessage = adjustMsg(verMessage);
+        
+        var vBuffSize = (serverMessage.size - verMessage.size)/2 - 2;
+        
+        writeln("vmessage size %i".format(verMessage.size));
+        
+        var vBuff: string;
+        var counter = 0;
+        
+        while counter <= vBuffSize {
+            vBuff+=' ';
+            counter+=1;
+        }
+        
+        verMessage = "*%s %s %s*".format(vBuff,verMessage,vBuff);
+        var blankBuffer: string;
+        counter = 0;
+        
+        while counter < serverMessage.size {
+            blankBuffer+=' ';
+            counter+=1;
+        }
+        var blankLine = '*%s*'.format(blankBuffer);
+        
+        var tag = '*';
+        counter = 0;
+        
+        while counter <= serverMessage.size {
+            tag+='*';
+            counter+=1;
+        }
+        
+        writeln(tag);
+        writeln(blankLine);
+        writeln('*%s*'.format(serverMessage));
+        writeln(verMessage);
+        writeln(blankLine);
+        writeln(tag);
+    }
+
     asLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
                                                "arkouda server version = %s".format(arkoudaVersion));
     asLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
@@ -82,22 +146,7 @@ proc main() {
 
     socket.bind("tcp://*:%t".format(ServerPort));
     
-    const buff = '         ';
-    const boundarySize = serverMessage.size + 20;
-    
-    var boundary = "*";
-    var i = 0;
-    
-    while i < boundarySize {
-        boundary += "*";
-        i+=1;
-    }
-    
-    serverMessage = "%s %s %s %s %s".format('*',buff,serverMessage,buff,'*');
-    
-    asLogger.info(getModuleName(), getRoutineName(), getLineNumber(), boundary);
-    asLogger.info(getModuleName(), getRoutineName(), getLineNumber(), serverMessage);
-    asLogger.info(getModuleName(), getRoutineName(), getLineNumber(), boundary);
+    printServerSpashMessage(serverToken,arkDirectory);
     
     createServerConnectionInfo();
 
@@ -141,25 +190,14 @@ proc main() {
             throw new owned ErrorWithMsg("Error: token %s does not match server token, check with server owner".format(token));
         }
     } 
-   
+
     /*
-    Parses the colon-delimted string containing the user, token, and cmd fields
-    into a three-string tuple.
-
-    :arg rawCmdSting: the colon-delimited string to be parsed
-    :returns: (string,string,string)
-    */ 
-    proc getCommandStrings(rawCmdString : string) : (string,string,string) {
-        
-        var strings = rawCmdString.splitMsgToTuple(sep=":", numChunks=3);
-        asLogger.info(getModuleName(), getRoutineName(), getLineNumber(),"stuff %t".format(strings));      
-        return (strings[0],strings[1],strings[2]);
-    }
-
-    proc extractCommand(cmdString : string) : CommandMsg throws {
-        var cm = new CommandMsg();
-        deserialize(cm,cmdString);
-        return cm;
+     * Converts the incoming request JSON string into RequestMsg object.
+     */
+    proc extractRequest(request : string) : RequestMsg throws {
+        var rm = new RequestMsg();
+        deserialize(rm, request);
+        return rm;
     }
     
     /*
@@ -169,7 +207,7 @@ proc main() {
     proc shutdown(user: string) {
         shutdownServer = true;
         repCount += 1;
-        socket.send(generateJsonReplyMsg(msg="shutdown server (%i req)".format(repCount), 
+        socket.send(serialize(msg="shutdown server (%i req)".format(repCount), 
                          msgType=MsgType.NORMAL,msgFormat=MsgFormat.STRING, user=user));
     }
     
@@ -182,34 +220,34 @@ proc main() {
         var s0 = t1.elapsed();
         
         /*
-         * Separate the first tuple, which is a string binary 
-         * containing the JSON binary string encapsulating user, token, cmd, and args from
-         * the remaining payload. Depending upon
+         * Separate the first tuple, which is a string binary containing the JSON binary
+         * string encapsulating user, token, cmd, message format and args from the 
+         * remaining payload.
          */
-        var (cmdRaw, payload) = reqMsgRaw.splitMsgToTuple(b"BINARY_PAYLOAD",2);
+        var (rawRequest, payload) = reqMsgRaw.splitMsgToTuple(b"BINARY_PAYLOAD",2);
         var user, token, cmd: string;
 
         // parse requests, execute requests, format responses
         try {
             /*
-             * Decode the string binary containing the user, token, and cmd. 
-             * If there is an error, discontinue processing message and send 
-             * an error message back to the client.
+             * Decode the string binary containing the JSON-formatted request string. 
+             * If there is an error, discontinue processing message and send an error
+             * message back to the client.
              */
-            var cmdStr : string;
+            var request : string;
 
             try! {
-                cmdStr = cmdRaw.decode();
+                request = rawRequest.decode();
             } catch e: DecodeError {
                 asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                       "illegal byte sequence in command: %t".format(cmdRaw.decode(decodePolicy.replace)));
-                sendRepMsg(generateJsonReplyMsg(msg=unknownError(e.message()),msgType=MsgType.ERROR,
+                       "illegal byte sequence in command: %t".format(
+                                          rawRequest.decode(decodePolicy.replace)));
+                sendRepMsg(serialize(msg=unknownError(e.message()),msgType=MsgType.ERROR,
                                                  msgFormat=MsgFormat.STRING, user="Unknown"));
             }
 
-            //parse the decoded cmdString to retrieve user,token,cmd
-            asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"INCOMING CMD %s".format(cmdStr));
-            var msg    = extractCommand(cmdStr);
+            // deserialize the decoded, JSON-formatted cmdStr into a RequestMsg
+            var msg: RequestMsg  = extractRequest(request);
             user   = msg.user;
             token  = msg.token;
             cmd    = msg.cmd;
@@ -217,7 +255,7 @@ proc main() {
             var args   = msg.args;
 
             /*
-             * If authentication is enabled with --authenticate flag, authenticate
+             * If authentication is enabled with the --authenticate flag, authenticate
              * the user which for now consists of matching the submitted token
              * with the token generated by the arkouda server
              */ 
@@ -252,125 +290,123 @@ proc main() {
             }
 
             /*
-             * Declare the repMsg and binaryRepMsg variables, one of which is sent to sendRepMsg
-             * depending upon whether a string (repMsg) or bytes (binaryRepMsg) is to be returned.
+             * Declare the repTuple and binaryRepMsg variables, one of which is processed, if 
+             * applicable, and sent to sendRepMsg depending upon whether a string (repTuple)
+             * or bytes (binaryRepMsg) is to be returned.
              */
             var binaryRepMsg: bytes;
-            var repMsg: string;
+            var repTuple: MsgTuple;
 
             select cmd
             {
-                when "array"             {repMsg = arrayMsg(cmd, payload, st);}
+                when "array"             {repTuple = arrayMsg(cmd, payload, st);}
                 when "tondarray"         {binaryRepMsg = tondarrayMsg(cmd, args, st);}
-                when "cast"              {repMsg = castMsg(cmd, args, st);}
-                when "mink"              {repMsg = minkMsg(cmd, args, st);}
-                when "maxk"              {repMsg = maxkMsg(cmd, args, st);}
-                when "intersect1d"       {repMsg = intersect1dMsg(cmd, args, st);}
-                when "setdiff1d"         {repMsg = setdiff1dMsg(cmd, args, st);}
-                when "setxor1d"          {repMsg = setxor1dMsg(cmd, args, st);}
-                when "union1d"           {repMsg = union1dMsg(cmd, args, st);}
-                when "segmentLengths"    {repMsg = segmentLengthsMsg(cmd, args, st);}
-                when "segmentedHash"     {repMsg = segmentedHashMsg(cmd, args, st);}
-                when "segmentedEfunc"    {repMsg = segmentedEfuncMsg(cmd, args, st);}
-                when "segmentedPeel"     {repMsg = segmentedPeelMsg(cmd, args, st);}
-                when "segmentedIndex"    {repMsg = segmentedIndexMsg(cmd, args, st);}
-                when "segmentedBinopvv"  {repMsg = segBinopvvMsg(cmd, args, st);}
-                when "segmentedBinopvs"  {repMsg = segBinopvsMsg(cmd, args, st);}
-                when "segmentedGroup"    {repMsg = segGroupMsg(cmd, args, st);}
-                when "segmentedIn1d"     {repMsg = segIn1dMsg(cmd, args, st);}
-                when "segmentedFlatten"  {repMsg = segFlattenMsg(cmd, args, st);}
-                when "lshdf"             {repMsg = lshdfMsg(cmd, args, st);}
-                when "readhdf"           {repMsg = readhdfMsg(cmd, args, st);}
-                when "readAllHdf"        {repMsg = readAllHdfMsg(cmd, args, st);}
-                when "tohdf"             {repMsg = tohdfMsg(cmd, args, st);}
-                when "create"            {repMsg = createMsg(cmd, args, st);}
-                when "delete"            {repMsg = deleteMsg(cmd, args, st);}
-                when "binopvv"           {repMsg = binopvvMsg(cmd, args, st);}
-                when "binopvs"           {repMsg = binopvsMsg(cmd, args, st);}
-                when "binopsv"           {repMsg = binopsvMsg(cmd, args, st);}
-                when "opeqvv"            {repMsg = opeqvvMsg(cmd, args, st);}
-                when "opeqvs"            {repMsg = opeqvsMsg(cmd, args, st);}
-                when "efunc"             {repMsg = efuncMsg(cmd, args, st);}
-                when "efunc3vv"          {repMsg = efunc3vvMsg(cmd, args, st);}
-                when "efunc3vs"          {repMsg = efunc3vsMsg(cmd, args, st);}
-                when "efunc3sv"          {repMsg = efunc3svMsg(cmd, args, st);}
-                when "efunc3ss"          {repMsg = efunc3ssMsg(cmd, args, st);}
-                when "reduction"         {repMsg = reductionMsg(cmd, args, st);}
-                when "countReduction"    {repMsg = countReductionMsg(cmd, args, st);}
-                when "findSegments"      {repMsg = findSegmentsMsg(cmd, args, st);}
-                when "segmentedReduction"{repMsg = segmentedReductionMsg(cmd, args, st);}
-                when "broadcast"         {repMsg = broadcastMsg(cmd, args, st);}
-                when "arange"            {repMsg = arangeMsg(cmd, args, st);}
-                when "linspace"          {repMsg = linspaceMsg(cmd, args, st);}
-                when "randint"           {repMsg = randintMsg(cmd, args, st);}
-                when "randomNormal"      {repMsg = randomNormalMsg(cmd, args, st);}
-                when "randomStrings"     {repMsg = randomStringsMsg(cmd, args, st);}
-                when "histogram"         {repMsg = histogramMsg(cmd, args, st);}
-                when "in1d"              {repMsg = in1dMsg(cmd, args, st);}
-                when "unique"            {repMsg = uniqueMsg(cmd, args, st);}
-                when "value_counts"      {repMsg = value_countsMsg(cmd, args, st);}
-                when "set"               {repMsg = setMsg(cmd, args, st);}
-                when "info"              {repMsg = infoMsg(cmd, args, st);}
-                when "str"               {repMsg = strMsg(cmd, args, st);}
-                when "repr"              {repMsg = reprMsg(cmd, args, st);}
-                when "[int]"             {repMsg = intIndexMsg(cmd, args, st);}
-                when "[slice]"           {repMsg = sliceIndexMsg(cmd, args, st);}
-                when "[pdarray]"         {repMsg = pdarrayIndexMsg(cmd, args, st);}
-                when "[int]=val"         {repMsg = setIntIndexToValueMsg(cmd, args, st);}
-                when "[pdarray]=val"     {repMsg = setPdarrayIndexToValueMsg(cmd, args, st);}
-                when "[pdarray]=pdarray" {repMsg = setPdarrayIndexToPdarrayMsg(cmd, args, st);}
-                when "[slice]=val"       {repMsg = setSliceIndexToValueMsg(cmd, args, st);}
-                when "[slice]=pdarray"   {repMsg = setSliceIndexToPdarrayMsg(cmd, args, st);}
-                when "argsort"           {repMsg = argsortMsg(cmd, args, st);}
-                when "coargsort"         {repMsg = coargsortMsg(cmd, args, st);}
-                when "concatenate"       {repMsg = concatenateMsg(cmd, args, st);}
-                when "sort"              {repMsg = sortMsg(cmd, args, st);}
-                when "joinEqWithDT"      {repMsg = joinEqWithDTMsg(cmd, args, st);}
-                when "getconfig"         {repMsg = getconfigMsg(cmd, args, st);}
-                when "getmemused"        {repMsg = getmemusedMsg(cmd, args, st);}
-                when "register"          {repMsg = registerMsg(cmd, args, st);}
-                when "attach"            {repMsg = attachMsg(cmd, args, st);}
-                when "unregister"        {repMsg = unregisterMsg(cmd, args, st);}
-                when "clear"             {repMsg = clearMsg(cmd, args, st);}               
+                when "cast"              {repTuple = castMsg(cmd, args, st);}
+                when "mink"              {repTuple = minkMsg(cmd, args, st);}
+                when "maxk"              {repTuple = maxkMsg(cmd, args, st);}
+                when "intersect1d"       {repTuple = intersect1dMsg(cmd, args, st);}
+                when "setdiff1d"         {repTuple = setdiff1dMsg(cmd, args, st);}
+                when "setxor1d"          {repTuple = setxor1dMsg(cmd, args, st);}
+                when "union1d"           {repTuple = union1dMsg(cmd, args, st);}
+                when "segmentLengths"    {repTuple = segmentLengthsMsg(cmd, args, st);}
+                when "segmentedHash"     {repTuple = segmentedHashMsg(cmd, args, st);}
+                when "segmentedEfunc"    {repTuple = segmentedEfuncMsg(cmd, args, st);}
+                when "segmentedPeel"     {repTuple = segmentedPeelMsg(cmd, args, st);}
+                when "segmentedIndex"    {repTuple = segmentedIndexMsg(cmd, args, st);}
+                when "segmentedBinopvv"  {repTuple = segBinopvvMsg(cmd, args, st);}
+                when "segmentedBinopvs"  {repTuple = segBinopvsMsg(cmd, args, st);}
+                when "segmentedGroup"    {repTuple = segGroupMsg(cmd, args, st);}
+                when "segmentedIn1d"     {repTuple = segIn1dMsg(cmd, args, st);}
+                when "segmentedFlatten"  {repTuple = segFlattenMsg(cmd, args, st);}
+                when "lshdf"             {repTuple = lshdfMsg(cmd, args, st);}
+                when "readhdf"           {repTuple = readhdfMsg(cmd, args, st);}
+                when "readAllHdf"        {repTuple = readAllHdfMsg(cmd, args, st);}
+                when "tohdf"             {repTuple = tohdfMsg(cmd, args, st);}
+                when "create"            {repTuple = createMsg(cmd, args, st);}
+                when "delete"            {repTuple = deleteMsg(cmd, args, st);}
+                when "binopvv"           {repTuple = binopvvMsg(cmd, args, st);}
+                when "binopvs"           {repTuple = binopvsMsg(cmd, args, st);}
+                when "binopsv"           {repTuple = binopsvMsg(cmd, args, st);}
+                when "opeqvv"            {repTuple = opeqvvMsg(cmd, args, st);}
+                when "opeqvs"            {repTuple = opeqvsMsg(cmd, args, st);}
+                when "efunc"             {repTuple = efuncMsg(cmd, args, st);}
+                when "efunc3vv"          {repTuple = efunc3vvMsg(cmd, args, st);}
+                when "efunc3vs"          {repTuple = efunc3vsMsg(cmd, args, st);}
+                when "efunc3sv"          {repTuple = efunc3svMsg(cmd, args, st);}
+                when "efunc3ss"          {repTuple = efunc3ssMsg(cmd, args, st);}
+                when "reduction"         {repTuple = reductionMsg(cmd, args, st);}
+                when "countReduction"    {repTuple = countReductionMsg(cmd, args, st);}
+                when "findSegments"      {repTuple = findSegmentsMsg(cmd, args, st);}
+                when "segmentedReduction"{repTuple = segmentedReductionMsg(cmd, args, st);}
+                when "broadcast"         {repTuple = broadcastMsg(cmd, args, st);}
+                when "arange"            {repTuple = arangeMsg(cmd, args, st);}
+                when "linspace"          {repTuple = linspaceMsg(cmd, args, st);}
+                when "randint"           {repTuple = randintMsg(cmd, args, st);}
+                when "randomNormal"      {repTuple = randomNormalMsg(cmd, args, st);}
+                when "randomStrings"     {repTuple = randomStringsMsg(cmd, args, st);}
+                when "histogram"         {repTuple = histogramMsg(cmd, args, st);}
+                when "in1d"              {repTuple = in1dMsg(cmd, args, st);}
+                when "unique"            {repTuple = uniqueMsg(cmd, args, st);}
+                when "value_counts"      {repTuple = value_countsMsg(cmd, args, st);}
+                when "set"               {repTuple = setMsg(cmd, args, st);}
+                when "info"              {repTuple = infoMsg(cmd, args, st);}
+                when "str"               {repTuple = strMsg(cmd, args, st);}
+                when "repr"              {repTuple = reprMsg(cmd, args, st);}
+                when "[int]"             {repTuple = intIndexMsg(cmd, args, st);}
+                when "[slice]"           {repTuple = sliceIndexMsg(cmd, args, st);}
+                when "[pdarray]"         {repTuple = pdarrayIndexMsg(cmd, args, st);}
+                when "[int]=val"         {repTuple = setIntIndexToValueMsg(cmd, args, st);}
+                when "[pdarray]=val"     {repTuple = setPdarrayIndexToValueMsg(cmd, args, st);}
+                when "[pdarray]=pdarray" {repTuple = setPdarrayIndexToPdarrayMsg(cmd, args, st);}
+                when "[slice]=val"       {repTuple = setSliceIndexToValueMsg(cmd, args, st);}
+                when "[slice]=pdarray"   {repTuple = setSliceIndexToPdarrayMsg(cmd, args, st);}
+                when "argsort"           {repTuple = argsortMsg(cmd, args, st);}
+                when "coargsort"         {repTuple = coargsortMsg(cmd, args, st);}
+                when "concatenate"       {repTuple = concatenateMsg(cmd, args, st);}
+                when "sort"              {repTuple = sortMsg(cmd, args, st);}
+                when "joinEqWithDT"      {repTuple = joinEqWithDTMsg(cmd, args, st);}
+                when "getconfig"         {repTuple = getconfigMsg(cmd, args, st);}
+                when "getmemused"        {repTuple = getmemusedMsg(cmd, args, st);}
+                when "register"          {repTuple = registerMsg(cmd, args, st);}
+                when "attach"            {repTuple = attachMsg(cmd, args, st);}
+                when "unregister"        {repTuple = unregisterMsg(cmd, args, st);}
+                when "clear"             {repTuple = clearMsg(cmd, args, st);}               
                 when "connect" {
                     if authenticate {
-                        repMsg = "connected to arkouda server tcp://*:%i as user %s with token %s".format(
-                                                          ServerPort,user,token);
+                        repTuple = new MsgTuple("connected to arkouda server tcp://*:%i as user %s with token %s".format(
+                                                          ServerPort,user,token), MsgType.NORMAL);
                     } else {
-                        repMsg = "connected to arkouda server tcp://*:%i".format(ServerPort);
+                        repTuple = new MsgTuple("connected to arkouda server tcp://*:%i".format(ServerPort), 
+                                                                                        MsgType.NORMAL);
                     }
                 }
                 when "disconnect" {
-                    repMsg = "disconnected from arkouda server tcp://*:%i".format(ServerPort);
+                    repTuple = new MsgTuple("disconnected from arkouda server tcp://*:%i".format(ServerPort), 
+                                                                   MsgType.NORMAL);
                 }
                 when "noop" {
-                    repMsg = "noop";
-                    asLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"no-op");
+                    repTuple = new MsgTuple("noop", MsgType.NORMAL);
                 }
                 when "ruok" {
-                    repMsg = "imok";
+                    repTuple = new MsgTuple("imok", MsgType.NORMAL);
                 }
                 otherwise {
-                    repMsg = "Error: unrecognized command: %s".format(cmd);
-                    asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+                    repTuple = new MsgTuple("Unrecognized command: %s".format(cmd), MsgType.ERROR);
+                    asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repTuple.msg);
                 }
             }
 
-            //Determine if a string (repMsg) or binary (binaryRepMsg) is to be returned and send response           
-            if repMsg.isEmpty() {
+            /*
+             * 1. Determine if the reply message is binary or a string via the repTuple.msg attribute
+             * 2. If a string, invoke serialize to generate a JSON-formatted reply string
+             * 3. Invoke the sendRepMsg function
+             */          
+            if repTuple.msg.isEmpty() {
+                // Since the repTuple.msg attribute is empty, this is a binary reply message
                 sendRepMsg(binaryRepMsg);
             } else {
-                var msgType: MsgType;
-                
-                if repMsg.find('Error') > -1 {
-                    msgType = MsgType.ERROR;
-                } else if repMsg.find('Warning') > -1 {
-                    msgType = MsgType.WARNING;
-                } else {
-                    msgType = MsgType.NORMAL;
-                }
-                sendRepMsg(generateJsonReplyMsg(msg=repMsg,msgType=msgType,msgFormat=MsgFormat.STRING, 
-                                                user=user));
+                sendRepMsg(serialize(msg=repTuple.msg,msgType=repTuple.msgType,
+                                                              msgFormat=MsgFormat.STRING, user=user));
             }
 
             /*
@@ -379,25 +415,28 @@ proc main() {
              */
             if trace {
                 asLogger.info(getModuleName(),getRoutineName(),getLineNumber(), 
-                                                  "<<< %s took %.17r sec".format(cmd, t1.elapsed() - s0));
+                                              "<<< %s took %.17r sec".format(cmd, t1.elapsed() - s0));
             }
             if (trace && memTrack) {
                 asLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                       "bytes of memory used after command %t".format(memoryUsed():uint * numLocales:uint));
+                    "bytes of memory used after command %t".format(memoryUsed():uint * numLocales:uint));
             }
         } catch (e: ErrorWithMsg) {
-            sendRepMsg(generateJsonReplyMsg(msg=e.msg,msgType=MsgType.ERROR, msgFormat=MsgFormat.STRING, 
+            // Generate a ReplyMsg of type ERROR and serialize to a JSON-formatted string
+            sendRepMsg(serialize(msg=e.msg,msgType=MsgType.ERROR, msgFormat=MsgFormat.STRING, 
                                                         user=user));
             if trace {
                 asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                     "<<< %s resulted in error %s in  %.17r sec".format(cmd, e.msg, t1.elapsed() - s0));
             }
         } catch (e: Error) {
-            sendRepMsg(generateJsonReplyMsg(msg=unknownError(e.message()),msgType=MsgType.ERROR, 
+            // Generate a ReplyMsg of type ERROR and serialize to a JSON-formatted string
+            sendRepMsg(serialize(msg=unknownError(e.message()),msgType=MsgType.ERROR, 
                                                          msgFormat=MsgFormat.STRING, user=user));
             if trace {
                 asLogger.error(getModuleName(), getRoutineName(), getLineNumber(), 
-                    "<<< %s resulted in error: %s in %.17r sec".format(cmd, e.message(),t1.elapsed() - s0));
+                    "<<< %s resulted in error: %s in %.17r sec".format(cmd, e.message(),
+                                                                                 t1.elapsed() - s0));
             }
         }
     }
@@ -407,14 +446,8 @@ proc main() {
     deleteServerConnectionInfo();
 
     asLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
-               "requests = %i responseCount = %i elapsed sec = %i".format(reqCount,repCount,t1.elapsed()));
-}
-
-/*
- * Generates JSON-formatted reply message
- */
-proc generateJsonReplyMsg(msg: string, msgType: MsgType, msgFormat: MsgFormat, user: string) : string {
-    return "%jt".format(new ReplyMsg(msg=msg,msgType=msgType, msgFormat=msgFormat, user=user));
+               "requests = %i responseCount = %i elapsed sec = %i".format(reqCount,repCount,
+                                                                                 t1.elapsed()));
 }
 
 /*

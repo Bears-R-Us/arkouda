@@ -97,3 +97,35 @@ class DtypesTest(ArkoudaTest):
         self.assertFalse(dtypes.isSupportedFloat(int(1.0)))
         self.assertFalse(dtypes.isSupportedFloat('1'))
         self.assertFalse(dtypes.isSupportedFloat('1.0'))
+        
+    def testDtypeEnum(self):
+        '''
+        Tests for DTypeEnum, ak.DTypes, and ak.ARKOUDA_SUPPORTED_DTYPES
+        '''
+        self.assertEqual('bool', str(dtypes.DType.BOOL))
+        self.assertEqual('float', str(dtypes.DType.FLOAT))
+        self.assertEqual('float64', str(dtypes.DType.FLOAT64))
+        self.assertEqual('int', str(dtypes.DType.INT))
+        self.assertEqual('int64', str(dtypes.DType.INT64))
+        self.assertEqual('str', str(dtypes.DType.STR))
+        self.assertEqual('uint8', str(dtypes.DType.UINT8))
+        self.assertEqual(frozenset({'float','float64', 'bool', 'uint8', 
+                                    'int','int64', 'str'}), ak.DTypes)
+        self.assertEqual(frozenset({'float','float64', 'bool', 'uint8', 
+                          'int','int64', 'str'}), ak.ARKOUDA_SUPPORTED_DTYPES)
+        
+    def testNumericDTypes(self):
+        self.assertEqual(frozenset(['bool', 'float', 'float64','int','int64']), 
+                         dtypes.NumericDTypes)
+        
+    def testSeriesDTypes(self):
+        self.assertEqual(np.str_, dtypes.SeriesDTypes['string'])
+        self.assertEqual(np.str_, dtypes. SeriesDTypes["<class 'str'>"])
+        self.assertEqual(np.int64, dtypes. SeriesDTypes['int64'])
+        self.assertEqual(np.int64, dtypes. SeriesDTypes["<class 'numpy.int64'>"])
+        self.assertEqual(np.float64, dtypes. SeriesDTypes['float64'])
+        self.assertEqual(np.float64, dtypes. SeriesDTypes["<class 'numpy.float64'>"])
+        self.assertEqual(np.bool, dtypes. SeriesDTypes['bool'])
+        self.assertEqual(np.bool, dtypes. SeriesDTypes["<class 'bool'>"])
+        self.assertEqual(np.int64, dtypes. SeriesDTypes['datetime64[ns]'])
+        self.assertEqual(np.int64, dtypes. SeriesDTypes['timedelta64[ns]'])
