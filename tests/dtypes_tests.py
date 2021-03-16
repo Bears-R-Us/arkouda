@@ -131,11 +131,13 @@ class DtypesTest(ArkoudaTest):
         self.assertEqual(np.int64, dtypes. SeriesDTypes['timedelta64[ns]'])
 
     def testScalars(self):
-        self.assertEqual('typing.Union[int, numpy.int64]', str(ak.int_scalars))
+        self.assertEqual("<class 'bool'>", str(ak.bool_scalars))
         self.assertEqual('typing.Union[float, numpy.float64]', str(ak.float_scalars))
+        self.assertEqual('typing.Union[int, numpy.int64]', str(ak.int_scalars))
         self.assertEqual('typing.Union[float, numpy.float64, int, numpy.int64]', 
                          str(ak.numeric_scalars))
         self.assertEqual('typing.Union[str, numpy.str_]', str(ak.str_scalars))
-        self.assertEqual('typing.Union[numpy.float64, numpy.int64]', str(ak.numpy_scalars))
+        self.assertEqual('typing.Union[numpy.float64, numpy.int64, bool, numpy.uint8, str, numpy.str_]', 
+                         str(ak.numpy_scalars))
         self.assertEqual('typing.Union[float, numpy.float64, int, numpy.int64, bool, str, numpy.str_]', 
                          str(ak.all_scalars))

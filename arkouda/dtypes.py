@@ -6,9 +6,9 @@ import builtins
 
 __all__ = ["DTypes", "DTypeObjects", "dtype", "npbool", "int64", "float64", 
            "uint8", "str_", "check_np_dtype", "translate_np_dtype", 
-           "resolve_scalar_dtype", "ARKOUDA_SUPPORTED_DTYPES", "int_scalars",
-           "float_scalars", "numeric_scalars", "numpy_scalars", "str_scalars",
-           "all_scalars"]
+           "resolve_scalar_dtype", "ARKOUDA_SUPPORTED_DTYPES", "bool_scalars",
+           "float_scalars", "int_scalars", "numeric_scalars", "numpy_scalars", 
+           "str_scalars", "all_scalars"]
 
 # supported dtypes
 structDtypeCodes = {'int64': 'q',
@@ -29,11 +29,12 @@ uint8 = np.dtype(np.uint8)
 str_ = np.dtype(np.str_)
 npstr = np.dtype(np.str)
 
+bool_scalars = Union[bool,np.bool]
 int_scalars = Union[int,np.int64]
 float_scalars = Union[float,np.float64]
 numeric_scalars = Union[float,np.float64,int,np.int64]
+numpy_scalars = Union[np.float64,np.int64,np.bool,np.uint8,np.str,np.str_]
 str_scalars = Union[str, np.str, np.str_]
-numpy_scalars = Union[np.float64,np.int64]
 all_scalars = Union[float,np.float64,int,np.int64,bool,np.bool,str,np.str,np.str_]
 
 '''
