@@ -854,7 +854,7 @@ def suffix_array(strings : Strings) -> SArrays:
             creating the pdarray encapsulating the return message
         """
         cmd=  "segmentedSuffixAry"
-        args = "segmentedSuffixAry {} {} {}".format( strings.objtype,
+        args = "{} {} {}".format( strings.objtype,
                                                         strings.offsets.name,
                                                         strings.bytes.name) 
         repMsg = generic_msg(cmd=cmd,args=args)

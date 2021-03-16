@@ -986,7 +986,8 @@ class SArrays:
             if self.size != other.size:
                 raise ValueError("SArrays: size mismatch {} {}".\
                                  format(self.size, other.size))
-            msg = "segmentedBinopvvInt {} {} {} {} {} {} {}".format(op,
+            cmd = "segmentedBinopvvInt"
+            args= "{} {} {} {} {} {} {}".format(op,
                                                                  self.objtype,
                                                                  self.offsets.name,
                                                                  self.bytes.name,
@@ -994,7 +995,8 @@ class SArrays:
                                                                  other.offsets.name,
                                                                  other.bytes.name)
         elif resolve_scalar_dtype(other) == 'int':
-            msg = "segmentedBinopvsInt {} {} {} {} {} {}".format(op,
+            cmd = "segmentedBinopvsInt"
+            args= "{} {} {} {} {} {}".format(op,
                                                               self.objtype,
                                                               self.offsets.name,
                                                               self.bytes.name,
@@ -1003,7 +1005,7 @@ class SArrays:
         else:
             raise ValueError("SArrays: {} not supported between SArrays and {}"\
                              .format(op, other.__class__.__name__))
-        repMsg = generic_msg(msg)
+        repMsg = generic_msg(cmd=cmd,args=args)
         return create_pdarray(cast(str,repMsg))
 
     def __eq__(self, other) -> bool:
@@ -1019,12 +1021,13 @@ class SArrays:
                 # Interpret negative key as offset from end of array
                 key += self.size
             if (key >= 0 and key < self.size):
-                msg = "segmentedIndex {} {} {} {} {}".format('intIndex',
-                                                             self.objtype,
-                                                             self.offsets.name,
-                                                             self.bytes.name,
-                                                             key)
-                repMsg = generic_msg(msg)
+                cmd = "segmentedIndex"
+                args= "{} {} {} {} {}".format("intIndex",
+                                               self.objtype,
+                                               self.offsets.name,
+                                               self.bytes.name,
+                                               key)
+                repMsg = generic_msg(cmd=cmd,args=args)
                 _, value = repMsg.split(maxsplit=1)
                 return _parse_single_int_array_value(value)
             else:
@@ -1033,14 +1036,15 @@ class SArrays:
         elif isinstance(key, slice):
             (start,stop,stride) = key.indices(self.size)
             self.logger.debug('start: {}; stop: {}; stride: {}'.format(start,stop,stride))
-            msg = "segmentedIndex {} {} {} {} {} {} {}".format('sliceIndex',
-                                                               self.objtype,
-                                                               self.offsets.name,
-                                                               self.bytes.name,
-                                                               start,
-                                                               stop,
-                                                               stride)
-            repMsg = generic_msg(msg)
+            cmd = "segmentedIndex"
+            args= "{} {} {} {} {} {} {}".format('sliceIndex',
+                                                 self.objtype,
+                                                 self.offsets.name,
+                                                 self.bytes.name,
+                                                 start,
+                                                 stop,
+                                                 stride)
+            repMsg = generic_msg(cmd=cmd,args=args)
             offsets, values = repMsg.split('+')
             return SArrays(offsets, values);
         elif isinstance(key, pdarray):
@@ -1049,12 +1053,13 @@ class SArrays:
                 raise TypeError("unsupported pdarray index type {}".format(key.dtype))
             if kind == "int" and self.size != key.size:
                 raise ValueError("size mismatch {} {}".format(self.size,key.size))
-            msg = "segmentedIndex {} {} {} {} {}".format('pdarrayIndex',
-                                                         self.objtype,
-                                                         self.offsets.name,
-                                                         self.bytes.name,
-                                                         key.name)
-            repMsg = generic_msg(msg)
+            cmd = "segmentedIndex"
+            args= "{} {} {} {} {}".format('pdarrayIndex',
+                                           self.objtype,
+                                           self.offsets.name,
+                                           self.bytes.name,
+                                           key.name)
+            repMsg = generic_msg(cmd=cmd,args=args)
             offsets, values = repMsg.split('+')
             return SArrays(offsets, values)
         else:
@@ -1074,9 +1079,10 @@ class SArrays:
         RuntimeError
             Raised if there is a server-side error thrown
         """
-        msg = "segmentLengths {} {} {}".\
+        cmd = "segmentLengths"
+        args= "{} {} {}".\
                         format(self.objtype, self.offsets.name, self.bytes.name)
-        repMsg = generic_msg(msg)
+        repMsg = generic_msg(cmd=cmd,args=args)
         return create_pdarray(cast(str,repMsg))
 
     '''
