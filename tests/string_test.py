@@ -53,7 +53,7 @@ def run_test_pdarray_index(strings, test_strings, cat):
     inds = ak.arange(0, strings.size, 10)
     assert(compare_strings(strings[inds].to_ndarray(), test_strings[inds.to_ndarray()]))
     assert(compare_strings(cat[inds].to_ndarray(), test_strings[inds.to_ndarray()]))
-    logical = ak.zeros(strings.size, dtype=ak.bool)
+    logical = ak.zeros(strings.size, dtype=ak.npbool)
     logical[inds] = True
     assert(compare_strings(strings[logical].to_ndarray(), test_strings[logical.to_ndarray()]))
     # Indexing with a one-element pdarray (int) should return Strings array, not string scalar
@@ -63,7 +63,7 @@ def run_test_pdarray_index(strings, test_strings, cat):
     assert(isinstance(result, ak.Strings) and (result.size == 1))
     assert(result[0] == strings[i])
     # Logical indexing with all-False array should return empty Strings array
-    logicalSingleton = ak.zeros(strings.size, dtype=ak.bool)
+    logicalSingleton = ak.zeros(strings.size, dtype=ak.npbool)
     result = strings[logicalSingleton]
     assert(isinstance(result, ak.Strings) and (result.size == 0))
     # Logical indexing with a single True should return one-element Strings array, not string scalar
@@ -88,7 +88,7 @@ def run_test_in1d(strings, cat, base_words):
     for word in strings[matches].to_ndarray():
         assert(word in more_words)
     # Exhaustively find all matches to make sure we didn't miss any
-    inds = ak.zeros(strings.size, dtype=ak.bool)
+    inds = ak.zeros(strings.size, dtype=ak.npbool)
     for word in more_words:
         inds |= (strings == word)
     assert((inds == matches).all())
@@ -396,7 +396,7 @@ class StringTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             stringsOne.lstick(stringsTwo, delimiter=1)
-        self.assertEqual('type of argument "delimiter" must be one of (str, bytes, str_); got int instead', 
+        self.assertEqual('type of argument "delimiter" must be one of (bytes, str, str_); got int instead', 
                          cm.exception.args[0])
         
         with self.assertRaises(TypeError) as cm:
@@ -406,22 +406,22 @@ class StringTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.startswith(1)
-        self.assertEqual('type of argument "substr" must be one of (str, bytes, str_); got int instead', 
+        self.assertEqual('type of argument "substr" must be one of (bytes, str, str_); got int instead', 
                          cm.exception.args[0])    
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.endswith(1)
-        self.assertEqual('type of argument "substr" must be one of (str, bytes, str_); got int instead', 
+        self.assertEqual('type of argument "substr" must be one of (bytes, str, str_); got int instead', 
                          cm.exception.args[0])   
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.contains(1)
-        self.assertEqual('type of argument "substr" must be one of (str, bytes, str_); got int instead', 
+        self.assertEqual('type of argument "substr" must be one of (bytes, str, str_); got int instead', 
                          cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.peel(1)
-        self.assertEqual('type of argument "delimiter" must be one of (str, bytes, str_); got int instead', 
+        self.assertEqual('type of argument "delimiter" must be one of (bytes, str, str_); got int instead', 
                          cm.exception.args[0])  
 
         with self.assertRaises(ValueError) as cm:

@@ -34,8 +34,8 @@ class IOTest(ArkoudaTest):
         self.float_ndarray.sort()
         self.float_pdarray_dupe = ak.array(np.random.uniform(-100,100,1000))   
 
-        self.bool_pdarray = ak.randint(0, 1, 1000, dtype=ak.bool)
-        self.bool_pdarray_dupe = ak.randint(0, 1, 1000, dtype=ak.bool)     
+        self.bool_pdarray = ak.randint(0, 1, 1000, dtype=ak.npbool)
+        self.bool_pdarray_dupe = ak.randint(0, 1, 1000, dtype=ak.npbool)     
    
         self.dict_columns =  {
            'int_tens_pdarray' : self.int_tens_pdarray,

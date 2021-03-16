@@ -16,7 +16,7 @@ class SortTest(ArkoudaTest):
     def testErrorHandling(self):
         
         # Test RuntimeError from bool NotImplementedError
-        bools = ak.randint(0, 1, 1000, dtype=ak.bool)   
+        bools = ak.randint(0, 1, 1000, dtype=ak.npbool)   
      
         with self.assertRaises(ValueError) as cm:
             ak.sort(bools)

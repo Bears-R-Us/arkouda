@@ -87,8 +87,8 @@ class PdarrayCreationTest(ArkoudaTest):
         test_array = ak.randint(0, 1, 3, dtype=ak.float64)
         self.assertEqual(ak.float64, test_array.dtype)
         
-        test_array = ak.randint(0, 1, 5, dtype=ak.bool)
-        self.assertEqual(ak.bool, test_array.dtype)
+        test_array = ak.randint(0, 1, 5, dtype=ak.npbool)
+        self.assertEqual(ak.npbool, test_array.dtype)
         
         test_ndarray = test_array.to_ndarray()
         
@@ -135,7 +135,7 @@ class PdarrayCreationTest(ArkoudaTest):
                                    4.4714086874555292, 3.7098921109084522, 4.5939589352472314, 
                                    4.0337935981006172]) == values).all())
     
-        values = ak.randint(1, 5, 10, dtype=ak.bool, seed=2)
+        values = ak.randint(1, 5, 10, dtype=ak.npbool, seed=2)
         self.assertTrue((ak.array([False, True, True, True, True, False, True, True, 
                                    True, True]) == values).all())
         
@@ -186,8 +186,8 @@ class PdarrayCreationTest(ArkoudaTest):
         boolZeros = ak.zeros(5, dtype=bool)
         self.assertEqual(bool,boolZeros.dtype)
 
-        boolZeros = ak.zeros(5, dtype=ak.bool)
-        self.assertEqual(ak.bool,boolZeros.dtype)
+        boolZeros = ak.zeros(5, dtype=ak.npbool)
+        self.assertEqual(ak.npbool,boolZeros.dtype)
         
         zeros  = ak.zeros('5')
         self.assertEqual(5, len(zeros))
@@ -215,8 +215,8 @@ class PdarrayCreationTest(ArkoudaTest):
         boolOnes = ak.ones(5, dtype=bool)
         self.assertEqual(bool,boolOnes.dtype)
         
-        boolOnes = ak.ones(5, dtype=ak.bool)
-        self.assertEqual(ak.bool,boolOnes.dtype)
+        boolOnes = ak.ones(5, dtype=ak.npbool)
+        self.assertEqual(ak.npbool,boolOnes.dtype)
 
         ones = ak.ones('5')
         self.assertEqual(5, len(ones))
@@ -243,10 +243,10 @@ class PdarrayCreationTest(ArkoudaTest):
         
         self.assertEqual(ak.float64,floatOnesLike.dtype)
         
-        boolOnes = ak.ones(5, dtype=ak.bool)
+        boolOnes = ak.ones(5, dtype=ak.npbool)
         boolOnesLike = ak.ones_like(boolOnes)
         
-        self.assertEqual(ak.bool,boolOnesLike.dtype)        
+        self.assertEqual(ak.npbool,boolOnesLike.dtype)        
         
     def test_eros_like(self):      
         intZeros = ak.zeros(5, dtype=ak.int64)
@@ -260,10 +260,10 @@ class PdarrayCreationTest(ArkoudaTest):
         
         self.assertEqual(ak.float64,floatZerosLike.dtype)
         
-        boolZeros = ak.ones(5, dtype=ak.bool)
+        boolZeros = ak.ones(5, dtype=ak.npbool)
         boolZerosLike = ak.ones_like(boolZeros)
         
-        self.assertEqual(ak.bool,boolZerosLike.dtype)        
+        self.assertEqual(ak.npbool,boolZerosLike.dtype)        
 
     def test_linspace(self):
         pda = ak.linspace(0, 100, 1000)  
@@ -374,7 +374,7 @@ class PdarrayCreationTest(ArkoudaTest):
                          cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:          
-            ak.random_strings_uniform(minlen=1, maxlen='5', size=10)          
+            ak.random_strings_uniform( minlen=1, maxlen='5', size=10)          
         self.assertEqual('type of argument "maxlen" must be one of (int, int64); got str instead', 
                          cm.exception.args[0])     
         
@@ -457,7 +457,7 @@ class PdarrayCreationTest(ArkoudaTest):
                                    'MRIEJUSA', 'OLUKRJK'])
                         == pda).all())   
         
-        pda = ak.random_strings_lognormal(np.int64(2), np.float64(0.25), np.int64(10), seed=1)
+        pda = ak.random_strings_lognormal(float(2), np.float64(0.25), np.int64(10), seed=1)
         
         self.assertTrue((ak.array(['TVKJTE', 'ABOCORHFM', 'LUDMMGTB', 'KWOQNPHZ', 
                                    'VSXRRL', 'AKOZOEEWTB', 'GOSVGEJNOW', 'BFWSIO', 

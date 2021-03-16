@@ -1,6 +1,6 @@
 import numpy as np
 from context import arkouda as ak
-from arkouda.dtypes import str as akstr
+from arkouda.dtypes import npstr
 from base_test import ArkoudaTest
 
 """
@@ -12,7 +12,7 @@ class NumericTest(ArkoudaTest):
     def testSeededRNG(self):
         N = 100
         seed = 8675309
-        numericdtypes = [ak.int64, ak.float64, ak.bool]
+        numericdtypes = [ak.int64, ak.float64, ak.npbool]
         for dt in numericdtypes:
             # Make sure unseeded runs differ
             a = ak.randint(0, 2**32, N, dtype=dt)
@@ -39,16 +39,16 @@ class NumericTest(ArkoudaTest):
         N = 100
         arrays = {ak.int64: ak.randint(-(2**48), 2**48, N),
                   ak.float64: ak.randint(0, 1, N, dtype=ak.float64),
-                  ak.bool: ak.randint(0, 2, N, dtype=ak.bool)}
-        roundtripable = set(((ak.bool, ak.bool),
+                  ak.npbool: ak.randint(0, 2, N, dtype=ak.npbool)}
+        roundtripable = set(((ak.npbool, ak.npbool),
                          (ak.int64, ak.int64),
                          (ak.int64, ak.float64),
-                         (ak.int64, akstr),
+                         (ak.int64, npstr),
                          (ak.float64, ak.float64),
-                         (ak.float64, akstr),
+                         (ak.float64, npstr),
                          (ak.uint8, ak.int64),
                          (ak.uint8, ak.float64),
-                         (ak.uint8, akstr)))
+                         (ak.uint8, npstr)))
         for t1, orig in arrays.items():
             for t2 in ak.DTypes:
                 t2 = ak.dtype(t2)
@@ -60,7 +60,7 @@ class NumericTest(ArkoudaTest):
                     
         self.assertTrue((ak.array([1, 2, 3, 4, 5]) == ak.cast(ak.linspace(1,5,5), dt=ak.int64)).all())
         self.assertEqual(ak.cast(ak.arange(0,5), dt=ak.float64).dtype, ak.float64)
-        self.assertTrue((ak.array([False, True, True, True, True]) == ak.cast(ak.linspace(0,4,5), dt=ak.bool)).all())
+        self.assertTrue((ak.array([False, True, True, True, True]) == ak.cast(ak.linspace(0,4,5), dt=ak.npbool)).all())
     
     def testHistogram(self):
         pda = ak.randint(10,30,40)
