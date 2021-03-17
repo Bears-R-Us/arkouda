@@ -44,7 +44,8 @@ logger = getArkoudaLogger(name='Arkouda Client')
 clientLogger = getArkoudaLogger(name='Arkouda User Logger', logFormat='%(message)s')   
 
 import pyfiglet
-print('{} version {}'.format(pyfiglet.figlet_format('Arkouda'),__version__))
+print('{}'.format(pyfiglet.figlet_format('Arkouda')))
+print('Client Version: {}'.format(__version__))
 
 # reset settings to default values
 def set_defaults() -> None:

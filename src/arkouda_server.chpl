@@ -62,29 +62,47 @@ proc main() {
                                         serverHostname, ServerPort, token);
         }
         
-        
-        
-        serverMessage = adjustMsg(serverMessage);
-        verMessage = adjustMsg(verMessage);
-        
+        serverMessage = adjustMsg(serverMessage);      
         serverMessage = "%s %s %s".format(buff,serverMessage,buff);
-        writeln("servermessage size: %i".format(serverMessage.size));
         
         verMessage = adjustMsg(verMessage);
         
-        var vBuffSize = (serverMessage.size - verMessage.size)/2 - 2;
-        
-        writeln("vmessage size %i".format(verMessage.size));
-        
+        var buffSize = (serverMessage.size - verMessage.size)/2 - 2;       
         var vBuff: string;
         var counter = 0;
         
-        while counter <= vBuffSize {
+        while counter <= buffSize {
             vBuff+=' ';
             counter+=1;
         }
         
         verMessage = "*%s %s %s*".format(vBuff,verMessage,vBuff);
+        
+        buffSize = (serverMessage.size - memLimMessage.size)/2 - 2;      
+        var mlBuff: string;
+        counter = 0;
+        
+        while counter <= buffSize {
+            mlBuff+=' ';
+            counter+=1;
+        }
+        
+        memLimMessage = adjustMsg(memLimMessage);
+        memLimMessage = "*%s %s %s*".format(mlBuff,memLimMessage,mlBuff);
+
+        
+        buffSize = (serverMessage.size - memUsedMessage.size)/2 - 2;
+        var muBuff: string;
+        counter = 0;
+        
+        while counter <= buffSize {
+            muBuff+=' ';
+            counter+=1;
+        }
+        
+        memUsedMessage = adjustMsg(memUsedMessage);
+        memUsedMessage = "*%s %s %s*".format(muBuff,memUsedMessage,muBuff);
+        
         var blankBuffer: string;
         counter = 0;
         
@@ -92,6 +110,7 @@ proc main() {
             blankBuffer+=' ';
             counter+=1;
         }
+        
         var blankLine = '*%s*'.format(blankBuffer);
         
         var tag = '*';
@@ -101,29 +120,37 @@ proc main() {
             tag+='*';
             counter+=1;
         }
+        writeln("      _          _                     _         ");
+        writeln("     / \\   _ __| | ______  _     __   __| | __  _  ");
+        writeln("    / _ \\ | `__| |// //_ \\ | | | |// _` |// _` | ");
+        writeln("   / ___ \\| |  |    < (_) | |_| |  (_| |  (_| | ");
+        writeln("  /_/  \\_\\_|  | |\\_\\__/\\__,__|\\__,_|\\__,_| ");
         
+        writeln("      *          _                     _         ");
+        writeln("     * *     _ __| | ______  _     __   __| | __  _  ");
+        writeln("    * * *\  **,| `__| |// //_ \\ | | | |// _` |// _` | ");
+        writeln("   * * * *\ *\| |  |    < (_) | |_| |  (_| |  (_| | ");
+        writeln("  * *   * * *(
+                  * *     * **_\\_|  | |\\_\\__/\\__,__|\\__,_|\\__,_| ");
+        writeln();
+        writeln(tag);
         writeln(tag);
         writeln(blankLine);
         writeln('*%s*'.format(serverMessage));
         writeln(verMessage);
+        if (memTrack) {
+            writeln(memLimMessage);
+            writeln(memUsedMessage);
+        }
         writeln(blankLine);
         writeln(tag);
+        writeln(tag);
+        writeln();
     }
 
-    asLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
-                                               "arkouda server version = %s".format(arkoudaVersion));
-    asLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
-                                               "memory tracking = %t".format(memTrack));
     const arkDirectory = initArkoudaDirectory();
-    asLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
+    asLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
                                        "initialized the .arkouda directory %s".format(arkDirectory));
-
-    if (memTrack) {
-        asLogger.info(getModuleName(), getRoutineName(), getLineNumber(), 
-                                               "getMemLimit() %i".format(getMemLimit()));
-        asLogger.info(getModuleName(), getRoutineName(), getLineNumber(), 
-                                               "bytes of memoryUsed() = %i".format(memoryUsed()));
-    }
 
     var st = new owned SymTab();
     var shutdownServer = false;
