@@ -53,7 +53,7 @@ def run_test_pdarray_index(strings, test_strings, cat):
     inds = ak.arange(0, strings.size, 10)
     assert(compare_strings(strings[inds].to_ndarray(), test_strings[inds.to_ndarray()]))
     assert(compare_strings(cat[inds].to_ndarray(), test_strings[inds.to_ndarray()]))
-    logical = ak.zeros(strings.size, dtype=ak.npbool)
+    logical = ak.zeros(strings.size, dtype=ak.bool)
     logical[inds] = True
     assert(compare_strings(strings[logical].to_ndarray(), test_strings[logical.to_ndarray()]))
     # Indexing with a one-element pdarray (int) should return Strings array, not string scalar
@@ -63,7 +63,7 @@ def run_test_pdarray_index(strings, test_strings, cat):
     assert(isinstance(result, ak.Strings) and (result.size == 1))
     assert(result[0] == strings[i])
     # Logical indexing with all-False array should return empty Strings array
-    logicalSingleton = ak.zeros(strings.size, dtype=ak.npbool)
+    logicalSingleton = ak.zeros(strings.size, dtype=ak.bool)
     result = strings[logicalSingleton]
     assert(isinstance(result, ak.Strings) and (result.size == 0))
     # Logical indexing with a single True should return one-element Strings array, not string scalar
@@ -88,7 +88,7 @@ def run_test_in1d(strings, cat, base_words):
     for word in strings[matches].to_ndarray():
         assert(word in more_words)
     # Exhaustively find all matches to make sure we didn't miss any
-    inds = ak.zeros(strings.size, dtype=ak.npbool)
+    inds = ak.zeros(strings.size, dtype=ak.bool)
     for word in more_words:
         inds |= (strings == word)
     assert((inds == matches).all())

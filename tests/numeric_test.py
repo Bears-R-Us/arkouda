@@ -12,7 +12,7 @@ class NumericTest(ArkoudaTest):
     def testSeededRNG(self):
         N = 100
         seed = 8675309
-        numericdtypes = [ak.int64, ak.float64, ak.npbool]
+        numericdtypes = [ak.int64, ak.float64, ak.bool]
         for dt in numericdtypes:
             # Make sure unseeded runs differ
             a = ak.randint(0, 2**32, N, dtype=dt)
@@ -39,8 +39,8 @@ class NumericTest(ArkoudaTest):
         N = 100
         arrays = {ak.int64: ak.randint(-(2**48), 2**48, N),
                   ak.float64: ak.randint(0, 1, N, dtype=ak.float64),
-                  ak.npbool: ak.randint(0, 2, N, dtype=ak.npbool)}
-        roundtripable = set(((ak.npbool, ak.npbool),
+                  ak.bool: ak.randint(0, 2, N, dtype=ak.bool)}
+        roundtripable = set(((ak.bool, ak.bool),
                          (ak.int64, ak.int64),
                          (ak.int64, ak.float64),
                          (ak.int64, npstr),
@@ -60,7 +60,7 @@ class NumericTest(ArkoudaTest):
                     
         self.assertTrue((ak.array([1, 2, 3, 4, 5]) == ak.cast(ak.linspace(1,5,5), dt=ak.int64)).all())
         self.assertEqual(ak.cast(ak.arange(0,5), dt=ak.float64).dtype, ak.float64)
-        self.assertTrue((ak.array([False, True, True, True, True]) == ak.cast(ak.linspace(0,4,5), dt=ak.npbool)).all())
+        self.assertTrue((ak.array([False, True, True, True, True]) == ak.cast(ak.linspace(0,4,5), dt=ak.bool)).all())
     
     def testHistogram(self):
         pda = ak.randint(10,30,40)

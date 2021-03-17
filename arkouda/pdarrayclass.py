@@ -9,7 +9,7 @@ from arkouda.dtypes import dtype, DTypes, resolve_scalar_dtype, \
      int_scalars, numeric_scalars, numpy_scalars
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import str_ as akstr_
-from arkouda.dtypes import npbool
+from arkouda.dtypes import bool as npbool
 from arkouda.logger import getArkoudaLogger
 import builtins
 

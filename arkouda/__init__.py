@@ -1,6 +1,5 @@
 from arkouda.client import *
 from arkouda.dtypes import *
-from arkouda.dtypes import npstr,npbool
 from arkouda.pdarrayclass import *
 from arkouda.sorting import *
 from arkouda.pdarraysetops import * 
