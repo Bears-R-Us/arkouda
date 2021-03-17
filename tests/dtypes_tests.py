@@ -74,7 +74,7 @@ class DtypesTest(ArkoudaTest):
         self.assertEqual(dtypes.dtype('str'), 
                          ak.array(['string {}'.format(i) for i in range(0,10)]).dtype)
 
-    def testIsSupportedInt(self):
+    def test_isSupportedInt(self):
         '''
         Tests for both True and False scenarios of the isSupportedInt method.
         '''
@@ -85,7 +85,7 @@ class DtypesTest(ArkoudaTest):
         self.assertFalse(dtypes.isSupportedInt('1'))
         self.assertFalse(dtypes.isSupportedInt('1.0'))
         
-    def testIsSupportedFloat(self):
+    def test_isSupportedFloat(self):
         '''
         Tests for both True and False scenarios of the isSupportedFloat method.
         '''
@@ -98,7 +98,7 @@ class DtypesTest(ArkoudaTest):
         self.assertFalse(dtypes.isSupportedFloat('1'))
         self.assertFalse(dtypes.isSupportedFloat('1.0'))
         
-    def testDtypeEnum(self):
+    def test_DtypeEnum(self):
         '''
         Tests for DTypeEnum, ak.DTypes, and ak.ARKOUDA_SUPPORTED_DTYPES
         '''
@@ -114,11 +114,11 @@ class DtypesTest(ArkoudaTest):
         self.assertEqual(frozenset({'float','float64', 'bool', 'uint8', 
                           'int','int64', 'str'}), ak.ARKOUDA_SUPPORTED_DTYPES)
         
-    def testNumericDTypes(self):
+    def test_NumericDTypes(self):
         self.assertEqual(frozenset(['bool', 'float', 'float64','int','int64']), 
                          dtypes.NumericDTypes)
         
-    def testSeriesDTypes(self):
+    def test_SeriesDTypes(self):
         self.assertEqual(np.str_, dtypes.SeriesDTypes['string'])
         self.assertEqual(np.str_, dtypes. SeriesDTypes["<class 'str'>"])
         self.assertEqual(np.int64, dtypes. SeriesDTypes['int64'])
@@ -129,3 +129,28 @@ class DtypesTest(ArkoudaTest):
         self.assertEqual(np.bool, dtypes. SeriesDTypes["<class 'bool'>"])
         self.assertEqual(np.int64, dtypes. SeriesDTypes['datetime64[ns]'])
         self.assertEqual(np.int64, dtypes. SeriesDTypes['timedelta64[ns]'])
+
+    def test_scalars(self):
+        self.assertEqual("<class 'bool'>", str(ak.bool_scalars))
+        self.assertEqual('typing.Union[float, numpy.float64]', str(ak.float_scalars))
+        self.assertEqual('typing.Union[int, numpy.int64]', str(ak.int_scalars))
+        self.assertEqual('typing.Union[float, numpy.float64, int, numpy.int64]', 
+                         str(ak.numeric_scalars))
+        self.assertEqual('typing.Union[str, numpy.str_]', str(ak.str_scalars))
+        self.assertEqual('typing.Union[numpy.float64, numpy.int64, bool, numpy.uint8, str, numpy.str_]', 
+                         str(ak.numpy_scalars))
+        self.assertEqual('typing.Union[float, numpy.float64, int, numpy.int64, bool, str, numpy.str_]', 
+                         str(ak.all_scalars))
+        
+    def test_number_format_strings(self):
+        self.assertEqual('{}', dtypes.NUMBER_FORMAT_STRINGS['bool'])
+        self.assertEqual('{:n}', dtypes.NUMBER_FORMAT_STRINGS['int64'])
+        self.assertEqual('{:.17f}', dtypes.NUMBER_FORMAT_STRINGS['float64'])
+        self.assertEqual('f', dtypes.NUMBER_FORMAT_STRINGS['np.float64'])
+        self.assertEqual('{:n}', dtypes.NUMBER_FORMAT_STRINGS['uint8'])
+        
+    def test_structDtypeCodes(self):
+        self.assertEqual('q', dtypes.structDtypeCodes['int64'])
+        self.assertEqual('d', dtypes.structDtypeCodes['float64'])
+        self.assertEqual('?', dtypes.structDtypeCodes['bool'])
+        self.assertEqual('B', dtypes.structDtypeCodes['uint8'])

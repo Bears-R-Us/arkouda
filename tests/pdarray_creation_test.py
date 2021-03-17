@@ -374,7 +374,7 @@ class PdarrayCreationTest(ArkoudaTest):
                          cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:          
-            ak.random_strings_uniform(minlen=1, maxlen='5', size=10)          
+            ak.random_strings_uniform( minlen=1, maxlen='5', size=10)          
         self.assertEqual('type of argument "maxlen" must be one of (int, int64); got str instead', 
                          cm.exception.args[0])     
         
@@ -457,7 +457,7 @@ class PdarrayCreationTest(ArkoudaTest):
                                    'MRIEJUSA', 'OLUKRJK'])
                         == pda).all())   
         
-        pda = ak.random_strings_lognormal(np.int64(2), np.float64(0.25), np.int64(10), seed=1)
+        pda = ak.random_strings_lognormal(float(2), np.float64(0.25), np.int64(10), seed=1)
         
         self.assertTrue((ak.array(['TVKJTE', 'ABOCORHFM', 'LUDMMGTB', 'KWOQNPHZ', 
                                    'VSXRRL', 'AKOZOEEWTB', 'GOSVGEJNOW', 'BFWSIO', 

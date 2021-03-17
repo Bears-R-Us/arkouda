@@ -396,7 +396,7 @@ class StringTest(ArkoudaTest):
 
         with self.assertRaises(TypeError) as cm:
             stringsOne.lstick(stringsTwo, delimiter=1)
-        self.assertEqual('type of argument "delimiter" must be one of (str, bytes, str_); got int instead', 
+        self.assertEqual('type of argument "delimiter" must be one of (bytes, str, str_); got int instead', 
                          cm.exception.args[0])
         
         with self.assertRaises(TypeError) as cm:
@@ -406,22 +406,22 @@ class StringTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.startswith(1)
-        self.assertEqual('type of argument "substr" must be one of (str, bytes, str_); got int instead', 
+        self.assertEqual('type of argument "substr" must be one of (bytes, str, str_); got int instead', 
                          cm.exception.args[0])    
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.endswith(1)
-        self.assertEqual('type of argument "substr" must be one of (str, bytes, str_); got int instead', 
+        self.assertEqual('type of argument "substr" must be one of (bytes, str, str_); got int instead', 
                          cm.exception.args[0])   
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.contains(1)
-        self.assertEqual('type of argument "substr" must be one of (str, bytes, str_); got int instead', 
+        self.assertEqual('type of argument "substr" must be one of (bytes, str, str_); got int instead', 
                          cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:
             stringsOne.peel(1)
-        self.assertEqual('type of argument "delimiter" must be one of (str, bytes, str_); got int instead', 
+        self.assertEqual('type of argument "delimiter" must be one of (bytes, str, str_); got int instead', 
                          cm.exception.args[0])  
 
         with self.assertRaises(ValueError) as cm:

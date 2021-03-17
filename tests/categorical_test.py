@@ -106,6 +106,12 @@ class CategoricalTest(ArkoudaTest):
         
         with self.assertRaises(NotImplementedError):
             cat._binop('string 1', '===')
+        
+        with self.assertRaises(TypeError) as cm:
+            cat._binop(1, '==')
+        self.assertEqual(('type of argument "other" must be one of (Categorical, str, str_);' +
+                          ' got int instead'), 
+                         cm.exception.args[0])
             
     def testConcatenate(self):
         catOne = self._getCategorical()
