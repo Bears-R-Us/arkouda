@@ -100,7 +100,6 @@ check-deps: $(CHECK_DEPS)
 CHPL_MINOR := $(shell $(CHPL) --version | sed -n "s/chpl version 1\.\([0-9]*\).*/\1/p")
 CHPL_VERSION_OK := $(shell test $(CHPL_MINOR) -ge 22 && echo yes)
 CHPL_VERSION_WARN := $(shell test $(CHPL_MINOR) -le 22 && echo yes)
-
 .PHONY: check-chpl
 check-chpl:
 ifneq ($(CHPL_VERSION_OK),yes)
@@ -187,7 +186,8 @@ ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 # The Memory module was moved to Memory.Diagnostics in 1.24. Due to how
 # resolution of use and import statements works, we have to conditionally
 # use one of two definitions of a wrapper module as a workaround.
-# Resolving Chapel issue #17438 would fix this.
+# Resolving Chapel issue #17438 or making 1.24 the minimum required version
+# would fix this.
 ifeq ($(shell expr $(CHPL_MINOR) \>= 24),1)
 	ARKOUDA_COMPAT_MODULES := -M $(ARKOUDA_SOURCE_DIR)/compat/ge-124
 else
