@@ -39,10 +39,10 @@ def time_ak_groupby(N_per_locale, trials, dtype, seed):
             g = ak.GroupBy(arrays)
             end = time.time()
             timings.append(end - start)
-            tavg = sum(timings) / trials
-            print("{}-array Average time = {:.4f} sec".format(numArrays, tavg))
-            bytes_per_sec = totalbytes / tavg
-            print("{}-array Average rate = {:.4f} GiB/sec".format(numArrays, bytes_per_sec/2**30))
+        tavg = sum(timings) / trials
+        print("{}-array Average time = {:.4f} sec".format(numArrays, tavg))
+        bytes_per_sec = totalbytes / tavg
+        print("{}-array Average rate = {:.4f} GiB/sec".format(numArrays, bytes_per_sec/2**30))
 
 def check_correctness(dtype, seed):
     arrays, totalbytes = generate_arrays(1000, 2, dtype, seed)
