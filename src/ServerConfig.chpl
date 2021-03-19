@@ -130,28 +130,16 @@ module ServerConfig
     Get the physical memory available on this locale
     */ 
     proc getPhysicalMemHere() {
-        use Version;
-        if chplVersion >= createVersion(1, 24) {
-            use Memory.Diagnostics;
-            return here.physicalMemory();
-        } else {
-            use Memory;
-            return here.physicalMemory();
-        }
+        use MemDiagnostics;
+        return here.physicalMemory();
     }
 
     /*
     Get the memory used on this locale
     */
     proc getMemUsed() {
-        use Version;
-        if chplVersion >= createVersion(1, 24) {
-            use Memory.Diagnostics;
-            return memoryUsed();
-        } else {
-            use Memory;
-            return memoryUsed();
-        }
+        use MemDiagnostics;
+        return memoryUsed();
     }
 
     /*
