@@ -42,7 +42,7 @@ proc main() {
         var version = "arkouda server version = %s".format(arkoudaVersion);
         var directory = "initialized the .arkouda directory %s".format(arkDirectory);
         var memLimit =  "getMemLimit() %i".format(getMemLimit());
-        var memUsed = "bytes of memoryUsed() = %i".format(memoryUsed());
+        var memUsed = "bytes of memoryUsed() = %i".format(getMemUsed());
         var serverMessage: string;
         var serverToken: string;
     
@@ -73,7 +73,7 @@ proc main() {
         asLogger.info(getModuleName(), getRoutineName(), getLineNumber(), 
                                                "getMemLimit() %i".format(getMemLimit()));
         asLogger.info(getModuleName(), getRoutineName(), getLineNumber(), 
-                                               "bytes of memoryUsed() = %i".format(memoryUsed()));
+                                               "bytes of memoryUsed() = %i".format(getMemUsed()));
     }
 
     var st = new owned SymTab();
@@ -385,7 +385,7 @@ proc main() {
             }
             if (trace && memTrack) {
                 asLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                    "bytes of memory used after command %t".format(memoryUsed():uint * numLocales:uint));
+                    "bytes of memory used after command %t".format(getMemUsed():uint * numLocales:uint));
             }
         } catch (e: ErrorWithMsg) {
             // Generate a ReplyMsg of type ERROR and serialize to a JSON-formatted string
