@@ -1,6 +1,6 @@
 import numpy as np
 from context import arkouda as ak
-from arkouda.dtypes import str as akstr
+from arkouda.dtypes import npstr
 from base_test import ArkoudaTest
 
 """
@@ -43,12 +43,12 @@ class NumericTest(ArkoudaTest):
         roundtripable = set(((ak.bool, ak.bool),
                          (ak.int64, ak.int64),
                          (ak.int64, ak.float64),
-                         (ak.int64, akstr),
+                         (ak.int64, npstr),
                          (ak.float64, ak.float64),
-                         (ak.float64, akstr),
+                         (ak.float64, npstr),
                          (ak.uint8, ak.int64),
                          (ak.uint8, ak.float64),
-                         (ak.uint8, akstr)))
+                         (ak.uint8, npstr)))
         for t1, orig in arrays.items():
             for t2 in ak.DTypes:
                 t2 = ak.dtype(t2)
