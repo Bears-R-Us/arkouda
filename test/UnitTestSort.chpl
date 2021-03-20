@@ -181,21 +181,8 @@ prototype module UnitTestSort
               perfValRange = uint(16);
   config const perfMemFraction = 50;
 
-  // Get physical memory on this locale
-  proc getPhysicalMemHere() {
-    use Version;
-    if chplVersion >= createVersion(1, 24) {
-      use Memory.Diagnostics;
-      return here.physicalMemory(unit=MemUnits.Bytes);
-    } else {
-      use Memory;
-      return here.physicalMemory(unit=MemUnits.Bytes);
-    }
-  }
-
   proc testPerformance() {
     param elemSize = numBytes(perfElemType);
-    const totMem = here.physicalMemory(unit = MemUnits.Bytes);
     const totMem = getPhysicalMemHere();
     const fraction = totMem / elemSize / perfMemFraction * numLocales;
     const nElems = if numElems > 0 then numElems else fraction;
