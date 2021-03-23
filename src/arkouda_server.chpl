@@ -37,7 +37,7 @@ proc initArkoudaDirectory() {
 
 proc main() {
 
-    proc printServerSpashMessage() throws {
+    proc printServerSplashMessage() throws {
         var arkDirectory = initArkoudaDirectory();
         var version = "arkouda server version = %s".format(arkoudaVersion);
         var directory = "initialized the .arkouda directory %s".format(arkDirectory);
@@ -48,8 +48,9 @@ proc main() {
     
         if authenticate {
             serverToken = getArkoudaToken('%s%s%s'.format(arkDirectory, pathSep, 'tokens.txt'));
-            serverMessage = ">>>>>>>>>>>>>>> server listening on tcp://%s:%t?token=%s " +
-                        "<<<<<<<<<<<<<<<".format(serverHostname, ServerPort, serverToken);
+            serverMessage = ">>>>>>>>>>>>>>> " +
+                            "server listening on tcp://%s:%t?token=%s ".format(serverHostname, ServerPort, serverToken) +
+                            "<<<<<<<<<<<<<<<";
         } else {
             serverMessage = ">>>>>>>>>>>>>>> server listening on tcp://%s:%t <<<<<<<<<<<<<<<".format(
                                         serverHostname, ServerPort);
@@ -88,8 +89,9 @@ proc main() {
     // configure token authentication and server startup message accordingly
     if authenticate {
         serverToken = getArkoudaToken('%s%s%s'.format(arkDirectory, pathSep, 'tokens.txt'));
-        serverMessage = ">>>>>>>>>>>>>>> server listening on tcp://%s:%t?token=%s " +
-                        "<<<<<<<<<<<<<<<".format(serverHostname, ServerPort, serverToken);
+        serverMessage = ">>>>>>>>>>>>>>> " +
+                        "server listening on tcp://%s:%t?token=%s ".format(serverHostname, ServerPort, serverToken) +
+                        "<<<<<<<<<<<<<<<";
     } else {
         serverMessage = ">>>>>>>>>>>>>>> server listening on tcp://%s:%t <<<<<<<<<<<<<<<".format(
                                         serverHostname, ServerPort);
