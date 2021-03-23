@@ -98,7 +98,8 @@ This yielded a >20TB dataframe in Arkouda.
    - [Connecting to Arkouda](#run-ak-connect)
 6. [Logging](#log-ak)
 7. [Type Checking in Arkouda](#typecheck-ak)
-8. [Contributing](#contrib-ak)
+8. [Environment Variables](#env-vars-ak)
+9. [Contributing](#contrib-ak)
 
 
 <a id="prereq-main"></a>
@@ -514,6 +515,10 @@ type checking require type hints. Consequently, to opt-out of type checking, sim
 
 </details>
 
+<a id="env-vars-ak"></a>
+## Environment Variables <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+The various Arkouda aspects (compilation, run-time, client, tests, etc.) can be configured using a number of environment
+variables (env vars).  See the [ENVIRONMENT](ENVIRONMENT.md) documentation for more details.
 
 <a id="contrib-ak"></a>
 ## Contributing to Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>

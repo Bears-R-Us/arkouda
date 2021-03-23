@@ -58,14 +58,15 @@ def get_arkouda_client_directory() -> Path:
     Returns
     -------
     Path
-        Path corresponding to the .arkouda directory path
+        Path corresponding to the user's .arkouda directory path
 
     Notes
     -----
     The default implementation is to place the .arkouda 
     directory in the current user's home directory. The
-    default can be overridden by seting the ARKOUDA_HOME
-    environment variable.
+    default can be overridden by setting the ARKOUDA_CLIENT_DIRECTORY
+    environment variable.  It is important this is not the same location
+    as the server's token directory as the file format is different.
     """
     arkouda_parent_dir = os.getenv('ARKOUDA_CLIENT_DIRECTORY')
     if not arkouda_parent_dir:
@@ -90,7 +91,7 @@ def get_username() -> str:
     
     Notes
     -----
-    The curreently supported operating systems are Windows, Linux, 
+    The currently supported operating systems are Windows, Linux,
     and MacOS AKA Darwin
     """
     try:
