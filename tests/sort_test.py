@@ -16,12 +16,18 @@ class SortTest(ArkoudaTest):
     def testErrorHandling(self):
         
         # Test RuntimeError from bool NotImplementedError
-        bools = ak.randint(0, 1, 1000, dtype=ak.bool)   
+        akbools = ak.randint(0, 1, 1000, dtype=ak.bool)   
+        bools = ak.randint(0, 1, 1000, dtype=bool) 
      
+        with self.assertRaises(ValueError) as cm:
+            ak.sort(akbools)
+        self.assertEqual('ak.sort supports float64 or int64, not bool', 
+                         cm.exception.args[0])
+        
         with self.assertRaises(ValueError) as cm:
             ak.sort(bools)
         self.assertEqual('ak.sort supports float64 or int64, not bool', 
-                         cm.exception.args[0])
+                         cm.exception.args[0])        
         
         # Test TypeError from sort attempt on non-pdarray
         with self.assertRaises(TypeError):

@@ -6,7 +6,7 @@ from arkouda.strings import Strings
 from arkouda.pdarrayclass import pdarray
 from arkouda.groupbyclass import GroupBy
 from arkouda.pdarraycreation import zeros, zeros_like, arange
-from arkouda.dtypes import resolve_scalar_dtype
+from arkouda.dtypes import resolve_scalar_dtype, str_scalars
 from arkouda.dtypes import int64 as akint64
 from arkouda.sorting import argsort
 from arkouda.pdarraysetops import concatenate, in1d
@@ -163,16 +163,16 @@ class Categorical:
         return "array({})".format(self.__str__())
 
     @typechecked
-    def _binop(self, other : Union[Categorical,str,np.str_], op : Union[str,np.str_]) -> pdarray:
+    def _binop(self, other : Union[Categorical,str_scalars], op : str_scalars) -> pdarray:
         """
         Executes the requested binop on this Categorical instance and returns 
         the results within a pdarray object.
 
         Parameters
         ----------
-        other : Union[Categorical,str,np.str_]
-            the other object is a Categorical object of string scalar
-        op : Union[str,np.str_]
+        other : Union[Categorical,str_scalars]
+            the other object is a Categorical object or string scalar
+        op : str_scalars
             name of the binary operation to be performed 
       
         Returns
@@ -206,17 +206,17 @@ class Categorical:
                                 "Consider converting operands to Categorical."))
 
     @typechecked
-    def _r_binop(self, other : Union[Categorical,str,np.str_], 
-                                              op : Union[str,np.str]) -> pdarray:
+    def _r_binop(self, other : Union[Categorical,str_scalars], 
+                                              op : str_scalars) -> pdarray:
         """
         Executes the requested reverse binop on this Categorical instance and 
         returns the results within a pdarray object.
 
         Parameters
         ----------
-        other : Union[Categorical,str,np.str_]
+        other : Union[Categorical,str_scalars]
             the other object is a Categorical object or string scalar
-        op : Union[str,np.str_]
+        op : str_scalars
             name of the binary operation to be performed 
       
         Returns

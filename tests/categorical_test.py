@@ -5,8 +5,8 @@ from base_test import ArkoudaTest
 
 class CategoricalTest(ArkoudaTest):
     
-    def _getCategorical(self) -> ak.Categorical:
-        return ak.Categorical(ak.array(['string {}'.format(i) for i in range(1,11)]))
+    def _getCategorical(self, prefix : str='string', size : int=11) -> ak.Categorical:
+        return ak.Categorical(ak.array(['{} {}'.format(prefix,i) for i in range(1,size)]))
     
     def _getRandomizedCategorical(self) -> ak.Categorical:
         return ak.Categorical(ak.array(['string', 'string1', 'non-string', 'non-string2', 
@@ -106,15 +106,21 @@ class CategoricalTest(ArkoudaTest):
         
         with self.assertRaises(NotImplementedError):
             cat._binop('string 1', '===')
+        
+        with self.assertRaises(TypeError) as cm:
+            cat._binop(1, '==')
+        self.assertEqual(('type of argument "other" must be one of (Categorical, str, str_);' +
+                          ' got int instead'), 
+                         cm.exception.args[0])
             
     def testConcatenate(self):
-        catOne = self._getCategorical()
-        catTwo = self._getRandomizedCategorical()
+        catOne = self._getCategorical('string',51)
+        catTwo = self._getCategorical('string-two', 51)
         
         resultCat = catOne.concatenate([catTwo])
         self.assertEqual('category', resultCat.objtype)
         self.assertIsInstance(resultCat, ak.Categorical)
-        self.assertEqual(20,resultCat.size)
+        self.assertEqual(100,resultCat.size)
 
         # Since Categorical.concatenate uses Categorical.from_codes method, confirm
         # that both permutation and segments are None
@@ -124,7 +130,7 @@ class CategoricalTest(ArkoudaTest):
         resultCat = ak.concatenate([catOne,catOne])
         self.assertEqual('category', resultCat.objtype)
         self.assertIsInstance(resultCat, ak.Categorical)
-        self.assertEqual(20,resultCat.size)
+        self.assertEqual(100,resultCat.size)
 
         # Since Categorical.concatenate uses Categorical.from_codes method, confirm
         # that both permutation and segments are None
@@ -134,7 +140,7 @@ class CategoricalTest(ArkoudaTest):
         resultCat = ak.concatenate([catOne,catOne], ordered=False)
         self.assertEqual('category', resultCat.objtype)
         self.assertIsInstance(resultCat, ak.Categorical)
-        self.assertEqual(20,resultCat.size)
+        self.assertEqual(100,resultCat.size)
 
         # Since Categorical.concatenate uses Categorical.from_codes method, confirm
         # that both permutation and segments are None
