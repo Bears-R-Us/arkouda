@@ -123,6 +123,7 @@ proc main() {
         writeln(tag);
         writeln();
         writeln();
+        stdout.flush();
     }
 
     const arkDirectory = initArkoudaDirectory();
