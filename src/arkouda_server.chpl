@@ -126,8 +126,6 @@ proc main() {
     }
 
     const arkDirectory = initArkoudaDirectory();
-    asLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
-                               "initialized the .arkouda directory %s".format(arkDirectory));
 
     var st = new owned SymTab();
     var shutdownServer = false;
@@ -146,6 +144,9 @@ proc main() {
     socket.bind("tcp://*:%t".format(ServerPort));
     
     printServerSplashMessage(serverToken,arkDirectory);
+    
+    asLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                               "initialized the .arkouda directory %s".format(arkDirectory));
     
     createServerConnectionInfo();
 
