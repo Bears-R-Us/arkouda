@@ -37,7 +37,7 @@ proc initArkoudaDirectory() {
 
 proc main() {
  
-    proc printServerSpashMessage(token: string, arkDirectory: string) throws {
+    proc printServerSplashMessage(token: string, arkDirectory: string) throws {
         var verMessage = "arkouda server version = %s".format(arkoudaVersion);
         var dirMessage = ".arkouda directory %s".format(arkDirectory);
         var memLimMessage =  "getMemLimit() %i".format(getMemLimit());
@@ -54,63 +54,49 @@ proc main() {
             }   
         }
     
+        proc generateBuffer(longSegment: string, shortSegment: string) : string {
+            var buffSize = (longSegment.size - shortSegment.size)/2 - 2;
+            var buffer: string;
+            var counter = 0;
+        
+            while counter <= buffSize {
+                buffer+=' ';
+                counter+=1;
+            }           
+            return buffer;
+        }
+    
         if token.isEmpty() {
-            serverMessage = "server listening on tcp://%s:%t".format(
-                                        serverHostname, ServerPort);
+            serverMessage = "server listening on tcp://%s:%t".format(serverHostname, 
+                                                                 ServerPort);
         } else {
-            serverMessage = "server listening on tcp://%s:%t?token=%s".format(
-                                        serverHostname, ServerPort, token);
+            serverMessage = "server listening on tcp://%s:%i?token=%s".format(serverHostname, 
+                                                                 ServerPort, token);
         }
         
         serverMessage = adjustMsg(serverMessage);      
         serverMessage = "%s %s %s".format(buff,serverMessage,buff);
         
+        var vBuff = generateBuffer(serverMessage,verMessage);
         verMessage = adjustMsg(verMessage);
-        
-        var buffSize = (serverMessage.size - verMessage.size)/2 - 2;       
-        var vBuff: string;
-        var counter = 0;
-        
-        while counter <= buffSize {
-            vBuff+=' ';
-            counter+=1;
-        }
-        
         verMessage = "*%s %s %s*".format(vBuff,verMessage,vBuff);
-        
-        buffSize = (serverMessage.size - memLimMessage.size)/2 - 2;      
-        var mlBuff: string;
-        counter = 0;
-        
-        while counter <= buffSize {
-            mlBuff+=' ';
-            counter+=1;
-        }
-        
+
+        var mlBuff = generateBuffer(serverMessage,memLimMessage);
         memLimMessage = adjustMsg(memLimMessage);
         memLimMessage = "*%s %s %s*".format(mlBuff,memLimMessage,mlBuff);
 
-        
-        buffSize = (serverMessage.size - memUsedMessage.size)/2 - 2;
-        var muBuff: string;
-        counter = 0;
-        
-        while counter <= buffSize {
-            muBuff+=' ';
-            counter+=1;
-        }
-        
+        var muBuff = generateBuffer(serverMessage,memUsedMessage);
         memUsedMessage = adjustMsg(memUsedMessage);
         memUsedMessage = "*%s %s %s*".format(muBuff,memUsedMessage,muBuff);
         
         var blankBuffer: string;
-        counter = 0;
+        var counter = 0;
         
         while counter < serverMessage.size {
             blankBuffer+=' ';
             counter+=1;
         }
-        
+
         var blankLine = '*%s*'.format(blankBuffer);
         
         var tag = '*';
@@ -120,18 +106,8 @@ proc main() {
             tag+='*';
             counter+=1;
         }
-        writeln("      _          _                     _         ");
-        writeln("     / \\   _ __| | ______  _     __   __| | __  _  ");
-        writeln("    / _ \\ | `__| |// //_ \\ | | | |// _` |// _` | ");
-        writeln("   / ___ \\| |  |    < (_) | |_| |  (_| |  (_| | ");
-        writeln("  /_/  \\_\\_|  | |\\_\\__/\\__,__|\\__,_|\\__,_| ");
-        
-        writeln("      *          _                     _         ");
-        writeln("     * *     _ __| | ______  _     __   __| | __  _  ");
-        writeln("    * * *\  **,| `__| |// //_ \\ | | | |// _` |// _` | ");
-        writeln("   * * * *\ *\| |  |    < (_) | |_| |  (_| |  (_| | ");
-        writeln("  * *   * * *(
-                  * *     * **_\\_|  | |\\_\\__/\\__,__|\\__,_|\\__,_| ");
+
+        writeln();
         writeln();
         writeln(tag);
         writeln(tag);
@@ -146,11 +122,12 @@ proc main() {
         writeln(tag);
         writeln(tag);
         writeln();
+        writeln();
     }
 
     const arkDirectory = initArkoudaDirectory();
     asLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
-                                       "initialized the .arkouda directory %s".format(arkDirectory));
+                               "initialized the .arkouda directory %s".format(arkDirectory));
 
     var st = new owned SymTab();
     var shutdownServer = false;
@@ -161,19 +138,14 @@ proc main() {
     var context: ZMQ.Context;
     var socket : ZMQ.Socket = context.socket(ZMQ.REP);
 
-    // configure token authentication and server startup message accordingly
+    // configure token authentication if applicable
     if authenticate {
         serverToken = getArkoudaToken('%s%s%s'.format(arkDirectory, pathSep, 'tokens.txt'));
-        serverMessage = ">>>>>>>>>>>>>>> server listening on tcp://%s:%t?token=%s " +
-                        "<<<<<<<<<<<<<<<".format(serverHostname, ServerPort, serverToken);
-    } else {
-        serverMessage = ">>>>>>>>>>>>>>> server listening on tcp://%s:%t <<<<<<<<<<<<<<<".format(
-                                        serverHostname, ServerPort);
     }
 
     socket.bind("tcp://*:%t".format(ServerPort));
     
-    printServerSpashMessage(serverToken,arkDirectory);
+    printServerSplashMessage(serverToken,arkDirectory);
     
     createServerConnectionInfo();
 
