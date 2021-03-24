@@ -183,8 +183,19 @@ endif
 ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
+# The Memory module was moved to Memory.Diagnostics in 1.24. Due to how
+# resolution of use and import statements works, we have to conditionally
+# use one of two definitions of a wrapper module as a workaround.
+# Resolving Chapel issue #17438 or making 1.24 the minimum required version
+# would fix this.
+ifeq ($(shell expr $(CHPL_MINOR) \>= 24),1)
+	ARKOUDA_COMPAT_MODULES := -M $(ARKOUDA_SOURCE_DIR)/compat/ge-124
+else
+	ARKOUDA_COMPAT_MODULES := -M $(ARKOUDA_SOURCE_DIR)/compat/lt-124
+endif
+
 $(ARKOUDA_MAIN_MODULE): check-deps $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
-	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) -o $@
+	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_COMPAT_MODULES) -o $@
 
 CLEAN_TARGETS += arkouda-clean
 .PHONY: arkouda-clean
