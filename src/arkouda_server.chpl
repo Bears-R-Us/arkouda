@@ -141,9 +141,9 @@ proc main() {
         serverToken = getArkoudaToken('%s%s%s'.format(arkDirectory, pathSep, 'tokens.txt'));
     }
 
-    socket.bind("tcp://*:%t".format(ServerPort));
-    
     printServerSplashMessage(serverToken,arkDirectory);
+
+    socket.bind("tcp://*:%t".format(ServerPort));
     
     asLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
                                "initialized the .arkouda directory %s".format(arkDirectory));
