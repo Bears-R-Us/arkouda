@@ -1,8 +1,6 @@
 /* arkouda server config param and config const */
 module ServerConfig
 {
-    use Memory;
-
     use ZMQ only;
     use HDF5.C_HDF5 only H5get_libversion;
     use SymArrayDmap only makeDistDom;
@@ -104,7 +102,7 @@ module ServerConfig
         cfg.numLocales = numLocales;
         cfg.numPUs = here.numPUs();
         cfg.maxTaskPar = here.maxTaskPar;
-        cfg.physicalMemory = here.physicalMemory();
+        cfg.physicalMemory = getPhysicalMemHere();
         cfg.distributionType = (makeDistDom(10).type):string;
         cfg.authenticate = authenticate; 
 
@@ -114,7 +112,7 @@ module ServerConfig
                 cfg.LocaleConfigs[here.id].name = here.name;
                 cfg.LocaleConfigs[here.id].numPUs = here.numPUs();
                 cfg.LocaleConfigs[here.id].maxTaskPar = here.maxTaskPar;
-                cfg.LocaleConfigs[here.id].physicalMemory = here.physicalMemory();
+                cfg.LocaleConfigs[here.id].physicalMemory = getPhysicalMemHere();
             }
         }
         var res: string = try! "%jt".format(cfg);
@@ -129,11 +127,27 @@ module ServerConfig
     }
 
     /*
+    Get the physical memory available on this locale
+    */ 
+    proc getPhysicalMemHere() {
+        use MemDiagnostics;
+        return here.physicalMemory();
+    }
+
+    /*
+    Get the memory used on this locale
+    */
+    proc getMemUsed() {
+        use MemDiagnostics;
+        return memoryUsed();
+    }
+
+    /*
     Get the memory limit for this server run
     returns a percentage of the physical memory per locale
     */
     proc getMemLimit():uint {
-        return ((perLocaleMemLimit:real / 100.0) * here.physicalMemory()):uint; // checks on locale-0
+        return ((perLocaleMemLimit:real / 100.0) * getPhysicalMemHere()):uint; // checks on locale-0
     }
 
     var memHighWater:uint = 0;
@@ -147,7 +161,7 @@ module ServerConfig
         // to use memoryUsed() procedure from Chapel's Memory module
         if (memTrack) {
             // this is a per locale total
-            var total = memoryUsed() + (additionalAmount:uint / numLocales:uint);
+            var total = getMemUsed() + (additionalAmount:uint / numLocales:uint);
             if (trace) {
                 if (total > memHighWater) {
                     memHighWater = total;

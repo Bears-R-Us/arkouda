@@ -9,7 +9,6 @@ module MsgProcessing
     use Errors;
     use Logging;
     use Message;
-    use Memory;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -190,7 +189,7 @@ module MsgProcessing
         var (_) = payload.splitMsgToTuple(1); // split request into fields
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".format(cmd));
         if (memTrack) {
-            return new MsgTuple((memoryUsed():uint * numLocales:uint):string, MsgType.NORMAL);
+            return new MsgTuple((getMemUsed():uint * numLocales:uint):string, MsgType.NORMAL);
         }
         else {
             return new MsgTuple(st.memUsed():string, MsgType.NORMAL);
