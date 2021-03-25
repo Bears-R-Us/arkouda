@@ -2,6 +2,7 @@ import json, os
 from typing import cast, Mapping, Optional, Tuple, Union
 import warnings, pkg_resources
 import zmq # type: ignore
+import pyfiglet # type: ignore
 from arkouda import security, io_util
 from arkouda.logger import getArkoudaLogger
 from arkouda.message import RequestMessage, MessageFormat, ReplyMessage, \
@@ -42,6 +43,10 @@ AllSymbols = "__AllSymbols__"
 
 logger = getArkoudaLogger(name='Arkouda Client') 
 clientLogger = getArkoudaLogger(name='Arkouda User Logger', logFormat='%(message)s')   
+
+# Print splash message
+print('{}'.format(pyfiglet.figlet_format('Arkouda')))
+print('Client Version: {}'.format(__version__))
 
 # reset settings to default values
 def set_defaults() -> None:
