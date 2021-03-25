@@ -1,0 +1,31 @@
+name: docs-gh-pages
+
+# Only publish docs when master changes
+on:
+  push:
+    branches:
+      - master
+
+env:
+  ARKOUDA_QUICK_COMPILE: true
+
+jobs:
+  docs:
+    if: github.repository == 'mhmerrill/arkouda'
+    runs-on: ubuntu-latest
+    container:
+      image: chapel/chapel:1.23.0
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dependencies
+      run: |
+        apt-get update && apt-get install -y python3-pip rsync
+        python3 -m pip install -e .[dev]
+    - name: Arkouda make doc
+      run: |
+        make doc
+    - name: publish-docs
+      uses: JamesIves/github-pages-deploy-action@4.1.0
+      with:
+        branch: gh-pages # This is the branch we'll deploy to
+        folder: docs # The folder we want to deploy, it becomes the root src of the branch

@@ -8,6 +8,8 @@
 
 [Arkouda PDF Documentation](https://arkouda.readthedocs.io/_/downloads/en/latest/pdf/)
 
+[Arkouda docs at Github Pages](https://mhmerrill.github.io/arkouda)
+
 ## Nightly Arkouda Performance Charts
 [Arkouda nightly performance charts](https://chapel-lang.org/perf/arkouda/)
 
