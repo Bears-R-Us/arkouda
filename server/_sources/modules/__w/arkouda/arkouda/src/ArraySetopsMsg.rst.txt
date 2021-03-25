@@ -1,0 +1,74 @@
+.. default-domain:: chpl
+
+.. module:: ArraySetopsMsg
+   :synopsis: Array set operations
+
+ArraySetopsMsg
+==============
+**Usage**
+
+.. code-block:: chapel
+
+   use ArraySetopsMsg;
+
+
+or
+
+.. code-block:: chapel
+
+   import ArraySetopsMsg;
+
+Array set operations
+includes intersection, union, xor, and diff
+
+currently, only performs operations with integer arrays 
+
+
+.. data:: var asLogger = new Logger()
+
+.. function:: proc intersect1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   Parse, execute, and respond to a intersect1d message
+   :arg reqMsg: request containing (cmd,name,name2,assume_unique)
+   :type reqMsg: string
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab
+   :returns: (MsgTuple) response message
+   
+
+.. function:: proc setxor1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   Parse, execute, and respond to a setxor1d message
+   :arg reqMsg: request containing (cmd,name,name2,assume_unique)
+   :type reqMsg: string
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab
+   :returns: (MsgTuple) response message
+   
+
+.. function:: proc setdiff1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   Parse, execute, and respond to a setdiff1d message
+   :arg reqMsg: request containing (cmd,name,name2,assume_unique)
+   :type reqMsg: string
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab
+   :returns: (MsgTuple) response message
+   
+
+.. function:: proc union1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   Parse, execute, and respond to a union1d message
+   :arg reqMsg: request containing (cmd,name,name2,assume_unique)
+   :type reqMsg: string
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab
+   :returns: (MsgTuple) response message
+   
+
+.. function:: proc stringtobool(str: string): bool throws
+

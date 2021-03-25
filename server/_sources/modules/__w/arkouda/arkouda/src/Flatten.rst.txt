@@ -1,0 +1,21 @@
+.. default-domain:: chpl
+
+.. module:: Flatten
+
+Flatten
+=======
+**Usage**
+
+.. code-block:: chapel
+
+   use Flatten;
+
+
+or
+
+.. code-block:: chapel
+
+   import Flatten;
+
+.. method:: proc SegString.flatten(delim: string, returnSegs: bool) throws
+

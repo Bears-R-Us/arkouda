@@ -1,0 +1,575 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>GenSymIO &mdash; chpldoc 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="Histogram" href="Histogram.html" />
+    <link rel="prev" title="FlattenMsg" href="FlattenMsg.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">chpldoc documentation</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="ArgSortMsg.html">ArgSortMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArraySetops.html">ArraySetops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArraySetopsMsg.html">ArraySetopsMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AryUtil.html">AryUtil</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Broadcast.html">Broadcast</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BroadcastMsg.html">BroadcastMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CastMsg.html">CastMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommAggregation.html">CommAggregation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommPrimitives.html">CommPrimitives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ConcatenateMsg.html">ConcatenateMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="EfuncMsg.html">EfuncMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Errors.html">Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Extremas.html">Extremas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FileIO.html">FileIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FindSegmentsMsg.html">FindSegmentsMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Flatten.html">Flatten</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FlattenMsg.html">FlattenMsg</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">GenSymIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Histogram.html">Histogram</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HistogramMsg.html">HistogramMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="In1d.html">In1d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="In1dMsg.html">In1dMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Indexing.html">Indexing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IndexingMsg.html">IndexingMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="JoinEqWithDTMsg.html">JoinEqWithDTMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="KExtremeMsg.html">KExtremeMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="KReduce.html">KReduce</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Message.html">Message</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MsgProcessing.html">MsgProcessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MultiTypeSymEntry.html">MultiTypeSymEntry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MultiTypeSymbolTable.html">MultiTypeSymbolTable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NumPyDType.html">NumPyDType</a></li>
+<li class="toctree-l1"><a class="reference internal" href="OperatorMsg.html">OperatorMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RadixSortLSD.html">RadixSortLSD</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RandArray.html">RandArray</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RandMsg.html">RandMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ReductionMsg.html">ReductionMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RegistrationMsg.html">RegistrationMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Security.html">Security</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegStringSort.html">SegStringSort</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegmentedArray.html">SegmentedArray</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegmentedMsg.html">SegmentedMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ServerConfig.html">ServerConfig</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ServerErrorStrings.html">ServerErrorStrings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SipHash.html">SipHash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SortMsg.html">SortMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SymArrayDmap.html">SymArrayDmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Unique.html">Unique</a></li>
+<li class="toctree-l1"><a class="reference internal" href="UniqueMsg.html">UniqueMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arkouda_server.html">arkouda_server</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">chpldoc</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+        
+      <li>GenSymIO</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/GenSymIO.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="module-GenSymIO"></span><div class="section" id="gensymio">
+<h1>GenSymIO<a class="headerlink" href="#gensymio" title="Permalink to this headline">¶</a></h1>
+<p><strong>Usage</strong></p>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">GenSymIO</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="nx">import</span> <span class="nx">GenSymIO</span><span class="p">;</span>
+</pre></div>
+</div>
+<dl class="data">
+<dt id="GenSymIO.gsLogger">
+<em class="property">const </em><code class="descname">gsLogger</code> = new Logger()<a class="headerlink" href="#GenSymIO.gsLogger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="GenSymIO.GenSymIO_DEBUG">
+<em class="property">config const </em><code class="descname">GenSymIO_DEBUG</code> = false<a class="headerlink" href="#GenSymIO.GenSymIO_DEBUG" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="GenSymIO.SEGARRAY_OFFSET_NAME">
+<em class="property">config const </em><code class="descname">SEGARRAY_OFFSET_NAME</code> = &quot;segments&quot;<a class="headerlink" href="#GenSymIO.SEGARRAY_OFFSET_NAME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="GenSymIO.SEGARRAY_VALUE_NAME">
+<em class="property">config const </em><code class="descname">SEGARRAY_VALUE_NAME</code> = &quot;values&quot;<a class="headerlink" href="#GenSymIO.SEGARRAY_VALUE_NAME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="GenSymIO.NULL_STRINGS_VALUE">
+<em class="property">config const </em><code class="descname">NULL_STRINGS_VALUE</code> = 0: uint(8)<a class="headerlink" href="#GenSymIO.NULL_STRINGS_VALUE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="GenSymIO.TRUNCATE">
+<em class="property">config const </em><code class="descname">TRUNCATE</code>: int = 0<a class="headerlink" href="#GenSymIO.TRUNCATE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="GenSymIO.APPEND">
+<em class="property">config const </em><code class="descname">APPEND</code>: int = 1<a class="headerlink" href="#GenSymIO.APPEND" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.arrayMsg">
+<em class="property">proc </em><code class="descname">arrayMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: bytes</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#GenSymIO.arrayMsg" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Creates a pdarray server-side and returns the SymTab name used to</li>
+<li>retrieve the pdarray from the SymTab.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.tondarrayMsg">
+<em class="property">proc </em><code class="descname">tondarrayMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: bytes throws<a class="headerlink" href="#GenSymIO.tondarrayMsg" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Outputs the pdarray as a Numpy ndarray in the form of a</li>
+<li>Chapel Bytes object</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.jsonToPdArray">
+<em class="property">proc </em><code class="descname">jsonToPdArray</code><span class="sig-paren">(</span><em>json: string</em>, <em>size: int</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.jsonToPdArray" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Converts the JSON array to a pdarray</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.lshdfMsg">
+<em class="property">proc </em><code class="descname">lshdfMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#GenSymIO.lshdfMsg" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Spawns a separate Chapel process that executes and returns the</li>
+<li>result of the h5ls command</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.readhdfMsg">
+<em class="property">proc </em><code class="descname">readhdfMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#GenSymIO.readhdfMsg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read dataset from HDF5 files into arkouda symbol table.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.readAllHdfMsg">
+<em class="property">proc </em><code class="descname">readAllHdfMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#GenSymIO.readAllHdfMsg" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Reads all datasets from 1..n HDF5 files into an Arkouda symbol table.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.fixupSegBoundaries">
+<em class="property">proc </em><code class="descname">fixupSegBoundaries</code><span class="sig-paren">(</span><em>a: [?D] int</em>, <em>segSubdoms: [?fD] domain(1)</em>, <em>valSubdoms: [fD] domain(1)</em><span class="sig-paren">)</span><a class="headerlink" href="#GenSymIO.fixupSegBoundaries" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.get_dtype">
+<em class="property">proc </em><code class="descname">get_dtype</code><span class="sig-paren">(</span><em>filename: string</em>, <em>dsetName: string</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.get_dtype" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Retrieves the datatype of the dataset read from HDF5</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.isHdf5File">
+<em class="property">proc </em><code class="descname">isHdf5File</code><span class="sig-paren">(</span><em>filename: string</em><span class="sig-paren">)</span>: int throws<a class="headerlink" href="#GenSymIO.isHdf5File" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Returns boolean indicating whether the file is a valid HDF5 file.</li>
+<li>Note: if the file cannot be opened due to permissions, throws</li>
+<li>a PermissionError</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.get_dataset_info">
+<em class="property">proc </em><code class="descname">get_dataset_info</code><span class="sig-paren">(</span><em>file_id</em>, <em>dsetName</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.get_dataset_info" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Returns a tuple containing the data type, data class, and a</li>
+<li>boolean indicating whether the datatype is signed for the</li>
+<li>supplied file id and dataset name.</li>
+</ul>
+</dd></dl>
+
+<dl class="class">
+<dt id="GenSymIO.HDF5RankError">
+<em class="property">class </em><code class="descname">HDF5RankError</code>: Error<a class="headerlink" href="#GenSymIO.HDF5RankError" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="GenSymIO.HDF5RankError.rank">
+<em class="property">var </em><code class="descname">rank</code>: int<a class="headerlink" href="#GenSymIO.HDF5RankError.rank" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="GenSymIO.HDF5RankError.filename">
+<em class="property">var </em><code class="descname">filename</code>: string<a class="headerlink" href="#GenSymIO.HDF5RankError.filename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="GenSymIO.HDF5RankError.dsetName">
+<em class="property">var </em><code class="descname">dsetName</code>: string<a class="headerlink" href="#GenSymIO.HDF5RankError.dsetName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.isStringsDataset">
+<em class="property">proc </em><code class="descname">isStringsDataset</code><span class="sig-paren">(</span><em>file_id: int</em>, <em>dsetName: string</em><span class="sig-paren">)</span>: bool throws<a class="headerlink" href="#GenSymIO.isStringsDataset" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Returns a boolean indicating whether the dataset is a Strings</li>
+<li>dataset, checking if the values dataset is embedded within a</li>
+<li>group named after the dsetName.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.isBooleanDataset">
+<em class="property">proc </em><code class="descname">isBooleanDataset</code><span class="sig-paren">(</span><em>file_id: int</em>, <em>dsetName: string</em><span class="sig-paren">)</span>: bool throws<a class="headerlink" href="#GenSymIO.isBooleanDataset" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Returns a boolean indicating whether the dataset is a boolean</li>
+<li>dataset, checking if the booleans dataset is embedded within a</li>
+<li>group named after the dsetName.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<em class="property">proc </em><code class="descname">isBooleanDataset</code><span class="sig-paren">(</span><em>fileName: string</em>, <em>dsetName: string</em><span class="sig-paren">)</span>: bool throws</dt>
+<dd><ul class="simple">
+<li>Overloaded method returns a boolean indicating whether the dataset is a</li>
+<li>boolean dataset, checking if the booleans dataset is embedded within a</li>
+<li>group named after the dsetName. This implementation retrieves the file id</li>
+<li>for a file name and invokes isBooleanDataset with file id.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.get_subdoms">
+<em class="property">proc </em><code class="descname">get_subdoms</code><span class="sig-paren">(</span><em>filenames: [?FD] string</em>, <em>dsetName: string</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.get_subdoms" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Get the subdomains of the distributed array represented by each file,</li>
+<li>as well as the total length of the array.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.read_files_into_distributed_array">
+<em class="property">proc </em><code class="descname">read_files_into_distributed_array</code><span class="sig-paren">(</span><em>A</em>, <em>filedomains: [?FD] domain(1)</em>, <em>filenames: [FD] string</em>, <em>dsetName: string</em><span class="sig-paren">)</span><a class="headerlink" href="#GenSymIO.read_files_into_distributed_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function gets called when A is a BlockDist or DefaultRectangular array.</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<em class="property">proc </em><code class="descname">read_files_into_distributed_array</code><span class="sig-paren">(</span><em>A</em>, <em>filedomains: [?FD] domain(1)</em>, <em>filenames: [FD] string</em>, <em>dsetName: string</em><span class="sig-paren">)</span></dt>
+<dd><p>This function is called when A is a CyclicDist array.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.domain_intersection">
+<em class="property">proc </em><code class="descname">domain_intersection</code><span class="sig-paren">(</span><em>d1: domain(1)</em>, <em>d2: domain(1)</em><span class="sig-paren">)</span><a class="headerlink" href="#GenSymIO.domain_intersection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.tohdfMsg">
+<em class="property">proc </em><code class="descname">tohdfMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#GenSymIO.tohdfMsg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.write1DDistArray">
+<em class="property">proc </em><code class="descname">write1DDistArray</code><span class="sig-paren">(</span><em>filename: string</em>, <em>mode: int</em>, <em>dsetName: string</em>, <em>A</em>, <em>array_type: DType</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.write1DDistArray" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Writes the float, int, or bool pdarray out to hdf5</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.isGroupedDataType">
+<em class="property">proc </em><code class="descname">isGroupedDataType</code><span class="sig-paren">(</span><em>dType: C_HDF5.hid_t</em><span class="sig-paren">)</span>: bool<a class="headerlink" href="#GenSymIO.isGroupedDataType" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Returns a boolean indicating if the data type is written to an HDF5</li>
+<li>group, which currently is C_HDF5.H5T_NATIVE_HBOOL.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.getDataType">
+<em class="property">proc </em><code class="descname">getDataType</code><span class="sig-paren">(</span><em>A</em><span class="sig-paren">)</span>: C_HDF5.hid_t<a class="headerlink" href="#GenSymIO.getDataType" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Returns the HDF5 data type corresponding to the dataset, which delegates</li>
+<li>to getHDF5Type for all datatypes supported by Chapel. For datatypes that</li>
+<li>are not supported by Chapel, getDataType encapsulates logic to retrieve</li>
+<li>the HDF5 data type.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.getWriteDsetName">
+<em class="property">proc </em><code class="descname">getWriteDsetName</code><span class="sig-paren">(</span><em>dType: C_HDF5.hid_t</em>, <em>dsetName: string</em><span class="sig-paren">)</span>: string throws<a class="headerlink" href="#GenSymIO.getWriteDsetName" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Retrieves the full dataset name including the group name, if applicable,</li>
+<li>for the dataset to be written to HDF5.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.getReadDsetName">
+<em class="property">proc </em><code class="descname">getReadDsetName</code><span class="sig-paren">(</span><em>file_id: int</em>, <em>dsetName: string</em><span class="sig-paren">)</span>: string throws<a class="headerlink" href="#GenSymIO.getReadDsetName" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Retrieves the full dataset name including the group name, if applicable,</li>
+<li>for the dataset to be read from HDF5.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.getFileMetadata">
+<em class="property">proc </em><code class="descname">getFileMetadata</code><span class="sig-paren">(</span><em>filename: string</em><span class="sig-paren">)</span><a class="headerlink" href="#GenSymIO.getFileMetadata" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Returns a tuple composed of a file prefix and extension to be used to</li>
+<li>generate locale-specific filenames to be written to.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.generateFilenames">
+<em class="property">proc </em><code class="descname">generateFilenames</code><span class="sig-paren">(</span><em>prefix: string</em>, <em>extension: string</em>, <em>A</em><span class="sig-paren">)</span>: [] string throws<a class="headerlink" href="#GenSymIO.generateFilenames" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Generates a list of filenames to be written to based upon a file prefix,</li>
+<li>extension, and number of locales.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.generateFilename">
+<em class="property">proc </em><code class="descname">generateFilename</code><span class="sig-paren">(</span><em>prefix: string</em>, <em>extension: string</em>, <em>idx: int</em><span class="sig-paren">)</span>: string throws<a class="headerlink" href="#GenSymIO.generateFilename" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Generates a file name composed of a prefix, which is a filename provided by</li>
+<li>the user along with a file index and extension.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.processFilenames">
+<em class="property">proc </em><code class="descname">processFilenames</code><span class="sig-paren">(</span><em>filenames: [] string</em>, <em>matchingFilenames: [] string</em>, <em>mode: int</em>, <em>A</em>, <em>group: string</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.processFilenames" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>If APPEND mode, checks to see if the matchingFilenames matches the filenames</li>
+<li>array and, if not, raises a MismatchedAppendError. If in TRUNCATE mode, creates</li>
+<li>the files matching the filenames. If 1..n of the filenames exist, returns</li>
+<li>warning to the user that 1..n files were overwritten. Since a group name is</li>
+<li>passed in, and hdf5 group is created in the file(s).</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<em class="property">proc </em><code class="descname">processFilenames</code><span class="sig-paren">(</span><em>filenames: [] string</em>, <em>matchingFilenames: [] string</em>, <em>mode: int</em>, <em>A</em><span class="sig-paren">)</span> throws</dt>
+<dd><ul class="simple">
+<li>If APPEND mode, checks to see if the matchingFilenams matches the filenames</li>
+<li>array and, if not, raises a MismatchedAppendError. If in TRUNCATE mode, creates</li>
+<li>the files matching the filenames. If 1..n of the filenames exist, returns</li>
+<li>warning to the user that 1..n files were overwritten.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="GenSymIO.getMatchingFilenames">
+<em class="property">proc </em><code class="descname">getMatchingFilenames</code><span class="sig-paren">(</span><em>prefix: string</em>, <em>extension: string</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.getMatchingFilenames" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Generates an array of filenames to be matched in APPEND mode and to be</li>
+<li>checked in TRUNCATE mode that will warn the user that 1..n files are</li>
+<li>being overwritten.</li>
+</ul>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="Histogram.html" class="btn btn-neutral float-right" title="Histogram" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="FlattenMsg.html" class="btn btn-neutral float-left" title="FlattenMsg" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ 
+
+
+
+</body>
+</html>

@@ -1,0 +1,171 @@
+:mod:`arkouda.message`
+======================
+
+.. py:module:: arkouda.message
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.message.MessageFormat
+   arkouda.message.MessageType
+   arkouda.message.RequestMessage
+   arkouda.message.ReplyMessage
+
+
+
+.. class:: MessageFormat
+
+   Bases: :class:`enum.Enum`
+
+   Generic enumeration.
+
+   Derive from this class to define new enumerations.
+
+   .. attribute:: STRING
+      :annotation: = STRING
+
+      
+
+   .. attribute:: BINARY
+      :annotation: = BINARY
+
+      
+
+   .. method:: __str__(self) -> str
+
+      Overridden method returns value, which is useful in outputting
+      a MessageFormat object to JSON.
+
+
+   .. method:: __repr__(self) -> str
+
+      Overridden method returns value, which is useful in outputting
+      a MessageFormat object to JSON.
+
+
+
+.. class:: MessageType
+
+   Bases: :class:`enum.Enum`
+
+   Generic enumeration.
+
+   Derive from this class to define new enumerations.
+
+   .. attribute:: NORMAL
+      :annotation: = NORMAL
+
+      
+
+   .. attribute:: WARNING
+      :annotation: = WARNING
+
+      
+
+   .. attribute:: ERROR
+      :annotation: = ERROR
+
+      
+
+   .. method:: __str__(self) -> str
+
+      Overridden method returns value, which is useful in outputting
+      a MessageType object to JSON.
+
+
+   .. method:: __repr__(self) -> str
+
+      Overridden method returns value, which is useful in outputting
+      a MessageType object to JSON.
+
+
+
+.. class:: RequestMessage(user: str, cmd: str, token: str = None, format: arkouda.message.MessageFormat = MessageFormat.STRING, args: str = None)
+
+
+   .. attribute:: __slots
+      :annotation: = ['user', 'token', 'cmd', 'format', 'args']
+
+      
+
+   .. attribute:: user
+      :annotation: :str
+
+      
+
+   .. attribute:: token
+      :annotation: :str
+
+      
+
+   .. attribute:: cmd
+      :annotation: :str
+
+      
+
+   .. attribute:: format
+      :annotation: :MessageFormat
+
+      
+
+   .. attribute:: args
+      :annotation: :str
+
+      
+
+   .. method:: asdict(self) -> Dict
+
+      Overridden asdict implementation sets the values of non-required
+      fields to an empty space (for Chapel JSON processing) and invokes
+      str() on the format instance attribute.
+
+      :returns: A dict object encapsulating ReplyMessage state
+      :rtype: Dict
+
+
+
+.. class:: ReplyMessage
+
+   .. attribute:: __slots__
+      :annotation: = ['msg', 'msgType', 'user']
+
+      
+
+   .. attribute:: msg
+      :annotation: :str
+
+      
+
+   .. attribute:: msgType
+      :annotation: :MessageType
+
+      
+
+   .. attribute:: user
+      :annotation: :str
+
+      
+
+   .. method:: fromdict(values: Dict) -> arkouda.message.ReplyMessage
+      :staticmethod:
+
+      Generates a ReplyMessage from a dict encapsulating the data and
+      metadata from a reply returned by the Arkouda server.
+
+      :param values: The dict object encapsulating the fields required to instantiate
+                     a ReplyMessage
+      :type values: Dict
+
+      :returns: The ReplyMessage composed of values encapsulated within values dict
+      :rtype: ReplyMessage
+
+      :raises ValueError: Raised if the values Dict is missing fields or contains malformed values
+
+
+

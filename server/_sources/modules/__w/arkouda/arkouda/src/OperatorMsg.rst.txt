@@ -1,0 +1,101 @@
+.. default-domain:: chpl
+
+.. module:: OperatorMsg
+
+OperatorMsg
+===========
+**Usage**
+
+.. code-block:: chapel
+
+   use OperatorMsg;
+
+
+or
+
+.. code-block:: chapel
+
+   import OperatorMsg;
+
+.. data:: const omLogger = new Logger()
+
+.. function:: proc binopvvMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   Parse and respond to binopvv message.
+   vv == vector op vector
+   
+   :arg reqMsg: request containing (cmd,op,aname,bname,rname)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: (MsgTuple) 
+   :throws: `UndefinedSymbolError(name)`
+   
+
+.. function:: proc binopvsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   Parse and respond to binopvs message.
+   vs == vector op scalar
+   
+   :arg reqMsg: request containing (cmd,op,aname,dtype,value)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: (MsgTuple) 
+   :throws: `UndefinedSymbolError(name)`
+   
+
+.. function:: proc binopsvMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   Parse and respond to binopsv message.
+   sv == scalar op vector
+   
+   :arg reqMsg: request containing (cmd,op,dtype,value,aname)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: (MsgTuple) 
+   :throws: `UndefinedSymbolError(name)`
+   
+
+.. function:: proc opeqvvMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   Parse and respond to opeqvv message.
+   vector op= vector
+   
+   :arg reqMsg: request containing (cmd,op,aname,bname)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: (MsgTuple) 
+   :throws: `UndefinedSymbolError(name)`
+   
+
+.. function:: proc opeqvsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   Parse and respond to opeqvs message.
+   vector op= scalar
+   
+   :arg reqMsg: request containing (cmd,op,aname,bname,rname)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: (MsgTuple)
+   :throws: `UndefinedSymbolError(name)`
+   
+

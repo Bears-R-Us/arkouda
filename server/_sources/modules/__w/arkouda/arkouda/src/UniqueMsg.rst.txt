@@ -1,0 +1,41 @@
+.. default-domain:: chpl
+
+.. module:: UniqueMsg
+   :synopsis: unique finding and counting algorithms
+
+UniqueMsg
+=========
+**Usage**
+
+.. code-block:: chapel
+
+   use UniqueMsg;
+
+
+or
+
+.. code-block:: chapel
+
+   import UniqueMsg;
+
+unique finding and counting algorithms
+these are all based on dense histograms and sparse histograms(assoc domains/arrays)
+
+you could also use a sort if you got into a real bind with really
+large dense ranges of values and large arrays...
+
+*** need to factor in sparsity estimation somehow ***
+for example if (a.max-a.min > a.size) means that a's are sparse
+
+
+
+.. data:: const umLogger = new Logger()
+
+.. function:: proc uniqueMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   unique take a pdarray and returns a pdarray with the unique values 
+
+.. function:: proc value_countsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   value_counts takes a pdarray and returns two pdarrays unique values and counts for each value 
+

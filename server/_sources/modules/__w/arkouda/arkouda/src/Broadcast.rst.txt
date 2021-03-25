@@ -1,0 +1,52 @@
+.. default-domain:: chpl
+
+.. module:: Broadcast
+
+Broadcast
+=========
+**Usage**
+
+.. code-block:: chapel
+
+   use Broadcast;
+
+
+or
+
+.. code-block:: chapel
+
+   import Broadcast;
+
+.. function:: proc broadcast(perm: [?D] int, segs: [?sD] int, vals: [sD] ?t)
+
+   
+   * Broadcast a value per segment of a segmented array to the
+   * original ordering of the precursor array. For example, if
+   * the original array was sorted and grouped, resulting in 
+   * groups defined by <segs>, and if <vals> contains group labels,
+   * then return the array of group labels corresponding to the 
+   * original array. Intended to be used with arkouda.GroupBy.
+   
+
+.. function:: proc broadcast(perm: [?D] int, segs: [?sD] int, vals: [sD] bool)
+
+   
+   * Broadcast a value per segment of a segmented array to the
+   * original ordering of the precursor array. For example, if
+   * the original array was sorted and grouped, resulting in 
+   * groups defined by <segs>, and if <vals> contains group labels,
+   * then return the array of group labels corresponding to the 
+   * original array. Intended to be used with arkouda.GroupBy.
+   
+
+.. function:: proc broadcast(segs: [?sD] int, vals: [sD] ?t, size: int)
+
+   
+   * Broadcast a value per segment of a segmented array to the
+   * full size of the array. For example, if the segmented array
+   * is a compressed sparse row matrix, then expand a row
+   * vector such that each nonzero receives its row's value.
+   
+
+.. function:: proc broadcast(segs: [?sD] int, vals: [sD] bool, size: int)
+

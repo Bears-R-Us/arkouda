@@ -1,0 +1,5580 @@
+:mod:`arkouda`
+==============
+
+.. py:module:: arkouda
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   categorical/index.rst
+   client/index.rst
+   dtypes/index.rst
+   groupbyclass/index.rst
+   io_util/index.rst
+   join/index.rst
+   logger/index.rst
+   message/index.rst
+   numeric/index.rst
+   pdarrayIO/index.rst
+   pdarrayclass/index.rst
+   pdarraycreation/index.rst
+   pdarraysetops/index.rst
+   security/index.rst
+   sorting/index.rst
+   strings/index.rst
+   timeclass/index.rst
+
+
+Package Contents
+----------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.pdarray
+   arkouda.GroupBy
+   arkouda.Strings
+   arkouda.Categorical
+   arkouda.pdarray
+   arkouda._Timescalar
+   arkouda._AbstractBaseTime
+   arkouda.Datetime
+   arkouda.Timedelta
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.connect
+   arkouda.disconnect
+   arkouda.shutdown
+   arkouda.get_config
+   arkouda.get_mem_used
+   arkouda.ruok
+   arkouda.check_np_dtype
+   arkouda.translate_np_dtype
+   arkouda.resolve_scalar_dtype
+   arkouda.info
+   arkouda.clear
+   arkouda.any
+   arkouda.all
+   arkouda.is_sorted
+   arkouda.sum
+   arkouda.prod
+   arkouda.min
+   arkouda.max
+   arkouda.argmin
+   arkouda.argmax
+   arkouda.mean
+   arkouda.var
+   arkouda.std
+   arkouda.mink
+   arkouda.maxk
+   arkouda.argmink
+   arkouda.argmaxk
+   arkouda.register_pdarray
+   arkouda.attach_pdarray
+   arkouda.unregister_pdarray
+   arkouda.argsort
+   arkouda.coargsort
+   arkouda.sort
+   arkouda.unique
+   arkouda.in1d
+   arkouda.concatenate
+   arkouda.union1d
+   arkouda.intersect1d
+   arkouda.setdiff1d
+   arkouda.setxor1d
+   arkouda.array
+   arkouda.zeros
+   arkouda.ones
+   arkouda.zeros_like
+   arkouda.ones_like
+   arkouda.arange
+   arkouda.linspace
+   arkouda.randint
+   arkouda.uniform
+   arkouda.standard_normal
+   arkouda.random_strings_uniform
+   arkouda.random_strings_lognormal
+   arkouda.from_series
+   arkouda.cast
+   arkouda.abs
+   arkouda.log
+   arkouda.exp
+   arkouda.cumsum
+   arkouda.cumprod
+   arkouda.sin
+   arkouda.cos
+   arkouda.where
+   arkouda.histogram
+   arkouda.value_counts
+   arkouda.ls_hdf
+   arkouda.read_hdf
+   arkouda.read_all
+   arkouda.load
+   arkouda.get_datasets
+   arkouda.load_all
+   arkouda.save_all
+   arkouda.broadcast
+   arkouda.join_on_eq_with_dt
+   arkouda.enableVerbose
+   arkouda.disableVerbose
+   arkouda.isSupportedInt
+   arkouda.from_series
+   arkouda.ak_array
+   arkouda.cast
+   arkouda.akabs
+   arkouda._get_factor
+   arkouda._identity
+   arkouda.date_range
+   arkouda.timedelta_range
+
+
+.. data:: AllSymbols
+   :annotation: = __AllSymbols__
+
+   
+
+.. function:: connect(server: str = 'localhost', port: int = 5555, timeout: int = 0, access_token: str = None, connect_url=None) -> None
+
+   Connect to a running arkouda server.
+
+   :param server: The hostname of the server (must be visible to the current
+                  machine). Defaults to `localhost`.
+   :type server: str, optional
+   :param port: The port of the server. Defaults to 5555.
+   :type port: int, optional
+   :param timeout: The timeout in seconds for client send and receive operations.
+                   Defaults to 0 seconds, whicn is interpreted as no timeout.
+   :type timeout: int, optional
+   :param access_token: The token used to connect to an existing socket to enable access to
+                        an Arkouda server where authentication is enabled. Defaults to None.
+   :type access_token: str, optional
+   :param connect_url: The complete url in the format of tcp://server:port?token=<token_value>
+                       where the token is optional
+   :type connect_url: str, optional
+
+   :returns:
+   :rtype: None
+
+   :raises ConnectionError: Raised if there's an error in connecting to the Arkouda server
+   :raises ValueError: Raised if there's an error in parsing the connect_url parameter
+   :raises RuntimeError: Raised if there is a server-side error
+
+   .. rubric:: Notes
+
+   On success, prints the connected address, as seen by the server. If called
+   with an existing connection, the socket will be re-initialized.
+
+
+.. function:: disconnect() -> None
+
+   Disconnects the client from the Arkouda server
+
+   :returns:
+   :rtype: None
+
+   :raises ConnectionError: Raised if there's an error disconnecting from the Arkouda server
+
+
+.. function:: shutdown() -> None
+
+   Sends a shutdown message to the Arkouda server that does the
+   following:
+
+   1. Delete all objects in the SymTable
+   2. Shuts down the Arkouda server
+   3. Disconnects the client from the stopped Arkouda Server
+
+   :returns:
+   :rtype: None
+
+   :raises RuntimeError: Raised if the client is not connected to the Arkouda server or
+       there is an error in disconnecting from the server
+
+
+.. function:: get_config() -> Mapping[(str, Union[str, int, float])]
+
+   Get runtime information about the server.
+
+   :returns: serverHostname
+             serverPort
+             numLocales
+             numPUs (number of processor units per locale)
+             maxTaskPar (maximum number of tasks per locale)
+             physicalMemory
+   :rtype: Mapping[str, Union[str, int, float]]
+
+   :raises RuntimeError: Raised if there is a server-side error in getting memory used
+   :raises ValueError: Raised if there's an error in parsing the JSON-formatted server config
+
+
+.. function:: get_mem_used() -> int
+
+   Compute the amount of memory used by objects in the server's symbol table.
+
+   :returns: Indicates the amount of memory allocated to symbol table objects.
+   :rtype: int
+
+   :raises RuntimeError: Raised if there is a server-side error in getting memory used
+   :raises ValueError: Raised if the returned value is not an int-formatted string
+
+
+.. data:: __version__
+   
+
+   
+
+.. function:: ruok() -> str
+
+   Simply sends an "ruok" message to the server and, if the return message is
+   "imok", this means the arkouda_server is up and operating normally. A return
+   message of "imnotok" indicates an error occurred or the connection timed out.
+
+   This method is basically a way to do a quick healthcheck in a way that does
+   not require error handling.
+
+   :returns: A string indicating if the server is operating normally (imok), if there's
+             an error server-side, or if ruok did not return a response (imnotok) in
+             both of the latter cases
+   :rtype: str
+
+
+.. data:: DTypes
+   
+
+   
+
+.. data:: DTypeObjects
+   
+
+   
+
+.. data:: dtype
+   
+
+   
+
+.. data:: bool
+   
+
+   
+
+.. data:: int64
+   
+
+   
+
+.. data:: float64
+   
+
+   
+
+.. data:: uint8
+   
+
+   
+
+.. data:: str_
+   
+
+   
+
+.. function:: check_np_dtype(dt: numpy.dtype) -> None
+
+   Assert that numpy dtype dt is one of the dtypes supported
+   by arkouda, otherwise raise TypeError.
+
+   :raises TypeError: Raised if the dtype is not in supported dtypes or if
+       dt is not a np.dtype
+
+
+.. function:: translate_np_dtype(dt: numpy.dtype) -> Tuple[(builtins.str, int)]
+
+   Split numpy dtype dt into its kind and byte size, raising
+   TypeError for unsupported dtypes.
+
+   :raises TypeError: Raised if the dtype is not in supported dtypes or if
+       dt is not a np.dtype
+
+
+.. function:: resolve_scalar_dtype(val: object) -> str
+
+   Try to infer what dtype arkouda_server should treat val as.
+
+
+.. data:: ARKOUDA_SUPPORTED_DTYPES
+   
+
+   
+
+.. data:: bool_scalars
+   
+
+   
+
+.. data:: float_scalars
+   
+
+   
+
+.. data:: int_scalars
+   
+
+   
+
+.. data:: numeric_scalars
+   
+
+   
+
+.. data:: numpy_scalars
+   
+
+   
+
+.. data:: str_scalars
+   
+
+   
+
+.. data:: all_scalars
+   
+
+   The DType enum defines the supported Arkouda data types in string form.
+
+
+.. class:: pdarray(name: str, mydtype: numpy.dtype, size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars)
+
+
+   The basic arkouda array class. This class contains only the
+   attributies of the array; the data resides on the arkouda
+   server. When a server operation results in a new array, arkouda
+   will create a pdarray instance that points to the array data on
+   the server. As such, the user should not initialize pdarray
+   instances directly.
+
+   .. attribute:: name
+
+      The server-side identifier for the array
+
+      :type: str
+
+   .. attribute:: dtype
+
+      The element type of the array
+
+      :type: dtype
+
+   .. attribute:: size
+
+      The number of elements in the array
+
+      :type: int_scalars
+
+   .. attribute:: ndim
+
+      The rank of the array (currently only rank 1 arrays supported)
+
+      :type: int_scalars
+
+   .. attribute:: shape
+
+      A list or tuple containing the sizes of each dimension of the array
+
+      :type: Sequence[int]
+
+   .. attribute:: itemsize
+
+      The size in bytes of each element
+
+      :type: int_scalars
+
+   .. attribute:: BinOps
+      
+
+      
+
+   .. attribute:: OpEqOps
+      
+
+      
+
+   .. attribute:: objtype
+      :annotation: = pdarray
+
+      
+
+   .. attribute:: __array_priority__
+      :annotation: = 1000
+
+      
+
+   .. method:: __del__(self)
+
+
+   .. method:: __bool__(self) -> bool
+
+
+   .. method:: __len__(self)
+
+
+   .. method:: __str__(self)
+
+      Return str(self).
+
+
+   .. method:: __repr__(self)
+
+      Return repr(self).
+
+
+   .. method:: format_other(self, other: object) -> numpy.dtype
+
+      Attempt to cast scalar other to the element dtype of this pdarray,
+      and print the resulting value to a string (e.g. for sending to a
+      server command). The user should not call this function directly.
+
+      :param other: The scalar to be cast to the pdarray.dtype
+      :type other: object
+
+      :returns:
+      :rtype: np.dtype corresponding to the other parameter
+
+      :raises TypeError: Raised if the other parameter cannot be converted to
+          Numpy dtype
+
+
+   .. method:: _binop(self, other: arkouda.pdarrayclass.pdarray, op: str) -> arkouda.pdarrayclass.pdarray
+
+      Executes binary operation specified by the op string
+
+      :param other: The pdarray upon which the binop is to be executed
+      :type other: pdarray
+      :param op: The binop to be executed
+      :type op: str
+
+      :returns: A pdarray encapsulating the binop result
+      :rtype: pdarray
+
+      :raises ValueError: Raised if the op is not within the pdarray.BinOps set, or if the
+          pdarray sizes don't match
+      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
+          a supported dtype
+
+
+   .. method:: _r_binop(self, other: arkouda.pdarrayclass.pdarray, op: str) -> arkouda.pdarrayclass.pdarray
+
+      Executes reverse binary operation specified by the op string
+
+      :param other: The pdarray upon which the reverse binop is to be executed
+      :type other: pdarray
+      :param op: The name of the reverse binop to be executed
+      :type op: str
+
+      :returns: A pdarray encapsulating the reverse binop result
+      :rtype: pdarray
+
+      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
+      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
+          a supported dtype
+
+
+   .. method:: __add__(self, other)
+
+
+   .. method:: __radd__(self, other)
+
+
+   .. method:: __sub__(self, other)
+
+
+   .. method:: __rsub__(self, other)
+
+
+   .. method:: __mul__(self, other)
+
+
+   .. method:: __rmul__(self, other)
+
+
+   .. method:: __truediv__(self, other)
+
+
+   .. method:: __rtruediv__(self, other)
+
+
+   .. method:: __floordiv__(self, other)
+
+
+   .. method:: __rfloordiv__(self, other)
+
+
+   .. method:: __mod__(self, other)
+
+
+   .. method:: __rmod__(self, other)
+
+
+   .. method:: __lshift__(self, other)
+
+
+   .. method:: __rlshift__(self, other)
+
+
+   .. method:: __rshift__(self, other)
+
+
+   .. method:: __rrshift__(self, other)
+
+
+   .. method:: __and__(self, other)
+
+
+   .. method:: __rand__(self, other)
+
+
+   .. method:: __or__(self, other)
+
+
+   .. method:: __ror__(self, other)
+
+
+   .. method:: __xor__(self, other)
+
+
+   .. method:: __rxor__(self, other)
+
+
+   .. method:: __pow__(self, other)
+
+
+   .. method:: __rpow__(self, other)
+
+
+   .. method:: __lt__(self, other)
+
+      Return self<value.
+
+
+   .. method:: __gt__(self, other)
+
+      Return self>value.
+
+
+   .. method:: __le__(self, other)
+
+      Return self<=value.
+
+
+   .. method:: __ge__(self, other)
+
+      Return self>=value.
+
+
+   .. method:: __eq__(self, other)
+
+      Return self==value.
+
+
+   .. method:: __ne__(self, other)
+
+      Return self!=value.
+
+
+   .. method:: __neg__(self)
+
+
+   .. method:: __invert__(self)
+
+
+   .. method:: opeq(self, other, op)
+
+
+   .. method:: __iadd__(self, other)
+
+
+   .. method:: __isub__(self, other)
+
+
+   .. method:: __imul__(self, other)
+
+
+   .. method:: __itruediv__(self, other)
+
+
+   .. method:: __ifloordiv__(self, other)
+
+
+   .. method:: __ilshift__(self, other)
+
+
+   .. method:: __irshift__(self, other)
+
+
+   .. method:: __iand__(self, other)
+
+
+   .. method:: __ior__(self, other)
+
+
+   .. method:: __ixor__(self, other)
+
+
+   .. method:: __ipow__(self, other)
+
+
+   .. method:: __iter__(self)
+      :abstractmethod:
+
+
+   .. method:: __getitem__(self, key)
+
+
+   .. method:: __setitem__(self, key, value)
+
+
+   .. method:: fill(self, value: arkouda.dtypes.numeric_scalars) -> None
+
+      Fill the array (in place) with a constant value.
+
+      :param value:
+      :type value: numeric_scalars
+
+      :raises TypeError: Raised if value is not an int, int64, float, or float64
+
+
+   .. method:: any(self) -> numpy.bool_
+
+      Return True iff any element of the array evaluates to True.
+
+
+   .. method:: all(self) -> numpy.bool_
+
+      Return True iff all elements of the array evaluate to True.
+
+
+   .. method:: is_sorted(self) -> numpy.bool_
+
+      Return True iff the array is monotonically non-decreasing.
+
+      :param None:
+
+      :returns: Indicates if the array is monotonically non-decreasing
+      :rtype: bool
+
+      :raises TypeError: Raised if pda is not a pdarray instance
+      :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+   .. method:: sum(self) -> arkouda.dtypes.numpy_scalars
+
+      Return the sum of all elements in the array.
+
+
+   .. method:: prod(self) -> numpy.float64
+
+      Return the product of all elements in the array. Return value is
+      always a np.float64 or np.int64.
+
+
+   .. method:: min(self) -> arkouda.dtypes.numpy_scalars
+
+      Return the minimum value of the array.
+
+
+   .. method:: max(self) -> arkouda.dtypes.numpy_scalars
+
+      Return the maximum value of the array.
+
+
+   .. method:: argmin(self) -> numpy.int64
+
+      Return the index of the first occurrence of the array min value
+
+
+   .. method:: argmax(self) -> numpy.int64
+
+      Return the index of the first occurrence of the array max value.
+
+
+   .. method:: mean(self) -> numpy.float64
+
+      Return the mean of the array.
+
+
+   .. method:: var(self, ddof: arkouda.dtypes.int_scalars = 0) -> numpy.float64
+
+      Compute the variance. See ``arkouda.var`` for details.
+
+      :param ddof: "Delta Degrees of Freedom" used in calculating var
+      :type ddof: int_scalars
+
+      :returns: The scalar variance of the array
+      :rtype: np.float64
+
+      :raises TypeError: Raised if pda is not a pdarray instance
+      :raises ValueError: Raised if the ddof >= pdarray size
+      :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+   .. method:: std(self, ddof: arkouda.dtypes.int_scalars = 0) -> numpy.float64
+
+      Compute the standard deviation. See ``arkouda.std`` for details.
+
+      :param ddof: "Delta Degrees of Freedom" used in calculating std
+      :type ddof: int_scalars
+
+      :returns: The scalar standard deviation of the array
+      :rtype: np.float64
+
+      :raises TypeError: Raised if pda is not a pdarray instance
+      :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+   .. method:: mink(self, k: arkouda.dtypes.int_scalars) -> arkouda.pdarrayclass.pdarray
+
+      Compute the minimum "k" values.
+
+      :param k: The desired count of maximum values to be returned by the output.
+      :type k: int_scalars
+
+      :returns: The maximum `k` values from pda
+      :rtype: pdarray, int
+
+      :raises TypeError: Raised if pda is not a pdarray
+
+
+   .. method:: maxk(self, k: arkouda.dtypes.int_scalars) -> arkouda.pdarrayclass.pdarray
+
+      Compute the maximum "k" values.
+
+      :param k: The desired count of maximum values to be returned by the output.
+      :type k: int_scalars
+
+      :returns: The maximum `k` values from pda
+      :rtype: pdarray, int
+
+      :raises TypeError: Raised if pda is not a pdarray
+
+
+   .. method:: argmink(self, k: arkouda.dtypes.int_scalars) -> arkouda.pdarrayclass.pdarray
+
+      Compute the minimum "k" values.
+
+      :param k: The desired count of maximum values to be returned by the output.
+      :type k: int_scalars
+
+      :returns: Indices corresponding to the maximum `k` values from pda
+      :rtype: pdarray, int
+
+      :raises TypeError: Raised if pda is not a pdarray
+
+
+   .. method:: argmaxk(self, k: arkouda.dtypes.int_scalars) -> arkouda.pdarrayclass.pdarray
+
+      Finds the indices corresponding to the maximum "k" values.
+
+      :param k: The desired count of maximum values to be returned by the output.
+      :type k: int_scalars
+
+      :returns: Indices corresponding to the  maximum `k` values, sorted
+      :rtype: pdarray, int
+
+      :raises TypeError: Raised if pda is not a pdarray
+
+
+   .. method:: to_ndarray(self) -> numpy.ndarray
+
+      Convert the array to a np.ndarray, transferring array data from the
+      Arkouda server to client-side Python. Note: if the pdarray size exceeds
+      client.maxTransferBytes, a RuntimeError is raised.
+
+      :returns: A numpy ndarray with the same attributes and data as the pdarray
+      :rtype: np.ndarray
+
+      :raises RuntimeError: Raised if there is a server-side error thrown, if the pdarray size
+          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
+          received does not match expected number of bytes
+
+      .. rubric:: Notes
+
+      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
+      otherwise a ``RuntimeError`` will be raised. This is to protect the user
+      from overflowing the memory of the system on which the Python client
+      is running, under the assumption that the server is running on a
+      distributed system with much more memory than the client. The user
+      may override this limit by setting client.maxTransferBytes to a larger
+      value, but proceed with caution.
+
+      .. seealso:: :obj:`array`
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(0, 5, 1)
+      >>> a.to_ndarray()
+      array([0, 1, 2, 3, 4])
+
+      >>> type(a.to_ndarray())
+      numpy.ndarray
+
+
+   .. method:: to_cuda(self)
+
+      Convert the array to a Numba DeviceND array, transferring array data from the
+      arkouda server to Python via ndarray. If the array exceeds a builtin size limit,
+      a RuntimeError is raised.
+
+      :returns: A Numba ndarray with the same attributes and data as the pdarray; on GPU
+      :rtype: numba.DeviceNDArray
+
+      :raises ImportError: Raised if CUDA is not available
+      :raises ModuleNotFoundError: Raised if Numba is either not installed or not enabled
+      :raises RuntimeError: Raised if there is a server-side error thrown in the course of retrieving
+          the pdarray.
+
+      .. rubric:: Notes
+
+      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
+      otherwise a ``RuntimeError`` will be raised. This is to protect the user
+      from overflowing the memory of the system on which the Python client
+      is running, under the assumption that the server is running on a
+      distributed system with much more memory than the client. The user
+      may override this limit by setting client.maxTransferBytes to a larger
+      value, but proceed with caution.
+
+      .. seealso:: :obj:`array`
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(0, 5, 1)
+      >>> a.to_cuda()
+      array([0, 1, 2, 3, 4])
+
+      >>> type(a.to_cuda())
+      numpy.devicendarray
+
+
+   .. method:: save(self, prefix_path: str, dataset: str = 'array', mode: str = 'truncate') -> str
+
+      Save the pdarray to HDF5. The result is a collection of HDF5 files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the array to its
+      corresponding file.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in HDF5 files (must not already exist)
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', attempt to create new dataset in existing files.
+      :type mode: str {'truncate' | 'append'}
+
+      :returns:
+      :rtype: string message indicating result of save operation
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+      :raises ValueError: Raised if there is an error in parsing the prefix path pointing to
+          file write location or if the mode parameter is neither truncate
+          nor append
+      :raises TypeError: Raised if any one of the prefix_path, dataset, or mode parameters
+          is not a string
+
+      .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read_hdf`, :obj:`read_all`
+
+      .. rubric:: Notes
+
+      The prefix_path must be visible to the arkouda server and the user must
+      have write permission.
+
+      Output files have names of the form ``<prefix_path>_LOCALE<i>.hdf``, where ``<i>``
+      ranges from 0 to ``numLocales``. If any of the output files already exist and
+      the mode is 'truncate', they will be overwritten. If the mode is 'append'
+      and the number of output files is less than the number of locales or a
+      dataset with the same name already exists, a ``RuntimeError`` will result.
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(0, 100, 1)
+      >>> a.save('arkouda_range', dataset='array')
+
+      Array is saved in numLocales files with names like ``tmp/arkouda_range_LOCALE0.hdf``
+
+      The array can be read back in as follows
+
+      >>> b = ak.load('arkouda_range', dataset='array')
+      >>> (a == b).all()
+      True
+
+
+   .. method:: register(self, user_defined_name: str) -> arkouda.pdarrayclass.pdarray
+
+      Return a pdarray with a user defined name in the arkouda server
+      so it can be attached to later using pdarray.attach()
+
+      :param user_defined_name: user defined name array is to be registered under
+      :type user_defined_name: str
+
+      :returns: pdarray which points to original input pdarray but is also
+                registered with user defined name in the arkouda server
+      :rtype: pdarray
+
+      :raises TypeError: Raised if pda is neither a pdarray nor a str or if
+          user_defined_name is not a str
+
+      .. seealso:: :obj:`attach`, :obj:`unregister`
+
+      .. rubric:: Notes
+
+      Registered names/pdarrays in the server are immune to deletion
+      until they are unregistered.
+
+      .. rubric:: Examples
+
+      >>> a = zeros(100)
+      >>> r_pda = a.register("my_zeros")
+      >>> # potentially disconnect from server and reconnect to server
+      >>> b = ak.pdarray.attach("my_zeros")
+      >>> # ...other work...
+      >>> b.unregister()
+
+
+   .. method:: unregister(self) -> None
+
+      Unregister a pdarray in the arkouda server which was previously
+      registered using register() and/or attahced to using attach()
+
+      :param user_defined_name: which array was registered under
+      :type user_defined_name: str
+
+      :returns:
+      :rtype: None
+
+      :raises TypeError: Raised if pda is neither a pdarray nor a str
+
+      .. seealso:: :obj:`register`, :obj:`unregister`
+
+      .. rubric:: Notes
+
+      Registered names/pdarrays in the server are immune to deletion until
+      they are unregistered.
+
+      .. rubric:: Examples
+
+      >>> a = zeros(100)
+      >>> r_pda = a.register("my_zeros")
+      >>> # potentially disconnect from server and reconnect to server
+      >>> b = ak.pdarray.attach("my_zeros")
+      >>> # ...other work...
+      >>> b.unregister()
+
+
+   .. method:: attach(user_defined_name: str) -> arkouda.pdarrayclass.pdarray
+      :staticmethod:
+
+      class method to return a pdarray attached to the a registered name in the arkouda
+      server which was registered using register()
+
+      :param user_defined_name: user defined name which array was registered under
+      :type user_defined_name: str
+
+      :returns: pdarray which points to pdarray registered with user defined
+                name in the arkouda server
+      :rtype: pdarray
+
+      :raises TypeError: Raised if user_defined_name is not a str
+
+      .. seealso:: :obj:`register`, :obj:`unregister`
+
+      .. rubric:: Notes
+
+      Registered names/pdarrays in the server are immune to deletion
+      until they are unregistered.
+
+      .. rubric:: Examples
+
+      >>> a = zeros(100)
+      >>> r_pda = a.register("my_zeros")
+      >>> # potentially disconnect from server and reconnect to server
+      >>> b = ak.pdarray.attach("my_zeros")
+      >>> # ...other work...
+      >>> b.unregister()
+
+
+
+.. function:: info(pda: Union[(pdarray, str)]) -> str
+
+   Returns information about the pdarray instance
+
+   :param pda: pda is either the pdarray instance or the pdarray.name string
+   :type pda: Union[pdarray, str]
+
+   :returns: Information regarding the pdarray in the form of a string
+   :rtype: str
+
+   :raises TypeError: Raised if the parameter is neither a pdarray or string
+   :raises RuntimeError: Raised if a server-side error is thrown in the process of
+       retrieving information about the pdarray
+
+
+.. function:: clear() -> None
+
+   Send a clear message to clear all unregistered data from the server symbol table
+
+   :returns:
+   :rtype: None
+
+   :raises RuntimeError: Raised if there is a server-side error in executing clear request
+
+
+.. function:: any(pda: arkouda.pdarrayclass.pdarray) -> numpy.bool_
+
+   Return True iff any element of the array evaluates to True.
+
+   :param pda: The pdarray instance to be evaluated
+   :type pda: pdarray
+
+   :returns: Indicates if 1..n pdarray elements evaluate to True
+   :rtype: bool
+
+   :raises TypeError: Raised if pda is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. function:: all(pda: arkouda.pdarrayclass.pdarray) -> numpy.bool_
+
+   Return True iff all elements of the array evaluate to True.
+
+   :param pda: The pdarray instance to be evaluated
+   :type pda: pdarray
+
+   :returns: Indicates if all pdarray elements evaluate to True
+   :rtype: bool
+
+   :raises TypeError: Raised if pda is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. function:: is_sorted(pda: arkouda.pdarrayclass.pdarray) -> numpy.bool_
+
+   Return True iff the array is monotonically non-decreasing.
+
+   :param pda: The pdarray instance to be evaluated
+   :type pda: pdarray
+
+   :returns: Indicates if the array is monotonically non-decreasing
+   :rtype: bool
+
+   :raises TypeError: Raised if pda is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. function:: sum(pda: arkouda.pdarrayclass.pdarray) -> numpy.float64
+
+   Return the sum of all elements in the array.
+
+   :param pda: Values for which to calculate the sum
+   :type pda: pdarray
+
+   :returns: The sum of all elements in the array
+   :rtype: np.float64
+
+   :raises TypeError: Raised if pda is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. function:: prod(pda: arkouda.pdarrayclass.pdarray) -> numpy.float64
+
+   Return the product of all elements in the array. Return value is
+   always a np.float64 or np.int64
+
+   :param pda: Values for which to calculate the product
+   :type pda: pdarray
+
+   :returns: The product calculated from the pda
+   :rtype: numpy_scalars
+
+   :raises TypeError: Raised if pda is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. function:: min(pda: arkouda.pdarrayclass.pdarray) -> arkouda.dtypes.numpy_scalars
+
+   Return the minimum value of the array.
+
+   :param pda: Values for which to calculate the min
+   :type pda: pdarray
+
+   :returns: The min calculated from the pda
+   :rtype: numpy_scalars
+
+   :raises TypeError: Raised if pda is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. function:: max(pda: arkouda.pdarrayclass.pdarray) -> arkouda.dtypes.numpy_scalars
+
+   Return the maximum value of the array.
+
+   :param pda: Values for which to calculate the max
+   :type pda: pdarray
+
+   :returns: The max calculated from the pda
+   :rtype: numpy_scalars
+
+   :raises TypeError: Raised if pda is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. function:: argmin(pda: arkouda.pdarrayclass.pdarray) -> numpy.int64
+
+   Return the index of the first occurrence of the array min value.
+
+   :param pda: Values for which to calculate the argmin
+   :type pda: pdarray
+
+   :returns: The index of the argmin calculated from the pda
+   :rtype: np.int64
+
+   :raises TypeError: Raised if pda is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. function:: argmax(pda: arkouda.pdarrayclass.pdarray) -> numpy.int64
+
+   Return the index of the first occurrence of the array max value.
+
+   :param pda: Values for which to calculate the argmax
+   :type pda: pdarray
+
+   :returns: The index of the argmax calculated from the pda
+   :rtype: np.int64
+
+   :raises TypeError: Raised if pda is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. function:: mean(pda: arkouda.pdarrayclass.pdarray) -> numpy.float64
+
+   Return the mean of the array.
+
+   :param pda: Values for which to calculate the mean
+   :type pda: pdarray
+
+   :returns: The mean calculated from the pda sum and size
+   :rtype: np.float64
+
+   :raises TypeError: Raised if pda is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. function:: var(pda: arkouda.pdarrayclass.pdarray, ddof: arkouda.dtypes.int_scalars = 0) -> numpy.float64
+
+   Return the variance of values in the array.
+
+   :param pda: Values for which to calculate the variance
+   :type pda: pdarray
+   :param ddof: "Delta Degrees of Freedom" used in calculating var
+   :type ddof: int_scalars
+
+   :returns: The scalar variance of the array
+   :rtype: np.float64
+
+   :raises TypeError: Raised if pda is not a pdarray instance
+   :raises ValueError: Raised if the ddof >= pdarray size
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+   .. seealso:: :obj:`mean`, :obj:`std`
+
+   .. rubric:: Notes
+
+   The variance is the average of the squared deviations from the mean,
+   i.e.,  ``var = mean((x - x.mean())**2)``.
+
+   The mean is normally calculated as ``x.sum() / N``, where ``N = len(x)``.
+   If, however, `ddof` is specified, the divisor ``N - ddof`` is used
+   instead.  In standard statistical practice, ``ddof=1`` provides an
+   unbiased estimator of the variance of a hypothetical infinite population.
+   ``ddof=0`` provides a maximum likelihood estimate of the variance for
+   normally distributed variables.
+
+
+.. function:: std(pda: arkouda.pdarrayclass.pdarray, ddof: arkouda.dtypes.int_scalars = 0) -> numpy.float64
+
+   Return the standard deviation of values in the array. The standard
+   deviation is implemented as the square root of the variance.
+
+   :param pda: values for which to calculate the standard deviation
+   :type pda: pdarray
+   :param ddof: "Delta Degrees of Freedom" used in calculating std
+   :type ddof: int_scalars
+
+   :returns: The scalar standard deviation of the array
+   :rtype: np.float64
+
+   :raises TypeError: Raised if pda is not a pdarray instance or ddof is not an integer
+   :raises ValueError: Raised if ddof is an integer < 0
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+   .. seealso:: :obj:`mean`, :obj:`var`
+
+   .. rubric:: Notes
+
+   The standard deviation is the square root of the average of the squared
+   deviations from the mean, i.e., ``std = sqrt(mean((x - x.mean())**2))``.
+
+   The average squared deviation is normally calculated as
+   ``x.sum() / N``, where ``N = len(x)``.  If, however, `ddof` is specified,
+   the divisor ``N - ddof`` is used instead. In standard statistical
+   practice, ``ddof=1`` provides an unbiased estimator of the variance
+   of the infinite population. ``ddof=0`` provides a maximum likelihood
+   estimate of the variance for normally distributed variables. The
+   standard deviation computed in this function is the square root of
+   the estimated variance, so even with ``ddof=1``, it will not be an
+   unbiased estimate of the standard deviation per se.
+
+
+.. function:: mink(pda: arkouda.pdarrayclass.pdarray, k: arkouda.dtypes.int_scalars) -> arkouda.pdarrayclass.pdarray
+
+   Find the `k` minimum values of an array.
+
+   Returns the smallest `k` values of an array, sorted
+
+   :param pda: Input array.
+   :type pda: pdarray
+   :param k: The desired count of minimum values to be returned by the output.
+   :type k: int_scalars
+
+   :returns: The minimum `k` values from pda, sorted
+   :rtype: pdarray
+
+   :raises TypeError: Raised if pda is not a pdarray
+   :raises ValueError: Raised if the pda is empty or k < 1
+
+   .. rubric:: Notes
+
+   This call is equivalent in value to:
+
+       a[ak.argsort(a)[:k]]
+
+   and generally outperforms this operation.
+
+   This reduction will see a significant drop in performance as `k` grows
+   beyond a certain value. This value is system dependent, but generally
+   about a `k` of 5 million is where performance degredation has been observed.
+
+   .. rubric:: Examples
+
+   >>> A = ak.array([10,5,1,3,7,2,9,0])
+   >>> ak.mink(A, 3)
+   array([0, 1, 2])
+   >>> ak.mink(A, 4)
+   array([0, 1, 2, 3])
+
+
+.. function:: maxk(pda: arkouda.pdarrayclass.pdarray, k: arkouda.dtypes.int_scalars) -> arkouda.pdarrayclass.pdarray
+
+   Find the `k` maximum values of an array.
+
+   Returns the largest `k` values of an array, sorted
+
+   :param pda: Input array.
+   :type pda: pdarray
+   :param k: The desired count of maximum values to be returned by the output.
+   :type k: int_scalars
+
+   :returns: The maximum `k` values from pda, sorted
+   :rtype: pdarray, int
+
+   :raises TypeError: Raised if pda is not a pdarray or k is not an integer
+   :raises ValueError: Raised if the pda is empty or k < 1
+
+   .. rubric:: Notes
+
+   This call is equivalent in value to:
+
+       a[ak.argsort(a)[k:]]
+
+   and generally outperforms this operation.
+
+   This reduction will see a significant drop in performance as `k` grows
+   beyond a certain value. This value is system dependent, but generally
+   about a `k` of 5 million is where performance degredation has been observed.
+
+   .. rubric:: Examples
+
+   >>> A = ak.array([10,5,1,3,7,2,9,0])
+   >>> ak.maxk(A, 3)
+   array([7, 9, 10])
+   >>> ak.maxk(A, 4)
+   array([5, 7, 9, 10])
+
+
+.. function:: argmink(pda: arkouda.pdarrayclass.pdarray, k: arkouda.dtypes.int_scalars) -> arkouda.pdarrayclass.pdarray
+
+   Finds the indices corresponding to the `k` minimum values of an array.
+
+   :param pda: Input array.
+   :type pda: pdarray
+   :param k: The desired count of indices corresponding to minimum array values
+   :type k: int_scalars
+
+   :returns: The indices of the minimum `k` values from the pda, sorted
+   :rtype: pdarray, int
+
+   :raises TypeError: Raised if pda is not a pdarray or k is not an integer
+   :raises ValueError: Raised if the pda is empty or k < 1
+
+   .. rubric:: Notes
+
+   This call is equivalent in value to:
+
+       ak.argsort(a)[:k]
+
+   and generally outperforms this operation.
+
+   This reduction will see a significant drop in performance as `k` grows
+   beyond a certain value. This value is system dependent, but generally
+   about a `k` of 5 million is where performance degradation has been observed.
+
+   .. rubric:: Examples
+
+   >>> A = ak.array([10,5,1,3,7,2,9,0])
+   >>> ak.argmink(A, 3)
+   array([7, 2, 5])
+   >>> ak.argmink(A, 4)
+   array([7, 2, 5, 3])
+
+
+.. function:: argmaxk(pda: arkouda.pdarrayclass.pdarray, k: arkouda.dtypes.int_scalars) -> arkouda.pdarrayclass.pdarray
+
+   Find the indices corresponding to the `k` maximum values of an array.
+
+   Returns the largest `k` values of an array, sorted
+
+   :param pda: Input array.
+   :type pda: pdarray
+   :param k: The desired count of indices corresponding to maxmum array values
+   :type k: int_scalars
+
+   :returns: The indices of the maximum `k` values from the pda, sorted
+   :rtype: pdarray, int
+
+   :raises TypeError: Raised if pda is not a pdarray or k is not an integer
+   :raises ValueError: Raised if the pda is empty or k < 1
+
+   .. rubric:: Notes
+
+   This call is equivalent in value to:
+
+       ak.argsort(a)[k:]
+
+   and generally outperforms this operation.
+
+   This reduction will see a significant drop in performance as `k` grows
+   beyond a certain value. This value is system dependent, but generally
+   about a `k` of 5 million is where performance degradation has been observed.
+
+   .. rubric:: Examples
+
+   >>> A = ak.array([10,5,1,3,7,2,9,0])
+   >>> ak.argmaxk(A, 3)
+   array([4, 6, 0])
+   >>> ak.argmaxk(A, 4)
+   array([1, 4, 6, 0])
+
+
+.. function:: register_pdarray(pda: Union[(str, pdarray)], user_defined_name: str) -> arkouda.pdarrayclass.pdarray
+
+   Return a pdarray with a user defined name in the arkouda server
+   so it can be attached to later using attach_pdarray()
+
+   :param pda: the array to register
+   :type pda: str or pdarray
+   :param user_defined_name: user defined name array is to be registered under
+   :type user_defined_name: str
+
+   :returns: pdarray which points to original input pdarray but is also
+             registered with user defined name in the arkouda server
+   :rtype: pdarray
+
+   :raises TypeError: Raised if pda is neither a pdarray nor a str or if
+       user_defined_name is not a str
+
+   .. seealso:: :obj:`attach_pdarray`, :obj:`unregister_pdarray`
+
+   .. rubric:: Notes
+
+   Registered names/pdarrays in the server are immune to deletion
+   until they are unregistered.
+
+   .. rubric:: Examples
+
+   >>> a = zeros(100)
+   >>> r_pda = ak.register_pda(a, "my_zeros")
+   >>> # potentially disconnect from server and reconnect to server
+   >>> b = ak.attach_pda("my_zeros")
+   >>> # ...other work...
+   >>> ak.unregister_pda(b)
+
+
+.. function:: attach_pdarray(user_defined_name: str) -> arkouda.pdarrayclass.pdarray
+
+   Return a pdarray attached to the a registered name in the arkouda
+   server which was registered using register_pdarray()
+
+   :param user_defined_name: user defined name which array was registered under
+   :type user_defined_name: str
+
+   :returns: pdarray which points to pdarray registered with user defined
+             name in the arkouda server
+   :rtype: pdarray
+
+   :raises TypeError: Raised if user_defined_name is not a str
+
+   .. seealso:: :obj:`register_pdarray`, :obj:`unregister_pdarray`
+
+   .. rubric:: Notes
+
+   Registered names/pdarrays in the server are immune to deletion
+   until they are unregistered.
+
+   .. rubric:: Examples
+
+   >>> a = zeros(100)
+   >>> r_pda = ak.register_pdarray(a, "my_zeros")
+   >>> # potentially disconnect from server and reconnect to server
+   >>> b = ak.attach_pdarray("my_zeros")
+   >>> # ...other work...
+   >>> ak.unregister_pdarray(b)
+
+
+.. function:: unregister_pdarray(pda: Union[(str, pdarray)]) -> None
+
+   Unregister a pdarray in the arkouda server which was previously
+   registered using register_pdarray() and/or attached to using attach_pdarray()
+
+   :param pda: user define name which array was registered under
+   :type pda: str or pdarray
+
+   :returns:
+   :rtype: None
+
+   :raises TypeError: Raised if pda is neither a pdarray nor a str
+
+   .. seealso:: :obj:`register_pdarray`, :obj:`unregister_pdarray`
+
+   .. rubric:: Notes
+
+   Registered names/pdarrays in the server are immune to deletion until
+   they are unregistered.
+
+   .. rubric:: Examples
+
+   >>> a = zeros(100)
+   >>> r_pda = ak.register_pdarray(a, "my_zeros")
+   >>> # potentially disconnect from server and reconnect to server
+   >>> b = ak.attach_pdarray("my_zeros")
+   >>> # ...other work...
+   >>> ak.unregister_pdarray(b)
+
+
+.. function:: argsort(pda: Union[(pdarray, Strings, 'Categorical')]) -> arkouda.pdarrayclass.pdarray
+
+   Return the permutation that sorts the array.
+
+   :param pda: The array to sort (int64 or float64)
+   :type pda: pdarray or Strings or Categorical
+
+   :returns: The indices such that ``pda[indices]`` is sorted
+   :rtype: pdarray, int64
+
+   :raises TypeError: Raised if the parameter is other than a pdarray or Strings
+
+   .. seealso:: :obj:`coargsort`
+
+   .. rubric:: Notes
+
+   Uses a least-significant-digit radix sort, which is stable and
+   resilient to non-uniformity in data but communication intensive.
+
+   .. rubric:: Examples
+
+   >>> a = ak.randint(0, 10, 10)
+   >>> perm = ak.argsort(a)
+   >>> a[perm]
+   array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
+
+
+.. function:: coargsort(arrays: Sequence[Union[Strings, pdarray]]) -> arkouda.pdarrayclass.pdarray
+
+   Return the permutation that groups the rows (left-to-right), if the
+   input arrays are treated as columns. The permutation sorts numeric
+   columns, but not strings -- strings are grouped, but not ordered.
+
+   :param arrays: The columns (int64, float64, or Strings) to sort by row
+   :type arrays: Sequence[Union[Strings,pdarray]]
+
+   :returns: The indices that permute the rows to grouped order
+   :rtype: pdarray, int64
+
+   :raises ValueError: Raised if the pdarrays are not of the same size or if the parameter
+       is not an Iterable containing pdarrays or Strings
+
+   .. seealso:: :obj:`argsort`
+
+   .. rubric:: Notes
+
+   Uses a least-significant-digit radix sort, which is stable and resilient
+   to non-uniformity in data but communication intensive. Starts with the
+   last array and moves forward. This sort operates directly on numeric types,
+   but for Strings, it operates on a hash. Thus, while grouping of equivalent
+   strings is guaranteed, lexicographic ordering of the groups is not.
+
+   .. rubric:: Examples
+
+   >>> a = ak.array([0, 1, 0, 1])
+   >>> b = ak.array([1, 1, 0, 0])
+   >>> perm = ak.coargsort([a, b])
+   >>> perm
+   array([2, 0, 3, 1])
+   >>> a[perm]
+   array([0, 0, 1, 1])
+   >>> b[perm]
+   array([0, 1, 0, 1])
+
+
+.. function:: sort(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return a sorted copy of the array. Only sorts numeric arrays;
+   for Strings, use argsort.
+
+   :param pda: The array to sort (int64 or float64)
+   :type pda: pdarray or Categorical
+
+   :returns: The sorted copy of pda
+   :rtype: pdarray, int64 or float64
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+   :raises ValueError: Raised if sort attempted on a pdarray with an unsupported dtype
+       such as bool
+
+   .. seealso:: :obj:`argsort`
+
+   .. rubric:: Notes
+
+   Uses a least-significant-digit radix sort, which is stable and resilient
+   to non-uniformity in data but communication intensive.
+
+   .. rubric:: Examples
+
+   >>> a = ak.randint(0, 10, 10)
+   >>> sorted = ak.sort(a)
+   >>> a
+   array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
+
+
+.. function:: unique(pda: Union[(pdarray, Strings, 'Categorical')], return_counts: bool = False) -> Union[(Union[pdarray, Strings, 'Categorical'], Tuple[Union[pdarray, Strings, 'Categorical'], Optional[pdarray]])]
+
+   Find the unique elements of an array.
+
+   Returns the unique elements of an array, sorted if the values are integers.
+   There is an optional output in addition to the unique elements: the number
+   of times each unique value comes up in the input array.
+
+   :param pda: Input array.
+   :type pda: pdarray or Strings or Categorical
+   :param return_counts: If True, also return the number of times each unique item appears
+                         in `pda`.
+   :type return_counts: bool, optional
+
+   :returns: * **unique** (*pdarray or Strings*) -- The unique values. If input dtype is int64, return values will be sorted.
+             * **unique_counts** (*pdarray, optional*) -- The number of times each of the unique values comes up in the
+               original array. Only provided if `return_counts` is True.
+
+   :raises TypeError: Raised if pda is not a pdarray or Strings object
+   :raises RuntimeError: Raised if the pdarray or Strings dtype is unsupported
+
+   .. rubric:: Notes
+
+   For integer arrays, this function checks to see whether `pda` is sorted
+   and, if so, whether it is already unique. This step can save considerable
+   computation. Otherwise, this function will sort `pda`.
+
+   .. rubric:: Examples
+
+   >>> A = ak.array([3, 2, 1, 1, 2, 3])
+   >>> ak.unique(A)
+   array([1, 2, 3])
+
+
+.. function:: in1d(pda1: Union[(pdarray, Strings, 'Categorical')], pda2: Union[(pdarray, Strings, 'Categorical')], invert: bool = False) -> arkouda.pdarrayclass.pdarray
+
+   Test whether each element of a 1-D array is also present in a second array.
+
+   Returns a boolean array the same length as `pda1` that is True
+   where an element of `pda1` is in `pda2` and False otherwise.
+
+   :param pda1: Input array.
+   :type pda1: pdarray or Strings or Categorical
+   :param pda2: The values against which to test each value of `pda1`. Must be the
+                same type as `pda1`.
+   :type pda2: pdarray or Strings or Categorical
+   :param invert: If True, the values in the returned array are inverted (that is,
+                  False where an element of `pda1` is in `pda2` and True otherwise).
+                  Default is False. ``ak.in1d(a, b, invert=True)`` is equivalent
+                  to (but is faster than) ``~ak.in1d(a, b)``.
+   :type invert: bool, optional
+
+   :returns: The values `pda1[in1d]` are in `pda2`.
+   :rtype: pdarray, bool
+
+   :raises TypeError: Raised if either pda1 or pda2 is not a pdarray, Strings, or
+       Categorical object or if invert is not a bool
+   :raises RuntimeError: Raised if the dtype of either array is not supported
+
+   .. seealso:: :obj:`unique`, :obj:`intersect1d`, :obj:`union1d`
+
+   .. rubric:: Notes
+
+   `in1d` can be considered as an element-wise function version of the
+   python keyword `in`, for 1-D sequences. ``in1d(a, b)`` is logically
+   equivalent to ``ak.array([item in b for item in a])``, but is much
+   faster and scales to arbitrarily large ``a``.
+
+   ak.in1d is not supported for bool or float64 pdarrays
+
+   .. rubric:: Examples
+
+   >>> ak.in1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
+   array([False, True, False])
+
+   >>> ak.in1d(ak.array(['one','two']),ak.array(['two', 'three','four','five']))
+   array([False, True])
+
+
+.. function:: concatenate(arrays: Sequence[Union[pdarray, Strings, 'Categorical']], ordered: bool = True) -> Union[(pdarray, Strings, 'Categorical')]
+
+   Concatenate a list or tuple of ``pdarray`` or ``Strings`` objects into
+   one ``pdarray`` or ``Strings`` object, respectively.
+
+   :param arrays: The arrays to concatenate. Must all have same dtype.
+   :type arrays: Sequence[Union[pdarray,Strings,Categorical]]
+   :param ordered: If True (default), the arrays will be appended in the
+                   order given. If False, array data may be interleaved
+                   in blocks, which can greatly improve performance but
+                   results in non-deterministic ordering of elements.
+   :type ordered: bool
+
+   :returns: Single pdarray or Strings object containing all values, returned in
+             the original order
+   :rtype: Union[pdarray,Strings,Categorical]
+
+   :raises ValueError: Raised if arrays is empty or if 1..n pdarrays have
+       differing dtypes
+   :raises TypeError: Raised if arrays is not a pdarrays or Strings python Sequence such as a
+       list or tuple
+   :raises RuntimeError: Raised if 1..n array elements are dtypes for which
+       concatenate has not been implemented.
+
+   .. rubric:: Examples
+
+   >>> ak.concatenate([ak.array([1, 2, 3]), ak.array([4, 5, 6])])
+   array([1, 2, 3, 4, 5, 6])
+
+   >>> ak.concatenate([ak.array([True,False,True]),ak.array([False,True,True])])
+   array([True, False, True, False, True, True])
+
+   >>> ak.concatenate([ak.array(['one','two']),ak.array(['three','four','five'])])
+   array(['one', 'two', 'three', 'four', 'five'])
+
+
+.. function:: union1d(pda1: arkouda.pdarrayclass.pdarray, pda2: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Find the union of two arrays.
+
+   Return the unique, sorted array of values that are in either
+   of the two input arrays.
+
+   :param pda1: Input array
+   :type pda1: pdarray
+   :param pda2: Input array
+   :type pda2: pdarray
+
+   :returns: Unique, sorted union of the input arrays.
+   :rtype: pdarray
+
+   :raises TypeError: Raised if either pda1 or pda2 is not a pdarray
+   :raises RuntimeError: Raised if the dtype of either array is not supported
+
+   .. seealso:: :obj:`intersect1d`, :obj:`unique`
+
+   .. rubric:: Notes
+
+   ak.union1d is not supported for bool or float64 pdarrays
+
+   .. rubric:: Examples
+
+   >>> ak.union1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
+   array([-2, -1, 0, 1, 2])
+
+
+.. function:: intersect1d(pda1: arkouda.pdarrayclass.pdarray, pda2: arkouda.pdarrayclass.pdarray, assume_unique: bool = False) -> arkouda.pdarrayclass.pdarray
+
+   Find the intersection of two arrays.
+
+   Return the sorted, unique values that are in both of the input arrays.
+
+   :param pda1: Input array
+   :type pda1: pdarray
+   :param pda2: Input array
+   :type pda2: pdarray
+   :param assume_unique: If True, the input arrays are both assumed to be unique, which
+                         can speed up the calculation.  Default is False.
+   :type assume_unique: bool
+
+   :returns: Sorted 1D array of common and unique elements.
+   :rtype: pdarray
+
+   :raises TypeError: Raised if either pda1 or pda2 is not a pdarray
+   :raises RuntimeError: Raised if the dtype of either pdarray is not supported
+
+   .. seealso:: :obj:`unique`, :obj:`union1d`
+
+   .. rubric:: Notes
+
+   ak.intersect1d is not supported for bool or float64 pdarrays
+
+   .. rubric:: Examples
+
+   >>> ak.intersect1d([1, 3, 4, 3], [3, 1, 2, 1])
+   array([1, 3])
+
+
+.. function:: setdiff1d(pda1: arkouda.pdarrayclass.pdarray, pda2: arkouda.pdarrayclass.pdarray, assume_unique: bool = False) -> arkouda.pdarrayclass.pdarray
+
+   Find the set difference of two arrays.
+
+   Return the sorted, unique values in `pda1` that are not in `pda2`.
+
+   :param pda1: Input array.
+   :type pda1: pdarray
+   :param pda2: Input comparison array.
+   :type pda2: pdarray
+   :param assume_unique: If True, the input arrays are both assumed to be unique, which
+                         can speed up the calculation.  Default is False.
+   :type assume_unique: bool
+
+   :returns: Sorted 1D array of values in `pda1` that are not in `pda2`.
+   :rtype: pdarray
+
+   :raises TypeError: Raised if either pda1 or pda2 is not a pdarray
+   :raises RuntimeError: Raised if the dtype of either pdarray is not supported
+
+   .. seealso:: :obj:`unique`, :obj:`setxor1d`
+
+   .. rubric:: Notes
+
+   ak.setdiff1d is not supported for bool or float64 pdarrays
+
+   .. rubric:: Examples
+
+   >>> a = ak.array([1, 2, 3, 2, 4, 1])
+   >>> b = ak.array([3, 4, 5, 6])
+   >>> ak.setdiff1d(a, b)
+   array([1, 2])
+
+
+.. function:: setxor1d(pda1: arkouda.pdarrayclass.pdarray, pda2: arkouda.pdarrayclass.pdarray, assume_unique: bool = False) -> arkouda.pdarrayclass.pdarray
+
+   Find the set exclusive-or (symmetric difference) of two arrays.
+
+   Return the sorted, unique values that are in only one (not both) of the
+   input arrays.
+
+   :param pda1: Input array.
+   :type pda1: pdarray
+   :param pda2: Input array.
+   :type pda2: pdarray
+   :param assume_unique: If True, the input arrays are both assumed to be unique, which
+                         can speed up the calculation.  Default is False.
+   :type assume_unique: bool
+
+   :returns: Sorted 1D array of unique values that are in only one of the input
+             arrays.
+   :rtype: pdarray
+
+   :raises TypeError: Raised if either pda1 or pda2 is not a pdarray
+   :raises RuntimeError: Raised if the dtype of either pdarray is not supported
+
+   .. rubric:: Notes
+
+   ak.setxor1d is not supported for bool or float64 pdarrays
+
+   .. rubric:: Examples
+
+   >>> a = ak.array([1, 2, 3, 2, 4])
+   >>> b = ak.array([2, 3, 5, 7, 5])
+   >>> ak.setxor1d(a,b)
+   array([1, 4, 5, 7])
+
+
+.. function:: array(a: Union[(pdarray, np.ndarray, Iterable)]) -> Union[(pdarray, Strings)]
+
+   Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
+   the corresponding data to the arkouda server.
+
+   :param a: Rank-1 array of a supported dtype
+   :type a: Union[pdarray, np.ndarray]
+
+   :returns: A pdarray instance stored on arkouda server or Strings instance, which
+             is composed of two pdarrays stored on arkouda server
+   :rtype: pdarray or Strings
+
+   :raises TypeError: Raised if a is not a pdarray, np.ndarray, or Python Iterable such as a
+       list, array, tuple, or deque
+   :raises RuntimeError: Raised if a is not one-dimensional, nbytes > maxTransferBytes, a.dtype is
+       not supported (not in DTypes), or if the product of a size and
+       a.itemsize > maxTransferBytes
+   :raises ValueError: Raised if the returned message is malformed or does not contain the fields
+       required to generate the array.
+
+   .. seealso:: :obj:`pdarray.to_ndarray`
+
+   .. rubric:: Notes
+
+   The number of bytes in the input array cannot exceed `arkouda.maxTransferBytes`,
+   otherwise a RuntimeError will be raised. This is to protect the user
+   from overwhelming the connection between the Python client and the arkouda
+   server, under the assumption that it is a low-bandwidth connection. The user
+   may override this limit by setting ak.maxTransferBytes to a larger value,
+   but should proceed with caution.
+
+   If the pdrray or ndarray is of type U, this method is called twice recursively
+   to create the Strings object and the two corresponding pdarrays for string
+   bytes and offsets, respectively.
+
+   .. rubric:: Examples
+
+   >>> ak.array(np.arange(1,10))
+   array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+   >>> ak.array(range(1,10))
+   array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+   >>> strings = ak.array(['string {}'.format(i) for i in range(0,5)])
+   >>> type(strings)
+   <class 'arkouda.strings.Strings'>
+
+
+.. function:: zeros(size: arkouda.dtypes.int_scalars, dtype: type = np.float64) -> arkouda.pdarrayclass.pdarray
+
+   Create a pdarray filled with zeros.
+
+   :param size: Size of the array (only rank-1 arrays supported)
+   :type size: int_scalars
+   :param dtype: Type of resulting array, default float64
+   :type dtype: all_scalars
+
+   :returns: Zeros of the requested size and dtype
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the supplied dtype is not supported or if the size
+       parameter is neither an int nor a str that is parseable to an int.
+
+   .. seealso:: :obj:`ones`, :obj:`zeros_like`
+
+   .. rubric:: Examples
+
+   >>> ak.zeros(5, dtype=ak.int64)
+   array([0, 0, 0, 0, 0])
+
+   >>> ak.zeros(5, dtype=ak.float64)
+   array([0, 0, 0, 0, 0])
+
+   >>> ak.zeros(5, dtype=ak.bool)
+   array([False, False, False, False, False])
+
+
+.. function:: ones(size: arkouda.dtypes.int_scalars, dtype: type = float64) -> arkouda.pdarrayclass.pdarray
+
+   Create a pdarray filled with ones.
+
+   :param size: Size of the array (only rank-1 arrays supported)
+   :type size: int_scalars
+   :param dtype: Resulting array type, default float64
+   :type dtype: Union[float64, int64, bool]
+
+   :returns: Ones of the requested size and dtype
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the supplied dtype is not supported or if the size
+       parameter is neither an int nor a str that is parseable to an int.
+
+   .. seealso:: :obj:`zeros`, :obj:`ones_like`
+
+   .. rubric:: Examples
+
+   >>> ak.ones(5, dtype=ak.int64)
+   array([1, 1, 1, 1, 1])
+
+   >>> ak.ones(5, dtype=ak.float64)
+   array([1, 1, 1, 1, 1])
+
+   >>> ak.ones(5, dtype=ak.bool)
+   array([True, True, True, True, True])
+
+
+.. function:: zeros_like(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Create a zero-filled pdarray of the same size and dtype as an existing
+   pdarray.
+
+   :param pda: Array to use for size and dtype
+   :type pda: pdarray
+
+   :returns: Equivalent to ak.zeros(pda.size, pda.dtype)
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the pda parameter is not a pdarray.
+
+   .. seealso:: :obj:`zeros`, :obj:`ones_like`
+
+   .. rubric:: Examples
+
+   >>> zeros = ak.zeros(5, dtype=ak.int64)
+   >>> ak.zeros_like(zeros)
+   array([0, 0, 0, 0, 0])
+
+   >>> zeros = ak.zeros(5, dtype=ak.float64)
+   >>> ak.zeros_like(zeros)
+   array([0, 0, 0, 0, 0])
+
+   >>> zeros = ak.zeros(5, dtype=ak.bool)
+   >>> ak.zeros_like(zeros)
+   array([False, False, False, False, False])
+
+
+.. function:: ones_like(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Create a one-filled pdarray of the same size and dtype as an existing
+   pdarray.
+
+   :param pda: Array to use for size and dtype
+   :type pda: pdarray
+
+   :returns: Equivalent to ak.ones(pda.size, pda.dtype)
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the pda parameter is not a pdarray.
+
+   .. seealso:: :obj:`ones`, :obj:`zeros_like`
+
+   .. rubric:: Notes
+
+   Logic for generating the pdarray is delegated to the ak.ones method.
+   Accordingly, the supported dtypes match are defined by the ak.ones method.
+
+   .. rubric:: Examples
+
+   >>> ones = ak.ones(5, dtype=ak.int64)
+    >>> ak.ones_like(ones)
+   array([1, 1, 1, 1, 1])
+
+   >>> ones = ak.ones(5, dtype=ak.float64)
+   >>> ak.ones_like(ones)
+   array([1, 1, 1, 1, 1])
+
+   >>> ones = ak.ones(5, dtype=ak.bool)
+   >>> ak.ones_like(ones)
+   array([True, True, True, True, True])
+
+
+.. function:: arange(*args) -> arkouda.pdarrayclass.pdarray
+
+   arange([start,] stop[, stride])
+
+   Create a pdarray of consecutive integers within the interval [start, stop).
+   If only one arg is given then arg is the stop parameter. If two args are
+   given, then the first arg is start and second is stop. If three args are
+   given, then the first arg is start, second is stop, third is stride.
+
+   :param start: Starting value (inclusive)
+   :type start: int_scalars, optional
+   :param stop: Stopping value (exclusive)
+   :type stop: int_scalars
+   :param stride: The difference between consecutive elements, the default stride is 1,
+                  if stride is specified then start must also be specified.
+   :type stride: int_scalars, optional
+
+   :returns: Integers from start (inclusive) to stop (exclusive) by stride
+   :rtype: pdarray, int64
+
+   :raises TypeError: Raised if start, stop, or stride is not an int object
+   :raises ZeroDivisionError: Raised if stride == 0
+
+   .. seealso:: :obj:`linspace`, :obj:`zeros`, :obj:`ones`, :obj:`randint`
+
+   .. rubric:: Notes
+
+   Negative strides result in decreasing values. Currently, only int64
+   pdarrays can be created with this method. For float64 arrays, use
+   the linspace method.
+
+   .. rubric:: Examples
+
+   >>> ak.arange(0, 5, 1)
+   array([0, 1, 2, 3, 4])
+
+   >>> ak.arange(5, 0, -1)
+   array([5, 4, 3, 2, 1])
+
+   >>> ak.arange(0, 10, 2)
+   array([0, 2, 4, 6, 8])
+
+   >>> ak.arange(-5, -10, -1)
+   array([-5, -6, -7, -8, -9])
+
+
+.. function:: linspace(start: arkouda.dtypes.numeric_scalars, stop: arkouda.dtypes.numeric_scalars, length: arkouda.dtypes.int_scalars) -> arkouda.pdarrayclass.pdarray
+
+   Create a pdarray of linearly-spaced floats in a closed interval.
+
+   :param start: Start of interval (inclusive)
+   :type start: numeric_scalars
+   :param stop: End of interval (inclusive)
+   :type stop: numeric_scalars
+   :param length: Number of points
+   :type length: int_scalars
+
+   :returns: Array of evenly spaced float values along the interval
+   :rtype: pdarray, float64
+
+   :raises TypeError: Raised if start or stop is not a float or int or if length is not an int
+
+   .. seealso:: :obj:`arange`
+
+   .. rubric:: Notes
+
+   If that start is greater than stop, the pdarray values are generated
+   in descending order.
+
+   .. rubric:: Examples
+
+   >>> ak.linspace(0, 1, 5)
+   array([0, 0.25, 0.5, 0.75, 1])
+
+   >>> ak.linspace(start=1, stop=0, length=5)
+   array([1, 0.75, 0.5, 0.25, 0])
+
+   >>> ak.linspace(start=-5, stop=0, length=5)
+   array([-5, -3.75, -2.5, -1.25, 0])
+
+
+.. function:: randint(low: arkouda.dtypes.numeric_scalars, high: arkouda.dtypes.numeric_scalars, size: arkouda.dtypes.int_scalars, dtype=int64, seed: arkouda.dtypes.int_scalars = None) -> arkouda.pdarrayclass.pdarray
+
+   Generate a pdarray of randomized int, float, or bool values in a
+   specified range bounded by the low and high parameters.
+
+   :param low: The low value (inclusive) of the range
+   :type low: numeric_scalars
+   :param high: The high value (exclusive for int, inclusive for float) of the range
+   :type high: numeric_scalars
+   :param size: The length of the returned array
+   :type size: int_scalars
+   :param dtype: The dtype of the array
+   :type dtype: Union[int64, float64, bool]
+   :param seed: Index for where to pull the first returned value
+   :type seed: int_scalars
+
+   :returns: Values drawn uniformly from the specified range having the desired dtype
+   :rtype: pdarray
+
+   :raises TypeError: Raised if dtype.name not in DTypes, size is not an int, low or high is
+       not an int or float, or seed is not an int
+   :raises ValueError: Raised if size < 0 or if high < low
+
+   .. rubric:: Notes
+
+   Calling randint with dtype=float64 will result in uniform non-integral
+   floating point values.
+
+   .. rubric:: Examples
+
+   >>> ak.randint(0, 10, 5)
+   array([5, 7, 4, 8, 3])
+
+   >>> ak.randint(0, 1, 3, dtype=ak.float64)
+   array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])
+
+   >>> ak.randint(0, 1, 5, dtype=ak.bool)
+   array([True, False, True, True, True])
+
+   >>> ak.randint(1, 5, 10, seed=2)
+   array([4, 3, 1, 3, 4, 4, 2, 4, 3, 2])
+
+   >>> ak.randint(1, 5, 3, dtype=ak.float64, seed=2)
+   array([2.9160772326374946, 4.353429832157099, 4.5392023718621486])
+
+   >>> ak.randint(1, 5, 10, dtype=ak.bool, seed=2)
+   array([False, True, True, True, True, False, True, True, True, True])
+
+
+.. function:: uniform(size: arkouda.dtypes.int_scalars, low: arkouda.dtypes.numeric_scalars = float(0.0), high: arkouda.dtypes.numeric_scalars = 1.0, seed: Union[(None, int_scalars)] = None) -> arkouda.pdarrayclass.pdarray
+
+   Generate a pdarray with uniformly distributed random float values
+   in a specified range.
+
+   :param low: The low value (inclusive) of the range, defaults to 0.0
+   :type low: float_scalars
+   :param high: The high value (inclusive) of the range, defaults to 1.0
+   :type high: float_scalars
+   :param size: The length of the returned array
+   :type size: int_scalars
+   :param seed: Value used to initialize the random number generator
+   :type seed: int_scalars, optional
+
+   :returns: Values drawn uniformly from the specified range
+   :rtype: pdarray, float64
+
+   :raises TypeError: Raised if dtype.name not in DTypes, size is not an int, or if
+       either low or high is not an int or float
+   :raises ValueError: Raised if size < 0 or if high < low
+
+   .. rubric:: Notes
+
+   The logic for uniform is delegated to the ak.randint method which
+   is invoked with a dtype of float64
+
+   .. rubric:: Examples
+
+   >>> ak.uniform(3)
+   array([0.92176432277231968, 0.083130710959903542, 0.68894208386667544])
+
+   >>> ak.uniform(size=3,low=0,high=5,seed=0)
+   array([0.30013431967121934, 0.47383036230759112, 1.0441791878997098])
+
+
+.. function:: standard_normal(size: arkouda.dtypes.int_scalars, seed: Union[(None, int_scalars)] = None) -> arkouda.pdarrayclass.pdarray
+
+   Draw real numbers from the standard normal distribution.
+
+   :param size: The number of samples to draw (size of the returned array)
+   :type size: int_scalars
+   :param seed: Value used to initialize the random number generator
+   :type seed: int_scalars
+
+   :returns: The array of random numbers
+   :rtype: pdarray, float64
+
+   :raises TypeError: Raised if size is not an int
+   :raises ValueError: Raised if size < 0
+
+   .. seealso:: :obj:`randint`
+
+   .. rubric:: Notes
+
+   For random samples from :math:`N(\mu, \sigma^2)`, use:
+
+   ``(sigma * standard_normal(size)) + mu``
+
+   .. rubric:: Examples
+
+   >>> ak.standard_normal(3,1)
+   array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])
+
+
+.. function:: random_strings_uniform(minlen: arkouda.dtypes.int_scalars, maxlen: arkouda.dtypes.int_scalars, size: arkouda.dtypes.int_scalars, characters: str = 'uppercase', seed: Union[(None, int_scalars)] = None) -> arkouda.strings.Strings
+
+   Generate random strings with lengths uniformly distributed between
+   minlen and maxlen, and with characters drawn from a specified set.
+
+   :param minlen: The minimum allowed length of string
+   :type minlen: int_scalars
+   :param maxlen: The maximum allowed length of string
+   :type maxlen: int_scalars
+   :param size: The number of strings to generate
+   :type size: int_scalars
+   :param characters: The set of characters to draw from
+   :type characters: (uppercase, lowercase, numeric, printable, binary)
+   :param seed: Value used to initialize the random number generator
+   :type seed: Union[None, int_scalars], optional
+
+   :returns: The array of random strings
+   :rtype: Strings
+
+   :raises ValueError: Raised if minlen < 0, maxlen < minlen, or size < 0
+
+   .. seealso:: :obj:`random_strings_lognormal`, :obj:`randint`
+
+   .. rubric:: Examples
+
+   >>> ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=5)
+   array(['TVKJ', 'EWAB', 'CO', 'HFMD', 'U'])
+
+   >>> ak.random_strings_uniform(minlen=1, maxlen=5, seed=1, size=5,
+   ... characters='printable')
+   array(['+5"f', '-P]3', '4k', '~HFF', 'F'])
+
+
+.. function:: random_strings_lognormal(logmean: arkouda.dtypes.numeric_scalars, logstd: arkouda.dtypes.numeric_scalars, size: arkouda.dtypes.int_scalars, characters: str = 'uppercase', seed: Optional[int_scalars] = None) -> arkouda.strings.Strings
+
+   Generate random strings with log-normally distributed lengths and
+   with characters drawn from a specified set.
+
+   :param logmean: The log-mean of the length distribution
+   :type logmean: numeric_scalars
+   :param logstd: The log-standard-deviation of the length distribution
+   :type logstd: numeric_scalars
+   :param size: The number of strings to generate
+   :type size: int_scalars
+   :param characters: The set of characters to draw from
+   :type characters: (uppercase, lowercase, numeric, printable, binary)
+   :param seed: Value used to initialize the random number generator
+   :type seed: int_scalars, optional
+
+   :returns: The Strings object encapsulating a pdarray of random strings
+   :rtype: Strings
+
+   :raises TypeError: Raised if logmean is neither a float nor a int, logstd is not a float,
+       size is not an int, or if characters is not a str
+   :raises ValueError: Raised if logstd <= 0 or size < 0
+
+   .. seealso:: :obj:`random_strings_lognormal`, :obj:`randint`
+
+   .. rubric:: Notes
+
+   The lengths of the generated strings are distributed $Lognormal(\mu, \sigma^2)$,
+   with :math:`\mu = logmean` and :math:`\sigma = logstd`. Thus, the strings will
+   have an average length of :math:`exp(\mu + 0.5*\sigma^2)`, a minimum length of
+   zero, and a heavy tail towards longer strings.
+
+   .. rubric:: Examples
+
+   >>> ak.random_strings_lognormal(2, 0.25, 5, seed=1)
+   array(['TVKJTE', 'ABOCORHFM', 'LUDMMGTB', 'KWOQNPHZ', 'VSXRRL'])
+
+   >>> ak.random_strings_lognormal(2, 0.25, 5, seed=1, characters='printable')
+   array(['+5"fp-', ']3Q4kC~HF', '=F=`,IE!', 'DjkBa'9(', '5oZ1)='])
+
+
+.. function:: from_series(series: pandas.Series, dtype: Optional[Union[type, str]] = None) -> Union[(pdarray, Strings)]
+
+   Converts a Pandas Series to an Arkouda pdarray or Strings object. If
+   dtype is None, the dtype is inferred from the Pandas Series. Otherwise,
+   the dtype parameter is set if the dtype of the Pandas Series is to be
+   overridden or is  unknown (for example, in situations where the Series
+   dtype is object).
+
+   :param series: The Pandas Series with a dtype of bool, float64, int64, or string
+   :type series: Pandas Series
+   :param dtype: The valid dtype types are np.bool, np.float64, np.int64, and np.str
+   :type dtype: Optional[type]
+
+   :returns:
+   :rtype: Union[pdarray,Strings]
+
+   :raises TypeError: Raised if series is not a Pandas Series object
+   :raises ValueError: Raised if the Series dtype is not bool, float64, int64, string, datetime, or timedelta
+
+   .. rubric:: Examples
+
+   >>> ak.from_series(pd.Series(np.random.randint(0,10,5)))
+   array([9, 0, 4, 7, 9])
+
+   >>> ak.from_series(pd.Series(['1', '2', '3', '4', '5']),dtype=np.int64)
+   array([1, 2, 3, 4, 5])
+
+   >>> ak.from_series(pd.Series(np.random.uniform(low=0.0,high=1.0,size=3)))
+   array([0.57600036956445599, 0.41619265571741659, 0.6615356693784662])
+
+   >>> ak.from_series(pd.Series(['0.57600036956445599', '0.41619265571741659',
+                      '0.6615356693784662']), dtype=np.float64)
+   array([0.57600036956445599, 0.41619265571741659, 0.6615356693784662])
+
+   >>> ak.from_series(pd.Series(np.random.choice([True, False],size=5)))
+   array([True, False, True, True, True])
+
+   >>> ak.from_series(pd.Series(['True', 'False', 'False', 'True', 'True']), dtype=np.bool)
+   array([True, True, True, True, True])
+
+   >>> ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e'], dtype="string"))
+   array(['a', 'b', 'c', 'd', 'e'])
+
+   >>> ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e']),dtype=np.str)
+   array(['a', 'b', 'c', 'd', 'e'])
+
+   >>> ak.from_series(pd.Series(pd.to_datetime(['1/1/2018', np.datetime64('2018-01-01')])))
+   array([1514764800000000000, 1514764800000000000])
+
+   .. rubric:: Notes
+
+   The supported datatypes are bool, float64, int64, string, and datetime64[ns]. The
+   data type is either inferred from the the Series or is set via the dtype parameter.
+
+   Series of datetime or timedelta are converted to Arkouda arrays of dtype int64 (nanoseconds)
+
+
+.. function:: cast(pda: Union[(pdarray, Strings)], dt: Union[(np.dtype, str)]) -> Union[(pdarray, Strings)]
+
+   Cast an array to another dtype.
+
+   :param pda: The array of values to cast
+   :type pda: pdarray or Strings
+   :param dtype: The target dtype to cast values to
+   :type dtype: np.dtype or str
+
+   :returns: Array of values cast to desired dtype
+   :rtype: pdarray or Strings
+
+   .. rubric:: Notes
+
+   The cast is performed according to Chapel's casting rules and is NOT safe
+   from overflows or underflows. The user must ensure that the target dtype
+   has the precision and capacity to hold the desired result.
+
+   .. rubric:: Examples
+
+   >>> ak.cast(ak.linspace(1.0,5.0,5), dt=ak.int64)
+   array([1, 2, 3, 4, 5])
+
+   >>> ak.cast(ak.arange(0,5), dt=ak.float64).dtype
+   dtype('float64')
+
+   >>> ak.cast(ak.arange(0,5), dt=ak.bool)
+   array([False, True, True, True, True])
+
+   >>> ak.cast(ak.linspace(0,4,5), dt=ak.bool)
+   array([False, True, True, True, True])
+
+
+.. function:: abs(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise absolute value of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing absolute values of the input array elements
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.abs(ak.arange(-5,-1))
+   array([5, 4, 3, 2])
+
+   >>> ak.abs(ak.linspace(-5,-1,5))
+   array([5, 4, 3, 2, 1])
+
+
+.. function:: log(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise natural log of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing natural log values of the input
+             array elements
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Notes
+
+   Logarithms with other bases can be computed as follows:
+
+   .. rubric:: Examples
+
+   >>> A = ak.array([1, 10, 100])
+   # Natural log
+   >>> ak.log(A)
+   array([0, 2.3025850929940459, 4.6051701859880918])
+   # Log base 10
+   >>> ak.log(A) / np.log(10)
+   array([0, 1, 2])
+   # Log base 2
+   >>> ak.log(A) / np.log(2)
+   array([0, 3.3219280948873626, 6.6438561897747253])
+
+
+.. function:: exp(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise exponential of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing exponential values of the input
+             array elements
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.exp(ak.arange(1,5))
+   array([2.7182818284590451, 7.3890560989306504, 20.085536923187668, 54.598150033144236])
+
+   >>> ak.exp(ak.uniform(5,1.0,5.0))
+   array([11.84010843172504, 46.454368507659211, 5.5571769623557188,
+          33.494295836924771, 13.478894913238722])
+
+
+.. function:: cumsum(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the cumulative sum over the array.
+
+   The sum is inclusive, such that the ``i`` th element of the
+   result is the sum of elements up to and including ``i``.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing cumulative sums for each element
+             of the original pdarray
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.cumsum(ak.arange([1,5]))
+   array([1, 3, 6])
+
+   >>> ak.cumsum(ak.uniform(5,1.0,5.0))
+   array([3.1598310770203937, 5.4110385860243131, 9.1622479306453748,
+          12.710615785506533, 13.945880905466208])
+
+   >>> ak.cumsum(ak.randint(0, 1, 5, dtype=ak.bool))
+   array([0, 1, 1, 2, 3])
+
+
+.. function:: cumprod(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the cumulative product over the array.
+
+   The product is inclusive, such that the ``i`` th element of the
+   result is the product of elements up to and including ``i``.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing cumulative products for each element
+             of the original pdarray
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.cumprod(ak.arange(1,5))
+   array([1, 2, 6, 24]))
+
+   >>> ak.cumprod(ak.uniform(5,1.0,5.0))
+   array([1.5728783400481925, 7.0472855509390593, 33.78523998586553,
+          134.05309592737584, 450.21589865655358])
+
+
+.. function:: sin(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise sine of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing sin for each element
+             of the original pdarray
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+
+.. function:: cos(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise cosine of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing cosine for each element
+             of the original pdarray
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+
+.. function:: where(condition: arkouda.pdarrayclass.pdarray, A: Union[(numeric_scalars, pdarray)], B: Union[(numeric_scalars, pdarray)]) -> arkouda.pdarrayclass.pdarray
+
+   Returns an array with elements chosen from A and B based upon a
+   conditioning array. As is the case with numpy.where, the return array
+   consists of values from the first array (A) where the conditioning array
+   elements are True and from the second array (B) where the conditioning
+   array elements are False.
+
+   :param condition: Used to choose values from A or B
+   :type condition: pdarray
+   :param A: Value(s) used when condition is True
+   :type A: Union[numeric_scalars, pdarray]
+   :param B: Value(s) used when condition is False
+   :type B: Union[numeric_scalars, pdarray]
+
+   :returns: Values chosen from A where the condition is True and B where
+             the condition is False
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the condition object is not a pdarray, if A or B is not
+       an int, np.int64, float, np.float64, or pdarray, if pdarray dtypes
+       are not supported or do not match, or multiple condition clauses (see
+       Notes section) are applied
+   :raises ValueError: Raised if the shapes of the condition, A, and B pdarrays are unequal
+
+   .. rubric:: Examples
+
+   >>> a1 = ak.arange(1,10)
+   >>> a2 = ak.ones(9, dtype=np.int64)
+   >>> cond = a1 < 5
+   >>> ak.where(cond,a1,a2)
+   array([1, 2, 3, 4, 1, 1, 1, 1, 1])
+
+   >>> a1 = ak.arange(1,10)
+   >>> a2 = ak.ones(9, dtype=np.int64)
+   >>> cond = a1 == 5
+   >>> ak.where(cond,a1,a2)
+   array([1, 1, 1, 1, 5, 1, 1, 1, 1])
+
+   >>> a1 = ak.arange(1,10)
+   >>> a2 = 10
+   >>> cond = a1 < 5
+   >>> ak.where(cond,a1,a2)
+   array([1, 2, 3, 4, 10, 10, 10, 10, 10])
+
+   .. rubric:: Notes
+
+   A and B must have the same dtype and only one conditional clause
+   is supported e.g., n < 5, n > 1, which is supported in numpy
+   is not currently supported in Arkouda
+
+
+.. function:: histogram(pda: arkouda.pdarrayclass.pdarray, bins: arkouda.dtypes.int_scalars = 10) -> arkouda.pdarrayclass.pdarray
+
+   Compute a histogram of evenly spaced bins over the range of an array.
+
+   :param pda: The values to histogram
+   :type pda: pdarray
+   :param bins: The number of equal-size bins to use (default: 10)
+   :type bins: int_scalars
+
+   :returns: The number of values present in each bin
+   :rtype: pdarray, int64 or float64
+
+   :raises TypeError: Raised if the parameter is not a pdarray or if bins is
+       not an int.
+   :raises ValueError: Raised if bins < 1
+   :raises NotImplementedError: Raised if pdarray dtype is bool or uint8
+
+   .. seealso:: :obj:`value_counts`
+
+   .. rubric:: Notes
+
+   The bins are evenly spaced in the interval [pda.min(), pda.max()].
+   Currently, the user must re-compute the bin edges, e.g. with np.linspace
+   (see below) in order to plot the histogram.
+
+   .. rubric:: Examples
+
+   >>> import matplotlib.pyplot as plt
+   >>> A = ak.arange(0, 10, 1)
+   >>> nbins = 3
+   >>> h = ak.histogram(A, bins=nbins)
+   >>> h
+   array([3, 3, 4])
+   # Recreate the bin edges in NumPy
+   >>> binEdges = np.linspace(A.min(), A.max(), nbins+1)
+   >>> binEdges
+   array([0., 3., 6., 9.])
+   # To plot, use only the left edges, and export the histogram to NumPy
+   >>> plt.plot(binEdges[:-1], h.to_ndarray())
+
+
+.. function:: value_counts(pda: arkouda.pdarrayclass.pdarray) -> Union[(Categorical, Tuple[Union[pdarray, Strings], Optional[pdarray]])]
+
+   Count the occurrences of the unique values of an array.
+
+   :param pda: The array of values to count
+   :type pda: pdarray, int64
+
+   :returns: * **unique_values** (*pdarray, int64 or Strings*) -- The unique values, sorted in ascending order
+             * **counts** (*pdarray, int64*) -- The number of times the corresponding unique value occurs
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. seealso:: :obj:`unique`, :obj:`histogram`
+
+   .. rubric:: Notes
+
+   This function differs from ``histogram()`` in that it only returns
+   counts for values that are present, leaving out empty "bins". This
+   function delegates all logic to the unique() method where the
+   return_counts parameter is set to True.
+
+   .. rubric:: Examples
+
+   >>> A = ak.array([2, 0, 2, 4, 0, 0])
+   >>> ak.value_counts(A)
+   (array([0, 2, 4]), array([3, 2, 1]))
+
+
+.. function:: ls_hdf(filename: str) -> str
+
+   This function calls the h5ls utility on a filename visible to the
+   arkouda server.
+
+   :param filename: The name of the file to pass to h5ls
+   :type filename: str
+
+   :returns: The string output of `h5ls <filename>` from the server
+   :rtype: str
+
+
+.. function:: read_hdf(dsetName: str, filenames: Union[(str, List[str])], strictTypes: bool = True) -> Union[(pdarray, Strings)]
+
+   Read a single dataset from multiple HDF5 files into an Arkouda
+   pdarray or Strings object.
+
+   :param dsetName: The name of the dataset (must be the same across all files)
+   :type dsetName: str
+   :param filenames: Either a list of filenames or shell expression
+   :type filenames: list or str
+   :param strictTypes: If True (default), require all dtypes in all files to have the
+                       same precision and sign. If False, allow dtypes of different
+                       precision and sign across different files. For example, if one
+                       file contains a uint32 dataset and another contains an int64
+                       dataset, the contents of both will be read into an int64 pdarray.
+   :type strictTypes: bool
+
+   :returns: A pdarray or Strings instance pointing to the server-side data
+   :rtype: Union[pdarray,Strings]
+
+   :raises TypeError: Raised if dsetName is not a str or if filenames is neither a string
+       nor a list of strings
+   :raises ValueError: Raised if all datasets are not present in all hdf5 files
+
+   .. seealso:: :obj:`get_datasets`, :obj:`ls_hdf`, :obj:`read_all`, :obj:`load`, :obj:`save`
+
+   .. rubric:: Notes
+
+   If filenames is a string, it is interpreted as a shell expression
+   (a single filename is a valid expression, so it will work) and is
+   expanded with glob to read all matching files. Use ``get_datasets`` to
+   show the names of datasets in HDF5 files.
+
+   If dsetName is not present in all files, a TypeError is raised.
+
+
+.. function:: read_all(filenames: Union[(str, List[str])], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True) -> Union[(pdarray, Strings, Mapping[str, Union[pdarray, Strings]])]
+
+   Read datasets from HDF5 files.
+
+   :param filenames: Either a list of filenames or shell expression
+   :type filenames: list or str
+   :param datasets: (List of) name(s) of dataset(s) to read (default: all available)
+   :type datasets: list or str or None
+   :param iterative: Iterative (True) or Single (False) function call(s) to server
+   :type iterative: bool
+   :param strictTypes: If True (default), require all dtypes of a given dataset to have the
+                       same precision and sign. If False, allow dtypes of different
+                       precision and sign across different files. For example, if one
+                       file contains a uint32 dataset and another contains an int64
+                       dataset with the same name, the contents of both will be read
+                       into an int64 pdarray.
+   :type strictTypes: bool
+
+   :returns: * *For a single dataset returns an Arkouda pdarray or Arkouda Strings object*
+             * *and for multiple datasets returns a dictionary of Arkouda pdarrays or*
+             * *Arkouda Strings.* -- Dictionary of {datasetName: pdarray or String}
+
+   :raises ValueError: Raised if all datasets are not present in all hdf5 files
+
+   .. seealso:: :obj:`read_hdf`, :obj:`get_datasets`, :obj:`ls_hdf`
+
+   .. rubric:: Notes
+
+   If filenames is a string, it is interpreted as a shell expression
+   (a single filename is a valid expression, so it will work) and is
+   expanded with glob to read all matching files.
+
+   If iterative == True each dataset name and file names are passed to
+   the server as independent sequential strings while if iterative == False
+   all dataset names and file names are passed to the server in a single
+   string.
+
+   If datasets is None, infer the names of datasets from the first file
+   and read all of them. Use ``get_datasets`` to show the names of datasets
+   to HDF5 files.
+
+
+.. function:: load(path_prefix: str, dataset: str = 'array') -> Union[(pdarray, Strings)]
+
+   Load a pdarray previously saved with ``pdarray.save()``.
+
+   :param path_prefix: Filename prefix used to save the original pdarray
+   :type path_prefix: str
+   :param dataset: Dataset name where the pdarray was saved, defaults to 'array'
+   :type dataset: str
+
+   :returns: The pdarray or Strings that was previously saved
+   :rtype: Union[pdarray, Strings]
+
+   :raises TypeError: Raised if dataset is not a str
+   :raises ValueError: Raised if all datasets are not present in all hdf5 files
+
+   .. seealso:: :obj:`save`, :obj:`load_all`, :obj:`read_hdf`, :obj:`read_all`
+
+
+.. function:: get_datasets(filename: str) -> List[str]
+
+   Get the names of datasets in an HDF5 file.
+
+   :param filename: Name of an HDF5 file visible to the arkouda server
+   :type filename: str
+
+   :returns: Names of the datasets in the file
+   :rtype: List[str]
+
+   :raises TypeError: Raised if filename is not a str
+
+   .. seealso:: :obj:`ls_hdf`
+
+
+.. function:: load_all(path_prefix: str) -> Mapping[(str, Union[pdarray, Strings])]
+
+   Load multiple pdarrays or Strings previously saved with ``save_all()``.
+
+   :param path_prefix: Filename prefix used to save the original pdarray
+   :type path_prefix: str
+
+   :returns: Dictionary of {datsetName: pdarray} with the previously saved pdarrays
+   :rtype: Mapping[str,pdarray]
+
+   :raises ValueError: Raised if all datasets are not present in all hdf5 files
+
+   .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read_hdf`, :obj:`read_all`
+
+
+.. function:: save_all(columns: Union[(Mapping[str, pdarray], List[pdarray])], prefix_path: str, names: List[str] = None, mode: str = 'truncate') -> None
+
+   Save multiple named pdarrays to HDF5 files.
+
+   :param columns: Collection of arrays to save
+   :type columns: dict or list of pdarrays
+   :param prefix_path: Directory and filename prefix for output files
+   :type prefix_path: str
+   :param names: Dataset names for the pdarrays
+   :type names: list of str
+   :param mode: By default, truncate (overwrite) the output files if they exist.
+                If 'append', attempt to create new dataset in existing files.
+   :type mode: {'truncate' | 'append'}
+
+   :returns:
+   :rtype: None
+
+   :raises ValueError: Raised if (1) the lengths of columns and values differ or (2) the mode
+       is not 'truncate' or 'append'
+
+   .. seealso:: :obj:`save`, :obj:`load_all`
+
+   .. rubric:: Notes
+
+   Creates one file per locale containing that locale's chunk of each pdarray.
+   If columns is a dictionary, the keys are used as the HDF5 dataset names.
+   Otherwise, if no names are supplied, 0-up integers are used. By default,
+   any existing files at path_prefix will be overwritten, unless the user
+   specifies the 'append' mode, in which case arkouda will attempt to add
+   <columns> as new datasets to existing files. If the wrong number of files
+   is present or dataset names already exist, a RuntimeError is raised.
+
+
+.. class:: GroupBy(keys: Union[(pdarray, Strings, 'Categorical', List[Union[pdarray, np.int64, Strings]])], assume_sorted: bool = False, hash_strings: bool = True)
+
+
+   Group an array or list of arrays by value, usually in preparation
+   for aggregating the within-group values of another array.
+
+   :param keys: The array to group by value, or if list, the column arrays to group by row
+   :type keys: (list of) pdarray, int64 or Strings
+   :param assume_sorted: If True, assume keys is already sorted (Default: False)
+   :type assume_sorted: bool
+
+   .. attribute:: nkeys
+
+      The number of key arrays (columns)
+
+      :type: Union[int,np.int64]
+
+   .. attribute:: size
+
+      The length of the array(s), i.e. number of rows
+
+      :type: Union[int,np.int64]
+
+   .. attribute:: permutation
+
+      The permutation that sorts the keys array(s) by value (row)
+
+      :type: pdarray
+
+   .. attribute:: unique_keys
+
+      The unique values of the keys array(s), in grouped order
+
+      :type: (list of) pdarray or Strings
+
+   .. attribute:: segments
+
+      The start index of each group in the grouped array(s)
+
+      :type: pdarray
+
+   .. attribute:: unique_key_indices
+
+      The first index in the raw (ungrouped) keys array(s) where each
+      unique value (row) occurs
+
+      :type: pdarray
+
+   .. attribute:: logger
+
+      Used for all logging operations
+
+      :type: ArkoudaLogger
+
+   :raises TypeError: Raised if keys is a pdarray with a dtype other than int64
+
+   .. rubric:: Notes
+
+   Only accepts pdarrays of int64 dtype or Strings.
+
+   .. attribute:: Reductions
+      
+
+      
+
+   .. method:: find_segments(self) -> None
+
+
+   .. method:: count(self) -> Tuple[(List[Union[pdarray, Strings]], pdarray)]
+
+      Count the number of elements in each group, i.e. the number of times
+      each key appears.
+
+      :param none:
+
+      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
+                * **counts** (*pdarray, int64*) -- The number of times each unique key appears
+
+      .. rubric:: Examples
+
+      >>> a = ak.randint(1,5,10)
+      >>> a
+      array([3, 2, 3, 1, 2, 4, 3, 4, 3, 4])
+      >>> g = ak.GroupBy(a)
+      >>> keys,counts = g.count()
+      >>> keys
+      array([1, 2, 3, 4])
+      >>> counts
+      array([1, 2, 4, 3])
+
+
+   .. method:: aggregate(self, values: arkouda.pdarrayclass.pdarray, operator: str, skipna: bool = True) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+
+      Using the permutation stored in the GroupBy instance, group another
+      array of values and apply a reduction to each group's values.
+
+      :param values: The values to group and reduce
+      :type values: pdarray
+      :param operator: The name of the reduction operator to use
+      :type operator: str
+
+      :returns: * **unique_keys** (*[Union[pdarray,List[Union[pdarray,Strings]]]*) -- The unique keys, in grouped order
+                * **aggregates** (*pdarray*) -- One aggregate value per unique key in the GroupBy instance
+
+      :raises TypeError: Raised if the values array is not a pdarray
+      :raises ValueError: Raised if the key array size does not match the values size or
+          if the operator is not in the GroupBy.Reductions array
+      :raises RuntimeError: Raised if the requested operator is not supported for the
+          values dtype
+
+      .. rubric:: Examples
+
+      >>> keys = ak.arange(0, 10)
+      >>> vals = ak.linspace(-1, 1, 10)
+      >>> g = ak.GroupBy(keys)
+      >>> g.aggregate(vals, 'sum')
+      (array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]), array([-1, -0.77777777777777768,
+      -0.55555555555555536, -0.33333333333333348, -0.11111111111111116,
+      0.11111111111111116, 0.33333333333333348, 0.55555555555555536, 0.77777777777777768,
+      1]))
+      >>> g.aggregate(vals, 'min')
+      (array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]), array([-1, -0.77777777777777779,
+      -0.55555555555555558, -0.33333333333333337, -0.11111111111111116, 0.11111111111111116,
+      0.33333333333333326, 0.55555555555555536, 0.77777777777777768, 1]))
+
+
+   .. method:: sum(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+
+      Using the permutation stored in the GroupBy instance, group
+      another array of values and sum each group's values.
+
+      :param values: The values to group and sum
+      :type values: pdarray
+
+      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
+                * **group_sums** (*pdarray*) -- One sum per unique key in the GroupBy instance
+
+      :raises TypeError: Raised if the values array is not a pdarray object
+      :raises ValueError: Raised if the key array size does not match the values size or
+          if the operator is not in the GroupBy.Reductions array
+
+      .. rubric:: Notes
+
+      The grouped sum of a boolean ``pdarray`` returns integers.
+
+      .. rubric:: Examples
+
+      >>> a = ak.randint(1,5,10)
+      >>> a
+      array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+      >>> g = ak.GroupBy(a)
+      >>> g.keys
+      array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+      >>> b = ak.randint(1,5,10)
+      >>> b
+      array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
+      >>> g.sum(b)
+      (array([2, 3, 4]), array([8, 14, 6]))
+
+
+   .. method:: prod(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+
+      Using the permutation stored in the GroupBy instance, group
+      another array of values and compute the product of each group's
+      values.
+
+      :param values: The values to group and multiply
+      :type values: pdarray
+
+      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
+                * **group_products** (*pdarray, float64*) -- One product per unique key in the GroupBy instance
+
+      :raises TypeError: Raised if the values array is not a pdarray object
+      :raises ValueError: Raised if the key array size does not match the values size
+          or if the operator is not in the GroupBy.Reductions array
+      :raises RuntimeError: Raised if prod is not supported for the values dtype
+
+      .. rubric:: Notes
+
+      The return dtype is always float64.
+
+      .. rubric:: Examples
+
+      >>> a = ak.randint(1,5,10)
+      >>> a
+      array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+      >>> g = ak.GroupBy(a)
+      >>> g.keys
+      array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+      >>> b = ak.randint(1,5,10)
+      >>> b
+      array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
+      >>> g.prod(b)
+      (array([2, 3, 4]), array([12, 108.00000000000003, 8.9999999999999982]))
+
+
+   .. method:: mean(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+
+      Using the permutation stored in the GroupBy instance, group
+      another array of values and compute the mean of each group's
+      values.
+
+      :param values: The values to group and average
+      :type values: pdarray
+
+      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
+                * **group_means** (*pdarray, float64*) -- One mean value per unique key in the GroupBy instance
+
+      :raises TypeError: Raised if the values array is not a pdarray object
+      :raises ValueError: Raised if the key array size does not match the values size
+          or if the operator is not in the GroupBy.Reductions array
+
+      .. rubric:: Notes
+
+      The return dtype is always float64.
+
+      .. rubric:: Examples
+
+      >>> a = ak.randint(1,5,10)
+      >>> a
+      array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+      >>> g = ak.GroupBy(a)
+      >>> g.keys
+      array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+      >>> b = ak.randint(1,5,10)
+      >>> b
+      array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
+      >>> g.mean(b)
+      (array([2, 3, 4]), array([2.6666666666666665, 2.7999999999999998, 3]))
+
+
+   .. method:: min(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+
+      Using the permutation stored in the GroupBy instance, group
+      another array of values and return the minimum of each group's
+      values.
+
+      :param values: The values to group and find minima
+      :type values: pdarray
+
+      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
+                * **group_minima** (*pdarray*) -- One minimum per unique key in the GroupBy instance
+
+      :raises TypeError: Raised if the values array is not a pdarray object or if min is
+          not supported for the values dtype
+      :raises ValueError: Raised if the key array size does not match the values size
+          or if the operator is not in the GroupBy.Reductions array
+      :raises RuntimeError: Raised if min is not supported for the values dtype
+
+      .. rubric:: Examples
+
+      >>> a = ak.randint(1,5,10)
+      >>> a
+      array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+      >>> g = ak.GroupBy(a)
+      >>> g.keys
+      array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+      >>> b = ak.randint(1,5,10)
+      >>> b
+      array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
+      >>> g.min(b)
+      (array([2, 3, 4]), array([1, 1, 3]))
+
+
+   .. method:: max(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+
+      Using the permutation stored in the GroupBy instance, group
+      another array of values and return the maximum of each
+      group's values.
+
+      :param values: The values to group and find maxima
+      :type values: pdarray
+
+      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
+                * **group_maxima** (*pdarray*) -- One maximum per unique key in the GroupBy instance
+
+      :raises TypeError: Raised if the values array is not a pdarray object or if max is
+          not supported for the values dtype
+      :raises ValueError: Raised if the key array size does not match the values size or
+          if the operator is not in the GroupBy.Reductions array
+      :raises RuntimeError: Raised if max is not supported for the values dtype
+
+      .. rubric:: Examples
+
+      >>> a = ak.randint(1,5,10)
+      >>> a
+      array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+      >>> g = ak.GroupBy(a)
+      >>> g.keys
+      array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+      >>> b = ak.randint(1,5,10)
+      >>> b
+      array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
+      >>> g.max(b)
+      (array([2, 3, 4]), array([4, 4, 3]))
+
+
+   .. method:: argmin(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+
+      Using the permutation stored in the GroupBy instance, group
+      another array of values and return the location of the first
+      minimum of each group's values.
+
+      :param values: The values to group and find argmin
+      :type values: pdarray
+
+      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
+                * **group_argminima** (*pdarray, int64*) -- One index per unique key in the GroupBy instance
+
+      :raises TypeError: Raised if the values array is not a pdarray object or if argmax
+          is not supported for the values dtype
+      :raises ValueError: Raised if the key array size does not match the values
+          size or if the operator is not in the GroupBy.Reductions array
+      :raises RuntimeError: Raised if argmin is not supported for the values dtype
+
+      .. rubric:: Notes
+
+      The returned indices refer to the original values array as
+      passed in, not the permutation applied by the GroupBy instance.
+
+      .. rubric:: Examples
+
+      >>> a = ak.randint(1,5,10)
+      >>> a
+      array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+      >>> g = ak.GroupBy(a)
+      >>> g.keys
+      array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+      >>> b = ak.randint(1,5,10)
+      >>> b
+      array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
+      >>> g.argmin(b)
+      (array([2, 3, 4]), array([5, 4, 2]))
+
+
+   .. method:: argmax(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+
+      Using the permutation stored in the GroupBy instance, group
+      another array of values and return the location of the first
+      maximum of each group's values.
+
+      :param values: The values to group and find argmax
+      :type values: pdarray
+
+      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
+                * **group_argmaxima** (*pdarray, int64*) -- One index per unique key in the GroupBy instance
+
+      :raises TypeError: Raised if the values array is not a pdarray object or if argmax
+          is not supported for the values dtype
+      :raises ValueError: Raised if the key array size does not match the values size or
+          if the operator is not in the GroupBy.Reductions array
+
+      .. rubric:: Notes
+
+      The returned indices refer to the original values array as passed in,
+      not the permutation applied by the GroupBy instance.
+
+      .. rubric:: Examples
+
+      >>> a = ak.randint(1,5,10)
+      >>> a
+      array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+      >>> g = ak.GroupBy(a)
+      >>> g.keys
+      array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+      >>> b = ak.randint(1,5,10)
+      >>> b
+      array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
+      >>> g.argmax(b)
+      (array([2, 3, 4]), array([9, 3, 2]))
+
+
+   .. method:: nunique(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+
+      Using the permutation stored in the GroupBy instance, group another
+      array of values and return the number of unique values in each group.
+
+      :param values: The values to group and find unique values
+      :type values: pdarray, int64
+
+      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
+                * **group_nunique** (*pdarray, int64*) -- Number of unique values per unique key in the GroupBy instance
+
+      :raises TypeError: Raised if the values array is not a pdarray or the pdarray
+          dtype is not supported for the nunique method
+      :raises ValueError: Raised if the key array size does not match the values size or
+          if the operator is not in the GroupBy.Reductions array
+      :raises RuntimeError: Raised if nunique is not supported for the values dtype
+
+      .. rubric:: Examples
+
+      >>> a = ak.randint(1,5,10)
+      >>> a
+      array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+      >>> g = ak.GroupBy(a)
+      >>> g.keys
+      array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
+      >>> b = ak.randint(1,5,10)
+      >>> b
+      array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
+      >>> g.nunique(b)
+      (array([2, 3, 4]), array([3, 3, 1]))
+
+
+   .. method:: any(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+
+      Using the permutation stored in the GroupBy instance, group another
+      array of values and perform an "or" reduction on each group.
+
+      :param values: The values to group and reduce with "or"
+      :type values: pdarray, bool
+
+      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
+                * **group_any** (*pdarray, bool*) -- One bool per unique key in the GroupBy instance
+
+      :raises TypeError: Raised if the values array is not a pdarray or if the pdarray
+          dtype is not bool
+      :raises ValueError: Raised if the key array size does not match the values size or
+          if the operator is not in the GroupBy.Reductions array
+
+
+   .. method:: all(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+
+      Using the permutation stored in the GroupBy instance, group
+      another array of values and perform an "and" reduction on
+      each group.
+
+      :param values: The values to group and reduce with "and"
+      :type values: pdarray, bool
+
+      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
+                * **group_any** (*pdarray, bool*) -- One bool per unique key in the GroupBy instance
+
+      :raises TypeError: Raised if the values array is not a pdarray or if the pdarray
+          dtype is not bool
+      :raises ValueError: Raised if the key array size does not match the values size or
+          if the operator is not in the GroupBy.Reductions array
+      :raises RuntimeError: Raised if all is not supported for the values dtype
+
+
+   .. method:: OR(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+
+      Bitwise OR of values in each segment.
+
+      Using the permutation stored in the GroupBy instance, group
+      another array of values and perform a bitwise OR reduction on
+      each group.
+
+      :param values: The values to group and reduce with OR
+      :type values: pdarray, int64
+
+      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
+                * **result** (*pdarray, int64*) -- Bitwise OR of values in segments corresponding to keys
+
+      :raises TypeError: Raised if the values array is not a pdarray or if the pdarray
+          dtype is not int64
+      :raises ValueError: Raised if the key array size does not match the values size or
+          if the operator is not in the GroupBy.Reductions array
+      :raises RuntimeError: Raised if all is not supported for the values dtype
+
+
+   .. method:: AND(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+
+      Bitwise AND of values in each segment.
+
+      Using the permutation stored in the GroupBy instance, group
+      another array of values and perform a bitwise AND reduction on
+      each group.
+
+      :param values: The values to group and reduce with AND
+      :type values: pdarray, int64
+
+      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
+                * **result** (*pdarray, int64*) -- Bitwise AND of values in segments corresponding to keys
+
+      :raises TypeError: Raised if the values array is not a pdarray or if the pdarray
+          dtype is not int64
+      :raises ValueError: Raised if the key array size does not match the values size or
+          if the operator is not in the GroupBy.Reductions array
+      :raises RuntimeError: Raised if all is not supported for the values dtype
+
+
+   .. method:: XOR(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+
+      Bitwise XOR of values in each segment.
+
+      Using the permutation stored in the GroupBy instance, group
+      another array of values and perform a bitwise XOR reduction on
+      each group.
+
+      :param values: The values to group and reduce with XOR
+      :type values: pdarray, int64
+
+      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
+                * **result** (*pdarray, int64*) -- Bitwise XOR of values in segments corresponding to keys
+
+      :raises TypeError: Raised if the values array is not a pdarray or if the pdarray
+          dtype is not int64
+      :raises ValueError: Raised if the key array size does not match the values size or
+          if the operator is not in the GroupBy.Reductions array
+      :raises RuntimeError: Raised if all is not supported for the values dtype
+
+
+   .. method:: broadcast(self, values: arkouda.pdarrayclass.pdarray, permute: bool = False) -> arkouda.pdarrayclass.pdarray
+
+      Fill each group's segment with a constant value.
+
+      :param values: The values to put in each group's segment
+      :type values: pdarray
+
+      :returns: The broadcast values
+      :rtype: pdarray
+
+      :raises TypeError: Raised if value is not a pdarray object
+      :raises ValueError: Raised if the values array does not have one
+          value per segment
+
+      .. rubric:: Notes
+
+      This function is a sparse analog of ``np.broadcast``. If a
+      GroupBy object represents a sparse matrix (tensor), then
+      this function takes a (dense) column vector and replicates
+      each value to the non-zero elements in the corresponding row.
+
+      The returned array is in permuted (grouped) order. To get
+      back to the order of the array on which GroupBy was called,
+      the user must invert the permutation (see below).
+
+      .. rubric:: Examples
+
+      >>> a = ak.array([0, 1, 0, 1, 0])
+      >>> values = ak.array([3, 5])
+      >>> g = ak.GroupBy(a)
+      # Result is in grouped order
+      >>> g.broadcast(values)
+      array([3, 3, 3, 5, 5]
+
+      >>> b = ak.zeros_like(a)
+      # Result is in original order
+      >>> b[g.permutation] = g.broadcast(values)
+      >>> b
+      array([3, 5, 3, 5, 3])
+
+      >>> a = ak.randint(1,5,10)
+      >>> a
+      array([3, 1, 4, 4, 4, 1, 3, 3, 2, 2])
+      >>> g = ak.GroupBy(a)
+      >>> keys,counts = g.count()
+      >>> g.broadcast(counts > 2)
+      array([0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
+      >>> g.broadcast(counts == 3)
+      array([0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
+      >>> g.broadcast(counts < 4)
+      array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+
+
+
+.. function:: broadcast(segments: arkouda.pdarrayclass.pdarray, values: arkouda.pdarrayclass.pdarray, size: Union[(int, np.int64)] = -1, permutation: Union[(pdarray, None)] = None)
+
+
+.. data:: GROUPBY_REDUCTION_TYPES
+   
+
+   
+
+.. class:: Strings(offset_attrib: Union[(pdarray, str)], bytes_attrib: Union[(pdarray, str)])
+
+
+   Represents an array of strings whose data resides on the
+   arkouda server. The user should not call this class directly;
+   rather its instances are created by other arkouda functions.
+
+   .. attribute:: offsets
+
+      The starting indices for each string
+
+      :type: pdarray
+
+   .. attribute:: bytes
+
+      The raw bytes of all strings, joined by nulls
+
+      :type: pdarray
+
+   .. attribute:: size
+
+      The number of strings in the array
+
+      :type: int_scalars
+
+   .. attribute:: nbytes
+
+      The total number of bytes in all strings
+
+      :type: int_scalars
+
+   .. attribute:: ndim
+
+      The rank of the array (currently only rank 1 arrays supported)
+
+      :type: int_scalars
+
+   .. attribute:: shape
+
+      The sizes of each dimension of the array
+
+      :type: tuple
+
+   .. attribute:: dtype
+
+      The dtype is ak.str
+
+      :type: dtype
+
+   .. attribute:: logger
+
+      Used for all logging operations
+
+      :type: ArkoudaLogger
+
+   .. rubric:: Notes
+
+   Strings is composed of two pdarrays: (1) offsets, which contains the
+   starting indices for each string and (2) bytes, which contains the
+   raw bytes of all strings, delimited by nulls.
+
+   .. attribute:: BinOps
+      
+
+      
+
+   .. attribute:: objtype
+      :annotation: = str
+
+      
+
+   .. method:: __iter__(self)
+      :abstractmethod:
+
+
+   .. method:: __len__(self) -> int
+
+
+   .. method:: __str__(self) -> str
+
+      Return str(self).
+
+
+   .. method:: __repr__(self) -> str
+
+      Return repr(self).
+
+
+   .. method:: _binop(self, other: Union[(Strings, str_scalars)], op: str) -> arkouda.pdarrayclass.pdarray
+
+      Executes the requested binop on this Strings instance and the
+          parameter Strings object and returns the results within
+          a pdarray object.
+
+          Parameters
+          ----------
+          other : Strings, str_scalars
+              the other object is a Strings object
+          op : str
+              name of the binary operation to be performed
+
+          Returns
+          -------
+          pdarray
+              encapsulating the results of the requested binop
+
+          Raises
+      -   -----
+          ValueError
+              Raised if (1) the op is not in the self.BinOps set, or (2) if the
+              sizes of this and the other instance don't match, or (3) the other
+              object is not a Strings object
+          RuntimeError
+              Raised if a server-side error is thrown while executing the
+              binary operation
+
+
+   .. method:: __eq__(self, other) -> bool
+
+      Return self==value.
+
+
+   .. method:: __ne__(self, other) -> bool
+
+      Return self!=value.
+
+
+   .. method:: __getitem__(self, key)
+
+
+   .. method:: get_lengths(self) -> arkouda.pdarrayclass.pdarray
+
+      Return the length of each string in the array.
+
+      :returns: The length of each string
+      :rtype: pdarray, int
+
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+
+   .. method:: contains(self, substr: Union[(bytes, str_scalars)]) -> arkouda.pdarrayclass.pdarray
+
+      Check whether each element contains the given substring.
+
+      :param substr: The substring in the form of string or byte array to search for
+      :type substr: str_scalars
+
+      :returns: True for elements that contain substr, False otherwise
+      :rtype: pdarray, bool
+
+      :raises TypeError: Raised if the substr parameter is not bytes or str_scalars
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.startswith`, :obj:`Strings.endswith`
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['string {}'.format(i) for i in range(1,6)])
+      >>> strings
+      array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5'])
+      >>> strings.contains('string')
+      array([True, True, True, True, True])
+
+
+   .. method:: startswith(self, substr: Union[(bytes, str_scalars)]) -> arkouda.pdarrayclass.pdarray
+
+      Check whether each element starts with the given substring.
+
+      :param substr: The prefix to search for
+      :type substr: Union[bytes,str_scalars]
+
+      :returns: True for elements that start with substr, False otherwise
+      :rtype: pdarray, bool
+
+      :raises TypeError: Raised if the substr parameter is not a bytes ior str_scalars
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.contains`, :obj:`Strings.endswith`
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['string {}'.format(i) for i in range(1,6)])
+      >>> strings
+      array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5'])
+      >>> strings.startswith('string')
+      array([True, True, True, True, True])
+
+
+   .. method:: endswith(self, substr: Union[(bytes, str_scalars)]) -> arkouda.pdarrayclass.pdarray
+
+      Check whether each element ends with the given substring.
+
+      :param substr: The suffix to search for
+      :type substr: Union[bytes,str_scalars]
+
+      :returns: True for elements that end with substr, False otherwise
+      :rtype: pdarray, bool
+
+      :raises TypeError: Raised if the substr parameter is not bytes or str_scalars
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.contains`, :obj:`Strings.startswith`
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['{} string'.format(i) for i in range(1,6)])
+      >>> strings
+      array(['1 string', '2 string', '3 string', '4 string', '5 string'])
+      >>> strings.endswith('ing')
+      array([True, True, True, True, True])
+
+
+   .. method:: flatten(self, delimiter: str, return_segments: bool = False) -> Union[(Strings, Tuple)]
+
+      Unpack delimiter-joined substrings into a flat array.
+
+      :param delimeter: Characters used to split strings into substrings
+      :type delimeter: str
+      :param return_segments: If True, also return mapping of original strings to first substring
+                              in return array.
+      :type return_segments: bool
+
+      :returns: * *Strings* -- Flattened substrings with delimiters removed
+                * *pdarray, int64 (optional)* -- For each original string, the index of first corresponding substring
+                  in the return array
+
+      .. seealso:: :obj:`peel`, :obj:`rpeel`
+
+      .. rubric:: Examples
+
+      >>> orig = ak.array(['one|two', 'three|four|five', 'six'])
+      >>> orig.flatten('|')
+      array(['one', 'two', 'three', 'four', 'five', 'six'])
+      >>> flat, map = orig.flatten('|', return_segments=True)
+      >>> map
+      array([0, 2, 5])
+
+
+   .. method:: peel(self, delimiter: Union[(bytes, str_scalars)], times: arkouda.dtypes.int_scalars = 1, includeDelimiter: bool = False, keepPartial: bool = False, fromRight: bool = False) -> Tuple
+
+      Peel off one or more delimited fields from each string (similar
+      to string.partition), returning two new arrays of strings.
+      *Warning*: This function is experimental and not guaranteed to work.
+
+      :param delimiter: The separator where the split will occur
+      :type delimiter: Union[bytes,str_scalars]
+      :param times: The number of times the delimiter is sought, i.e. skip over
+                    the first (times-1) delimiters
+      :type times: Union[int,np.int64]
+      :param includeDelimiter: If true, append the delimiter to the end of the first return
+                               array. By default, it is prepended to the beginning of the
+                               second return array.
+      :type includeDelimiter: bool
+      :param keepPartial: If true, a string that does not contain <times> instances of
+                          the delimiter will be returned in the first array. By default,
+                          such strings are returned in the second array.
+      :type keepPartial: bool
+      :param fromRight: If true, peel from the right instead of the left (see also rpeel)
+      :type fromRight: bool
+
+      :returns:
+
+                left : Strings
+                    The field(s) peeled from the end of each string (unless
+                    fromRight is true)
+                right : Strings
+                    The remainder of each string after peeling (unless fromRight
+                    is true)
+      :rtype: Tuple[Strings,Strings]
+
+      :raises TypeError: Raised if the delimiter parameter is not byte or str_scalars, if
+          times is not int64, or if includeDelimiter, keepPartial, or
+          fromRight is not bool
+      :raises ValueError: Raised if times is < 1
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`rpeel`, :obj:`stick`, :obj:`lstick`
+
+      .. rubric:: Examples
+
+      >>> s = ak.array(['a.b', 'c.d', 'e.f.g'])
+      >>> s.peel('.')
+      (array(['a', 'c', 'e']), array(['b', 'd', 'f.g']))
+      >>> s.peel('.', includeDelimiter=True)
+      (array(['a.', 'c.', 'e.']), array(['b', 'd', 'f.g']))
+      >>> s.peel('.', times=2)
+      (array(['', '', 'e.f']), array(['a.b', 'c.d', 'g']))
+      >>> s.peel('.', times=2, keepPartial=True)
+      (array(['a.b', 'c.d', 'e.f']), array(['', '', 'g']))
+
+
+   .. method:: rpeel(self, delimiter: Union[(bytes, str_scalars)], times: arkouda.dtypes.int_scalars = 1, includeDelimiter: bool = False, keepPartial: bool = False)
+
+      Peel off one or more delimited fields from the end of each string
+      (similar to string.rpartition), returning two new arrays of strings.
+      *Warning*: This function is experimental and not guaranteed to work.
+
+      :param delimiter: The separator where the split will occur
+      :type delimiter: Union[bytes,str_scalars]
+      :param times: The number of times the delimiter is sought, i.e. skip over
+                    the last (times-1) delimiters
+      :type times: Union[int,np.int64]
+      :param includeDelimiter: If true, prepend the delimiter to the start of the first return
+                               array. By default, it is appended to the end of the
+                               second return array.
+      :type includeDelimiter: bool
+      :param keepPartial: If true, a string that does not contain <times> instances of
+                          the delimiter will be returned in the second array. By default,
+                          such strings are returned in the first array.
+      :type keepPartial: bool
+
+      :returns: * **left** (*Strings*) -- The remainder of the string after peeling
+                * **right** (*Strings*) -- The field(s) that were peeled from the right of each string
+
+      :raises TypeError: Raised if the delimiter parameter is not bytes or str_scalars or
+          if times is not int64
+      :raises ValueError: Raised if times is < 1
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`peel`, :obj:`stick`, :obj:`lstick`
+
+      .. rubric:: Examples
+
+      >>> s = ak.array(['a.b', 'c.d', 'e.f.g'])
+      >>> s.rpeel('.')
+      (array(['a', 'c', 'e.f']), array(['b', 'd', 'g']))
+      # Compared against peel
+      >>> s.peel('.')
+      (array(['a', 'c', 'e']), array(['b', 'd', 'f.g']))
+
+
+   .. method:: stick(self, other: arkouda.strings.Strings, delimiter: Union[(bytes, str_scalars)] = '', toLeft: bool = False) -> arkouda.strings.Strings
+
+      Join the strings from another array onto one end of the strings
+      of this array, optionally inserting a delimiter.
+      *Warning*: This function is experimental and not guaranteed to work.
+
+      :param other: The strings to join onto self's strings
+      :type other: Strings
+      :param delimiter: String inserted between self and other
+      :type delimiter: str
+      :param toLeft: If true, join other strings to the left of self. By default,
+                     other is joined to the right of self.
+      :type toLeft: bool
+
+      :returns: The array of joined strings
+      :rtype: Strings
+
+      :raises TypeError: Raised if the delimiter parameter is not bytes or str_scalars
+          or if the other parameter is not a Strings instance
+      :raises ValueError: Raised if times is < 1
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`lstick`, :obj:`peel`, :obj:`rpeel`
+
+      .. rubric:: Examples
+
+      >>> s = ak.array(['a', 'c', 'e'])
+      >>> t = ak.array(['b', 'd', 'f'])
+      >>> s.stick(t, delimiter='.')
+      array(['a.b', 'c.d', 'e.f'])
+
+
+   .. method:: __add__(self, other: arkouda.strings.Strings) -> arkouda.strings.Strings
+
+
+   .. method:: lstick(self, other: arkouda.strings.Strings, delimiter: Union[(bytes, str_scalars)] = '') -> arkouda.strings.Strings
+
+      Join the strings from another array onto the left of the strings
+      of this array, optionally inserting a delimiter.
+      *Warning*: This function is experimental and not guaranteed to work.
+
+      :param other: The strings to join onto self's strings
+      :type other: Strings
+      :param delimiter: String inserted between self and other
+      :type delimiter: Union[bytes,str_scalars]
+
+      :returns: The array of joined strings, as other + self
+      :rtype: Strings
+
+      :raises TypeError: Raised if the delimiter parameter is neither bytes nor a str
+          or if the other parameter is not a Strings instance
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`stick`, :obj:`peel`, :obj:`rpeel`
+
+      .. rubric:: Examples
+
+      >>> s = ak.array(['a', 'c', 'e'])
+      >>> t = ak.array(['b', 'd', 'f'])
+      >>> s.lstick(t, delimiter='.')
+      array(['b.a', 'd.c', 'f.e'])
+
+
+   .. method:: __radd__(self, other: arkouda.strings.Strings) -> arkouda.strings.Strings
+
+
+   .. method:: hash(self) -> Tuple[(pdarray, pdarray)]
+
+      Compute a 128-bit hash of each string.
+
+      :returns: A tuple of two int64 pdarrays. The ith hash value is the concatenation
+                of the ith values from each array.
+      :rtype: Tuple[pdarray,pdarray]
+
+      .. rubric:: Notes
+
+      The implementation uses SipHash128, a fast and balanced hash function (used
+      by Python for dictionaries and sets). For realistic numbers of strings (up
+      to about 10**15), the probability of a collision between two 128-bit hash
+      values is negligible.
+
+
+   .. method:: group(self) -> arkouda.pdarrayclass.pdarray
+
+      Return the permutation that groups the array, placing equivalent
+      strings together. All instances of the same string are guaranteed to lie
+      in one contiguous block of the permuted array, but the blocks are not
+      necessarily ordered.
+
+      :returns: The permutation that groups the array by value
+      :rtype: pdarray
+
+      .. seealso:: :obj:`GroupBy`, :obj:`unique`
+
+      .. rubric:: Notes
+
+      If the arkouda server is compiled with "-sSegmentedArray.useHash=true",
+      then arkouda uses 128-bit hash values to group strings, rather than sorting
+      the strings directly. This method is fast, but the resulting permutation
+      merely groups equivalent strings and does not sort them. If the "useHash"
+      parameter is false, then a full sort is performed.
+
+      :raises RuntimeError: Raised if there is a server-side error in executing group request or
+          creating the pdarray encapsulating the return message
+
+
+   .. method:: to_ndarray(self) -> numpy.ndarray
+
+      Convert the array to a np.ndarray, transferring array data from the
+      arkouda server to Python. If the array exceeds a built-in size limit,
+      a RuntimeError is raised.
+
+      :returns: A numpy ndarray with the same strings as this array
+      :rtype: np.ndarray
+
+      .. rubric:: Notes
+
+      The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
+      otherwise a ``RuntimeError`` will be raised. This is to protect the user
+      from overflowing the memory of the system on which the Python client
+      is running, under the assumption that the server is running on a
+      distributed system with much more memory than the client. The user
+      may override this limit by setting ak.maxTransferBytes to a larger
+      value, but proceed with caution.
+
+      .. seealso:: :obj:`array`
+
+      .. rubric:: Examples
+
+      >>> a = ak.array(["hello", "my", "world"])
+      >>> a.to_ndarray()
+      array(['hello', 'my', 'world'], dtype='<U5')
+      >>> type(a.to_ndarray())
+      numpy.ndarray
+
+
+   .. method:: save(self, prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate') -> None
+
+      Save the Strings object to HDF5. The result is a collection of HDF5 files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the array to its
+      corresponding file.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: The name of the Strings dataset to be written, defaults to strings_array
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', create a new Strings dataset within existing files.
+      :type mode: str {'truncate' | 'append'}
+
+      :returns:
+      :rtype: None
+
+      :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
+          neither 'truncate' nor 'append'
+      :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
+
+      .. seealso:: :obj:`pdarrayIO.save`
+
+      .. rubric:: Notes
+
+      Important implementation notes: (1) Strings state is saved as two datasets
+      within an hdf5 group, (2) the hdf5 group is named via the dataset parameter,
+      (3) the hdf5 group encompasses the two pdarrays composing a Strings object:
+      segments and values and (4) save logic is delegated to pdarray.save
+
+
+   .. method:: register_helper(cls, offsets, bytes)
+      :classmethod:
+
+
+   .. method:: register(self, user_defined_name: str) -> arkouda.strings.Strings
+
+
+   .. method:: unregister(self) -> None
+
+
+   .. method:: attach(user_defined_name: str) -> arkouda.strings.Strings
+      :staticmethod:
+
+
+
+.. function:: join_on_eq_with_dt(a1: arkouda.pdarrayclass.pdarray, a2: arkouda.pdarrayclass.pdarray, t1: arkouda.pdarrayclass.pdarray, t2: arkouda.pdarrayclass.pdarray, dt: Union[(int, np.int64)], pred: str, result_limit: Union[(int, np.int64)] = 1000) -> Tuple[(pdarray, pdarray)]
+
+   Performs an inner-join on equality between two integer arrays where
+   the time-window predicate is also true
+
+   :param a1: pdarray to be joined
+   :type a1: pdarray, int64
+   :param a2: pdarray to be joined
+   :type a2: pdarray, int64
+   :param t1: timestamps in millis corresponding to the a1 pdarray
+   :type t1: pdarray
+   :param t2: timestamps in millis corresponding to the a2 pdarray
+   :type t2: pdarray,
+   :param dt: time delta
+   :type dt: Union[int,np.int64]
+   :param pred: time window predicate
+   :type pred: str
+   :param result_limit: size limit for returned result
+   :type result_limit: Union[int,np.int64]
+
+   :returns: * **result_array_one** (*pdarray, int64*) -- a1 indices where a1 == a2
+             * **result_array_one** (*pdarray, int64*) -- a2 indices where a2 == a1
+
+   :raises TypeError: Raised if a1, a2, t1, or t2 is not a pdarray, or if dt or
+       result_limit is not an int
+   :raises ValueError: if a1, a2, t1, or t2 dtype is not int64, pred is not
+       'true_dt', 'abs_dt', or 'pos_dt', or result_limit is < 0
+
+
+.. class:: Categorical(values, **kwargs)
+
+
+   Represents an array of values belonging to named categories. Converting a
+   Strings object to Categorical often saves memory and speeds up operations,
+   especially if there are many repeated values, at the cost of some one-time
+   work in initialization.
+
+   :param values: String values to convert to categories
+   :type values: Strings
+
+   .. attribute:: categories
+
+      The set of category labels (determined automatically)
+
+      :type: Strings
+
+   .. attribute:: codes
+
+      The category indices of the values or -1 for N/A
+
+      :type: pdarray, int64
+
+   .. attribute:: permutation
+
+      The permutation that groups the values in the same order as categories
+
+      :type: pdarray, int64
+
+   .. attribute:: segments
+
+      When values are grouped, the starting offset of each group
+
+      :type: pdarray, int64
+
+   .. attribute:: size
+
+      The number of items in the array
+
+      :type: Union[int,np.int64]
+
+   .. attribute:: nlevels
+
+      The number of distinct categories
+
+      :type: Union[int,np.int64]
+
+   .. attribute:: ndim
+
+      The rank of the array (currently only rank 1 arrays supported)
+
+      :type: Union[int,np.int64]
+
+   .. attribute:: shape
+
+      The sizes of each dimension of the array
+
+      :type: tuple
+
+   .. attribute:: BinOps
+      
+
+      
+
+   .. attribute:: objtype
+      :annotation: = category
+
+      
+
+   .. attribute:: permutation
+      
+
+      
+
+   .. attribute:: segments
+      
+
+      
+
+   .. method:: from_codes(cls, codes: arkouda.pdarrayclass.pdarray, categories: arkouda.strings.Strings, permutation=None, segments=None) -> arkouda.categorical.Categorical
+      :classmethod:
+
+      Make a Categorical from codes and categories arrays. If codes and
+      categories have already been pre-computed, this constructor saves
+      time. If not, please use the normal constructor.
+
+      :param codes: Category indices of each value
+      :type codes: pdarray, int64
+      :param categories: Unique category labels
+      :type categories: Strings
+      :param permutation: The permutation that groups the values in the same order
+                          as categories
+      :type permutation: pdarray, int64
+      :param segments: When values are grouped, the starting offset of each group
+      :type segments: pdarray, int64
+
+      :returns: The Categorical object created from the input parameters
+      :rtype: Categorical
+
+      :raises TypeError: Raised if codes is not a pdarray of int64 objects or if
+          categories is not a Strings object
+
+
+   .. method:: to_ndarray(self) -> numpy.ndarray
+
+      Convert the array to a np.ndarray, transferring array data from
+      the arkouda server to Python. This conversion discards category
+      information and produces an ndarray of strings. If the arrays
+      exceeds a built-in size limit, a RuntimeError is raised.
+
+      :returns: A numpy ndarray of strings corresponding to the values in
+                this array
+      :rtype: np.ndarray
+
+      .. rubric:: Notes
+
+      The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
+      otherwise a ``RuntimeError`` will be raised. This is to protect the user
+      from overflowing the memory of the system on which the Python client
+      is running, under the assumption that the server is running on a
+      distributed system with much more memory than the client. The user
+      may override this limit by setting ak.maxTransferBytes to a larger
+      value, but proceed with caution.
+
+
+   .. method:: __iter__(self)
+
+
+   .. method:: __len__(self)
+
+
+   .. method:: __str__(self)
+
+      Return str(self).
+
+
+   .. method:: __repr__(self)
+
+      Return repr(self).
+
+
+   .. method:: _binop(self, other: Union[(Categorical, str_scalars)], op: arkouda.dtypes.str_scalars) -> arkouda.pdarrayclass.pdarray
+
+      Executes the requested binop on this Categorical instance and returns
+          the results within a pdarray object.
+
+          Parameters
+          ----------
+          other : Union[Categorical,str_scalars]
+              the other object is a Categorical object or string scalar
+          op : str_scalars
+              name of the binary operation to be performed
+
+          Returns
+          -------
+          pdarray
+              encapsulating the results of the requested binop
+
+          Raises
+      -   -----
+          ValueError
+              Raised if (1) the op is not in the self.BinOps set, or (2) if the
+              sizes of this and the other instance don't match
+          RuntimeError
+              Raised if a server-side error is thrown while executing the
+              binary operation
+
+
+   .. method:: _r_binop(self, other: Union[(Categorical, str_scalars)], op: arkouda.dtypes.str_scalars) -> arkouda.pdarrayclass.pdarray
+
+      Executes the requested reverse binop on this Categorical instance and
+          returns the results within a pdarray object.
+
+          Parameters
+          ----------
+          other : Union[Categorical,str_scalars]
+              the other object is a Categorical object or string scalar
+          op : str_scalars
+              name of the binary operation to be performed
+
+          Returns
+          -------
+          pdarray
+              encapsulating the results of the requested binop
+
+          Raises
+      -   -----
+          ValueError
+              Raised if (1) the op is not in the self.BinOps set, or (2) if the
+              sizes of this and the other instance don't match
+          RuntimeError
+              Raised if a server-side error is thrown while executing the
+              binary operation
+
+
+   .. method:: __eq__(self, other)
+
+      Return self==value.
+
+
+   .. method:: __ne__(self, other)
+
+      Return self!=value.
+
+
+   .. method:: __getitem__(self, key) -> arkouda.categorical.Categorical
+
+
+   .. method:: reset_categories(self) -> arkouda.categorical.Categorical
+
+      Recompute the category labels, discarding any unused labels. This
+      method is often useful after slicing or indexing a Categorical array,
+      when the resulting array only contains a subset of the original
+      categories. In this case, eliminating unused categories can speed up
+      other operations.
+
+      :returns: A Categorical object generated from the current instance
+      :rtype: Categorical
+
+
+   .. method:: contains(self, substr: str) -> arkouda.pdarrayclass.pdarray
+
+      Check whether each element contains the given substring.
+
+      :param substr: The substring to search for
+      :type substr: str
+
+      :returns: True for elements that contain substr, False otherwise
+      :rtype: pdarray, bool
+
+      :raises TypeError: Raised if substr is not a str
+
+      .. rubric:: Notes
+
+      This method can be significantly faster than the corresponding method
+      on Strings objects, because it searches the unique category labels
+      instead of the full array.
+
+      .. seealso:: :obj:`Categorical.startswith`, :obj:`Categorical.endswith`
+
+
+   .. method:: startswith(self, substr: str) -> arkouda.pdarrayclass.pdarray
+
+      Check whether each element starts with the given substring.
+
+      :param substr: The substring to search for
+      :type substr: str
+
+      :raises TypeError: Raised if substr is not a str
+
+      :returns: True for elements that contain substr, False otherwise
+      :rtype: pdarray, bool
+
+      .. rubric:: Notes
+
+      This method can be significantly faster than the corresponding
+      method on Strings objects, because it searches the unique category
+      labels instead of the full array.
+
+      .. seealso:: :obj:`Categorical.contains`, :obj:`Categorical.endswith`
+
+
+   .. method:: endswith(self, substr: str) -> arkouda.pdarrayclass.pdarray
+
+      Check whether each element ends with the given substring.
+
+      :param substr: The substring to search for
+      :type substr: str
+
+      :raises TypeError: Raised if substr is not a str
+
+      :returns: True for elements that contain substr, False otherwise
+      :rtype: pdarray, bool
+
+      .. rubric:: Notes
+
+      This method can be significantly faster than the corresponding method
+      on Strings objects, because it searches the unique category labels
+      instead of the full array.
+
+      .. seealso:: :obj:`Categorical.startswith`, :obj:`Categorical.contains`
+
+
+   .. method:: in1d(self, test)
+
+
+   .. method:: unique(self) -> arkouda.categorical.Categorical
+
+
+   .. method:: group(self) -> arkouda.pdarrayclass.pdarray
+
+      Return the permutation that groups the array, placing equivalent
+      categories together. All instances of the same category are guaranteed
+      to lie in one contiguous block of the permuted array, but the blocks
+      are not necessarily ordered.
+
+      :returns: The permutation that groups the array by value
+      :rtype: pdarray
+
+      .. seealso:: :obj:`GroupBy`, :obj:`unique`
+
+      .. rubric:: Notes
+
+      This method is faster than the corresponding Strings method. If the
+      Categorical was created from a Strings object, then this function
+      simply returns the cached permutation. Even if the Categorical was
+      created using from_codes(), this function will be faster than
+      Strings.group() because it sorts dense integer values, rather than
+      128-bit hash values.
+
+
+   .. method:: argsort(self)
+
+
+   .. method:: sort(self)
+
+
+   .. method:: concatenate(self, others: List[Categorical], ordered: bool = True) -> arkouda.categorical.Categorical
+
+      Merge this Categorical with other Categorical objects in the array,
+      concatenating the arrays and synchronizing the categories.
+
+      :param others: The Categorical arrays to concatenate and merge with this one
+      :type others: List[Categorical]
+      :param ordered: If True (default), the arrays will be appended in the
+                      order given. If False, array data may be interleaved
+                      in blocks, which can greatly improve performance but
+                      results in non-deterministic ordering of elements.
+      :type ordered: bool
+
+      :returns: The merged Categorical object
+      :rtype: Categorical
+
+      :raises TypeError: Raised if any others array objects are not Categorical objects
+
+      .. rubric:: Notes
+
+      This operation can be expensive -- slower than concatenating Strings.
+
+
+
+.. function:: enableVerbose() -> None
+
+   Enables verbose logging (DEBUG log level) for all ArkoudaLoggers
+
+
+.. function:: disableVerbose(logLevel: arkouda.logger.LogLevel = LogLevel.INFO) -> None
+
+   Disables verbose logging (DEBUG log level) for all ArkoudaLoggers, setting
+   the log level for each to the logLevel parameter
+
+   :param logLevel: The new log level, defaultts to LogLevel.INFO
+   :type logLevel: LogLevel
+
+   :raises TypeError: Raised if logLevel is not a LogLevel enum
+
+
+.. class:: pdarray(name: str, mydtype: numpy.dtype, size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars)
+
+
+   The basic arkouda array class. This class contains only the
+   attributies of the array; the data resides on the arkouda
+   server. When a server operation results in a new array, arkouda
+   will create a pdarray instance that points to the array data on
+   the server. As such, the user should not initialize pdarray
+   instances directly.
+
+   .. attribute:: name
+
+      The server-side identifier for the array
+
+      :type: str
+
+   .. attribute:: dtype
+
+      The element type of the array
+
+      :type: dtype
+
+   .. attribute:: size
+
+      The number of elements in the array
+
+      :type: int_scalars
+
+   .. attribute:: ndim
+
+      The rank of the array (currently only rank 1 arrays supported)
+
+      :type: int_scalars
+
+   .. attribute:: shape
+
+      A list or tuple containing the sizes of each dimension of the array
+
+      :type: Sequence[int]
+
+   .. attribute:: itemsize
+
+      The size in bytes of each element
+
+      :type: int_scalars
+
+   .. attribute:: BinOps
+      
+
+      
+
+   .. attribute:: OpEqOps
+      
+
+      
+
+   .. attribute:: objtype
+      :annotation: = pdarray
+
+      
+
+   .. attribute:: __array_priority__
+      :annotation: = 1000
+
+      
+
+   .. method:: __del__(self)
+
+
+   .. method:: __bool__(self) -> bool
+
+
+   .. method:: __len__(self)
+
+
+   .. method:: __str__(self)
+
+      Return str(self).
+
+
+   .. method:: __repr__(self)
+
+      Return repr(self).
+
+
+   .. method:: format_other(self, other: object) -> numpy.dtype
+
+      Attempt to cast scalar other to the element dtype of this pdarray,
+      and print the resulting value to a string (e.g. for sending to a
+      server command). The user should not call this function directly.
+
+      :param other: The scalar to be cast to the pdarray.dtype
+      :type other: object
+
+      :returns:
+      :rtype: np.dtype corresponding to the other parameter
+
+      :raises TypeError: Raised if the other parameter cannot be converted to
+          Numpy dtype
+
+
+   .. method:: _binop(self, other: arkouda.pdarrayclass.pdarray, op: str) -> arkouda.pdarrayclass.pdarray
+
+      Executes binary operation specified by the op string
+
+      :param other: The pdarray upon which the binop is to be executed
+      :type other: pdarray
+      :param op: The binop to be executed
+      :type op: str
+
+      :returns: A pdarray encapsulating the binop result
+      :rtype: pdarray
+
+      :raises ValueError: Raised if the op is not within the pdarray.BinOps set, or if the
+          pdarray sizes don't match
+      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
+          a supported dtype
+
+
+   .. method:: _r_binop(self, other: arkouda.pdarrayclass.pdarray, op: str) -> arkouda.pdarrayclass.pdarray
+
+      Executes reverse binary operation specified by the op string
+
+      :param other: The pdarray upon which the reverse binop is to be executed
+      :type other: pdarray
+      :param op: The name of the reverse binop to be executed
+      :type op: str
+
+      :returns: A pdarray encapsulating the reverse binop result
+      :rtype: pdarray
+
+      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
+      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
+          a supported dtype
+
+
+   .. method:: __add__(self, other)
+
+
+   .. method:: __radd__(self, other)
+
+
+   .. method:: __sub__(self, other)
+
+
+   .. method:: __rsub__(self, other)
+
+
+   .. method:: __mul__(self, other)
+
+
+   .. method:: __rmul__(self, other)
+
+
+   .. method:: __truediv__(self, other)
+
+
+   .. method:: __rtruediv__(self, other)
+
+
+   .. method:: __floordiv__(self, other)
+
+
+   .. method:: __rfloordiv__(self, other)
+
+
+   .. method:: __mod__(self, other)
+
+
+   .. method:: __rmod__(self, other)
+
+
+   .. method:: __lshift__(self, other)
+
+
+   .. method:: __rlshift__(self, other)
+
+
+   .. method:: __rshift__(self, other)
+
+
+   .. method:: __rrshift__(self, other)
+
+
+   .. method:: __and__(self, other)
+
+
+   .. method:: __rand__(self, other)
+
+
+   .. method:: __or__(self, other)
+
+
+   .. method:: __ror__(self, other)
+
+
+   .. method:: __xor__(self, other)
+
+
+   .. method:: __rxor__(self, other)
+
+
+   .. method:: __pow__(self, other)
+
+
+   .. method:: __rpow__(self, other)
+
+
+   .. method:: __lt__(self, other)
+
+      Return self<value.
+
+
+   .. method:: __gt__(self, other)
+
+      Return self>value.
+
+
+   .. method:: __le__(self, other)
+
+      Return self<=value.
+
+
+   .. method:: __ge__(self, other)
+
+      Return self>=value.
+
+
+   .. method:: __eq__(self, other)
+
+      Return self==value.
+
+
+   .. method:: __ne__(self, other)
+
+      Return self!=value.
+
+
+   .. method:: __neg__(self)
+
+
+   .. method:: __invert__(self)
+
+
+   .. method:: opeq(self, other, op)
+
+
+   .. method:: __iadd__(self, other)
+
+
+   .. method:: __isub__(self, other)
+
+
+   .. method:: __imul__(self, other)
+
+
+   .. method:: __itruediv__(self, other)
+
+
+   .. method:: __ifloordiv__(self, other)
+
+
+   .. method:: __ilshift__(self, other)
+
+
+   .. method:: __irshift__(self, other)
+
+
+   .. method:: __iand__(self, other)
+
+
+   .. method:: __ior__(self, other)
+
+
+   .. method:: __ixor__(self, other)
+
+
+   .. method:: __ipow__(self, other)
+
+
+   .. method:: __iter__(self)
+      :abstractmethod:
+
+
+   .. method:: __getitem__(self, key)
+
+
+   .. method:: __setitem__(self, key, value)
+
+
+   .. method:: fill(self, value: arkouda.dtypes.numeric_scalars) -> None
+
+      Fill the array (in place) with a constant value.
+
+      :param value:
+      :type value: numeric_scalars
+
+      :raises TypeError: Raised if value is not an int, int64, float, or float64
+
+
+   .. method:: any(self) -> numpy.bool_
+
+      Return True iff any element of the array evaluates to True.
+
+
+   .. method:: all(self) -> numpy.bool_
+
+      Return True iff all elements of the array evaluate to True.
+
+
+   .. method:: is_sorted(self) -> numpy.bool_
+
+      Return True iff the array is monotonically non-decreasing.
+
+      :param None:
+
+      :returns: Indicates if the array is monotonically non-decreasing
+      :rtype: bool
+
+      :raises TypeError: Raised if pda is not a pdarray instance
+      :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+   .. method:: sum(self) -> arkouda.dtypes.numpy_scalars
+
+      Return the sum of all elements in the array.
+
+
+   .. method:: prod(self) -> numpy.float64
+
+      Return the product of all elements in the array. Return value is
+      always a np.float64 or np.int64.
+
+
+   .. method:: min(self) -> arkouda.dtypes.numpy_scalars
+
+      Return the minimum value of the array.
+
+
+   .. method:: max(self) -> arkouda.dtypes.numpy_scalars
+
+      Return the maximum value of the array.
+
+
+   .. method:: argmin(self) -> numpy.int64
+
+      Return the index of the first occurrence of the array min value
+
+
+   .. method:: argmax(self) -> numpy.int64
+
+      Return the index of the first occurrence of the array max value.
+
+
+   .. method:: mean(self) -> numpy.float64
+
+      Return the mean of the array.
+
+
+   .. method:: var(self, ddof: arkouda.dtypes.int_scalars = 0) -> numpy.float64
+
+      Compute the variance. See ``arkouda.var`` for details.
+
+      :param ddof: "Delta Degrees of Freedom" used in calculating var
+      :type ddof: int_scalars
+
+      :returns: The scalar variance of the array
+      :rtype: np.float64
+
+      :raises TypeError: Raised if pda is not a pdarray instance
+      :raises ValueError: Raised if the ddof >= pdarray size
+      :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+   .. method:: std(self, ddof: arkouda.dtypes.int_scalars = 0) -> numpy.float64
+
+      Compute the standard deviation. See ``arkouda.std`` for details.
+
+      :param ddof: "Delta Degrees of Freedom" used in calculating std
+      :type ddof: int_scalars
+
+      :returns: The scalar standard deviation of the array
+      :rtype: np.float64
+
+      :raises TypeError: Raised if pda is not a pdarray instance
+      :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+   .. method:: mink(self, k: arkouda.dtypes.int_scalars) -> arkouda.pdarrayclass.pdarray
+
+      Compute the minimum "k" values.
+
+      :param k: The desired count of maximum values to be returned by the output.
+      :type k: int_scalars
+
+      :returns: The maximum `k` values from pda
+      :rtype: pdarray, int
+
+      :raises TypeError: Raised if pda is not a pdarray
+
+
+   .. method:: maxk(self, k: arkouda.dtypes.int_scalars) -> arkouda.pdarrayclass.pdarray
+
+      Compute the maximum "k" values.
+
+      :param k: The desired count of maximum values to be returned by the output.
+      :type k: int_scalars
+
+      :returns: The maximum `k` values from pda
+      :rtype: pdarray, int
+
+      :raises TypeError: Raised if pda is not a pdarray
+
+
+   .. method:: argmink(self, k: arkouda.dtypes.int_scalars) -> arkouda.pdarrayclass.pdarray
+
+      Compute the minimum "k" values.
+
+      :param k: The desired count of maximum values to be returned by the output.
+      :type k: int_scalars
+
+      :returns: Indices corresponding to the maximum `k` values from pda
+      :rtype: pdarray, int
+
+      :raises TypeError: Raised if pda is not a pdarray
+
+
+   .. method:: argmaxk(self, k: arkouda.dtypes.int_scalars) -> arkouda.pdarrayclass.pdarray
+
+      Finds the indices corresponding to the maximum "k" values.
+
+      :param k: The desired count of maximum values to be returned by the output.
+      :type k: int_scalars
+
+      :returns: Indices corresponding to the  maximum `k` values, sorted
+      :rtype: pdarray, int
+
+      :raises TypeError: Raised if pda is not a pdarray
+
+
+   .. method:: to_ndarray(self) -> numpy.ndarray
+
+      Convert the array to a np.ndarray, transferring array data from the
+      Arkouda server to client-side Python. Note: if the pdarray size exceeds
+      client.maxTransferBytes, a RuntimeError is raised.
+
+      :returns: A numpy ndarray with the same attributes and data as the pdarray
+      :rtype: np.ndarray
+
+      :raises RuntimeError: Raised if there is a server-side error thrown, if the pdarray size
+          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
+          received does not match expected number of bytes
+
+      .. rubric:: Notes
+
+      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
+      otherwise a ``RuntimeError`` will be raised. This is to protect the user
+      from overflowing the memory of the system on which the Python client
+      is running, under the assumption that the server is running on a
+      distributed system with much more memory than the client. The user
+      may override this limit by setting client.maxTransferBytes to a larger
+      value, but proceed with caution.
+
+      .. seealso:: :obj:`array`
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(0, 5, 1)
+      >>> a.to_ndarray()
+      array([0, 1, 2, 3, 4])
+
+      >>> type(a.to_ndarray())
+      numpy.ndarray
+
+
+   .. method:: to_cuda(self)
+
+      Convert the array to a Numba DeviceND array, transferring array data from the
+      arkouda server to Python via ndarray. If the array exceeds a builtin size limit,
+      a RuntimeError is raised.
+
+      :returns: A Numba ndarray with the same attributes and data as the pdarray; on GPU
+      :rtype: numba.DeviceNDArray
+
+      :raises ImportError: Raised if CUDA is not available
+      :raises ModuleNotFoundError: Raised if Numba is either not installed or not enabled
+      :raises RuntimeError: Raised if there is a server-side error thrown in the course of retrieving
+          the pdarray.
+
+      .. rubric:: Notes
+
+      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
+      otherwise a ``RuntimeError`` will be raised. This is to protect the user
+      from overflowing the memory of the system on which the Python client
+      is running, under the assumption that the server is running on a
+      distributed system with much more memory than the client. The user
+      may override this limit by setting client.maxTransferBytes to a larger
+      value, but proceed with caution.
+
+      .. seealso:: :obj:`array`
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(0, 5, 1)
+      >>> a.to_cuda()
+      array([0, 1, 2, 3, 4])
+
+      >>> type(a.to_cuda())
+      numpy.devicendarray
+
+
+   .. method:: save(self, prefix_path: str, dataset: str = 'array', mode: str = 'truncate') -> str
+
+      Save the pdarray to HDF5. The result is a collection of HDF5 files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path. Each locale saves its chunk of the array to its
+      corresponding file.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in HDF5 files (must not already exist)
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', attempt to create new dataset in existing files.
+      :type mode: str {'truncate' | 'append'}
+
+      :returns:
+      :rtype: string message indicating result of save operation
+
+      :raises RuntimeError: Raised if a server-side error is thrown saving the pdarray
+      :raises ValueError: Raised if there is an error in parsing the prefix path pointing to
+          file write location or if the mode parameter is neither truncate
+          nor append
+      :raises TypeError: Raised if any one of the prefix_path, dataset, or mode parameters
+          is not a string
+
+      .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read_hdf`, :obj:`read_all`
+
+      .. rubric:: Notes
+
+      The prefix_path must be visible to the arkouda server and the user must
+      have write permission.
+
+      Output files have names of the form ``<prefix_path>_LOCALE<i>.hdf``, where ``<i>``
+      ranges from 0 to ``numLocales``. If any of the output files already exist and
+      the mode is 'truncate', they will be overwritten. If the mode is 'append'
+      and the number of output files is less than the number of locales or a
+      dataset with the same name already exists, a ``RuntimeError`` will result.
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(0, 100, 1)
+      >>> a.save('arkouda_range', dataset='array')
+
+      Array is saved in numLocales files with names like ``tmp/arkouda_range_LOCALE0.hdf``
+
+      The array can be read back in as follows
+
+      >>> b = ak.load('arkouda_range', dataset='array')
+      >>> (a == b).all()
+      True
+
+
+   .. method:: register(self, user_defined_name: str) -> arkouda.pdarrayclass.pdarray
+
+      Return a pdarray with a user defined name in the arkouda server
+      so it can be attached to later using pdarray.attach()
+
+      :param user_defined_name: user defined name array is to be registered under
+      :type user_defined_name: str
+
+      :returns: pdarray which points to original input pdarray but is also
+                registered with user defined name in the arkouda server
+      :rtype: pdarray
+
+      :raises TypeError: Raised if pda is neither a pdarray nor a str or if
+          user_defined_name is not a str
+
+      .. seealso:: :obj:`attach`, :obj:`unregister`
+
+      .. rubric:: Notes
+
+      Registered names/pdarrays in the server are immune to deletion
+      until they are unregistered.
+
+      .. rubric:: Examples
+
+      >>> a = zeros(100)
+      >>> r_pda = a.register("my_zeros")
+      >>> # potentially disconnect from server and reconnect to server
+      >>> b = ak.pdarray.attach("my_zeros")
+      >>> # ...other work...
+      >>> b.unregister()
+
+
+   .. method:: unregister(self) -> None
+
+      Unregister a pdarray in the arkouda server which was previously
+      registered using register() and/or attahced to using attach()
+
+      :param user_defined_name: which array was registered under
+      :type user_defined_name: str
+
+      :returns:
+      :rtype: None
+
+      :raises TypeError: Raised if pda is neither a pdarray nor a str
+
+      .. seealso:: :obj:`register`, :obj:`unregister`
+
+      .. rubric:: Notes
+
+      Registered names/pdarrays in the server are immune to deletion until
+      they are unregistered.
+
+      .. rubric:: Examples
+
+      >>> a = zeros(100)
+      >>> r_pda = a.register("my_zeros")
+      >>> # potentially disconnect from server and reconnect to server
+      >>> b = ak.pdarray.attach("my_zeros")
+      >>> # ...other work...
+      >>> b.unregister()
+
+
+   .. method:: attach(user_defined_name: str) -> arkouda.pdarrayclass.pdarray
+      :staticmethod:
+
+      class method to return a pdarray attached to the a registered name in the arkouda
+      server which was registered using register()
+
+      :param user_defined_name: user defined name which array was registered under
+      :type user_defined_name: str
+
+      :returns: pdarray which points to pdarray registered with user defined
+                name in the arkouda server
+      :rtype: pdarray
+
+      :raises TypeError: Raised if user_defined_name is not a str
+
+      .. seealso:: :obj:`register`, :obj:`unregister`
+
+      .. rubric:: Notes
+
+      Registered names/pdarrays in the server are immune to deletion
+      until they are unregistered.
+
+      .. rubric:: Examples
+
+      >>> a = zeros(100)
+      >>> r_pda = a.register("my_zeros")
+      >>> # potentially disconnect from server and reconnect to server
+      >>> b = ak.pdarray.attach("my_zeros")
+      >>> # ...other work...
+      >>> b.unregister()
+
+
+
+.. data:: int64
+   
+
+   
+
+.. function:: isSupportedInt(num)
+
+
+.. function:: from_series(series: pandas.Series, dtype: Optional[Union[type, str]] = None) -> Union[(pdarray, Strings)]
+
+   Converts a Pandas Series to an Arkouda pdarray or Strings object. If
+   dtype is None, the dtype is inferred from the Pandas Series. Otherwise,
+   the dtype parameter is set if the dtype of the Pandas Series is to be
+   overridden or is  unknown (for example, in situations where the Series
+   dtype is object).
+
+   :param series: The Pandas Series with a dtype of bool, float64, int64, or string
+   :type series: Pandas Series
+   :param dtype: The valid dtype types are np.bool, np.float64, np.int64, and np.str
+   :type dtype: Optional[type]
+
+   :returns:
+   :rtype: Union[pdarray,Strings]
+
+   :raises TypeError: Raised if series is not a Pandas Series object
+   :raises ValueError: Raised if the Series dtype is not bool, float64, int64, string, datetime, or timedelta
+
+   .. rubric:: Examples
+
+   >>> ak.from_series(pd.Series(np.random.randint(0,10,5)))
+   array([9, 0, 4, 7, 9])
+
+   >>> ak.from_series(pd.Series(['1', '2', '3', '4', '5']),dtype=np.int64)
+   array([1, 2, 3, 4, 5])
+
+   >>> ak.from_series(pd.Series(np.random.uniform(low=0.0,high=1.0,size=3)))
+   array([0.57600036956445599, 0.41619265571741659, 0.6615356693784662])
+
+   >>> ak.from_series(pd.Series(['0.57600036956445599', '0.41619265571741659',
+                      '0.6615356693784662']), dtype=np.float64)
+   array([0.57600036956445599, 0.41619265571741659, 0.6615356693784662])
+
+   >>> ak.from_series(pd.Series(np.random.choice([True, False],size=5)))
+   array([True, False, True, True, True])
+
+   >>> ak.from_series(pd.Series(['True', 'False', 'False', 'True', 'True']), dtype=np.bool)
+   array([True, True, True, True, True])
+
+   >>> ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e'], dtype="string"))
+   array(['a', 'b', 'c', 'd', 'e'])
+
+   >>> ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e']),dtype=np.str)
+   array(['a', 'b', 'c', 'd', 'e'])
+
+   >>> ak.from_series(pd.Series(pd.to_datetime(['1/1/2018', np.datetime64('2018-01-01')])))
+   array([1514764800000000000, 1514764800000000000])
+
+   .. rubric:: Notes
+
+   The supported datatypes are bool, float64, int64, string, and datetime64[ns]. The
+   data type is either inferred from the the Series or is set via the dtype parameter.
+
+   Series of datetime or timedelta are converted to Arkouda arrays of dtype int64 (nanoseconds)
+
+
+.. function:: ak_array(a: Union[(pdarray, np.ndarray, Iterable)]) -> Union[(pdarray, Strings)]
+
+   Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
+   the corresponding data to the arkouda server.
+
+   :param a: Rank-1 array of a supported dtype
+   :type a: Union[pdarray, np.ndarray]
+
+   :returns: A pdarray instance stored on arkouda server or Strings instance, which
+             is composed of two pdarrays stored on arkouda server
+   :rtype: pdarray or Strings
+
+   :raises TypeError: Raised if a is not a pdarray, np.ndarray, or Python Iterable such as a
+       list, array, tuple, or deque
+   :raises RuntimeError: Raised if a is not one-dimensional, nbytes > maxTransferBytes, a.dtype is
+       not supported (not in DTypes), or if the product of a size and
+       a.itemsize > maxTransferBytes
+   :raises ValueError: Raised if the returned message is malformed or does not contain the fields
+       required to generate the array.
+
+   .. seealso:: :obj:`pdarray.to_ndarray`
+
+   .. rubric:: Notes
+
+   The number of bytes in the input array cannot exceed `arkouda.maxTransferBytes`,
+   otherwise a RuntimeError will be raised. This is to protect the user
+   from overwhelming the connection between the Python client and the arkouda
+   server, under the assumption that it is a low-bandwidth connection. The user
+   may override this limit by setting ak.maxTransferBytes to a larger value,
+   but should proceed with caution.
+
+   If the pdrray or ndarray is of type U, this method is called twice recursively
+   to create the Strings object and the two corresponding pdarrays for string
+   bytes and offsets, respectively.
+
+   .. rubric:: Examples
+
+   >>> ak.array(np.arange(1,10))
+   array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+   >>> ak.array(range(1,10))
+   array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+   >>> strings = ak.array(['string {}'.format(i) for i in range(0,5)])
+   >>> type(strings)
+   <class 'arkouda.strings.Strings'>
+
+
+.. function:: cast(pda: Union[(pdarray, Strings)], dt: Union[(np.dtype, str)]) -> Union[(pdarray, Strings)]
+
+   Cast an array to another dtype.
+
+   :param pda: The array of values to cast
+   :type pda: pdarray or Strings
+   :param dtype: The target dtype to cast values to
+   :type dtype: np.dtype or str
+
+   :returns: Array of values cast to desired dtype
+   :rtype: pdarray or Strings
+
+   .. rubric:: Notes
+
+   The cast is performed according to Chapel's casting rules and is NOT safe
+   from overflows or underflows. The user must ensure that the target dtype
+   has the precision and capacity to hold the desired result.
+
+   .. rubric:: Examples
+
+   >>> ak.cast(ak.linspace(1.0,5.0,5), dt=ak.int64)
+   array([1, 2, 3, 4, 5])
+
+   >>> ak.cast(ak.arange(0,5), dt=ak.float64).dtype
+   dtype('float64')
+
+   >>> ak.cast(ak.arange(0,5), dt=ak.bool)
+   array([False, True, True, True, True])
+
+   >>> ak.cast(ak.linspace(0,4,5), dt=ak.bool)
+   array([False, True, True, True, True])
+
+
+.. function:: akabs(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Return the element-wise absolute value of the array.
+
+   :param pda:
+   :type pda: pdarray
+
+   :returns: A pdarray containing absolute values of the input array elements
+   :rtype: pdarray
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Examples
+
+   >>> ak.abs(ak.arange(-5,-1))
+   array([5, 4, 3, 2])
+
+   >>> ak.abs(ak.linspace(-5,-1,5))
+   array([5, 4, 3, 2, 1])
+
+
+.. data:: _BASE_UNIT
+   :annotation: = ns
+
+   
+
+.. data:: _unit2normunit
+   
+
+   
+
+.. data:: _unit2factor
+   
+
+   
+
+.. function:: _get_factor(unit: str) -> int
+
+
+.. function:: _identity(x, **kwargs)
+
+
+.. class:: _Timescalar(scalar)
+
+
+
+.. class:: _AbstractBaseTime(array, unit: str = _BASE_UNIT)
+
+
+   Bases: :class:`arkouda.pdarrayclass.pdarray`
+
+   Base class for Datetime and Timedelta; not user-facing. Arkouda handles
+   time similar to Pandas (albeit with less functionality), in that all absolute
+   and relative times are represented in nanoseconds as int64 behind the scenes.
+   Datetime and Timedelta can be constructed from Arkouda, NumPy, or Pandas arrays;
+   in each case, the input values are normalized to nanoseconds on initialization,
+   so that all resulting operations are transparent.
+
+   .. method:: _get_callback(cls, other, op)
+      :classmethod:
+
+
+   .. method:: floor(self, freq)
+
+      Round times down to the nearest integer of a given frequency.
+
+      :param freq: Frequency to round to
+      :type freq: str {'d', 'm', 'h', 's', 'ms', 'us', 'ns'}
+
+      :returns: Values rounded down to nearest frequency
+      :rtype: self.__class__
+
+
+   .. method:: ceil(self, freq)
+
+      Round times up to the nearest integer of a given frequency.
+
+      :param freq: Frequency to round to
+      :type freq: str {'d', 'm', 'h', 's', 'ms', 'us', 'ns'}
+
+      :returns: Values rounded up to nearest frequency
+      :rtype: self.__class__
+
+
+   .. method:: round(self, freq)
+
+      Round times to the nearest integer of a given frequency. Midpoint
+      values will be rounded to nearest even integer.
+
+      :param freq: Frequency to round to
+      :type freq: str {'d', 'm', 'h', 's', 'ms', 'us', 'ns'}
+
+      :returns: Values rounded to nearest frequency
+      :rtype: self.__class__
+
+
+   .. method:: to_ndarray(self)
+
+      Convert the array to a np.ndarray, transferring array data from the
+      Arkouda server to client-side Python. Note: if the pdarray size exceeds
+      client.maxTransferBytes, a RuntimeError is raised.
+
+      :returns: A numpy ndarray with the same attributes and data as the pdarray
+      :rtype: np.ndarray
+
+      :raises RuntimeError: Raised if there is a server-side error thrown, if the pdarray size
+          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
+          received does not match expected number of bytes
+
+      .. rubric:: Notes
+
+      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
+      otherwise a ``RuntimeError`` will be raised. This is to protect the user
+      from overflowing the memory of the system on which the Python client
+      is running, under the assumption that the server is running on a
+      distributed system with much more memory than the client. The user
+      may override this limit by setting client.maxTransferBytes to a larger
+      value, but proceed with caution.
+
+      .. seealso:: :obj:`array`
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(0, 5, 1)
+      >>> a.to_ndarray()
+      array([0, 1, 2, 3, 4])
+
+      >>> type(a.to_ndarray())
+      numpy.ndarray
+
+
+   .. method:: __str__(self)
+
+      Return str(self).
+
+
+   .. method:: __repr__(self) -> str
+
+      Return repr(self).
+
+
+   .. method:: _binop(self, other, op)
+
+      Executes binary operation specified by the op string
+
+      :param other: The pdarray upon which the binop is to be executed
+      :type other: pdarray
+      :param op: The binop to be executed
+      :type op: str
+
+      :returns: A pdarray encapsulating the binop result
+      :rtype: pdarray
+
+      :raises ValueError: Raised if the op is not within the pdarray.BinOps set, or if the
+          pdarray sizes don't match
+      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
+          a supported dtype
+
+
+   .. method:: _r_binop(self, other, op)
+
+      Executes reverse binary operation specified by the op string
+
+      :param other: The pdarray upon which the reverse binop is to be executed
+      :type other: pdarray
+      :param op: The name of the reverse binop to be executed
+      :type op: str
+
+      :returns: A pdarray encapsulating the reverse binop result
+      :rtype: pdarray
+
+      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
+      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
+          a supported dtype
+
+
+   .. method:: opeq(self, other, op)
+
+
+   .. method:: _is_datetime_scalar(scalar)
+      :staticmethod:
+
+
+   .. method:: _is_timedelta_scalar(scalar)
+      :staticmethod:
+
+
+   .. method:: _scalar_callback(self, key)
+
+
+   .. method:: __getitem__(self, key)
+
+
+   .. method:: __setitem__(self, key, value)
+
+
+   .. method:: min(self)
+
+      Return the minimum value of the array.
+
+
+   .. method:: max(self)
+
+      Return the maximum value of the array.
+
+
+   .. method:: mink(self, k)
+
+      Compute the minimum "k" values.
+
+      :param k: The desired count of maximum values to be returned by the output.
+      :type k: int_scalars
+
+      :returns: The maximum `k` values from pda
+      :rtype: pdarray, int
+
+      :raises TypeError: Raised if pda is not a pdarray
+
+
+   .. method:: maxk(self, k)
+
+      Compute the maximum "k" values.
+
+      :param k: The desired count of maximum values to be returned by the output.
+      :type k: int_scalars
+
+      :returns: The maximum `k` values from pda
+      :rtype: pdarray, int
+
+      :raises TypeError: Raised if pda is not a pdarray
+
+
+
+.. class:: Datetime(array, unit: str = _BASE_UNIT)
+
+
+   Bases: :class:`arkouda.timeclass._AbstractBaseTime`
+
+   Represents a date and/or time.
+
+   Datetime is the Arkouda analog to pandas DatetimeIndex and
+   other timeseries data types.
+
+   :param array:
+   :type array: int64 pdarray, pd.DatetimeIndex, pd.Series, or np.datetime64 array
+   :param uint: For int64 pdarray, denotes the unit of the input. Ignored for pandas
+                and numpy arrays, which carry their own unit. Not case-sensitive;
+                prefixes of full names (like 'sec') are accepted.
+
+                Possible values:
+
+                * 'weeks' or 'w'
+                * 'days' or 'd'
+                * 'hours' or 'h'
+                * 'minutes', 'm', or 't'
+                * 'seconds' or 's'
+                * 'milliseconds', 'ms', or 'l'
+                * 'microseconds', 'us', or 'u'
+                * 'nanoseconds', 'ns', or 'n'
+
+                Unlike in pandas, units cannot be combined or mixed with integers
+   :type uint: str, default 'ns'
+
+   .. rubric:: Notes
+
+   The ``._data`` attribute is always in nanoseconds with int64 dtype.
+
+   .. attribute:: supported_with_datetime
+      
+
+      
+
+   .. attribute:: supported_with_r_datetime
+      
+
+      
+
+   .. attribute:: supported_with_timedelta
+      
+
+      
+
+   .. attribute:: supported_with_r_timedelta
+      
+
+      
+
+   .. attribute:: supported_opeq
+      
+
+      
+
+   .. attribute:: supported_with_pdarray
+      
+
+      
+
+   .. attribute:: supported_with_r_pdarray
+      
+
+      
+
+   .. method:: _get_callback(cls, otherclass, op)
+      :classmethod:
+
+
+   .. method:: _scalar_callback(self, scalar)
+
+
+   .. method:: _is_supported_scalar(scalar)
+      :staticmethod:
+
+
+   .. method:: to_pandas(self)
+
+      Convert array to a pandas DatetimeIndex. Note: if the array size
+      exceeds client.maxTransferBytes, a RuntimeError is raised.
+
+      .. seealso:: :obj:`to_ndarray`
+
+
+   .. method:: sum(self)
+
+      Return the sum of all elements in the array.
+
+
+
+.. class:: Timedelta(array, unit: str = _BASE_UNIT)
+
+
+   Bases: :class:`arkouda.timeclass._AbstractBaseTime`
+
+   Represents a duration, the difference between two dates or times.
+
+   Timedelta is the Arkouda equivalent of pandas.TimedeltaIndex.
+
+   :param array:
+   :type array: int64 pdarray, pd.TimedeltaIndex, pd.Series, or np.timedelta64 array
+   :param unit: For int64 pdarray, denotes the unit of the input. Ignored for pandas
+                and numpy arrays, which carry their own unit. Not case-sensitive;
+                prefixes of full names (like 'sec') are accepted.
+
+                Possible values:
+
+                * 'weeks' or 'w'
+                * 'days' or 'd'
+                * 'hours' or 'h'
+                * 'minutes', 'm', or 't'
+                * 'seconds' or 's'
+                * 'milliseconds', 'ms', or 'l'
+                * 'microseconds', 'us', or 'u'
+                * 'nanoseconds', 'ns', or 'n'
+
+                Unlike in pandas, units cannot be combined or mixed with integers
+   :type unit: str, default 'ns'
+
+   .. rubric:: Notes
+
+   The ``._data`` attribute is always in nanoseconds with int64 dtype.
+
+   .. attribute:: supported_with_datetime
+      
+
+      
+
+   .. attribute:: supported_with_r_datetime
+      
+
+      
+
+   .. attribute:: supported_with_timedelta
+      
+
+      
+
+   .. attribute:: supported_with_r_timedelta
+      
+
+      
+
+   .. attribute:: supported_opeq
+      
+
+      
+
+   .. attribute:: supported_with_pdarray
+      
+
+      
+
+   .. attribute:: supported_with_r_pdarray
+      
+
+      
+
+   .. method:: _get_callback(cls, otherclass, op)
+      :classmethod:
+
+
+   .. method:: _scalar_callback(self, scalar)
+
+
+   .. method:: _is_supported_scalar(scalar)
+      :staticmethod:
+
+
+   .. method:: to_pandas(self)
+
+      Convert array to a pandas TimedeltaIndex. Note: if the array size
+      exceeds client.maxTransferBytes, a RuntimeError is raised.
+
+      .. seealso:: :obj:`to_ndarray`
+
+
+   .. method:: sum(self)
+
+      Return the sum of all elements in the array.
+
+
+   .. method:: abs(self)
+
+      Absolute value of time interval.
+
+
+
+.. function:: date_range(start=None, end=None, periods=None, freq=None, tz=None, normalize=False, name=None, closed=None, **kwargs)
+
+   Creates a fixed frequency Datetime range. Alias for
+   ``ak.Datetime(pd.date_range(args))``. Subject to size limit
+   imposed by client.maxTransferBytes.
+
+   :param start: Left bound for generating dates.
+   :type start: str or datetime-like, optional
+   :param end: Right bound for generating dates.
+   :type end: str or datetime-like, optional
+   :param periods: Number of periods to generate.
+   :type periods: int, optional
+   :param freq: Frequency strings can have multiples, e.g. '5H'. See
+                timeseries.offset_aliases for a list of
+                frequency aliases.
+   :type freq: str or DateOffset, default 'D'
+   :param tz: Time zone name for returning localized DatetimeIndex, for example
+              'Asia/Hong_Kong'. By default, the resulting DatetimeIndex is
+              timezone-naive.
+   :type tz: str or tzinfo, optional
+   :param normalize: Normalize start/end dates to midnight before generating date range.
+   :type normalize: bool, default False
+   :param name: Name of the resulting DatetimeIndex.
+   :type name: str, default None
+   :param closed: Make the interval closed with respect to the given frequency to
+                  the 'left', 'right', or both sides (None, the default).
+   :type closed: {None, 'left', 'right'}, optional
+   :param \*\*kwargs: For compatibility. Has no effect on the result.
+
+   :returns: **rng**
+   :rtype: DatetimeIndex
+
+   .. rubric:: Notes
+
+   Of the four parameters ``start``, ``end``, ``periods``, and ``freq``,
+   exactly three must be specified. If ``freq`` is omitted, the resulting
+   ``DatetimeIndex`` will have ``periods`` linearly spaced elements between
+   ``start`` and ``end`` (closed on both sides).
+
+   To learn more about the frequency strings, please see `this link
+   <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`__.
+
+
+.. function:: timedelta_range(start=None, end=None, periods=None, freq=None, name=None, closed=None, **kwargs)
+
+   Return a fixed frequency TimedeltaIndex, with day as the default
+   frequency. Alias for ``ak.Timedelta(pd.timedelta_range(args))``.
+   Subject to size limit imposed by client.maxTransferBytes.
+
+   :param start: Left bound for generating timedeltas.
+   :type start: str or timedelta-like, default None
+   :param end: Right bound for generating timedeltas.
+   :type end: str or timedelta-like, default None
+   :param periods: Number of periods to generate.
+   :type periods: int, default None
+   :param freq: Frequency strings can have multiples, e.g. '5H'.
+   :type freq: str or DateOffset, default 'D'
+   :param name: Name of the resulting TimedeltaIndex.
+   :type name: str, default None
+   :param closed: Make the interval closed with respect to the given frequency to
+                  the 'left', 'right', or both sides (None).
+   :type closed: str, default None
+
+   :returns: **rng**
+   :rtype: TimedeltaIndex
+
+   .. rubric:: Notes
+
+   Of the four parameters ``start``, ``end``, ``periods``, and ``freq``,
+   exactly three must be specified. If ``freq`` is omitted, the resulting
+   ``TimedeltaIndex`` will have ``periods`` linearly spaced elements between
+   ``start`` and ``end`` (closed on both sides).
+
+   To learn more about the frequency strings, please see `this link
+   <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`__.
+
+

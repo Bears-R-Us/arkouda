@@ -1,0 +1,230 @@
+.. default-domain:: chpl
+
+.. module:: GenSymIO
+
+GenSymIO
+========
+**Usage**
+
+.. code-block:: chapel
+
+   use GenSymIO;
+
+
+or
+
+.. code-block:: chapel
+
+   import GenSymIO;
+
+.. data:: const gsLogger = new Logger()
+
+.. data:: config const GenSymIO_DEBUG = false
+
+.. data:: config const SEGARRAY_OFFSET_NAME = "segments"
+
+.. data:: config const SEGARRAY_VALUE_NAME = "values"
+
+.. data:: config const NULL_STRINGS_VALUE = 0: uint(8)
+
+.. data:: config const TRUNCATE: int = 0
+
+.. data:: config const APPEND: int = 1
+
+.. function:: proc arrayMsg(cmd: string, payload: bytes, st: borrowed SymTab): MsgTuple throws
+
+   
+   * Creates a pdarray server-side and returns the SymTab name used to
+   * retrieve the pdarray from the SymTab.
+   
+
+.. function:: proc tondarrayMsg(cmd: string, payload: string, st: borrowed SymTab): bytes throws
+
+   
+   * Outputs the pdarray as a Numpy ndarray in the form of a 
+   * Chapel Bytes object
+   
+
+.. function:: proc jsonToPdArray(json: string, size: int) throws
+
+   
+   * Converts the JSON array to a pdarray
+   
+
+.. function:: proc lshdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   * Spawns a separate Chapel process that executes and returns the 
+   * result of the h5ls command
+   
+
+.. function:: proc readhdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   Read dataset from HDF5 files into arkouda symbol table. 
+
+.. function:: proc readAllHdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   * Reads all datasets from 1..n HDF5 files into an Arkouda symbol table. 
+   
+
+.. function:: proc fixupSegBoundaries(a: [?D] int, segSubdoms: [?fD] domain(1), valSubdoms: [fD] domain(1))
+
+.. function:: proc get_dtype(filename: string, dsetName: string) throws
+
+   
+   * Retrieves the datatype of the dataset read from HDF5 
+   
+
+.. function:: proc isHdf5File(filename: string): int throws
+
+   
+   * Returns boolean indicating whether the file is a valid HDF5 file.
+   * Note: if the file cannot be opened due to permissions, throws
+   * a PermissionError
+   
+
+.. function:: proc get_dataset_info(file_id, dsetName) throws
+
+   
+   * Returns a tuple containing the data type, data class, and a 
+   * boolean indicating whether the datatype is signed for the 
+   * supplied file id and dataset name.
+   
+
+.. class:: HDF5RankError : Error
+
+   .. attribute:: var rank: int
+
+   .. attribute:: var filename: string
+
+   .. attribute:: var dsetName: string
+
+.. function:: proc isStringsDataset(file_id: int, dsetName: string): bool throws
+
+   
+   * Returns a boolean indicating whether the dataset is a Strings
+   * dataset, checking if the values dataset is embedded within a 
+   * group named after the dsetName.
+   
+
+.. function:: proc isBooleanDataset(file_id: int, dsetName: string): bool throws
+
+   
+   * Returns a boolean indicating whether the dataset is a boolean
+   * dataset, checking if the booleans dataset is embedded within a 
+   * group named after the dsetName.
+   
+
+.. function:: proc isBooleanDataset(fileName: string, dsetName: string): bool throws
+
+   
+   * Overloaded method returns a boolean indicating whether the dataset is a
+   * boolean dataset, checking if the booleans dataset is embedded within a 
+   * group named after the dsetName. This implementation retrieves the file id
+   * for a file name and invokes isBooleanDataset with file id.
+   
+
+.. function:: proc get_subdoms(filenames: [?FD] string, dsetName: string) throws
+
+   
+   *  Get the subdomains of the distributed array represented by each file, 
+   *  as well as the total length of the array. 
+   
+
+.. function:: proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), filenames: [FD] string, dsetName: string)
+
+   This function gets called when A is a BlockDist or DefaultRectangular array. 
+
+.. function:: proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), filenames: [FD] string, dsetName: string)
+
+   This function is called when A is a CyclicDist array. 
+
+.. function:: proc domain_intersection(d1: domain(1), d2: domain(1))
+
+.. function:: proc tohdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+.. function:: proc write1DDistArray(filename: string, mode: int, dsetName: string, A, array_type: DType) throws
+
+   
+   * Writes the float, int, or bool pdarray out to hdf5
+   
+
+.. function:: proc isGroupedDataType(dType: C_HDF5.hid_t): bool
+
+   
+   * Returns a boolean indicating if the data type is written to an HDF5
+   * group, which currently is C_HDF5.H5T_NATIVE_HBOOL.
+   
+
+.. function:: proc getDataType(A): C_HDF5.hid_t
+
+   
+   * Returns the HDF5 data type corresponding to the dataset, which delegates
+   * to getHDF5Type for all datatypes supported by Chapel. For datatypes that
+   * are not supported by Chapel, getDataType encapsulates logic to retrieve
+   * the HDF5 data type.
+   
+
+.. function:: proc getWriteDsetName(dType: C_HDF5.hid_t, dsetName: string): string throws
+
+   
+   * Retrieves the full dataset name including the group name, if applicable,
+   * for the dataset to be written to HDF5.
+   
+
+.. function:: proc getReadDsetName(file_id: int, dsetName: string): string throws
+
+   
+   * Retrieves the full dataset name including the group name, if applicable,
+   * for the dataset to be read from HDF5.
+   
+
+.. function:: proc getFileMetadata(filename: string)
+
+   
+   * Returns a tuple composed of a file prefix and extension to be used to
+   * generate locale-specific filenames to be written to.
+   
+
+.. function:: proc generateFilenames(prefix: string, extension: string, A): [] string throws
+
+   
+   * Generates a list of filenames to be written to based upon a file prefix,
+   * extension, and number of locales.
+   
+
+.. function:: proc generateFilename(prefix: string, extension: string, idx: int): string throws
+
+   
+   * Generates a file name composed of a prefix, which is a filename provided by
+   * the user along with a file index and extension.
+   
+
+.. function:: proc processFilenames(filenames: [] string, matchingFilenames: [] string, mode: int, A, group: string) throws
+
+   
+   * If APPEND mode, checks to see if the matchingFilenames matches the filenames
+   * array and, if not, raises a MismatchedAppendError. If in TRUNCATE mode, creates
+   * the files matching the filenames. If 1..n of the filenames exist, returns 
+   * warning to the user that 1..n files were overwritten. Since a group name is 
+   * passed in, and hdf5 group is created in the file(s).
+   
+
+.. function:: proc processFilenames(filenames: [] string, matchingFilenames: [] string, mode: int, A) throws
+
+   
+   * If APPEND mode, checks to see if the matchingFilenams matches the filenames
+   * array and, if not, raises a MismatchedAppendError. If in TRUNCATE mode, creates
+   * the files matching the filenames. If 1..n of the filenames exist, returns 
+   * warning to the user that 1..n files were overwritten.
+   
+
+.. function:: proc getMatchingFilenames(prefix: string, extension: string) throws
+
+   
+   * Generates an array of filenames to be matched in APPEND mode and to be
+   * checked in TRUNCATE mode that will warn the user that 1..n files are
+   * being overwritten.
+   
+

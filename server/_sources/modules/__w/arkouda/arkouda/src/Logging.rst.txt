@@ -1,0 +1,61 @@
+.. default-domain:: chpl
+
+.. module:: Logging
+
+Logging
+=======
+**Usage**
+
+.. code-block:: chapel
+
+   use Logging;
+
+
+or
+
+.. code-block:: chapel
+
+   import Logging;
+
+.. enum:: enum LogLevel { DEBUG, INFO, WARN, ERROR, CRITICAL }
+
+   
+   * The LogLevel enum is used to provide a strongly-typed means of
+   * configuring the logging level of a Logger object
+   
+
+
+.. class:: Logger
+
+   
+   * The Logger class provides structured log messages at various levels
+   * of logging sensitivity analogous to other languages such as Python.
+   
+
+
+   .. attribute:: var level = LogLevel.WARN
+
+   .. attribute:: var warnLevels = new LogLevelsetchpl__buildArrayExpr(LogLevel.WARN, LogLevel.INFO, LogLevel.DEBUG)
+
+   .. attribute:: var criticalLevels = new LogLevelsetchpl__buildArrayExpr(LogLevel.CRITICAL, LogLevel.WARN, LogLevel.INFO, LogLevel.DEBUG)
+
+   .. attribute:: var errorLevels = new LogLevelsetchpl__buildArrayExpr(LogLevel.ERROR, LogLevel.CRITICAL, LogLevel.WARN, LogLevel.INFO, LogLevel.DEBUG)
+
+   .. attribute:: var infoLevels = new LogLevelsetLogLevel.INFOchpl__buildArrayExprLogLevel.DEBUG
+
+   .. attribute:: var printDate: bool = true
+
+   .. method:: proc debug(moduleName, routineName, lineNumber, msg: string) throws
+
+   .. method:: proc info(moduleName, routineName, lineNumber, msg: string) throws
+
+   .. method:: proc warn(moduleName, routineName, lineNumber, msg: string) throws
+
+   .. method:: proc critical(moduleName, routineName, lineNumber, msg: string) throws
+
+   .. method:: proc error(moduleName, routineName, lineNumber, msg: string) throws
+
+   .. method:: proc generateLogMessage(moduleName: string, routineName, lineNumber, msg, level: string) throws
+
+   .. method:: proc generateDateTimeString() throws
+

@@ -1,0 +1,133 @@
+:mod:`arkouda.client`
+=====================
+
+.. py:module:: arkouda.client
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.client.connect
+   arkouda.client.disconnect
+   arkouda.client.shutdown
+   arkouda.client.get_config
+   arkouda.client.get_mem_used
+   arkouda.client.ruok
+
+
+.. data:: __version__
+   
+
+   
+
+.. data:: AllSymbols
+   :annotation: = __AllSymbols__
+
+   
+
+.. function:: connect(server: str = 'localhost', port: int = 5555, timeout: int = 0, access_token: str = None, connect_url=None) -> None
+
+   Connect to a running arkouda server.
+
+   :param server: The hostname of the server (must be visible to the current
+                  machine). Defaults to `localhost`.
+   :type server: str, optional
+   :param port: The port of the server. Defaults to 5555.
+   :type port: int, optional
+   :param timeout: The timeout in seconds for client send and receive operations.
+                   Defaults to 0 seconds, whicn is interpreted as no timeout.
+   :type timeout: int, optional
+   :param access_token: The token used to connect to an existing socket to enable access to
+                        an Arkouda server where authentication is enabled. Defaults to None.
+   :type access_token: str, optional
+   :param connect_url: The complete url in the format of tcp://server:port?token=<token_value>
+                       where the token is optional
+   :type connect_url: str, optional
+
+   :returns:
+   :rtype: None
+
+   :raises ConnectionError: Raised if there's an error in connecting to the Arkouda server
+   :raises ValueError: Raised if there's an error in parsing the connect_url parameter
+   :raises RuntimeError: Raised if there is a server-side error
+
+   .. rubric:: Notes
+
+   On success, prints the connected address, as seen by the server. If called
+   with an existing connection, the socket will be re-initialized.
+
+
+.. function:: disconnect() -> None
+
+   Disconnects the client from the Arkouda server
+
+   :returns:
+   :rtype: None
+
+   :raises ConnectionError: Raised if there's an error disconnecting from the Arkouda server
+
+
+.. function:: shutdown() -> None
+
+   Sends a shutdown message to the Arkouda server that does the
+   following:
+
+   1. Delete all objects in the SymTable
+   2. Shuts down the Arkouda server
+   3. Disconnects the client from the stopped Arkouda Server
+
+   :returns:
+   :rtype: None
+
+   :raises RuntimeError: Raised if the client is not connected to the Arkouda server or
+       there is an error in disconnecting from the server
+
+
+.. function:: get_config() -> Mapping[(str, Union[str, int, float])]
+
+   Get runtime information about the server.
+
+   :returns: serverHostname
+             serverPort
+             numLocales
+             numPUs (number of processor units per locale)
+             maxTaskPar (maximum number of tasks per locale)
+             physicalMemory
+   :rtype: Mapping[str, Union[str, int, float]]
+
+   :raises RuntimeError: Raised if there is a server-side error in getting memory used
+   :raises ValueError: Raised if there's an error in parsing the JSON-formatted server config
+
+
+.. function:: get_mem_used() -> int
+
+   Compute the amount of memory used by objects in the server's symbol table.
+
+   :returns: Indicates the amount of memory allocated to symbol table objects.
+   :rtype: int
+
+   :raises RuntimeError: Raised if there is a server-side error in getting memory used
+   :raises ValueError: Raised if the returned value is not an int-formatted string
+
+
+.. function:: ruok() -> str
+
+   Simply sends an "ruok" message to the server and, if the return message is
+   "imok", this means the arkouda_server is up and operating normally. A return
+   message of "imnotok" indicates an error occurred or the connection timed out.
+
+   This method is basically a way to do a quick healthcheck in a way that does
+   not require error handling.
+
+   :returns: A string indicating if the server is operating normally (imok), if there's
+             an error server-side, or if ruok did not return a response (imnotok) in
+             both of the latter cases
+   :rtype: str
+
+

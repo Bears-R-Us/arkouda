@@ -1,0 +1,490 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ReductionMsg &mdash; chpldoc 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="RegistrationMsg" href="RegistrationMsg.html" />
+    <link rel="prev" title="RandMsg" href="RandMsg.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">chpldoc documentation</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="ArgSortMsg.html">ArgSortMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArraySetops.html">ArraySetops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArraySetopsMsg.html">ArraySetopsMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AryUtil.html">AryUtil</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Broadcast.html">Broadcast</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BroadcastMsg.html">BroadcastMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CastMsg.html">CastMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommAggregation.html">CommAggregation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommPrimitives.html">CommPrimitives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ConcatenateMsg.html">ConcatenateMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="EfuncMsg.html">EfuncMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Errors.html">Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Extremas.html">Extremas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FileIO.html">FileIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FindSegmentsMsg.html">FindSegmentsMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Flatten.html">Flatten</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FlattenMsg.html">FlattenMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GenSymIO.html">GenSymIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Histogram.html">Histogram</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HistogramMsg.html">HistogramMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="In1d.html">In1d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="In1dMsg.html">In1dMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Indexing.html">Indexing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IndexingMsg.html">IndexingMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="JoinEqWithDTMsg.html">JoinEqWithDTMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="KExtremeMsg.html">KExtremeMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="KReduce.html">KReduce</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Message.html">Message</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MsgProcessing.html">MsgProcessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MultiTypeSymEntry.html">MultiTypeSymEntry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MultiTypeSymbolTable.html">MultiTypeSymbolTable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NumPyDType.html">NumPyDType</a></li>
+<li class="toctree-l1"><a class="reference internal" href="OperatorMsg.html">OperatorMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RadixSortLSD.html">RadixSortLSD</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RandArray.html">RandArray</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RandMsg.html">RandMsg</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ReductionMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RegistrationMsg.html">RegistrationMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Security.html">Security</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegStringSort.html">SegStringSort</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegmentedArray.html">SegmentedArray</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegmentedMsg.html">SegmentedMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ServerConfig.html">ServerConfig</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ServerErrorStrings.html">ServerErrorStrings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SipHash.html">SipHash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SortMsg.html">SortMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SymArrayDmap.html">SymArrayDmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Unique.html">Unique</a></li>
+<li class="toctree-l1"><a class="reference internal" href="UniqueMsg.html">UniqueMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arkouda_server.html">arkouda_server</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">chpldoc</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+        
+      <li>ReductionMsg</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/ReductionMsg.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="module-ReductionMsg"></span><div class="section" id="reductionmsg">
+<h1>ReductionMsg<a class="headerlink" href="#reductionmsg" title="Permalink to this headline">¶</a></h1>
+<p><strong>Usage</strong></p>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">ReductionMsg</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="nx">import</span> <span class="nx">ReductionMsg</span><span class="p">;</span>
+</pre></div>
+</div>
+<dl class="data">
+<dt id="ReductionMsg.rmLogger">
+<em class="property">const </em><code class="descname">rmLogger</code> = new Logger()<a class="headerlink" href="#ReductionMsg.rmLogger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ReductionMsg.reductionMsg">
+<em class="property">proc </em><code class="descname">reductionMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#ReductionMsg.reductionMsg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ReductionMsg.countReductionMsg">
+<em class="property">proc </em><code class="descname">countReductionMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#ReductionMsg.countReductionMsg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ReductionMsg.segCount">
+<em class="property">proc </em><code class="descname">segCount</code><span class="sig-paren">(</span><em>segments: [?D] int</em>, <em>upper: int</em><span class="sig-paren">)</span>: [D] int<a class="headerlink" href="#ReductionMsg.segCount" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ReductionMsg.segmentedReductionMsg">
+<em class="property">proc </em><code class="descname">segmentedReductionMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#ReductionMsg.segmentedReductionMsg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ReductionMsg.segSum">
+<em class="property">proc </em><code class="descname">segSum</code><span class="sig-paren">(</span><em>values: [] ?intype</em>, <em>segments: [?D] int</em>, <em>skipNan = false</em><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.segSum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Segmented Reductions of the form: seg&lt;Op&gt;(values:[] t, segments: [] int)
+Use &lt;segments&gt; as the boundary indices to divide &lt;values&gt; into chunks,
+and then reduce over each chunk using the operator &lt;Op&gt;. The return array
+of reduced values is the same size as &lt;segments&gt;.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ReductionMsg.segProduct">
+<em class="property">proc </em><code class="descname">segProduct</code><span class="sig-paren">(</span><em>values: [] ?t</em>, <em>segments: [?D] int</em>, <em>skipNan = false</em><span class="sig-paren">)</span>: [D] real<a class="headerlink" href="#ReductionMsg.segProduct" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ReductionMsg.segMean">
+<em class="property">proc </em><code class="descname">segMean</code><span class="sig-paren">(</span><em>values: [] ?t</em>, <em>segments: [?D] int</em>, <em>skipNan = false</em><span class="sig-paren">)</span>: [D] real<a class="headerlink" href="#ReductionMsg.segMean" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ReductionMsg.segMin">
+<em class="property">proc </em><code class="descname">segMin</code><span class="sig-paren">(</span><em>values: [?vD] ?t</em>, <em>segments: [?D] int</em>, <em>skipNan = false</em><span class="sig-paren">)</span>: [D] t<a class="headerlink" href="#ReductionMsg.segMin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ReductionMsg.segMax">
+<em class="property">proc </em><code class="descname">segMax</code><span class="sig-paren">(</span><em>values: [?vD] ?t</em>, <em>segments: [?D] int</em>, <em>skipNan = false</em><span class="sig-paren">)</span>: [D] t<a class="headerlink" href="#ReductionMsg.segMax" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ReductionMsg.segArgmin">
+<em class="property">proc </em><code class="descname">segArgmin</code><span class="sig-paren">(</span><em>values: [?vD] ?t</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: ([D] t, [D] int)<a class="headerlink" href="#ReductionMsg.segArgmin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ReductionMsg.segArgmax">
+<em class="property">proc </em><code class="descname">segArgmax</code><span class="sig-paren">(</span><em>values: [?vD] ?t</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: ([D] t, [D] int)<a class="headerlink" href="#ReductionMsg.segArgmax" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ReductionMsg.segAny">
+<em class="property">proc </em><code class="descname">segAny</code><span class="sig-paren">(</span><em>values: [] bool</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [D] bool<a class="headerlink" href="#ReductionMsg.segAny" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ReductionMsg.segAll">
+<em class="property">proc </em><code class="descname">segAll</code><span class="sig-paren">(</span><em>values: [] bool</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [D] bool<a class="headerlink" href="#ReductionMsg.segAll" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ReductionMsg.segOr">
+<em class="property">proc </em><code class="descname">segOr</code><span class="sig-paren">(</span><em>values: [?vD] int</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [D] int<a class="headerlink" href="#ReductionMsg.segOr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="ReductionMsg.ResettingOrScanOp">
+<em class="property">class </em><code class="descname">ResettingOrScanOp</code>: ReduceScanOp<a class="headerlink" href="#ReductionMsg.ResettingOrScanOp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs a bitwise OR scan, controlled by a reset flag. While
+* the reset flag is false, the accumulation of values proceeds as
+* normal. When a true is encountered, the state resets to the
+* identity.</p>
+<dl class="attribute">
+<dt id="ReductionMsg.ResettingOrScanOp.eltType">
+<em class="property">type </em><code class="descname">eltType</code><a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.eltType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ReductionMsg.ResettingOrScanOp.value">
+<em class="property">var </em><code class="descname">value</code> = (false, 0)<a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.value" title="Permalink to this definition">¶</a></dt>
+<dd><p>value is a tuple comprising a flag and the actual result of
+segmented bitwise OR.</p>
+<p>The meaning of the flag depends on whether it belongs to an
+array element yet to be scanned or to an element that has
+already been scanned (including the internal state of a class
+instance doing the scanning). For elements yet to be scanned,
+the flag means “reset to the identity here”. For elements that
+have already been scanned, or for internal state, the flag means
+“there has already been a reset in the computation of this value”.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ReductionMsg.ResettingOrScanOp.identity">
+<em class="property">proc </em><code class="descname">identity</code><a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.identity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ReductionMsg.ResettingOrScanOp.accumulate">
+<em class="property">proc </em><code class="descname">accumulate</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.accumulate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ReductionMsg.ResettingOrScanOp.accumulateOntoState">
+<em class="property">proc </em><code class="descname">accumulateOntoState</code><span class="sig-paren">(</span><em>ref state</em>, <em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.accumulateOntoState" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ReductionMsg.ResettingOrScanOp.combine">
+<em class="property">proc </em><code class="descname">combine</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.combine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ReductionMsg.ResettingOrScanOp.generate">
+<em class="property">proc </em><code class="descname">generate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.generate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ReductionMsg.ResettingOrScanOp.clone">
+<em class="property">proc </em><code class="descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingOrScanOp.clone" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="ReductionMsg.segAnd">
+<em class="property">proc </em><code class="descname">segAnd</code><span class="sig-paren">(</span><em>values: [?vD] int</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span>: [D] int<a class="headerlink" href="#ReductionMsg.segAnd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="ReductionMsg.ResettingAndScanOp">
+<em class="property">class </em><code class="descname">ResettingAndScanOp</code>: ReduceScanOp<a class="headerlink" href="#ReductionMsg.ResettingAndScanOp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs a bitwise AND scan, controlled by a reset flag. While
+* the reset flag is false, the accumulation of values proceeds as
+* normal. When a true is encountered, the state resets to the
+* identity.</p>
+<dl class="attribute">
+<dt id="ReductionMsg.ResettingAndScanOp.eltType">
+<em class="property">type </em><code class="descname">eltType</code><a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.eltType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ReductionMsg.ResettingAndScanOp.value">
+<em class="property">var </em><code class="descname">value</code> = (false, 18446744073709551615: int)<a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.value" title="Permalink to this definition">¶</a></dt>
+<dd><p>value is a tuple comprising a flag and the actual result of
+segmented bitwise AND.</p>
+<p>The meaning of the flag depends on
+whether it belongs to an array element yet to be scanned or
+to an element that has already been scanned (or the state of
+an instance doing the scanning). For elements yet to be scanned,
+the flag means “reset to the identity here”. For elements that
+have already been scanned, or for internal state, the flag means
+“there has already been a reset in the computation of this value”.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ReductionMsg.ResettingAndScanOp.identity">
+<em class="property">proc </em><code class="descname">identity</code><a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.identity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ReductionMsg.ResettingAndScanOp.accumulate">
+<em class="property">proc </em><code class="descname">accumulate</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.accumulate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ReductionMsg.ResettingAndScanOp.accumulateOntoState">
+<em class="property">proc </em><code class="descname">accumulateOntoState</code><span class="sig-paren">(</span><em>ref state</em>, <em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.accumulateOntoState" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ReductionMsg.ResettingAndScanOp.combine">
+<em class="property">proc </em><code class="descname">combine</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.combine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ReductionMsg.ResettingAndScanOp.generate">
+<em class="property">proc </em><code class="descname">generate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.generate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ReductionMsg.ResettingAndScanOp.clone">
+<em class="property">proc </em><code class="descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.ResettingAndScanOp.clone" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="ReductionMsg.segXor">
+<em class="property">proc </em><code class="descname">segXor</code><span class="sig-paren">(</span><em>values: [] int</em>, <em>segments: [?D] int</em><span class="sig-paren">)</span><a class="headerlink" href="#ReductionMsg.segXor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ReductionMsg.expandKeys">
+<em class="property">proc </em><code class="descname">expandKeys</code><span class="sig-paren">(</span><em>kD</em>, <em>segments: [?sD] int</em><span class="sig-paren">)</span>: [kD] int<a class="headerlink" href="#ReductionMsg.expandKeys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ReductionMsg.segNumUnique">
+<em class="property">proc </em><code class="descname">segNumUnique</code><span class="sig-paren">(</span><em>values: [?kD] int</em>, <em>segments: [?sD] int</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#ReductionMsg.segNumUnique" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ReductionMsg.stringtobool">
+<em class="property">proc </em><code class="descname">stringtobool</code><span class="sig-paren">(</span><em>str: string</em><span class="sig-paren">)</span>: bool throws<a class="headerlink" href="#ReductionMsg.stringtobool" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="RegistrationMsg.html" class="btn btn-neutral float-right" title="RegistrationMsg" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="RandMsg.html" class="btn btn-neutral float-left" title="RandMsg" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ 
+
+
+
+</body>
+</html>

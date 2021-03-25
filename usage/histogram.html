@@ -1,0 +1,457 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Summarizing Data &#8212; arkouda 2020.07.07 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Sorting" href="argsort.html" />
+    <link rel="prev" title="Indexing and Assignment" href="indexing.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="summarizing-data">
+<h1>Summarizing Data<a class="headerlink" href="#summarizing-data" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="descriptive-statistics">
+<h2>Descriptive Statistics<a class="headerlink" href="#descriptive-statistics" title="Permalink to this headline">¶</a></h2>
+<p>Simple descriptive statistics are available as reduction methods on <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+<span class="go">-10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="go">10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="go">13</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="go">0.013</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">var</span><span class="p">()</span>
+<span class="go">36.934176000000015</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+<span class="go">6.07734942223993</span>
+</pre></div>
+</div>
+<p>The list of reductions supported on <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects is:</p>
+<dl class="py method">
+<dt id="arkouda.pdarray.any">
+<code class="sig-prename descclassname"><span class="pre">pdarray.</span></code><code class="sig-name descname"><span class="pre">any</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.bool_</span><a class="headerlink" href="#arkouda.pdarray.any" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True iff any element of the array evaluates to True.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.pdarray.all">
+<code class="sig-prename descclassname"><span class="pre">pdarray.</span></code><code class="sig-name descname"><span class="pre">all</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.bool_</span><a class="headerlink" href="#arkouda.pdarray.all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True iff all elements of the array evaluate to True.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.pdarray.is_sorted">
+<code class="sig-prename descclassname"><span class="pre">pdarray.</span></code><code class="sig-name descname"><span class="pre">is_sorted</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.bool_</span><a class="headerlink" href="#arkouda.pdarray.is_sorted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True iff the array is monotonically non-decreasing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Indicates if the array is monotonically non-decreasing</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if pda is not a pdarray instance</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.pdarray.sum">
+<code class="sig-prename descclassname"><span class="pre">pdarray.</span></code><code class="sig-name descname"><span class="pre">sum</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">,</span> </span><span class="pre">bool</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.uint8</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.str_</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.pdarray.sum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the sum of all elements in the array.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.pdarray.prod">
+<code class="sig-prename descclassname"><span class="pre">pdarray.</span></code><code class="sig-name descname"><span class="pre">prod</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.float64</span><a class="headerlink" href="#arkouda.pdarray.prod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the product of all elements in the array. Return value is
+always a np.float64 or np.int64.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.pdarray.min">
+<code class="sig-prename descclassname"><span class="pre">pdarray.</span></code><code class="sig-name descname"><span class="pre">min</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">,</span> </span><span class="pre">bool</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.uint8</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.str_</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.pdarray.min" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the minimum value of the array.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.pdarray.max">
+<code class="sig-prename descclassname"><span class="pre">pdarray.</span></code><code class="sig-name descname"><span class="pre">max</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">,</span> </span><span class="pre">bool</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.uint8</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.str_</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.pdarray.max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the maximum value of the array.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.pdarray.argmin">
+<code class="sig-prename descclassname"><span class="pre">pdarray.</span></code><code class="sig-name descname"><span class="pre">argmin</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.int64</span><a class="headerlink" href="#arkouda.pdarray.argmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the index of the first occurrence of the array min value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.pdarray.argmax">
+<code class="sig-prename descclassname"><span class="pre">pdarray.</span></code><code class="sig-name descname"><span class="pre">argmax</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.int64</span><a class="headerlink" href="#arkouda.pdarray.argmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the index of the first occurrence of the array max value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.pdarray.mean">
+<code class="sig-prename descclassname"><span class="pre">pdarray.</span></code><code class="sig-name descname"><span class="pre">mean</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.float64</span><a class="headerlink" href="#arkouda.pdarray.mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the mean of the array.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.pdarray.var">
+<code class="sig-prename descclassname"><span class="pre">pdarray.</span></code><code class="sig-name descname"><span class="pre">var</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.float64</span><a class="headerlink" href="#arkouda.pdarray.var" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the variance. See <code class="docutils literal notranslate"><span class="pre">arkouda.var</span></code> for details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ddof</strong> (<em>int_scalars</em>) – “Delta Degrees of Freedom” used in calculating var</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The scalar variance of the array</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.float64</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if pda is not a pdarray instance</p></li>
+<li><p><strong>ValueError</strong> – Raised if the ddof &gt;= pdarray size</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.pdarray.std">
+<code class="sig-prename descclassname"><span class="pre">pdarray.</span></code><code class="sig-name descname"><span class="pre">std</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.float64</span><a class="headerlink" href="#arkouda.pdarray.std" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the standard deviation. See <code class="docutils literal notranslate"><span class="pre">arkouda.std</span></code> for details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ddof</strong> (<em>int_scalars</em>) – “Delta Degrees of Freedom” used in calculating std</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The scalar standard deviation of the array</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.float64</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if pda is not a pdarray instance</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.pdarray.mink">
+<code class="sig-prename descclassname"><span class="pre">pdarray.</span></code><code class="sig-name descname"><span class="pre">mink</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#arkouda.pdarray.mink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the minimum “k” values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>int_scalars</em>) – The desired count of maximum values to be returned by the output.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The maximum <cite>k</cite> values from pda</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, int</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if pda is not a pdarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.pdarray.maxk">
+<code class="sig-prename descclassname"><span class="pre">pdarray.</span></code><code class="sig-name descname"><span class="pre">maxk</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int_scalars</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pdarray</span><a class="headerlink" href="#arkouda.pdarray.maxk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the maximum “k” values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>int_scalars</em>) – The desired count of maximum values to be returned by the output.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The maximum <cite>k</cite> values from pda</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, int</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if pda is not a pdarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.pdarray.argmink">
+<code class="sig-prename descclassname"><span class="pre">pdarray.</span></code><code class="sig-name descname"><span class="pre">argmink</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#arkouda.pdarray.argmink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the minimum “k” values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>int_scalars</em>) – The desired count of maximum values to be returned by the output.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Indices corresponding to the maximum <cite>k</cite> values from pda</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, int</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if pda is not a pdarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.pdarray.argmaxk">
+<code class="sig-prename descclassname"><span class="pre">pdarray.</span></code><code class="sig-name descname"><span class="pre">argmaxk</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#arkouda.pdarray.argmaxk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the indices corresponding to the maximum “k” values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>int_scalars</em>) – The desired count of maximum values to be returned by the output.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Indices corresponding to the  maximum <cite>k</cite> values, sorted</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, int</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if pda is not a pdarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="histogram">
+<h2>Histogram<a class="headerlink" href="#histogram" title="Permalink to this headline">¶</a></h2>
+<p>Arkouda can compute simple histograms on <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> data. Currently, this function can only create histograms over evenly spaced bins between the min and max of the data. In the future, we plan to support using a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> to define custom bin edges.</p>
+<dl class="py function">
+<dt id="arkouda.histogram">
+<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">histogram</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#arkouda.histogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute a histogram of evenly spaced bins over the range of an array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – The values to histogram</p></li>
+<li><p><strong>bins</strong> (<em>int_scalars</em>) – The number of equal-size bins to use (default: 10)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The number of values present in each bin</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, int64 or float64</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray or if bins is
+    not an int.</p></li>
+<li><p><strong>ValueError</strong> – Raised if bins &lt; 1</p></li>
+<li><p><strong>NotImplementedError</strong> – Raised if pdarray dtype is bool or uint8</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.value_counts" title="arkouda.value_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_counts</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>The bins are evenly spaced in the interval [pda.min(), pda.max()].
+Currently, the user must re-compute the bin edges, e.g. with np.linspace
+(see below) in order to plot the histogram.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nbins</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">nbins</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h</span>
+<span class="go">array([3, 3, 4])</span>
+<span class="go"># Recreate the bin edges in NumPy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binEdges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">A</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">nbins</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binEdges</span>
+<span class="go">array([0., 3., 6., 9.])</span>
+<span class="go"># To plot, use only the left edges, and export the histogram to NumPy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">binEdges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">h</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">())</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<p>Since the <code class="docutils literal notranslate"><span class="pre">histogram</span></code> function currently does not return the bin edges, only the counts, the user can recreate the bin edges (e.g. for plotting) using:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">binEdges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">myarray</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">myarray</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">nbins</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="value-counts">
+<h2>Value Counts<a class="headerlink" href="#value-counts" title="Permalink to this headline">¶</a></h2>
+<p>For int64 <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects, it is often useful to count only the unique values that appear. This function finds all unique values and their counts.</p>
+<dl class="py function">
+<dt id="arkouda.value_counts">
+<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">value_counts</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Categorical</span><span class="p"><span class="pre">,</span> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.value_counts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Count the occurrences of the unique values of an array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pda</strong> (<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>int64</em>) – The array of values to count</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>unique_values</strong> (<em>pdarray, int64 or Strings</em>) – The unique values, sorted in ascending order</p></li>
+<li><p><strong>counts</strong> (<em>pdarray, int64</em>) – The number of times the corresponding unique value occurs</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="setops.html#arkouda.unique" title="arkouda.unique"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique</span></code></a>, <a class="reference internal" href="#arkouda.histogram" title="arkouda.histogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">histogram</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>This function differs from <code class="docutils literal notranslate"><span class="pre">histogram()</span></code> in that it only returns
+counts for values that are present, leaving out empty “bins”. This
+function delegates all logic to the unique() method where the
+return_counts parameter is set to True.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">value_counts</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="go">(array([0, 2, 4]), array([3, 2, 1]))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">arkouda</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../setup/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../usage.html">Usage</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="startup.html">Startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="creation.html">Creating Arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IO.html">Data I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arithmetic.html">Arithmetic and Numeric Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html">Indexing and Assignment</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Summarizing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="argsort.html">Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setops.html">Array Set Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="groupby.html">GroupBy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="strings.html">Strings in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="categorical.html">Categoricals</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autoapi/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../server/index.html">Chapel API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../usage.html">Usage</a><ul>
+      <li>Previous: <a href="indexing.html" title="previous chapter">Indexing and Assignment</a></li>
+      <li>Next: <a href="argsort.html" title="next chapter">Sorting</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Michael Merrill and William Reus.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/usage/histogram.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

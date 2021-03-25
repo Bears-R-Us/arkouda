@@ -1,0 +1,31 @@
+.. default-domain:: chpl
+
+.. module:: In1dMsg
+
+In1dMsg
+=======
+**Usage**
+
+.. code-block:: chapel
+
+   use In1dMsg;
+
+
+or
+
+.. code-block:: chapel
+
+   import In1dMsg;
+
+.. data:: var iLogger = new Logger()
+
+.. function:: proc in1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   in1d takes two pdarray and returns a bool pdarray
+   with the "in"/contains for each element tested against the second pdarray.
+   
+   in1dMsg processes the request, considers the size of the arguements, and decides 
+   which implementation
+   of in1d to utilize.
+   
+

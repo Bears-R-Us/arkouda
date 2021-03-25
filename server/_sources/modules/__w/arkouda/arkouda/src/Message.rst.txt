@@ -1,0 +1,83 @@
+.. default-domain:: chpl
+
+.. module:: Message
+
+Message
+=======
+**Usage**
+
+.. code-block:: chapel
+
+   use Message;
+
+
+or
+
+.. code-block:: chapel
+
+   import Message;
+
+.. enum:: enum MsgType { NORMAL, WARNING, ERROR }
+
+.. enum:: enum MsgFormat { STRING, BINARY }
+
+.. record:: MsgTuple
+
+   
+   * Encapsulates the message string and message type.
+   
+
+
+   .. attribute:: var msg: string
+
+   .. attribute:: var msgType: MsgType
+
+.. class:: ReplyMsg
+
+   
+   * Encapsulates state corresponding to a reply message sent back to 
+   * the Arkouda client.
+   
+
+
+   .. attribute:: var msg: string
+
+   .. attribute:: var msgType: MsgType
+
+   .. attribute:: var msgFormat: MsgFormat
+
+   .. attribute:: var user: string
+
+.. record:: RequestMsg
+
+   
+   * Encapsulates state corresponding to a client request sent to the Arkouda server.
+   
+
+
+   .. attribute:: var user: string
+
+   .. attribute:: var token: string
+
+   .. attribute:: var cmd: string
+
+   .. attribute:: var format: string
+
+   .. attribute:: var args: string
+
+.. function:: proc deserialize(ref msg: RequestMsg, request: string) throws
+
+   
+   * Deserializes a JSON-formatted string to a RequestMsg object, where the
+   * JSON format is as follows:
+   *
+   * {"user": "user", "token": "token", "cmd": "cmd", "format": "STRING", "args": "arg1 arg2"}
+   *
+   
+
+.. function:: proc serialize(msg: string, msgType: MsgType, msgFormat: MsgFormat, user: string): string throws
+
+   
+   * Generates a ReplyMsg object and serializes it into a JSON-formatted reply message
+   
+

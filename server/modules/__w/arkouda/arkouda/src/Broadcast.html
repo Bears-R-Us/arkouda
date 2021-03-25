@@ -1,0 +1,312 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Broadcast &mdash; chpldoc 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="BroadcastMsg" href="BroadcastMsg.html" />
+    <link rel="prev" title="AryUtil" href="AryUtil.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">chpldoc documentation</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="ArgSortMsg.html">ArgSortMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArraySetops.html">ArraySetops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArraySetopsMsg.html">ArraySetopsMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AryUtil.html">AryUtil</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Broadcast</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BroadcastMsg.html">BroadcastMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CastMsg.html">CastMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommAggregation.html">CommAggregation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommPrimitives.html">CommPrimitives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ConcatenateMsg.html">ConcatenateMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="EfuncMsg.html">EfuncMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Errors.html">Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Extremas.html">Extremas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FileIO.html">FileIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FindSegmentsMsg.html">FindSegmentsMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Flatten.html">Flatten</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FlattenMsg.html">FlattenMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GenSymIO.html">GenSymIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Histogram.html">Histogram</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HistogramMsg.html">HistogramMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="In1d.html">In1d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="In1dMsg.html">In1dMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Indexing.html">Indexing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IndexingMsg.html">IndexingMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="JoinEqWithDTMsg.html">JoinEqWithDTMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="KExtremeMsg.html">KExtremeMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="KReduce.html">KReduce</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Message.html">Message</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MsgProcessing.html">MsgProcessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MultiTypeSymEntry.html">MultiTypeSymEntry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MultiTypeSymbolTable.html">MultiTypeSymbolTable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NumPyDType.html">NumPyDType</a></li>
+<li class="toctree-l1"><a class="reference internal" href="OperatorMsg.html">OperatorMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RadixSortLSD.html">RadixSortLSD</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RandArray.html">RandArray</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RandMsg.html">RandMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ReductionMsg.html">ReductionMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RegistrationMsg.html">RegistrationMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Security.html">Security</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegStringSort.html">SegStringSort</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegmentedArray.html">SegmentedArray</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegmentedMsg.html">SegmentedMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ServerConfig.html">ServerConfig</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ServerErrorStrings.html">ServerErrorStrings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SipHash.html">SipHash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SortMsg.html">SortMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SymArrayDmap.html">SymArrayDmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Unique.html">Unique</a></li>
+<li class="toctree-l1"><a class="reference internal" href="UniqueMsg.html">UniqueMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arkouda_server.html">arkouda_server</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">chpldoc</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+        
+      <li>Broadcast</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/Broadcast.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="module-Broadcast"></span><div class="section" id="broadcast">
+<h1>Broadcast<a class="headerlink" href="#broadcast" title="Permalink to this headline">¶</a></h1>
+<p><strong>Usage</strong></p>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">Broadcast</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="nx">import</span> <span class="nx">Broadcast</span><span class="p">;</span>
+</pre></div>
+</div>
+<dl class="function">
+<dt id="Broadcast.broadcast">
+<em class="property">proc </em><code class="descname">broadcast</code><span class="sig-paren">(</span><em>perm: [?D] int</em>, <em>segs: [?sD] int</em>, <em>vals: [sD] ?t</em><span class="sig-paren">)</span><a class="headerlink" href="#Broadcast.broadcast" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li>Broadcast a value per segment of a segmented array to the</li>
+<li>original ordering of the precursor array. For example, if</li>
+<li>the original array was sorted and grouped, resulting in</li>
+<li>groups defined by &lt;segs&gt;, and if &lt;vals&gt; contains group labels,</li>
+<li>then return the array of group labels corresponding to the</li>
+<li>original array. Intended to be used with arkouda.GroupBy.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<em class="property">proc </em><code class="descname">broadcast</code><span class="sig-paren">(</span><em>perm: [?D] int</em>, <em>segs: [?sD] int</em>, <em>vals: [sD] bool</em><span class="sig-paren">)</span></dt>
+<dd><ul class="simple">
+<li>Broadcast a value per segment of a segmented array to the</li>
+<li>original ordering of the precursor array. For example, if</li>
+<li>the original array was sorted and grouped, resulting in</li>
+<li>groups defined by &lt;segs&gt;, and if &lt;vals&gt; contains group labels,</li>
+<li>then return the array of group labels corresponding to the</li>
+<li>original array. Intended to be used with arkouda.GroupBy.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<em class="property">proc </em><code class="descname">broadcast</code><span class="sig-paren">(</span><em>segs: [?sD] int</em>, <em>vals: [sD] ?t</em>, <em>size: int</em><span class="sig-paren">)</span></dt>
+<dd><ul class="simple">
+<li>Broadcast a value per segment of a segmented array to the</li>
+<li>full size of the array. For example, if the segmented array</li>
+<li>is a compressed sparse row matrix, then expand a row</li>
+<li>vector such that each nonzero receives its row’s value.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<em class="property">proc </em><code class="descname">broadcast</code><span class="sig-paren">(</span><em>segs: [?sD] int</em>, <em>vals: [sD] bool</em>, <em>size: int</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="BroadcastMsg.html" class="btn btn-neutral float-right" title="BroadcastMsg" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="AryUtil.html" class="btn btn-neutral float-left" title="AryUtil" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ 
+
+
+
+</body>
+</html>

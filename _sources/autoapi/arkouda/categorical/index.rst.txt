@@ -1,0 +1,359 @@
+:mod:`arkouda.categorical`
+==========================
+
+.. py:module:: arkouda.categorical
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.categorical.Categorical
+
+
+
+.. class:: Categorical(values, **kwargs)
+
+
+   Represents an array of values belonging to named categories. Converting a
+   Strings object to Categorical often saves memory and speeds up operations,
+   especially if there are many repeated values, at the cost of some one-time
+   work in initialization.
+
+   :param values: String values to convert to categories
+   :type values: Strings
+
+   .. attribute:: categories
+
+      The set of category labels (determined automatically)
+
+      :type: Strings
+
+   .. attribute:: codes
+
+      The category indices of the values or -1 for N/A
+
+      :type: pdarray, int64
+
+   .. attribute:: permutation
+
+      The permutation that groups the values in the same order as categories
+
+      :type: pdarray, int64
+
+   .. attribute:: segments
+
+      When values are grouped, the starting offset of each group
+
+      :type: pdarray, int64
+
+   .. attribute:: size
+
+      The number of items in the array
+
+      :type: Union[int,np.int64]
+
+   .. attribute:: nlevels
+
+      The number of distinct categories
+
+      :type: Union[int,np.int64]
+
+   .. attribute:: ndim
+
+      The rank of the array (currently only rank 1 arrays supported)
+
+      :type: Union[int,np.int64]
+
+   .. attribute:: shape
+
+      The sizes of each dimension of the array
+
+      :type: tuple
+
+   .. attribute:: BinOps
+      
+
+      
+
+   .. attribute:: objtype
+      :annotation: = category
+
+      
+
+   .. attribute:: permutation
+      
+
+      
+
+   .. attribute:: segments
+      
+
+      
+
+   .. method:: from_codes(cls, codes: arkouda.pdarrayclass.pdarray, categories: arkouda.strings.Strings, permutation=None, segments=None) -> arkouda.categorical.Categorical
+      :classmethod:
+
+      Make a Categorical from codes and categories arrays. If codes and
+      categories have already been pre-computed, this constructor saves
+      time. If not, please use the normal constructor.
+
+      :param codes: Category indices of each value
+      :type codes: pdarray, int64
+      :param categories: Unique category labels
+      :type categories: Strings
+      :param permutation: The permutation that groups the values in the same order
+                          as categories
+      :type permutation: pdarray, int64
+      :param segments: When values are grouped, the starting offset of each group
+      :type segments: pdarray, int64
+
+      :returns: The Categorical object created from the input parameters
+      :rtype: Categorical
+
+      :raises TypeError: Raised if codes is not a pdarray of int64 objects or if
+          categories is not a Strings object
+
+
+   .. method:: to_ndarray(self) -> numpy.ndarray
+
+      Convert the array to a np.ndarray, transferring array data from
+      the arkouda server to Python. This conversion discards category
+      information and produces an ndarray of strings. If the arrays
+      exceeds a built-in size limit, a RuntimeError is raised.
+
+      :returns: A numpy ndarray of strings corresponding to the values in
+                this array
+      :rtype: np.ndarray
+
+      .. rubric:: Notes
+
+      The number of bytes in the array cannot exceed ``arkouda.maxTransferBytes``,
+      otherwise a ``RuntimeError`` will be raised. This is to protect the user
+      from overflowing the memory of the system on which the Python client
+      is running, under the assumption that the server is running on a
+      distributed system with much more memory than the client. The user
+      may override this limit by setting ak.maxTransferBytes to a larger
+      value, but proceed with caution.
+
+
+   .. method:: __iter__(self)
+
+
+   .. method:: __len__(self)
+
+
+   .. method:: __str__(self)
+
+      Return str(self).
+
+
+   .. method:: __repr__(self)
+
+      Return repr(self).
+
+
+   .. method:: _binop(self, other: Union[(Categorical, str_scalars)], op: arkouda.dtypes.str_scalars) -> arkouda.pdarrayclass.pdarray
+
+      Executes the requested binop on this Categorical instance and returns
+          the results within a pdarray object.
+
+          Parameters
+          ----------
+          other : Union[Categorical,str_scalars]
+              the other object is a Categorical object or string scalar
+          op : str_scalars
+              name of the binary operation to be performed
+
+          Returns
+          -------
+          pdarray
+              encapsulating the results of the requested binop
+
+          Raises
+      -   -----
+          ValueError
+              Raised if (1) the op is not in the self.BinOps set, or (2) if the
+              sizes of this and the other instance don't match
+          RuntimeError
+              Raised if a server-side error is thrown while executing the
+              binary operation
+
+
+   .. method:: _r_binop(self, other: Union[(Categorical, str_scalars)], op: arkouda.dtypes.str_scalars) -> arkouda.pdarrayclass.pdarray
+
+      Executes the requested reverse binop on this Categorical instance and
+          returns the results within a pdarray object.
+
+          Parameters
+          ----------
+          other : Union[Categorical,str_scalars]
+              the other object is a Categorical object or string scalar
+          op : str_scalars
+              name of the binary operation to be performed
+
+          Returns
+          -------
+          pdarray
+              encapsulating the results of the requested binop
+
+          Raises
+      -   -----
+          ValueError
+              Raised if (1) the op is not in the self.BinOps set, or (2) if the
+              sizes of this and the other instance don't match
+          RuntimeError
+              Raised if a server-side error is thrown while executing the
+              binary operation
+
+
+   .. method:: __eq__(self, other)
+
+      Return self==value.
+
+
+   .. method:: __ne__(self, other)
+
+      Return self!=value.
+
+
+   .. method:: __getitem__(self, key) -> arkouda.categorical.Categorical
+
+
+   .. method:: reset_categories(self) -> arkouda.categorical.Categorical
+
+      Recompute the category labels, discarding any unused labels. This
+      method is often useful after slicing or indexing a Categorical array,
+      when the resulting array only contains a subset of the original
+      categories. In this case, eliminating unused categories can speed up
+      other operations.
+
+      :returns: A Categorical object generated from the current instance
+      :rtype: Categorical
+
+
+   .. method:: contains(self, substr: str) -> arkouda.pdarrayclass.pdarray
+
+      Check whether each element contains the given substring.
+
+      :param substr: The substring to search for
+      :type substr: str
+
+      :returns: True for elements that contain substr, False otherwise
+      :rtype: pdarray, bool
+
+      :raises TypeError: Raised if substr is not a str
+
+      .. rubric:: Notes
+
+      This method can be significantly faster than the corresponding method
+      on Strings objects, because it searches the unique category labels
+      instead of the full array.
+
+      .. seealso:: :obj:`Categorical.startswith`, :obj:`Categorical.endswith`
+
+
+   .. method:: startswith(self, substr: str) -> arkouda.pdarrayclass.pdarray
+
+      Check whether each element starts with the given substring.
+
+      :param substr: The substring to search for
+      :type substr: str
+
+      :raises TypeError: Raised if substr is not a str
+
+      :returns: True for elements that contain substr, False otherwise
+      :rtype: pdarray, bool
+
+      .. rubric:: Notes
+
+      This method can be significantly faster than the corresponding
+      method on Strings objects, because it searches the unique category
+      labels instead of the full array.
+
+      .. seealso:: :obj:`Categorical.contains`, :obj:`Categorical.endswith`
+
+
+   .. method:: endswith(self, substr: str) -> arkouda.pdarrayclass.pdarray
+
+      Check whether each element ends with the given substring.
+
+      :param substr: The substring to search for
+      :type substr: str
+
+      :raises TypeError: Raised if substr is not a str
+
+      :returns: True for elements that contain substr, False otherwise
+      :rtype: pdarray, bool
+
+      .. rubric:: Notes
+
+      This method can be significantly faster than the corresponding method
+      on Strings objects, because it searches the unique category labels
+      instead of the full array.
+
+      .. seealso:: :obj:`Categorical.startswith`, :obj:`Categorical.contains`
+
+
+   .. method:: in1d(self, test)
+
+
+   .. method:: unique(self) -> arkouda.categorical.Categorical
+
+
+   .. method:: group(self) -> arkouda.pdarrayclass.pdarray
+
+      Return the permutation that groups the array, placing equivalent
+      categories together. All instances of the same category are guaranteed
+      to lie in one contiguous block of the permuted array, but the blocks
+      are not necessarily ordered.
+
+      :returns: The permutation that groups the array by value
+      :rtype: pdarray
+
+      .. seealso:: :obj:`GroupBy`, :obj:`unique`
+
+      .. rubric:: Notes
+
+      This method is faster than the corresponding Strings method. If the
+      Categorical was created from a Strings object, then this function
+      simply returns the cached permutation. Even if the Categorical was
+      created using from_codes(), this function will be faster than
+      Strings.group() because it sorts dense integer values, rather than
+      128-bit hash values.
+
+
+   .. method:: argsort(self)
+
+
+   .. method:: sort(self)
+
+
+   .. method:: concatenate(self, others: List[Categorical], ordered: bool = True) -> arkouda.categorical.Categorical
+
+      Merge this Categorical with other Categorical objects in the array,
+      concatenating the arrays and synchronizing the categories.
+
+      :param others: The Categorical arrays to concatenate and merge with this one
+      :type others: List[Categorical]
+      :param ordered: If True (default), the arrays will be appended in the
+                      order given. If False, array data may be interleaved
+                      in blocks, which can greatly improve performance but
+                      results in non-deterministic ordering of elements.
+      :type ordered: bool
+
+      :returns: The merged Categorical object
+      :rtype: Categorical
+
+      :raises TypeError: Raised if any others array objects are not Categorical objects
+
+      .. rubric:: Notes
+
+      This operation can be expensive -- slower than concatenating Strings.
+
+
+

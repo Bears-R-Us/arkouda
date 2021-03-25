@@ -1,0 +1,72 @@
+.. default-domain:: chpl
+
+.. module:: RadixSortLSD
+   :synopsis: Radix Sort Least Significant Digit 
+
+RadixSortLSD
+============
+**Usage**
+
+.. code-block:: chapel
+
+   use RadixSortLSD;
+
+
+or
+
+.. code-block:: chapel
+
+   import RadixSortLSD;
+
+Radix Sort Least Significant Digit 
+
+.. data:: config const RSLSD_vv = false
+
+.. data:: const vv = RSLSD_vv
+
+.. data:: config const RSLSD_numTasks = here.maxTaskPar
+
+.. data:: const numTasks = RSLSD_numTasks
+
+.. data:: const Tasks = {0..#numTasks}
+
+.. data:: config param RSLSD_bitsPerDigit = 16
+
+.. data:: const rsLogger = new Logger()
+
+.. function:: proc getBitWidth(a: [?aD] int): (int, bool)
+
+.. function:: proc getBitWidth(a: [?aD] real): (int, bool)
+
+.. function:: proc getBitWidth(a: [?aD] (uint, uint)): (int, bool)
+
+.. function:: proc getBitWidth(a: [?aD] ?t): (int, bool)
+
+.. function:: proc getDigit(key: int, rshift: int, last: bool, negs: bool): int
+
+.. function:: proc getDigit(key: uint, rshift: int, last: bool, negs: bool): int
+
+.. function:: proc getDigit(in key: real, rshift: int, last: bool, negs: bool): int
+
+.. function:: proc getDigit(key: 2*(uint), rshift: int, last: bool, negs: bool): int
+
+.. function:: proc getDigit(key: _tuple, rshift: int, last: bool, negs: bool): int
+
+.. function:: proc calcBlock(task: int, low: int, high: int)
+
+.. function:: proc calcGlobalIndex(bucket: int, loc: int, task: int): int
+
+.. function:: proc radixSortLSD_ranks(a: [?aD] ?t, checkSorted: bool = true): [aD] int
+
+   Radix Sort Least Significant Digit
+   radix sort a block distributed array
+   returning a permutation vector as a block distributed array 
+
+.. function:: proc radixSortLSD_keys(a: [?aD] ?t, checkSorted: bool = true): [aD] t
+
+   Radix Sort Least Significant Digit
+   radix sort a block distributed array
+   returning sorted keys as a block distributed array 
+
+.. function:: proc radixSortLSD_memEst(size: int, itemsize: int)
+

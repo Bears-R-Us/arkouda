@@ -1,0 +1,27 @@
+.. default-domain:: chpl
+
+.. module:: FileIO
+
+FileIO
+======
+**Usage**
+
+.. code-block:: chapel
+
+   use FileIO;
+
+
+or
+
+.. code-block:: chapel
+
+   import FileIO;
+
+.. function:: proc appendFile(filePath: string, line: string) throws
+
+.. function:: proc getLineFromFile(filePath: string, lineIndex: int = -1): string throws
+
+.. function:: proc delimitedFileToMap(filePath: string, delimiter: string = ","): map
+
+.. function:: proc initDirectory(filePath: string) throws
+

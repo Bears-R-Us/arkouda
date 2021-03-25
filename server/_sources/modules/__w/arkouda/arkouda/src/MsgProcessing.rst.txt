@@ -1,0 +1,177 @@
+.. default-domain:: chpl
+
+.. module:: MsgProcessing
+
+MsgProcessing
+=============
+**Usage**
+
+.. code-block:: chapel
+
+   use MsgProcessing;
+
+
+or
+
+.. code-block:: chapel
+
+   import MsgProcessing;
+
+.. data:: const mpLogger = new Logger()
+
+.. function:: proc createMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   Parse, execute, and respond to a create message 
+   
+   :arg : payload
+   :type string: containing (dtype,size)
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: (MsgTuple) response message
+   
+
+.. function:: proc deleteMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   Parse, execute, and respond to a delete message 
+   
+   :arg reqMsg: request containing (cmd,name)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: MsgTuple
+   
+
+.. function:: proc clearMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   Clear all unregistered symbols and associated data from sym table
+   
+   :arg reqMsg: request containing (cmd)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: MsgTuple
+    
+
+.. function:: proc infoMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   Takes the name of data referenced in a msg and searches for the name in the provided sym table.
+   Returns a string of info for the sym entry that is mapped to the provided name.
+   
+   :arg reqMsg: request containing (cmd,name)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: MsgTuple
+    
+
+.. function:: proc getconfigMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   query server configuration...
+   
+   :arg reqMsg: request containing (cmd)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: MsgTuple
+    
+
+.. function:: proc getmemusedMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   query server total memory allocated or symbol table data memory
+   
+   :arg reqMsg: request containing (cmd)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: MsgTuple
+    
+
+.. function:: proc strMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   Response to __str__ method in python str convert array data to string 
+   
+   :arg reqMsg: request containing (cmd,name)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: (string,MsgType)
+   
+
+.. function:: proc reprMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   Response to __repr__ method in python.
+   Repr convert array data to string 
+   
+   :arg reqMsg: request containing (cmd,name)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: MsgTuple
+   
+
+.. function:: proc arangeMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   Creates a sym entry with distributed array adhering to the Msg parameters (start, stop, stride)
+   
+   :arg reqMsg: request containing (cmd,start,stop,stride)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: MsgTuple
+   
+
+.. function:: proc linspaceMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   Creates a sym entry with distributed array adhering to the Msg parameters (start, stop, len)
+   
+   :arg reqMsg: request containing (cmd,start,stop,len)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: MsgTuple
+   
+
+.. function:: proc setMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   Sets all elements in array to a value (broadcast) 
+   
+   :arg reqMsg: request containing (cmd,name,dtype,value)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: MsgTuple
+   :throws: `UndefinedSymbolError(name)`
+   
+

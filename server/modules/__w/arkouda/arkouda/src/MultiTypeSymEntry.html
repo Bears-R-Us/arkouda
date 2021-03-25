@@ -1,0 +1,411 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>MultiTypeSymEntry &mdash; chpldoc 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="MultiTypeSymbolTable" href="MultiTypeSymbolTable.html" />
+    <link rel="prev" title="MsgProcessing" href="MsgProcessing.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">chpldoc documentation</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="ArgSortMsg.html">ArgSortMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArraySetops.html">ArraySetops</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ArraySetopsMsg.html">ArraySetopsMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AryUtil.html">AryUtil</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Broadcast.html">Broadcast</a></li>
+<li class="toctree-l1"><a class="reference internal" href="BroadcastMsg.html">BroadcastMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CastMsg.html">CastMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommAggregation.html">CommAggregation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CommPrimitives.html">CommPrimitives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ConcatenateMsg.html">ConcatenateMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="EfuncMsg.html">EfuncMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Errors.html">Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Extremas.html">Extremas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FileIO.html">FileIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FindSegmentsMsg.html">FindSegmentsMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Flatten.html">Flatten</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FlattenMsg.html">FlattenMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GenSymIO.html">GenSymIO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Histogram.html">Histogram</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HistogramMsg.html">HistogramMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="In1d.html">In1d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="In1dMsg.html">In1dMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Indexing.html">Indexing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IndexingMsg.html">IndexingMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="JoinEqWithDTMsg.html">JoinEqWithDTMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="KExtremeMsg.html">KExtremeMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="KReduce.html">KReduce</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Message.html">Message</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MsgProcessing.html">MsgProcessing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">MultiTypeSymEntry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MultiTypeSymbolTable.html">MultiTypeSymbolTable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NumPyDType.html">NumPyDType</a></li>
+<li class="toctree-l1"><a class="reference internal" href="OperatorMsg.html">OperatorMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RadixSortLSD.html">RadixSortLSD</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RandArray.html">RandArray</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RandMsg.html">RandMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ReductionMsg.html">ReductionMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RegistrationMsg.html">RegistrationMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Security.html">Security</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegStringSort.html">SegStringSort</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegmentedArray.html">SegmentedArray</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SegmentedMsg.html">SegmentedMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ServerConfig.html">ServerConfig</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ServerErrorStrings.html">ServerErrorStrings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SipHash.html">SipHash</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SortMsg.html">SortMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SymArrayDmap.html">SymArrayDmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Unique.html">Unique</a></li>
+<li class="toctree-l1"><a class="reference internal" href="UniqueMsg.html">UniqueMsg</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arkouda_server.html">arkouda_server</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">chpldoc</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+        
+      <li>MultiTypeSymEntry</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../../../../_sources/modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="module-MultiTypeSymEntry"></span><div class="section" id="multitypesymentry">
+<h1>MultiTypeSymEntry<a class="headerlink" href="#multitypesymentry" title="Permalink to this headline">¶</a></h1>
+<p><strong>Usage</strong></p>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">MultiTypeSymEntry</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="nx">import</span> <span class="nx">MultiTypeSymEntry</span><span class="p">;</span>
+</pre></div>
+</div>
+<dl class="function">
+<dt id="MultiTypeSymEntry.toSymEntry">
+<em class="property">proc </em><code class="descname">toSymEntry</code><span class="sig-paren">(</span><em>gse: borrowed GenSymEntry</em>, <em>type etype</em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.toSymEntry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Casts a GenSymEntry to the specified type and returns it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>gse</strong> – generic sym entry</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="MultiTypeSymEntry.GenSymEntry">
+<em class="property">class </em><code class="descname">GenSymEntry</code><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a dummy class to avoid having to talk about specific
+instantiations of SymEntry.</p>
+<dl class="attribute">
+<dt id="MultiTypeSymEntry.GenSymEntry.dtype">
+<em class="property">var </em><code class="descname">dtype</code>: DType<a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.dtype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="MultiTypeSymEntry.GenSymEntry.itemsize">
+<em class="property">var </em><code class="descname">itemsize</code>: int<a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.itemsize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="MultiTypeSymEntry.GenSymEntry.size">
+<em class="property">var </em><code class="descname">size</code>: int = 0<a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="MultiTypeSymEntry.GenSymEntry.ndim">
+<em class="property">var </em><code class="descname">ndim</code>: int = 1<a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.ndim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="MultiTypeSymEntry.GenSymEntry.shape">
+<em class="property">var </em><code class="descname">shape</code>: 1*(int) = (0)<a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.shape" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="MultiTypeSymEntry.GenSymEntry.init">
+<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><em>type etype</em>, <em>len: int = 0</em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="MultiTypeSymEntry.GenSymEntry.toSymEntry">
+<em class="property">proc </em><code class="descname">toSymEntry</code><span class="sig-paren">(</span><em>type etype</em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.toSymEntry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cast this <cite>GenSymEntry</cite> to <cite>borrowed SymEntry(etype)</cite></p>
+<p>This function will halt if the cast fails.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>etype</strong> : <em>type</em> – <cite>SymEntry</cite> type parameter</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="MultiTypeSymEntry.SymEntry">
+<em class="property">class </em><code class="descname">SymEntry</code>: GenSymEntry<a class="headerlink" href="#MultiTypeSymEntry.SymEntry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Symbol table entry
+Only supports 1-d arrays for now</p>
+<dl class="attribute">
+<dt id="MultiTypeSymEntry.SymEntry.etype">
+<em class="property">type </em><code class="descname">etype</code><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.etype" title="Permalink to this definition">¶</a></dt>
+<dd><p>generic element type array
+etype is different from dtype (chapel vs numpy)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="MultiTypeSymEntry.SymEntry.aD">
+<em class="property">var </em><code class="descname">aD</code>: makeDistDom(size).type<a class="headerlink" href="#MultiTypeSymEntry.SymEntry.aD" title="Permalink to this definition">¶</a></dt>
+<dd><p>‘aD’ is the distributed domain for ‘a’ whose value and type
+are defined by makeDistDom() to support varying distributions</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="MultiTypeSymEntry.SymEntry.a">
+<em class="property">var </em><code class="descname">a</code>: [aD] etype<a class="headerlink" href="#MultiTypeSymEntry.SymEntry.a" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="MultiTypeSymEntry.SymEntry.init">
+<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><em>len: int</em>, <em>type etype</em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>This init takes length and element type</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>len</strong> : <em>int</em> – length of array to be allocated</li>
+<li><strong>etype</strong> : <em>type</em> – type to be instantiated</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><em>a: [?D] ?etype</em><span class="sig-paren">)</span></dt>
+<dd><p>This init takes an array of a type</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>a</strong> : <em>[] ?etype</em> – array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="MultiTypeSymEntry.SymEntry.postinit">
+<em class="property">proc </em><code class="descname">postinit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.postinit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verbose flag utility method</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="MultiTypeSymEntry.SymEntry.deinit">
+<em class="property">proc </em><code class="descname">deinit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.deinit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verbose flag utility method</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="MultiTypeSymEntry.SymEntry.writeThis">
+<em class="property">override proc </em><code class="descname">writeThis</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#MultiTypeSymEntry.SymEntry.writeThis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="MultiTypeSymbolTable.html" class="btn btn-neutral float-right" title="MultiTypeSymbolTable" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="MsgProcessing.html" class="btn btn-neutral float-left" title="MsgProcessing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+  
+ 
+
+
+
+</body>
+</html>

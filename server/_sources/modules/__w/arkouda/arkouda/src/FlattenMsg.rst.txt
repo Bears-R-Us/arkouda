@@ -1,0 +1,23 @@
+.. default-domain:: chpl
+
+.. module:: FlattenMsg
+
+FlattenMsg
+==========
+**Usage**
+
+.. code-block:: chapel
+
+   use FlattenMsg;
+
+
+or
+
+.. code-block:: chapel
+
+   import FlattenMsg;
+
+.. data:: const fmLogger = new Logger()
+
+.. function:: proc segFlattenMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+

@@ -1,0 +1,67 @@
+.. default-domain:: chpl
+
+.. module:: SymArrayDmap
+
+SymArrayDmap
+============
+**Usage**
+
+.. code-block:: chapel
+
+   use SymArrayDmap;
+
+
+or
+
+.. code-block:: chapel
+
+   import SymArrayDmap;
+
+.. enum:: enum Dmap { defaultRectangular, blockDist, cyclicDist }
+
+   
+   Available domain maps. Cyclic isn't regularly tested and may not work.
+   
+
+
+.. data:: config param MyDmap: Dmap = defaultDmap
+
+   
+   How domains/arrays are distributed. Defaults to :enum:`Dmap.defaultRectangular` if
+   :param:`CHPL_COMM=none`, otherwise defaults to :enum:`Dmap.blockDist`.
+   
+
+.. function:: proc makeDistDom(size: int)
+
+   
+   Makes a domain distributed according to :param:`MyDmap`.
+   
+   :arg size: size of domain
+   :type size: int
+   
+
+.. function:: proc makeDistArray(size: int, type etype)
+
+   
+   Makes an array of specified type over a distributed domain
+   
+   :arg size: size of the domain
+   :type size: int 
+   
+   :arg etype: desired type of array
+   :type etype: type
+   
+   :returns: [] ?etype
+   
+
+.. function:: proc makeDistDomType(size: int) type
+
+   
+   Returns the type of the distributed domain
+   
+   :arg size: size of domain
+   :type size: int
+   
+   :returns: type
+   
+

@@ -1,0 +1,124 @@
+:mod:`arkouda.dtypes`
+=====================
+
+.. py:module:: arkouda.dtypes
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.dtypes.check_np_dtype
+   arkouda.dtypes.translate_np_dtype
+   arkouda.dtypes.resolve_scalar_dtype
+
+
+.. data:: dtype
+   
+
+   
+
+.. data:: bool
+   
+
+   
+
+.. data:: int64
+   
+
+   
+
+.. data:: float64
+   
+
+   
+
+.. data:: uint8
+   
+
+   
+
+.. data:: str_
+   
+
+   
+
+.. data:: bool_scalars
+   
+
+   
+
+.. data:: float_scalars
+   
+
+   
+
+.. data:: int_scalars
+   
+
+   
+
+.. data:: numeric_scalars
+   
+
+   
+
+.. data:: numpy_scalars
+   
+
+   
+
+.. data:: str_scalars
+   
+
+   
+
+.. data:: all_scalars
+   
+
+   The DType enum defines the supported Arkouda data types in string form.
+
+
+.. data:: ARKOUDA_SUPPORTED_DTYPES
+   
+
+   
+
+.. data:: DTypes
+   
+
+   
+
+.. data:: DTypeObjects
+   
+
+   
+
+.. function:: check_np_dtype(dt: numpy.dtype) -> None
+
+   Assert that numpy dtype dt is one of the dtypes supported
+   by arkouda, otherwise raise TypeError.
+
+   :raises TypeError: Raised if the dtype is not in supported dtypes or if
+       dt is not a np.dtype
+
+
+.. function:: translate_np_dtype(dt: numpy.dtype) -> Tuple[(builtins.str, int)]
+
+   Split numpy dtype dt into its kind and byte size, raising
+   TypeError for unsupported dtypes.
+
+   :raises TypeError: Raised if the dtype is not in supported dtypes or if
+       dt is not a np.dtype
+
+
+.. function:: resolve_scalar_dtype(val: object) -> str
+
+   Try to infer what dtype arkouda_server should treat val as.
+
+

@@ -1,0 +1,34 @@
+.. default-domain:: chpl
+
+.. module:: Indexing
+   :synopsis: Helper functions for indexing a chapel array
+
+Indexing
+========
+**Usage**
+
+.. code-block:: chapel
+
+   use Indexing;
+
+
+or
+
+.. code-block:: chapel
+
+   import Indexing;
+
+Helper functions for indexing a chapel array
+includes slicing, indexing by boolean ararys, and concatenation
+
+
+.. function:: proc sliceIndex(a: [?aD] ?t, start: int, stop: int, stride: int)
+
+.. function:: proc sliceTail(a: [?aD] ?t)
+
+.. function:: proc sliceHead(a: [?aD] ?t)
+
+.. function:: proc boolIndexer(a: [?aD] ?t, truth: [aD] bool)
+
+.. function:: proc concatset(a: [?aD] ?t, b: [?bD] t)
+

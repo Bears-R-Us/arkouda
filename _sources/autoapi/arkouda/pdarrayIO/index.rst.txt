@@ -1,0 +1,194 @@
+:mod:`arkouda.pdarrayIO`
+========================
+
+.. py:module:: arkouda.pdarrayIO
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.pdarrayIO.ls_hdf
+   arkouda.pdarrayIO.read_hdf
+   arkouda.pdarrayIO.read_all
+   arkouda.pdarrayIO.load
+   arkouda.pdarrayIO.get_datasets
+   arkouda.pdarrayIO.load_all
+   arkouda.pdarrayIO.save_all
+
+
+.. function:: ls_hdf(filename: str) -> str
+
+   This function calls the h5ls utility on a filename visible to the
+   arkouda server.
+
+   :param filename: The name of the file to pass to h5ls
+   :type filename: str
+
+   :returns: The string output of `h5ls <filename>` from the server
+   :rtype: str
+
+
+.. function:: read_hdf(dsetName: str, filenames: Union[(str, List[str])], strictTypes: bool = True) -> Union[(pdarray, Strings)]
+
+   Read a single dataset from multiple HDF5 files into an Arkouda
+   pdarray or Strings object.
+
+   :param dsetName: The name of the dataset (must be the same across all files)
+   :type dsetName: str
+   :param filenames: Either a list of filenames or shell expression
+   :type filenames: list or str
+   :param strictTypes: If True (default), require all dtypes in all files to have the
+                       same precision and sign. If False, allow dtypes of different
+                       precision and sign across different files. For example, if one
+                       file contains a uint32 dataset and another contains an int64
+                       dataset, the contents of both will be read into an int64 pdarray.
+   :type strictTypes: bool
+
+   :returns: A pdarray or Strings instance pointing to the server-side data
+   :rtype: Union[pdarray,Strings]
+
+   :raises TypeError: Raised if dsetName is not a str or if filenames is neither a string
+       nor a list of strings
+   :raises ValueError: Raised if all datasets are not present in all hdf5 files
+
+   .. seealso:: :obj:`get_datasets`, :obj:`ls_hdf`, :obj:`read_all`, :obj:`load`, :obj:`save`
+
+   .. rubric:: Notes
+
+   If filenames is a string, it is interpreted as a shell expression
+   (a single filename is a valid expression, so it will work) and is
+   expanded with glob to read all matching files. Use ``get_datasets`` to
+   show the names of datasets in HDF5 files.
+
+   If dsetName is not present in all files, a TypeError is raised.
+
+
+.. function:: read_all(filenames: Union[(str, List[str])], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True) -> Union[(pdarray, Strings, Mapping[str, Union[pdarray, Strings]])]
+
+   Read datasets from HDF5 files.
+
+   :param filenames: Either a list of filenames or shell expression
+   :type filenames: list or str
+   :param datasets: (List of) name(s) of dataset(s) to read (default: all available)
+   :type datasets: list or str or None
+   :param iterative: Iterative (True) or Single (False) function call(s) to server
+   :type iterative: bool
+   :param strictTypes: If True (default), require all dtypes of a given dataset to have the
+                       same precision and sign. If False, allow dtypes of different
+                       precision and sign across different files. For example, if one
+                       file contains a uint32 dataset and another contains an int64
+                       dataset with the same name, the contents of both will be read
+                       into an int64 pdarray.
+   :type strictTypes: bool
+
+   :returns: * *For a single dataset returns an Arkouda pdarray or Arkouda Strings object*
+             * *and for multiple datasets returns a dictionary of Arkouda pdarrays or*
+             * *Arkouda Strings.* -- Dictionary of {datasetName: pdarray or String}
+
+   :raises ValueError: Raised if all datasets are not present in all hdf5 files
+
+   .. seealso:: :obj:`read_hdf`, :obj:`get_datasets`, :obj:`ls_hdf`
+
+   .. rubric:: Notes
+
+   If filenames is a string, it is interpreted as a shell expression
+   (a single filename is a valid expression, so it will work) and is
+   expanded with glob to read all matching files.
+
+   If iterative == True each dataset name and file names are passed to
+   the server as independent sequential strings while if iterative == False
+   all dataset names and file names are passed to the server in a single
+   string.
+
+   If datasets is None, infer the names of datasets from the first file
+   and read all of them. Use ``get_datasets`` to show the names of datasets
+   to HDF5 files.
+
+
+.. function:: load(path_prefix: str, dataset: str = 'array') -> Union[(pdarray, Strings)]
+
+   Load a pdarray previously saved with ``pdarray.save()``.
+
+   :param path_prefix: Filename prefix used to save the original pdarray
+   :type path_prefix: str
+   :param dataset: Dataset name where the pdarray was saved, defaults to 'array'
+   :type dataset: str
+
+   :returns: The pdarray or Strings that was previously saved
+   :rtype: Union[pdarray, Strings]
+
+   :raises TypeError: Raised if dataset is not a str
+   :raises ValueError: Raised if all datasets are not present in all hdf5 files
+
+   .. seealso:: :obj:`save`, :obj:`load_all`, :obj:`read_hdf`, :obj:`read_all`
+
+
+.. function:: get_datasets(filename: str) -> List[str]
+
+   Get the names of datasets in an HDF5 file.
+
+   :param filename: Name of an HDF5 file visible to the arkouda server
+   :type filename: str
+
+   :returns: Names of the datasets in the file
+   :rtype: List[str]
+
+   :raises TypeError: Raised if filename is not a str
+
+   .. seealso:: :obj:`ls_hdf`
+
+
+.. function:: load_all(path_prefix: str) -> Mapping[(str, Union[pdarray, Strings])]
+
+   Load multiple pdarrays or Strings previously saved with ``save_all()``.
+
+   :param path_prefix: Filename prefix used to save the original pdarray
+   :type path_prefix: str
+
+   :returns: Dictionary of {datsetName: pdarray} with the previously saved pdarrays
+   :rtype: Mapping[str,pdarray]
+
+   :raises ValueError: Raised if all datasets are not present in all hdf5 files
+
+   .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read_hdf`, :obj:`read_all`
+
+
+.. function:: save_all(columns: Union[(Mapping[str, pdarray], List[pdarray])], prefix_path: str, names: List[str] = None, mode: str = 'truncate') -> None
+
+   Save multiple named pdarrays to HDF5 files.
+
+   :param columns: Collection of arrays to save
+   :type columns: dict or list of pdarrays
+   :param prefix_path: Directory and filename prefix for output files
+   :type prefix_path: str
+   :param names: Dataset names for the pdarrays
+   :type names: list of str
+   :param mode: By default, truncate (overwrite) the output files if they exist.
+                If 'append', attempt to create new dataset in existing files.
+   :type mode: {'truncate' | 'append'}
+
+   :returns:
+   :rtype: None
+
+   :raises ValueError: Raised if (1) the lengths of columns and values differ or (2) the mode
+       is not 'truncate' or 'append'
+
+   .. seealso:: :obj:`save`, :obj:`load_all`
+
+   .. rubric:: Notes
+
+   Creates one file per locale containing that locale's chunk of each pdarray.
+   If columns is a dictionary, the keys are used as the HDF5 dataset names.
+   Otherwise, if no names are supplied, 0-up integers are used. By default,
+   any existing files at path_prefix will be overwritten, unless the user
+   specifies the 'append' mode, in which case arkouda will attempt to add
+   <columns> as new datasets to existing files. If the wrong number of files
+   is present or dataset names already exist, a RuntimeError is raised.
+
+

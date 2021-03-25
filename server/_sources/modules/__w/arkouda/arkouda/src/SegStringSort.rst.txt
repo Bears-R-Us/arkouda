@@ -1,0 +1,37 @@
+.. default-domain:: chpl
+
+.. module:: SegStringSort
+
+SegStringSort
+=============
+**Usage**
+
+.. code-block:: chapel
+
+   use SegStringSort;
+
+
+or
+
+.. code-block:: chapel
+
+   import SegStringSort;
+
+.. data:: const ssLogger = new Logger()
+
+.. record:: StringIntComparator
+
+   .. method:: proc keyPart(chpl__tuple_arg_temp0: (string, int), in i: int)
+
+.. function:: proc twoPhaseStringSort(ss: SegString): [ss.offsets.aD] int throws
+
+.. function:: proc getPivot(lengths: [?D] int): 2*(int)
+
+.. function:: proc gatherLongStrings(ss: SegString, lengths: [] int, longInds: [?D] int): [] (string, int)
+
+.. function:: proc calcBlock(task: int, low: int, high: int)
+
+.. function:: proc calcGlobalIndex(bucket: int, loc: int, task: int): int
+
+.. function:: proc radixSortLSD_raw(const ref offsets: [?aD] int, const ref lengths: [aD] int, const ref values: [] uint(8), const ref inds: [aD] int, const pivot: int): [aD] int throws
+

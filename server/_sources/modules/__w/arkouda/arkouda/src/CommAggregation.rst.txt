@@ -1,0 +1,127 @@
+.. default-domain:: chpl
+
+.. module:: CommAggregation
+
+CommAggregation
+===============
+**Usage**
+
+.. code-block:: chapel
+
+   use CommAggregation;
+
+
+or
+
+.. code-block:: chapel
+
+   import CommAggregation;
+
+.. function:: proc newDstAggregator(type elemType, param useUnorderedCopy = false)
+
+   Creates a new destination aggregator (dst/lhs will be remote). 
+
+.. function:: proc newSrcAggregator(type elemType, param useUnorderedCopy = false)
+
+   Creates a new source aggregator (src/rhs will be remote). 
+
+.. record:: DstAggregator
+
+   
+   * Aggregates copy(ref dst, src). Optimized for when src is local.
+   * Not parallel safe and is expected to be created on a per-task basis
+   * High memory usage since there are per-destination buffers
+   
+
+
+   .. attribute:: type elemType
+
+   .. attribute:: type aggType = (c_ptr(elemType), elemType)
+
+   .. attribute:: const bufferSize = dstBuffSize
+
+   .. attribute:: const myLocaleSpace = LocaleSpace
+
+   .. attribute:: var opsUntilYield = yieldFrequency
+
+   .. attribute:: var lBuffers: [myLocaleSpace] [0..#bufferSize] aggType
+
+   .. attribute:: var rBuffers: [myLocaleSpace] remoteBuffer(aggType)
+
+   .. attribute:: var bufferIdxs: [myLocaleSpace] int
+
+   .. method:: proc postinit()
+
+   .. method:: proc deinit()
+
+   .. method:: proc flush()
+
+   .. method:: proc copy(ref dst: elemType, const in srcVal: elemType)
+
+   .. method:: proc _flushBuffer(loc: int, ref bufferIdx, freeData)
+
+.. record:: SrcAggregator
+
+   
+   * Aggregates copy(ref dst, const ref src). Only works when dst is local.
+   * Not parallel safe and is expected to be created on a per task basis
+   * High memory usage since there are per-destination buffers
+   
+
+
+   .. attribute:: type elemType
+
+   .. attribute:: type aggType = c_ptr(elemType)
+
+   .. attribute:: const bufferSize = srcBuffSize
+
+   .. attribute:: const myLocaleSpace = LocaleSpace
+
+   .. attribute:: var opsUntilYield = yieldFrequency
+
+   .. attribute:: var dstAddrs: [myLocaleSpace] [0..#bufferSize] aggType
+
+   .. attribute:: var lSrcAddrs: [myLocaleSpace] [0..#bufferSize] aggType
+
+   .. attribute:: var lSrcVals: [myLocaleSpace] [0..#bufferSize] elemType
+
+   .. attribute:: var rSrcAddrs: [myLocaleSpace] remoteBuffer(aggType)
+
+   .. attribute:: var rSrcVals: [myLocaleSpace] remoteBuffer(elemType)
+
+   .. attribute:: var bufferIdxs: [myLocaleSpace] int
+
+   .. method:: proc postinit()
+
+   .. method:: proc deinit()
+
+   .. method:: proc flush()
+
+   .. method:: proc copy(ref dst: elemType, const ref src: elemType)
+
+   .. method:: proc _flushBuffer(loc: int, ref bufferIdx, freeData)
+
+.. record:: remoteBuffer
+
+   .. attribute:: type elemType
+
+   .. attribute:: var size: int
+
+   .. attribute:: var loc: int
+
+   .. attribute:: var data: c_ptr(elemType)
+
+   .. method:: proc cachedAlloc(): c_ptr(elemType)
+
+   .. itermethod:: iter localIter(data: c_ptr(elemType), size: int) ref: elemType
+
+   .. method:: proc localFree(data: c_ptr(elemType))
+
+   .. method:: proc markFreed()
+
+   .. method:: proc PUT(lArr: [] elemType, size: int)
+
+   .. method:: proc GET(lArr: [] elemType, size: int)
+
+   .. method:: proc deinit()
+

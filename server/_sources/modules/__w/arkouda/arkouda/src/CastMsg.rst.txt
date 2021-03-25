@@ -1,0 +1,29 @@
+.. default-domain:: chpl
+
+.. module:: CastMsg
+
+CastMsg
+=======
+**Usage**
+
+.. code-block:: chapel
+
+   use CastMsg;
+
+
+or
+
+.. code-block:: chapel
+
+   import CastMsg;
+
+.. data:: const castLogger = new Logger()
+
+.. function:: proc castMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+.. function:: proc castGenSymEntry(gse: borrowed GenSymEntry, st: borrowed SymTab, type fromType, type toType): string throws
+
+.. function:: proc castGenSymEntryToString(gse: borrowed GenSymEntry, st: borrowed SymTab, type fromType): string throws
+
+.. function:: proc castStringToSymEntry(s: SegString, st: borrowed SymTab, type toType): string throws
+

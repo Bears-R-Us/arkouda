@@ -1,0 +1,25 @@
+.. default-domain:: chpl
+
+.. module:: Security
+
+Security
+========
+**Usage**
+
+.. code-block:: chapel
+
+   use Security;
+
+
+or
+
+.. code-block:: chapel
+
+   import Security;
+
+.. function:: proc generateToken(len: int = 32): string
+
+.. function:: proc getArkoudaToken(tokensPath: string): string throws
+
+.. function:: proc setArkoudaToken(tokensPath: string, len: int = 32): string throws
+

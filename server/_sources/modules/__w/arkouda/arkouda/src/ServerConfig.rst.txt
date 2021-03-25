@@ -1,0 +1,114 @@
+.. default-domain:: chpl
+
+.. module:: ServerConfig
+   :synopsis: arkouda server config param and config const 
+
+ServerConfig
+============
+**Usage**
+
+.. code-block:: chapel
+
+   use ServerConfig;
+
+
+or
+
+.. code-block:: chapel
+
+   import ServerConfig;
+
+arkouda server config param and config const 
+
+.. data:: config const trace = true
+
+   
+   Trace logging flag
+   
+
+.. data:: config const v = false
+
+   
+   Verbose debug flag
+   
+
+.. data:: config const ServerPort = 5555
+
+   
+   Port for zeromq
+   
+
+.. data:: config const perLocaleMemLimit = 90
+
+   
+   Memory usage limit -- percentage of physical memory
+   
+
+.. data:: config param arkoudaVersion: string
+
+   
+   Arkouda version
+   
+
+.. data:: config const serverConnectionInfo: string = ARKOUDA_SERVER_CONNECTION_INFOgetEnv
+
+   
+   Write the server `hostname:port` to this file.
+   
+
+.. data:: const scLogger = new Logger()
+
+.. data:: var serverHostname: string = AppendExpr.Call09
+
+   
+   Hostname where I am running
+   
+
+.. function:: proc get_hostname(): string
+
+.. data:: config const authenticate: bool = false
+
+   
+   Indicates whether token authentication is being used for Akrouda server requests
+   
+
+.. function:: proc getConfig(): string
+
+.. function:: proc getEnv(name: string, default = ""): string
+
+.. function:: proc getPhysicalMemHere()
+
+   
+   Get the physical memory available on this locale
+   
+
+.. function:: proc getMemUsed()
+
+   
+   Get the memory used on this locale
+   
+
+.. function:: proc getMemLimit(): uint
+
+   
+   Get the memory limit for this server run
+   returns a percentage of the physical memory per locale
+   
+
+.. data:: var memHighWater: uint = 0
+
+.. function:: proc overMemLimit(additionalAmount: int) throws
+
+   
+   check used + amount is over the memory limit
+   throw error if we would go over the limit
+   
+
+.. method:: proc string.splitMsgToTuple(param numChunks: int)
+
+.. method:: proc string.splitMsgToTuple(sep: string, param numChunks: int)
+
+.. method:: proc bytes.splitMsgToTuple(param numChunks: int)
+
+.. method:: proc bytes.splitMsgToTuple(sep: bytes, param numChunks: int)
+

@@ -1,0 +1,55 @@
+.. default-domain:: chpl
+
+.. module:: Unique
+   :synopsis: unique finding and counting algorithms
+
+Unique
+======
+**Usage**
+
+.. code-block:: chapel
+
+   use Unique;
+
+
+or
+
+.. code-block:: chapel
+
+   import Unique;
+
+unique finding and counting algorithms
+these are all based on dense histograms and sparse histograms(assoc domains/arrays)
+
+you could also use a sort if you got into a real bind with really
+large dense ranges of values and large arrays...
+
+*** need to factor in sparsity estimation somehow ***
+for example if (a.max-a.min > a.size) means that a's are sparse
+
+
+
+.. data:: const uLogger = new Logger()
+
+.. function:: proc uniqueSort(a: [?aD] int, param needCounts = true)
+
+   
+   sorting based unique finding procedure
+   
+   Returns a tuple: (UniqueValArray,UniqueValCountsArray)
+   which contains the unique values of a, along with the number of times each unique value appears in a
+   
+   :arg a: Array of data to be processed
+   :type a: [] int
+   
+   :returns: ([] int, [] int)
+   
+
+.. function:: proc uniqueSortWithInverse(a: [?aD] int)
+
+.. function:: proc uniqueFromSorted(sorted: [?aD] int, param needCounts = true)
+
+.. function:: proc uniqueGroup(str: SegString, returnInverse = false, assumeSorted = false) throws
+
+.. function:: proc uniqueFromTruth(str: SegString, perm: [?aD] int, truth: [aD] bool) throws
+

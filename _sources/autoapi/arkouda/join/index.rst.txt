@@ -1,0 +1,47 @@
+:mod:`arkouda.join`
+===================
+
+.. py:module:: arkouda.join
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.join.join_on_eq_with_dt
+
+
+.. function:: join_on_eq_with_dt(a1: arkouda.pdarrayclass.pdarray, a2: arkouda.pdarrayclass.pdarray, t1: arkouda.pdarrayclass.pdarray, t2: arkouda.pdarrayclass.pdarray, dt: Union[(int, np.int64)], pred: str, result_limit: Union[(int, np.int64)] = 1000) -> Tuple[(pdarray, pdarray)]
+
+   Performs an inner-join on equality between two integer arrays where
+   the time-window predicate is also true
+
+   :param a1: pdarray to be joined
+   :type a1: pdarray, int64
+   :param a2: pdarray to be joined
+   :type a2: pdarray, int64
+   :param t1: timestamps in millis corresponding to the a1 pdarray
+   :type t1: pdarray
+   :param t2: timestamps in millis corresponding to the a2 pdarray
+   :type t2: pdarray,
+   :param dt: time delta
+   :type dt: Union[int,np.int64]
+   :param pred: time window predicate
+   :type pred: str
+   :param result_limit: size limit for returned result
+   :type result_limit: Union[int,np.int64]
+
+   :returns: * **result_array_one** (*pdarray, int64*) -- a1 indices where a1 == a2
+             * **result_array_one** (*pdarray, int64*) -- a2 indices where a2 == a1
+
+   :raises TypeError: Raised if a1, a2, t1, or t2 is not a pdarray, or if dt or
+       result_limit is not an int
+   :raises ValueError: if a1, a2, t1, or t2 dtype is not int64, pred is not
+       'true_dt', 'abs_dt', or 'pos_dt', or result_limit is < 0
+
+

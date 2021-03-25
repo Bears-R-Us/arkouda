@@ -1,0 +1,39 @@
+.. default-domain:: chpl
+
+.. module:: arkouda_server
+
+arkouda_server
+==============
+**Usage**
+
+.. code-block:: chapel
+
+   use arkouda_server;
+
+
+or
+
+.. code-block:: chapel
+
+   import arkouda_server;
+
+.. data:: const asLogger = new Logger()
+
+   arkouda server
+   backend chapel program to mimic ndarray from numpy
+   This is the main driver for the arkouda server 
+
+.. function:: proc initArkoudaDirectory()
+
+.. function:: proc main()
+
+.. function:: proc createServerConnectionInfo()
+
+   
+   Creates the serverConnectionInfo file on arkouda_server startup
+
+.. function:: proc deleteServerConnectionInfo()
+
+   
+   Deletes the serverConnetionFile on arkouda_server shutdown
+

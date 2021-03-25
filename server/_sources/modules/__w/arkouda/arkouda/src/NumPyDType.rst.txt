@@ -1,0 +1,65 @@
+.. default-domain:: chpl
+
+.. module:: NumPyDType
+
+NumPyDType
+==========
+**Usage**
+
+.. code-block:: chapel
+
+   use NumPyDType;
+
+
+or
+
+.. code-block:: chapel
+
+   import NumPyDType;
+
+.. enum:: enum DType { Int64, Float64, Bool, UInt8, UNDEF }
+
+   In chapel the types int and real defalut to int(64) and real(64).
+   We also need other types like float32, int32, etc 
+
+
+.. function:: proc whichDtype(type etype) param: DType
+
+   
+   Take a chapel type and returns the matching DType 
+   
+   :arg etype: chapel type
+   
+   :returns: DType
+   
+
+.. function:: proc dtypeSize(dt: DType): int
+
+   Returns the size in bytes of a DType 
+   
+   :arg dt: (pythonic) DType
+   :type dt: DType
+   
+   :returns: (int)
+   
+
+.. function:: proc str2dtype(dstr: string): DType
+
+   Turns a dtype string in pythonland into a DType 
+   
+   :arg dstr: pythonic dtype to be converted
+   :type dstr: string
+   
+   :returns: DType
+   
+
+.. function:: proc dtype2str(dtype: DType): string
+
+   Turns a DType into a dtype string in pythonland 
+   
+   :arg dtype: DType to convert to string
+   :type dtype: DType
+   
+   :returns: (string)
+   
+

@@ -1,0 +1,63 @@
+.. default-domain:: chpl
+
+.. module:: RegistrationMsg
+
+RegistrationMsg
+===============
+**Usage**
+
+.. code-block:: chapel
+
+   use RegistrationMsg;
+
+
+or
+
+.. code-block:: chapel
+
+   import RegistrationMsg;
+
+.. data:: const regLogger = new Logger()
+
+.. function:: proc registerMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   Parse, execute, and respond to a register message 
+   
+   :arg reqMsg: request containing (name,user_defined_name)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: MsgTuple response message
+   
+
+.. function:: proc attachMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   Parse, execute, and respond to a attach message 
+   
+   :arg reqMsg: request containing (name)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: MsgTuple response message
+   
+
+.. function:: proc unregisterMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   Parse, execute, and respond to a unregister message 
+   
+   :arg reqMsg: request containing (name)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: MsgTuple response message
+   
+

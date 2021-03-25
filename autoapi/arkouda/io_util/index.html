@@ -1,0 +1,254 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>arkouda.io_util &#8212; arkouda 2020.07.07 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="arkouda.join" href="../join/index.html" />
+    <link rel="prev" title="arkouda.groupbyclass" href="../groupbyclass/index.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-arkouda.io_util">
+<span id="arkouda-io-util"></span><h1><a class="reference internal" href="#module-arkouda.io_util" title="arkouda.io_util"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io_util</span></code></a><a class="headerlink" href="#module-arkouda.io_util" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io_util.get_directory" title="arkouda.io_util.get_directory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_directory</span></code></a>(path: str) → pathlib.Path</p></td>
+<td><p>Creates the directory if it does not exist and then</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io_util.write_line_to_file" title="arkouda.io_util.write_line_to_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_line_to_file</span></code></a>(path: str, line: str) → None</p></td>
+<td><p>Writes a line to the requested file. Note: if the file</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.io_util.delimited_file_to_dict" title="arkouda.io_util.delimited_file_to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delimited_file_to_dict</span></code></a>(path: str, delimiter: str = ',') → Dict[(str, str)]</p></td>
+<td><p>Returns a dictionary populated by lines from a file where</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.io_util.dict_to_delimited_file" title="arkouda.io_util.dict_to_delimited_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict_to_delimited_file</span></code></a>(path: str, values: Mapping[(Any, Any)], delimiter: str = ',') → None</p></td>
+<td><p>Writes a dictionary to delimited lines in a file where</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt id="arkouda.io_util.get_directory">
+<code class="sig-prename descclassname"><span class="pre">arkouda.io_util.</span></code><code class="sig-name descname"><span class="pre">get_directory</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pathlib.Path</span><a class="headerlink" href="#arkouda.io_util.get_directory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the directory if it does not exist and then
+returns the corresponding Path object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – The path to the directory</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Path object corresponding to the directory</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Raised if there’s an error in reading an
+existing directory or creating a new one</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.io_util.write_line_to_file">
+<code class="sig-prename descclassname"><span class="pre">arkouda.io_util.</span></code><code class="sig-name descname"><span class="pre">write_line_to_file</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#arkouda.io_util.write_line_to_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a line to the requested file. Note: if the file
+does not exist, the file is created first and then
+the specified line is written to it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Path to the target file</p></li>
+<li><p><strong>line</strong> (<em>str</em>) – Line to be written to the file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>UnsupportedOption</strong> – Raised if there’s an error in creating or
+writing to the file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.io_util.delimited_file_to_dict">
+<code class="sig-prename descclassname"><span class="pre">arkouda.io_util.</span></code><code class="sig-name descname"><span class="pre">delimited_file_to_dict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.io_util.delimited_file_to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dictionary populated by lines from a file where
+the first delimited element of each line is the key and
+the second delimited element is the value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Path to the file</p></li>
+<li><p><strong>delimiter</strong> (<em>str</em>) – Delimiter separating key and value</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dictionary containing key,value pairs derived from each
+line of delimited strings</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Mapping[str,str]</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>UnsupportedOperation</strong> – Raised if there’s an error in reading the file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.io_util.dict_to_delimited_file">
+<code class="sig-prename descclassname"><span class="pre">arkouda.io_util.</span></code><code class="sig-name descname"><span class="pre">dict_to_delimited_file</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">','</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#arkouda.io_util.dict_to_delimited_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a dictionary to delimited lines in a file where
+the first delimited element of each line is the dict key
+and the second delimited element is the dict value. If the
+file does not exist, it is created and then written to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Path to the file</p></li>
+<li><p><strong>delimiter</strong> – Delimiter separating key and value</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>OError</strong> – Raised if there’s an error opening or writing to the
+specified file</p></li>
+<li><p><strong>ValueError</strong> – Raised if the delimiter is not supported</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">arkouda</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">API Reference</a><ul>
+  <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><ul>
+      <li>Previous: <a href="../groupbyclass/index.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.groupbyclass</span></code></a></li>
+      <li>Next: <a href="../join/index.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.join</span></code></a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Michael Merrill and William Reus.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/autoapi/arkouda/io_util/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

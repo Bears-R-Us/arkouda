@@ -1,0 +1,78 @@
+.. default-domain:: chpl
+
+.. module:: AryUtil
+
+AryUtil
+=======
+**Usage**
+
+.. code-block:: chapel
+
+   use AryUtil;
+
+
+or
+
+.. code-block:: chapel
+
+   import AryUtil;
+
+.. data:: const auLogger = new Logger()
+
+.. data:: var printThresh = 30
+
+   
+   Threshold for the amount of data that will be printed. 
+   Arrays larger than printThresh will print less data.
+   
+
+.. function:: proc formatAry(A): string throws
+
+   
+   Prints the passed array.
+   
+   :arg name: name of the array
+   :arg A: array to be printed
+   
+
+.. function:: proc printAry(name: string, A)
+
+.. function:: proc printOwnership(x)
+
+   1.18 version print out localSubdomains 
+   
+   :arg x: array
+   :type x: [] 
+   
+
+.. function:: proc isSorted(A: [?D] ?t): bool
+
+   
+   Determines if the passed array is sorted.
+   
+   :arg A: array to check
+   
+   
+
+.. function:: proc aStats(a: [?D] int): (int, int, real, real, real)
+
+   
+   Returns stats on a given array in form (int,int,real,real,real).
+   
+   :arg a: array to produce statistics on
+   :type a: [] int
+   
+   :returns: a_min, a_max, a_mean, a_variation, a_stdDeviation
+   
+
+.. function:: proc fillUniform(A: [?D] int, a_min: int, a_max: int, seed: int = 241)
+
+.. function:: proc contiguousIndices(A: []) param
+
+   
+   Determines if the passed array array maps contiguous indices to
+   contiguous memory.
+   
+   :arg A: array to check
+   
+

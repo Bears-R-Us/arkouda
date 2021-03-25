@@ -1,0 +1,27 @@
+.. default-domain:: chpl
+
+.. module:: ConcatenateMsg
+
+ConcatenateMsg
+==============
+**Usage**
+
+.. code-block:: chapel
+
+   use ConcatenateMsg;
+
+
+or
+
+.. code-block:: chapel
+
+   import ConcatenateMsg;
+
+.. data:: const cmLogger = new Logger()
+
+.. function:: proc concatenateMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   Concatenate a list of arrays together
+   to form one array
+   
+

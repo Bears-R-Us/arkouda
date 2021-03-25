@@ -1,0 +1,33 @@
+.. default-domain:: chpl
+
+.. module:: SipHash
+
+SipHash
+=======
+**Usage**
+
+.. code-block:: chapel
+
+   use SipHash;
+
+
+or
+
+.. code-block:: chapel
+
+   import SipHash;
+
+.. data:: param cROUNDS = 2
+
+.. data:: param dROUNDS = 4
+
+.. data:: const defaultSipHashKey: [0..#16] uint(8) = AppendExpr.Loop04
+
+.. data:: const shLogger = new Logger()
+
+.. function:: proc ROTL(x, b)
+
+.. function:: proc sipHash64(msg: [] uint(8), D): uint(64)
+
+.. function:: proc sipHash128(msg: [] uint(8), D): 2*(uint(64))
+

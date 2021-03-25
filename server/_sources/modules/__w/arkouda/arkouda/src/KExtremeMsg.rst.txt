@@ -1,0 +1,48 @@
+.. default-domain:: chpl
+
+.. module:: KExtremeMsg
+   :synopsis: min-k reduction 
+
+KExtremeMsg
+===========
+**Usage**
+
+.. code-block:: chapel
+
+   use KExtremeMsg;
+
+
+or
+
+.. code-block:: chapel
+
+   import KExtremeMsg;
+
+min-k reduction 
+* Stores the sorted minimum k values onto the server
+
+
+.. data:: const keLogger = new Logger()
+
+.. function:: proc minkMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   Parse, execute, and respond to a mink message
+   :arg reqMsg: request containing (name,k,returnIndices)
+   :type reqMsg: string
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab
+   :returns: (MsgTuple) response message
+   
+
+.. function:: proc maxkMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   Parse, execute, and respond to a maxk message
+   :arg reqMsg: request containing (name,k,returnIndices)
+   :type reqMsg: string
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab
+   :returns: (MsgTuple) response message
+   
+

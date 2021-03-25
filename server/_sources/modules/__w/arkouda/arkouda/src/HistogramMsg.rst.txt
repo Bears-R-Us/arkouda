@@ -1,0 +1,25 @@
+.. default-domain:: chpl
+
+.. module:: HistogramMsg
+
+HistogramMsg
+============
+**Usage**
+
+.. code-block:: chapel
+
+   use HistogramMsg;
+
+
+or
+
+.. code-block:: chapel
+
+   import HistogramMsg;
+
+.. data:: const hgmLogger = new Logger()
+
+.. function:: proc histogramMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   histogram takes a pdarray and returns a pdarray with the histogram in it 
+

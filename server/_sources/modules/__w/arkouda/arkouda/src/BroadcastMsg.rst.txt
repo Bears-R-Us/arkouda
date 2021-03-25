@@ -1,0 +1,29 @@
+.. default-domain:: chpl
+
+.. module:: BroadcastMsg
+
+BroadcastMsg
+============
+**Usage**
+
+.. code-block:: chapel
+
+   use BroadcastMsg;
+
+
+or
+
+.. code-block:: chapel
+
+   import BroadcastMsg;
+
+.. data:: const bmLogger = new Logger()
+
+.. function:: proc broadcastMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   * Broadcast a value per segment of a segmented array to the
+   * full size of the array, optionally applying a permutation
+   * to return the result in the order of the original array.
+   
+

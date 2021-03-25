@@ -1,0 +1,178 @@
+.. default-domain:: chpl
+
+.. module:: Errors
+
+Errors
+======
+**Usage**
+
+.. code-block:: chapel
+
+   use Errors;
+
+
+or
+
+.. code-block:: chapel
+
+   import Errors;
+
+.. class:: ErrorWithContext : Error
+
+   
+   * Generates an error message that provides a fuller context to the error
+   * by including the line number, proc name, and module name from which the 
+   * Error was thrown.
+   
+
+
+   .. attribute:: var lineNumber: int
+
+   .. attribute:: var routineName: string
+
+   .. attribute:: var moduleName: string
+
+   .. attribute:: var errorClass: string
+
+   .. attribute:: var publishMsg: string
+
+   .. method:: proc init(msg: string, lineNumber: int, routineName: string, moduleName: string, errorClass: string = "ErrorWithContext")
+
+      
+      * Accepts parameters that are used to generate the detailed, context-rich
+      * error message accessible via ErrorWithContext.message() as well as the 
+      * client-formatted error message accessible via ErrorWithContext.publish()
+      
+
+   .. method:: proc init()
+
+   .. method:: proc publish(): string
+
+      
+      * Returns only the msg init parameter element prepended with "Error: ",
+      * which can be used to report errors back to the Arkouda client in a format
+      * understandable to front-end developers as well as users.
+      
+
+.. class:: DatasetNotFoundError : ErrorWithContext
+
+   
+   * The DatasetNotFoundError is thrown if there is no dataset in the file
+   * being accessed.
+   
+
+
+   .. method:: proc init(msg: string, lineNumber: int, routineName: string, moduleName: string)
+
+   .. method:: proc init()
+
+.. class:: WriteModeError : ErrorWithContext
+
+   
+   * The WriteModeError is thrown if a file save operation is executed in append mode
+   * on a brand new file lacking any current datasets.
+   
+
+
+   .. method:: proc init(msg: string, lineNumber: int, routineName: string, moduleName: string)
+
+   .. method:: proc init()
+
+.. class:: NotHDF5FileError : ErrorWithContext
+
+   
+   * The NotHDF5FileError is thrown if it is determined a file is not HDFF file.
+   
+
+
+   .. method:: proc init(msg: string, lineNumber: int, routineName: string, moduleName: string)
+
+   .. method:: proc init()
+
+.. class:: HDF5FileFormatError : ErrorWithContext
+
+   
+   * The HDF5FileFormatError is thrown if there is an error in parsing the HDF5 file.
+   
+
+
+   .. method:: proc init(msg: string, lineNumber: int, routineName: string, moduleName: string)
+
+   .. method:: proc init()
+
+.. class:: MismatchedAppendError : ErrorWithContext
+
+   
+   * The MismatchedAppendError is thrown if an attempt is made to append a dataset to
+   * an HDF5 file where the number of locales for the current Arkouda instance differs
+   * from the number of locales in the Arkouda instance that wrote the original files.
+   
+
+
+   .. method:: proc init(msg: string, lineNumber: int, routineName: string, moduleName: string)
+
+   .. method:: proc init()
+
+.. class:: SegArrayError : ErrorWithContext
+
+   
+   * The SegArrayError is thrown if the file corresponding to the SegArray lacks either the
+   * SEGARRAY_OFFSET_NAME or SEGARRAY_VALUE_NAME dataset.
+   
+
+
+   .. method:: proc init(msg: string, lineNumber: int, routineName: string, moduleName: string)
+
+   .. method:: proc init()
+
+.. class:: ArgumentError : ErrorWithContext
+
+   
+   * The ArgumentError is thrown if there is a problem with 1.n arguments passed
+   * into a function.
+   
+
+
+   .. method:: proc init(msg: string, lineNumber: int, routineName: string, moduleName: string)
+
+   .. method:: proc init()
+
+.. class:: NotImplementedError : ErrorWithContext
+
+   
+   * The NotImplementedError is thrown if the requested operation has not been implemented
+   * for the specified data type(s) and/or command type.
+   
+
+
+   .. method:: proc init(msg: string, lineNumber: int, routineName: string, moduleName: string)
+
+   .. method:: proc init()
+
+.. class:: UnknownSymbolError : ErrorWithContext
+
+   
+   * The UnknownSymbolError is thrown if there is not entry in the SymTab.
+   
+
+
+   .. method:: proc init(msg: string, lineNumber: int, routineName: string, moduleName: string)
+
+   .. method:: proc init()
+
+.. function:: proc generateErrorContext(msg: string, lineNumber: int, moduleName: string, routineName: string, errorClass: string = "ErrorWithContext"): string
+
+   
+   * Generatea a detailed, context-rich error message for errors such as instances of 
+   * built-in Chapel Errors in a format that matches the Arkouda ErrorWithContext
+   * error message format. 
+   
+
+.. function:: proc getErrorWithContext(lineNumber: int, moduleName: string, routineName: string, msg: string, errorClass: string): Error throws
+
+   
+   * Factory method for generating ErrorWithContext objects that include an error
+   * message as well as the line number, routine name, and module name where the 
+   * error was thrown.
+   
+

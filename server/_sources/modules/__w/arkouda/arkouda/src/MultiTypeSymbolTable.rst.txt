@@ -1,0 +1,212 @@
+.. default-domain:: chpl
+
+.. module:: MultiTypeSymbolTable
+
+MultiTypeSymbolTable
+====================
+**Usage**
+
+.. code-block:: chapel
+
+   use MultiTypeSymbolTable;
+
+
+or
+
+.. code-block:: chapel
+
+   import MultiTypeSymbolTable;
+
+.. data:: var mtLogger = new Logger()
+
+.. class:: SymTab
+
+   symbol table 
+
+
+   .. attribute:: var registry: domain(string)
+
+      
+      Associative domain of strings
+      
+
+   .. attribute:: var tab: stringmapshared GenSymEntry
+
+      
+      Map indexed by strings
+      
+
+   .. attribute:: var nid = 0
+
+   .. method:: proc nextName(): string
+
+      
+      Gives out symbol names.
+      
+
+   .. method:: proc regName(name: string, userDefinedName: string) throws
+
+   .. method:: proc unregName(name: string) throws
+
+   .. method:: proc addEntry(name: string, len: int, type t): borrowed SymEntry(t) throws
+
+      
+      Takes args and creates a new SymEntry.
+      
+      :arg name: name of the array
+      :type name: string
+      
+      :arg len: length of array
+      :type len: int
+      
+      :arg t: type of array
+      
+      :returns: borrow of newly created `SymEntry(t)`
+      
+
+   .. method:: proc addEntry(name: string, in entry: shared GenSymEntry): borrowed GenSymEntry throws
+
+      
+      Takes an already created GenSymEntry and creates a new SymEntry.
+      
+      :arg name: name of the array
+      :type name: string
+      
+      :arg entry: Generic Sym Entry to convert
+      :type entry: GenSymEntry
+      
+      :returns: borrow of newly created GenSymEntry
+      
+
+   .. method:: proc addEntry(name: string, len: int, dtype: DType): borrowed GenSymEntry throws
+
+      
+      Creates a symEntry from array name, length, and DType
+      
+      :arg name: name of the array
+      :type name: string
+      
+      :arg len: length of array
+      :type len: int
+      
+      :arg dtype: type of array
+      
+      :returns: borrow of newly created GenSymEntry
+      
+
+   .. method:: proc deleteEntry(name: string) throws
+
+      
+      Removes an unregistered entry from the symTable
+      
+      :arg name: name of the array
+      :type name: string
+      
+
+   .. method:: proc clear() throws
+
+      
+      Clears all unregistered entries from the symTable
+      
+
+   .. method:: proc lookup(name: string): borrowed GenSymEntry throws
+
+      
+      Returns the sym entry associated with the provided name, if the sym entry exists
+      
+      :arg name: string to index/query in the sym table
+      :type name: string
+      
+      :returns: sym entry or throws on error
+      :throws: `unkownSymbolError(name)`
+      
+
+   .. method:: proc check(name: string) throws
+
+      
+      checks to see if a symbol is defined if it is not it throws an exception 
+      
+
+   .. method:: proc pretty() throws
+
+      
+      Prints the SymTable in a pretty format (name,SymTable[name])
+      
+
+   .. method:: proc memUsed(): int
+
+      
+      returns total bytes in arrays in the symbol table
+      
+
+   .. method:: proc dump(name: string): string throws
+
+      
+      Attempts to format and return sym entries mapped to the provided string into JSON format.
+      Pass __AllSymbols__ to process the entire sym table.
+      
+      :arg name: name of entry to be processed
+      :type name: string
+      
+
+   .. method:: proc info(name: string): string throws
+
+      
+      Returns verbose attributes of the sym entry at the given string, if the string maps to an entry.
+      Pass __AllSymbols__ to process all sym entries in the sym table.
+      
+      Returns: name, dtype, size, ndim, shape, and item size
+      
+      :arg name: name of entry to be processed
+      :type name: string
+      
+      :returns: s (string) containing info
+      
+
+   .. method:: proc attrib(name: string): string throws
+
+      
+      Returns raw attributes of the sym entry at the given string, if the string maps to an entry.
+      Returns: name, dtype, size, ndim, shape, and item size
+      
+      :arg name: name of entry to be processed
+      :type name: string
+      
+      :returns: s (string) containing info
+      
+
+   .. method:: proc datastr(name: string, thresh: int): string throws
+
+      
+      Attempts to find a sym entry mapped to the provided string, then 
+      returns the data in the entry up to the specified threshold.
+      Arrays of size less than threshold will be printed in their entirety. 
+      Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
+      
+      :arg name: name of entry to be processed
+      :type name: string
+      
+      :arg thresh: threshold for data to return
+      :type thresh: int
+      
+      :returns: s (string) containing the array data
+      
+
+   .. method:: proc datarepr(name: string, thresh: int): string throws
+
+      
+      Attempts to find a sym entry mapped to the provided string, then 
+      returns the data in the entry up to the specified threshold. 
+      This method returns the data in form "array([<DATA>])".
+      Arrays of size less than threshold will be printed in their entirety. 
+      Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
+      
+      :arg name: name of entry to be processed
+      :type name: string
+      
+      :arg thresh: threshold for data to return
+      :type thresh: int
+      
+      :returns: s (string) containing the array data
+      
+

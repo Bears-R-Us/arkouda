@@ -1,0 +1,269 @@
+:mod:`arkouda.pdarraysetops`
+============================
+
+.. py:module:: arkouda.pdarraysetops
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.pdarraysetops.unique
+   arkouda.pdarraysetops.in1d
+   arkouda.pdarraysetops.concatenate
+   arkouda.pdarraysetops.union1d
+   arkouda.pdarraysetops.intersect1d
+   arkouda.pdarraysetops.setdiff1d
+   arkouda.pdarraysetops.setxor1d
+
+
+.. function:: unique(pda: Union[(pdarray, Strings, 'Categorical')], return_counts: bool = False) -> Union[(Union[pdarray, Strings, 'Categorical'], Tuple[Union[pdarray, Strings, 'Categorical'], Optional[pdarray]])]
+
+   Find the unique elements of an array.
+
+   Returns the unique elements of an array, sorted if the values are integers.
+   There is an optional output in addition to the unique elements: the number
+   of times each unique value comes up in the input array.
+
+   :param pda: Input array.
+   :type pda: pdarray or Strings or Categorical
+   :param return_counts: If True, also return the number of times each unique item appears
+                         in `pda`.
+   :type return_counts: bool, optional
+
+   :returns: * **unique** (*pdarray or Strings*) -- The unique values. If input dtype is int64, return values will be sorted.
+             * **unique_counts** (*pdarray, optional*) -- The number of times each of the unique values comes up in the
+               original array. Only provided if `return_counts` is True.
+
+   :raises TypeError: Raised if pda is not a pdarray or Strings object
+   :raises RuntimeError: Raised if the pdarray or Strings dtype is unsupported
+
+   .. rubric:: Notes
+
+   For integer arrays, this function checks to see whether `pda` is sorted
+   and, if so, whether it is already unique. This step can save considerable
+   computation. Otherwise, this function will sort `pda`.
+
+   .. rubric:: Examples
+
+   >>> A = ak.array([3, 2, 1, 1, 2, 3])
+   >>> ak.unique(A)
+   array([1, 2, 3])
+
+
+.. function:: in1d(pda1: Union[(pdarray, Strings, 'Categorical')], pda2: Union[(pdarray, Strings, 'Categorical')], invert: bool = False) -> arkouda.pdarrayclass.pdarray
+
+   Test whether each element of a 1-D array is also present in a second array.
+
+   Returns a boolean array the same length as `pda1` that is True
+   where an element of `pda1` is in `pda2` and False otherwise.
+
+   :param pda1: Input array.
+   :type pda1: pdarray or Strings or Categorical
+   :param pda2: The values against which to test each value of `pda1`. Must be the
+                same type as `pda1`.
+   :type pda2: pdarray or Strings or Categorical
+   :param invert: If True, the values in the returned array are inverted (that is,
+                  False where an element of `pda1` is in `pda2` and True otherwise).
+                  Default is False. ``ak.in1d(a, b, invert=True)`` is equivalent
+                  to (but is faster than) ``~ak.in1d(a, b)``.
+   :type invert: bool, optional
+
+   :returns: The values `pda1[in1d]` are in `pda2`.
+   :rtype: pdarray, bool
+
+   :raises TypeError: Raised if either pda1 or pda2 is not a pdarray, Strings, or
+       Categorical object or if invert is not a bool
+   :raises RuntimeError: Raised if the dtype of either array is not supported
+
+   .. seealso:: :obj:`unique`, :obj:`intersect1d`, :obj:`union1d`
+
+   .. rubric:: Notes
+
+   `in1d` can be considered as an element-wise function version of the
+   python keyword `in`, for 1-D sequences. ``in1d(a, b)`` is logically
+   equivalent to ``ak.array([item in b for item in a])``, but is much
+   faster and scales to arbitrarily large ``a``.
+
+   ak.in1d is not supported for bool or float64 pdarrays
+
+   .. rubric:: Examples
+
+   >>> ak.in1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
+   array([False, True, False])
+
+   >>> ak.in1d(ak.array(['one','two']),ak.array(['two', 'three','four','five']))
+   array([False, True])
+
+
+.. function:: concatenate(arrays: Sequence[Union[pdarray, Strings, 'Categorical']], ordered: bool = True) -> Union[(pdarray, Strings, 'Categorical')]
+
+   Concatenate a list or tuple of ``pdarray`` or ``Strings`` objects into
+   one ``pdarray`` or ``Strings`` object, respectively.
+
+   :param arrays: The arrays to concatenate. Must all have same dtype.
+   :type arrays: Sequence[Union[pdarray,Strings,Categorical]]
+   :param ordered: If True (default), the arrays will be appended in the
+                   order given. If False, array data may be interleaved
+                   in blocks, which can greatly improve performance but
+                   results in non-deterministic ordering of elements.
+   :type ordered: bool
+
+   :returns: Single pdarray or Strings object containing all values, returned in
+             the original order
+   :rtype: Union[pdarray,Strings,Categorical]
+
+   :raises ValueError: Raised if arrays is empty or if 1..n pdarrays have
+       differing dtypes
+   :raises TypeError: Raised if arrays is not a pdarrays or Strings python Sequence such as a
+       list or tuple
+   :raises RuntimeError: Raised if 1..n array elements are dtypes for which
+       concatenate has not been implemented.
+
+   .. rubric:: Examples
+
+   >>> ak.concatenate([ak.array([1, 2, 3]), ak.array([4, 5, 6])])
+   array([1, 2, 3, 4, 5, 6])
+
+   >>> ak.concatenate([ak.array([True,False,True]),ak.array([False,True,True])])
+   array([True, False, True, False, True, True])
+
+   >>> ak.concatenate([ak.array(['one','two']),ak.array(['three','four','five'])])
+   array(['one', 'two', 'three', 'four', 'five'])
+
+
+.. function:: union1d(pda1: arkouda.pdarrayclass.pdarray, pda2: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Find the union of two arrays.
+
+   Return the unique, sorted array of values that are in either
+   of the two input arrays.
+
+   :param pda1: Input array
+   :type pda1: pdarray
+   :param pda2: Input array
+   :type pda2: pdarray
+
+   :returns: Unique, sorted union of the input arrays.
+   :rtype: pdarray
+
+   :raises TypeError: Raised if either pda1 or pda2 is not a pdarray
+   :raises RuntimeError: Raised if the dtype of either array is not supported
+
+   .. seealso:: :obj:`intersect1d`, :obj:`unique`
+
+   .. rubric:: Notes
+
+   ak.union1d is not supported for bool or float64 pdarrays
+
+   .. rubric:: Examples
+
+   >>> ak.union1d(ak.array([-1, 0, 1]), ak.array([-2, 0, 2]))
+   array([-2, -1, 0, 1, 2])
+
+
+.. function:: intersect1d(pda1: arkouda.pdarrayclass.pdarray, pda2: arkouda.pdarrayclass.pdarray, assume_unique: bool = False) -> arkouda.pdarrayclass.pdarray
+
+   Find the intersection of two arrays.
+
+   Return the sorted, unique values that are in both of the input arrays.
+
+   :param pda1: Input array
+   :type pda1: pdarray
+   :param pda2: Input array
+   :type pda2: pdarray
+   :param assume_unique: If True, the input arrays are both assumed to be unique, which
+                         can speed up the calculation.  Default is False.
+   :type assume_unique: bool
+
+   :returns: Sorted 1D array of common and unique elements.
+   :rtype: pdarray
+
+   :raises TypeError: Raised if either pda1 or pda2 is not a pdarray
+   :raises RuntimeError: Raised if the dtype of either pdarray is not supported
+
+   .. seealso:: :obj:`unique`, :obj:`union1d`
+
+   .. rubric:: Notes
+
+   ak.intersect1d is not supported for bool or float64 pdarrays
+
+   .. rubric:: Examples
+
+   >>> ak.intersect1d([1, 3, 4, 3], [3, 1, 2, 1])
+   array([1, 3])
+
+
+.. function:: setdiff1d(pda1: arkouda.pdarrayclass.pdarray, pda2: arkouda.pdarrayclass.pdarray, assume_unique: bool = False) -> arkouda.pdarrayclass.pdarray
+
+   Find the set difference of two arrays.
+
+   Return the sorted, unique values in `pda1` that are not in `pda2`.
+
+   :param pda1: Input array.
+   :type pda1: pdarray
+   :param pda2: Input comparison array.
+   :type pda2: pdarray
+   :param assume_unique: If True, the input arrays are both assumed to be unique, which
+                         can speed up the calculation.  Default is False.
+   :type assume_unique: bool
+
+   :returns: Sorted 1D array of values in `pda1` that are not in `pda2`.
+   :rtype: pdarray
+
+   :raises TypeError: Raised if either pda1 or pda2 is not a pdarray
+   :raises RuntimeError: Raised if the dtype of either pdarray is not supported
+
+   .. seealso:: :obj:`unique`, :obj:`setxor1d`
+
+   .. rubric:: Notes
+
+   ak.setdiff1d is not supported for bool or float64 pdarrays
+
+   .. rubric:: Examples
+
+   >>> a = ak.array([1, 2, 3, 2, 4, 1])
+   >>> b = ak.array([3, 4, 5, 6])
+   >>> ak.setdiff1d(a, b)
+   array([1, 2])
+
+
+.. function:: setxor1d(pda1: arkouda.pdarrayclass.pdarray, pda2: arkouda.pdarrayclass.pdarray, assume_unique: bool = False) -> arkouda.pdarrayclass.pdarray
+
+   Find the set exclusive-or (symmetric difference) of two arrays.
+
+   Return the sorted, unique values that are in only one (not both) of the
+   input arrays.
+
+   :param pda1: Input array.
+   :type pda1: pdarray
+   :param pda2: Input array.
+   :type pda2: pdarray
+   :param assume_unique: If True, the input arrays are both assumed to be unique, which
+                         can speed up the calculation.  Default is False.
+   :type assume_unique: bool
+
+   :returns: Sorted 1D array of unique values that are in only one of the input
+             arrays.
+   :rtype: pdarray
+
+   :raises TypeError: Raised if either pda1 or pda2 is not a pdarray
+   :raises RuntimeError: Raised if the dtype of either pdarray is not supported
+
+   .. rubric:: Notes
+
+   ak.setxor1d is not supported for bool or float64 pdarrays
+
+   .. rubric:: Examples
+
+   >>> a = ak.array([1, 2, 3, 2, 4])
+   >>> b = ak.array([2, 3, 5, 7, 5])
+   >>> ak.setxor1d(a,b)
+   array([1, 4, 5, 7])
+
+

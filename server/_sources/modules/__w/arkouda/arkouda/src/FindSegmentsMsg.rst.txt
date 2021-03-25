@@ -1,0 +1,36 @@
+.. default-domain:: chpl
+
+.. module:: FindSegmentsMsg
+
+FindSegmentsMsg
+===============
+**Usage**
+
+.. code-block:: chapel
+
+   use FindSegmentsMsg;
+
+
+or
+
+.. code-block:: chapel
+
+   import FindSegmentsMsg;
+
+.. data:: const fsLogger = new Logger()
+
+.. function:: proc findSegmentsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   
+   :arg reqMsg: request containing (cmd,kname,pname)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: (MsgTuple) 
+   :throws: `UndefinedSymbolError(name)`
+   
+   
+

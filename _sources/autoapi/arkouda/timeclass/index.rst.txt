@@ -1,0 +1,513 @@
+:mod:`arkouda.timeclass`
+========================
+
+.. py:module:: arkouda.timeclass
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.timeclass._Timescalar
+   arkouda.timeclass._AbstractBaseTime
+   arkouda.timeclass.Datetime
+   arkouda.timeclass.Timedelta
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.timeclass._get_factor
+   arkouda.timeclass._identity
+   arkouda.timeclass.date_range
+   arkouda.timeclass.timedelta_range
+
+
+.. data:: _BASE_UNIT
+   :annotation: = ns
+
+   
+
+.. data:: _unit2normunit
+   
+
+   
+
+.. data:: _unit2factor
+   
+
+   
+
+.. function:: _get_factor(unit: str) -> int
+
+
+.. function:: _identity(x, **kwargs)
+
+
+.. class:: _Timescalar(scalar)
+
+
+
+.. class:: _AbstractBaseTime(array, unit: str = _BASE_UNIT)
+
+
+   Bases: :class:`arkouda.pdarrayclass.pdarray`
+
+   Base class for Datetime and Timedelta; not user-facing. Arkouda handles
+   time similar to Pandas (albeit with less functionality), in that all absolute
+   and relative times are represented in nanoseconds as int64 behind the scenes.
+   Datetime and Timedelta can be constructed from Arkouda, NumPy, or Pandas arrays;
+   in each case, the input values are normalized to nanoseconds on initialization,
+   so that all resulting operations are transparent.
+
+   .. method:: _get_callback(cls, other, op)
+      :classmethod:
+
+
+   .. method:: floor(self, freq)
+
+      Round times down to the nearest integer of a given frequency.
+
+      :param freq: Frequency to round to
+      :type freq: str {'d', 'm', 'h', 's', 'ms', 'us', 'ns'}
+
+      :returns: Values rounded down to nearest frequency
+      :rtype: self.__class__
+
+
+   .. method:: ceil(self, freq)
+
+      Round times up to the nearest integer of a given frequency.
+
+      :param freq: Frequency to round to
+      :type freq: str {'d', 'm', 'h', 's', 'ms', 'us', 'ns'}
+
+      :returns: Values rounded up to nearest frequency
+      :rtype: self.__class__
+
+
+   .. method:: round(self, freq)
+
+      Round times to the nearest integer of a given frequency. Midpoint
+      values will be rounded to nearest even integer.
+
+      :param freq: Frequency to round to
+      :type freq: str {'d', 'm', 'h', 's', 'ms', 'us', 'ns'}
+
+      :returns: Values rounded to nearest frequency
+      :rtype: self.__class__
+
+
+   .. method:: to_ndarray(self)
+
+      Convert the array to a np.ndarray, transferring array data from the
+      Arkouda server to client-side Python. Note: if the pdarray size exceeds
+      client.maxTransferBytes, a RuntimeError is raised.
+
+      :returns: A numpy ndarray with the same attributes and data as the pdarray
+      :rtype: np.ndarray
+
+      :raises RuntimeError: Raised if there is a server-side error thrown, if the pdarray size
+          exceeds the built-in client.maxTransferBytes size limit, or if the bytes
+          received does not match expected number of bytes
+
+      .. rubric:: Notes
+
+      The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
+      otherwise a ``RuntimeError`` will be raised. This is to protect the user
+      from overflowing the memory of the system on which the Python client
+      is running, under the assumption that the server is running on a
+      distributed system with much more memory than the client. The user
+      may override this limit by setting client.maxTransferBytes to a larger
+      value, but proceed with caution.
+
+      .. seealso:: :obj:`array`
+
+      .. rubric:: Examples
+
+      >>> a = ak.arange(0, 5, 1)
+      >>> a.to_ndarray()
+      array([0, 1, 2, 3, 4])
+
+      >>> type(a.to_ndarray())
+      numpy.ndarray
+
+
+   .. method:: __str__(self)
+
+      Return str(self).
+
+
+   .. method:: __repr__(self) -> str
+
+      Return repr(self).
+
+
+   .. method:: _binop(self, other, op)
+
+      Executes binary operation specified by the op string
+
+      :param other: The pdarray upon which the binop is to be executed
+      :type other: pdarray
+      :param op: The binop to be executed
+      :type op: str
+
+      :returns: A pdarray encapsulating the binop result
+      :rtype: pdarray
+
+      :raises ValueError: Raised if the op is not within the pdarray.BinOps set, or if the
+          pdarray sizes don't match
+      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
+          a supported dtype
+
+
+   .. method:: _r_binop(self, other, op)
+
+      Executes reverse binary operation specified by the op string
+
+      :param other: The pdarray upon which the reverse binop is to be executed
+      :type other: pdarray
+      :param op: The name of the reverse binop to be executed
+      :type op: str
+
+      :returns: A pdarray encapsulating the reverse binop result
+      :rtype: pdarray
+
+      :raises ValueError: Raised if the op is not within the pdarray.BinOps set
+      :raises TypeError: Raised if other is not a pdarray or the pdarray.dtype is not
+          a supported dtype
+
+
+   .. method:: opeq(self, other, op)
+
+
+   .. method:: _is_datetime_scalar(scalar)
+      :staticmethod:
+
+
+   .. method:: _is_timedelta_scalar(scalar)
+      :staticmethod:
+
+
+   .. method:: _scalar_callback(self, key)
+
+
+   .. method:: __getitem__(self, key)
+
+
+   .. method:: __setitem__(self, key, value)
+
+
+   .. method:: min(self)
+
+      Return the minimum value of the array.
+
+
+   .. method:: max(self)
+
+      Return the maximum value of the array.
+
+
+   .. method:: mink(self, k)
+
+      Compute the minimum "k" values.
+
+      :param k: The desired count of maximum values to be returned by the output.
+      :type k: int_scalars
+
+      :returns: The maximum `k` values from pda
+      :rtype: pdarray, int
+
+      :raises TypeError: Raised if pda is not a pdarray
+
+
+   .. method:: maxk(self, k)
+
+      Compute the maximum "k" values.
+
+      :param k: The desired count of maximum values to be returned by the output.
+      :type k: int_scalars
+
+      :returns: The maximum `k` values from pda
+      :rtype: pdarray, int
+
+      :raises TypeError: Raised if pda is not a pdarray
+
+
+
+.. class:: Datetime(array, unit: str = _BASE_UNIT)
+
+
+   Bases: :class:`arkouda.timeclass._AbstractBaseTime`
+
+   Represents a date and/or time.
+
+   Datetime is the Arkouda analog to pandas DatetimeIndex and
+   other timeseries data types.
+
+   :param array:
+   :type array: int64 pdarray, pd.DatetimeIndex, pd.Series, or np.datetime64 array
+   :param uint: For int64 pdarray, denotes the unit of the input. Ignored for pandas
+                and numpy arrays, which carry their own unit. Not case-sensitive;
+                prefixes of full names (like 'sec') are accepted.
+
+                Possible values:
+
+                * 'weeks' or 'w'
+                * 'days' or 'd'
+                * 'hours' or 'h'
+                * 'minutes', 'm', or 't'
+                * 'seconds' or 's'
+                * 'milliseconds', 'ms', or 'l'
+                * 'microseconds', 'us', or 'u'
+                * 'nanoseconds', 'ns', or 'n'
+
+                Unlike in pandas, units cannot be combined or mixed with integers
+   :type uint: str, default 'ns'
+
+   .. rubric:: Notes
+
+   The ``._data`` attribute is always in nanoseconds with int64 dtype.
+
+   .. attribute:: supported_with_datetime
+      
+
+      
+
+   .. attribute:: supported_with_r_datetime
+      
+
+      
+
+   .. attribute:: supported_with_timedelta
+      
+
+      
+
+   .. attribute:: supported_with_r_timedelta
+      
+
+      
+
+   .. attribute:: supported_opeq
+      
+
+      
+
+   .. attribute:: supported_with_pdarray
+      
+
+      
+
+   .. attribute:: supported_with_r_pdarray
+      
+
+      
+
+   .. method:: _get_callback(cls, otherclass, op)
+      :classmethod:
+
+
+   .. method:: _scalar_callback(self, scalar)
+
+
+   .. method:: _is_supported_scalar(scalar)
+      :staticmethod:
+
+
+   .. method:: to_pandas(self)
+
+      Convert array to a pandas DatetimeIndex. Note: if the array size
+      exceeds client.maxTransferBytes, a RuntimeError is raised.
+
+      .. seealso:: :obj:`to_ndarray`
+
+
+   .. method:: sum(self)
+
+      Return the sum of all elements in the array.
+
+
+
+.. class:: Timedelta(array, unit: str = _BASE_UNIT)
+
+
+   Bases: :class:`arkouda.timeclass._AbstractBaseTime`
+
+   Represents a duration, the difference between two dates or times.
+
+   Timedelta is the Arkouda equivalent of pandas.TimedeltaIndex.
+
+   :param array:
+   :type array: int64 pdarray, pd.TimedeltaIndex, pd.Series, or np.timedelta64 array
+   :param unit: For int64 pdarray, denotes the unit of the input. Ignored for pandas
+                and numpy arrays, which carry their own unit. Not case-sensitive;
+                prefixes of full names (like 'sec') are accepted.
+
+                Possible values:
+
+                * 'weeks' or 'w'
+                * 'days' or 'd'
+                * 'hours' or 'h'
+                * 'minutes', 'm', or 't'
+                * 'seconds' or 's'
+                * 'milliseconds', 'ms', or 'l'
+                * 'microseconds', 'us', or 'u'
+                * 'nanoseconds', 'ns', or 'n'
+
+                Unlike in pandas, units cannot be combined or mixed with integers
+   :type unit: str, default 'ns'
+
+   .. rubric:: Notes
+
+   The ``._data`` attribute is always in nanoseconds with int64 dtype.
+
+   .. attribute:: supported_with_datetime
+      
+
+      
+
+   .. attribute:: supported_with_r_datetime
+      
+
+      
+
+   .. attribute:: supported_with_timedelta
+      
+
+      
+
+   .. attribute:: supported_with_r_timedelta
+      
+
+      
+
+   .. attribute:: supported_opeq
+      
+
+      
+
+   .. attribute:: supported_with_pdarray
+      
+
+      
+
+   .. attribute:: supported_with_r_pdarray
+      
+
+      
+
+   .. method:: _get_callback(cls, otherclass, op)
+      :classmethod:
+
+
+   .. method:: _scalar_callback(self, scalar)
+
+
+   .. method:: _is_supported_scalar(scalar)
+      :staticmethod:
+
+
+   .. method:: to_pandas(self)
+
+      Convert array to a pandas TimedeltaIndex. Note: if the array size
+      exceeds client.maxTransferBytes, a RuntimeError is raised.
+
+      .. seealso:: :obj:`to_ndarray`
+
+
+   .. method:: sum(self)
+
+      Return the sum of all elements in the array.
+
+
+   .. method:: abs(self)
+
+      Absolute value of time interval.
+
+
+
+.. function:: date_range(start=None, end=None, periods=None, freq=None, tz=None, normalize=False, name=None, closed=None, **kwargs)
+
+   Creates a fixed frequency Datetime range. Alias for
+   ``ak.Datetime(pd.date_range(args))``. Subject to size limit
+   imposed by client.maxTransferBytes.
+
+   :param start: Left bound for generating dates.
+   :type start: str or datetime-like, optional
+   :param end: Right bound for generating dates.
+   :type end: str or datetime-like, optional
+   :param periods: Number of periods to generate.
+   :type periods: int, optional
+   :param freq: Frequency strings can have multiples, e.g. '5H'. See
+                timeseries.offset_aliases for a list of
+                frequency aliases.
+   :type freq: str or DateOffset, default 'D'
+   :param tz: Time zone name for returning localized DatetimeIndex, for example
+              'Asia/Hong_Kong'. By default, the resulting DatetimeIndex is
+              timezone-naive.
+   :type tz: str or tzinfo, optional
+   :param normalize: Normalize start/end dates to midnight before generating date range.
+   :type normalize: bool, default False
+   :param name: Name of the resulting DatetimeIndex.
+   :type name: str, default None
+   :param closed: Make the interval closed with respect to the given frequency to
+                  the 'left', 'right', or both sides (None, the default).
+   :type closed: {None, 'left', 'right'}, optional
+   :param \*\*kwargs: For compatibility. Has no effect on the result.
+
+   :returns: **rng**
+   :rtype: DatetimeIndex
+
+   .. rubric:: Notes
+
+   Of the four parameters ``start``, ``end``, ``periods``, and ``freq``,
+   exactly three must be specified. If ``freq`` is omitted, the resulting
+   ``DatetimeIndex`` will have ``periods`` linearly spaced elements between
+   ``start`` and ``end`` (closed on both sides).
+
+   To learn more about the frequency strings, please see `this link
+   <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`__.
+
+
+.. function:: timedelta_range(start=None, end=None, periods=None, freq=None, name=None, closed=None, **kwargs)
+
+   Return a fixed frequency TimedeltaIndex, with day as the default
+   frequency. Alias for ``ak.Timedelta(pd.timedelta_range(args))``.
+   Subject to size limit imposed by client.maxTransferBytes.
+
+   :param start: Left bound for generating timedeltas.
+   :type start: str or timedelta-like, default None
+   :param end: Right bound for generating timedeltas.
+   :type end: str or timedelta-like, default None
+   :param periods: Number of periods to generate.
+   :type periods: int, default None
+   :param freq: Frequency strings can have multiples, e.g. '5H'.
+   :type freq: str or DateOffset, default 'D'
+   :param name: Name of the resulting TimedeltaIndex.
+   :type name: str, default None
+   :param closed: Make the interval closed with respect to the given frequency to
+                  the 'left', 'right', or both sides (None).
+   :type closed: str, default None
+
+   :returns: **rng**
+   :rtype: TimedeltaIndex
+
+   .. rubric:: Notes
+
+   Of the four parameters ``start``, ``end``, ``periods``, and ``freq``,
+   exactly three must be specified. If ``freq`` is omitted, the resulting
+   ``TimedeltaIndex`` will have ``periods`` linearly spaced elements between
+   ``start`` and ``end`` (closed on both sides).
+
+   To learn more about the frequency strings, please see `this link
+   <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`__.
+
+

@@ -1,0 +1,97 @@
+.. default-domain:: chpl
+
+.. module:: KReduce
+
+KReduce
+=======
+**Usage**
+
+.. code-block:: chapel
+
+   use KReduce;
+
+
+or
+
+.. code-block:: chapel
+
+   import KReduce;
+
+.. class:: kreduce : ReduceScanOp
+
+   
+    :class:`KReduce` is a user defined reduction.
+    Returns array of the k extreme values of an array of type eltType.
+    Whether it will be the max or min values is specified through the "isMin" field (true gives min values, false gives max values).
+   
+   This uses the current user-defined reduction framwork,
+   creating a unique :class: `KReduce` instance on each
+   task, which then calls the ``accumulate()`` procedure
+   on the input array to build up the data structure in
+   a heap like manner. Once that is complete, each task
+   will migrate to locale 0 and call the ``combine()``
+   procedure on each heap, which will reduce all of the
+   task :class: `KReduce` instances down into the final
+   result of the reduction.
+   
+   This reduction performs well with a small `k` 
+   value, but sees a significant drop off in 
+   performance as `k` grows larger, although the 
+   exact value for this threshold is system dependent. 
+   This is because this is a per-task reduciton, so 
+   as `k` increases, the amount of random access that 
+   occurs will increase, slowing down access. This 
+   operation is equivalent to performing an `argsort()` 
+   on an array, and then using a slice of these values 
+   to retrieve the first or last `k` indices from that 
+   sorted indice array. 
+   
+
+
+   .. attribute:: type eltType
+
+   .. attribute:: const k: int
+
+   .. attribute:: const isMin = true
+
+   .. attribute:: var v = new KExtreme(eltType = eltType, size = k, isMinReduction = isMin)
+
+   .. method:: proc identity
+
+   .. method:: proc accumulateOntoState(ref v, value: (eltType, int))
+
+   .. method:: proc accumulate(value: (eltType, int))
+
+   .. method:: proc accumulate(accumState: KExtreme(eltType))
+
+   .. method:: proc accumulate(accumState: [])
+
+   .. method:: proc combine(state: borrowed kreduce(eltType))
+
+   .. method:: proc generate()
+
+   .. method:: proc clone()
+
+.. function:: proc computeExtremaValuesAndInds(arr: [?D] ?t, kval: int, isMin = true)
+
+   
+   * Instinatiate the kreduce reduction class
+   * so that a custom `k` value can be
+   * passed into the class, returning a tuple
+   * array that contains both the extreme values
+   * and the indices associated with those values.
+   
+
+.. function:: proc computeExtremaValues(arr, kval: int, isMin = true)
+
+   
+   * Return the `kval` largest elements of an array `arr`
+   
+
+.. function:: proc computeExtremaIndices(arr, kval: int, isMin = true)
+
+   
+   * Return the indices of the `kval` largest 
+   * elements of an array `arr`
+   
+

@@ -1,0 +1,173 @@
+.. default-domain:: chpl
+
+.. module:: EfuncMsg
+
+EfuncMsg
+========
+**Usage**
+
+.. code-block:: chapel
+
+   use EfuncMsg;
+
+
+or
+
+.. code-block:: chapel
+
+   import EfuncMsg;
+
+.. data:: const eLogger = new Logger()
+
+.. function:: proc efuncMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   These ops are functions which take an array and produce an array.
+    
+    **Dev Note:** Do scans fit here also? I think so... vector = scanop(vector)
+    parse and respond to efunc "elemental function" message
+    vector = efunc(vector) 
+    
+   :arg reqMsg: request containing (cmd,efunc,name)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: (MsgTuple)
+   :throws: `UndefinedSymbolError(name)`
+   
+
+.. function:: proc efunc3vvMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   These are ternary functions which take three arrays and produce an array.
+   vector = efunc(vector, vector, vector)
+   
+   :arg reqMsg: request containing (cmd,efunc,name1,name2,name3)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: (MsgTuple)
+   :throws: `UndefinedSymbolError(name)`
+   
+
+.. function:: proc efunc3vsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   vector = efunc(vector, vector, scalar)
+   
+   :arg reqMsg: request containing (cmd,efunc,name1,name2,dtype,value)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: (MsgTuple)
+   :throws: `UndefinedSymbolError(name)`
+   
+
+.. function:: proc efunc3svMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   vector = efunc(vector, scalar, vector)
+   
+   :arg reqMsg: request containing (cmd,efunc,name1,dtype,value,name2)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: (MsgTuple)
+   :throws: `UndefinedSymbolError(name)`
+   
+
+.. function:: proc efunc3ssMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   vector = efunc(vector, scalar, scalar)
+   
+   :arg reqMsg: request containing (cmd,efunc,name1,dtype1,value1,dtype2,value2)
+   :type reqMsg: string 
+   
+   :arg st: SymTab to act on
+   :type st: borrowed SymTab 
+   
+   :returns: (MsgTuple)
+   :throws: `UndefinedSymbolError(name)`
+   
+
+.. function:: proc where_helper(cond: [?D] bool, A: [D] ?t, B: [D] t, param kind): [D] t
+
+   The 'where' function takes a boolean array and two other arguments A and B, and 
+   returns an array with A where the boolean is true and B where it is false. A and B
+   can be vectors or scalars. 
+   Dev Note: I would like to be able to write these functions without
+   the param kind and just let the compiler choose, but it complains about an
+   ambiguous call. 
+   
+   :arg cond:
+   :type cond: [?D] bool
+   
+   :arg A:
+   :type A: [D] ?t
+   
+   :arg B: 
+   :type B: [D] t
+   
+   :arg kind:
+   :type kind: param
+   
+
+.. function:: proc where_helper(cond: [?D] bool, A: [D] ?t, b: t, param kind): [D] t
+
+   
+   
+   :arg cond:
+   :type cond: [?D] bool
+   
+   :arg A:
+   :type A: [D] ?t
+   
+   :arg B: 
+   :type B: t
+   
+   :arg kind:
+   :type kind: param
+   
+
+.. function:: proc where_helper(cond: [?D] bool, a: ?t, B: [D] t, param kind): [D] t
+
+   
+   
+   :arg cond:
+   :type cond: [?D] bool
+   
+   :arg a:
+   :type a: ?t
+   
+   :arg B: 
+   :type B: [D] t
+   
+   :arg kind:
+   :type kind: param
+   
+
+.. function:: proc where_helper(cond: [?D] bool, a: ?t, b: t, param kind): [D] t
+
+   
+   
+   :arg cond:
+   :type cond: [?D] bool
+   
+   :arg a:
+   :type a: ?t
+   
+   :arg b: 
+   :type b: t
+   
+   :arg kind:
+   :type kind: param
+   
+

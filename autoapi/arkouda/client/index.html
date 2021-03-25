@@ -1,0 +1,309 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>arkouda.client &#8212; arkouda 2020.07.07 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="arkouda.dtypes" href="../dtypes/index.html" />
+    <link rel="prev" title="arkouda.categorical" href="../categorical/index.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-arkouda.client">
+<span id="arkouda-client"></span><h1><a class="reference internal" href="#module-arkouda.client" title="arkouda.client"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client</span></code></a><a class="headerlink" href="#module-arkouda.client" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.client.connect" title="arkouda.client.connect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">connect</span></code></a>(server: str = 'localhost', port: int = 5555, timeout: int = 0, access_token: str = None, connect_url=None) → None</p></td>
+<td><p>Connect to a running arkouda server.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.client.disconnect" title="arkouda.client.disconnect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disconnect</span></code></a>() → None</p></td>
+<td><p>Disconnects the client from the Arkouda server</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.client.shutdown" title="arkouda.client.shutdown"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shutdown</span></code></a>() → None</p></td>
+<td><p>Sends a shutdown message to the Arkouda server that does the</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.client.get_config" title="arkouda.client.get_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_config</span></code></a>() → Mapping[(str, Union[str, int, float])]</p></td>
+<td><p>Get runtime information about the server.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.client.get_mem_used" title="arkouda.client.get_mem_used"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_mem_used</span></code></a>() → int</p></td>
+<td><p>Compute the amount of memory used by objects in the server’s symbol table.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.client.ruok" title="arkouda.client.ruok"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ruok</span></code></a>() → str</p></td>
+<td><p>Simply sends an “ruok” message to the server and, if the return message is</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt id="arkouda.client.__version__">
+<code class="sig-prename descclassname"><span class="pre">arkouda.client.</span></code><code class="sig-name descname"><span class="pre">__version__</span></code><a class="headerlink" href="#arkouda.client.__version__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt id="arkouda.client.AllSymbols">
+<code class="sig-prename descclassname"><span class="pre">arkouda.client.</span></code><code class="sig-name descname"><span class="pre">AllSymbols</span></code><em class="property"> <span class="pre">=</span> <span class="pre">__AllSymbols__</span></em><a class="headerlink" href="#arkouda.client.AllSymbols" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.client.connect">
+<code class="sig-prename descclassname"><span class="pre">arkouda.client.</span></code><code class="sig-name descname"><span class="pre">connect</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'localhost'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">5555</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_token</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connect_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#arkouda.client.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect to a running arkouda server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>server</strong> (<em>str</em><em>, </em><em>optional</em>) – The hostname of the server (must be visible to the current
+machine). Defaults to <cite>localhost</cite>.</p></li>
+<li><p><strong>port</strong> (<em>int</em><em>, </em><em>optional</em>) – The port of the server. Defaults to 5555.</p></li>
+<li><p><strong>timeout</strong> (<em>int</em><em>, </em><em>optional</em>) – The timeout in seconds for client send and receive operations.
+Defaults to 0 seconds, whicn is interpreted as no timeout.</p></li>
+<li><p><strong>access_token</strong> (<em>str</em><em>, </em><em>optional</em>) – The token used to connect to an existing socket to enable access to
+an Arkouda server where authentication is enabled. Defaults to None.</p></li>
+<li><p><strong>connect_url</strong> (<em>str</em><em>, </em><em>optional</em>) – The complete url in the format of <a class="reference external" href="tcp://server:port">tcp://server:port</a>?token=&lt;token_value&gt;
+where the token is optional</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ConnectionError</strong> – Raised if there’s an error in connecting to the Arkouda server</p></li>
+<li><p><strong>ValueError</strong> – Raised if there’s an error in parsing the connect_url parameter</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there is a server-side error</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>On success, prints the connected address, as seen by the server. If called
+with an existing connection, the socket will be re-initialized.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.client.disconnect">
+<code class="sig-prename descclassname"><span class="pre">arkouda.client.</span></code><code class="sig-name descname"><span class="pre">disconnect</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#arkouda.client.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disconnects the client from the Arkouda server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ConnectionError</strong> – Raised if there’s an error disconnecting from the Arkouda server</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.client.shutdown">
+<code class="sig-prename descclassname"><span class="pre">arkouda.client.</span></code><code class="sig-name descname"><span class="pre">shutdown</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#arkouda.client.shutdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends a shutdown message to the Arkouda server that does the
+following:</p>
+<ol class="arabic simple">
+<li><p>Delete all objects in the SymTable</p></li>
+<li><p>Shuts down the Arkouda server</p></li>
+<li><p>Disconnects the client from the stopped Arkouda Server</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if the client is not connected to the Arkouda server or
+there is an error in disconnecting from the server</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.client.get_config">
+<code class="sig-prename descclassname"><span class="pre">arkouda.client.</span></code><code class="sig-name descname"><span class="pre">get_config</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.client.get_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get runtime information about the server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>serverHostname
+serverPort
+numLocales
+numPUs (number of processor units per locale)
+maxTaskPar (maximum number of tasks per locale)
+physicalMemory</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Mapping[str, Union[str, int, float]]</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>RuntimeError</strong> – Raised if there is a server-side error in getting memory used</p></li>
+<li><p><strong>ValueError</strong> – Raised if there’s an error in parsing the JSON-formatted server config</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.client.get_mem_used">
+<code class="sig-prename descclassname"><span class="pre">arkouda.client.</span></code><code class="sig-name descname"><span class="pre">get_mem_used</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="headerlink" href="#arkouda.client.get_mem_used" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the amount of memory used by objects in the server’s symbol table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Indicates the amount of memory allocated to symbol table objects.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>RuntimeError</strong> – Raised if there is a server-side error in getting memory used</p></li>
+<li><p><strong>ValueError</strong> – Raised if the returned value is not an int-formatted string</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.client.ruok">
+<code class="sig-prename descclassname"><span class="pre">arkouda.client.</span></code><code class="sig-name descname"><span class="pre">ruok</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.client.ruok" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simply sends an “ruok” message to the server and, if the return message is
+“imok”, this means the arkouda_server is up and operating normally. A return
+message of “imnotok” indicates an error occurred or the connection timed out.</p>
+<p>This method is basically a way to do a quick healthcheck in a way that does
+not require error handling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A string indicating if the server is operating normally (imok), if there’s
+an error server-side, or if ruok did not return a response (imnotok) in
+both of the latter cases</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">arkouda</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">API Reference</a><ul>
+  <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><ul>
+      <li>Previous: <a href="../categorical/index.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.categorical</span></code></a></li>
+      <li>Next: <a href="../dtypes/index.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dtypes</span></code></a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Michael Merrill and William Reus.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/autoapi/arkouda/client/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

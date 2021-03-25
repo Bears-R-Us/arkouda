@@ -1,0 +1,260 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>arkouda.dtypes &#8212; arkouda 2020.07.07 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="arkouda.groupbyclass" href="../groupbyclass/index.html" />
+    <link rel="prev" title="arkouda.client" href="../client/index.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-arkouda.dtypes">
+<span id="arkouda-dtypes"></span><h1><a class="reference internal" href="#module-arkouda.dtypes" title="arkouda.dtypes"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.dtypes</span></code></a><a class="headerlink" href="#module-arkouda.dtypes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.check_np_dtype" title="arkouda.dtypes.check_np_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_np_dtype</span></code></a>(dt: numpy.dtype) → None</p></td>
+<td><p>Assert that numpy dtype dt is one of the dtypes supported</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.translate_np_dtype" title="arkouda.dtypes.translate_np_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate_np_dtype</span></code></a>(dt: numpy.dtype) → Tuple[(builtins.str, int)]</p></td>
+<td><p>Split numpy dtype dt into its kind and byte size, raising</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.resolve_scalar_dtype" title="arkouda.dtypes.resolve_scalar_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_scalar_dtype</span></code></a>(val: object) → str</p></td>
+<td><p>Try to infer what dtype arkouda_server should treat val as.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt id="arkouda.dtypes.dtype">
+<code class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></code><code class="sig-name descname"><span class="pre">dtype</span></code><a class="headerlink" href="#arkouda.dtypes.dtype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt id="arkouda.dtypes.bool">
+<code class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></code><code class="sig-name descname"><span class="pre">bool</span></code><a class="headerlink" href="#arkouda.dtypes.bool" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt id="arkouda.dtypes.int64">
+<code class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></code><code class="sig-name descname"><span class="pre">int64</span></code><a class="headerlink" href="#arkouda.dtypes.int64" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt id="arkouda.dtypes.float64">
+<code class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></code><code class="sig-name descname"><span class="pre">float64</span></code><a class="headerlink" href="#arkouda.dtypes.float64" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt id="arkouda.dtypes.uint8">
+<code class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></code><code class="sig-name descname"><span class="pre">uint8</span></code><a class="headerlink" href="#arkouda.dtypes.uint8" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt id="arkouda.dtypes.str_">
+<code class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></code><code class="sig-name descname"><span class="pre">str_</span></code><a class="headerlink" href="#arkouda.dtypes.str_" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt id="arkouda.dtypes.bool_scalars">
+<code class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></code><code class="sig-name descname"><span class="pre">bool_scalars</span></code><a class="headerlink" href="#arkouda.dtypes.bool_scalars" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt id="arkouda.dtypes.float_scalars">
+<code class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></code><code class="sig-name descname"><span class="pre">float_scalars</span></code><a class="headerlink" href="#arkouda.dtypes.float_scalars" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt id="arkouda.dtypes.int_scalars">
+<code class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></code><code class="sig-name descname"><span class="pre">int_scalars</span></code><a class="headerlink" href="#arkouda.dtypes.int_scalars" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt id="arkouda.dtypes.numeric_scalars">
+<code class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></code><code class="sig-name descname"><span class="pre">numeric_scalars</span></code><a class="headerlink" href="#arkouda.dtypes.numeric_scalars" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt id="arkouda.dtypes.numpy_scalars">
+<code class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></code><code class="sig-name descname"><span class="pre">numpy_scalars</span></code><a class="headerlink" href="#arkouda.dtypes.numpy_scalars" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt id="arkouda.dtypes.str_scalars">
+<code class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></code><code class="sig-name descname"><span class="pre">str_scalars</span></code><a class="headerlink" href="#arkouda.dtypes.str_scalars" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt id="arkouda.dtypes.all_scalars">
+<code class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></code><code class="sig-name descname"><span class="pre">all_scalars</span></code><a class="headerlink" href="#arkouda.dtypes.all_scalars" title="Permalink to this definition">¶</a></dt>
+<dd><p>The DType enum defines the supported Arkouda data types in string form.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="arkouda.dtypes.ARKOUDA_SUPPORTED_DTYPES">
+<code class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></code><code class="sig-name descname"><span class="pre">ARKOUDA_SUPPORTED_DTYPES</span></code><a class="headerlink" href="#arkouda.dtypes.ARKOUDA_SUPPORTED_DTYPES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt id="arkouda.dtypes.DTypes">
+<code class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></code><code class="sig-name descname"><span class="pre">DTypes</span></code><a class="headerlink" href="#arkouda.dtypes.DTypes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt id="arkouda.dtypes.DTypeObjects">
+<code class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></code><code class="sig-name descname"><span class="pre">DTypeObjects</span></code><a class="headerlink" href="#arkouda.dtypes.DTypeObjects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.dtypes.check_np_dtype">
+<code class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></code><code class="sig-name descname"><span class="pre">check_np_dtype</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.dtype</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#arkouda.dtypes.check_np_dtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assert that numpy dtype dt is one of the dtypes supported
+by arkouda, otherwise raise TypeError.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>TypeError</strong> – Raised if the dtype is not in supported dtypes or if
+dt is not a np.dtype</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.dtypes.translate_np_dtype">
+<code class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></code><code class="sig-name descname"><span class="pre">translate_np_dtype</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.dtype</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">builtins.str</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.dtypes.translate_np_dtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split numpy dtype dt into its kind and byte size, raising
+TypeError for unsupported dtypes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>TypeError</strong> – Raised if the dtype is not in supported dtypes or if
+dt is not a np.dtype</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.dtypes.resolve_scalar_dtype">
+<code class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></code><code class="sig-name descname"><span class="pre">resolve_scalar_dtype</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.dtypes.resolve_scalar_dtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Try to infer what dtype arkouda_server should treat val as.</p>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">arkouda</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">API Reference</a><ul>
+  <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><ul>
+      <li>Previous: <a href="../client/index.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.client</span></code></a></li>
+      <li>Next: <a href="../groupbyclass/index.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.groupbyclass</span></code></a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Michael Merrill and William Reus.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/autoapi/arkouda/dtypes/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

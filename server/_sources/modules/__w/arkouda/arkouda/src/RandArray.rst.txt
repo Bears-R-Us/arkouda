@@ -1,0 +1,41 @@
+.. default-domain:: chpl
+
+.. module:: RandArray
+
+RandArray
+=========
+**Usage**
+
+.. code-block:: chapel
+
+   use RandArray;
+
+
+or
+
+.. code-block:: chapel
+
+   import RandArray;
+
+.. data:: const raLogger = new Logger()
+
+.. function:: proc fillInt(a: [] ?t, const aMin, const aMax, const seedStr: string = "None") throws
+
+.. function:: proc fillUInt(a: [] ?t, const aMin, const aMax, const seedStr: string = "None") throws
+
+.. function:: proc fillReal(a: [] real, const aMin: numeric = 0.0, const aMax: numeric = 1.0, const seedStr: string = "None") throws
+
+.. function:: proc fillBool(a: [] bool, const seedStr: string = "None") throws
+
+.. function:: proc fillNormal(a: [?D] real, const seedStr: string = "None") throws
+
+.. enum:: enum charSet { Uppercase, Lowercase, Numeric, Printable, Binary }
+
+.. function:: proc str2CharSet(str: string): charSet
+
+.. data:: var charBounds: map(keyType = charSet, valType = 2*(int), parSafe = false)
+
+.. function:: proc newRandStringsUniformLength(const n: int, const minLen: int, const maxLen: int, characters: charSet = charSet.Uppercase, const seedStr: string = "None") throws
+
+.. function:: proc newRandStringsLogNormalLength(const n: int, const logMean: numeric, const logStd: numeric, characters: charSet = charSet.Uppercase, const seedStr: string = "None") throws
+

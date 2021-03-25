@@ -1,0 +1,384 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>arkouda.pdarrayIO &#8212; arkouda 2020.07.07 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="arkouda.pdarrayclass" href="../pdarrayclass/index.html" />
+    <link rel="prev" title="arkouda.numeric" href="../numeric/index.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-arkouda.pdarrayIO">
+<span id="arkouda-pdarrayio"></span><h1><a class="reference internal" href="#module-arkouda.pdarrayIO" title="arkouda.pdarrayIO"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarrayIO</span></code></a><a class="headerlink" href="#module-arkouda.pdarrayIO" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayIO.ls_hdf" title="arkouda.pdarrayIO.ls_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_hdf</span></code></a>(filename: str) → str</p></td>
+<td><p>This function calls the h5ls utility on a filename visible to the</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayIO.read_hdf" title="arkouda.pdarrayIO.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>(dsetName: str, filenames: Union[(str, List[str])], strictTypes: bool = True) → Union[(pdarray, Strings)]</p></td>
+<td><p>Read a single dataset from multiple HDF5 files into an Arkouda</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayIO.read_all" title="arkouda.pdarrayIO.read_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_all</span></code></a>(filenames: Union[(str, List[str])], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True) → Union[(pdarray, Strings, Mapping[str, Union[pdarray, Strings]])]</p></td>
+<td><p>Read datasets from HDF5 files.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayIO.load" title="arkouda.pdarrayIO.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(path_prefix: str, dataset: str = 'array') → Union[(pdarray, Strings)]</p></td>
+<td><p>Load a pdarray previously saved with <code class="docutils literal notranslate"><span class="pre">pdarray.save()</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayIO.get_datasets" title="arkouda.pdarrayIO.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>(filename: str) → List[str]</p></td>
+<td><p>Get the names of datasets in an HDF5 file.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayIO.load_all" title="arkouda.pdarrayIO.load_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></a>(path_prefix: str) → Mapping[(str, Union[pdarray, Strings])]</p></td>
+<td><p>Load multiple pdarrays or Strings previously saved with <code class="docutils literal notranslate"><span class="pre">save_all()</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayIO.save_all" title="arkouda.pdarrayIO.save_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_all</span></code></a>(columns: Union[(Mapping[str, pdarray], List[pdarray])], prefix_path: str, names: List[str] = None, mode: str = 'truncate') → None</p></td>
+<td><p>Save multiple named pdarrays to HDF5 files.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt id="arkouda.pdarrayIO.ls_hdf">
+<code class="sig-prename descclassname"><span class="pre">arkouda.pdarrayIO.</span></code><code class="sig-name descname"><span class="pre">ls_hdf</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.pdarrayIO.ls_hdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calls the h5ls utility on a filename visible to the
+arkouda server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – The name of the file to pass to h5ls</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The string output of <cite>h5ls &lt;filename&gt;</cite> from the server</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.pdarrayIO.read_hdf">
+<code class="sig-prename descclassname"><span class="pre">arkouda.pdarrayIO.</span></code><code class="sig-name descname"><span class="pre">read_hdf</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dsetName</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filenames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strictTypes</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pdarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">Strings</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.pdarrayIO.read_hdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a single dataset from multiple HDF5 files into an Arkouda
+pdarray or Strings object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dsetName</strong> (<em>str</em>) – The name of the dataset (must be the same across all files)</p></li>
+<li><p><strong>filenames</strong> (<em>list</em><em> or </em><em>str</em>) – Either a list of filenames or shell expression</p></li>
+<li><p><strong>strictTypes</strong> (<em>bool</em>) – If True (default), require all dtypes in all files to have the
+same precision and sign. If False, allow dtypes of different
+precision and sign across different files. For example, if one
+file contains a uint32 dataset and another contains an int64
+dataset, the contents of both will be read into an int64 pdarray.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A pdarray or Strings instance pointing to the server-side data</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>,<a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings">Strings</a>]</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if dsetName is not a str or if filenames is neither a string
+nor a list of strings</p></li>
+<li><p><strong>ValueError</strong> – Raised if all datasets are not present in all hdf5 files</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.pdarrayIO.get_datasets" title="arkouda.pdarrayIO.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>, <a class="reference internal" href="#arkouda.pdarrayIO.ls_hdf" title="arkouda.pdarrayIO.ls_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_hdf</span></code></a>, <a class="reference internal" href="#arkouda.pdarrayIO.read_all" title="arkouda.pdarrayIO.read_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_all</span></code></a>, <a class="reference internal" href="#arkouda.pdarrayIO.load" title="arkouda.pdarrayIO.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<p>If filenames is a string, it is interpreted as a shell expression
+(a single filename is a valid expression, so it will work) and is
+expanded with glob to read all matching files. Use <code class="docutils literal notranslate"><span class="pre">get_datasets</span></code> to
+show the names of datasets in HDF5 files.</p>
+<p>If dsetName is not present in all files, a TypeError is raised.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.pdarrayIO.read_all">
+<code class="sig-prename descclassname"><span class="pre">arkouda.pdarrayIO.</span></code><code class="sig-name descname"><span class="pre">read_all</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filenames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasets</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterative</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strictTypes</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pdarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">Strings</span><span class="p"><span class="pre">,</span> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pdarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">Strings</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.pdarrayIO.read_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read datasets from HDF5 files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filenames</strong> (<em>list</em><em> or </em><em>str</em>) – Either a list of filenames or shell expression</p></li>
+<li><p><strong>datasets</strong> (<em>list</em><em> or </em><em>str</em><em> or </em><em>None</em>) – (List of) name(s) of dataset(s) to read (default: all available)</p></li>
+<li><p><strong>iterative</strong> (<em>bool</em>) – Iterative (True) or Single (False) function call(s) to server</p></li>
+<li><p><strong>strictTypes</strong> (<em>bool</em>) – If True (default), require all dtypes of a given dataset to have the
+same precision and sign. If False, allow dtypes of different
+precision and sign across different files. For example, if one
+file contains a uint32 dataset and another contains an int64
+dataset with the same name, the contents of both will be read
+into an int64 pdarray.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>For a single dataset returns an Arkouda pdarray or Arkouda Strings object</em></p></li>
+<li><p><em>and for multiple datasets returns a dictionary of Arkouda pdarrays or</em></p></li>
+<li><p><em>Arkouda Strings.</em> – Dictionary of {datasetName: pdarray or String}</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – Raised if all datasets are not present in all hdf5 files</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.pdarrayIO.read_hdf" title="arkouda.pdarrayIO.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>, <a class="reference internal" href="#arkouda.pdarrayIO.get_datasets" title="arkouda.pdarrayIO.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>, <a class="reference internal" href="#arkouda.pdarrayIO.ls_hdf" title="arkouda.pdarrayIO.ls_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_hdf</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>If filenames is a string, it is interpreted as a shell expression
+(a single filename is a valid expression, so it will work) and is
+expanded with glob to read all matching files.</p>
+<p>If iterative == True each dataset name and file names are passed to
+the server as independent sequential strings while if iterative == False
+all dataset names and file names are passed to the server in a single
+string.</p>
+<p>If datasets is None, infer the names of datasets from the first file
+and read all of them. Use <code class="docutils literal notranslate"><span class="pre">get_datasets</span></code> to show the names of datasets
+to HDF5 files.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.pdarrayIO.load">
+<code class="sig-prename descclassname"><span class="pre">arkouda.pdarrayIO.</span></code><code class="sig-name descname"><span class="pre">load</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_prefix</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'array'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pdarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">Strings</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.pdarrayIO.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a pdarray previously saved with <code class="docutils literal notranslate"><span class="pre">pdarray.save()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path_prefix</strong> (<em>str</em>) – Filename prefix used to save the original pdarray</p></li>
+<li><p><strong>dataset</strong> (<em>str</em>) – Dataset name where the pdarray was saved, defaults to ‘array’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The pdarray or Strings that was previously saved</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings">Strings</a>]</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if dataset is not a str</p></li>
+<li><p><strong>ValueError</strong> – Raised if all datasets are not present in all hdf5 files</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>, <a class="reference internal" href="#arkouda.pdarrayIO.load_all" title="arkouda.pdarrayIO.load_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></a>, <a class="reference internal" href="#arkouda.pdarrayIO.read_hdf" title="arkouda.pdarrayIO.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>, <a class="reference internal" href="#arkouda.pdarrayIO.read_all" title="arkouda.pdarrayIO.read_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_all</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.pdarrayIO.get_datasets">
+<code class="sig-prename descclassname"><span class="pre">arkouda.pdarrayIO.</span></code><code class="sig-name descname"><span class="pre">get_datasets</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.pdarrayIO.get_datasets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the names of datasets in an HDF5 file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – Name of an HDF5 file visible to the arkouda server</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Names of the datasets in the file</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if filename is not a str</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.pdarrayIO.ls_hdf" title="arkouda.pdarrayIO.ls_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_hdf</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.pdarrayIO.load_all">
+<code class="sig-prename descclassname"><span class="pre">arkouda.pdarrayIO.</span></code><code class="sig-name descname"><span class="pre">load_all</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_prefix</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pdarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">Strings</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.pdarrayIO.load_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load multiple pdarrays or Strings previously saved with <code class="docutils literal notranslate"><span class="pre">save_all()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path_prefix</strong> (<em>str</em>) – Filename prefix used to save the original pdarray</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dictionary of {datsetName: pdarray} with the previously saved pdarrays</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Mapping[str,<a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Raised if all datasets are not present in all hdf5 files</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.pdarrayIO.save_all" title="arkouda.pdarrayIO.save_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_all</span></code></a>, <a class="reference internal" href="#arkouda.pdarrayIO.load" title="arkouda.pdarrayIO.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>, <a class="reference internal" href="#arkouda.pdarrayIO.read_hdf" title="arkouda.pdarrayIO.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>, <a class="reference internal" href="#arkouda.pdarrayIO.read_all" title="arkouda.pdarrayIO.read_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_all</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.pdarrayIO.save_all">
+<code class="sig-prename descclassname"><span class="pre">arkouda.pdarrayIO.</span></code><code class="sig-name descname"><span class="pre">save_all</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pdarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">pdarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'truncate'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#arkouda.pdarrayIO.save_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save multiple named pdarrays to HDF5 files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>columns</strong> (<em>dict</em><em> or </em><em>list of pdarrays</em>) – Collection of arrays to save</p></li>
+<li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix for output files</p></li>
+<li><p><strong>names</strong> (<em>list of str</em>) – Dataset names for the pdarrays</p></li>
+<li><p><strong>mode</strong> (<em>{'truncate' | 'append'}</em>) – By default, truncate (overwrite) the output files if they exist.
+If ‘append’, attempt to create new dataset in existing files.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Raised if (1) the lengths of columns and values differ or (2) the mode
+is not ‘truncate’ or ‘append’</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>, <a class="reference internal" href="#arkouda.pdarrayIO.load_all" title="arkouda.pdarrayIO.load_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Creates one file per locale containing that locale’s chunk of each pdarray.
+If columns is a dictionary, the keys are used as the HDF5 dataset names.
+Otherwise, if no names are supplied, 0-up integers are used. By default,
+any existing files at path_prefix will be overwritten, unless the user
+specifies the ‘append’ mode, in which case arkouda will attempt to add
+&lt;columns&gt; as new datasets to existing files. If the wrong number of files
+is present or dataset names already exist, a RuntimeError is raised.</p>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">arkouda</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">API Reference</a><ul>
+  <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><ul>
+      <li>Previous: <a href="../numeric/index.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.numeric</span></code></a></li>
+      <li>Next: <a href="../pdarrayclass/index.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.pdarrayclass</span></code></a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Michael Merrill and William Reus.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/autoapi/arkouda/pdarrayIO/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

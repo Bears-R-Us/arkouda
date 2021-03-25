@@ -1,0 +1,91 @@
+:mod:`arkouda.io_util`
+======================
+
+.. py:module:: arkouda.io_util
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.io_util.get_directory
+   arkouda.io_util.write_line_to_file
+   arkouda.io_util.delimited_file_to_dict
+   arkouda.io_util.dict_to_delimited_file
+
+
+.. function:: get_directory(path: str) -> pathlib.Path
+
+   Creates the directory if it does not exist and then
+   returns the corresponding Path object
+
+   :param path: The path to the directory
+   :type path: str
+
+   :returns: Path object corresponding to the directory
+   :rtype: str
+
+   :raises ValueError: Raised if there's an error in reading an
+       existing directory or creating a new one
+
+
+.. function:: write_line_to_file(path: str, line: str) -> None
+
+   Writes a line to the requested file. Note: if the file
+   does not exist, the file is created first and then
+   the specified line is written to it.
+
+   :param path: Path to the target file
+   :type path: str
+   :param line: Line to be written to the file
+   :type line: str
+
+   :returns:
+   :rtype: None
+
+   :raises UnsupportedOption: Raised if there's an error in creating or
+       writing to the file
+
+
+.. function:: delimited_file_to_dict(path: str, delimiter: str = ',') -> Dict[(str, str)]
+
+   Returns a dictionary populated by lines from a file where
+   the first delimited element of each line is the key and
+   the second delimited element is the value.
+
+   :param path: Path to the file
+   :type path: str
+   :param delimiter: Delimiter separating key and value
+   :type delimiter: str
+
+   :returns: Dictionary containing key,value pairs derived from each
+             line of delimited strings
+   :rtype: Mapping[str,str]
+
+   :raises UnsupportedOperation: Raised if there's an error in reading the file
+
+
+.. function:: dict_to_delimited_file(path: str, values: Mapping[(Any, Any)], delimiter: str = ',') -> None
+
+   Writes a dictionary to delimited lines in a file where
+   the first delimited element of each line is the dict key
+   and the second delimited element is the dict value. If the
+   file does not exist, it is created and then written to.
+
+   :param path: Path to the file
+   :type path: str
+   :param delimiter: Delimiter separating key and value
+
+   :returns:
+   :rtype: None
+
+   :raises OError: Raised if there's an error opening or writing to the
+       specified file
+   :raises ValueError: Raised if the delimiter is not supported
+
+

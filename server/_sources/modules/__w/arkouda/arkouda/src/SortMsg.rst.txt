@@ -1,0 +1,30 @@
+.. default-domain:: chpl
+
+.. module:: SortMsg
+
+SortMsg
+=======
+**Usage**
+
+.. code-block:: chapel
+
+   use SortMsg;
+
+
+or
+
+.. code-block:: chapel
+
+   import SortMsg;
+
+.. data:: const sortLogger = new Logger()
+
+.. function:: proc sort(a: [?aD] ?t): [aD] t
+
+   Sort the given pdarray using Radix Sort and
+   return sorted keys as a block distributed array 
+
+.. function:: proc sortMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   sort takes pdarray and returns a sorted copy of the array 
+

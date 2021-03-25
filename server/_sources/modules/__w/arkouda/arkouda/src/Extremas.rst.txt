@@ -1,0 +1,68 @@
+.. default-domain:: chpl
+
+.. module:: Extremas
+
+Extremas
+========
+**Usage**
+
+.. code-block:: chapel
+
+   use Extremas;
+
+
+or
+
+.. code-block:: chapel
+
+   import Extremas;
+
+.. record:: KExtreme
+
+   
+   :record:`KExtreme` data structure that is used
+   to track the minimum or maximum ``size``
+   values that are in an array. Acts similar
+   to a heap data structure, but can be
+   sorted and merged to extract the
+   extreme values from multiple kextreme
+   objects.
+   
+   This record is used in the user-defined ``kreduce``
+   reuction by having one :record: `KExtreme` instance
+   per task, which is then built up by pushing the
+   values into the heap-like :record: `KExtreme` by
+   the ``accumulate()`` function. Once all of the values
+   from each task have been accumulated, the ``combine()``
+   function is called on each :record: `KExtreme` instance,
+   which is handled by sorting the record, giving up
+   its heap-like quality, and using it as a sorted array
+   to increase the efficiency of the merge step.
+
+
+   .. attribute:: type eltType
+
+   .. attribute:: var size: int
+
+   .. attribute:: var dom = {0..#size}
+
+   .. attribute:: var numEmpty: int = size-2
+
+   .. attribute:: var isSorted: bool = false
+
+   .. attribute:: var isMinReduction = true
+
+   .. attribute:: var _data: [dom] (eltType, int) = if isMinReduction then (max(eltType), -1) else (min(eltType), -1)
+
+   .. method:: proc pushArr(arr: [?D])
+
+   .. method:: proc push(val: (eltType, int))
+
+   .. method:: proc heapifyDown()
+
+   .. method:: proc doSort()
+
+   .. itermethod:: iter these()
+
+.. function:: proc merge(ref v1: KExtreme(?t), ref v2: KExtreme(t)): [v1._data.domain] (t, int)
+

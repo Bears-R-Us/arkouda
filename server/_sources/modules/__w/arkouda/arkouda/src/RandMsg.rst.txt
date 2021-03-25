@@ -1,0 +1,32 @@
+.. default-domain:: chpl
+
+.. module:: RandMsg
+
+RandMsg
+=======
+**Usage**
+
+.. code-block:: chapel
+
+   use RandMsg;
+
+
+or
+
+.. code-block:: chapel
+
+   import RandMsg;
+
+.. data:: const randLogger = new Logger()
+
+.. function:: proc randintMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   parse, execute, and respond to randint message
+   uniform int in half-open interval [min,max)
+   
+   :arg reqMsg: message to process (contains cmd,aMin,aMax,len,dtype)
+   
+
+.. function:: proc randomNormalMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+

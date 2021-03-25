@@ -1,0 +1,59 @@
+.. default-domain:: chpl
+
+.. module:: JoinEqWithDTMsg
+
+JoinEqWithDTMsg
+===============
+**Usage**
+
+.. code-block:: chapel
+
+   use JoinEqWithDTMsg;
+
+
+or
+
+.. code-block:: chapel
+
+   import JoinEqWithDTMsg;
+
+.. data:: param TRUE_DT = 0
+
+.. data:: param ABS_DT = 1
+
+.. data:: param POS_DT = 2
+
+.. data:: const jeLogger = new Logger()
+
+.. function:: proc +(x: atomic int, y: atomic int)
+
+.. function:: proc +=(X: [?D] int, Y: [D] atomic int)
+
+.. function:: proc binarySearch(a: [?D] int, x: int): int
+
+   
+   Stole this code from Bill's Merge.chpl until we merge the PR's
+   This version does not throw exceptions
+   Given a *sorted*, zero-up array, use binary search to find the index of the first element 
+   that is greater than or equal to a target.
+   
+
+.. function:: proc findMatch(v: int, seg: [?segD] int, ukeys: [segD] int, perm: [?aD] int): (bool, range)
+
+.. function:: proc joinEqWithDT(a1: [?a1D] int, seg: [?segD] int, ukeys: [segD] int, perm: [?a2D] int, t1: [a1D] int, t2: [a2D] int, dt: int, pred: int, resLimitPerLocale: int)
+
+.. function:: proc joinEqWithDTMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   joinEqWithDT is a specialized inner-join on equality between
+   two integer arrays where the time-window predicate is also true.
+   a1: is the first array
+   g2: is a GroupBy of the second array a2
+   (seg,ukeys,perm) are derived from a2 by doing a GroupBy
+   t1: time stamp array corresponding to a1
+   t2: time stamp array corresponding to a2
+   dt: is the delta time
+   pred: is the dt-predicate ("absDT","posDT","trueDT")
+   resLimit: is how many answers can you tolerate ;-)
+   
+

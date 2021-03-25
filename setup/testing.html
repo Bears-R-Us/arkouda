@@ -1,0 +1,456 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Performance Testing &#8212; arkouda 2020.07.07 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Quickstart" href="quickstart.html" />
+    <link rel="prev" title="Installation" href="installation.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="performance-testing">
+<h1>Performance Testing<a class="headerlink" href="#performance-testing" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">benchmarks</span></code> directory contains scripts for measuring the performance of arkouda, optionally compared to the (single-node) performance of NumPy.</p>
+<div class="section" id="argsort">
+<h2>Argsort<a class="headerlink" href="#argsort" title="Permalink to this headline">¶</a></h2>
+<p><p>Measure performance of sorting an array of random values.</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">argsort</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="n">SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">TRIALS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DTYPE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">numpy</span><span class="p">]</span>
+                  <span class="p">[</span><span class="o">--</span><span class="n">correctness</span><span class="o">-</span><span class="n">only</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SEED</span><span class="p">]</span>
+                  <span class="n">hostname</span> <span class="n">port</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="option-list">
+<dt><kbd>hostname</kbd></dt>
+<dd><p>Hostname of arkouda server</p>
+</dd>
+<dt><kbd>port</kbd></dt>
+<dd><p>Port of arkouda server</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="option-list">
+<dt><kbd>-n, --size</kbd></dt>
+<dd><p>Problem size: length of array to argsort</p>
+<p>Default: 100000000</p>
+</dd>
+<dt><kbd>-t, --trials</kbd></dt>
+<dd><p>Number of times to run the benchmark</p>
+<p>Default: 3</p>
+</dd>
+<dt><kbd>-d, --dtype</kbd></dt>
+<dd><p>Dtype of array (int64, float64)</p>
+<p>Default: “int64”</p>
+</dd>
+<dt><kbd>--numpy</kbd></dt>
+<dd><p>Run the same operation in NumPy to compare performance.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--correctness-only</kbd></dt>
+<dd><p>Only check correctness, not performance.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>-s, --seed</kbd></dt>
+<dd><p>Value to initialize random number generator</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="gather">
+<h2>Gather<a class="headerlink" href="#gather" title="Permalink to this headline">¶</a></h2>
+<p><p>Measure the performance of random gather: C = V[I]</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">gather</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="n">SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">i</span> <span class="n">INDEX_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span> <span class="n">VALUE_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">TRIALS</span><span class="p">]</span>
+                 <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DTYPE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">numpy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">correctness</span><span class="o">-</span><span class="n">only</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SEED</span><span class="p">]</span>
+                 <span class="n">hostname</span> <span class="n">port</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="option-list">
+<dt><kbd>hostname</kbd></dt>
+<dd><p>Hostname of arkouda server</p>
+</dd>
+<dt><kbd>port</kbd></dt>
+<dd><p>Port of arkouda server</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="option-list">
+<dt><kbd>-n, --size</kbd></dt>
+<dd><p>Problem size: length of index and gather arrays</p>
+<p>Default: 100000000</p>
+</dd>
+<dt><kbd>-i, --index-size</kbd></dt>
+<dd><p>Length of index array (number of gathers to perform)</p>
+</dd>
+<dt><kbd>-v, --value-size</kbd></dt>
+<dd><p>Length of array from which values are gathered</p>
+</dd>
+<dt><kbd>-t, --trials</kbd></dt>
+<dd><p>Number of times to run the benchmark</p>
+<p>Default: 6</p>
+</dd>
+<dt><kbd>-d, --dtype</kbd></dt>
+<dd><p>Dtype of value array (int64, float64, bool)</p>
+<p>Default: “int64”</p>
+</dd>
+<dt><kbd>-r, --randomize</kbd></dt>
+<dd><p>Use random values instead of ones</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--numpy</kbd></dt>
+<dd><p>Run the same operation in NumPy to compare performance.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--correctness-only</kbd></dt>
+<dd><p>Only check correctness, not performance.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>-s, --seed</kbd></dt>
+<dd><p>Value to initialize random number generator</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="reduce">
+<h2>Reduce<a class="headerlink" href="#reduce" title="Permalink to this headline">¶</a></h2>
+<p><p>Measure performance of reductions over arrays.</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">reduce</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="n">SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">TRIALS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DTYPE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">numpy</span><span class="p">]</span>
+                 <span class="p">[</span><span class="o">--</span><span class="n">correctness</span><span class="o">-</span><span class="n">only</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SEED</span><span class="p">]</span>
+                 <span class="n">hostname</span> <span class="n">port</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="option-list">
+<dt><kbd>hostname</kbd></dt>
+<dd><p>Hostname of arkouda server</p>
+</dd>
+<dt><kbd>port</kbd></dt>
+<dd><p>Port of arkouda server</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="option-list">
+<dt><kbd>-n, --size</kbd></dt>
+<dd><p>Problem size: length of array to reduce</p>
+<p>Default: 100000000</p>
+</dd>
+<dt><kbd>-t, --trials</kbd></dt>
+<dd><p>Number of times to run the benchmark</p>
+<p>Default: 6</p>
+</dd>
+<dt><kbd>-d, --dtype</kbd></dt>
+<dd><p>Dtype of array (int64, float64)</p>
+<p>Default: “int64”</p>
+</dd>
+<dt><kbd>-r, --randomize</kbd></dt>
+<dd><p>Fill array with random values instead of range</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--numpy</kbd></dt>
+<dd><p>Run the same operation in NumPy to compare performance.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--correctness-only</kbd></dt>
+<dd><p>Only check correctness, not performance.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>-s, --seed</kbd></dt>
+<dd><p>Value to initialize random number generator</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="scan">
+<h2>Scan<a class="headerlink" href="#scan" title="Permalink to this headline">¶</a></h2>
+<p><p>Measure the performance of scans (cumulative reductions) over arrays.</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">scan</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="n">SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">TRIALS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DTYPE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">numpy</span><span class="p">]</span>
+               <span class="p">[</span><span class="o">--</span><span class="n">correctness</span><span class="o">-</span><span class="n">only</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SEED</span><span class="p">]</span>
+               <span class="n">hostname</span> <span class="n">port</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="option-list">
+<dt><kbd>hostname</kbd></dt>
+<dd><p>Hostname of arkouda server</p>
+</dd>
+<dt><kbd>port</kbd></dt>
+<dd><p>Port of arkouda server</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="option-list">
+<dt><kbd>-n, --size</kbd></dt>
+<dd><p>Problem size: length of array</p>
+<p>Default: 100000000</p>
+</dd>
+<dt><kbd>-t, --trials</kbd></dt>
+<dd><p>Number of times to run the benchmark</p>
+<p>Default: 6</p>
+</dd>
+<dt><kbd>-d, --dtype</kbd></dt>
+<dd><p>Dtype of array (int64, float64)</p>
+<p>Default: “int64”</p>
+</dd>
+<dt><kbd>-r, --randomize</kbd></dt>
+<dd><p>Fill array with random values instead of range</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--numpy</kbd></dt>
+<dd><p>Run the same operation in NumPy to compare performance.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--correctness-only</kbd></dt>
+<dd><p>Only check correctness, not performance.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>-s, --seed</kbd></dt>
+<dd><p>Value to initialize random number generator</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="scatter">
+<h2>Scatter<a class="headerlink" href="#scatter" title="Permalink to this headline">¶</a></h2>
+<p><p>Measure performance of random scatter: C[I] = V</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">scatter</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="n">SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">i</span> <span class="n">INDEX_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span> <span class="n">VALUE_SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">TRIALS</span><span class="p">]</span>
+                  <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DTYPE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">numpy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">correctness</span><span class="o">-</span><span class="n">only</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SEED</span><span class="p">]</span>
+                  <span class="n">hostname</span> <span class="n">port</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="option-list">
+<dt><kbd>hostname</kbd></dt>
+<dd><p>Hostname of arkouda server</p>
+</dd>
+<dt><kbd>port</kbd></dt>
+<dd><p>Port of arkouda server</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="option-list">
+<dt><kbd>-n, --size</kbd></dt>
+<dd><p>Problem size: length of index and scatter arrays</p>
+<p>Default: 100000000</p>
+</dd>
+<dt><kbd>-i, --index-size</kbd></dt>
+<dd><p>Length of index array (number of scatters to perform)</p>
+</dd>
+<dt><kbd>-v, --value-size</kbd></dt>
+<dd><p>Length of array from which values are scattered</p>
+</dd>
+<dt><kbd>-t, --trials</kbd></dt>
+<dd><p>Number of times to run the benchmark</p>
+<p>Default: 6</p>
+</dd>
+<dt><kbd>-d, --dtype</kbd></dt>
+<dd><p>Dtype of value array (int64, float64, bool)</p>
+<p>Default: “int64”</p>
+</dd>
+<dt><kbd>-r, --randomize</kbd></dt>
+<dd><p>Use random values instead of ones</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--numpy</kbd></dt>
+<dd><p>Run the same operation in NumPy to compare performance.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--correctness-only</kbd></dt>
+<dd><p>Only check correctness, not performance.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>-s, --seed</kbd></dt>
+<dd><p>Value to initialize random number generator</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="stream">
+<h2>Stream<a class="headerlink" href="#stream" title="Permalink to this headline">¶</a></h2>
+<p><p>Run the stream benchmark: C = A + alpha*B</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">stream</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">n</span> <span class="n">SIZE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">t</span> <span class="n">TRIALS</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span> <span class="n">DTYPE</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="n">ALPHA</span><span class="p">]</span>
+                 <span class="p">[</span><span class="o">--</span><span class="n">numpy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">correctness</span><span class="o">-</span><span class="n">only</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">s</span> <span class="n">SEED</span><span class="p">]</span>
+                 <span class="n">hostname</span> <span class="n">port</span>
+</pre></div>
+</div>
+<div class="section" id="Positional Arguments">
+<h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="option-list">
+<dt><kbd>hostname</kbd></dt>
+<dd><p>Hostname of arkouda server</p>
+</dd>
+<dt><kbd>port</kbd></dt>
+<dd><p>Port of arkouda server</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="Named Arguments">
+<h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
+<dl class="option-list">
+<dt><kbd>-n, --size</kbd></dt>
+<dd><p>Problem size: length of arrays A and B</p>
+<p>Default: 100000000</p>
+</dd>
+<dt><kbd>-t, --trials</kbd></dt>
+<dd><p>Number of times to run the benchmark</p>
+<p>Default: 6</p>
+</dd>
+<dt><kbd>-d, --dtype</kbd></dt>
+<dd><p>Dtype of arrays (int64, float64)</p>
+<p>Default: “float64”</p>
+</dd>
+<dt><kbd>-r, --randomize</kbd></dt>
+<dd><p>Fill arrays with random values instead of ones</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>-a, --alpha</kbd></dt>
+<dd><p>Scalar multiple</p>
+<p>Default: 1.0</p>
+</dd>
+<dt><kbd>--numpy</kbd></dt>
+<dd><p>Run the same operation in NumPy to compare performance.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--correctness-only</kbd></dt>
+<dd><p>Only check correctness, not performance.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>-s, --seed</kbd></dt>
+<dd><p>Value to initialize random number generator</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">arkouda</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Performance Testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#argsort">Argsort</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gather">Gather</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reduce">Reduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scan">Scan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scatter">Scatter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#stream">Stream</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autoapi/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../server/index.html">Chapel API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="installation.html" title="previous chapter">Installation</a></li>
+      <li>Next: <a href="quickstart.html" title="next chapter">Quickstart</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Michael Merrill and William Reus.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/setup/testing.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Examples &#8212; arkouda 2020.07.07 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contributing" href="contributing.html" />
+    <link rel="prev" title="Categoricals" href="usage/categorical.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="examples">
+<span id="examples-label"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="dataframe-like-patterns">
+<h2>DataFrame-like Patterns<a class="headerlink" href="#dataframe-like-patterns" title="Permalink to this headline">¶</a></h2>
+<p>DataFrames (e.g. from <code class="docutils literal notranslate"><span class="pre">pandas</span></code>) are a useful abstraction for working with tabular data. While arkouda does not yet have an actual <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> class, it is possible to do many of the same operations. Here, we will create and use a pseudo-DataFrame: a <code class="docutils literal notranslate"><span class="pre">dict</span></code> of named <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects, which are analogous to columns of a DataFrame. Let the following represent transactions in which a userID purchased an item on a particular day for a certain amount of money:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">userName</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;Alice&#39;</span><span class="p">,</span> <span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="s1">&#39;Alice&#39;</span><span class="p">,</span> <span class="s1">&#39;Carol&#39;</span><span class="p">,</span> <span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="s1">&#39;Alice&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">userID</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">111</span><span class="p">,</span> <span class="mi">222</span><span class="p">,</span> <span class="mi">111</span><span class="p">,</span> <span class="mi">333</span><span class="p">,</span> <span class="mi">222</span><span class="p">,</span> <span class="mi">111</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">item</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">day</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">amount</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">4.3</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;userName&#39;</span><span class="p">:</span> <span class="n">userName</span><span class="p">,</span> <span class="s1">&#39;userID&#39;</span><span class="p">:</span> <span class="n">userID</span><span class="p">,</span>
+<span class="go">            &#39;item&#39;: item, &#39;day&#39;: day, &#39;amount&#39;: amount}</span>
+</pre></div>
+</div>
+<div class="section" id="selection">
+<h3>Selection<a class="headerlink" href="#selection" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">df.loc[condition]</span></code> syntax is useful for selecting subsets of data by value and can be emulated in arkouda. For example, here we select all transactions involving user <code class="docutils literal notranslate"><span class="pre">111</span></code> of an amount less than <code class="docutils literal notranslate"><span class="pre">1.0</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">condition</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;userID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">111</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u1</span> <span class="o">=</span> <span class="p">{</span><span class="n">col</span><span class="p">:</span> <span class="n">a</span><span class="p">[</span><span class="n">condition</span><span class="p">]</span> <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u1</span>
+<span class="go">{&#39;userName&#39;: array([&#39;Alice&#39;, &#39;Alice&#39;]),</span>
+<span class="go"> &#39;userID&#39;: array([111, 111]),</span>
+<span class="go"> &#39;item&#39;: array([0, 0]),</span>
+<span class="go"> &#39;day&#39;: array([5, 6]),</span>
+<span class="go"> &#39;amount&#39;: array([0.5, 0.59999999999999998])}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="description">
+<h3>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">value_counts</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;day&#39;</span><span class="p">])</span>
+<span class="go">(array([5, 6]), array([3, 3]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">],</span> <span class="mi">10</span><span class="p">)</span>
+<span class="go">array([3, 2, 0, 0, 0, 0, 0, 0, 0, 1])</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="grouping">
+<h3>Grouping<a class="headerlink" href="#grouping" title="Permalink to this headline">¶</a></h3>
+<p>In Pandas, groupby-aggregate is a very useful pattern that can be computationally intensive. Arkouda supports grouping by key and most aggregations in Pandas. Note that, because arkouda does not yet have a true <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> class, the arkouda <code class="docutils literal notranslate"><span class="pre">GroupBy</span></code> operation does not conform to the <code class="docutils literal notranslate"><span class="pre">pandas</span></code> API.</p>
+<p>Here we group the data by item and get the number of unique users who bought the item, and the total revenue generated by the item.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">byItem</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">GroupBy</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;item&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">byItem</span><span class="o">.</span><span class="n">nunique</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;userID&#39;</span><span class="p">])</span>
+<span class="go">(array([0, 1, 2]), array([2, 2, 1]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">byItem</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;amount&#39;</span><span class="p">])</span>
+<span class="go">(array([0, 1, 2]),</span>
+<span class="go"> array([1.7000000000000002, 2.2999999999999998, 4.3000000000000007]))</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="integration-with-pandas">
+<h3>Integration with Pandas<a class="headerlink" href="#integration-with-pandas" title="Permalink to this headline">¶</a></h3>
+<p>Often, it is useful to load data in arkouda and bring back a small subset of the data to explore further in Pandas. This can be done as long as each column is less than <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code> in size (default 1 GB).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assume some filtering takes place here</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">subset</span> <span class="o">=</span> <span class="n">data</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="n">col</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span> <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">subset</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">df</span>
+   <span class="n">amount</span>  <span class="n">day</span>  <span class="n">item</span>  <span class="n">userID</span> <span class="n">userName</span>
+   <span class="mi">0</span>     <span class="mf">0.5</span>    <span class="mi">5</span>     <span class="mi">0</span>     <span class="mi">111</span>    <span class="n">Alice</span>
+   <span class="mi">1</span>     <span class="mf">0.6</span>    <span class="mi">5</span>     <span class="mi">0</span>     <span class="mi">222</span>      <span class="n">Bob</span>
+   <span class="mi">2</span>     <span class="mf">1.1</span>    <span class="mi">6</span>     <span class="mi">1</span>     <span class="mi">111</span>    <span class="n">Alice</span>
+   <span class="mi">3</span>     <span class="mf">1.2</span>    <span class="mi">5</span>     <span class="mi">1</span>     <span class="mi">333</span>    <span class="n">Carol</span>
+   <span class="mi">4</span>     <span class="mf">4.3</span>    <span class="mi">6</span>     <span class="mi">2</span>     <span class="mi">222</span>      <span class="n">Bob</span>
+   <span class="mi">5</span>     <span class="mf">0.6</span>    <span class="mi">6</span>     <span class="mi">0</span>     <span class="mi">111</span>    <span class="n">Alice</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="graphs">
+<h2>Graphs<a class="headerlink" href="#graphs" title="Permalink to this headline">¶</a></h2>
+<p>Arkouda can be used for constructing and performing basic analysis of graphs.</p>
+<p>Consider the following arkouda code (from <code class="docutils literal notranslate"><span class="pre">toys/ak_rmat.py</span></code>), which generates an RMAT graph:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">gen_rmat_edges</span><span class="p">(</span><span class="n">lgNv</span><span class="p">,</span> <span class="n">Ne_per_v</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">perm</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="c1"># number of vertices</span>
+    <span class="n">Nv</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">lgNv</span>
+    <span class="c1"># number of edges</span>
+    <span class="n">Ne</span> <span class="o">=</span> <span class="n">Ne_per_v</span> <span class="o">*</span> <span class="n">Nv</span>
+    <span class="c1"># probabilities</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">p</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span><span class="o">/</span> <span class="mf">3.0</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">b</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">b</span>
+    <span class="c1"># init edge arrays</span>
+    <span class="n">ii</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">Ne</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="n">jj</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">Ne</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="c1"># quantites to use in edge generation loop</span>
+    <span class="n">ab</span> <span class="o">=</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span>
+    <span class="n">c_norm</span> <span class="o">=</span> <span class="n">c</span> <span class="o">/</span> <span class="p">(</span><span class="n">c</span> <span class="o">+</span> <span class="n">d</span><span class="p">)</span>
+    <span class="n">a_norm</span> <span class="o">=</span> <span class="n">a</span> <span class="o">/</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
+    <span class="c1"># generate edges</span>
+    <span class="k">for</span> <span class="n">ib</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">lgNv</span><span class="p">):</span>
+        <span class="n">ii_bit</span> <span class="o">=</span> <span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Ne</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">ab</span><span class="p">)</span>
+        <span class="n">jj_bit</span> <span class="o">=</span> <span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Ne</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">c_norm</span> <span class="o">*</span> <span class="n">ii_bit</span> <span class="o">+</span> <span class="n">a_norm</span> <span class="o">*</span> <span class="p">(</span><span class="o">~</span> <span class="n">ii_bit</span><span class="p">)))</span>
+        <span class="n">ii</span> <span class="o">=</span> <span class="n">ii</span> <span class="o">+</span> <span class="p">((</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">ib</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="n">ii_bit</span><span class="p">)</span>
+        <span class="n">jj</span> <span class="o">=</span> <span class="n">jj</span> <span class="o">+</span> <span class="p">((</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">ib</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="n">jj_bit</span><span class="p">)</span>
+    <span class="c1"># sort all based on ii and jj using coargsort</span>
+    <span class="c1"># all edges should be sorted based on both vertices of the edge</span>
+    <span class="n">iv</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">coargsort</span><span class="p">((</span><span class="n">ii</span><span class="p">,</span><span class="n">jj</span><span class="p">))</span>
+    <span class="c1"># permute into sorted order</span>
+    <span class="n">ii</span> <span class="o">=</span> <span class="n">ii</span><span class="p">[</span><span class="n">iv</span><span class="p">]</span> <span class="c1"># permute first vertex into sorted order</span>
+    <span class="n">jj</span> <span class="o">=</span> <span class="n">jj</span><span class="p">[</span><span class="n">iv</span><span class="p">]</span> <span class="c1"># permute second vertex into sorted order</span>
+    <span class="c1"># to premute/rename vertices</span>
+    <span class="k">if</span> <span class="n">perm</span><span class="p">:</span>
+        <span class="c1"># generate permutation for new vertex numbers(names)</span>
+        <span class="n">ir</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">Nv</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">ak</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+        <span class="c1"># renumber(rename) vertices</span>
+        <span class="n">ii</span> <span class="o">=</span> <span class="n">ir</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="c1"># rename first vertex</span>
+        <span class="n">jj</span> <span class="o">=</span> <span class="n">ir</span><span class="p">[</span><span class="n">jj</span><span class="p">]</span> <span class="c1"># rename second vertex</span>
+    <span class="c1">#</span>
+    <span class="c1"># maybe: remove edges which are self-loops???</span>
+    <span class="c1">#</span>
+    <span class="c1"># return pair of ndarrays</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">ii</span><span class="p">,</span><span class="n">jj</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here we generate a random-looking edge-list representing one million vertices and about 10 million edges</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">gen_rmat_edges</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Calculate out degrees using GroupBy:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bySrc</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">GroupBy</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">srcID</span><span class="p">,</span> <span class="n">outDeg</span> <span class="o">=</span> <span class="n">bySrc</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Breadth first search is relatively straightforward to implement using <a class="reference internal" href="usage/setops.html#setops-label"><span class="std std-ref">Array Set Operations</span></a>. This example is from <code class="docutils literal notranslate"><span class="pre">toys/ak_bfs_conn_comp.py</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># src and dst pdarrays hold the edge list</span>
+<span class="c1"># seeds pdarray with starting vertices/seeds</span>
+<span class="k">def</span> <span class="nf">bfs</span><span class="p">(</span><span class="n">src</span><span class="p">,</span><span class="n">dst</span><span class="p">,</span><span class="n">seeds</span><span class="p">,</span><span class="n">printLayers</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="c1"># holds vertices in the current layer of the bfs</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">seeds</span><span class="p">)</span>
+    <span class="c1"># holds the visited vertices</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">Z</span><span class="p">)</span> <span class="c1"># holds vertices in Z to start with</span>
+    <span class="c1"># frontiers</span>
+    <span class="n">F</span> <span class="o">=</span> <span class="p">[</span><span class="n">Z</span><span class="p">]</span>
+    <span class="k">while</span> <span class="n">Z</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">printLayers</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Z.size = &quot;</span><span class="p">,</span><span class="n">Z</span><span class="o">.</span><span class="n">size</span><span class="p">,</span><span class="s2">&quot; Z = &quot;</span><span class="p">,</span><span class="n">Z</span><span class="p">)</span>
+        <span class="n">fZv</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">src</span><span class="p">,</span><span class="n">Z</span><span class="p">)</span> <span class="c1"># find src vertex edges</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">dst</span><span class="p">[</span><span class="n">fZv</span><span class="p">])</span> <span class="c1"># compress out dst vertices to match and make them unique</span>
+        <span class="n">Z</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">W</span><span class="p">,</span><span class="n">V</span><span class="p">)</span> <span class="c1"># subtract out vertices already visited</span>
+        <span class="n">V</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">union1d</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">Z</span><span class="p">)</span> <span class="c1"># union current frontier into vertices already visited</span>
+        <span class="n">F</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Z</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">F</span><span class="p">,</span><span class="n">V</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now we do a breadth-first search from the first vertex:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">layers</span><span class="p">,</span> <span class="n">visited</span> <span class="o">=</span> <span class="n">bfs</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">src</span><span class="p">[</span><span class="mi">0</span><span class="p">]]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">l</span><span class="o">.</span><span class="n">size</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">layers</span><span class="p">]</span>
+<span class="go">[1, 1, 2056, 42584, 410889, 24146, 2, 0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">visited</span><span class="o">.</span><span class="n">size</span>
+<span class="go">479679</span>
+</pre></div>
+</div>
+<p>From this we see the number of new vertices in each frontier, as well as the total number of vertices reachable from the seed.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">arkouda</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dataframe-like-patterns">DataFrame-like Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#graphs">Graphs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server/index.html">Chapel API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="usage/categorical.html" title="previous chapter">Categoricals</a></li>
+      <li>Next: <a href="contributing.html" title="next chapter">Contributing</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Michael Merrill and William Reus.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/examples.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

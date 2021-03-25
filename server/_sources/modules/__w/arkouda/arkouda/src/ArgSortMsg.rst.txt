@@ -1,0 +1,65 @@
+.. default-domain:: chpl
+
+.. module:: ArgSortMsg
+   :synopsis: arg sort algorithm
+
+ArgSortMsg
+==========
+**Usage**
+
+.. code-block:: chapel
+
+   use ArgSortMsg;
+
+
+or
+
+.. code-block:: chapel
+
+   import ArgSortMsg;
+
+arg sort algorithm
+these pass back an index vector which can be used
+to permute the original array into sorted order 
+
+.. data:: const asLogger = new Logger()
+
+.. data:: var lgSmall = 10
+
+.. data:: var small = 2**lgSmall
+
+.. data:: var lgMedium = 20
+
+.. data:: var medium = 2**lgMedium
+
+.. data:: var lgLarge = 30
+
+.. data:: var large = 2**lgLarge
+
+.. data:: var sBins = 2**10
+
+.. data:: var mBins = 2**25
+
+.. data:: var lBins = 2**25*numLocales
+
+.. function:: proc incrementalArgSort(g: GenSymEntry, iv: [?aD] int): [] int throws
+
+   Perform one step in a multi-step argsort, starting with an initial 
+   permutation vector and further permuting it in the manner required
+   to sort an array of keys.
+   
+
+.. function:: proc incrementalArgSort(s: SegString, iv: [?aD] int): [] int throws
+
+.. function:: proc coargsortMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   Find the permutation that sorts multiple arrays, treating each array as a
+   new level of the sorting key.
+   
+
+.. function:: proc argsortDefault(A: [?D] ?t): [D] int
+
+.. function:: proc argsortMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   argsort takes pdarray and returns an index vector iv which sorts the array 
+

@@ -1,0 +1,594 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data I/O &#8212; arkouda 2020.07.07 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Arithmetic and Numeric Operations" href="arithmetic.html" />
+    <link rel="prev" title="Creating Arrays" href="creation.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="data-i-o">
+<span id="io-label"></span><h1>Data I/O<a class="headerlink" href="#data-i-o" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="between-client-and-server">
+<h2>Between client and server<a class="headerlink" href="#between-client-and-server" title="Permalink to this headline">¶</a></h2>
+<p>Arkouda is designed to integrate with NumPy and Pandas, with arkouda handling large, distributed data in parallel while receiving and sending smaller input and output data to/from Python as NumPy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> objects. A common arkouda workflow looks like</p>
+<ol class="arabic simple">
+<li><p>Load in a large dataset with arkouda</p></li>
+<li><p>Enter or create a small NumPy array with user data to compare against the large dataset</p></li>
+<li><p>Convert the NumPy array to an arkouda array (transferring the data to the server)</p></li>
+<li><p>Run computations that filter or summarize the large dataset</p></li>
+<li><p>Pass the smaller result set back to Python as a NumPy array for plotting or inspection</p></li>
+</ol>
+<p>Below are the functions that enable both sides of this transfer.</p>
+<dl class="py function">
+<dt id="arkouda.array">
+<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">array</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">Iterable</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
+the corresponding data to the arkouda server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>a</strong> (<em>Union</em><em>[</em><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a><em>, </em><em>np.ndarray</em><em>]</em>) – Rank-1 array of a supported dtype</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A pdarray instance stored on arkouda server or Strings instance, which
+is composed of two pdarrays stored on arkouda server</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a> or <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings">Strings</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if a is not a pdarray, np.ndarray, or Python Iterable such as a
+    list, array, tuple, or deque</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if a is not one-dimensional, nbytes &gt; maxTransferBytes, a.dtype is
+    not supported (not in DTypes), or if the product of a size and
+    a.itemsize &gt; maxTransferBytes</p></li>
+<li><p><strong>ValueError</strong> – Raised if the returned message is malformed or does not contain the fields
+    required to generate the array.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.pdarray.to_ndarray" title="arkouda.pdarray.to_ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pdarray.to_ndarray</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>The number of bytes in the input array cannot exceed <cite>arkouda.maxTransferBytes</cite>,
+otherwise a RuntimeError will be raised. This is to protect the user
+from overwhelming the connection between the Python client and the arkouda
+server, under the assumption that it is a low-bandwidth connection. The user
+may override this limit by setting ak.maxTransferBytes to a larger value,
+but should proceed with caution.</p>
+<p>If the pdrray or ndarray is of type U, this method is called twice recursively
+to create the Strings object and the two corresponding pdarrays for string
+bytes and offsets, respectively.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="go">array([1, 2, 3, 4, 5, 6, 7, 8, 9])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="go">array([1, 2, 3, 4, 5, 6, 7, 8, 9])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;string </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
+<span class="go">&lt;class &#39;arkouda.strings.Strings&#39;&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.pdarray.to_ndarray">
+<code class="sig-prename descclassname"><span class="pre">arkouda.pdarray.</span></code><code class="sig-name descname"><span class="pre">to_ndarray</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="headerlink" href="#arkouda.pdarray.to_ndarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the array to a np.ndarray, transferring array data from the
+Arkouda server to client-side Python. Note: if the pdarray size exceeds
+client.maxTransferBytes, a RuntimeError is raised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A numpy ndarray with the same attributes and data as the pdarray</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown, if the pdarray size
+    exceeds the built-in client.maxTransferBytes size limit, or if the bytes
+    received does not match expected number of bytes</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">client.maxTransferBytes</span></code>,
+otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
+from overflowing the memory of the system on which the Python client
+is running, under the assumption that the server is running on a
+distributed system with much more memory than the client. The user
+may override this limit by setting client.maxTransferBytes to a larger
+value, but proceed with caution.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span>
+<span class="go">array([0, 1, 2, 3, 4])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">())</span>
+<span class="go">numpy.ndarray</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.Strings.to_ndarray">
+<code class="sig-prename descclassname"><span class="pre">arkouda.Strings.</span></code><code class="sig-name descname"><span class="pre">to_ndarray</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="headerlink" href="#arkouda.Strings.to_ndarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the array to a np.ndarray, transferring array data from the
+arkouda server to Python. If the array exceeds a built-in size limit,
+a RuntimeError is raised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A numpy ndarray with the same strings as this array</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>,
+otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
+from overflowing the memory of the system on which the Python client
+is running, under the assumption that the server is running on a
+distributed system with much more memory than the client. The user
+may override this limit by setting ak.maxTransferBytes to a larger
+value, but proceed with caution.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;hello&quot;</span><span class="p">,</span> <span class="s2">&quot;my&quot;</span><span class="p">,</span> <span class="s2">&quot;world&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span>
+<span class="go">array([&#39;hello&#39;, &#39;my&#39;, &#39;world&#39;], dtype=&#39;&lt;U5&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">())</span>
+<span class="go">numpy.ndarray</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="large-datasets">
+<h2>Large Datasets<a class="headerlink" href="#large-datasets" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="data-preprocessing">
+<span id="data-preprocessing-label"></span><h3>Data Preprocessing<a class="headerlink" href="#data-preprocessing" title="Permalink to this headline">¶</a></h3>
+<p>Arkouda is designed to work primarily with columnar data spread across multiple files of non-uniform size. All disk-based I/O uses the HDF5 file format and associates each column of data with an HDF5 dataset present at the root level of all files.</p>
+<p>Files are processed in parallel with one file per locale. While HDF5 has an MPI layer for concurrent reading and writing of a single file from multiple nodes, arkouda does not yet support this functionality.</p>
+<p>Because most data does not come in HDF5 format, the arkouda developers use arkouda in conjunction with several data preprocessing pipelines. While each dataset requires a unique conversion strategy, all preprocessing should:</p>
+<ul class="simple">
+<li><p>Transpose row-based formats (e.g. CSV) to columns and output each column as an HDF5 dataset</p></li>
+<li><p>NOT aggregate input files too aggressively, but keep them separate to enable parallel I/O (hundreds or thousands of files is appropriate, in our experience)</p></li>
+<li><p>Convert text to numeric types where possible</p></li>
+</ul>
+<p>Much of this preprocessing can be accomplished with the Pandas <code class="docutils literal notranslate"><span class="pre">read*</span></code> functions for ingest and the <code class="docutils literal notranslate"><span class="pre">h5py</span></code> module for output. See <a class="reference external" href="https://github.com/reuster986/hdflow">this example</a> for ideas.</p>
+</div>
+<div class="section" id="reading-hdf5-data-from-disk">
+<h3>Reading HDF5 data from disk<a class="headerlink" href="#reading-hdf5-data-from-disk" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="arkouda.read_hdf">
+<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">read_hdf</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dsetName</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filenames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strictTypes</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.read_hdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a single dataset from multiple HDF5 files into an Arkouda
+pdarray or Strings object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dsetName</strong> (<em>str</em>) – The name of the dataset (must be the same across all files)</p></li>
+<li><p><strong>filenames</strong> (<em>list</em><em> or </em><em>str</em>) – Either a list of filenames or shell expression</p></li>
+<li><p><strong>strictTypes</strong> (<em>bool</em>) – If True (default), require all dtypes in all files to have the
+same precision and sign. If False, allow dtypes of different
+precision and sign across different files. For example, if one
+file contains a uint32 dataset and another contains an int64
+dataset, the contents of both will be read into an int64 pdarray.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A pdarray or Strings instance pointing to the server-side data</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>,<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings">Strings</a>]</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if dsetName is not a str or if filenames is neither a string
+    nor a list of strings</p></li>
+<li><p><strong>ValueError</strong> – Raised if all datasets are not present in all hdf5 files</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.get_datasets" title="arkouda.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>, <a class="reference internal" href="#arkouda.ls_hdf" title="arkouda.ls_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_hdf</span></code></a>, <a class="reference internal" href="#arkouda.read_all" title="arkouda.read_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_all</span></code></a>, <a class="reference internal" href="#arkouda.load" title="arkouda.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<p>If filenames is a string, it is interpreted as a shell expression
+(a single filename is a valid expression, so it will work) and is
+expanded with glob to read all matching files. Use <code class="docutils literal notranslate"><span class="pre">get_datasets</span></code> to
+show the names of datasets in HDF5 files.</p>
+<p>If dsetName is not present in all files, a TypeError is raised.</p>
+</dd></dl>
+
+<p>For convenience, multiple datasets can be read in to create a dictionary of pdarrays.</p>
+<dl class="py function">
+<dt id="arkouda.read_all">
+<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">read_all</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filenames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datasets</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterative</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strictTypes</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.read_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read datasets from HDF5 files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filenames</strong> (<em>list</em><em> or </em><em>str</em>) – Either a list of filenames or shell expression</p></li>
+<li><p><strong>datasets</strong> (<em>list</em><em> or </em><em>str</em><em> or </em><em>None</em>) – (List of) name(s) of dataset(s) to read (default: all available)</p></li>
+<li><p><strong>iterative</strong> (<em>bool</em>) – Iterative (True) or Single (False) function call(s) to server</p></li>
+<li><p><strong>strictTypes</strong> (<em>bool</em>) – If True (default), require all dtypes of a given dataset to have the
+same precision and sign. If False, allow dtypes of different
+precision and sign across different files. For example, if one
+file contains a uint32 dataset and another contains an int64
+dataset with the same name, the contents of both will be read
+into an int64 pdarray.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>For a single dataset returns an Arkouda pdarray or Arkouda Strings object</em></p></li>
+<li><p><em>and for multiple datasets returns a dictionary of Arkouda pdarrays or</em></p></li>
+<li><p><em>Arkouda Strings.</em> – Dictionary of {datasetName: pdarray or String}</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – Raised if all datasets are not present in all hdf5 files</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.read_hdf" title="arkouda.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>, <a class="reference internal" href="#arkouda.get_datasets" title="arkouda.get_datasets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datasets</span></code></a>, <a class="reference internal" href="#arkouda.ls_hdf" title="arkouda.ls_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_hdf</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>If filenames is a string, it is interpreted as a shell expression
+(a single filename is a valid expression, so it will work) and is
+expanded with glob to read all matching files.</p>
+<p>If iterative == True each dataset name and file names are passed to
+the server as independent sequential strings while if iterative == False
+all dataset names and file names are passed to the server in a single
+string.</p>
+<p>If datasets is None, infer the names of datasets from the first file
+and read all of them. Use <code class="docutils literal notranslate"><span class="pre">get_datasets</span></code> to show the names of datasets
+to HDF5 files.</p>
+</dd></dl>
+
+<p>HDF5 files can be queried via the server for dataset names and sizes.</p>
+<dl class="py function">
+<dt id="arkouda.get_datasets">
+<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">get_datasets</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.get_datasets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the names of datasets in an HDF5 file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – Name of an HDF5 file visible to the arkouda server</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Names of the datasets in the file</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if filename is not a str</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.ls_hdf" title="arkouda.ls_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_hdf</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.ls_hdf">
+<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">ls_hdf</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.ls_hdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calls the h5ls utility on a filename visible to the
+arkouda server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – The name of the file to pass to h5ls</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The string output of <cite>h5ls &lt;filename&gt;</cite> from the server</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="persisting-pdarray-data-to-disk">
+<h3>Persisting <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> data to disk<a class="headerlink" href="#persisting-pdarray-data-to-disk" title="Permalink to this headline">¶</a></h3>
+<p>Arkouda supports saving pdarrays to HDF5 files. Unfortunately, arkouda does not yet support writing to a single HDF5 file from multiple locales and must create one output file per locale.</p>
+<dl class="py function">
+<dt id="arkouda.pdarray.save">
+<code class="sig-prename descclassname"><span class="pre">arkouda.pdarray.</span></code><code class="sig-name descname"><span class="pre">save</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'truncate'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.pdarray.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the pdarray to HDF5. The result is a collection of HDF5 files,
+one file per locale of the arkouda server, where each filename starts
+with prefix_path. Each locale saves its chunk of the array to its
+corresponding file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix that all output files share</p></li>
+<li><p><strong>dataset</strong> (<em>str</em>) – Name of the dataset to create in HDF5 files (must not already exist)</p></li>
+<li><p><strong>mode</strong> (<em>str {'truncate' | 'append'}</em>) – By default, truncate (overwrite) output files, if they exist.
+If ‘append’, attempt to create new dataset in existing files.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>string message indicating result of save operation</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown saving the pdarray</p></li>
+<li><p><strong>ValueError</strong> – Raised if there is an error in parsing the prefix path pointing to
+    file write location or if the mode parameter is neither truncate
+    nor append</p></li>
+<li><p><strong>TypeError</strong> – Raised if any one of the prefix_path, dataset, or mode parameters
+    is not a string</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_all</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">read_all</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<p>The prefix_path must be visible to the arkouda server and the user must
+have write permission.</p>
+<p>Output files have names of the form <code class="docutils literal notranslate"><span class="pre">&lt;prefix_path&gt;_LOCALE&lt;i&gt;.hdf</span></code>, where <code class="docutils literal notranslate"><span class="pre">&lt;i&gt;</span></code>
+ranges from 0 to <code class="docutils literal notranslate"><span class="pre">numLocales</span></code>. If any of the output files already exist and
+the mode is ‘truncate’, they will be overwritten. If the mode is ‘append’
+and the number of output files is less than the number of locales or a
+dataset with the same name already exists, a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will result.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;arkouda_range&#39;</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;array&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Array is saved in numLocales files with names like <code class="docutils literal notranslate"><span class="pre">tmp/arkouda_range_LOCALE0.hdf</span></code></p>
+<p>The array can be read back in as follows</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;arkouda_range&#39;</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;array&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.save_all">
+<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">save_all</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'truncate'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#arkouda.save_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save multiple named pdarrays to HDF5 files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>columns</strong> (<em>dict</em><em> or </em><em>list of pdarrays</em>) – Collection of arrays to save</p></li>
+<li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix for output files</p></li>
+<li><p><strong>names</strong> (<em>list of str</em>) – Dataset names for the pdarrays</p></li>
+<li><p><strong>mode</strong> (<em>{'truncate' | 'append'}</em>) – By default, truncate (overwrite) the output files if they exist.
+If ‘append’, attempt to create new dataset in existing files.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Raised if (1) the lengths of columns and values differ or (2) the mode
+    is not ‘truncate’ or ‘append’</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>, <a class="reference internal" href="#arkouda.load_all" title="arkouda.load_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Creates one file per locale containing that locale’s chunk of each pdarray.
+If columns is a dictionary, the keys are used as the HDF5 dataset names.
+Otherwise, if no names are supplied, 0-up integers are used. By default,
+any existing files at path_prefix will be overwritten, unless the user
+specifies the ‘append’ mode, in which case arkouda will attempt to add
+&lt;columns&gt; as new datasets to existing files. If the wrong number of files
+is present or dataset names already exist, a RuntimeError is raised.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="loading-persisted-arrays-from-disk">
+<h3>Loading persisted arrays from disk<a class="headerlink" href="#loading-persisted-arrays-from-disk" title="Permalink to this headline">¶</a></h3>
+<p>These functions allow loading <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> data persisted with <code class="docutils literal notranslate"><span class="pre">save()</span></code> and <code class="docutils literal notranslate"><span class="pre">save_all()</span></code>.</p>
+<dl class="py function">
+<dt id="arkouda.load">
+<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">load</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_prefix</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'array'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a pdarray previously saved with <code class="docutils literal notranslate"><span class="pre">pdarray.save()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path_prefix</strong> (<em>str</em>) – Filename prefix used to save the original pdarray</p></li>
+<li><p><strong>dataset</strong> (<em>str</em>) – Dataset name where the pdarray was saved, defaults to ‘array’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The pdarray or Strings that was previously saved</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings">Strings</a>]</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if dataset is not a str</p></li>
+<li><p><strong>ValueError</strong> – Raised if all datasets are not present in all hdf5 files</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code>, <a class="reference internal" href="#arkouda.load_all" title="arkouda.load_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></a>, <a class="reference internal" href="#arkouda.read_hdf" title="arkouda.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>, <a class="reference internal" href="#arkouda.read_all" title="arkouda.read_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_all</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.load_all">
+<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">load_all</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_prefix</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.load_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load multiple pdarrays or Strings previously saved with <code class="docutils literal notranslate"><span class="pre">save_all()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path_prefix</strong> (<em>str</em>) – Filename prefix used to save the original pdarray</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dictionary of {datsetName: pdarray} with the previously saved pdarrays</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Mapping[str,<a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Raised if all datasets are not present in all hdf5 files</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.save_all" title="arkouda.save_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_all</span></code></a>, <a class="reference internal" href="#arkouda.load" title="arkouda.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>, <a class="reference internal" href="#arkouda.read_hdf" title="arkouda.read_hdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hdf</span></code></a>, <a class="reference internal" href="#arkouda.read_all" title="arkouda.read_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_all</span></code></a></p>
+</div>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">arkouda</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../setup/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../usage.html">Usage</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="startup.html">Startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="creation.html">Creating Arrays</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Data I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arithmetic.html">Arithmetic and Numeric Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html">Indexing and Assignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="histogram.html">Summarizing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="argsort.html">Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setops.html">Array Set Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="groupby.html">GroupBy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="strings.html">Strings in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="categorical.html">Categoricals</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autoapi/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../server/index.html">Chapel API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../usage.html">Usage</a><ul>
+      <li>Previous: <a href="creation.html" title="previous chapter">Creating Arrays</a></li>
+      <li>Next: <a href="arithmetic.html" title="next chapter">Arithmetic and Numeric Operations</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Michael Merrill and William Reus.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/usage/IO.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

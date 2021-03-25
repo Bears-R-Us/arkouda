@@ -1,0 +1,91 @@
+.. default-domain:: chpl
+
+.. module:: In1d
+
+In1d
+====
+**Usage**
+
+.. code-block:: chapel
+
+   use In1d;
+
+
+or
+
+.. code-block:: chapel
+
+   import In1d;
+
+.. data:: var inLogger = new Logger()
+
+.. function:: proc in1dGlobalAr1Bcast(ar1: [?aD1] int, ar2: [?aD2] int)
+
+   Brute force:
+   forward-way reduction per element of ar1 over ar2.
+   Causes every element in ar1 to be broadcast/communicated over ar2.
+   
+   :arg ar1: array to broadcast over ar2
+   :type ar1: [] int
+   
+   :arg ar2: array to be broadcast over
+   :type ar2: [] int
+   
+   :returns truth: a boolean array containing the result of ar1 being broadcast over ar2
+   :type truth: [] bool
+   
+
+.. function:: proc in1dGlobalAr2Bcast(ar1: [?aD1] int, ar2: [?aD2] int)
+
+   Brute force:
+   reverse-way serial-or-reduce for each element in ar2 over ar1.
+   Causes every element in ar2 to be broadcast/communicated over ar1.
+   
+   :arg ar1: array to be broadcast over
+   :type ar1: [] int
+   
+   :arg ar2: array to broadcast over ar1
+   :type ar2: [] int
+   
+   :returns truth: a boolean array containing the result of ar2 being broadcast over ar1
+   :type truth: [] bool
+   
+
+.. function:: proc in1dAr2PerLocAssoc(ar1: [?aD1] int, ar2: [?aD2] int)
+
+   Put ar2 into an associative domain of int, per locale. 
+   Creates truth (boolean array) from the domain of ar1.
+   ar1 and truth are distributed on the same locales.
+   ar2 is copied to a set (associative domain) in each locale.
+   set membership of ar1 to ar2 is checked on each locale by iterating over 
+   the local subdomains of ar1, and populating the local subdomains of truth 
+   with the result of the membership test.
+   
+   Apply v flag for timing information.
+   
+   :arg ar1: array to broadcast in parallel over ar2
+   :type ar1: [] int
+   
+   :arg ar2: array to be broadcast over in parallel
+   :type ar2: [] int
+   
+   :returns truth: the distributed boolean array containing the result of ar1 being broadcast over ar2
+   :type truth: [] bool
+   
+
+.. function:: proc in1dSort(ar1: [?aD1] int, ar2: [?aD2] int)
+
+   For each value in the first array, check membership in the second array. This 
+   implementation uses a sort, which is best when the second array is large because 
+   it scales well in both time and memory.
+   
+   :arg ar1: array to broadcast in parallel over ar2
+   :type ar1: [] int
+   
+   :arg ar2: array to be broadcast over in parallel
+   :type ar2: [] int
+   
+   :returns truth: the distributed boolean array containing the result of ar1 being broadcast over ar2
+   :type truth: [] bool
+   
+

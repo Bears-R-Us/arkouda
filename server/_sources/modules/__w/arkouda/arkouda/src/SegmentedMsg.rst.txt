@@ -1,0 +1,68 @@
+.. default-domain:: chpl
+
+.. module:: SegmentedMsg
+
+SegmentedMsg
+============
+**Usage**
+
+.. code-block:: chapel
+
+   use SegmentedMsg;
+
+
+or
+
+.. code-block:: chapel
+
+   import SegmentedMsg;
+
+.. data:: const smLogger = new Logger()
+
+.. function:: proc randomStringsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+.. function:: proc segmentLengthsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+.. function:: proc segmentedEfuncMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+.. function:: proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+.. function:: proc segmentedHashMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+.. function:: proc segmentedIndexMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+   
+   * Assigns a segIntIndex, sliceIndex, or pdarrayIndex to the incoming payload
+   * consisting of a sub-command, object type, offset SymTab key, array SymTab
+   * key, and index value for the incoming payload.
+   * 
+   * Note: the sub-command indicates the index type which can be one of the following:
+   * 1. intIndex : setIntIndex
+   * 2. sliceIndex : segSliceIndex
+   * 3. pdarrayIndex : segPdarrayIndex
+   
+
+.. function:: proc segIntIndex(objtype: string, args: [] string, st: borrowed SymTab): MsgTuple throws
+
+   
+   Returns the object corresponding to the index
+   
+
+.. function:: proc convertPythonIndexToChapel(pyidx: int, high: int): int
+
+   Allow Python-style negative indices. 
+
+.. function:: proc segSliceIndex(objtype: string, args: [] string, st: borrowed SymTab): MsgTuple throws
+
+.. function:: proc convertPythonSliceToChapel(start: int, stop: int, stride: int = 1): range(stridable = true)
+
+.. function:: proc segPdarrayIndex(objtype: string, args: [] string, st: borrowed SymTab): MsgTuple throws
+
+.. function:: proc segBinopvvMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+.. function:: proc segBinopvsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+.. function:: proc segIn1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+.. function:: proc segGroupMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+

@@ -1,0 +1,35 @@
+:mod:`arkouda.logger`
+=====================
+
+.. py:module:: arkouda.logger
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.logger.enableVerbose
+   arkouda.logger.disableVerbose
+
+
+.. function:: enableVerbose() -> None
+
+   Enables verbose logging (DEBUG log level) for all ArkoudaLoggers
+
+
+.. function:: disableVerbose(logLevel: arkouda.logger.LogLevel = LogLevel.INFO) -> None
+
+   Disables verbose logging (DEBUG log level) for all ArkoudaLoggers, setting
+   the log level for each to the logLevel parameter
+
+   :param logLevel: The new log level, defaultts to LogLevel.INFO
+   :type logLevel: LogLevel
+
+   :raises TypeError: Raised if logLevel is not a LogLevel enum
+
+

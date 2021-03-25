@@ -1,0 +1,137 @@
+.. default-domain:: chpl
+
+.. module:: ReductionMsg
+
+ReductionMsg
+============
+**Usage**
+
+.. code-block:: chapel
+
+   use ReductionMsg;
+
+
+or
+
+.. code-block:: chapel
+
+   import ReductionMsg;
+
+.. data:: const rmLogger = new Logger()
+
+.. function:: proc reductionMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+.. function:: proc countReductionMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+.. function:: proc segCount(segments: [?D] int, upper: int): [D] int
+
+.. function:: proc segmentedReductionMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
+
+.. function:: proc segSum(values: [] ?intype, segments: [?D] int, skipNan = false)
+
+   Segmented Reductions of the form: seg<Op>(values:[] t, segments: [] int)
+   Use <segments> as the boundary indices to divide <values> into chunks, 
+   and then reduce over each chunk using the operator <Op>. The return array 
+   of reduced values is the same size as <segments>.
+   
+
+.. function:: proc segProduct(values: [] ?t, segments: [?D] int, skipNan = false): [D] real
+
+.. function:: proc segMean(values: [] ?t, segments: [?D] int, skipNan = false): [D] real
+
+.. function:: proc segMin(values: [?vD] ?t, segments: [?D] int, skipNan = false): [D] t
+
+.. function:: proc segMax(values: [?vD] ?t, segments: [?D] int, skipNan = false): [D] t
+
+.. function:: proc segArgmin(values: [?vD] ?t, segments: [?D] int): ([D] t, [D] int)
+
+.. function:: proc segArgmax(values: [?vD] ?t, segments: [?D] int): ([D] t, [D] int)
+
+.. function:: proc segAny(values: [] bool, segments: [?D] int): [D] bool
+
+.. function:: proc segAll(values: [] bool, segments: [?D] int): [D] bool
+
+.. function:: proc segOr(values: [?vD] int, segments: [?D] int): [D] int
+
+.. class:: ResettingOrScanOp : ReduceScanOp
+
+   Performs a bitwise OR scan, controlled by a reset flag. While
+   * the reset flag is false, the accumulation of values proceeds as 
+   * normal. When a true is encountered, the state resets to the
+   * identity. 
+
+
+   .. attribute:: type eltType
+
+   .. attribute:: var value = (false, 0)
+
+      value is a tuple comprising a flag and the actual result of 
+      segmented bitwise OR. 
+      
+      The meaning of the flag depends on whether it belongs to an 
+      array element yet to be scanned or to an element that has 
+      already been scanned (including the internal state of a class
+      instance doing the scanning). For elements yet to be scanned,
+      the flag means "reset to the identity here". For elements that
+      have already been scanned, or for internal state, the flag means 
+      "there has already been a reset in the computation of this value".
+      
+
+   .. method:: proc identity
+
+   .. method:: proc accumulate(x)
+
+   .. method:: proc accumulateOntoState(ref state, x)
+
+   .. method:: proc combine(x)
+
+   .. method:: proc generate()
+
+   .. method:: proc clone()
+
+.. function:: proc segAnd(values: [?vD] int, segments: [?D] int): [D] int
+
+.. class:: ResettingAndScanOp : ReduceScanOp
+
+   Performs a bitwise AND scan, controlled by a reset flag. While
+   * the reset flag is false, the accumulation of values proceeds as 
+   * normal. When a true is encountered, the state resets to the
+   * identity. 
+
+
+   .. attribute:: type eltType
+
+   .. attribute:: var value = (false, 18446744073709551615: int)
+
+      value is a tuple comprising a flag and the actual result of 
+      segmented bitwise AND. 
+      
+      The meaning of the flag depends on
+      whether it belongs to an array element yet to be scanned or 
+      to an element that has already been scanned (or the state of
+      an instance doing the scanning). For elements yet to be scanned,
+      the flag means "reset to the identity here". For elements that
+      have already been scanned, or for internal state, the flag means 
+      "there has already been a reset in the computation of this value".
+      
+
+   .. method:: proc identity
+
+   .. method:: proc accumulate(x)
+
+   .. method:: proc accumulateOntoState(ref state, x)
+
+   .. method:: proc combine(x)
+
+   .. method:: proc generate()
+
+   .. method:: proc clone()
+
+.. function:: proc segXor(values: [] int, segments: [?D] int)
+
+.. function:: proc expandKeys(kD, segments: [?sD] int): [kD] int
+
+.. function:: proc segNumUnique(values: [?kD] int, segments: [?sD] int) throws
+
+.. function:: proc stringtobool(str: string): bool throws
+

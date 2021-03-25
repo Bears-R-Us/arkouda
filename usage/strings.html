@@ -1,0 +1,518 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Strings in Arkouda &#8212; arkouda 2020.07.07 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Categoricals" href="categorical.html" />
+    <link rel="prev" title="GroupBy" href="groupby.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="strings-in-arkouda">
+<h1>Strings in Arkouda<a class="headerlink" href="#strings-in-arkouda" title="Permalink to this headline">¶</a></h1>
+<p>Like NumPy, Arkouda supports arrays of strings, but whereas in NumPy arrays of strings are still <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> objects, in Arkouda the array of strings is its own class: <code class="docutils literal notranslate"><span class="pre">Strings</span></code>.</p>
+<p>In order to efficiently store strings with a wide range of lengths, Arkouda uses a “segmented array” data structure, comprising:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code>: A <code class="docutils literal notranslate"><span class="pre">uint8</span></code> array containing the concatenated bytes of all the strings, separated by null (0) bytes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">offsets</span></code>: A <code class="docutils literal notranslate"><span class="pre">int64</span></code> array with the start index of each string</p></li>
+</ul>
+<div class="section" id="performance">
+<h2>Performance<a class="headerlink" href="#performance" title="Permalink to this headline">¶</a></h2>
+<p>Because strings are a variable-width data type, and because of the way Arkouda represents strings, operations on strings are considerably slower than operations on numeric data. Use numeric data whenever possible. For example, if your raw data contains string data that could be represented numerically, consider setting up a processing pipeline performs the conversion (and stores the result in HDF5 format) on ingest.</p>
+</div>
+<div class="section" id="i-o">
+<h2>I/O<a class="headerlink" href="#i-o" title="Permalink to this headline">¶</a></h2>
+<p>Arrays of strings can be transferred between the Arkouda client and server using the <code class="docutils literal notranslate"><span class="pre">arkouda.array</span></code> and <code class="docutils literal notranslate"><span class="pre">Strings.to_ndarray</span></code> functions (see <a class="reference internal" href="IO.html#io-label"><span class="std std-ref">Data I/O</span></a>). The former converts a Python list or NumPy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> of strings to an Arkouda <code class="docutils literal notranslate"><span class="pre">Strings</span></code> object, whereas the latter converts an Arkouda <code class="docutils literal notranslate"><span class="pre">Strings</span></code> object to a NumPy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>. As with numeric arrays, if the size of the data exceeds the threshold set by <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>, the client will raise an exception.</p>
+<p>Arkouda currently only supports the HDF5 file format for disk-based I/O. In order to read an array of strings from an HDF5 file, the strings must be stored in an HDF5 <code class="docutils literal notranslate"><span class="pre">group</span></code> containing two datasets: <code class="docutils literal notranslate"><span class="pre">segments</span></code> (an integer array corresponding to <code class="docutils literal notranslate"><span class="pre">offsets</span></code> above) and <code class="docutils literal notranslate"><span class="pre">values</span></code> (a <code class="docutils literal notranslate"><span class="pre">uint8</span></code> array corresponding to <code class="docutils literal notranslate"><span class="pre">bytes</span></code> above). See <a class="reference internal" href="IO.html#data-preprocessing-label"><span class="std std-ref">Data Preprocessing</span></a> for more information and guidelines.</p>
+</div>
+<div class="section" id="operations">
+<h2>Operations<a class="headerlink" href="#operations" title="Permalink to this headline">¶</a></h2>
+<p>Arkouda <code class="docutils literal notranslate"><span class="pre">Strings</span></code> objects support the following operations:</p>
+<ul class="simple">
+<li><p>Indexing with integer, slice, integer <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>, and boolean <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> (see <a class="reference internal" href="indexing.html#indexing-label"><span class="std std-ref">Indexing and Assignment</span></a>)</p></li>
+<li><p>Comparison (<code class="docutils literal notranslate"><span class="pre">==</span></code> and <code class="docutils literal notranslate"><span class="pre">!=</span></code>) with string literal or other <code class="docutils literal notranslate"><span class="pre">Strings</span></code> object of same size</p></li>
+<li><p><a class="reference internal" href="setops.html#setops-label"><span class="std std-ref">Array Set Operations</span></a>, e.g. <code class="docutils literal notranslate"><span class="pre">unique</span></code> and <code class="docutils literal notranslate"><span class="pre">in1d</span></code></p></li>
+<li><p><a class="reference internal" href="argsort.html#sorting-label"><span class="std std-ref">Sorting</span></a>, via <code class="docutils literal notranslate"><span class="pre">argsort</span></code> and <code class="docutils literal notranslate"><span class="pre">coargsort</span></code></p></li>
+<li><p><a class="reference internal" href="groupby.html#groupby-label"><span class="std std-ref">GroupBy</span></a>, both alone and in conjunction with numeric arrays</p></li>
+<li><p><a class="reference internal" href="pdarray.html#cast-label"><span class="std std-ref">Type Casting</span></a> to and from numeric arrays</p></li>
+<li><p><a class="reference internal" href="creation.html#concatenate-label"><span class="std std-ref">Concatenation</span></a> with other <code class="docutils literal notranslate"><span class="pre">Strings</span></code></p></li>
+</ul>
+</div>
+<div class="section" id="string-specific-methods">
+<h2>String-Specific Methods<a class="headerlink" href="#string-specific-methods" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="substring-search">
+<h3>Substring search<a class="headerlink" href="#substring-search" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><dl class="py method">
+<dt id="arkouda.Strings.contains">
+<code class="sig-prename descclassname"><span class="pre">Strings.</span></code><code class="sig-name descname"><span class="pre">contains</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substr</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span> </span><span class="pre">str_scalars</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pdarray</span><a class="headerlink" href="#arkouda.Strings.contains" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether each element contains the given substring.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>substr</strong> (<em>str_scalars</em>) – The substring in the form of string or byte array to search for</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True for elements that contain substr, False otherwise</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, bool</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if the substr parameter is not bytes or str_scalars</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.Strings.startswith" title="arkouda.Strings.startswith"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.startswith</span></code></a>, <a class="reference internal" href="#arkouda.Strings.endswith" title="arkouda.Strings.endswith"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.endswith</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;string </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span>
+<span class="go">array([&#39;string 1&#39;, &#39;string 2&#39;, &#39;string 3&#39;, &#39;string 4&#39;, &#39;string 5&#39;])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;string&#39;</span><span class="p">)</span>
+<span class="go">array([True, True, True, True, True])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.Strings.startswith">
+<code class="sig-prename descclassname"><span class="pre">Strings.</span></code><code class="sig-name descname"><span class="pre">startswith</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substr</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span> </span><span class="pre">str_scalars</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pdarray</span><a class="headerlink" href="#arkouda.Strings.startswith" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether each element starts with the given substring.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>substr</strong> (<em>Union</em><em>[</em><em>bytes</em><em>,</em><em>str_scalars</em><em>]</em>) – The prefix to search for</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True for elements that start with substr, False otherwise</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, bool</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if the substr parameter is not a bytes ior str_scalars</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.Strings.contains" title="arkouda.Strings.contains"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.contains</span></code></a>, <a class="reference internal" href="#arkouda.Strings.endswith" title="arkouda.Strings.endswith"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.endswith</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;string </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span>
+<span class="go">array([&#39;string 1&#39;, &#39;string 2&#39;, &#39;string 3&#39;, &#39;string 4&#39;, &#39;string 5&#39;])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;string&#39;</span><span class="p">)</span>
+<span class="go">array([True, True, True, True, True])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.Strings.endswith">
+<code class="sig-prename descclassname"><span class="pre">Strings.</span></code><code class="sig-name descname"><span class="pre">endswith</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">substr</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span> </span><span class="pre">str_scalars</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pdarray</span><a class="headerlink" href="#arkouda.Strings.endswith" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether each element ends with the given substring.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>substr</strong> (<em>Union</em><em>[</em><em>bytes</em><em>,</em><em>str_scalars</em><em>]</em>) – The suffix to search for</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True for elements that end with substr, False otherwise</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, bool</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if the substr parameter is not bytes or str_scalars</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.Strings.contains" title="arkouda.Strings.contains"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.contains</span></code></a>, <a class="reference internal" href="#arkouda.Strings.startswith" title="arkouda.Strings.startswith"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.startswith</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> string&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span>
+<span class="go">array([&#39;1 string&#39;, &#39;2 string&#39;, &#39;3 string&#39;, &#39;4 string&#39;, &#39;5 string&#39;])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;ing&#39;</span><span class="p">)</span>
+<span class="go">array([True, True, True, True, True])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div></blockquote>
+</div>
+<div class="section" id="splitting-and-joining">
+<h3>Splitting and joining<a class="headerlink" href="#splitting-and-joining" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><dl class="py method">
+<dt id="arkouda.Strings.peel">
+<code class="sig-prename descclassname"><span class="pre">Strings.</span></code><code class="sig-name descname"><span class="pre">peel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span> </span><span class="pre">str_scalars</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int_scalars</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">includeDelimiter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepPartial</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fromRight</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Tuple</span><a class="headerlink" href="#arkouda.Strings.peel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Peel off one or more delimited fields from each string (similar
+to string.partition), returning two new arrays of strings.
+<em>Warning</em>: This function is experimental and not guaranteed to work.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>delimiter</strong> (<em>Union</em><em>[</em><em>bytes</em><em>,</em><em>str_scalars</em><em>]</em>) – The separator where the split will occur</p></li>
+<li><p><strong>times</strong> (<em>Union</em><em>[</em><em>int</em><em>,</em><em>np.int64</em><em>]</em>) – The number of times the delimiter is sought, i.e. skip over
+the first (times-1) delimiters</p></li>
+<li><p><strong>includeDelimiter</strong> (<em>bool</em>) – If true, append the delimiter to the end of the first return
+array. By default, it is prepended to the beginning of the
+second return array.</p></li>
+<li><p><strong>keepPartial</strong> (<em>bool</em>) – If true, a string that does not contain &lt;times&gt; instances of
+the delimiter will be returned in the first array. By default,
+such strings are returned in the second array.</p></li>
+<li><p><strong>fromRight</strong> (<em>bool</em>) – If true, peel from the right instead of the left (see also rpeel)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>left<span class="classifier">Strings</span></dt><dd><p>The field(s) peeled from the end of each string (unless
+fromRight is true)</p>
+</dd>
+<dt>right<span class="classifier">Strings</span></dt><dd><p>The remainder of each string after peeling (unless fromRight
+is true)</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings">Strings</a>,<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings">Strings</a>]</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if the delimiter parameter is not byte or str_scalars, if
+    times is not int64, or if includeDelimiter, keepPartial, or
+    fromRight is not bool</p></li>
+<li><p><strong>ValueError</strong> – Raised if times is &lt; 1</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.Strings.rpeel" title="arkouda.Strings.rpeel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rpeel</span></code></a>, <a class="reference internal" href="#arkouda.Strings.stick" title="arkouda.Strings.stick"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stick</span></code></a>, <a class="reference internal" href="#arkouda.Strings.lstick" title="arkouda.Strings.lstick"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lstick</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;a.b&#39;</span><span class="p">,</span> <span class="s1">&#39;c.d&#39;</span><span class="p">,</span> <span class="s1">&#39;e.f.g&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">peel</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+<span class="go">(array([&#39;a&#39;, &#39;c&#39;, &#39;e&#39;]), array([&#39;b&#39;, &#39;d&#39;, &#39;f.g&#39;]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">peel</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">includeDelimiter</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">(array([&#39;a.&#39;, &#39;c.&#39;, &#39;e.&#39;]), array([&#39;b&#39;, &#39;d&#39;, &#39;f.g&#39;]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">peel</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">(array([&#39;&#39;, &#39;&#39;, &#39;e.f&#39;]), array([&#39;a.b&#39;, &#39;c.d&#39;, &#39;g&#39;]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">peel</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">keepPartial</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">(array([&#39;a.b&#39;, &#39;c.d&#39;, &#39;e.f&#39;]), array([&#39;&#39;, &#39;&#39;, &#39;g&#39;]))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.Strings.rpeel">
+<code class="sig-prename descclassname"><span class="pre">Strings.</span></code><code class="sig-name descname"><span class="pre">rpeel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.str_</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">includeDelimiter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepPartial</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Strings.rpeel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Peel off one or more delimited fields from the end of each string
+(similar to string.rpartition), returning two new arrays of strings.
+<em>Warning</em>: This function is experimental and not guaranteed to work.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>delimiter</strong> (<em>Union</em><em>[</em><em>bytes</em><em>,</em><em>str_scalars</em><em>]</em>) – The separator where the split will occur</p></li>
+<li><p><strong>times</strong> (<em>Union</em><em>[</em><em>int</em><em>,</em><em>np.int64</em><em>]</em>) – The number of times the delimiter is sought, i.e. skip over
+the last (times-1) delimiters</p></li>
+<li><p><strong>includeDelimiter</strong> (<em>bool</em>) – If true, prepend the delimiter to the start of the first return
+array. By default, it is appended to the end of the
+second return array.</p></li>
+<li><p><strong>keepPartial</strong> (<em>bool</em>) – If true, a string that does not contain &lt;times&gt; instances of
+the delimiter will be returned in the second array. By default,
+such strings are returned in the first array.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>left</strong> (<em>Strings</em>) – The remainder of the string after peeling</p></li>
+<li><p><strong>right</strong> (<em>Strings</em>) – The field(s) that were peeled from the right of each string</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if the delimiter parameter is not bytes or str_scalars or
+    if times is not int64</p></li>
+<li><p><strong>ValueError</strong> – Raised if times is &lt; 1</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.Strings.peel" title="arkouda.Strings.peel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">peel</span></code></a>, <a class="reference internal" href="#arkouda.Strings.stick" title="arkouda.Strings.stick"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stick</span></code></a>, <a class="reference internal" href="#arkouda.Strings.lstick" title="arkouda.Strings.lstick"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lstick</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;a.b&#39;</span><span class="p">,</span> <span class="s1">&#39;c.d&#39;</span><span class="p">,</span> <span class="s1">&#39;e.f.g&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">rpeel</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+<span class="go">(array([&#39;a&#39;, &#39;c&#39;, &#39;e.f&#39;]), array([&#39;b&#39;, &#39;d&#39;, &#39;g&#39;]))</span>
+<span class="go"># Compared against peel</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">peel</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+<span class="go">(array([&#39;a&#39;, &#39;c&#39;, &#39;e&#39;]), array([&#39;b&#39;, &#39;d&#39;, &#39;f.g&#39;]))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.Strings.stick">
+<code class="sig-prename descclassname"><span class="pre">Strings.</span></code><code class="sig-name descname"><span class="pre">stick</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Strings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span> </span><span class="pre">str_scalars</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">toLeft</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Strings</span><a class="headerlink" href="#arkouda.Strings.stick" title="Permalink to this definition">¶</a></dt>
+<dd><p>Join the strings from another array onto one end of the strings
+of this array, optionally inserting a delimiter.
+<em>Warning</em>: This function is experimental and not guaranteed to work.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>other</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a>) – The strings to join onto self’s strings</p></li>
+<li><p><strong>delimiter</strong> (<em>str</em>) – String inserted between self and other</p></li>
+<li><p><strong>toLeft</strong> (<em>bool</em>) – If true, join other strings to the left of self. By default,
+other is joined to the right of self.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The array of joined strings</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings">Strings</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if the delimiter parameter is not bytes or str_scalars
+    or if the other parameter is not a Strings instance</p></li>
+<li><p><strong>ValueError</strong> – Raised if times is &lt; 1</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.Strings.lstick" title="arkouda.Strings.lstick"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lstick</span></code></a>, <a class="reference internal" href="#arkouda.Strings.peel" title="arkouda.Strings.peel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">peel</span></code></a>, <a class="reference internal" href="#arkouda.Strings.rpeel" title="arkouda.Strings.rpeel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rpeel</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">stick</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+<span class="go">array([&#39;a.b&#39;, &#39;c.d&#39;, &#39;e.f&#39;])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.Strings.lstick">
+<code class="sig-prename descclassname"><span class="pre">Strings.</span></code><code class="sig-name descname"><span class="pre">lstick</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.str_</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><a class="headerlink" href="#arkouda.Strings.lstick" title="Permalink to this definition">¶</a></dt>
+<dd><p>Join the strings from another array onto the left of the strings
+of this array, optionally inserting a delimiter.
+<em>Warning</em>: This function is experimental and not guaranteed to work.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>other</strong> (<a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a>) – The strings to join onto self’s strings</p></li>
+<li><p><strong>delimiter</strong> (<em>Union</em><em>[</em><em>bytes</em><em>,</em><em>str_scalars</em><em>]</em>) – String inserted between self and other</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The array of joined strings, as other + self</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../autoapi/arkouda/index.html#arkouda.Strings" title="arkouda.Strings">Strings</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if the delimiter parameter is neither bytes nor a str
+    or if the other parameter is not a Strings instance</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.Strings.stick" title="arkouda.Strings.stick"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stick</span></code></a>, <a class="reference internal" href="#arkouda.Strings.peel" title="arkouda.Strings.peel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">peel</span></code></a>, <a class="reference internal" href="#arkouda.Strings.rpeel" title="arkouda.Strings.rpeel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rpeel</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">lstick</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+<span class="go">array([&#39;b.a&#39;, &#39;d.c&#39;, &#39;f.e&#39;])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div></blockquote>
+</div>
+<div class="section" id="flattening">
+<h3>Flattening<a class="headerlink" href="#flattening" title="Permalink to this headline">¶</a></h3>
+<p>Given an array of strings where each string encodes a variable-length sequence delimited by a common substring, flattening offers a method for unpacking the sequences into a flat array of individual elements. A mapping between original strings and new array elements can be preserved, if desired. This method can be used in pipe</p>
+<blockquote>
+<div><dl class="py method">
+<dt id="arkouda.Strings.flatten">
+<code class="sig-prename descclassname"><span class="pre">Strings.</span></code><code class="sig-name descname"><span class="pre">flatten</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_segments</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Tuple</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.Strings.flatten" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unpack delimiter-joined substrings into a flat array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>delimeter</strong> (<em>str</em>) – Characters used to split strings into substrings</p></li>
+<li><p><strong>return_segments</strong> (<em>bool</em>) – If True, also return mapping of original strings to first substring
+in return array.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>Strings</em> – Flattened substrings with delimiters removed</p></li>
+<li><p><em>pdarray, int64 (optional)</em> – For each original string, the index of first corresponding substring
+in the return array</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.Strings.peel" title="arkouda.Strings.peel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">peel</span></code></a>, <a class="reference internal" href="#arkouda.Strings.rpeel" title="arkouda.Strings.rpeel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rpeel</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">orig</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;one|two&#39;</span><span class="p">,</span> <span class="s1">&#39;three|four|five&#39;</span><span class="p">,</span> <span class="s1">&#39;six&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">orig</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+<span class="go">array([&#39;one&#39;, &#39;two&#39;, &#39;three&#39;, &#39;four&#39;, &#39;five&#39;, &#39;six&#39;])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flat</span><span class="p">,</span> <span class="nb">map</span> <span class="o">=</span> <span class="n">orig</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">,</span> <span class="n">return_segments</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">map</span>
+<span class="go">array([0, 2, 5])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div></blockquote>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">arkouda</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../setup/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../usage.html">Usage</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="startup.html">Startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pdarray.html">The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="creation.html">Creating Arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="IO.html">Data I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arithmetic.html">Arithmetic and Numeric Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html">Indexing and Assignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="histogram.html">Summarizing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="argsort.html">Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setops.html">Array Set Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="groupby.html">GroupBy</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Strings in Arkouda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="categorical.html">Categoricals</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autoapi/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../server/index.html">Chapel API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../usage.html">Usage</a><ul>
+      <li>Previous: <a href="groupby.html" title="previous chapter">GroupBy</a></li>
+      <li>Next: <a href="categorical.html" title="next chapter">Categoricals</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Michael Merrill and William Reus.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/usage/strings.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

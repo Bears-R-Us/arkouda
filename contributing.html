@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contributing &#8212; arkouda 2020.07.07 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Reference" href="autoapi/index.html" />
+    <link rel="prev" title="Examples" href="examples.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="contributing">
+<h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h1>
+<p>This section describes how to add new functionality to arkouda.</p>
+<div class="section" id="adding-python-functionality">
+<h2>Adding Python Functionality<a class="headerlink" href="#adding-python-functionality" title="Permalink to this headline">¶</a></h2>
+<p>Python functions should follow the API of NumPy or Pandas, were possible. In general, functions should conform to the following:</p>
+<ol class="arabic simple">
+<li><p>Be defined somewhere in the <code class="docutils literal notranslate"><span class="pre">arkouda</span></code> subdirectory, such as in <code class="docutils literal notranslate"><span class="pre">arkouda/pdarraysetops.py</span></code></p></li>
+<li><p>Have a complete docstring in <a class="reference external" href="https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard">NumPy format</a></p></li>
+<li><p>Check argument types and properties, raising exceptions if necessary</p></li>
+<li><p>Send a request message using <code class="docutils literal notranslate"><span class="pre">generic_msg(request)</span></code></p></li>
+<li><p>Process the reply message</p></li>
+<li><p>Possibly create one or more <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects</p></li>
+<li><p>Return any results</p></li>
+</ol>
+<div class="section" id="example">
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">pda</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the foo() of the array.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pda : pdarray</span>
+<span class="sd">        The array to foo</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pdarray</span>
+<span class="sd">        The foo&#39;d array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pda</span><span class="p">,</span> <span class="n">pdarray</span><span class="p">):</span>
+        <span class="n">repMsg</span> <span class="o">=</span> <span class="n">generic_msg</span><span class="p">(</span><span class="s2">&quot;foo </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pda</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">create_pdarray</span><span class="p">(</span><span class="n">repMsg</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;must be pdarray </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pda</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="adding-functionality-to-the-arkouda-server">
+<h2>Adding Functionality to the Arkouda Server<a class="headerlink" href="#adding-functionality-to-the-arkouda-server" title="Permalink to this headline">¶</a></h2>
+<p>Your contribution must include all the machinery to process a command from the client, in addition to the logic of the coputation. When the client issues a command <code class="docutils literal notranslate"><span class="pre">foo</span> <span class="pre">arg1</span> <span class="pre">arg2</span> <span class="pre">...</span></code> to the arkouda server, this is what typically happens:</p>
+<ol class="arabic simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">select</span></code> block in <code class="docutils literal notranslate"><span class="pre">arkouda_server.chpl</span></code> sees “foo” and calls <code class="docutils literal notranslate"><span class="pre">fooMsg(reqMsg,</span> <span class="pre">st)</span></code>, passing the command string and the symbol table.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">fooMsg</span></code> function is found via the <code class="docutils literal notranslate"><span class="pre">MsgProcessing</span></code> module, which contains <code class="docutils literal notranslate"><span class="pre">use</span> <span class="pre">FooMsg</span></code> and thus gets all symbols from the <code class="docutils literal notranslate"><span class="pre">FooMsg</span></code> module where <code class="docutils literal notranslate"><span class="pre">fooMsg()</span></code> is defined.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">fooMsg()</span></code> function (in the <code class="docutils literal notranslate"><span class="pre">FooMsg</span></code> module) parses and executes the command by</p>
+<ol class="arabic simple">
+<li><p>Splitting the command string</p></li>
+<li><p>Casting any scalar args</p></li>
+<li><p>Looking up <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> (<code class="docutils literal notranslate"><span class="pre">GenSymEntry</span></code>) args in the symbol table with <code class="docutils literal notranslate"><span class="pre">st.lookup(arg)</span></code> and checking for <code class="docutils literal notranslate"><span class="pre">nil</span></code> result</p></li>
+<li><p>Checking dtypes of arrays and branching to corresponding code</p></li>
+<li><p>Casting <code class="docutils literal notranslate"><span class="pre">GenSymEntry</span></code> objects to correct types with <code class="docutils literal notranslate"><span class="pre">toSymEntry()</span></code></p></li>
+<li><p>Executing the operation, usually on the array data <code class="docutils literal notranslate"><span class="pre">entry.a</span></code></p></li>
+<li><p>If necessary, creating new <code class="docutils literal notranslate"><span class="pre">SymEntry</span></code> and adding it to the symbol table with <code class="docutils literal notranslate"><span class="pre">st.addEntry()</span></code></p></li>
+<li><p>Returning an appropriate message string</p>
+<ol class="arabic simple">
+<li><p>If the return is an array, “created &lt;attributes&gt;”</p></li>
+<li><p>If the return is multiple arrays, one creation string per array, joined by “+”</p></li>
+<li><p>If the return is a scalar, “&lt;dtype&gt; &lt;value&gt;”</p></li>
+<li><p>If any error occurred, then “Error: &lt;message&gt;” (see <code class="docutils literal notranslate"><span class="pre">ServerErrorStrings.chpl</span></code> for functions to generate common error strings)</p></li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<div class="section" id="id1">
+<h3>Example<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>First, in <code class="docutils literal notranslate"><span class="pre">src/arkouda_server.chpl</span></code>, add a <code class="docutils literal notranslate"><span class="pre">when</span></code> statement to register the “foo” command:</p>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="c1">// parse requests, execute requests, format responses</span>
+<span class="k">select</span> <span class="nx">cmd</span>
+<span class="p">{</span>
+    <span class="c1">// ...</span>
+    <span class="k">when</span> <span class="s2">&quot;foo&quot;</span>             <span class="p">{</span><span class="nx">repMsg</span> <span class="o">=</span> <span class="nx">fooMsg</span><span class="p">(</span><span class="nx">reqMsg</span><span class="p">,</span> <span class="nx">st</span><span class="p">);}</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Next, in the <code class="docutils literal notranslate"><span class="pre">MsgProcessing</span></code> module, add <code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">use</span> <span class="pre">FooMsg;</span></code> in the appropriate location:</p>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">module</span> <span class="nc">MsgProcessing</span>
+<span class="p">{</span>
+    <span class="k">use</span> <span class="nx">ServerConfig</span><span class="p">;</span>
+    <span class="k">use</span> <span class="nx">Time</span> <span class="k">only</span><span class="p">;</span>
+    <span class="k">use</span> <span class="nx">Math</span> <span class="k">only</span><span class="p">;</span>
+    <span class="k">use</span> <span class="nx">MultiTypeSymbolTable</span><span class="p">;</span>
+    <span class="k">use</span> <span class="nx">MultiTypeSymEntry</span><span class="p">;</span>
+    <span class="k">use</span> <span class="nx">ServerErrorStrings</span><span class="p">;</span>
+    <span class="k">use</span> <span class="nx">AryUtil</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="k">use</span> <span class="nx">OperatorMsg</span><span class="p">;</span>
+    <span class="c1">// ...</span>
+    <span class="k">public</span> <span class="k">use</span> <span class="nx">FooMsg</span><span class="p">;</span>
+    <span class="c1">// ...</span>
+</pre></div>
+</div>
+<p>Then, define your argument parsing and function logic in <code class="docutils literal notranslate"><span class="pre">src/FooMsg.chpl</span></code> in the following manner:</p>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">module</span> <span class="nc">FooMsg</span>
+<span class="p">{</span>
+    <span class="k">use</span> <span class="nx">ServerConfig</span><span class="p">;</span>
+
+    <span class="k">use</span> <span class="nx">MultiTypeSymEntry</span><span class="p">;</span>
+    <span class="k">use</span> <span class="nx">ServerErrorStrings</span><span class="p">;</span>
+    <span class="k">use</span> <span class="nx">MultiTypeSymbolTable</span><span class="p">;</span>
+
+    <span class="c1">// do foo on array a</span>
+    <span class="k">proc</span> <span class="nf">foo</span><span class="p">(</span><span class="nx">a</span><span class="p">:</span> <span class="p">[?</span><span class="nx">aD</span><span class="p">]</span> <span class="kt">int</span><span class="p">):</span> <span class="p">[</span><span class="nx">aD</span><span class="p">]</span> <span class="kt">int</span> <span class="p">{</span>
+       <span class="c1">//...</span>
+       <span class="k">return</span><span class="p">(</span><span class="nx">ret</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="cm">/*</span>
+<span class="cm">    Parse, execute, and respond to a foo message</span>
+<span class="cm">    :arg reqMsg: request containing (cmd,dtype,size)</span>
+<span class="cm">    :type reqMsg: string</span>
+<span class="cm">    :arg st: SymTab to act on</span>
+<span class="cm">    :type st: borrowed SymTab</span>
+<span class="cm">    :returns: (string) response message</span>
+<span class="cm">    */</span>
+    <span class="k">proc</span> <span class="nf">fooMsg</span><span class="p">(</span><span class="nx">reqMsg</span><span class="p">:</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">st</span><span class="p">:</span> <span class="k">borrowed</span> <span class="nx">SymTab</span><span class="p">):</span> <span class="kt">string</span> <span class="k">throws</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">repMsg</span><span class="p">:</span> <span class="kt">string</span><span class="p">;</span> <span class="c1">// response message</span>
+        <span class="c1">// split request into fields</span>
+        <span class="kd">var</span> <span class="p">(</span><span class="nx">cmd</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span> <span class="o">=</span> <span class="nx">reqMsg</span><span class="p">.</span><span class="nx">splitMsgToTuple</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+        <span class="c1">// get next symbol name</span>
+        <span class="kd">var</span> <span class="nx">rname</span> <span class="o">=</span> <span class="nx">st</span><span class="p">.</span><span class="nx">nextName</span><span class="p">();</span>
+
+        <span class="kd">var</span> <span class="nx">gEnt</span><span class="p">:</span> <span class="k">borrowed</span> <span class="nx">GenSymEntry</span> <span class="o">=</span> <span class="nx">st</span><span class="p">.</span><span class="nx">lookup</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">gEnt</span> <span class="o">==</span> <span class="kc">nil</span><span class="p">)</span> <span class="p">{</span><span class="k">return</span> <span class="nx">unknownSymbolError</span><span class="p">(</span><span class="s2">&quot;set&quot;</span><span class="p">,</span><span class="nx">name</span><span class="p">);}</span>
+        <span class="c1">// if verbose print action</span>
+        <span class="k">if</span> <span class="nx">v</span> <span class="p">{</span><span class="k">try</span><span class="o">!</span> <span class="nx">writeln</span><span class="p">(</span><span class="s2">&quot;%s %s: %s&quot;</span><span class="p">.</span><span class="nx">format</span><span class="p">(</span><span class="nx">cmd</span><span class="p">,</span><span class="nx">name</span><span class="p">,</span><span class="nx">rname</span><span class="p">));</span> <span class="k">try</span><span class="o">!</span> <span class="nx">stdout</span><span class="p">.</span><span class="nx">flush</span><span class="p">();}</span>
+        <span class="k">select</span> <span class="p">(</span><span class="nx">gEnt</span><span class="p">.</span><span class="nx">dtype</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">when</span> <span class="p">(</span><span class="nx">DType</span><span class="p">.</span><span class="nx">Int64</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kd">var</span> <span class="nx">e</span> <span class="o">=</span> <span class="nx">toSymEntry</span><span class="p">(</span><span class="nx">gEnt</span><span class="p">,</span><span class="kt">int</span><span class="p">);</span>
+                <span class="kd">var</span> <span class="nx">ret</span> <span class="o">=</span> <span class="nx">foo</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">a</span><span class="p">);</span>
+                <span class="nx">st</span><span class="p">.</span><span class="nx">addEntry</span><span class="p">(</span><span class="nx">rname</span><span class="p">,</span> <span class="nx">new</span> <span class="k">shared</span> <span class="nx">SymEntry</span><span class="p">(</span><span class="nx">ret</span><span class="p">));</span>
+            <span class="p">}</span>
+            <span class="k">otherwise</span> <span class="p">{</span><span class="k">return</span> <span class="nx">notImplementedError</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span><span class="nx">gEnt</span><span class="p">.</span><span class="nx">dtype</span><span class="p">);}</span>
+        <span class="p">}</span>
+        <span class="c1">// response message</span>
+        <span class="k">return</span> <span class="k">try</span><span class="o">!</span> <span class="s2">&quot;created &quot;</span> <span class="o">+</span> <span class="nx">st</span><span class="p">.</span><span class="nx">attrib</span><span class="p">(</span><span class="nx">rname</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">arkouda</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#adding-python-functionality">Adding Python Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-functionality-to-the-arkouda-server">Adding Functionality to the Arkouda Server</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server/index.html">Chapel API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="examples.html" title="previous chapter">Examples</a></li>
+      <li>Next: <a href="autoapi/index.html" title="next chapter">API Reference</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Michael Merrill and William Reus.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/contributing.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
