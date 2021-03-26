@@ -195,10 +195,8 @@ module FindSegmentsMsg
          Segment boundaries are in terms of permuted arrays, so invert the permutation to get 
          back to the original index
          */
-        forall (s, i) in zip(sa, saD) {
-          // TODO convert to aggregation, which side is remote though?
-          use UnorderedCopy;
-          unorderedCopy(uka[i], pa[s]);
+        forall (s, u) in zip(sa, uka) with (var agg = newSrcAggregator(int)) {
+          agg.copy(u, pa[s]);
         }
 
         // Return entry names of segments and unique key indices
