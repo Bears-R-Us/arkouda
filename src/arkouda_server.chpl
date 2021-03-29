@@ -40,8 +40,8 @@ proc main() {
     proc printServerSplashMessage(token: string, arkDirectory: string) throws {
         var verMessage = "arkouda server version = %s".format(arkoudaVersion);
         var dirMessage = ".arkouda directory %s".format(arkDirectory);
-        var memLimMessage =  "getMemLimit() %i".format(getMemLimit());
-        var memUsedMessage = "bytes of memoryUsed() = %i".format(memoryUsed());
+        var memLimMessage =  "memory limit = %i".format(getMemLimit());
+        var memUsedMessage = "bytes of memory used = %i".format(getMemUsed());
         var serverMessage: string;
     
         const buff = '                         ';
@@ -420,7 +420,7 @@ proc main() {
             }
             if (trace && memTrack) {
                 asLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                    "bytes of memory used after command %t".format(memoryUsed():uint * numLocales:uint));
+                    "bytes of memory used after command %t".format(getMemUsed():uint * numLocales:uint));
             }
         } catch (e: ErrorWithMsg) {
             // Generate a ReplyMsg of type ERROR and serialize to a JSON-formatted string
