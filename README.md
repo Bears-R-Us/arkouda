@@ -19,6 +19,8 @@
 [Chapel Gitter channel](https://gitter.im/chapel-lang/chapel)
 
 ## Talks on Arkouda
+[Bill Reus' March 2021 talk at the NJIT Data Science Seminar](https://www.youtube.com/watch?v=hzLbJF-fvjQ&t=3s)
+
 Bill Reus' CHIUW 2020 Keynote [video](https://youtu.be/g-G_Z_3pgUE) and [slides](https://chapel-lang.org/CHIUW/2020/Reus.pdf)
 
 [Mike Merrill's CHIUW 2019 talk](https://chapel-lang.org/CHIUW/2019/Merrill.pdf)
