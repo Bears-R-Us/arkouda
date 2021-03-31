@@ -750,13 +750,13 @@ module SegmentedArray {
   
   /* Test for equality between two same-length arrays of strings. Returns
      a boolean vector of the same length. */
-  proc ==(lss:SegString, rss:SegString) throws {
+  operator SegString.==(lss:SegString, rss:SegString) throws {
     return compare(lss, rss, true);
   }
 
   /* Test for inequality between two same-length arrays of strings. Returns
      a boolean vector of the same length. */
-  proc !=(lss:SegString, rss:SegString) throws {
+  operator SegString.!=(lss:SegString, rss:SegString) throws {
     return compare(lss, rss, false);
   }
 
@@ -821,13 +821,13 @@ module SegmentedArray {
 
   /* Test an array of strings for equality against a constant string. Return a boolean
      vector the same size as the array. */
-  proc ==(ss:SegString, testStr: string) {
+  operator ==(ss:SegString, testStr: string) {
     return compare(ss, testStr, true);
   }
   
   /* Test an array of strings for inequality against a constant string. Return a boolean
      vector the same size as the array. */
-  proc !=(ss:SegString, testStr: string) {
+  operator !=(ss:SegString, testStr: string) {
     return compare(ss, testStr, false);
   }
 
