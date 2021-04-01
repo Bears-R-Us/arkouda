@@ -61,15 +61,16 @@ Functions
    the current user's .arkouda directory where artifacts
    such as server access tokens are stored.
 
-   :returns: Path corresponding to the .arkouda directory path
+   :returns: Path corresponding to the user's .arkouda directory path
    :rtype: Path
 
    .. rubric:: Notes
 
    The default implementation is to place the .arkouda
    directory in the current user's home directory. The
-   default can be overridden by seting the ARKOUDA_HOME
-   environment variable.
+   default can be overridden by setting the ARKOUDA_CLIENT_DIRECTORY
+   environment variable.  It is important this is not the same location
+   as the server's token directory as the file format is different.
 
 
 .. function:: get_username() -> str
@@ -84,7 +85,7 @@ Functions
 
    .. rubric:: Notes
 
-   The curreently supported operating systems are Windows, Linux,
+   The currently supported operating systems are Windows, Linux,
    and MacOS AKA Darwin
 
 

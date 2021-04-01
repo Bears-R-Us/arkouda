@@ -113,7 +113,7 @@ the current user’s .arkouda directory where artifacts
 such as server access tokens are stored.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Path corresponding to the .arkouda directory path</p>
+<dd class="field-odd"><p>Path corresponding to the user’s .arkouda directory path</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>Path</p>
@@ -122,8 +122,9 @@ such as server access tokens are stored.</p>
 <p class="rubric">Notes</p>
 <p>The default implementation is to place the .arkouda
 directory in the current user’s home directory. The
-default can be overridden by seting the ARKOUDA_HOME
-environment variable.</p>
+default can be overridden by setting the ARKOUDA_CLIENT_DIRECTORY
+environment variable.  It is important this is not the same location
+as the server’s token directory as the file format is different.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -143,7 +144,7 @@ user’s username for the host system.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The curreently supported operating systems are Windows, Linux,
+<p>The currently supported operating systems are Windows, Linux,
 and MacOS AKA Darwin</p>
 </dd></dl>
 
