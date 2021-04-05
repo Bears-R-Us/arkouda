@@ -5,9 +5,10 @@ module CommAggregation {
   use CommPrimitives;
 
   // TODO should tune these values at startup
+  param defaultBuffSize = if CHPL_COMM == "ugni" then 4096 else 8096;
   private config const yieldFrequency = getEnvInt("ARKOUDA_SERVER_AGGREGATION_YIELD_FREQUENCY", 1024);
-  private config const dstBuffSize = getEnvInt("ARKOUDA_SERVER_AGGREGATION_DST_BUFF_SIZE", 4096);
-  private config const srcBuffSize = getEnvInt("ARKOUDA_SERVER_AGGREGATION_SRC_BUFF_SIZE", 4096);
+  private config const dstBuffSize = getEnvInt("ARKOUDA_SERVER_AGGREGATION_DST_BUFF_SIZE", defaultBuffSize);
+  private config const srcBuffSize = getEnvInt("ARKOUDA_SERVER_AGGREGATION_SRC_BUFF_SIZE", defaultBuffSize);
 
 
   /* Creates a new destination aggregator (dst/lhs will be remote). */
