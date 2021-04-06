@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
     <title>Categoricals &#8212; arkouda 2020.07.07 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
@@ -33,10 +34,10 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="categoricals">
+  <section id="categoricals">
 <h1>Categoricals<a class="headerlink" href="#categoricals" title="Permalink to this headline">¶</a></h1>
 <p>Categorical arrays are a concept from Pandas that speeds up many operations on strings, especially when an array of strings contains many repeated values. A <code class="docutils literal notranslate"><span class="pre">Categorical</span></code> object stores the unique strings as category labels and represents the values of the original array as integer indices into this category array.</p>
-<div class="section" id="construction">
+<section id="construction">
 <h2>Construction<a class="headerlink" href="#construction" title="Permalink to this headline">¶</a></h2>
 <p>The typical way to construct a <code class="docutils literal notranslate"><span class="pre">Categorical</span></code> is from a <code class="docutils literal notranslate"><span class="pre">Strings</span></code> object:</p>
 <blockquote>
@@ -175,8 +176,8 @@ as categories</p></li>
 </dd></dl>
 
 </div></blockquote>
-</div>
-<div class="section" id="operations">
+</section>
+<section id="operations">
 <h2>Operations<a class="headerlink" href="#operations" title="Permalink to this headline">¶</a></h2>
 <p>Arkouda <code class="docutils literal notranslate"><span class="pre">Categorical</span></code> objects support all operations that <code class="docutils literal notranslate"><span class="pre">Strings</span></code> support, and they will almost always execute faster:</p>
 <ul>
@@ -272,8 +273,8 @@ instead of the full array.</p>
 <li><p><a class="reference internal" href="argsort.html#sorting-label"><span class="std std-ref">Sorting</span></a>, via <code class="docutils literal notranslate"><span class="pre">argsort</span></code> and <code class="docutils literal notranslate"><span class="pre">coargsort</span></code></p></li>
 <li><p><a class="reference internal" href="groupby.html#groupby-label"><span class="std std-ref">GroupBy</span></a>, both alone and in conjunction with numeric arrays</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
@@ -292,7 +293,7 @@ instead of the full array.</p>
 
 
 <h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
+<p><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../setup/prerequisites.html">Prerequisites</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>

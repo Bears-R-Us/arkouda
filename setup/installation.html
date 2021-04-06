@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
     <title>Installation &#8212; arkouda 2020.07.07 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
@@ -33,14 +34,14 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="installation">
+  <section id="installation">
 <span id="installation-label"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <p>Before installing arkouda, make sure to satisfy all the <a class="reference internal" href="prerequisites.html#prerequisites-label"><span class="std std-ref">Prerequisites</span></a>, including setting up your environment for Chapel.</p>
-<div class="section" id="download">
+<section id="download">
 <h2>Download<a class="headerlink" href="#download" title="Permalink to this headline">¶</a></h2>
 <p>The easiest way to get arkouda is to download, clone, or fork the <a class="reference external" href="https://github.com/mhmerrill/arkouda/">arkouda github repo</a>.</p>
-</div>
-<div class="section" id="environment-setup">
+</section>
+<section id="environment-setup">
 <h2>Environment Setup<a class="headerlink" href="#environment-setup" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
 <li><p>Ensure that <code class="docutils literal notranslate"><span class="pre">CHPL_HOME</span></code> is set and <code class="docutils literal notranslate"><span class="pre">$CHPL_HOME/bin</span></code> is in your <code class="docutils literal notranslate"><span class="pre">PATH</span></code> (consider adding to your .*rc file).</p></li>
@@ -55,14 +56,14 @@
 </pre></div>
 </div>
 <p>Be sure to customize these paths appropriately for your system.</p>
-</div>
-<div class="section" id="build-the-server">
+</section>
+<section id="build-the-server">
 <h2>Build the Server<a class="headerlink" href="#build-the-server" title="Permalink to this headline">¶</a></h2>
 <p>Run <code class="docutils literal notranslate"><span class="pre">make</span></code> in the arkouda root directory to build the arkouda server program.</p>
 <p>Note: this will take 10-20 minutes, depending on your processor.</p>
 <p>We recommend adding the arkouda root directory to your <code class="docutils literal notranslate"><span class="pre">PATH</span></code> environment variable.</p>
-</div>
-<div class="section" id="install-the-client">
+</section>
+<section id="install-the-client">
 <h2>Install the Client<a class="headerlink" href="#install-the-client" title="Permalink to this headline">¶</a></h2>
 <p>There are two ways to install the python client. It is available from the Python Package Index (PyPI) with:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3 install arkouda
@@ -72,10 +73,10 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip3 install -e path/to/local/arkouda/repo
 </pre></div>
 </div>
-</div>
-<div class="section" id="troubleshooting">
+</section>
+<section id="troubleshooting">
 <h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="chapel-not-built-for-this-configuration">
+<section id="chapel-not-built-for-this-configuration">
 <h3>Chapel not built for this configuration<a class="headerlink" href="#chapel-not-built-for-this-configuration" title="Permalink to this headline">¶</a></h3>
 <p>Error: Build fails with a message stating Chapel was not built for this configuration</p>
 <p>Solution: While a full rebuild of Chapel is not required, some additional components must be built with the current environment settings. Do this by setting all your arkouda environment variables as above and running:</p>
@@ -84,14 +85,14 @@ make
 </pre></div>
 </div>
 <p>This should build the extra components needed by Chapel to compile arkouda.</p>
-</div>
-<div class="section" id="unable-to-find-hdf5-or-zmq">
+</section>
+<section id="unable-to-find-hdf5-or-zmq">
 <h3>Unable to find HDF5 or ZMQ<a class="headerlink" href="#unable-to-find-hdf5-or-zmq" title="Permalink to this headline">¶</a></h3>
 <p>Error: Cannot find <code class="docutils literal notranslate"><span class="pre">-lzmq</span></code> or <code class="docutils literal notranslate"><span class="pre">-lhdf5</span></code></p>
 <p>Solution: Ensure the path(s) in the arkouda <code class="docutils literal notranslate"><span class="pre">Makefile.paths</span></code> file are valid, and that the files <code class="docutils literal notranslate"><span class="pre">lib/libzmq.so</span></code> and <code class="docutils literal notranslate"><span class="pre">lib/libhdf5.so</span></code> appear there. If not, try reinstalling HDF5 and/or ZMQ at those locations, or install the <a class="reference external" href="https://www.anaconda.com/distribution/">Anaconda</a> distribution and place the Anaconda root directory in <code class="docutils literal notranslate"><span class="pre">Makefile.paths</span></code>.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
           </div>
@@ -110,7 +111,7 @@ make
 
 
 <h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
+<p><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="prerequisites.html">Prerequisites</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>

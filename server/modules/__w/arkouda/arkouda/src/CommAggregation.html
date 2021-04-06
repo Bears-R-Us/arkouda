@@ -213,6 +213,11 @@
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="nx">import</span> <span class="nx">CommAggregation</span><span class="p">;</span>
 </pre></div>
 </div>
+<dl class="data">
+<dt id="CommAggregation.defaultBuffSize">
+<em class="property">param </em><code class="descname">defaultBuffSize</code> = if CHPL_COMM==ugni then 4096 else 8096<a class="headerlink" href="#CommAggregation.defaultBuffSize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="function">
 <dt id="CommAggregation.newDstAggregator">
 <em class="property">proc </em><code class="descname">newDstAggregator</code><span class="sig-paren">(</span><em>type elemType</em>, <em>param useUnorderedCopy = false</em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.newDstAggregator" title="Permalink to this definition">¶</a></dt>
