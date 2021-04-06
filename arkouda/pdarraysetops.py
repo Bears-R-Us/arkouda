@@ -142,7 +142,7 @@ def in1d(pda1 : Union[pdarray,Strings,'Categorical'], pda2 : Union[pdarray,Strin
     array([False, True])
     """
     from arkouda.categorical import Categorical as Categorical_
-    if hasattr(pda1, 'in1d'):
+    if hasattr(pda1, 'categories'):
         return cast(Categorical_,pda1).in1d(pda2)
     elif isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         repMsg = generic_msg(cmd="in1d", args="{} {} {}".\

@@ -145,3 +145,18 @@ class SetOpsTest(ArkoudaTest):
                          cm.exception.args[0])          
         with self.assertRaises(TypeError):
             ak.union1d([-1, 0, 1], [-2, 0, 2])     
+
+    def testIn1d(self): 
+        pdaOne = ak.array([-1, 0, 1, 3])
+        pdaTwo = ak.array([-1, 2, 2, 3])
+        self.assertTrue((ak.in1d(pdaOne, pdaTwo) == 
+                         ak.array([True, False, False, True])).all())
+
+        vals = [i for i in range(0, 5)]
+        valsTwo = list(vals)
+        valsTwo[4] = 9
+        stringsOne = ak.array(['String {}'.format(i) for i in vals])
+        stringsTwo = ak.array(['String {}'.format(i) for i in valsTwo])
+        
+        self.assertTrue((ak.array([True,True,True,True,False]) 
+                        == ak.in1d(stringsOne,stringsTwo)).all())
