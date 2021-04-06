@@ -431,8 +431,46 @@ instead of the full array.</p>
 
 <dl class="py method">
 <dt id="arkouda.categorical.Categorical.in1d">
-<code class="sig-name descname"><span class="pre">in1d</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.categorical.Categorical.in1d" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname"><span class="pre">in1d</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Strings</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">Categorical</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#arkouda.categorical.Categorical.in1d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test whether each element of the Categorical object is
+also present in the test Strings or Categorical object.</p>
+<p>Returns a boolean array the same length as <cite>self</cite> that is True
+where an element of <cite>self</cite> is in <cite>test</cite> and False otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>test</strong> (<em>Union</em><em>[</em><a class="reference internal" href="../index.html#arkouda.Strings" title="arkouda.Strings"><em>Strings</em></a><em>,</em><a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>]</em>) – The values against which to test each value of ‘self`.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The values <cite>self[in1d]</cite> are in the <cite>test</cite> Strings or Categorical object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, bool</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if test is not a Strings or Categorical object</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.categorical.Categorical.unique" title="arkouda.categorical.Categorical.unique"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unique</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">intersect1d</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">union1d</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<p><cite>in1d</cite> can be considered as an element-wise function version of the
+python keyword <cite>in</cite>, for 1-D sequences. <code class="docutils literal notranslate"><span class="pre">in1d(a,</span> <span class="pre">b)</span></code> is logically
+equivalent to <code class="docutils literal notranslate"><span class="pre">ak.array([item</span> <span class="pre">in</span> <span class="pre">b</span> <span class="pre">for</span> <span class="pre">item</span> <span class="pre">in</span> <span class="pre">a])</span></code>, but is much
+faster and scales to arbitrarily large <code class="docutils literal notranslate"><span class="pre">a</span></code>.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;String </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cat</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span><span class="n">strings</span><span class="p">)</span>
+<span class="go">array([True, True, True, True, True])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;String </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">9</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">catTwo</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span><span class="n">catTwo</span><span class="p">)</span>
+<span class="go">array([False, False, False, False, False])</span>
+</pre></div>
+</div>
+</dd></dl>
 
 <dl class="py method">
 <dt id="arkouda.categorical.Categorical.unique">
