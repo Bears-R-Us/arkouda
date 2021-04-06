@@ -152,22 +152,10 @@ class SetOpsTest(ArkoudaTest):
         self.assertTrue((ak.in1d(pdaOne, pdaTwo) == 
                          ak.array([True, False, False, True])).all())
 
-        vals = [i for i in range(0, 5)]
-        valsTwo = list(vals)
-        valsTwo[4] = 9
+        vals = [i % 3 for i in range(10)]
+        valsTwo = [i % 2 for i in range(10)]
         stringsOne = ak.array(['String {}'.format(i) for i in vals])
         stringsTwo = ak.array(['String {}'.format(i) for i in valsTwo])
-        
-        self.assertTrue((ak.array([True,True,True,True,False]) 
-                        == ak.in1d(stringsOne,stringsTwo)).all())
 
-        catOne = ak.Categorical(stringsOne)
-        catTwo = ak.Categorical(stringsTwo)
-
-        self.assertTrue((ak.array([True,True,True,True,False]) 
-                        == ak.in1d(catOne,catTwo)).all())
-        
-        self.assertTrue((ak.array([True,True,True,True,False]) 
-                        == catOne.in1d(catTwo)).all())
-        
-        
+        answer = ak.array([x < 2 for x in vals])
+        self.assertTrue((answer == ak.in1d(stringsOne,stringsTwo)).all())

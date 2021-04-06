@@ -369,22 +369,21 @@ class Categorical:
     @typechecked
     def in1d(self, test : Union[Strings,Categorical]) -> pdarray:
         """
-        Test whether each element of the Categorical.categories object is 
-        also present in the in input Strings or Categorical.categories object.
+        Test whether each element of the Categorical object is 
+        also present in the test Strings or Categorical object.
 
         Returns a boolean array the same length as `self` that is True
-        where an element of `self.categories` is in `test or test.categories` 
-        and False otherwise.
+        where an element of `self` is in `test` and False otherwise.
 
         Parameters
         ----------
         test : Union[Strings,Categorical]
-            The values against which to test each value of 'self.categories.
+            The values against which to test each value of 'self`.
 
         Returns
         -------
         pdarray, bool
-            The values `self[in1d]` are in `test` or `test.categories`.
+            The values `self[in1d]` are in the `test` Strings or Categorical object.
         
         Raises
         ------
@@ -407,18 +406,18 @@ class Categorical:
         --------
         >>> strings = ak.array(['String {}'.format(i) for i in range(0,5)])
         >>> cat = ak.Categorical(strings)
-        >>> cat.in1d(strings)
+        >>> ak.in1d(cat,strings)
         array([True, True, True, True, True])
         >>> strings = ak.array(['String {}'.format(i) for i in range(5,9)])
         >>> catTwo = ak.Categorical(strings)
-        >>> cat.in1d(catTwo)
+        >>> ak.in1d(cat,catTwo)
         array([False, False, False, False, False])
         """
         if isinstance(test,Categorical):
-            return in1d(self.categories,test.categories)
+            categoriesisin = in1d(self.categories, test.categories)
         else:
             categoriesisin = in1d(self.categories, test)
-            return categoriesisin[self.codes]
+        return categoriesisin[self.codes]
 
     def unique(self) -> Categorical:
         #__doc__ = unique.__doc__
