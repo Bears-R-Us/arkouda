@@ -112,7 +112,26 @@ class CategoricalTest(ArkoudaTest):
         self.assertEqual(('type of argument "other" must be one of (Categorical, str, str_);' +
                           ' got int instead'), 
                          cm.exception.args[0])
-            
+    
+    def testIn1d(self):
+        vals = [i % 3 for i in range(10)]
+        valsTwo = [i % 2 for i in range(10)]
+
+        stringsOne = ak.array(['String {}'.format(i) for i in vals])
+        stringsTwo = ak.array(['String {}'.format(i) for i in valsTwo])
+        catOne = ak.Categorical(stringsOne)
+        catTwo = ak.Categorical(stringsTwo)
+
+        answer = ak.array([x < 2 for x in vals])
+
+        self.assertTrue((answer == ak.in1d(catOne,catTwo)).all())
+        self.assertTrue((answer == ak.in1d(catOne,stringsTwo)).all())
+
+        with self.assertRaises(TypeError) as cm:
+            ak.in1d(catOne, ak.randint(0,5,5))
+        self.assertEqual(('type of argument "test" must be one of (Strings, Categorical); got ' + 
+                          'arkouda.pdarrayclass.pdarray instead'), cm.exception.args[0])    
+       
     def testConcatenate(self):
         catOne = self._getCategorical('string',51)
         catTwo = self._getCategorical('string-two', 51)
