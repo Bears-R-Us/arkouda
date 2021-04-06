@@ -366,10 +366,59 @@ class Categorical:
         categoriesendswith = self.categories.endswith(substr)
         return categoriesendswith[self.codes]
 
-    def in1d(self, test):
-        #__doc__ = in1d.__doc__
-        categoriesisin = in1d(self.categories, test)
-        return categoriesisin[self.codes]
+    @typechecked
+    def in1d(self, test : Union[Strings,Categorical]) -> pdarray:
+        """
+        Test whether each element of the Categorical.categories object is 
+        also present in the in input Strings or Categorical.categories object.
+
+        Returns a boolean array the same length as `self` that is True
+        where an element of `self.categories` is in `test or test.categories` 
+        and False otherwise.
+
+        Parameters
+        ----------
+        test : Union[Strings,Categorical]
+            The values against which to test each value of 'self.categories.
+
+        Returns
+        -------
+        pdarray, bool
+            The values `self[in1d]` are in `test` or `test.categories`.
+        
+        Raises
+        ------
+        TypeError
+            Raised if test is not a Strings or Categorical object
+
+        See Also
+        --------
+        unique, intersect1d, union1d
+
+        Notes
+        -----
+        `in1d` can be considered as an element-wise function version of the
+        python keyword `in`, for 1-D sequences. ``in1d(a, b)`` is logically
+        equivalent to ``ak.array([item in b for item in a])``, but is much
+        faster and scales to arbitrarily large ``a``.
+    
+
+        Examples
+        --------
+        >>> strings = ak.array(['String {}'.format(i) for i in range(0,5)])
+        >>> cat = ak.Categorical(strings)
+        >>> cat.in1d(strings)
+        array([True, True, True, True, True])
+        >>> strings = ak.array(['String {}'.format(i) for i in range(5,9)])
+        >>> catTwo = ak.Categorical(strings)
+        >>> cat.in1d(catTwo)
+        array([False, False, False, False, False])
+        """
+        if isinstance(test,Categorical):
+            return in1d(self.categories,test.categories)
+        else:
+            categoriesisin = in1d(self.categories, test)
+            return categoriesisin[self.codes]
 
     def unique(self) -> Categorical:
         #__doc__ = unique.__doc__

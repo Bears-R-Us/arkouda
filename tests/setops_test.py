@@ -160,3 +160,14 @@ class SetOpsTest(ArkoudaTest):
         
         self.assertTrue((ak.array([True,True,True,True,False]) 
                         == ak.in1d(stringsOne,stringsTwo)).all())
+
+        catOne = ak.Categorical(stringsOne)
+        catTwo = ak.Categorical(stringsTwo)
+
+        self.assertTrue((ak.array([True,True,True,True,False]) 
+                        == ak.in1d(catOne,catTwo)).all())
+        
+        self.assertTrue((ak.array([True,True,True,True,False]) 
+                        == catOne.in1d(catTwo)).all())
+        
+        
