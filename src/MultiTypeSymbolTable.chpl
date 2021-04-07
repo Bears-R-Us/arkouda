@@ -320,19 +320,36 @@ module MultiTypeSymbolTable
         */
         proc info(name:string): string throws {
             var s: string;
-            if name == "__AllSymbols__" {
+            if tab.size == 0 {
+                s = "the symbol table is empty";
+            }
+            else if name == "__AllSymbols__" {
                 for n in tab {
-                    s += "name:%t dtype:%t size:%t ndim:%t shape:%t itemsize:%t\n".format(n, 
+                    s += "name:%t dtype:%t size:%t ndim:%t shape:%t itemsize:%t registered:%t\n".format(n, 
                               dtype2str(tab.getBorrowed(n).dtype), tab.getBorrowed(n).size, 
                               tab.getBorrowed(n).ndim, tab.getBorrowed(n).shape, 
-                              tab.getBorrowed(n).itemsize);
+                              tab.getBorrowed(n).itemsize, registry.contains(n));
                 }
-            } else {
+            } 
+            else if name == "__RegisteredSymbols__" {
+                if registry.size == 0 {
+                    s = "the registry is empty";
+                }
+                else {
+                    for n in registry {
+                        s += "name:%t dtype:%t size:%t ndim:%t shape:%t itemsize:%t registered:%t\n".format(n, 
+                                  dtype2str(tab.getBorrowed(n).dtype), tab.getBorrowed(n).size, 
+                                  tab.getBorrowed(n).ndim, tab.getBorrowed(n).shape, 
+                                  tab.getBorrowed(n).itemsize, registry.contains(n));
+                    }
+                }
+            }
+            else {
                 if (tab.contains(name)) {
-                    s = "name:%t dtype:%t size:%t ndim:%t shape:%t itemsize:%t\n".format(name, 
+                    s = "name:%t dtype:%t size:%t ndim:%t shape:%t itemsize:%t registered:%t\n".format(name, 
                               dtype2str(tab.getBorrowed(name).dtype), tab.getBorrowed(name).size, 
                               tab.getBorrowed(name).ndim, tab.getBorrowed(name).shape, 
-                              tab.getBorrowed(name).itemsize);
+                              tab.getBorrowed(name).itemsize, registry.contains(name));
                 }
                 else {
                     throw getErrorWithContext(
