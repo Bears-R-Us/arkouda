@@ -62,10 +62,15 @@ module MultiTypeSymbolTable
                                      "Registering symbol: %s ".format(userDefinedName));            
             }
             
+            // RE: Issue#729 we no longer support multiple name registration of the same object
+            if (registry.contains(name)) {
+                registry -= name;
+            }
+
             registry += userDefinedName; // add user defined name to registry
 
             // point at same shared table entry
-            tab.addOrSet(userDefinedName, tab.getValue(name));
+            tab.addOrSet(userDefinedName, tab.getAndRemove(name));
         }
 
         proc unregName(name: string) throws {

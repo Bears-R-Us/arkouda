@@ -19,17 +19,14 @@ class RegistrationTest(ArkoudaTest):
         '''
         ar_array = self.a_array.register('test_int64_a')
 
-        self.assertEqual('test_int64_a', ar_array.name)
-        self.assertNotEqual(self.a_array.name, ar_array.name)  
-
-        self.assertTrue((self.a_array.to_ndarray() == 
-                                      ar_array.to_ndarray()).all())
+        self.assertEqual('test_int64_a', self.a_array.name, "Expect name to change inplace")
+        self.assertTrue(self.a_array is ar_array, "These should be the same object")
+        self.assertTrue((self.a_array.to_ndarray() == ar_array.to_ndarray()).all())
         ak.clear()
+        # Both ar_array and self.a_array point to the same object, so both should still be usable.
         str(ar_array)
-        
-        with self.assertRaises(RuntimeError):
-            str(self.a_array)
-        
+        str(self.a_array)
+
     def test_unregister(self):
         '''
         Tests the following:
@@ -96,7 +93,13 @@ class RegistrationTest(ArkoudaTest):
         4. Method invocation on registered arrays succeeds after ak.clear()
         '''
         ar_array = self.a_array.register('test_int64_a')
-        br_array = self.a_array.register('test_int64_b')
+        aar_array = self.a_array.register('test_int64_aa')
+
+        self.assertTrue(ar_array is aar_array,
+                        msg="With inplace modification, these should be the same")
+        self.assertEqual(ar_array.name, "test_int64_aa",
+                         msg="ar_array.name should be updated with inplace modification")
+
         twos_array = ak.ones(10,dtype=ak.int64).register('twos_array')
         twos_array.fill(2)
         
@@ -104,14 +107,21 @@ class RegistrationTest(ArkoudaTest):
         self.assertTrue((twos_array.to_ndarray() == 
                                      g_twos_array.to_ndarray()).all())
 
-        ak.clear()
+        ak.clear() # This should remove self.b_array and g_twos_array
 
-        with self.assertRaises(RuntimeError):
-            str(self.a_array)
+        with self.assertRaises(RuntimeError, msg="g_twos_array should have been cleared because it wasn't registered"):
+            str(g_twos_array)
 
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(RuntimeError, msg="self.b_array should have been cleared because it wasn't registered"):
+            str(self.b_array)
+
+        # Assert these exist by invoking them and not receiving an exception
+        str(self.a_array)
+        str(ar_array)
+
+        with self.assertRaises(RuntimeError, msg="Should raise error because self.b_array was cleared"):
             self.a_array + self.b_array
 
-        g_twos_array = ar_array + br_array
+        g_twos_array = ar_array + aar_array
         self.assertTrue((twos_array.to_ndarray() == 
                                        g_twos_array.to_ndarray()).all())
