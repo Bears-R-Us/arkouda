@@ -81,16 +81,27 @@ def from_series(series : pd.Series,
     data type is either inferred from the the Series or is set via the dtype parameter. 
     
     Series of datetime or timedelta are converted to Arkouda arrays of dtype int64 (nanoseconds)
+    
+    A Pandas Series containing strings has a dtype of object. Arkouda assumes the Series
+    contains strings and sets the dtype to str
     """ 
     if not dtype:   
         dt = series.dtype.name
     else:
         dt = str(dtype)
     try:
+        '''
+        If the Series has a object dtype, set dtype to string to comply with method
+        signature that does not require a dtype; this is required because Pandas can infer
+        non-str dtypes from the input np or Python array.
+        '''
+        if dt == 'object':
+            dt = 'string'
+
         n_array = series.to_numpy(dtype=SeriesDTypes[dt])
     except KeyError:
         raise ValueError(('dtype {} is unsupported. Supported dtypes are bool, ' +
-                          'float64, int64, string, datetime64[ns], and timedelta64[ns]').format(dt))
+                      'float64, int64, string, datetime64[ns], and timedelta64[ns]').format(dt))
     return array(n_array)
 
 def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
