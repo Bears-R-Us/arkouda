@@ -299,41 +299,7 @@ Classes
       .. seealso:: :obj:`Categorical.startswith`, :obj:`Categorical.contains`
 
 
-   .. method:: in1d(self, test: Union[(Strings, Categorical)]) -> arkouda.pdarrayclass.pdarray
-
-      Test whether each element of the Categorical object is
-      also present in the test Strings or Categorical object.
-
-      Returns a boolean array the same length as `self` that is True
-      where an element of `self` is in `test` and False otherwise.
-
-      :param test: The values against which to test each value of 'self`.
-      :type test: Union[Strings,Categorical]
-
-      :returns: The values `self[in1d]` are in the `test` Strings or Categorical object.
-      :rtype: pdarray, bool
-
-      :raises TypeError: Raised if test is not a Strings or Categorical object
-
-      .. seealso:: :obj:`unique`, :obj:`intersect1d`, :obj:`union1d`
-
-      .. rubric:: Notes
-
-      `in1d` can be considered as an element-wise function version of the
-      python keyword `in`, for 1-D sequences. ``in1d(a, b)`` is logically
-      equivalent to ``ak.array([item in b for item in a])``, but is much
-      faster and scales to arbitrarily large ``a``.
-
-      .. rubric:: Examples
-
-      >>> strings = ak.array(['String {}'.format(i) for i in range(0,5)])
-      >>> cat = ak.Categorical(strings)
-      >>> ak.in1d(cat,strings)
-      array([True, True, True, True, True])
-      >>> strings = ak.array(['String {}'.format(i) for i in range(5,9)])
-      >>> catTwo = ak.Categorical(strings)
-      >>> ak.in1d(cat,catTwo)
-      array([False, False, False, False, False])
+   .. method:: in1d(self, test)
 
 
    .. method:: unique(self) -> arkouda.categorical.Categorical

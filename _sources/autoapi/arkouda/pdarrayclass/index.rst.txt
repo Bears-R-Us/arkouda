@@ -39,6 +39,7 @@ Functions
    arkouda.pdarrayclass.maxk
    arkouda.pdarrayclass.argmink
    arkouda.pdarrayclass.argmaxk
+   arkouda.pdarrayclass.register_pdarray
    arkouda.pdarrayclass.attach_pdarray
    arkouda.pdarrayclass.unregister_pdarray
 
@@ -608,19 +609,18 @@ Functions
 
    .. method:: register(self, user_defined_name: str) -> arkouda.pdarrayclass.pdarray
 
-      Register this pdarray with a user defined name in the arkouda server
+      Return a pdarray with a user defined name in the arkouda server
       so it can be attached to later using pdarray.attach()
 
       :param user_defined_name: user defined name array is to be registered under
       :type user_defined_name: str
 
-      :returns: The same pdarray which is now registered with the arkouda server and has an updated name.
-                This is an in-place modification, the original is returned to support a fluid programming style
+      :returns: pdarray which points to original input pdarray but is also
+                registered with user defined name in the arkouda server
       :rtype: pdarray
 
       :raises TypeError: Raised if pda is neither a pdarray nor a str or if
           user_defined_name is not a str
-      :raises RegistrationError: If the server was unable to register the pdarray with the user_defined_name
 
       .. seealso:: :obj:`attach`, :obj:`unregister`
 
@@ -644,6 +644,8 @@ Functions
       Unregister a pdarray in the arkouda server which was previously
       registered using register() and/or attahced to using attach()
 
+      :param user_defined_name: which array was registered under
+      :type user_defined_name: str
 
       :returns:
       :rtype: None
@@ -1080,6 +1082,40 @@ Functions
    array([4, 6, 0])
    >>> ak.argmaxk(A, 4)
    array([1, 4, 6, 0])
+
+
+.. function:: register_pdarray(pda: Union[(str, pdarray)], user_defined_name: str) -> arkouda.pdarrayclass.pdarray
+
+   Return a pdarray with a user defined name in the arkouda server
+   so it can be attached to later using attach_pdarray()
+
+   :param pda: the array to register
+   :type pda: str or pdarray
+   :param user_defined_name: user defined name array is to be registered under
+   :type user_defined_name: str
+
+   :returns: pdarray which points to original input pdarray but is also
+             registered with user defined name in the arkouda server
+   :rtype: pdarray
+
+   :raises TypeError: Raised if pda is neither a pdarray nor a str or if
+       user_defined_name is not a str
+
+   .. seealso:: :obj:`attach_pdarray`, :obj:`unregister_pdarray`
+
+   .. rubric:: Notes
+
+   Registered names/pdarrays in the server are immune to deletion
+   until they are unregistered.
+
+   .. rubric:: Examples
+
+   >>> a = zeros(100)
+   >>> r_pda = ak.register_pda(a, "my_zeros")
+   >>> # potentially disconnect from server and reconnect to server
+   >>> b = ak.attach_pda("my_zeros")
+   >>> # ...other work...
+   >>> ak.unregister_pda(b)
 
 
 .. function:: attach_pdarray(user_defined_name: str) -> arkouda.pdarrayclass.pdarray

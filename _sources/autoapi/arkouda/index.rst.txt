@@ -81,6 +81,7 @@ Functions
    arkouda.maxk
    arkouda.argmink
    arkouda.argmaxk
+   arkouda.register_pdarray
    arkouda.attach_pdarray
    arkouda.unregister_pdarray
    arkouda.argsort
@@ -918,19 +919,18 @@ Functions
 
    .. method:: register(self, user_defined_name: str) -> arkouda.pdarrayclass.pdarray
 
-      Register this pdarray with a user defined name in the arkouda server
+      Return a pdarray with a user defined name in the arkouda server
       so it can be attached to later using pdarray.attach()
 
       :param user_defined_name: user defined name array is to be registered under
       :type user_defined_name: str
 
-      :returns: The same pdarray which is now registered with the arkouda server and has an updated name.
-                This is an in-place modification, the original is returned to support a fluid programming style
+      :returns: pdarray which points to original input pdarray but is also
+                registered with user defined name in the arkouda server
       :rtype: pdarray
 
       :raises TypeError: Raised if pda is neither a pdarray nor a str or if
           user_defined_name is not a str
-      :raises RegistrationError: If the server was unable to register the pdarray with the user_defined_name
 
       .. seealso:: :obj:`attach`, :obj:`unregister`
 
@@ -954,6 +954,8 @@ Functions
       Unregister a pdarray in the arkouda server which was previously
       registered using register() and/or attahced to using attach()
 
+      :param user_defined_name: which array was registered under
+      :type user_defined_name: str
 
       :returns:
       :rtype: None
@@ -1390,6 +1392,40 @@ Functions
    array([4, 6, 0])
    >>> ak.argmaxk(A, 4)
    array([1, 4, 6, 0])
+
+
+.. function:: register_pdarray(pda: Union[(str, pdarray)], user_defined_name: str) -> arkouda.pdarrayclass.pdarray
+
+   Return a pdarray with a user defined name in the arkouda server
+   so it can be attached to later using attach_pdarray()
+
+   :param pda: the array to register
+   :type pda: str or pdarray
+   :param user_defined_name: user defined name array is to be registered under
+   :type user_defined_name: str
+
+   :returns: pdarray which points to original input pdarray but is also
+             registered with user defined name in the arkouda server
+   :rtype: pdarray
+
+   :raises TypeError: Raised if pda is neither a pdarray nor a str or if
+       user_defined_name is not a str
+
+   .. seealso:: :obj:`attach_pdarray`, :obj:`unregister_pdarray`
+
+   .. rubric:: Notes
+
+   Registered names/pdarrays in the server are immune to deletion
+   until they are unregistered.
+
+   .. rubric:: Examples
+
+   >>> a = zeros(100)
+   >>> r_pda = ak.register_pda(a, "my_zeros")
+   >>> # potentially disconnect from server and reconnect to server
+   >>> b = ak.attach_pda("my_zeros")
+   >>> # ...other work...
+   >>> ak.unregister_pda(b)
 
 
 .. function:: attach_pdarray(user_defined_name: str) -> arkouda.pdarrayclass.pdarray
@@ -2287,9 +2323,6 @@ Functions
    data type is either inferred from the the Series or is set via the dtype parameter.
 
    Series of datetime or timedelta are converted to Arkouda arrays of dtype int64 (nanoseconds)
-
-   A Pandas Series containing strings has a dtype of object. Arkouda assumes the Series
-   contains strings and sets the dtype to str
 
 
 .. function:: cast(pda: Union[(pdarray, Strings)], dt: Union[(np.dtype, str)]) -> Union[(pdarray, Strings)]
@@ -3838,6 +3871,10 @@ Functions
       segments and values and (4) save logic is delegated to pdarray.save
 
 
+   .. method:: register_helper(cls, offsets, bytes)
+      :classmethod:
+
+
    .. method:: register(self, user_defined_name: str) -> arkouda.strings.Strings
 
 
@@ -4161,41 +4198,7 @@ Functions
       .. seealso:: :obj:`Categorical.startswith`, :obj:`Categorical.contains`
 
 
-   .. method:: in1d(self, test: Union[(Strings, Categorical)]) -> arkouda.pdarrayclass.pdarray
-
-      Test whether each element of the Categorical object is
-      also present in the test Strings or Categorical object.
-
-      Returns a boolean array the same length as `self` that is True
-      where an element of `self` is in `test` and False otherwise.
-
-      :param test: The values against which to test each value of 'self`.
-      :type test: Union[Strings,Categorical]
-
-      :returns: The values `self[in1d]` are in the `test` Strings or Categorical object.
-      :rtype: pdarray, bool
-
-      :raises TypeError: Raised if test is not a Strings or Categorical object
-
-      .. seealso:: :obj:`unique`, :obj:`intersect1d`, :obj:`union1d`
-
-      .. rubric:: Notes
-
-      `in1d` can be considered as an element-wise function version of the
-      python keyword `in`, for 1-D sequences. ``in1d(a, b)`` is logically
-      equivalent to ``ak.array([item in b for item in a])``, but is much
-      faster and scales to arbitrarily large ``a``.
-
-      .. rubric:: Examples
-
-      >>> strings = ak.array(['String {}'.format(i) for i in range(0,5)])
-      >>> cat = ak.Categorical(strings)
-      >>> ak.in1d(cat,strings)
-      array([True, True, True, True, True])
-      >>> strings = ak.array(['String {}'.format(i) for i in range(5,9)])
-      >>> catTwo = ak.Categorical(strings)
-      >>> ak.in1d(cat,catTwo)
-      array([False, False, False, False, False])
+   .. method:: in1d(self, test)
 
 
    .. method:: unique(self) -> arkouda.categorical.Categorical
@@ -4834,19 +4837,18 @@ Functions
 
    .. method:: register(self, user_defined_name: str) -> arkouda.pdarrayclass.pdarray
 
-      Register this pdarray with a user defined name in the arkouda server
+      Return a pdarray with a user defined name in the arkouda server
       so it can be attached to later using pdarray.attach()
 
       :param user_defined_name: user defined name array is to be registered under
       :type user_defined_name: str
 
-      :returns: The same pdarray which is now registered with the arkouda server and has an updated name.
-                This is an in-place modification, the original is returned to support a fluid programming style
+      :returns: pdarray which points to original input pdarray but is also
+                registered with user defined name in the arkouda server
       :rtype: pdarray
 
       :raises TypeError: Raised if pda is neither a pdarray nor a str or if
           user_defined_name is not a str
-      :raises RegistrationError: If the server was unable to register the pdarray with the user_defined_name
 
       .. seealso:: :obj:`attach`, :obj:`unregister`
 
@@ -4870,6 +4872,8 @@ Functions
       Unregister a pdarray in the arkouda server which was previously
       registered using register() and/or attahced to using attach()
 
+      :param user_defined_name: which array was registered under
+      :type user_defined_name: str
 
       :returns:
       :rtype: None
@@ -4989,9 +4993,6 @@ Functions
    data type is either inferred from the the Series or is set via the dtype parameter.
 
    Series of datetime or timedelta are converted to Arkouda arrays of dtype int64 (nanoseconds)
-
-   A Pandas Series containing strings has a dtype of object. Arkouda assumes the Series
-   contains strings and sets the dtype to str
 
 
 .. function:: ak_array(a: Union[(pdarray, np.ndarray, Iterable)]) -> Union[(pdarray, Strings)]

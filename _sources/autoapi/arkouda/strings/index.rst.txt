@@ -515,6 +515,10 @@ Classes
       segments and values and (4) save logic is delegated to pdarray.save
 
 
+   .. method:: register_helper(cls, offsets, bytes)
+      :classmethod:
+
+
    .. method:: register(self, user_defined_name: str) -> arkouda.strings.Strings
 
 
