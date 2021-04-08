@@ -15,7 +15,7 @@ import builtins
 
 __all__ = ["pdarray", "info", "clear", "any", "all", "is_sorted", "sum", "prod", 
            "min", "max", "argmin", "argmax", "mean", "var", "std", "mink", 
-           "maxk", "argmink", "argmaxk", "register_pdarray", "attach_pdarray", 
+           "maxk", "argmink", "argmaxk", "attach_pdarray",
            "unregister_pdarray"]
 
 logger = getArkoudaLogger(name='pdarrayclass')    
@@ -952,7 +952,7 @@ class pdarray:
 
     def register(self, user_defined_name : str) -> pdarray:
         """
-        Return a pdarray with a user defined name in the arkouda server 
+        Register this pdarray with a user defined name in the arkouda server
         so it can be attached to later using pdarray.attach()
         
         Parameters
@@ -963,14 +963,16 @@ class pdarray:
         Returns
         -------
         pdarray
-            pdarray which points to original input pdarray but is also 
-            registered with user defined name in the arkouda server
+            The same pdarray which is now registered with the arkouda server and has an updated name.
+            This is an in-place modification, the original is returned to support a fluid programming style
         
         Raises
         ------
         TypeError
             Raised if pda is neither a pdarray nor a str or if 
             user_defined_name is not a str
+        RegistrationError
+            If the server was unable to register the pdarray with the user_defined_name
         
         See also
         --------
@@ -990,7 +992,18 @@ class pdarray:
         >>> # ...other work...
         >>> b.unregister()
         """
-        return register_pdarray(self, user_defined_name)
+        if not isinstance(user_defined_name, str):
+            raise TypeError(f"user_defined_name must be of type str, was {type(user_defined_name)}")
+
+        rep_msg = generic_msg(cmd="register", args=f"{self.name} {user_defined_name}")
+        if isinstance(rep_msg, bytes):
+            rep_msg = str(rep_msg, "UTF-8")
+
+        if rep_msg != "success":
+            raise RegistrationError(f"Server was unable to register {user_defined_name}")
+
+        self.name = user_defined_name
+        return self
 
     def unregister(self) -> None:
         """
@@ -999,8 +1012,6 @@ class pdarray:
         
         Parameters
         ----------
-        user_defined_name : str
-            which array was registered under
         
         Returns
         -------
@@ -1732,63 +1743,6 @@ def argmaxk(pda : pdarray, k : int_scalars) -> pdarray:
     repMsg = generic_msg(cmd="maxk", args="{} {} {}".format(pda.name, k, True))
     return create_pdarray(repMsg)
 
-
-@typechecked
-def register_pdarray(pda : Union[str,pdarray], user_defined_name : str) -> pdarray:
-    """
-    Return a pdarray with a user defined name in the arkouda server 
-    so it can be attached to later using attach_pdarray()
-    
-    Parameters
-    ----------
-    pda : str or pdarray
-        the array to register
-    user_defined_name : str
-        user defined name array is to be registered under
-
-    Returns
-    -------
-    pdarray
-        pdarray which points to original input pdarray but is also 
-        registered with user defined name in the arkouda server
-
-
-    Raises
-    ------
-    TypeError
-        Raised if pda is neither a pdarray nor a str or if 
-        user_defined_name is not a str
-
-    See also
-    --------
-    attach_pdarray, unregister_pdarray
-
-    Notes
-    -----
-    Registered names/pdarrays in the server are immune to deletion 
-    until they are unregistered.
-
-    Examples
-    --------
-    >>> a = zeros(100)
-    >>> r_pda = ak.register_pda(a, "my_zeros")
-    >>> # potentially disconnect from server and reconnect to server
-    >>> b = ak.attach_pda("my_zeros")
-    >>> # ...other work...
-    >>> ak.unregister_pda(b)
-    """
-
-    if isinstance(pda, pdarray):
-        repMsg = generic_msg(cmd="register", args="{} {}".\
-                             format(pda.name, user_defined_name))
-        return create_pdarray(repMsg)
-
-    if isinstance(pda, str):
-        repMsg = generic_msg(cmd="register", args="{} {}".\
-                             format(pda, user_defined_name))        
-        return create_pdarray(repMsg)
-
-
 @typechecked
 def attach_pdarray(user_defined_name : str) -> pdarray:
     """
@@ -1876,3 +1830,8 @@ def unregister_pdarray(pda : Union[str,pdarray]) -> None:
 
     if isinstance(pda, str):
         repMsg = generic_msg(cmd="unregister", args="{}".format(pda))
+
+
+# TODO In the future move this to a specific errors file
+class RegistrationError(Exception):
+    """Error/Exception used when the Arkouda Server cannot register an object"""

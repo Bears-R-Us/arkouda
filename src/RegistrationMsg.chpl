@@ -45,7 +45,7 @@ module RegistrationMsg
         st.regName(name, userDefinedName);
         
         // response message
-        repMsg = "created %s".format(st.attrib(userDefinedName));
+        repMsg = "success";
         regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }

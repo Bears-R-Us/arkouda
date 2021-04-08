@@ -96,6 +96,7 @@ class Strings:
             raise ValueError(e)   
 
         self.dtype = npstr
+        self.name:Union[str, None] = None
         self.logger = getArkoudaLogger(name=__class__.__name__) # type: ignore
 
     def __iter__(self):
@@ -827,13 +828,11 @@ class Strings:
         self.bytes.save(prefix_path=prefix_path, 
                                     dataset='{}/values'.format(dataset), mode=mode)
 
-    @classmethod
-    def register_helper(cls, offsets, bytes):
-        return cls(offsets, bytes)
-
     def register(self, user_defined_name : str) -> Strings:
-        return self.register_helper(self.offsets.register(user_defined_name+'_offsets'),
-                               self.bytes.register(user_defined_name+'_bytes'))
+        self.offsets.register(user_defined_name+'_offsets')
+        self.bytes.register(user_defined_name+'_bytes')
+        self.name = user_defined_name
+        return self
 
     def unregister(self) -> None:
         self.offsets.unregister()
