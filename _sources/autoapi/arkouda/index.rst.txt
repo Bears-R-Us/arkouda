@@ -2324,6 +2324,9 @@ Functions
 
    Series of datetime or timedelta are converted to Arkouda arrays of dtype int64 (nanoseconds)
 
+   A Pandas Series containing strings has a dtype of object. Arkouda assumes the Series
+   contains strings and sets the dtype to str
+
 
 .. function:: cast(pda: Union[(pdarray, Strings)], dt: Union[(np.dtype, str)]) -> Union[(pdarray, Strings)]
 
@@ -5027,6 +5030,9 @@ Functions
    data type is either inferred from the the Series or is set via the dtype parameter.
 
    Series of datetime or timedelta are converted to Arkouda arrays of dtype int64 (nanoseconds)
+
+   A Pandas Series containing strings has a dtype of object. Arkouda assumes the Series
+   contains strings and sets the dtype to str
 
 
 .. function:: ak_array(a: Union[(pdarray, np.ndarray, Iterable)]) -> Union[(pdarray, Strings)]

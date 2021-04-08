@@ -3248,6 +3248,8 @@ dtype is object).</p>
 <p>The supported datatypes are bool, float64, int64, string, and datetime64[ns]. The
 data type is either inferred from the the Series or is set via the dtype parameter.</p>
 <p>Series of datetime or timedelta are converted to Arkouda arrays of dtype int64 (nanoseconds)</p>
+<p>A Pandas Series containing strings has a dtype of object. Arkouda assumes the Series
+contains strings and sets the dtype to str</p>
 </dd></dl>
 
 <dl class="py function">
@@ -6876,6 +6878,8 @@ dtype is object).</p>
 <p>The supported datatypes are bool, float64, int64, string, and datetime64[ns]. The
 data type is either inferred from the the Series or is set via the dtype parameter.</p>
 <p>Series of datetime or timedelta are converted to Arkouda arrays of dtype int64 (nanoseconds)</p>
+<p>A Pandas Series containing strings has a dtype of object. Arkouda assumes the Series
+contains strings and sets the dtype to str</p>
 </dd></dl>
 
 <dl class="py function">
