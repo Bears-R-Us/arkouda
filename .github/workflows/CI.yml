@@ -74,7 +74,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: [chapel, chapel-gasnet-smp]
+        include:
+          - image: chapel
+            threads: 2
+          - image: chapel-gasnet-smp
+            threads: 1
+    env:
+      CHPL_RT_NUM_THREADS_PER_LOCALE: ${{matrix.threads}}
     container:
       image: chapel/${{matrix.image}}:1.23.0
     steps:
