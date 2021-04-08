@@ -493,6 +493,11 @@ class PdarrayCreationTest(ArkoudaTest):
         
         self.assertIsInstance(objects, ak.Strings)
         self.assertEqual(np.str, objects.dtype)
+        
+        objects = ak.from_series(pd.Series(['a', 'b', 'c', 'd', 'e']))
+        
+        self.assertIsInstance(objects, ak.Strings)
+        self.assertEqual(np.str, objects.dtype)       
 
         p_array = ak.from_series(pd.Series(np.random.randint(0,10,10)))
 
@@ -553,8 +558,8 @@ class PdarrayCreationTest(ArkoudaTest):
             ak.from_series(pd.Series(np.random.randint(0,10,10), dtype=np.int8))      
         self.assertEqual(('dtype int8 is unsupported. Supported dtypes are bool, ' +
                           'float64, int64, string, datetime64[ns], and timedelta64[ns]'), 
-                         cm.exception.args[0])            
-            
+                         cm.exception.args[0])
+        
     def test_fill(self):
         ones = ak.ones(100)
 
