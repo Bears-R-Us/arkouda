@@ -55,8 +55,16 @@ module MultiTypeSymbolTable
 
             // check to see if userDefinedName is defined
             if (registry.contains(userDefinedName)) {
-                mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "regName: redefined symbol: %s ".format(userDefinedName));
+                mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                                     "regName: requested symbol `%s` is already in use".format(userDefinedName));
+                // We should return an error here
+                throw getErrorWithContext(
+                                    msg=incompatibleArgumentsError("regName", name),
+                                    lineNumber=getLineNumber(),
+                                    routineName=getRoutineName(),
+                                    moduleName=getModuleName(),
+                                    errorClass="ArgumentError");
+                // throw new owned ArgumentError();
             } else {
                 mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                      "Registering symbol: %s ".format(userDefinedName));            

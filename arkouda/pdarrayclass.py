@@ -16,7 +16,7 @@ import builtins
 __all__ = ["pdarray", "info", "clear", "any", "all", "is_sorted", "sum", "prod", 
            "min", "max", "argmin", "argmax", "mean", "var", "std", "mink", 
            "maxk", "argmink", "argmaxk", "attach_pdarray",
-           "unregister_pdarray"]
+           "unregister_pdarray", "RegistrationError"]
 
 logger = getArkoudaLogger(name='pdarrayclass')    
 
@@ -949,7 +949,6 @@ class pdarray:
         return cast(str, generic_msg(cmd="tohdf", args="{} {} {} {} {}".\
                            format(self.name, dataset, m, json_array, self.dtype)))
 
-
     def register(self, user_defined_name : str) -> pdarray:
         """
         Register this pdarray with a user defined name in the arkouda server
@@ -995,11 +994,13 @@ class pdarray:
         if not isinstance(user_defined_name, str):
             raise TypeError(f"user_defined_name must be of type str, was {type(user_defined_name)}")
 
-        rep_msg = generic_msg(cmd="register", args=f"{self.name} {user_defined_name}")
-        if isinstance(rep_msg, bytes):
-            rep_msg = str(rep_msg, "UTF-8")
-
-        if rep_msg != "success":
+        try:
+            rep_msg = generic_msg(cmd="register", args=f"{self.name} {user_defined_name}")
+            if isinstance(rep_msg, bytes):
+                rep_msg = str(rep_msg, "UTF-8")
+            if rep_msg != "success":
+                raise RegistrationError
+        except (RuntimeError, RegistrationError):  # Registering two objects with the same name is not allowed
             raise RegistrationError(f"Server was unable to register {user_defined_name}")
 
         self.name = user_defined_name

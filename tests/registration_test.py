@@ -1,5 +1,7 @@
 from context import arkouda as ak
 from base_test import ArkoudaTest
+from arkouda.pdarrayclass import RegistrationError
+
 
 class RegistrationTest(ArkoudaTest):
     
@@ -26,6 +28,26 @@ class RegistrationTest(ArkoudaTest):
         # Both ar_array and self.a_array point to the same object, so both should still be usable.
         str(ar_array)
         str(self.a_array)
+
+        try:
+            self.a_array.unregister()
+        except (RuntimeError, RegistrationError):
+            pass  # Will be tested in `test_unregister`
+
+    def test_double_register(self):
+        """
+        Tests the case when two objects get registered using the same user_defined_name
+        """
+        a = ak.ones(3, dtype=ak.int64)
+        b = ak.ones(3, dtype=ak.int64)
+        b.fill(2)
+        a.register("foo")
+
+        with self.assertRaises(RegistrationError, msg="Should raise an Error"):
+            b.register("foo")
+
+        # Clean up the registry
+        a.unregister()
 
     def test_unregister(self):
         '''
