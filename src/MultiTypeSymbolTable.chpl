@@ -53,10 +53,16 @@ module MultiTypeSymbolTable
                                    errorClass="UnknownSymbolError");
             }
 
-            // check to see if userDefinedName is defined
+            // check to see if userDefinedName is already defined, with in-place modification, this will be an error
             if (registry.contains(userDefinedName)) {
-                mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "regName: redefined symbol: %s ".format(userDefinedName));
+                mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                                     "regName: requested symbol `%s` is already in use".format(userDefinedName));
+                throw getErrorWithContext(
+                                    msg=incompatibleArgumentsError("regName", name),
+                                    lineNumber=getLineNumber(),
+                                    routineName=getRoutineName(),
+                                    moduleName=getModuleName(),
+                                    errorClass="ArgumentError");
             } else {
                 mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                      "Registering symbol: %s ".format(userDefinedName));            

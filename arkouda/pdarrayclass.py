@@ -16,7 +16,7 @@ import builtins
 __all__ = ["pdarray", "info", "clear", "any", "all", "is_sorted", "sum", "prod", 
            "min", "max", "argmin", "argmax", "mean", "var", "std", "mink", 
            "maxk", "argmink", "argmaxk", "attach_pdarray",
-           "unregister_pdarray"]
+           "unregister_pdarray", "RegistrationError"]
 
 logger = getArkoudaLogger(name='pdarrayclass')    
 
@@ -949,11 +949,13 @@ class pdarray:
         return cast(str, generic_msg(cmd="tohdf", args="{} {} {} {} {}".\
                            format(self.name, dataset, m, json_array, self.dtype)))
 
-
     def register(self, user_defined_name : str) -> pdarray:
         """
         Register this pdarray with a user defined name in the arkouda server
         so it can be attached to later using pdarray.attach()
+        This is an in-place operation, registering a pdarray more than once will
+        update the name in the registry and remove the previously registered name.
+        A name can only be registered to one pdarray at a time.
         
         Parameters
         ----------
@@ -964,7 +966,8 @@ class pdarray:
         -------
         pdarray
             The same pdarray which is now registered with the arkouda server and has an updated name.
-            This is an in-place modification, the original is returned to support a fluid programming style
+            This is an in-place modification, the original is returned to support a fluid programming style.
+            Please note you cannot register two different pdarrays with the same name.
         
         Raises
         ------
@@ -973,6 +976,8 @@ class pdarray:
             user_defined_name is not a str
         RegistrationError
             If the server was unable to register the pdarray with the user_defined_name
+            If the user is attempting to register more than one pdarray with the same name, the former should be
+            unregistered first to free up the registration name.
         
         See also
         --------
@@ -995,11 +1000,13 @@ class pdarray:
         if not isinstance(user_defined_name, str):
             raise TypeError(f"user_defined_name must be of type str, was {type(user_defined_name)}")
 
-        rep_msg = generic_msg(cmd="register", args=f"{self.name} {user_defined_name}")
-        if isinstance(rep_msg, bytes):
-            rep_msg = str(rep_msg, "UTF-8")
-
-        if rep_msg != "success":
+        try:
+            rep_msg = generic_msg(cmd="register", args=f"{self.name} {user_defined_name}")
+            if isinstance(rep_msg, bytes):
+                rep_msg = str(rep_msg, "UTF-8")
+            if rep_msg != "success":
+                raise RegistrationError
+        except (RuntimeError, RegistrationError):  # Registering two objects with the same name is not allowed
             raise RegistrationError(f"Server was unable to register {user_defined_name}")
 
         self.name = user_defined_name
