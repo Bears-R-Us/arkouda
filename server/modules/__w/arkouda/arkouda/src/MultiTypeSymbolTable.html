@@ -395,8 +395,9 @@ Pass __AllSymbols__ to process the entire sym table.</p>
 <dt id="MultiTypeSymbolTable.SymTab.info">
 <em class="property">proc </em><code class="descname">info</code><span class="sig-paren">(</span><em>name: string</em><span class="sig-paren">)</span>: string throws<a class="headerlink" href="#MultiTypeSymbolTable.SymTab.info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns verbose attributes of the sym entry at the given string, if the string maps to an entry.
-Pass __AllSymbols__ to process all sym entries in the sym table.</p>
-<p>Returns: name, dtype, size, ndim, shape, and item size</p>
+Pass __AllSymbols__ to process all sym entries in the sym table.
+Pass __RegisteredSymbols__ to process all registered sym entries.</p>
+<p>Returns: name, dtype, size, ndim, shape, item size, and registration status</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -404,6 +405,27 @@ Pass __AllSymbols__ to process all sym entries in the sym table.</p>
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>name</strong> : <em>string</em> – name of entry to be processed</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">s (string) containing info</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="MultiTypeSymbolTable.SymTab.formatEntry">
+<em class="property">proc </em><code class="descname">formatEntry</code><span class="sig-paren">(</span><em>name: string</em>, <em>item: borrowed GenSymEntry</em><span class="sig-paren">)</span>: string throws<a class="headerlink" href="#MultiTypeSymbolTable.SymTab.formatEntry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns formatted string for info call.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> : <em>string</em> – name of entry to be formatted</li>
+<li><strong>entry</strong> : <em>GenSymEntry</em> – Generic Sym Entry to be formatted (tab.getBorrowed(name))</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">formatted string</p>
+</td>
 </tr>
 </tbody>
 </table>

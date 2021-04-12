@@ -154,13 +154,28 @@ or
       
       Returns verbose attributes of the sym entry at the given string, if the string maps to an entry.
       Pass __AllSymbols__ to process all sym entries in the sym table.
+      Pass __RegisteredSymbols__ to process all registered sym entries.
       
-      Returns: name, dtype, size, ndim, shape, and item size
+      Returns: name, dtype, size, ndim, shape, item size, and registration status
       
       :arg name: name of entry to be processed
       :type name: string
       
       :returns: s (string) containing info
+      
+
+   .. method:: proc formatEntry(name: string, item: borrowed GenSymEntry): string throws
+
+      
+      Returns formatted string for info call. 
+      
+      :arg name: name of entry to be formatted
+      :type name: string
+      
+      :arg entry: Generic Sym Entry to be formatted (tab.getBorrowed(name))
+      :type entry: GenSymEntry
+      
+      :returns: formatted string
       
 
    .. method:: proc attrib(name: string): string throws
