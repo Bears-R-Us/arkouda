@@ -1442,14 +1442,18 @@ dataset with the same name already exists, a <code class="docutils literal notra
 <dt id="arkouda.pdarray.register">
 <code class="sig-name descname"><span class="pre">register</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#arkouda.pdarray.register" title="Permalink to this definition">¶</a></dt>
 <dd><p>Register this pdarray with a user defined name in the arkouda server
-so it can be attached to later using pdarray.attach()</p>
+so it can be attached to later using pdarray.attach()
+This is an in-place operation, registering a pdarray more than once will
+update the name in the registry and remove the previously registered name.
+A name can only be registered to one pdarray at a time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name array is to be registered under</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The same pdarray which is now registered with the arkouda server and has an updated name.
-This is an in-place modification, the original is returned to support a fluid programming style</p>
+This is an in-place modification, the original is returned to support a fluid programming style.
+Please note you cannot register two different pdarrays with the same name.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
@@ -1458,7 +1462,9 @@ This is an in-place modification, the original is returned to support a fluid pr
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if pda is neither a pdarray nor a str or if
 user_defined_name is not a str</p></li>
-<li><p><strong>RegistrationError</strong> – If the server was unable to register the pdarray with the user_defined_name</p></li>
+<li><p><a class="reference internal" href="#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the pdarray with the user_defined_name
+If the user is attempting to register more than one pdarray with the same name, the former should be
+unregistered first to free up the registration name.</p></li>
 </ul>
 </dd>
 </dl>
@@ -2158,6 +2164,13 @@ they are unregistered.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">unregister_pdarray</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="arkouda.RegistrationError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">RegistrationError</span></code><a class="headerlink" href="#arkouda.RegistrationError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Error/Exception used when the Arkouda Server cannot register an object</p>
 </dd></dl>
 
 <dl class="py function">
@@ -6640,14 +6653,18 @@ dataset with the same name already exists, a <code class="docutils literal notra
 <dt id="id88">
 <code class="sig-name descname"><span class="pre">register</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#id88" title="Permalink to this definition">¶</a></dt>
 <dd><p>Register this pdarray with a user defined name in the arkouda server
-so it can be attached to later using pdarray.attach()</p>
+so it can be attached to later using pdarray.attach()
+This is an in-place operation, registering a pdarray more than once will
+update the name in the registry and remove the previously registered name.
+A name can only be registered to one pdarray at a time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name array is to be registered under</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The same pdarray which is now registered with the arkouda server and has an updated name.
-This is an in-place modification, the original is returned to support a fluid programming style</p>
+This is an in-place modification, the original is returned to support a fluid programming style.
+Please note you cannot register two different pdarrays with the same name.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
@@ -6656,7 +6673,9 @@ This is an in-place modification, the original is returned to support a fluid pr
 <dd class="field-even"><ul class="simple">
 <li><p><strong>TypeError</strong> – Raised if pda is neither a pdarray nor a str or if
 user_defined_name is not a str</p></li>
-<li><p><strong>RegistrationError</strong> – If the server was unable to register the pdarray with the user_defined_name</p></li>
+<li><p><a class="reference internal" href="#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the pdarray with the user_defined_name
+If the user is attempting to register more than one pdarray with the same name, the former should be
+unregistered first to free up the registration name.</p></li>
 </ul>
 </dd>
 </dl>
