@@ -155,11 +155,3 @@ class CategoricalTest(ArkoudaTest):
         # that both permutation and segments are None
         self.assertFalse(resultCat.permutation)
         self.assertFalse(resultCat.segments)
-        
-        catOne = self._getCategorical('string',11)
-        catTwo = self._getCategorical('string-two', 6)
-        
-        resultCat = catOne.concatenate([catTwo])
-        self.assertEqual('category', resultCat.objtype)
-        self.assertIsInstance(resultCat, ak.Categorical)
-        self.assertEqual(15,resultCat.size)
