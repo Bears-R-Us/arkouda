@@ -953,6 +953,9 @@ class pdarray:
         """
         Register this pdarray with a user defined name in the arkouda server
         so it can be attached to later using pdarray.attach()
+        This is an in-place operation, registering a pdarray more than once will
+        update the name in the registry and remove the previously registered name.
+        A name can only be registered to one pdarray at a time.
         
         Parameters
         ----------
@@ -963,7 +966,8 @@ class pdarray:
         -------
         pdarray
             The same pdarray which is now registered with the arkouda server and has an updated name.
-            This is an in-place modification, the original is returned to support a fluid programming style
+            This is an in-place modification, the original is returned to support a fluid programming style.
+            Please note you cannot register two different pdarrays with the same name.
         
         Raises
         ------
@@ -972,6 +976,8 @@ class pdarray:
             user_defined_name is not a str
         RegistrationError
             If the server was unable to register the pdarray with the user_defined_name
+            If the user is attempting to register more than one pdarray with the same name, the former should be
+            unregistered first to free up the registration name.
         
         See also
         --------
