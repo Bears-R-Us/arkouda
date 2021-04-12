@@ -268,8 +268,7 @@ proc main() {
               try {
                 if (cmd != "array") {
                   asLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
-                                                     ">>> %t %t".format(cmd, 
-                                                    payload.decode(decodePolicy.replace)));
+                                                     ">>> %t %t".format(cmd, args));
                 } else {
                   asLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
                                                      ">>> %s [binary data]".format(cmd));
