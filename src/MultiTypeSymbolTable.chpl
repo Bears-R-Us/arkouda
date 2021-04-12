@@ -310,8 +310,9 @@ module MultiTypeSymbolTable
         /*
         Returns verbose attributes of the sym entry at the given string, if the string maps to an entry.
         Pass __AllSymbols__ to process all sym entries in the sym table.
+        Pass __RegisteredSymbols__ to process all registered sym entries.
 
-        Returns: name, dtype, size, ndim, shape, and item size
+        Returns: name, dtype, size, ndim, shape, item size, and registration status
 
         :arg name: name of entry to be processed
         :type name: string
@@ -321,35 +322,26 @@ module MultiTypeSymbolTable
         proc info(name:string): string throws {
             var s: string;
             if tab.size == 0 {
-                s = "the symbol table is empty";
+                s = "__EMPTY_SYMBOLTABLE__";
             }
             else if name == "__AllSymbols__" {
                 for n in tab {
-                    s += "name:%t dtype:%t size:%t ndim:%t shape:%t itemsize:%t registered:%t\n".format(n, 
-                              dtype2str(tab.getBorrowed(n).dtype), tab.getBorrowed(n).size, 
-                              tab.getBorrowed(n).ndim, tab.getBorrowed(n).shape, 
-                              tab.getBorrowed(n).itemsize, registry.contains(n));
+                    s += formatEntry(n, tab.getBorrowed(n));
                 }
             } 
             else if name == "__RegisteredSymbols__" {
                 if registry.size == 0 {
-                    s = "the registry is empty";
+                    s = "__EMPTY_REGISTRY__";
                 }
                 else {
                     for n in registry {
-                        s += "name:%t dtype:%t size:%t ndim:%t shape:%t itemsize:%t registered:%t\n".format(n, 
-                                  dtype2str(tab.getBorrowed(n).dtype), tab.getBorrowed(n).size, 
-                                  tab.getBorrowed(n).ndim, tab.getBorrowed(n).shape, 
-                                  tab.getBorrowed(n).itemsize, registry.contains(n));
+                        s += formatEntry(n, tab.getBorrowed(n));
                     }
                 }
             }
             else {
                 if (tab.contains(name)) {
-                    s = "name:%t dtype:%t size:%t ndim:%t shape:%t itemsize:%t registered:%t\n".format(name, 
-                              dtype2str(tab.getBorrowed(name).dtype), tab.getBorrowed(name).size, 
-                              tab.getBorrowed(name).ndim, tab.getBorrowed(name).shape, 
-                              tab.getBorrowed(name).itemsize, registry.contains(name));
+                    s += formatEntry(name, tab.getBorrowed(name));
                 }
                 else {
                     throw getErrorWithContext(
@@ -361,6 +353,22 @@ module MultiTypeSymbolTable
                 }
             }
             return s;
+        }
+
+        /*
+        Returns formatted string for info call. 
+
+        :arg name: name of entry to be formatted
+        :type name: string
+
+        :arg entry: Generic Sym Entry to be formatted (tab.getBorrowed(name))
+        :type entry: GenSymEntry
+
+        :returns: formatted string
+        */
+        proc formatEntry(name:string, item:borrowed GenSymEntry): string throws {
+            return "name:%t dtype:%t size:%t ndim:%t shape:%t itemsize:%t registered:%t\n".format(name, 
+                              dtype2str(item.dtype), item.size, item.ndim, item.shape, item.itemsize, registry.contains(name));
         }
 
         /*

@@ -130,8 +130,8 @@ class RegistrationTest(ArkoudaTest):
         '''
         Tests the following:
 
-        1. info() with an empty symbol table returns 'the symbol table is empty' regardless of arguments
-        2. info(ak.RegisteredSymbols) when no objects are registered returns 'the registry is empty'
+        1. info() with an empty symbol table returns '__EMPTY_SYMBOLTABLE__' regardless of arguments
+        2. info(ak.RegisteredSymbols) when no objects are registered returns '__EMPTY_REGISTRY__'
         3. The registered field is set to false for objects that have not been registered
         4. The registered field is set to true for objects that have been registered
         5. info(ak.AllSymbols) contains both registered and non-registered objects
@@ -140,16 +140,16 @@ class RegistrationTest(ArkoudaTest):
         # Cleanup symbol table from previous tests
         cleanup()
 
-        self.assertEqual(ak.info(ak.AllSymbols), 'the symbol table is empty',
+        self.assertEqual(ak.info(ak.AllSymbols), '__EMPTY_SYMBOLTABLE__',
                          msg='info(AllSymbols) empty symbol table message failed')
-        self.assertEqual(ak.info(ak.RegisteredSymbols), 'the symbol table is empty',
+        self.assertEqual(ak.info(ak.RegisteredSymbols), '__EMPTY_SYMBOLTABLE__',
                          msg='info(RegisteredSymbols) empty symbol table message failed')
 
         my_array = ak.ones(10, dtype=ak.int64)
         self.assertTrue('registered:false' in ak.info(ak.AllSymbols).split(),
                         msg='info(AllSymbols) should contain non-registered objects')
 
-        self.assertEqual(ak.info(ak.RegisteredSymbols), 'the registry is empty',
+        self.assertEqual(ak.info(ak.RegisteredSymbols), '__EMPTY_REGISTRY__',
                          msg='info(RegisteredSymbols) empty registry message failed')
 
         # After register(), the registered field should be set to true for all info calls
@@ -169,27 +169,28 @@ class RegistrationTest(ArkoudaTest):
                         msg='info(AllSymbols) and info(RegisteredSymbols) should have same num of objects after clear()')
 
         # After unregister(), the registered field should be set to false for AllSymbol and object name info calls
-        # RegisteredSymbols info calls should return 'the registry is empty'
+        # RegisteredSymbols info calls should return '__EMPTY_REGISTRY__'
         my_array.unregister()
         self.assertTrue('registered:false' in ak.info("keep_me").split(),
                         msg='info(keep_me) registered field should be false after unregister()')
         self.assertTrue('registered:false' in ak.info(ak.AllSymbols).split(),
                         msg='info(AllSymbols) should contain unregistered objects')
-        self.assertEqual(ak.info(ak.RegisteredSymbols), 'the registry is empty',
+        self.assertEqual(ak.info(ak.RegisteredSymbols), '__EMPTY_REGISTRY__',
                          msg='info(RegisteredSymbols) empty registry message failed after unregister()')
 
-        # After clear(), every info call should return 'the symbol table is empty'
+        # After clear(), every info call should return '__EMPTY_SYMBOLTABLE__'
         ak.clear()
-        self.assertEqual(ak.info("keep_me"), 'the symbol table is empty',
+        self.assertEqual(ak.info("keep_me"), '__EMPTY_SYMBOLTABLE__',
                          msg='info(keep_me) empty symbol message failed')
-        self.assertEqual(ak.info(ak.AllSymbols), 'the symbol table is empty',
+        self.assertEqual(ak.info(ak.AllSymbols), '__EMPTY_SYMBOLTABLE__',
                          msg='info(AllSymbols) empty symbol table message failed')
-        self.assertEqual(ak.info(ak.RegisteredSymbols), 'the symbol table is empty',
+        self.assertEqual(ak.info(ak.RegisteredSymbols), '__EMPTY_SYMBOLTABLE__',
                          msg='info(RegisteredSymbols) empty symbol table message failed')
 
 def cleanup():
     ak.clear()
-    for registered_object in ak.info(ak.AllSymbols).split('\n')[:-1]:
-        name = registered_object.split()[0].split(':')[1].replace('"', '')
-        ak.unregister_pdarray(name)
-    ak.clear()
+    if ak.info(ak.AllSymbols) != '__EMPTY_SYMBOLTABLE__':
+        for registered_object in filter(None, ak.info(ak.AllSymbols).split('\n')):
+            name = registered_object.split()[0].split(':')[1].replace('"', '')
+            ak.unregister_pdarray(name)
+        ak.clear()
