@@ -353,10 +353,7 @@ $(TEST_BINARY_DIR):
 
 .PHONY: $(TEST_TARGETS) # Force tests to always rebuild.
 $(TEST_TARGETS): $(TEST_BINARY_DIR)/$(TEST_BINARY_SIGIL)%: $(TEST_SOURCE_DIR)/%.chpl | $(TEST_BINARY_DIR)
-	$(CHPL) $(TEST_CHPL_FLAGS) -M $(ARKOUDA_SOURCE_DIR) $< -o $@
-
-test/%: test/%.chpl
-	$(CHPL) $@.chpl $(TEST_CHPL_FLAGS) -M $(ARKOUDA_SOURCE_DIR)
+	$(CHPL) $(TEST_CHPL_FLAGS) -M $(ARKOUDA_SOURCE_DIR) $(ARKOUDA_COMPAT_MODULES) $< -o $@
 
 print-%:
 	@echo "$($*)"
