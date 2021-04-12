@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Strings in Arkouda &#8212; arkouda 2020.07.07 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
@@ -34,7 +33,7 @@
 
           <div class="body" role="main">
             
-  <section id="strings-in-arkouda">
+  <div class="section" id="strings-in-arkouda">
 <h1>Strings in Arkouda<a class="headerlink" href="#strings-in-arkouda" title="Permalink to this headline">¶</a></h1>
 <p>Like NumPy, Arkouda supports arrays of strings, but whereas in NumPy arrays of strings are still <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> objects, in Arkouda the array of strings is its own class: <code class="docutils literal notranslate"><span class="pre">Strings</span></code>.</p>
 <p>In order to efficiently store strings with a wide range of lengths, Arkouda uses a “segmented array” data structure, comprising:</p>
@@ -42,16 +41,16 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code>: A <code class="docutils literal notranslate"><span class="pre">uint8</span></code> array containing the concatenated bytes of all the strings, separated by null (0) bytes.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">offsets</span></code>: A <code class="docutils literal notranslate"><span class="pre">int64</span></code> array with the start index of each string</p></li>
 </ul>
-<section id="performance">
+<div class="section" id="performance">
 <h2>Performance<a class="headerlink" href="#performance" title="Permalink to this headline">¶</a></h2>
 <p>Because strings are a variable-width data type, and because of the way Arkouda represents strings, operations on strings are considerably slower than operations on numeric data. Use numeric data whenever possible. For example, if your raw data contains string data that could be represented numerically, consider setting up a processing pipeline performs the conversion (and stores the result in HDF5 format) on ingest.</p>
-</section>
-<section id="i-o">
+</div>
+<div class="section" id="i-o">
 <h2>I/O<a class="headerlink" href="#i-o" title="Permalink to this headline">¶</a></h2>
 <p>Arrays of strings can be transferred between the Arkouda client and server using the <code class="docutils literal notranslate"><span class="pre">arkouda.array</span></code> and <code class="docutils literal notranslate"><span class="pre">Strings.to_ndarray</span></code> functions (see <a class="reference internal" href="IO.html#io-label"><span class="std std-ref">Data I/O</span></a>). The former converts a Python list or NumPy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> of strings to an Arkouda <code class="docutils literal notranslate"><span class="pre">Strings</span></code> object, whereas the latter converts an Arkouda <code class="docutils literal notranslate"><span class="pre">Strings</span></code> object to a NumPy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>. As with numeric arrays, if the size of the data exceeds the threshold set by <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>, the client will raise an exception.</p>
 <p>Arkouda currently only supports the HDF5 file format for disk-based I/O. In order to read an array of strings from an HDF5 file, the strings must be stored in an HDF5 <code class="docutils literal notranslate"><span class="pre">group</span></code> containing two datasets: <code class="docutils literal notranslate"><span class="pre">segments</span></code> (an integer array corresponding to <code class="docutils literal notranslate"><span class="pre">offsets</span></code> above) and <code class="docutils literal notranslate"><span class="pre">values</span></code> (a <code class="docutils literal notranslate"><span class="pre">uint8</span></code> array corresponding to <code class="docutils literal notranslate"><span class="pre">bytes</span></code> above). See <a class="reference internal" href="IO.html#data-preprocessing-label"><span class="std std-ref">Data Preprocessing</span></a> for more information and guidelines.</p>
-</section>
-<section id="operations">
+</div>
+<div class="section" id="operations">
 <h2>Operations<a class="headerlink" href="#operations" title="Permalink to this headline">¶</a></h2>
 <p>Arkouda <code class="docutils literal notranslate"><span class="pre">Strings</span></code> objects support the following operations:</p>
 <ul class="simple">
@@ -63,10 +62,10 @@
 <li><p><a class="reference internal" href="pdarray.html#cast-label"><span class="std std-ref">Type Casting</span></a> to and from numeric arrays</p></li>
 <li><p><a class="reference internal" href="creation.html#concatenate-label"><span class="std std-ref">Concatenation</span></a> with other <code class="docutils literal notranslate"><span class="pre">Strings</span></code></p></li>
 </ul>
-</section>
-<section id="string-specific-methods">
+</div>
+<div class="section" id="string-specific-methods">
 <h2>String-Specific Methods<a class="headerlink" href="#string-specific-methods" title="Permalink to this headline">¶</a></h2>
-<section id="substring-search">
+<div class="section" id="substring-search">
 <h3>Substring search<a class="headerlink" href="#substring-search" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><dl class="py method">
@@ -175,8 +174,8 @@
 </dd></dl>
 
 </div></blockquote>
-</section>
-<section id="splitting-and-joining">
+</div>
+<div class="section" id="splitting-and-joining">
 <h3>Splitting and joining<a class="headerlink" href="#splitting-and-joining" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><dl class="py method">
@@ -377,8 +376,8 @@ of this array, optionally inserting a delimiter.
 </dd></dl>
 
 </div></blockquote>
-</section>
-<section id="flattening">
+</div>
+<div class="section" id="flattening">
 <h3>Flattening<a class="headerlink" href="#flattening" title="Permalink to this headline">¶</a></h3>
 <p>Given an array of strings where each string encodes a variable-length sequence delimited by a common substring, flattening offers a method for unpacking the sequences into a flat array of individual elements. A mapping between original strings and new array elements can be preserved, if desired. This method can be used in pipe</p>
 <blockquote>
@@ -419,9 +418,9 @@ in the return array</p></li>
 </dd></dl>
 
 </div></blockquote>
-</section>
-</section>
-</section>
+</div>
+</div>
+</div>
 
 
           </div>
@@ -440,7 +439,7 @@ in the return array</p></li>
 
 
 <h3>Navigation</h3>
-<p><span class="caption-text">Contents:</span></p>
+<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../setup/prerequisites.html">Prerequisites</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
@@ -504,7 +503,7 @@ in the return array</p></li>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Summarizing Data &#8212; arkouda 2020.07.07 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
@@ -34,9 +33,9 @@
 
           <div class="body" role="main">
             
-  <section id="summarizing-data">
+  <div class="section" id="summarizing-data">
 <h1>Summarizing Data<a class="headerlink" href="#summarizing-data" title="Permalink to this headline">¶</a></h1>
-<section id="descriptive-statistics">
+<div class="section" id="descriptive-statistics">
 <h2>Descriptive Statistics<a class="headerlink" href="#descriptive-statistics" title="Permalink to this headline">¶</a></h2>
 <p>Simple descriptive statistics are available as reduction methods on <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
@@ -260,8 +259,8 @@ always a np.float64 or np.int64.</p>
 </dl>
 </dd></dl>
 
-</section>
-<section id="histogram">
+</div>
+<div class="section" id="histogram">
 <h2>Histogram<a class="headerlink" href="#histogram" title="Permalink to this headline">¶</a></h2>
 <p>Arkouda can compute simple histograms on <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> data. Currently, this function can only create histograms over evenly spaced bins between the min and max of the data. In the future, we plan to support using a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> to define custom bin edges.</p>
 <dl class="py function">
@@ -319,8 +318,8 @@ Currently, the user must re-compute the bin edges, e.g. with np.linspace
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">binEdges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">myarray</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">myarray</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">nbins</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="value-counts">
+</div>
+<div class="section" id="value-counts">
 <h2>Value Counts<a class="headerlink" href="#value-counts" title="Permalink to this headline">¶</a></h2>
 <p>For int64 <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects, it is often useful to count only the unique values that appear. This function finds all unique values and their counts.</p>
 <dl class="py function">
@@ -359,8 +358,8 @@ return_counts parameter is set to True.</p>
 </div>
 </dd></dl>
 
-</section>
-</section>
+</div>
+</div>
 
 
           </div>
@@ -379,7 +378,7 @@ return_counts parameter is set to True.</p>
 
 
 <h3>Navigation</h3>
-<p><span class="caption-text">Contents:</span></p>
+<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../setup/prerequisites.html">Prerequisites</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
@@ -443,7 +442,7 @@ return_counts parameter is set to True.</p>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

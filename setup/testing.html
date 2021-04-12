@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Performance Testing &#8212; arkouda 2020.07.07 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
@@ -34,10 +33,10 @@
 
           <div class="body" role="main">
             
-  <section id="performance-testing">
+  <div class="section" id="performance-testing">
 <h1>Performance Testing<a class="headerlink" href="#performance-testing" title="Permalink to this headline">¶</a></h1>
 <p>The <code class="docutils literal notranslate"><span class="pre">benchmarks</span></code> directory contains scripts for measuring the performance of arkouda, optionally compared to the (single-node) performance of NumPy.</p>
-<section id="argsort">
+<div class="section" id="argsort">
 <h2>Argsort<a class="headerlink" href="#argsort" title="Permalink to this headline">¶</a></h2>
 <p><p>Measure performance of sorting an array of random values.</p>
 </p>
@@ -46,7 +45,7 @@
                   <span class="n">hostname</span> <span class="n">port</span>
 </pre></div>
 </div>
-<section id="Positional Arguments">
+<div class="section" id="Positional Arguments">
 <h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>hostname</kbd></dt>
@@ -56,8 +55,8 @@
 <dd><p>Port of arkouda server</p>
 </dd>
 </dl>
-</section>
-<section id="Named Arguments">
+</div>
+<div class="section" id="Named Arguments">
 <h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-n, --size</kbd></dt>
@@ -84,9 +83,9 @@
 <dd><p>Value to initialize random number generator</p>
 </dd>
 </dl>
-</section>
-</section>
-<section id="gather">
+</div>
+</div>
+<div class="section" id="gather">
 <h2>Gather<a class="headerlink" href="#gather" title="Permalink to this headline">¶</a></h2>
 <p><p>Measure the performance of random gather: C = V[I]</p>
 </p>
@@ -95,7 +94,7 @@
                  <span class="n">hostname</span> <span class="n">port</span>
 </pre></div>
 </div>
-<section id="Positional Arguments">
+<div class="section" id="Positional Arguments">
 <h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>hostname</kbd></dt>
@@ -105,8 +104,8 @@
 <dd><p>Port of arkouda server</p>
 </dd>
 </dl>
-</section>
-<section id="Named Arguments">
+</div>
+<div class="section" id="Named Arguments">
 <h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-n, --size</kbd></dt>
@@ -143,9 +142,9 @@
 <dd><p>Value to initialize random number generator</p>
 </dd>
 </dl>
-</section>
-</section>
-<section id="reduce">
+</div>
+</div>
+<div class="section" id="reduce">
 <h2>Reduce<a class="headerlink" href="#reduce" title="Permalink to this headline">¶</a></h2>
 <p><p>Measure performance of reductions over arrays.</p>
 </p>
@@ -154,7 +153,7 @@
                  <span class="n">hostname</span> <span class="n">port</span>
 </pre></div>
 </div>
-<section id="Positional Arguments">
+<div class="section" id="Positional Arguments">
 <h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>hostname</kbd></dt>
@@ -164,8 +163,8 @@
 <dd><p>Port of arkouda server</p>
 </dd>
 </dl>
-</section>
-<section id="Named Arguments">
+</div>
+<div class="section" id="Named Arguments">
 <h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-n, --size</kbd></dt>
@@ -196,9 +195,9 @@
 <dd><p>Value to initialize random number generator</p>
 </dd>
 </dl>
-</section>
-</section>
-<section id="scan">
+</div>
+</div>
+<div class="section" id="scan">
 <h2>Scan<a class="headerlink" href="#scan" title="Permalink to this headline">¶</a></h2>
 <p><p>Measure the performance of scans (cumulative reductions) over arrays.</p>
 </p>
@@ -207,7 +206,7 @@
                <span class="n">hostname</span> <span class="n">port</span>
 </pre></div>
 </div>
-<section id="Positional Arguments">
+<div class="section" id="Positional Arguments">
 <h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>hostname</kbd></dt>
@@ -217,8 +216,8 @@
 <dd><p>Port of arkouda server</p>
 </dd>
 </dl>
-</section>
-<section id="Named Arguments">
+</div>
+<div class="section" id="Named Arguments">
 <h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-n, --size</kbd></dt>
@@ -249,9 +248,9 @@
 <dd><p>Value to initialize random number generator</p>
 </dd>
 </dl>
-</section>
-</section>
-<section id="scatter">
+</div>
+</div>
+<div class="section" id="scatter">
 <h2>Scatter<a class="headerlink" href="#scatter" title="Permalink to this headline">¶</a></h2>
 <p><p>Measure performance of random scatter: C[I] = V</p>
 </p>
@@ -260,7 +259,7 @@
                   <span class="n">hostname</span> <span class="n">port</span>
 </pre></div>
 </div>
-<section id="Positional Arguments">
+<div class="section" id="Positional Arguments">
 <h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>hostname</kbd></dt>
@@ -270,8 +269,8 @@
 <dd><p>Port of arkouda server</p>
 </dd>
 </dl>
-</section>
-<section id="Named Arguments">
+</div>
+<div class="section" id="Named Arguments">
 <h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-n, --size</kbd></dt>
@@ -308,9 +307,9 @@
 <dd><p>Value to initialize random number generator</p>
 </dd>
 </dl>
-</section>
-</section>
-<section id="stream">
+</div>
+</div>
+<div class="section" id="stream">
 <h2>Stream<a class="headerlink" href="#stream" title="Permalink to this headline">¶</a></h2>
 <p><p>Run the stream benchmark: C = A + alpha*B</p>
 </p>
@@ -319,7 +318,7 @@
                  <span class="n">hostname</span> <span class="n">port</span>
 </pre></div>
 </div>
-<section id="Positional Arguments">
+<div class="section" id="Positional Arguments">
 <h3>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>hostname</kbd></dt>
@@ -329,8 +328,8 @@
 <dd><p>Port of arkouda server</p>
 </dd>
 </dl>
-</section>
-<section id="Named Arguments">
+</div>
+<div class="section" id="Named Arguments">
 <h3>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-n, --size</kbd></dt>
@@ -365,9 +364,9 @@
 <dd><p>Value to initialize random number generator</p>
 </dd>
 </dl>
-</section>
-</section>
-</section>
+</div>
+</div>
+</div>
 
 
           </div>
@@ -386,7 +385,7 @@
 
 
 <h3>Navigation</h3>
-<p><span class="caption-text">Contents:</span></p>
+<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="prerequisites.html">Prerequisites</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
@@ -442,7 +441,7 @@
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

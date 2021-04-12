@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Contributing &#8212; arkouda 2020.07.07 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
@@ -34,10 +33,10 @@
 
           <div class="body" role="main">
             
-  <section id="contributing">
+  <div class="section" id="contributing">
 <h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h1>
 <p>This section describes how to add new functionality to arkouda.</p>
-<section id="adding-python-functionality">
+<div class="section" id="adding-python-functionality">
 <h2>Adding Python Functionality<a class="headerlink" href="#adding-python-functionality" title="Permalink to this headline">¶</a></h2>
 <p>Python functions should follow the API of NumPy or Pandas, were possible. In general, functions should conform to the following:</p>
 <ol class="arabic simple">
@@ -49,7 +48,7 @@
 <li><p>Possibly create one or more <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects</p></li>
 <li><p>Return any results</p></li>
 </ol>
-<section id="example">
+<div class="section" id="example">
 <h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">pda</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -72,9 +71,9 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;must be pdarray </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pda</span><span class="p">))</span>
 </pre></div>
 </div>
-</section>
-</section>
-<section id="adding-functionality-to-the-arkouda-server">
+</div>
+</div>
+<div class="section" id="adding-functionality-to-the-arkouda-server">
 <h2>Adding Functionality to the Arkouda Server<a class="headerlink" href="#adding-functionality-to-the-arkouda-server" title="Permalink to this headline">¶</a></h2>
 <p>Your contribution must include all the machinery to process a command from the client, in addition to the logic of the coputation. When the client issues a command <code class="docutils literal notranslate"><span class="pre">foo</span> <span class="pre">arg1</span> <span class="pre">arg2</span> <span class="pre">...</span></code> to the arkouda server, this is what typically happens:</p>
 <ol class="arabic simple">
@@ -100,7 +99,7 @@
 </ol>
 </li>
 </ol>
-<section id="id1">
+<div class="section" id="id1">
 <h3>Example<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>First, in <code class="docutils literal notranslate"><span class="pre">src/arkouda_server.chpl</span></code>, add a <code class="docutils literal notranslate"><span class="pre">when</span></code> statement to register the “foo” command:</p>
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="c1">// parse requests, execute requests, format responses</span>
@@ -177,9 +176,9 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-</section>
-</section>
-</section>
+</div>
+</div>
+</div>
 
 
           </div>
@@ -198,7 +197,7 @@
 
 
 <h3>Navigation</h3>
-<p><span class="caption-text">Contents:</span></p>
+<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="setup/prerequisites.html">Prerequisites</a></li>
 <li class="toctree-l1"><a class="reference internal" href="setup/installation.html">Installation</a></li>
@@ -250,7 +249,7 @@
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

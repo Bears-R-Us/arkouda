@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Data I/O &#8212; arkouda 2020.07.07 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
@@ -34,9 +33,9 @@
 
           <div class="body" role="main">
             
-  <section id="data-i-o">
+  <div class="section" id="data-i-o">
 <span id="io-label"></span><h1>Data I/O<a class="headerlink" href="#data-i-o" title="Permalink to this headline">¶</a></h1>
-<section id="between-client-and-server">
+<div class="section" id="between-client-and-server">
 <h2>Between client and server<a class="headerlink" href="#between-client-and-server" title="Permalink to this headline">¶</a></h2>
 <p>Arkouda is designed to integrate with NumPy and Pandas, with arkouda handling large, distributed data in parallel while receiving and sending smaller input and output data to/from Python as NumPy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> objects. A common arkouda workflow looks like</p>
 <ol class="arabic simple">
@@ -184,10 +183,10 @@ value, but proceed with caution.</p>
 </div>
 </dd></dl>
 
-</section>
-<section id="large-datasets">
+</div>
+<div class="section" id="large-datasets">
 <h2>Large Datasets<a class="headerlink" href="#large-datasets" title="Permalink to this headline">¶</a></h2>
-<section id="data-preprocessing">
+<div class="section" id="data-preprocessing">
 <span id="data-preprocessing-label"></span><h3>Data Preprocessing<a class="headerlink" href="#data-preprocessing" title="Permalink to this headline">¶</a></h3>
 <p>Arkouda is designed to work primarily with columnar data spread across multiple files of non-uniform size. All disk-based I/O uses the HDF5 file format and associates each column of data with an HDF5 dataset present at the root level of all files.</p>
 <p>Files are processed in parallel with one file per locale. While HDF5 has an MPI layer for concurrent reading and writing of a single file from multiple nodes, arkouda does not yet support this functionality.</p>
@@ -198,8 +197,8 @@ value, but proceed with caution.</p>
 <li><p>Convert text to numeric types where possible</p></li>
 </ul>
 <p>Much of this preprocessing can be accomplished with the Pandas <code class="docutils literal notranslate"><span class="pre">read*</span></code> functions for ingest and the <code class="docutils literal notranslate"><span class="pre">h5py</span></code> module for output. See <a class="reference external" href="https://github.com/reuster986/hdflow">this example</a> for ideas.</p>
-</section>
-<section id="reading-hdf5-data-from-disk">
+</div>
+<div class="section" id="reading-hdf5-data-from-disk">
 <h3>Reading HDF5 data from disk<a class="headerlink" href="#reading-hdf5-data-from-disk" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
 <dt id="arkouda.read_hdf">
@@ -335,8 +334,8 @@ arkouda server.</p>
 </dl>
 </dd></dl>
 
-</section>
-<section id="persisting-pdarray-data-to-disk">
+</div>
+<div class="section" id="persisting-pdarray-data-to-disk">
 <h3>Persisting <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> data to disk<a class="headerlink" href="#persisting-pdarray-data-to-disk" title="Permalink to this headline">¶</a></h3>
 <p>Arkouda supports saving pdarrays to HDF5 files. Unfortunately, arkouda does not yet support writing to a single HDF5 file from multiple locales and must create one output file per locale.</p>
 <dl class="py function">
@@ -437,8 +436,8 @@ specifies the ‘append’ mode, in which case arkouda will attempt to add
 is present or dataset names already exist, a RuntimeError is raised.</p>
 </dd></dl>
 
-</section>
-<section id="loading-persisted-arrays-from-disk">
+</div>
+<div class="section" id="loading-persisted-arrays-from-disk">
 <h3>Loading persisted arrays from disk<a class="headerlink" href="#loading-persisted-arrays-from-disk" title="Permalink to this headline">¶</a></h3>
 <p>These functions allow loading <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> data persisted with <code class="docutils literal notranslate"><span class="pre">save()</span></code> and <code class="docutils literal notranslate"><span class="pre">save_all()</span></code>.</p>
 <dl class="py function">
@@ -495,9 +494,9 @@ is present or dataset names already exist, a RuntimeError is raised.</p>
 </div>
 </dd></dl>
 
-</section>
-</section>
-</section>
+</div>
+</div>
+</div>
 
 
           </div>
@@ -516,7 +515,7 @@ is present or dataset names already exist, a RuntimeError is raised.</p>
 
 
 <h3>Navigation</h3>
-<p><span class="caption-text">Contents:</span></p>
+<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../setup/prerequisites.html">Prerequisites</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
@@ -580,7 +579,7 @@ is present or dataset names already exist, a RuntimeError is raised.</p>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

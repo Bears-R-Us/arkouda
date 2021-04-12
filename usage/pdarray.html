@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The pdarray class &#8212; arkouda 2020.07.07 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
@@ -34,7 +33,7 @@
 
           <div class="body" role="main">
             
-  <section id="the-pdarray-class">
+  <div class="section" id="the-pdarray-class">
 <h1>The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class<a class="headerlink" href="#the-pdarray-class" title="Permalink to this headline">¶</a></h1>
 <p>Just as the backbone of NumPy is the <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>, the backbone of arkouda is an array class called <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>. And just as the <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> object is a Python wrapper for C-style data with C and Fortran methods, the <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> object is a Python wrapper for distributed data with parallel methods written in Chapel. The API of <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> is similar, but not identical, to that of <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>.</p>
 <dl class="py class">
@@ -114,7 +113,7 @@ instances directly.</p>
 
 </dd></dl>
 
-<section id="data-type">
+<div class="section" id="data-type">
 <h2>Data Type<a class="headerlink" href="#data-type" title="Permalink to this headline">¶</a></h2>
 <p>Currently, <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> supports three user-facing data types (strings are exposed via a separate class, see <span class="xref std std-ref">Strings in Arkouda</span>):</p>
 <ul class="simple">
@@ -123,24 +122,24 @@ instances directly.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">bool</span></code>: 8-bit boolean value</p></li>
 </ul>
 <p>Arkouda inherits all of its data types from numpy. For example, <code class="docutils literal notranslate"><span class="pre">ak.int64</span></code> is derived from <code class="docutils literal notranslate"><span class="pre">np.int64</span></code>.</p>
-</section>
-<section id="rank">
+</div>
+<div class="section" id="rank">
 <h2>Rank<a class="headerlink" href="#rank" title="Permalink to this headline">¶</a></h2>
 <p>Currently, a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> can only have rank 1. We plan to support sparse, multi-dimensional arrays via data structures incorporating rank-1 <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects.</p>
-</section>
-<section id="name">
+</div>
+<div class="section" id="name">
 <h2>Name<a class="headerlink" href="#name" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">name</span></code> attribute of an array is a string used by the arkouda server to identify the <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> object in its symbol table. This name is chosen by the server, and the user should not overwrite it.</p>
-</section>
-<section id="operators">
+</div>
+<div class="section" id="operators">
 <h2>Operators<a class="headerlink" href="#operators" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class supports most Python special methods, including arithmetic, bitwise, and comparison operators.</p>
-</section>
-<section id="iteration">
+</div>
+<div class="section" id="iteration">
 <h2>Iteration<a class="headerlink" href="#iteration" title="Permalink to this headline">¶</a></h2>
 <p>While it is possible to iterate directly over a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> with <code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">x</span> <span class="pre">in</span> <span class="pre">array</span></code>, this is not recommended because it triggers a transfer of all array data from the arkouda server to the Python client as a <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>. This transfer will raise an error if it exceeds the byte limit defined in <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>. There is almost always a more array-oriented way to express an iterator-based computation; see the coming sections for details.</p>
-</section>
-<section id="type-casting">
+</div>
+<div class="section" id="type-casting">
 <span id="cast-label"></span><h2>Type Casting<a class="headerlink" href="#type-casting" title="Permalink to this headline">¶</a></h2>
 <p>Conversion between dtypes is sometimes implicit, as in the following example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
@@ -191,8 +190,8 @@ has the precision and capacity to hold the desired result.</p>
 </div>
 </dd></dl>
 
-</section>
-</section>
+</div>
+</div>
 
 
           </div>
@@ -211,7 +210,7 @@ has the precision and capacity to hold the desired result.</p>
 
 
 <h3>Navigation</h3>
-<p><span class="caption-text">Contents:</span></p>
+<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../setup/prerequisites.html">Prerequisites</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
@@ -275,7 +274,7 @@ has the precision and capacity to hold the desired result.</p>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

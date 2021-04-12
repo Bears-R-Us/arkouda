@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Creating Arrays &#8212; arkouda 2020.07.07 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
@@ -34,10 +33,10 @@
 
           <div class="body" role="main">
             
-  <section id="creating-arrays">
+  <div class="section" id="creating-arrays">
 <h1>Creating Arrays<a class="headerlink" href="#creating-arrays" title="Permalink to this headline">¶</a></h1>
 <p>There are several ways to initialize arkouda <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects, most of which come from NumPy.</p>
-<section id="constant">
+<div class="section" id="constant">
 <h2>Constant<a class="headerlink" href="#constant" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="arkouda.zeros">
@@ -206,8 +205,8 @@ Accordingly, the supported dtypes match are defined by the ak.ones method.</p>
 </div>
 </dd></dl>
 
-</section>
-<section id="regular">
+</div>
+<div class="section" id="regular">
 <h2>Regular<a class="headerlink" href="#regular" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="arkouda.arange">
@@ -309,8 +308,8 @@ in descending order.</p>
 </div>
 </dd></dl>
 
-</section>
-<section id="random">
+</div>
+<div class="section" id="random">
 <h2>Random<a class="headerlink" href="#random" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="arkouda.randint">
@@ -371,8 +370,8 @@ floating point values.</p>
 </div>
 </dd></dl>
 
-</section>
-<section id="concatenation">
+</div>
+<div class="section" id="concatenation">
 <span id="concatenate-label"></span><h2>Concatenation<a class="headerlink" href="#concatenation" title="Permalink to this headline">¶</a></h2>
 <p>Performance note: in multi-locale settings, the default (ordered) mode of <code class="docutils literal notranslate"><span class="pre">concatenate</span></code> is very communication-intensive because the distribution of the original and resulting arrays are unrelated and most data must be moved non-locally. If the application does not require the concatenated array to be ordered (e.g. if the result is simply going to be sorted anyway), then using the keyword <code class="docutils literal notranslate"><span class="pre">ordered=False</span></code> will greatly speed up concatenation by minimizing non-local data movement.</p>
 <dl class="py function">
@@ -423,8 +422,8 @@ the original order</p>
 </div>
 </dd></dl>
 
-</section>
-</section>
+</div>
+</div>
 
 
           </div>
@@ -443,7 +442,7 @@ the original order</p>
 
 
 <h3>Navigation</h3>
-<p><span class="caption-text">Contents:</span></p>
+<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../setup/prerequisites.html">Prerequisites</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
@@ -507,7 +506,7 @@ the original order</p>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

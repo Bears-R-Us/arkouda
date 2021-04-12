@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Arithmetic and Numeric Operations &#8212; arkouda 2020.07.07 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
@@ -34,9 +33,9 @@
 
           <div class="body" role="main">
             
-  <section id="arithmetic-and-numeric-operations">
+  <div class="section" id="arithmetic-and-numeric-operations">
 <h1>Arithmetic and Numeric Operations<a class="headerlink" href="#arithmetic-and-numeric-operations" title="Permalink to this headline">¶</a></h1>
-<section id="vector-and-scalar-arithmetic">
+<div class="section" id="vector-and-scalar-arithmetic">
 <h2>Vector and Scalar Arithmetic<a class="headerlink" href="#vector-and-scalar-arithmetic" title="Permalink to this headline">¶</a></h2>
 <p>A large subset of Python’s binary and in-place operators are supported on <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects. Where supported, the behavior of these operators is identical to that of NumPy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> objects.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
@@ -52,8 +51,8 @@
 </pre></div>
 </div>
 <p>Operations that are not implemented will raise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code>. In-place operations that would change the dtype of the <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> are not implemented.</p>
-</section>
-<section id="element-wise-functions">
+</div>
+<div class="section" id="element-wise-functions">
 <h2>Element-wise Functions<a class="headerlink" href="#element-wise-functions" title="Permalink to this headline">¶</a></h2>
 <p>Arrays support several mathematical functions that operate element-wise and return a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> of the same length.</p>
 <dl class="py function">
@@ -194,8 +193,8 @@ of the original pdarray</p>
 </dl>
 </dd></dl>
 
-</section>
-<section id="scans">
+</div>
+<div class="section" id="scans">
 <h2>Scans<a class="headerlink" href="#scans" title="Permalink to this headline">¶</a></h2>
 <p>Scans perform a cumulative reduction over a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>, returning a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> of the same size.</p>
 <dl class="py function">
@@ -268,8 +267,8 @@ of the original pdarray</p>
 </div>
 </dd></dl>
 
-</section>
-<section id="reductions">
+</div>
+<div class="section" id="reductions">
 <h2>Reductions<a class="headerlink" href="#reductions" title="Permalink to this headline">¶</a></h2>
 <p>Reductions return a scalar value.</p>
 <dl class="py function">
@@ -762,8 +761,8 @@ about a <cite>k</cite> of 5 million is where performance degradation has been ob
 </div>
 </dd></dl>
 
-</section>
-<section id="where">
+</div>
+<div class="section" id="where">
 <h2>Where<a class="headerlink" href="#where" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">where</span></code> function is a way to multiplex two <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> (or a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> and a scalar) based on a condition:</p>
 <dl class="py function">
@@ -827,8 +826,8 @@ is supported e.g., n &lt; 5, n &gt; 1, which is supported in numpy
 is not currently supported in Arkouda</p>
 </dd></dl>
 
-</section>
-</section>
+</div>
+</div>
 
 
           </div>
@@ -847,7 +846,7 @@ is not currently supported in Arkouda</p>
 
 
 <h3>Navigation</h3>
-<p><span class="caption-text">Contents:</span></p>
+<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../setup/prerequisites.html">Prerequisites</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../setup/installation.html">Installation</a></li>
@@ -911,7 +910,7 @@ is not currently supported in Arkouda</p>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
