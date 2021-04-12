@@ -8,7 +8,7 @@ from arkouda.logger import getArkoudaLogger
 from arkouda.message import RequestMessage, MessageFormat, ReplyMessage, \
      MessageType
 
-__all__ = ["AllSymbols", "connect", "disconnect", "shutdown", "get_config", 
+__all__ = ["AllSymbols", "RegisteredSymbols", "connect", "disconnect", "shutdown", "get_config",
            "get_mem_used", "__version__", "ruok"]
 
 # Try to read the version from the file located at ../VERSION
@@ -40,6 +40,7 @@ pdarrayIterThresh  = pdarrayIterThreshDefVal
 maxTransferBytesDefVal = 2**30
 maxTransferBytes = maxTransferBytesDefVal
 AllSymbols = "__AllSymbols__"
+RegisteredSymbols = "__RegisteredSymbols__"
 
 logger = getArkoudaLogger(name='Arkouda Client') 
 clientLogger = getArkoudaLogger(name='Arkouda User Logger', logFormat='%(message)s')   
