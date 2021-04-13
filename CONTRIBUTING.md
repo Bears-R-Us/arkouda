@@ -2,6 +2,8 @@
 
 Arkouda welcomes contributions via feedback, bug reports, and pull requests.
 
+We use a simple [Git Feature Branch Workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow)
+
 ## Development for Arkouda
 
 ### Makefile
