@@ -91,6 +91,7 @@ This yielded a >20TB dataframe in Arkouda.
    - [Linux](#prereq-linux)
      - [Install Chapel](#prereq-linux-chapel)
      - [Python environment - Anaconda](#prereq-linux-anaconda)
+   - [Windows - WSL](#prereq-windows)
 2. [Building Arkouda](#build-ak)
    - [Building the source](#build-ak-source)
    - [Building the docs](#build-ak-docs)
@@ -249,6 +250,36 @@ As is the case with the MacOS install, it is highly recommended to [install Anac
 ```
 
 </details>
+
+
+<a id="prereq-windows"></a>
+### Windows Environment (WSL2) <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+It is possible to set up a basic arkouda installation on MS Windows using the Windows Subsystem for Linux (WSL2).
+The general strategy here is to use Linux terminals on WSL to launch the server
+If you are going to try this route we suggest using WSL-2 with Ubuntu 20.04 LTS.  There are a number of tutorials
+available online such has [MicroSoft's](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+
+Key installation points:
+  - Make sure to use WSL2
+  - Ubuntu 20.04 LTS from the MS app store
+  - Don't forget to create a user account and password as part of the Linux install
+
+Once configured you can follow the basic [Linux installation instructions](#prereq-linux)
+for installing Chapel & Arkouda.  We also recommend installing Anaconda for windows.
+
+The general plan is to compile & run the `arkouda-server` process from a Linux terminal on WSL and then either connect
+to it with the python client using another Linux terminal running on WSL _or_ using the Windows Anaconda-Powershell.
+
+If running an IDE you can use either the Windows or Linux version, however, you may need to install an X-window system
+on Windows such as VcXsrv, X410, or an alternative.  Follow the setup instructions for whichever one you choose, but
+keep in mind you may need to update your Windows firewall to allow the Xserver to connect.  Also, on the Linux side of
+the house we found it necessary to add 
+```bash
+export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2; exit;}'):0.0
+```
+to our `~/.bashrc` file to get the display correctly forwarded.
+
+
 
 <a id="build-ak"></a>
 ## Building Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
