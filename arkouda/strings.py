@@ -828,17 +828,114 @@ class Strings:
         self.bytes.save(prefix_path=prefix_path, 
                                     dataset='{}/values'.format(dataset), mode=mode)
 
-    def register(self, user_defined_name : str) -> Strings:
+    def register(self, user_defined_name: str) -> Strings:
+        """
+        Register this Strings object with a user defined name in the arkouda server
+        so it can be attached to later using Strings.attach()
+        This is an in-place operation, registering a Strings object more than once will
+        update the name in the registry and remove the previously registered name.
+        A name can only be registered to one object at a time.
+
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name which the Strings object is to be registered under
+
+        Returns
+        -------
+        Strings
+            The same Strings object which is now registered with the arkouda server and has an updated name.
+            This is an in-place modification, the original is returned to support a fluid programming style.
+            Please note you cannot register two different objects with the same name.
+
+        Raises
+        ------
+        TypeError
+            Raised if pda is neither a pdarray nor a str or if
+            user_defined_name is not a str
+        RegistrationError
+            If the server was unable to register the Strings object with the user_defined_name
+            If the user is attempting to register more than one object with the same name, the former should be
+            unregistered first to free up the registration name.
+
+        See also
+        --------
+        attach, unregister
+
+        Notes
+        -----
+        Registered names/Strings objects in the server are immune to deletion
+        until they are unregistered.
+        """
+        if not isinstance(user_defined_name, str):
+            raise TypeError(f"user_defined_name must be of type str, was {type(user_defined_name)}")
+
         self.offsets.register(user_defined_name+'_offsets')
         self.bytes.register(user_defined_name+'_bytes')
         self.name = user_defined_name
         return self
 
     def unregister(self) -> None:
+        """
+        Unregister a Strings object in the arkouda server which was previously
+        registered using register() and/or attached to using attach()
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        TypeError
+            Raised if pda is neither a pdarray nor a str
+
+        See also
+        --------
+        register, unregister
+
+        Notes
+        -----
+        Registered names/Strings objects in the server are immune to deletion until
+        they are unregistered.
+        """
         self.offsets.unregister()
         self.bytes.unregister()
 
     @staticmethod
     def attach(user_defined_name : str) -> Strings:
+        """
+        class method to return a Strings object attached to the registered name in the arkouda
+        server which was registered using register()
+
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name which the Strings object was registered under
+
+        Returns
+        -------
+        Strings object
+            the Strings object registered with user_defined_name in the arkouda server
+
+        Raises
+        ------
+        TypeError
+            Raised if user_defined_name is not a str
+
+        See also
+        --------
+        register, unregister
+
+        Notes
+        -----
+        Registered names/Strings objects in the server are immune to deletion
+        until they are unregistered.
+        """
+        if not isinstance(user_defined_name, str):
+            raise TypeError(f"user_defined_name must be of type str, was {type(user_defined_name)}")
+
         return Strings(pdarray.attach(user_defined_name+'_offsets'),
                        pdarray.attach(user_defined_name+'_bytes'))
