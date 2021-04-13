@@ -28,7 +28,8 @@ Functions
    arkouda.pdarraycreation.random_strings_lognormal
 
 
-.. function:: from_series(series: pandas.Series, dtype: Optional[Union[type, str]] = None) -> Union[(pdarray, Strings)]
+
+.. function:: from_series(series: pandas.Series, dtype: Optional[Union[type, str]] = None) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Converts a Pandas Series to an Arkouda pdarray or Strings object. If
    dtype is None, the dtype is inferred from the Pandas Series. Otherwise,
@@ -88,7 +89,7 @@ Functions
    contains strings and sets the dtype to str
 
 
-.. function:: array(a: Union[(pdarray, np.ndarray, Iterable)]) -> Union[(pdarray, Strings)]
+.. function:: array(a: Union[arkouda.pdarrayclass.pdarray, numpy.ndarray, Iterable]) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Convert a Python or Numpy Iterable to a pdarray or Strings object, sending
    the corresponding data to the arkouda server.
@@ -389,7 +390,7 @@ Functions
    array([False, True, True, True, True, False, True, True, True, True])
 
 
-.. function:: uniform(size: arkouda.dtypes.int_scalars, low: arkouda.dtypes.numeric_scalars = float(0.0), high: arkouda.dtypes.numeric_scalars = 1.0, seed: Union[(None, int_scalars)] = None) -> arkouda.pdarrayclass.pdarray
+.. function:: uniform(size: arkouda.dtypes.int_scalars, low: arkouda.dtypes.numeric_scalars = float(0.0), high: arkouda.dtypes.numeric_scalars = 1.0, seed: Union[None, arkouda.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray
 
    Generate a pdarray with uniformly distributed random float values
    in a specified range.
@@ -424,7 +425,7 @@ Functions
    array([0.30013431967121934, 0.47383036230759112, 1.0441791878997098])
 
 
-.. function:: standard_normal(size: arkouda.dtypes.int_scalars, seed: Union[(None, int_scalars)] = None) -> arkouda.pdarrayclass.pdarray
+.. function:: standard_normal(size: arkouda.dtypes.int_scalars, seed: Union[None, arkouda.dtypes.int_scalars] = None) -> arkouda.pdarrayclass.pdarray
 
    Draw real numbers from the standard normal distribution.
 
@@ -453,7 +454,7 @@ Functions
    array([-0.68586185091150265, 1.1723810583573375, 0.567584107142031])
 
 
-.. function:: random_strings_uniform(minlen: arkouda.dtypes.int_scalars, maxlen: arkouda.dtypes.int_scalars, size: arkouda.dtypes.int_scalars, characters: str = 'uppercase', seed: Union[(None, int_scalars)] = None) -> arkouda.strings.Strings
+.. function:: random_strings_uniform(minlen: arkouda.dtypes.int_scalars, maxlen: arkouda.dtypes.int_scalars, size: arkouda.dtypes.int_scalars, characters: str = 'uppercase', seed: Union[None, arkouda.dtypes.int_scalars] = None) -> arkouda.strings.Strings
 
    Generate random strings with lengths uniformly distributed between
    minlen and maxlen, and with characters drawn from a specified set.
@@ -486,7 +487,7 @@ Functions
    array(['+5"f', '-P]3', '4k', '~HFF', 'F'])
 
 
-.. function:: random_strings_lognormal(logmean: arkouda.dtypes.numeric_scalars, logstd: arkouda.dtypes.numeric_scalars, size: arkouda.dtypes.int_scalars, characters: str = 'uppercase', seed: Optional[int_scalars] = None) -> arkouda.strings.Strings
+.. function:: random_strings_lognormal(logmean: arkouda.dtypes.numeric_scalars, logstd: arkouda.dtypes.numeric_scalars, size: arkouda.dtypes.int_scalars, characters: str = 'uppercase', seed: Optional[arkouda.dtypes.int_scalars] = None) -> arkouda.strings.Strings
 
    Generate random strings with log-normally distributed lengths and
    with characters drawn from a specified set.

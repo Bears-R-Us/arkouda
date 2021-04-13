@@ -19,9 +19,10 @@ Classes
 
 
 
+
 .. class:: MessageFormat
 
-   Bases: :class:`enum.Enum`
+   Bases: :py:obj:`enum.Enum`
 
    Generic enumeration.
 
@@ -52,7 +53,7 @@ Classes
 
 .. class:: MessageType
 
-   Bases: :class:`enum.Enum`
+   Bases: :py:obj:`enum.Enum`
 
    Generic enumeration.
 
@@ -86,7 +87,7 @@ Classes
 
 
 
-.. class:: RequestMessage(user: str, cmd: str, token: str = None, format: arkouda.message.MessageFormat = MessageFormat.STRING, args: str = None)
+.. class:: RequestMessage(user: str, cmd: str, token: str = None, format: MessageFormat = MessageFormat.STRING, args: str = None)
 
 
    .. attribute:: __slots
@@ -152,7 +153,7 @@ Classes
 
       
 
-   .. method:: fromdict(values: Dict) -> arkouda.message.ReplyMessage
+   .. method:: fromdict(values: Dict) -> ReplyMessage
       :staticmethod:
 
       Generates a ReplyMessage from a dict encapsulating the data and

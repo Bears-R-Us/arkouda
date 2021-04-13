@@ -82,6 +82,26 @@
 </tr>
 </tbody>
 </table>
+</div>
+<div class="section" id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.timeclass._BASE_UNIT" title="arkouda.timeclass._BASE_UNIT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BASE_UNIT</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.timeclass._unit2normunit" title="arkouda.timeclass._unit2normunit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_unit2normunit</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.timeclass._unit2factor" title="arkouda.timeclass._unit2factor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_unit2factor</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
 <dl class="py data">
 <dt id="arkouda.timeclass._BASE_UNIT">
 <code class="sig-prename descclassname"><span class="pre">arkouda.timeclass.</span></code><code class="sig-name descname"><span class="pre">_BASE_UNIT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">ns</span></em><a class="headerlink" href="#arkouda.timeclass._BASE_UNIT" title="Permalink to this definition">¶</a></dt>
@@ -115,7 +135,7 @@
 <dl class="py class">
 <dt id="arkouda.timeclass._AbstractBaseTime">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">arkouda.timeclass.</span></code><code class="sig-name descname"><span class="pre">_AbstractBaseTime</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">_BASE_UNIT</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.timeclass._AbstractBaseTime" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">arkouda.pdarrayclass.pdarray</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arkouda.pdarrayclass.pdarray</span></code></a></p>
 <p>Base class for Datetime and Timedelta; not user-facing. Arkouda handles
 time similar to Pandas (albeit with less functionality), in that all absolute
 and relative times are represented in nanoseconds as int64 behind the scenes.
@@ -376,7 +396,7 @@ a supported dtype</p></li>
 <dl class="py class">
 <dt id="arkouda.timeclass.Datetime">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">arkouda.timeclass.</span></code><code class="sig-name descname"><span class="pre">Datetime</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">_BASE_UNIT</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.timeclass.Datetime" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#arkouda.timeclass._AbstractBaseTime" title="arkouda.timeclass._AbstractBaseTime"><code class="xref py py-class docutils literal notranslate"><span class="pre">arkouda.timeclass._AbstractBaseTime</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#arkouda.timeclass._AbstractBaseTime" title="arkouda.timeclass._AbstractBaseTime"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_AbstractBaseTime</span></code></a></p>
 <p>Represents a date and/or time.</p>
 <p>Datetime is the Arkouda analog to pandas DatetimeIndex and
 other timeseries data types.</p>
@@ -477,7 +497,7 @@ exceeds client.maxTransferBytes, a RuntimeError is raised.</p>
 <dl class="py class">
 <dt id="arkouda.timeclass.Timedelta">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">arkouda.timeclass.</span></code><code class="sig-name descname"><span class="pre">Timedelta</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">_BASE_UNIT</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.timeclass.Timedelta" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#arkouda.timeclass._AbstractBaseTime" title="arkouda.timeclass._AbstractBaseTime"><code class="xref py py-class docutils literal notranslate"><span class="pre">arkouda.timeclass._AbstractBaseTime</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#arkouda.timeclass._AbstractBaseTime" title="arkouda.timeclass._AbstractBaseTime"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_AbstractBaseTime</span></code></a></p>
 <p>Represents a duration, the difference between two dates or times.</p>
 <p>Timedelta is the Arkouda equivalent of pandas.TimedeltaIndex.</p>
 <dl class="field-list simple">

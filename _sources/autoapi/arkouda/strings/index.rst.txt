@@ -16,7 +16,8 @@ Classes
 
 
 
-.. class:: Strings(offset_attrib: Union[(pdarray, str)], bytes_attrib: Union[(pdarray, str)])
+
+.. class:: Strings(offset_attrib: Union[arkouda.pdarrayclass.pdarray, str], bytes_attrib: Union[arkouda.pdarrayclass.pdarray, str])
 
 
    Represents an array of strings whose data resides on the
@@ -104,7 +105,7 @@ Classes
       Return repr(self).
 
 
-   .. method:: _binop(self, other: Union[(Strings, str_scalars)], op: str) -> arkouda.pdarrayclass.pdarray
+   .. method:: _binop(self, other: Union[Strings, arkouda.dtypes.str_scalars], op: str) -> arkouda.pdarrayclass.pdarray
 
       Executes the requested binop on this Strings instance and the
           parameter Strings object and returns the results within
@@ -156,7 +157,7 @@ Classes
       :raises RuntimeError: Raised if there is a server-side error thrown
 
 
-   .. method:: contains(self, substr: Union[(bytes, str_scalars)]) -> arkouda.pdarrayclass.pdarray
+   .. method:: contains(self, substr: Union[bytes, arkouda.dtypes.str_scalars]) -> arkouda.pdarrayclass.pdarray
 
       Check whether each element contains the given substring.
 
@@ -180,7 +181,7 @@ Classes
       array([True, True, True, True, True])
 
 
-   .. method:: startswith(self, substr: Union[(bytes, str_scalars)]) -> arkouda.pdarrayclass.pdarray
+   .. method:: startswith(self, substr: Union[bytes, arkouda.dtypes.str_scalars]) -> arkouda.pdarrayclass.pdarray
 
       Check whether each element starts with the given substring.
 
@@ -204,7 +205,7 @@ Classes
       array([True, True, True, True, True])
 
 
-   .. method:: endswith(self, substr: Union[(bytes, str_scalars)]) -> arkouda.pdarrayclass.pdarray
+   .. method:: endswith(self, substr: Union[bytes, arkouda.dtypes.str_scalars]) -> arkouda.pdarrayclass.pdarray
 
       Check whether each element ends with the given substring.
 
@@ -228,7 +229,7 @@ Classes
       array([True, True, True, True, True])
 
 
-   .. method:: flatten(self, delimiter: str, return_segments: bool = False) -> Union[(Strings, Tuple)]
+   .. method:: flatten(self, delimiter: str, return_segments: bool = False) -> Union[Strings, Tuple]
 
       Unpack delimiter-joined substrings into a flat array.
 
@@ -254,7 +255,7 @@ Classes
       array([0, 2, 5])
 
 
-   .. method:: peel(self, delimiter: Union[(bytes, str_scalars)], times: arkouda.dtypes.int_scalars = 1, includeDelimiter: bool = False, keepPartial: bool = False, fromRight: bool = False) -> Tuple
+   .. method:: peel(self, delimiter: Union[bytes, arkouda.dtypes.str_scalars], times: arkouda.dtypes.int_scalars = 1, includeDelimiter: bool = False, keepPartial: bool = False, fromRight: bool = False) -> Tuple
 
       Peel off one or more delimited fields from each string (similar
       to string.partition), returning two new arrays of strings.
@@ -307,7 +308,7 @@ Classes
       (array(['a.b', 'c.d', 'e.f']), array(['', '', 'g']))
 
 
-   .. method:: rpeel(self, delimiter: Union[(bytes, str_scalars)], times: arkouda.dtypes.int_scalars = 1, includeDelimiter: bool = False, keepPartial: bool = False)
+   .. method:: rpeel(self, delimiter: Union[bytes, arkouda.dtypes.str_scalars], times: arkouda.dtypes.int_scalars = 1, includeDelimiter: bool = False, keepPartial: bool = False)
 
       Peel off one or more delimited fields from the end of each string
       (similar to string.rpartition), returning two new arrays of strings.
@@ -347,7 +348,7 @@ Classes
       (array(['a', 'c', 'e']), array(['b', 'd', 'f.g']))
 
 
-   .. method:: stick(self, other: arkouda.strings.Strings, delimiter: Union[(bytes, str_scalars)] = '', toLeft: bool = False) -> arkouda.strings.Strings
+   .. method:: stick(self, other: Strings, delimiter: Union[bytes, arkouda.dtypes.str_scalars] = '', toLeft: bool = False) -> Strings
 
       Join the strings from another array onto one end of the strings
       of this array, optionally inserting a delimiter.
@@ -379,10 +380,10 @@ Classes
       array(['a.b', 'c.d', 'e.f'])
 
 
-   .. method:: __add__(self, other: arkouda.strings.Strings) -> arkouda.strings.Strings
+   .. method:: __add__(self, other: Strings) -> Strings
 
 
-   .. method:: lstick(self, other: arkouda.strings.Strings, delimiter: Union[(bytes, str_scalars)] = '') -> arkouda.strings.Strings
+   .. method:: lstick(self, other: Strings, delimiter: Union[bytes, arkouda.dtypes.str_scalars] = '') -> Strings
 
       Join the strings from another array onto the left of the strings
       of this array, optionally inserting a delimiter.
@@ -410,10 +411,10 @@ Classes
       array(['b.a', 'd.c', 'f.e'])
 
 
-   .. method:: __radd__(self, other: arkouda.strings.Strings) -> arkouda.strings.Strings
+   .. method:: __radd__(self, other: Strings) -> Strings
 
 
-   .. method:: hash(self) -> Tuple[(pdarray, pdarray)]
+   .. method:: hash(self) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
 
       Compute a 128-bit hash of each string.
 
@@ -515,13 +516,13 @@ Classes
       segments and values and (4) save logic is delegated to pdarray.save
 
 
-   .. method:: register(self, user_defined_name: str) -> arkouda.strings.Strings
+   .. method:: register(self, user_defined_name: str) -> Strings
 
 
    .. method:: unregister(self) -> None
 
 
-   .. method:: attach(user_defined_name: str) -> arkouda.strings.Strings
+   .. method:: attach(user_defined_name: str) -> Strings
       :staticmethod:
 
 

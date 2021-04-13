@@ -24,12 +24,21 @@ Functions
    arkouda.groupbyclass.broadcast
 
 
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.groupbyclass.GROUPBY_REDUCTION_TYPES
+
+
 .. data:: GROUPBY_REDUCTION_TYPES
    
 
    
 
-.. class:: GroupBy(keys: Union[(pdarray, Strings, 'Categorical', List[Union[pdarray, np.int64, Strings]])], assume_sorted: bool = False, hash_strings: bool = True)
+.. class:: GroupBy(keys: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical, List[Union[arkouda.pdarrayclass.pdarray, numpy.int64, arkouda.strings.Strings]]], assume_sorted: bool = False, hash_strings: bool = True)
 
 
    Group an array or list of arrays by value, usually in preparation
@@ -97,7 +106,7 @@ Functions
    .. method:: find_segments(self) -> None
 
 
-   .. method:: count(self) -> Tuple[(List[Union[pdarray, Strings]], pdarray)]
+   .. method:: count(self) -> Tuple[List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]], arkouda.pdarrayclass.pdarray]
 
       Count the number of elements in each group, i.e. the number of times
       each key appears.
@@ -120,7 +129,7 @@ Functions
       array([1, 2, 4, 3])
 
 
-   .. method:: aggregate(self, values: arkouda.pdarrayclass.pdarray, operator: str, skipna: bool = True) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+   .. method:: aggregate(self, values: arkouda.pdarrayclass.pdarray, operator: str, skipna: bool = True) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group another
       array of values and apply a reduction to each group's values.
@@ -155,7 +164,7 @@ Functions
       0.33333333333333326, 0.55555555555555536, 0.77777777777777768, 1]))
 
 
-   .. method:: sum(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+   .. method:: sum(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and sum each group's values.
@@ -189,7 +198,7 @@ Functions
       (array([2, 3, 4]), array([8, 14, 6]))
 
 
-   .. method:: prod(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+   .. method:: prod(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and compute the product of each group's
@@ -225,7 +234,7 @@ Functions
       (array([2, 3, 4]), array([12, 108.00000000000003, 8.9999999999999982]))
 
 
-   .. method:: mean(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+   .. method:: mean(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and compute the mean of each group's
@@ -260,7 +269,7 @@ Functions
       (array([2, 3, 4]), array([2.6666666666666665, 2.7999999999999998, 3]))
 
 
-   .. method:: min(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+   .. method:: min(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and return the minimum of each group's
@@ -293,7 +302,7 @@ Functions
       (array([2, 3, 4]), array([1, 1, 3]))
 
 
-   .. method:: max(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+   .. method:: max(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and return the maximum of each
@@ -326,7 +335,7 @@ Functions
       (array([2, 3, 4]), array([4, 4, 3]))
 
 
-   .. method:: argmin(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+   .. method:: argmin(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and return the location of the first
@@ -364,7 +373,7 @@ Functions
       (array([2, 3, 4]), array([5, 4, 2]))
 
 
-   .. method:: argmax(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+   .. method:: argmax(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and return the location of the first
@@ -401,7 +410,7 @@ Functions
       (array([2, 3, 4]), array([9, 3, 2]))
 
 
-   .. method:: nunique(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+   .. method:: nunique(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group another
       array of values and return the number of unique values in each group.
@@ -433,7 +442,7 @@ Functions
       (array([2, 3, 4]), array([3, 3, 1]))
 
 
-   .. method:: any(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+   .. method:: any(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group another
       array of values and perform an "or" reduction on each group.
@@ -450,7 +459,7 @@ Functions
           if the operator is not in the GroupBy.Reductions array
 
 
-   .. method:: all(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+   .. method:: all(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and perform an "and" reduction on
@@ -469,7 +478,7 @@ Functions
       :raises RuntimeError: Raised if all is not supported for the values dtype
 
 
-   .. method:: OR(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+   .. method:: OR(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
 
       Bitwise OR of values in each segment.
 
@@ -490,7 +499,7 @@ Functions
       :raises RuntimeError: Raised if all is not supported for the values dtype
 
 
-   .. method:: AND(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+   .. method:: AND(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
 
       Bitwise AND of values in each segment.
 
@@ -511,7 +520,7 @@ Functions
       :raises RuntimeError: Raised if all is not supported for the values dtype
 
 
-   .. method:: XOR(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[(Union[pdarray, List[Union[pdarray, Strings]]], pdarray)]
+   .. method:: XOR(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
 
       Bitwise XOR of values in each segment.
 
@@ -586,6 +595,6 @@ Functions
 
 
 
-.. function:: broadcast(segments: arkouda.pdarrayclass.pdarray, values: arkouda.pdarrayclass.pdarray, size: Union[(int, np.int64)] = -1, permutation: Union[(pdarray, None)] = None)
+.. function:: broadcast(segments: arkouda.pdarrayclass.pdarray, values: arkouda.pdarrayclass.pdarray, size: Union[int, numpy.int64] = -1, permutation: Union[arkouda.pdarrayclass.pdarray, None] = None)
 
 

@@ -18,7 +18,8 @@ Functions
    arkouda.sorting.sort
 
 
-.. function:: argsort(pda: Union[(pdarray, Strings, 'Categorical')]) -> arkouda.pdarrayclass.pdarray
+
+.. function:: argsort(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]) -> arkouda.pdarrayclass.pdarray
 
    Return the permutation that sorts the array.
 
@@ -45,7 +46,7 @@ Functions
    array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
 
 
-.. function:: coargsort(arrays: Sequence[Union[Strings, pdarray]]) -> arkouda.pdarrayclass.pdarray
+.. function:: coargsort(arrays: Sequence[Union[arkouda.strings.Strings, arkouda.pdarrayclass.pdarray]]) -> arkouda.pdarrayclass.pdarray
 
    Return the permutation that groups the rows (left-to-right), if the
    input arrays are treated as columns. The permutation sorts numeric

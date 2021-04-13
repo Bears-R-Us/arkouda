@@ -30,6 +30,17 @@ Functions
    arkouda.timeclass.timedelta_range
 
 
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.timeclass._BASE_UNIT
+   arkouda.timeclass._unit2normunit
+   arkouda.timeclass._unit2factor
+
+
 .. data:: _BASE_UNIT
    :annotation: = ns
 
@@ -58,7 +69,7 @@ Functions
 .. class:: _AbstractBaseTime(array, unit: str = _BASE_UNIT)
 
 
-   Bases: :class:`arkouda.pdarrayclass.pdarray`
+   Bases: :py:obj:`arkouda.pdarrayclass.pdarray`
 
    Base class for Datetime and Timedelta; not user-facing. Arkouda handles
    time similar to Pandas (albeit with less functionality), in that all absolute
@@ -245,7 +256,7 @@ Functions
 .. class:: Datetime(array, unit: str = _BASE_UNIT)
 
 
-   Bases: :class:`arkouda.timeclass._AbstractBaseTime`
+   Bases: :py:obj:`_AbstractBaseTime`
 
    Represents a date and/or time.
 
@@ -339,7 +350,7 @@ Functions
 .. class:: Timedelta(array, unit: str = _BASE_UNIT)
 
 
-   Bases: :class:`arkouda.timeclass._AbstractBaseTime`
+   Bases: :py:obj:`_AbstractBaseTime`
 
    Represents a duration, the difference between two dates or times.
 

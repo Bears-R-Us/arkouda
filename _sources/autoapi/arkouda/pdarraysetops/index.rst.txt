@@ -22,7 +22,8 @@ Functions
    arkouda.pdarraysetops.setxor1d
 
 
-.. function:: unique(pda: Union[(pdarray, Strings, 'Categorical')], return_counts: bool = False) -> Union[(Union[pdarray, Strings, 'Categorical'], Tuple[Union[pdarray, Strings, 'Categorical'], Optional[pdarray]])]
+
+.. function:: unique(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical], return_counts: bool = False) -> Union[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical], Tuple[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical], Optional[arkouda.pdarrayclass.pdarray]]]
 
    Find the unique elements of an array.
 
@@ -56,7 +57,7 @@ Functions
    array([1, 2, 3])
 
 
-.. function:: in1d(pda1: Union[(pdarray, Strings, 'Categorical')], pda2: Union[(pdarray, Strings, 'Categorical')], invert: bool = False) -> arkouda.pdarrayclass.pdarray
+.. function:: in1d(pda1: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical], pda2: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical], invert: bool = False) -> arkouda.pdarrayclass.pdarray
 
    Test whether each element of a 1-D array is also present in a second array.
 
@@ -101,7 +102,7 @@ Functions
    array([False, True])
 
 
-.. function:: concatenate(arrays: Sequence[Union[pdarray, Strings, 'Categorical']], ordered: bool = True) -> Union[(pdarray, Strings, 'Categorical')]
+.. function:: concatenate(arrays: Sequence[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]], ordered: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Categorical]
 
    Concatenate a list or tuple of ``pdarray`` or ``Strings`` objects into
    one ``pdarray`` or ``Strings`` object, respectively.

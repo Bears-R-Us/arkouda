@@ -17,12 +17,13 @@ Functions
    arkouda.logger.disableVerbose
 
 
+
 .. function:: enableVerbose() -> None
 
    Enables verbose logging (DEBUG log level) for all ArkoudaLoggers
 
 
-.. function:: disableVerbose(logLevel: arkouda.logger.LogLevel = LogLevel.INFO) -> None
+.. function:: disableVerbose(logLevel: LogLevel = LogLevel.INFO) -> None
 
    Disables verbose logging (DEBUG log level) for all ArkoudaLoggers, setting
    the log level for each to the logLevel parameter

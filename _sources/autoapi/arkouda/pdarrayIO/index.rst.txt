@@ -22,6 +22,7 @@ Functions
    arkouda.pdarrayIO.save_all
 
 
+
 .. function:: ls_hdf(filename: str) -> str
 
    This function calls the h5ls utility on a filename visible to the
@@ -34,7 +35,7 @@ Functions
    :rtype: str
 
 
-.. function:: read_hdf(dsetName: str, filenames: Union[(str, List[str])], strictTypes: bool = True) -> Union[(pdarray, Strings)]
+.. function:: read_hdf(dsetName: str, filenames: Union[str, List[str]], strictTypes: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Read a single dataset from multiple HDF5 files into an Arkouda
    pdarray or Strings object.
@@ -69,7 +70,7 @@ Functions
    If dsetName is not present in all files, a TypeError is raised.
 
 
-.. function:: read_all(filenames: Union[(str, List[str])], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True) -> Union[(pdarray, Strings, Mapping[str, Union[pdarray, Strings]])]
+.. function:: read_all(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
 
    Read datasets from HDF5 files.
 
@@ -111,7 +112,7 @@ Functions
    to HDF5 files.
 
 
-.. function:: load(path_prefix: str, dataset: str = 'array') -> Union[(pdarray, Strings)]
+.. function:: load(path_prefix: str, dataset: str = 'array') -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Load a pdarray previously saved with ``pdarray.save()``.
 
@@ -144,7 +145,7 @@ Functions
    .. seealso:: :obj:`ls_hdf`
 
 
-.. function:: load_all(path_prefix: str) -> Mapping[(str, Union[pdarray, Strings])]
+.. function:: load_all(path_prefix: str) -> Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]
 
    Load multiple pdarrays or Strings previously saved with ``save_all()``.
 
@@ -159,7 +160,7 @@ Functions
    .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read_hdf`, :obj:`read_all`
 
 
-.. function:: save_all(columns: Union[(Mapping[str, pdarray], List[pdarray])], prefix_path: str, names: List[str] = None, mode: str = 'truncate') -> None
+.. function:: save_all(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, mode: str = 'truncate') -> None
 
    Save multiple named pdarrays to HDF5 files.
 

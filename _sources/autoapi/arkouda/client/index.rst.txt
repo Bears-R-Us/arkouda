@@ -21,6 +21,17 @@ Functions
    arkouda.client.ruok
 
 
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.client.__version__
+   arkouda.client.AllSymbols
+   arkouda.client.RegisteredSymbols
+
+
 .. data:: __version__
    
 
@@ -94,7 +105,7 @@ Functions
        there is an error in disconnecting from the server
 
 
-.. function:: get_config() -> Mapping[(str, Union[str, int, float])]
+.. function:: get_config() -> Mapping[str, Union[str, int, float]]
 
    Get runtime information about the server.
 

@@ -26,7 +26,8 @@ Functions
    arkouda.numeric.value_counts
 
 
-.. function:: cast(pda: Union[(pdarray, Strings)], dt: Union[(np.dtype, str)]) -> Union[(pdarray, Strings)]
+
+.. function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], dt: Union[numpy.dtype, str]) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Cast an array to another dtype.
 
@@ -217,7 +218,7 @@ Functions
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. function:: where(condition: arkouda.pdarrayclass.pdarray, A: Union[(numeric_scalars, pdarray)], B: Union[(numeric_scalars, pdarray)]) -> arkouda.pdarrayclass.pdarray
+.. function:: where(condition: arkouda.pdarrayclass.pdarray, A: Union[arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray], B: Union[arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray]) -> arkouda.pdarrayclass.pdarray
 
    Returns an array with elements chosen from A and B based upon a
    conditioning array. As is the case with numpy.where, the return array
@@ -310,7 +311,7 @@ Functions
    >>> plt.plot(binEdges[:-1], h.to_ndarray())
 
 
-.. function:: value_counts(pda: arkouda.pdarrayclass.pdarray) -> Union[(Categorical, Tuple[Union[pdarray, Strings], Optional[pdarray]])]
+.. function:: value_counts(pda: arkouda.pdarrayclass.pdarray) -> Union[Categorical, Tuple[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Optional[arkouda.pdarrayclass.pdarray]]]
 
    Count the occurrences of the unique values of an array.
 

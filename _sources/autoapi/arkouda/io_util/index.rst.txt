@@ -19,6 +19,7 @@ Functions
    arkouda.io_util.dict_to_delimited_file
 
 
+
 .. function:: get_directory(path: str) -> pathlib.Path
 
    Creates the directory if it does not exist and then
@@ -52,7 +53,7 @@ Functions
        writing to the file
 
 
-.. function:: delimited_file_to_dict(path: str, delimiter: str = ',') -> Dict[(str, str)]
+.. function:: delimited_file_to_dict(path: str, delimiter: str = ',') -> Dict[str, str]
 
    Returns a dictionary populated by lines from a file where
    the first delimited element of each line is the key and
@@ -70,7 +71,7 @@ Functions
    :raises UnsupportedOperation: Raised if there's an error in reading the file
 
 
-.. function:: dict_to_delimited_file(path: str, values: Mapping[(Any, Any)], delimiter: str = ',') -> None
+.. function:: dict_to_delimited_file(path: str, values: Mapping[Any, Any], delimiter: str = ',') -> None
 
    Writes a dictionary to delimited lines in a file where
    the first delimited element of each line is the dict key

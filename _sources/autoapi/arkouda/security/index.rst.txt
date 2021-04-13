@@ -20,6 +20,15 @@ Functions
    arkouda.security.generate_username_token_json
 
 
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.security.username_tokenizer
+
+
 .. data:: username_tokenizer
    
 

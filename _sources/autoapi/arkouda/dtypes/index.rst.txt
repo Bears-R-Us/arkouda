@@ -18,6 +18,30 @@ Functions
    arkouda.dtypes.resolve_scalar_dtype
 
 
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.dtypes.dtype
+   arkouda.dtypes.bool
+   arkouda.dtypes.int64
+   arkouda.dtypes.float64
+   arkouda.dtypes.uint8
+   arkouda.dtypes.str_
+   arkouda.dtypes.bool_scalars
+   arkouda.dtypes.float_scalars
+   arkouda.dtypes.int_scalars
+   arkouda.dtypes.numeric_scalars
+   arkouda.dtypes.numpy_scalars
+   arkouda.dtypes.str_scalars
+   arkouda.dtypes.all_scalars
+   arkouda.dtypes.ARKOUDA_SUPPORTED_DTYPES
+   arkouda.dtypes.DTypes
+   arkouda.dtypes.DTypeObjects
+
+
 .. data:: dtype
    
 
@@ -108,7 +132,7 @@ Functions
        dt is not a np.dtype
 
 
-.. function:: translate_np_dtype(dt: numpy.dtype) -> Tuple[(builtins.str, int)]
+.. function:: translate_np_dtype(dt: numpy.dtype) -> Tuple[str, int]
 
    Split numpy dtype dt into its kind and byte size, raising
    TypeError for unsupported dtypes.
