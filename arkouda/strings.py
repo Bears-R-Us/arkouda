@@ -828,6 +828,7 @@ class Strings:
         self.bytes.save(prefix_path=prefix_path, 
                                     dataset='{}/values'.format(dataset), mode=mode)
 
+    @typechecked
     def register(self, user_defined_name: str) -> Strings:
         """
         Register this Strings object with a user defined name in the arkouda server
@@ -851,8 +852,7 @@ class Strings:
         Raises
         ------
         TypeError
-            Raised if pda is neither a pdarray nor a str or if
-            user_defined_name is not a str
+            Raised if user_defined_name is not a str
         RegistrationError
             If the server was unable to register the Strings object with the user_defined_name
             If the user is attempting to register more than one object with the same name, the former should be
@@ -867,9 +867,6 @@ class Strings:
         Registered names/Strings objects in the server are immune to deletion
         until they are unregistered.
         """
-        if not isinstance(user_defined_name, str):
-            raise TypeError(f"user_defined_name must be of type str, was {type(user_defined_name)}")
-
         self.offsets.register(user_defined_name+'_offsets')
         self.bytes.register(user_defined_name+'_bytes')
         self.name = user_defined_name
@@ -889,8 +886,8 @@ class Strings:
 
         Raises
         ------
-        TypeError
-            Raised if pda is neither a pdarray nor a str
+        RuntimeError
+            Raised if the server could not find the internal name/symbol to remove
 
         See also
         --------
@@ -905,7 +902,8 @@ class Strings:
         self.bytes.unregister()
 
     @staticmethod
-    def attach(user_defined_name : str) -> Strings:
+    @typechecked
+    def attach(user_defined_name: str) -> Strings:
         """
         class method to return a Strings object attached to the registered name in the arkouda
         server which was registered using register()
@@ -934,8 +932,5 @@ class Strings:
         Registered names/Strings objects in the server are immune to deletion
         until they are unregistered.
         """
-        if not isinstance(user_defined_name, str):
-            raise TypeError(f"user_defined_name must be of type str, was {type(user_defined_name)}")
-
         return Strings(pdarray.attach(user_defined_name+'_offsets'),
                        pdarray.attach(user_defined_name+'_bytes'))
