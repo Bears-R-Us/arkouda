@@ -991,7 +991,7 @@ class pdarray:
         Examples
         --------
         >>> a = zeros(100)
-        >>> r_pda = a.register("my_zeros")
+        >>> a.register("my_zeros")
         >>> # potentially disconnect from server and reconnect to server
         >>> b = ak.pdarray.attach("my_zeros")
         >>> # ...other work...
@@ -1038,7 +1038,7 @@ class pdarray:
         Examples
         --------
         >>> a = zeros(100)
-        >>> r_pda = a.register("my_zeros")
+        >>> a.register("my_zeros")
         >>> # potentially disconnect from server and reconnect to server
         >>> b = ak.pdarray.attach("my_zeros")
         >>> # ...other work...
@@ -1082,7 +1082,7 @@ class pdarray:
         Examples
         --------
         >>> a = zeros(100)
-        >>> r_pda = a.register("my_zeros")
+        >>> a.register("my_zeros")
         >>> # potentially disconnect from server and reconnect to server
         >>> b = ak.pdarray.attach("my_zeros")
         >>> # ...other work...
@@ -1748,11 +1748,11 @@ def argmaxk(pda : pdarray, k : int_scalars) -> pdarray:
     return create_pdarray(repMsg)
 
 @typechecked
-def attach_pdarray(user_defined_name : str) -> pdarray:
+def attach_pdarray(user_defined_name: str) -> pdarray:
     """
-    Return a pdarray attached to the a registered name in the arkouda 
-    server which was registered using register_pdarray()
-    
+    class method to return a pdarray attached to the registered name in the arkouda
+    server which was registered using register()
+
     Parameters
     ----------
     user_defined_name : str
@@ -1761,27 +1761,26 @@ def attach_pdarray(user_defined_name : str) -> pdarray:
     Returns
     -------
     pdarray
-        pdarray which points to pdarray registered with user defined
-        name in the arkouda server
-        
+        pdarray which is bound to corresponding server side component that was registered with user_defined_name
+
     Raises
     ------
     TypeError
-        Raised if user_defined_name is not a str
+      Raised if user_defined_name is not a str
 
     See also
     --------
-    register_pdarray, unregister_pdarray
+    register, unregister_pdarray
 
     Notes
     -----
-    Registered names/pdarrays in the server are immune to deletion 
+    Registered names/pdarrays in the server are immune to deletion
     until they are unregistered.
 
     Examples
     --------
     >>> a = zeros(100)
-    >>> r_pda = ak.register_pdarray(a, "my_zeros")
+    >>> a.register("my_zeros")
     >>> # potentially disconnect from server and reconnect to server
     >>> b = ak.attach_pdarray("my_zeros")
     >>> # ...other work...
@@ -1792,38 +1791,36 @@ def attach_pdarray(user_defined_name : str) -> pdarray:
 
 
 @typechecked
-def unregister_pdarray(pda : Union[str,pdarray]) -> None:
+def unregister_pdarray(pda: Union[str,pdarray]) -> None:
     """
-    Unregister a pdarray in the arkouda server which was previously 
-    registered using register_pdarray() and/or attached to using attach_pdarray()
-    
+    Unregister a pdarray in the arkouda server which was previously
+    registered using register() and/or attahced to using attach_pdarray()
+
     Parameters
     ----------
-    pda : str or pdarray
-        user define name which array was registered under
 
     Returns
     -------
     None
 
-    Raises 
+    Raises
     ------
-    TypeError
-        Raised if pda is neither a pdarray nor a str
+    RuntimeError
+        Raised if the server could not find the internal name/symbol to remove
 
     See also
     --------
-    register_pdarray, unregister_pdarray
+    register, unregister_pdarray
 
     Notes
     -----
-    Registered names/pdarrays in the server are immune to deletion until 
+    Registered names/pdarrays in the server are immune to deletion until
     they are unregistered.
 
     Examples
     --------
     >>> a = zeros(100)
-    >>> r_pda = ak.register_pdarray(a, "my_zeros")
+    >>> a.register("my_zeros")
     >>> # potentially disconnect from server and reconnect to server
     >>> b = ak.attach_pdarray("my_zeros")
     >>> # ...other work...
