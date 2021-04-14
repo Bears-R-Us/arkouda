@@ -728,17 +728,93 @@ segments and values and (4) save logic is delegated to pdarray.save</p>
 <dl class="py method">
 <dt id="arkouda.strings.Strings.register">
 <code class="sig-name descname"><span class="pre">register</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><a class="headerlink" href="#arkouda.strings.Strings.register" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Register this Strings object with a user defined name in the arkouda server
+so it can be attached to later using Strings.attach()
+This is an in-place operation, registering a Strings object more than once will
+update the name in the registry and remove the previously registered name.
+A name can only be registered to one object at a time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name which the Strings object is to be registered under</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The same Strings object which is now registered with the arkouda server and has an updated name.
+This is an in-place modification, the original is returned to support a fluid programming style.
+Please note you cannot register two different objects with the same name.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.strings.Strings" title="arkouda.strings.Strings">Strings</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
+<li><p><a class="reference internal" href="../index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Strings object with the user_defined_name
+If the user is attempting to register more than one object with the same name, the former should be
+unregistered first to free up the registration name.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.strings.Strings.attach" title="arkouda.strings.Strings.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.strings.Strings.unregister" title="arkouda.strings.Strings.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Registered names/Strings objects in the server are immune to deletion
+until they are unregistered.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="arkouda.strings.Strings.unregister">
 <code class="sig-name descname"><span class="pre">unregister</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#arkouda.strings.Strings.unregister" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Unregister a Strings object in the arkouda server which was previously
+registered using register() and/or attached to using attach()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if the server could not find the internal name/symbol to remove</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.strings.Strings.register" title="arkouda.strings.Strings.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.strings.Strings.unregister" title="arkouda.strings.Strings.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Registered names/Strings objects in the server are immune to deletion until
+they are unregistered.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="arkouda.strings.Strings.attach">
 <em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">attach</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><a class="headerlink" href="#arkouda.strings.Strings.attach" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>class method to return a Strings object attached to the registered name in the arkouda
+server which was registered using register()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name which the Strings object was registered under</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the Strings object registered with user_defined_name in the arkouda server</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Strings object</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.strings.Strings.register" title="arkouda.strings.Strings.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.strings.Strings.unregister" title="arkouda.strings.Strings.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Registered names/Strings objects in the server are immune to deletion
+until they are unregistered.</p>
+</dd></dl>
 
 </dd></dl>
 

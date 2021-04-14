@@ -190,7 +190,7 @@
 <td><p>Find the indices corresponding to the <cite>k</cite> maximum values of an array.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.attach_pdarray" title="arkouda.attach_pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach_pdarray</span></code></a>(user_defined_name: str) → pdarray</p></td>
-<td><p>Return a pdarray attached to the a registered name in the arkouda</p></td>
+<td><p>class method to return a pdarray attached to the registered name in the arkouda</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.unregister_pdarray" title="arkouda.unregister_pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray</span></code></a>(pda: Union[str, pdarray]) → None</p></td>
 <td><p>Unregister a pdarray in the arkouda server which was previously</p></td>
@@ -1543,8 +1543,7 @@ Please note you cannot register two different pdarrays with the same name.</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if pda is neither a pdarray nor a str or if
-user_defined_name is not a str</p></li>
+<li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
 <li><p><a class="reference internal" href="#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the pdarray with the user_defined_name
 If the user is attempting to register more than one pdarray with the same name, the former should be
 unregistered first to free up the registration name.</p></li>
@@ -1560,7 +1559,7 @@ unregistered first to free up the registration name.</p></li>
 until they are unregistered.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">r_pda</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># potentially disconnect from server and reconnect to server</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">pdarray</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># ...other work...</span>
@@ -1582,7 +1581,7 @@ registered using register() and/or attahced to using attach()</p>
 <dd class="field-even"><p>None</p>
 </dd>
 <dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><strong>TypeError</strong> – Raised if pda is neither a pdarray nor a str</p>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if the server could not find the internal name/symbol to remove</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -1594,7 +1593,7 @@ registered using register() and/or attahced to using attach()</p>
 they are unregistered.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">r_pda</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># potentially disconnect from server and reconnect to server</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">pdarray</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># ...other work...</span>
@@ -1606,15 +1605,14 @@ they are unregistered.</p>
 <dl class="py method">
 <dt id="arkouda.pdarray.attach">
 <em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">attach</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><a class="headerlink" href="#arkouda.pdarray.attach" title="Permalink to this definition">¶</a></dt>
-<dd><p>class method to return a pdarray attached to the a registered name in the arkouda
+<dd><p>class method to return a pdarray attached to the registered name in the arkouda
 server which was registered using register()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name which array was registered under</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>pdarray which points to pdarray registered with user defined
-name in the arkouda server</p>
+<dd class="field-even"><p>pdarray which is bound to corresponding server side component that was registered with user_defined_name</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
@@ -1632,7 +1630,7 @@ name in the arkouda server</p>
 until they are unregistered.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">r_pda</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># potentially disconnect from server and reconnect to server</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">pdarray</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># ...other work...</span>
@@ -2177,15 +2175,14 @@ about a <cite>k</cite> of 5 million is where performance degradation has been ob
 <dl class="py function">
 <dt id="arkouda.attach_pdarray">
 <code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">attach_pdarray</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><a class="headerlink" href="#arkouda.attach_pdarray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a pdarray attached to the a registered name in the arkouda
-server which was registered using register_pdarray()</p>
+<dd><p>class method to return a pdarray attached to the registered name in the arkouda
+server which was registered using register()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name which array was registered under</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>pdarray which points to pdarray registered with user defined
-name in the arkouda server</p>
+<dd class="field-even"><p>pdarray which is bound to corresponding server side component that was registered with user_defined_name</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
@@ -2196,14 +2193,14 @@ name in the arkouda server</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_pdarray</span></code>, <a class="reference internal" href="#arkouda.unregister_pdarray" title="arkouda.unregister_pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray</span></code></a></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code>, <a class="reference internal" href="#arkouda.unregister_pdarray" title="arkouda.unregister_pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>Registered names/pdarrays in the server are immune to deletion
 until they are unregistered.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">r_pda</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">register_pdarray</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># potentially disconnect from server and reconnect to server</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">attach_pdarray</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># ...other work...</span>
@@ -2216,31 +2213,28 @@ until they are unregistered.</p>
 <dt id="arkouda.unregister_pdarray">
 <code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">unregister_pdarray</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#arkouda.unregister_pdarray" title="Permalink to this definition">¶</a></dt>
 <dd><p>Unregister a pdarray in the arkouda server which was previously
-registered using register_pdarray() and/or attached to using attach_pdarray()</p>
+registered using register() and/or attahced to using attach_pdarray()</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>pda</strong> (<em>str</em><em> or </em><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><em>pdarray</em></a>) – user define name which array was registered under</p>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>TypeError</strong> – Raised if pda is neither a pdarray nor a str</p>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if the server could not find the internal name/symbol to remove</p>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_pdarray</span></code>, <a class="reference internal" href="#arkouda.unregister_pdarray" title="arkouda.unregister_pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray</span></code></a></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code>, <a class="reference internal" href="#arkouda.unregister_pdarray" title="arkouda.unregister_pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>Registered names/pdarrays in the server are immune to deletion until
 they are unregistered.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">r_pda</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">register_pdarray</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># potentially disconnect from server and reconnect to server</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">attach_pdarray</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># ...other work...</span>
@@ -5359,17 +5353,93 @@ segments and values and (4) save logic is delegated to pdarray.save</p>
 <dl class="py method">
 <dt id="arkouda.Strings.register">
 <code class="sig-name descname"><span class="pre">register</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><span class="pre">Strings</span></a><a class="headerlink" href="#arkouda.Strings.register" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Register this Strings object with a user defined name in the arkouda server
+so it can be attached to later using Strings.attach()
+This is an in-place operation, registering a Strings object more than once will
+update the name in the registry and remove the previously registered name.
+A name can only be registered to one object at a time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name which the Strings object is to be registered under</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The same Strings object which is now registered with the arkouda server and has an updated name.
+This is an in-place modification, the original is returned to support a fluid programming style.
+Please note you cannot register two different objects with the same name.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings">Strings</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
+<li><p><a class="reference internal" href="#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Strings object with the user_defined_name
+If the user is attempting to register more than one object with the same name, the former should be
+unregistered first to free up the registration name.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.Strings.attach" title="arkouda.Strings.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.Strings.unregister" title="arkouda.Strings.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Registered names/Strings objects in the server are immune to deletion
+until they are unregistered.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="arkouda.Strings.unregister">
 <code class="sig-name descname"><span class="pre">unregister</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#arkouda.Strings.unregister" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Unregister a Strings object in the arkouda server which was previously
+registered using register() and/or attached to using attach()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if the server could not find the internal name/symbol to remove</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.Strings.register" title="arkouda.Strings.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.Strings.unregister" title="arkouda.Strings.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Registered names/Strings objects in the server are immune to deletion until
+they are unregistered.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="arkouda.Strings.attach">
 <em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">attach</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><span class="pre">Strings</span></a><a class="headerlink" href="#arkouda.Strings.attach" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>class method to return a Strings object attached to the registered name in the arkouda
+server which was registered using register()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name which the Strings object was registered under</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the Strings object registered with user_defined_name in the arkouda server</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Strings object</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.Strings.register" title="arkouda.Strings.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.Strings.unregister" title="arkouda.Strings.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Registered names/Strings objects in the server are immune to deletion
+until they are unregistered.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -6754,8 +6824,7 @@ Please note you cannot register two different pdarrays with the same name.</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – Raised if pda is neither a pdarray nor a str or if
-user_defined_name is not a str</p></li>
+<li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
 <li><p><a class="reference internal" href="#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the pdarray with the user_defined_name
 If the user is attempting to register more than one pdarray with the same name, the former should be
 unregistered first to free up the registration name.</p></li>
@@ -6771,7 +6840,7 @@ unregistered first to free up the registration name.</p></li>
 until they are unregistered.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">r_pda</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># potentially disconnect from server and reconnect to server</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">pdarray</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># ...other work...</span>
@@ -6793,7 +6862,7 @@ registered using register() and/or attahced to using attach()</p>
 <dd class="field-even"><p>None</p>
 </dd>
 <dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><strong>TypeError</strong> – Raised if pda is neither a pdarray nor a str</p>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if the server could not find the internal name/symbol to remove</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -6805,7 +6874,7 @@ registered using register() and/or attahced to using attach()</p>
 they are unregistered.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">r_pda</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># potentially disconnect from server and reconnect to server</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">pdarray</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># ...other work...</span>
@@ -6817,15 +6886,14 @@ they are unregistered.</p>
 <dl class="py method">
 <dt id="id90">
 <em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">attach</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><a class="headerlink" href="#id90" title="Permalink to this definition">¶</a></dt>
-<dd><p>class method to return a pdarray attached to the a registered name in the arkouda
+<dd><p>class method to return a pdarray attached to the registered name in the arkouda
 server which was registered using register()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name which array was registered under</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>pdarray which points to pdarray registered with user defined
-name in the arkouda server</p>
+<dd class="field-even"><p>pdarray which is bound to corresponding server side component that was registered with user_defined_name</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
@@ -6843,7 +6911,7 @@ name in the arkouda server</p>
 until they are unregistered.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">r_pda</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># potentially disconnect from server and reconnect to server</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">pdarray</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># ...other work...</span>

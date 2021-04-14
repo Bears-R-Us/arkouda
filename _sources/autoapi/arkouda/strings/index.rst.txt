@@ -518,12 +518,72 @@ Classes
 
    .. method:: register(self, user_defined_name: str) -> Strings
 
+      Register this Strings object with a user defined name in the arkouda server
+      so it can be attached to later using Strings.attach()
+      This is an in-place operation, registering a Strings object more than once will
+      update the name in the registry and remove the previously registered name.
+      A name can only be registered to one object at a time.
+
+      :param user_defined_name: user defined name which the Strings object is to be registered under
+      :type user_defined_name: str
+
+      :returns: The same Strings object which is now registered with the arkouda server and has an updated name.
+                This is an in-place modification, the original is returned to support a fluid programming style.
+                Please note you cannot register two different objects with the same name.
+      :rtype: Strings
+
+      :raises TypeError: Raised if user_defined_name is not a str
+      :raises RegistrationError: If the server was unable to register the Strings object with the user_defined_name
+          If the user is attempting to register more than one object with the same name, the former should be
+          unregistered first to free up the registration name.
+
+      .. seealso:: :obj:`attach`, :obj:`unregister`
+
+      .. rubric:: Notes
+
+      Registered names/Strings objects in the server are immune to deletion
+      until they are unregistered.
+
 
    .. method:: unregister(self) -> None
+
+      Unregister a Strings object in the arkouda server which was previously
+      registered using register() and/or attached to using attach()
+
+
+      :returns:
+      :rtype: None
+
+      :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove
+
+      .. seealso:: :obj:`register`, :obj:`unregister`
+
+      .. rubric:: Notes
+
+      Registered names/Strings objects in the server are immune to deletion until
+      they are unregistered.
 
 
    .. method:: attach(user_defined_name: str) -> Strings
       :staticmethod:
+
+      class method to return a Strings object attached to the registered name in the arkouda
+      server which was registered using register()
+
+      :param user_defined_name: user defined name which the Strings object was registered under
+      :type user_defined_name: str
+
+      :returns: the Strings object registered with user_defined_name in the arkouda server
+      :rtype: Strings object
+
+      :raises TypeError: Raised if user_defined_name is not a str
+
+      .. seealso:: :obj:`register`, :obj:`unregister`
+
+      .. rubric:: Notes
+
+      Registered names/Strings objects in the server are immune to deletion
+      until they are unregistered.
 
 
 

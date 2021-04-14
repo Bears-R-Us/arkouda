@@ -623,8 +623,7 @@ Functions
                 Please note you cannot register two different pdarrays with the same name.
       :rtype: pdarray
 
-      :raises TypeError: Raised if pda is neither a pdarray nor a str or if
-          user_defined_name is not a str
+      :raises TypeError: Raised if user_defined_name is not a str
       :raises RegistrationError: If the server was unable to register the pdarray with the user_defined_name
           If the user is attempting to register more than one pdarray with the same name, the former should be
           unregistered first to free up the registration name.
@@ -639,7 +638,7 @@ Functions
       .. rubric:: Examples
 
       >>> a = zeros(100)
-      >>> r_pda = a.register("my_zeros")
+      >>> a.register("my_zeros")
       >>> # potentially disconnect from server and reconnect to server
       >>> b = ak.pdarray.attach("my_zeros")
       >>> # ...other work...
@@ -655,7 +654,7 @@ Functions
       :returns:
       :rtype: None
 
-      :raises TypeError: Raised if pda is neither a pdarray nor a str
+      :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove
 
       .. seealso:: :obj:`register`, :obj:`unregister`
 
@@ -667,7 +666,7 @@ Functions
       .. rubric:: Examples
 
       >>> a = zeros(100)
-      >>> r_pda = a.register("my_zeros")
+      >>> a.register("my_zeros")
       >>> # potentially disconnect from server and reconnect to server
       >>> b = ak.pdarray.attach("my_zeros")
       >>> # ...other work...
@@ -677,14 +676,13 @@ Functions
    .. method:: attach(user_defined_name: str) -> pdarray
       :staticmethod:
 
-      class method to return a pdarray attached to the a registered name in the arkouda
+      class method to return a pdarray attached to the registered name in the arkouda
       server which was registered using register()
 
       :param user_defined_name: user defined name which array was registered under
       :type user_defined_name: str
 
-      :returns: pdarray which points to pdarray registered with user defined
-                name in the arkouda server
+      :returns: pdarray which is bound to corresponding server side component that was registered with user_defined_name
       :rtype: pdarray
 
       :raises TypeError: Raised if user_defined_name is not a str
@@ -699,7 +697,7 @@ Functions
       .. rubric:: Examples
 
       >>> a = zeros(100)
-      >>> r_pda = a.register("my_zeros")
+      >>> a.register("my_zeros")
       >>> # potentially disconnect from server and reconnect to server
       >>> b = ak.pdarray.attach("my_zeros")
       >>> # ...other work...
@@ -1091,19 +1089,18 @@ Functions
 
 .. function:: attach_pdarray(user_defined_name: str) -> pdarray
 
-   Return a pdarray attached to the a registered name in the arkouda
-   server which was registered using register_pdarray()
+   class method to return a pdarray attached to the registered name in the arkouda
+   server which was registered using register()
 
    :param user_defined_name: user defined name which array was registered under
    :type user_defined_name: str
 
-   :returns: pdarray which points to pdarray registered with user defined
-             name in the arkouda server
+   :returns: pdarray which is bound to corresponding server side component that was registered with user_defined_name
    :rtype: pdarray
 
    :raises TypeError: Raised if user_defined_name is not a str
 
-   .. seealso:: :obj:`register_pdarray`, :obj:`unregister_pdarray`
+   .. seealso:: :obj:`register`, :obj:`unregister_pdarray`
 
    .. rubric:: Notes
 
@@ -1113,7 +1110,7 @@ Functions
    .. rubric:: Examples
 
    >>> a = zeros(100)
-   >>> r_pda = ak.register_pdarray(a, "my_zeros")
+   >>> a.register("my_zeros")
    >>> # potentially disconnect from server and reconnect to server
    >>> b = ak.attach_pdarray("my_zeros")
    >>> # ...other work...
@@ -1123,17 +1120,15 @@ Functions
 .. function:: unregister_pdarray(pda: Union[str, pdarray]) -> None
 
    Unregister a pdarray in the arkouda server which was previously
-   registered using register_pdarray() and/or attached to using attach_pdarray()
+   registered using register() and/or attahced to using attach_pdarray()
 
-   :param pda: user define name which array was registered under
-   :type pda: str or pdarray
 
    :returns:
    :rtype: None
 
-   :raises TypeError: Raised if pda is neither a pdarray nor a str
+   :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove
 
-   .. seealso:: :obj:`register_pdarray`, :obj:`unregister_pdarray`
+   .. seealso:: :obj:`register`, :obj:`unregister_pdarray`
 
    .. rubric:: Notes
 
@@ -1143,7 +1138,7 @@ Functions
    .. rubric:: Examples
 
    >>> a = zeros(100)
-   >>> r_pda = ak.register_pdarray(a, "my_zeros")
+   >>> a.register("my_zeros")
    >>> # potentially disconnect from server and reconnect to server
    >>> b = ak.attach_pdarray("my_zeros")
    >>> # ...other work...
