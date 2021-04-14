@@ -155,3 +155,17 @@ class CategoricalTest(ArkoudaTest):
         # that both permutation and segments are None
         self.assertFalse(resultCat.permutation)
         self.assertFalse(resultCat.segments)
+        
+        # Concatenate two Categoricals with different categories, and test result against original strings
+        s1 = ak.array(['abc', 'de', 'abc', 'fghi', 'de'])
+        s2 = ak.array(['jkl', 'mno', 'fghi', 'abc', 'fghi', 'mno'])
+        c1 = ak.Categorical(s1)
+        c2 = ak.Categorical(s2)
+        # Ordered concatenation
+        s12ord = ak.concatenate([s1, s2], ordered=True)
+        c12ord = ak.concatenate([c1, c2], ordered=True)
+        self.assertTrue((ak.Categorical(s12ord) == c12ord).all())
+        # Unordered (but still deterministic) concatenation
+        s12unord = ak.concatenate([s1, s2], ordered=False)
+        c12unord = ak.concatenate([c1, c2], ordered=False)
+        self.assertTrue((ak.Categorical(s12unord) == c12unord).all())
