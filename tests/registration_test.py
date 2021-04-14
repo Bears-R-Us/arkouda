@@ -209,6 +209,34 @@ class RegistrationTest(ArkoudaTest):
         self.assertEqual(ak.info(ak.RegisteredSymbols), '__EMPTY_SYMBOLTABLE__',
                          msg='info(RegisteredSymbols) empty symbol table message failed')
 
+    def test_is_registered(self):
+        """
+        Tests the pdarray.is_registered() function
+        """
+        cleanup()
+        a = ak.ones(10, dtype=ak.int64)
+        self.assertFalse(a.is_registered())
+
+        a.register('keep')
+        self.assertTrue(a.is_registered())
+
+        a.unregister()
+        self.assertFalse(a.is_registered())
+        ak.clear()
+
+    def test_list_registry(self):
+        """
+        Tests the generic ak.list_registry() function
+        """
+        cleanup()
+        a = ak.ones(10, dtype=ak.int64)
+        # list_registry() should return an empty list which is implicitly False
+        self.assertFalse(ak.list_registry())
+
+        a.register('keep')
+        self.assertTrue('keep' in ak.list_registry())
+        cleanup()
+
 def cleanup():
     ak.clear()
     if ak.info(ak.AllSymbols) != '__EMPTY_SYMBOLTABLE__':

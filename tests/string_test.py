@@ -505,3 +505,17 @@ class StringTest(ArkoudaTest):
         ak.clear()
         with self.assertRaises(RuntimeError, msg="keep was unregistered and should be cleared"):
             str(keep) # should cause RuntimeError
+
+    def test_string_is_registered(self):
+        """
+        Tests the Strings.is_registered() function
+        """
+        keep = ak.random_strings_uniform(1, 10, UNIQUE, characters='printable')
+        self.assertFalse(keep.is_registered())
+
+        keep.register('keep_me')
+        self.assertTrue(keep.is_registered())
+
+        keep.unregister()
+        self.assertFalse(keep.is_registered())
+        ak.clear()
