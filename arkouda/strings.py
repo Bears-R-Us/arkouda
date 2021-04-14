@@ -952,7 +952,7 @@ class Strings:
         Registered names/Strings objects in the server are immune to deletion
         until they are unregistered.
         """
-        return Strings(pdarray.attach(user_defined_name+'_offsets'),
+        s = Strings(pdarray.attach(user_defined_name+'_offsets'),
                        pdarray.attach(user_defined_name+'_bytes'))
         s.name = user_defined_name
         return s
