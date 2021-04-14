@@ -13,13 +13,7 @@ module IndexingMsg
 
     use CommAggregation;
     
-    const imLogger = new Logger();
-
-    if v {
-        imLogger.level = LogLevel.DEBUG;
-    } else {
-        imLogger.level = LogLevel.INFO;
-    }
+    const imLogger = new Logger(ServerConfig.logLevel);
 
     /* intIndex "a[int]" response to __getitem__(int) */
     proc intIndexMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {

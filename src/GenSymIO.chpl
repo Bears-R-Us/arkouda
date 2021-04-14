@@ -19,13 +19,7 @@ module GenSymIO {
     use Message;
     use ServerConfig;
     
-    const gsLogger = new Logger();
-  
-    if v {
-        gsLogger.level = LogLevel.DEBUG;
-    } else {
-        gsLogger.level = LogLevel.INFO;
-    } 
+    const gsLogger = new Logger(ServerConfig.logLevel);
 
     config const GenSymIO_DEBUG = false;
     config const SEGARRAY_OFFSET_NAME = "segments";

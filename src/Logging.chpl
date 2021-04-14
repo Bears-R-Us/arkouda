@@ -2,6 +2,8 @@ module Logging {
     use Set;
     use IO;
     use DateTime;
+    use Reflection;
+    use Errors;
 
     /*
      * The LogLevel enum is used to provide a strongly-typed means of
@@ -14,7 +16,7 @@ module Logging {
      * of logging sensitivity analogous to other languages such as Python.
      */
     class Logger {
-        var level = LogLevel.WARN;
+        var level: LogLevel = LogLevel.INFO;
         
         var warnLevels = new set(LogLevel,[LogLevel.WARN, LogLevel.INFO,
                            LogLevel.DEBUG]);
@@ -28,6 +30,12 @@ module Logging {
         var infoLevels = new set(LogLevel,[LogLevel.INFO,LogLevel.DEBUG]);  
         
         var printDate: bool = true;
+        
+        proc init(logLevel : LogLevel) {
+            level = logLevel;
+        }
+        
+        proc init() {}
         
         proc debug(moduleName, routineName, lineNumber, msg: string) throws {
             if level == LogLevel.DEBUG  {
@@ -84,5 +92,27 @@ module Logging {
             var rawCms = vals(1).split(".");
             return "%s:%s".format(cd,rawCms(0));        
         }
+    }
+    
+    /*
+     * Returns the LogLevel enum corresponding to the supplied log
+     * level string.
+     */
+    proc getLogLevel(level : string) : LogLevel throws {
+        select level {
+            when 'DEBUG' { return LogLevel.DEBUG; }
+            when 'INFO' { return LogLevel.INFO; }
+            when 'WARN' { return LogLevel.WARN; }
+            when 'ERROR' { return LogLevel.ERROR; }
+            when 'CRITICAL' { return LogLevel.CRITICAL; }  
+            otherwise { 
+                throw new owned ErrorWithContext(
+                        "level must be DEBUG, INFO, WARN, ERROR, or CRITICAL",
+                        getLineNumber(),
+                        getRoutineName(),
+                        getModuleName(),
+                        "IllegalArgumentError");
+            }  
+        } 
     }
 }

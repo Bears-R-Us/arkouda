@@ -37,13 +37,8 @@ module MsgProcessing
     public use BroadcastMsg;
     public use FlattenMsg;
     
-    const mpLogger = new Logger();
-    
-    if v {
-        mpLogger.level = LogLevel.DEBUG;
-    } else {
-        mpLogger.level = LogLevel.INFO;
-    }
+    private config const logLevel = ServerConfig.logLevel;
+    const mpLogger = new Logger(logLevel);
     
     /* 
     Parse, execute, and respond to a create message 

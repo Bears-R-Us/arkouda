@@ -17,13 +17,7 @@ module SegmentedArray {
   use Logging;
   use Errors;
 
-  const saLogger = new Logger();
-  
-  if v {
-      saLogger.level = LogLevel.DEBUG;
-  } else {
-      saLogger.level = LogLevel.INFO;
-  }
+  const saLogger = new Logger(ServerConfig.logLevel);
 
   private config param useHash = true;
   param SegmentedArrayUseHash = useHash;

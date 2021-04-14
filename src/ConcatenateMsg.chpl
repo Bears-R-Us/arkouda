@@ -17,12 +17,7 @@ module ConcatenateMsg
     
     use AryUtil;
 
-    const cmLogger = new Logger();
-    if v {
-        cmLogger.level = LogLevel.DEBUG;
-    } else {
-        cmLogger.level = LogLevel.INFO;
-    }
+    const cmLogger = new Logger(ServerConfig.logLevel);
 
     /* Concatenate a list of arrays together
        to form one array
