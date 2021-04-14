@@ -1188,7 +1188,7 @@ def info(pda : Union[pdarray, str]) -> str:
         raise TypeError("info: must be pdarray or string".format(pda))
         return generic_msg(cmd="info", args="{}".format(pda))
 
-def list_registry() -> list:
+def list_registry() -> list[str]:
     """
     Return a list containing the names of all registered objects
 
