@@ -16,7 +16,7 @@ import builtins
 __all__ = ["pdarray", "info", "clear", "any", "all", "is_sorted", "list_registry", "list_symbol_table",
            "sum", "prod", "min", "max", "argmin", "argmax", "mean", "var", "std", "mink",
            "maxk", "argmink", "argmaxk", "attach_pdarray",
-           "unregister_pdarray", "RegistrationError"]
+           "unregister_pdarray_by_name", "RegistrationError"]
 
 logger = getArkoudaLogger(name='pdarrayclass')    
 
@@ -1001,7 +1001,7 @@ class pdarray:
 
         See also
         --------
-        attach, unregister
+        attach, unregister, is_registered, list_registry, unregister_pdarray_by_name
 
         Notes
         -----
@@ -1048,7 +1048,7 @@ class pdarray:
         
         See also
         --------
-        register, unregister
+        register, unregister, is_registered, unregister_pdarray_by_name, list_registry
         
         Notes
         -----
@@ -1064,8 +1064,8 @@ class pdarray:
         >>> # ...other work...
         >>> b.unregister()
         """
-        unregister_pdarray(self)
-        
+        unregister_pdarray_by_name(self.name)
+
     # class method self is not passed in
     # invoke with ak.pdarray.attach('user_defined_name')
     @staticmethod
@@ -1092,7 +1092,7 @@ class pdarray:
         
         See also
         --------
-        register, unregister
+        register, unregister, is_registered, unregister_pdarray_by_name, list_registry
         
         Notes
         -----
@@ -1846,7 +1846,7 @@ def attach_pdarray(user_defined_name: str) -> pdarray:
 
     See also
     --------
-    register, unregister_pdarray
+    register, unregister, is_registered, unregister_pdarray_by_name, list_registry
 
     Notes
     -----
@@ -1860,20 +1860,22 @@ def attach_pdarray(user_defined_name: str) -> pdarray:
     >>> # potentially disconnect from server and reconnect to server
     >>> b = ak.attach_pdarray("my_zeros")
     >>> # ...other work...
-    >>> ak.unregister_pdarray(b)
+    >>> b.unregister()
     """
     repMsg = generic_msg(cmd="attach", args="{}".format(user_defined_name))
     return create_pdarray(repMsg)
 
 
 @typechecked
-def unregister_pdarray(pda: Union[str,pdarray]) -> None:
+def unregister_pdarray_by_name(user_defined_name:str) -> None:
     """
-    Unregister a pdarray in the arkouda server which was previously
+    Unregister a named pdarray in the arkouda server which was previously
     registered using register() and/or attahced to using attach_pdarray()
 
     Parameters
     ----------
+    user_defined_name : str
+        user defined name which array was registered under
 
     Returns
     -------
@@ -1886,7 +1888,7 @@ def unregister_pdarray(pda: Union[str,pdarray]) -> None:
 
     See also
     --------
-    register, unregister_pdarray
+    register, unregister, is_registered, list_registry, attach
 
     Notes
     -----
@@ -1900,13 +1902,9 @@ def unregister_pdarray(pda: Union[str,pdarray]) -> None:
     >>> # potentially disconnect from server and reconnect to server
     >>> b = ak.attach_pdarray("my_zeros")
     >>> # ...other work...
-    >>> ak.unregister_pdarray(b)
+    >>> ak.unregister_pdarray_by_name(b)
     """
-    if isinstance(pda, pdarray):
-        repMsg = generic_msg(cmd="unregister", args="{}".format(pda.name))
-
-    if isinstance(pda, str):
-        repMsg = generic_msg(cmd="unregister", args="{}".format(pda))
+    repMsg = generic_msg(cmd="unregister", args=user_defined_name)
 
 
 # TODO In the future move this to a specific errors file
