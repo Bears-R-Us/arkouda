@@ -49,6 +49,20 @@ class RegistrationTest(ArkoudaTest):
         # Clean up the registry
         a.unregister()
 
+    def test_registration_type_check(self):
+        """
+        Tests type checking of user_defined_name for register and attach
+        """
+
+        a = ak.ones(3, dtype=ak.int64)
+
+        with self.assertRaises(TypeError, msg="register() should raise TypeError when user_defined_name is not a str"):
+            a.register(7)
+        with self.assertRaises(TypeError, msg="attach() should raise TypeError when user_defined_name is not a str"):
+            a.attach(7)
+
+        ak.clear()
+
     def test_unregister(self):
         '''
         Tests the following:

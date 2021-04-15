@@ -518,10 +518,9 @@ class Categorical:
         else:
             g = GroupBy(concatenate([self.categories] + \
                                        [o.categories for o in others],
-                                       ordered=False))
+                                       ordered=True))
             newidx = g.unique_keys
-            wherediditgo = zeros(newidx.size, dtype=akint64)
-            wherediditgo[g.permutation] = arange(newidx.size)
+            wherediditgo = g.broadcast(arange(newidx.size), permute=True)
             idxsizes = np.array([self.categories.size] + \
                                 [o.categories.size for o in others])
             idxoffsets = np.cumsum(idxsizes) - idxsizes
