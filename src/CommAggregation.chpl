@@ -143,23 +143,35 @@ module CommAggregation {
     const bufferSize = srcBuffSize;
     const myLocaleSpace = LocaleSpace;
     var opsUntilYield = yieldFrequency;
-    var dstAddrs: [myLocaleSpace][0..#bufferSize] aggType;
-    var lSrcAddrs: [myLocaleSpace][0..#bufferSize] aggType;
+    var dstAddrs: c_ptr(c_ptr(aggType));
+    var lSrcAddrs: c_ptr(c_ptr(aggType));
     var lSrcVals: [myLocaleSpace][0..#bufferSize] elemType;
     var rSrcAddrs: [myLocaleSpace] remoteBuffer(aggType);
     var rSrcVals: [myLocaleSpace] remoteBuffer(elemType);
 
-    var bufferIdxs: [myLocaleSpace] int;
+    var bufferIdxs: c_ptr(int);
 
     proc postinit() {
+      dstAddrs = c_malloc(c_ptr(aggType), numLocales);
+      lSrcAddrs = c_malloc(c_ptr(aggType), numLocales);
       for loc in myLocaleSpace {
+        dstAddrs[loc] = c_malloc(aggType, bufferSize);
+        lSrcAddrs[loc] = c_malloc(aggType, bufferSize);
         rSrcAddrs[loc] = new remoteBuffer(aggType, bufferSize, loc);
         rSrcVals[loc] = new remoteBuffer(elemType, bufferSize, loc);
       }
+      bufferIdxs = c_calloc(int, numLocales);
     }
 
     proc deinit() {
       flush();
+      for loc in myLocaleSpace {
+        c_free(dstAddrs[loc]);
+        c_free(lSrcAddrs[loc]);
+      }
+      c_free(dstAddrs);
+      c_free(lSrcAddrs);
+      c_free(bufferIdxs);
     }
 
     proc flush() {
@@ -169,7 +181,9 @@ module CommAggregation {
     }
 
     inline proc copy(ref dst: elemType, const ref src: elemType) {
-      assert(dst.locale.id == here.id);
+      if boundsChecking {
+        assert(dst.locale.id == here.id);
+      }
       const dstAddr = getAddr(dst);
 
       const loc = src.locale.id;
@@ -317,6 +331,14 @@ module CommAggregation {
       }
       const byte_size = size:size_t * c_sizeof(elemType);
       CommPrimitives.PUT(c_ptrTo(lArr[0]), loc, data, byte_size);
+    }
+
+    proc PUT(lArr: c_ptr(elemType), size: int) {
+      if boundsChecking {
+        assert(size <= this.size);
+      }
+      const byte_size = size:size_t * c_sizeof(elemType);
+      CommPrimitives.PUT(lArr, loc, data, byte_size);
     }
 
     proc GET(lArr: [] elemType, size: int) where lArr.isDefaultRectangular() {
