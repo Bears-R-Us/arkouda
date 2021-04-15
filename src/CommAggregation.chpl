@@ -40,18 +40,26 @@ module CommAggregation {
     const bufferSize = dstBuffSize;
     const myLocaleSpace = LocaleSpace;
     var opsUntilYield = yieldFrequency;
-    var lBuffers: [myLocaleSpace] [0..#bufferSize] aggType;
+    var lBuffers: c_ptr(c_ptr(aggType));
     var rBuffers: [myLocaleSpace] remoteBuffer(aggType);
-    var bufferIdxs: [myLocaleSpace] int;
+    var bufferIdxs: c_ptr(int);
 
     proc postinit() {
+      lBuffers = c_malloc(c_ptr(aggType), numLocales);
       for loc in myLocaleSpace {
+        lBuffers[loc] = c_malloc(aggType, bufferSize);
         rBuffers[loc] = new remoteBuffer(aggType, bufferSize, loc);
       }
+      bufferIdxs = c_calloc(int, numLocales);
     }
 
     proc deinit() {
       flush();
+      for loc in myLocaleSpace {
+        c_free(lBuffers[loc]);
+      }
+      c_free(lBuffers);
+      c_free(bufferIdxs);
     }
 
     proc flush() {
