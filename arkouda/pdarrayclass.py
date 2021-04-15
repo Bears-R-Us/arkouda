@@ -1,9 +1,9 @@
 from __future__ import annotations
-from typing import cast, Sequence, Union
+from typing import cast, Sequence, Union, List
 from typeguard import typechecked
 import json, struct
 import numpy as np # type: ignore
-from arkouda.client import generic_msg
+from arkouda.client import generic_msg, RegisteredSymbols, EmptyRegistry
 from arkouda.dtypes import dtype, DTypes, resolve_scalar_dtype, \
      structDtypeCodes, translate_np_dtype, NUMBER_FORMAT_STRINGS, \
      int_scalars, numeric_scalars, numpy_scalars
@@ -1188,7 +1188,7 @@ def info(pda : Union[pdarray, str]) -> str:
         raise TypeError("info: must be pdarray or string".format(pda))
         return generic_msg(cmd="info", args="{}".format(pda))
 
-def list_registry() -> list[str]:
+def list_registry() -> List[str]:
     """
     Return a list containing the names of all registered objects
 
@@ -1206,19 +1206,16 @@ def list_registry() -> list[str]:
     RuntimeError
         Raised if there's a server-side error thrown
     """
-    registered_list: list[str] = []
+    registered_list: List[str] = []
 
-    if info('__RegisteredSymbols__') == '__EMPTY_REGISTRY__':
-        return registered_list
-
-    registered_object: str
-    for registered_object in filter(None, info('__RegisteredSymbols__').split('\n')):
-        if registered_object is not None:
-            name = registered_object.split()[0].split(':')[1].replace('"', '')
-            registered_list.append(name)
+    if info(RegisteredSymbols) != EmptyRegistry:
+        registered_object: str
+        for registered_object in filter(None, info(RegisteredSymbols).split('\n')):
+            if registered_object is not None:
+                name = registered_object.split()[0].split(':')[1].replace('"', '')
+                registered_list.append(name)
 
     return registered_list
-
 
 def clear() -> None:
     """

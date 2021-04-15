@@ -1,6 +1,11 @@
 from context import arkouda as ak
+from typing import Tuple
+import numpy as np
+from collections import Counter
 from base_test import ArkoudaTest
 from arkouda.pdarrayclass import RegistrationError
+N = 100
+UNIQUE = N // 4
 
 
 class RegistrationTest(ArkoudaTest):
@@ -166,8 +171,8 @@ class RegistrationTest(ArkoudaTest):
         '''
         Tests the following:
 
-        1. info() with an empty symbol table returns '__EMPTY_SYMBOLTABLE__' regardless of arguments
-        2. info(ak.RegisteredSymbols) when no objects are registered returns '__EMPTY_REGISTRY__'
+        1. info() with an empty symbol table returns ak.EmptySymbolTable regardless of arguments
+        2. info(ak.RegisteredSymbols) when no objects are registered returns ak.EmptyRegistry
         3. The registered field is set to false for objects that have not been registered
         4. The registered field is set to true for objects that have been registered
         5. info(ak.AllSymbols) contains both registered and non-registered objects
@@ -176,16 +181,16 @@ class RegistrationTest(ArkoudaTest):
         # Cleanup symbol table from previous tests
         cleanup()
 
-        self.assertEqual(ak.info(ak.AllSymbols), '__EMPTY_SYMBOLTABLE__',
+        self.assertEqual(ak.info(ak.AllSymbols), ak.EmptySymbolTable,
                          msg='info(AllSymbols) empty symbol table message failed')
-        self.assertEqual(ak.info(ak.RegisteredSymbols), '__EMPTY_SYMBOLTABLE__',
+        self.assertEqual(ak.info(ak.RegisteredSymbols), ak.EmptySymbolTable,
                          msg='info(RegisteredSymbols) empty symbol table message failed')
 
         my_array = ak.ones(10, dtype=ak.int64)
         self.assertTrue('registered:false' in ak.info(ak.AllSymbols).split(),
                         msg='info(AllSymbols) should contain non-registered objects')
 
-        self.assertEqual(ak.info(ak.RegisteredSymbols), '__EMPTY_REGISTRY__',
+        self.assertEqual(ak.info(ak.RegisteredSymbols), ak.EmptyRegistry,
                          msg='info(RegisteredSymbols) empty registry message failed')
 
         # After register(), the registered field should be set to true for all info calls
@@ -205,22 +210,22 @@ class RegistrationTest(ArkoudaTest):
                         msg='info(AllSymbols) and info(RegisteredSymbols) should have same num of objects after clear()')
 
         # After unregister(), the registered field should be set to false for AllSymbol and object name info calls
-        # RegisteredSymbols info calls should return '__EMPTY_REGISTRY__'
+        # RegisteredSymbols info calls should return ak.EmptyRegistry
         my_array.unregister()
         self.assertTrue('registered:false' in ak.info("keep_me").split(),
                         msg='info(keep_me) registered field should be false after unregister()')
         self.assertTrue('registered:false' in ak.info(ak.AllSymbols).split(),
                         msg='info(AllSymbols) should contain unregistered objects')
-        self.assertEqual(ak.info(ak.RegisteredSymbols), '__EMPTY_REGISTRY__',
+        self.assertEqual(ak.info(ak.RegisteredSymbols), ak.EmptyRegistry,
                          msg='info(RegisteredSymbols) empty registry message failed after unregister()')
 
-        # After clear(), every info call should return '__EMPTY_SYMBOLTABLE__'
+        # After clear(), every info call should return ak.EmptySymbolTable
         ak.clear()
-        self.assertEqual(ak.info("keep_me"), '__EMPTY_SYMBOLTABLE__',
+        self.assertEqual(ak.info("keep_me"), ak.EmptySymbolTable,
                          msg='info(keep_me) empty symbol message failed')
-        self.assertEqual(ak.info(ak.AllSymbols), '__EMPTY_SYMBOLTABLE__',
+        self.assertEqual(ak.info(ak.AllSymbols), ak.EmptySymbolTable,
                          msg='info(AllSymbols) empty symbol table message failed')
-        self.assertEqual(ak.info(ak.RegisteredSymbols), '__EMPTY_SYMBOLTABLE__',
+        self.assertEqual(ak.info(ak.RegisteredSymbols), ak.EmptySymbolTable,
                          msg='info(RegisteredSymbols) empty symbol table message failed')
 
     def test_is_registered(self):
@@ -251,9 +256,57 @@ class RegistrationTest(ArkoudaTest):
         self.assertTrue('keep' in ak.list_registry())
         cleanup()
 
+    def test_string_registration(self):
+        # Initial registration should set name
+        keep = ak.random_strings_uniform(1, 10, UNIQUE, characters='printable')
+        keep.register("keep_me")
+        self.assertTrue(keep.name is "keep_me")
+        self.assertTrue(keep.offsets.name == "keep_me_offsets")
+        self.assertTrue(keep.bytes.name == "keep_me_bytes")
+
+        # Register a second time to confirm name change
+        keep.register("kept")
+        self.assertTrue(keep.name is "kept")
+        self.assertTrue(keep.offsets.name == "kept_offsets")
+        self.assertTrue(keep.bytes.name == "kept_bytes")
+
+        # Add an item to discard
+        discard = ak.random_strings_uniform(1, 10, UNIQUE, characters='printable')
+
+        ak.clear()
+        self.assertTrue(keep.name == "kept")
+        self.assertTrue(keep.offsets.name == "kept_offsets")
+        self.assertTrue(keep.bytes.name == "kept_bytes")
+
+        with self.assertRaises(RuntimeError, msg="discard was not registered and should be discarded"):
+            str(discard)
+
+        # Unregister, should remain usable until we clear
+        keep.unregister()
+        str(keep) # Should not cause error
+        self.assertTrue(keep.offsets.name == "kept_offsets", msg="name should remain intact even after unregister")
+        ak.clear()
+        with self.assertRaises(RuntimeError, msg="keep was unregistered and should be cleared"):
+            str(keep) # should cause RuntimeError
+
+    def test_string_is_registered(self):
+        """
+        Tests the Strings.is_registered() function
+        """
+        keep = ak.random_strings_uniform(1, 10, UNIQUE, characters='printable')
+        self.assertFalse(keep.is_registered())
+
+        keep.register('keep_me')
+        self.assertTrue(keep.is_registered())
+
+        keep.unregister()
+        self.assertFalse(keep.is_registered())
+        ak.clear()
+
+
 def cleanup():
     ak.clear()
-    if ak.info(ak.AllSymbols) != '__EMPTY_SYMBOLTABLE__':
+    if ak.info(ak.AllSymbols) != ak.EmptySymbolTable:
         for registered_object in filter(None, ak.info(ak.AllSymbols).split('\n')):
             name = registered_object.split()[0].split(':')[1].replace('"', '')
             ak.unregister_pdarray(name)
