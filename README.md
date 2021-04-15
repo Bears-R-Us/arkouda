@@ -502,11 +502,29 @@ connect without specifying the token via the access_token parameter or token url
 <a id="log-ak"></a>
 ## Logging <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
-The Arkouda server features a Chapel logging framework that prints out the module name, routine name and line number
-for all logged messages. Available logging levels are ERROR, CRITICAL, WARN, INFO, and DEBUG. 
+The Arkouda server features a Chapel logging framework that prints out the module name, function name and line number
+for all logged messages. An example is shown below:
 
-The default logging level is INFO where all messages at the ERROR, CRITICAL, WARN, and INFO levels are printed. For debugging, 
-the DEBUG level is enabled by passing in the --v flag upon arkouda\_server startup.
+```
+2021-04-15:06:22:59 [ConcatenateMsg] concatenateMsg Line 193 DEBUG [Chapel] creating pdarray id_4 of type Int64
+2021-04-15:06:22:59 [ServerConfig] overMemLimit Line 175 INFO [Chapel] memory high watermark = 44720 memory limit = 30923764531
+2021-04-15:06:22:59 [MultiTypeSymbolTable] addEntry Line 127 DEBUG [Chapel] adding symbol: id_4 
+```
+
+
+Available logging levels are ERROR, CRITICAL, WARN, INFO, and DEBUG. The default logging level is INFO where all messages at the ERROR, CRITICAL, WARN, and INFO levels are printed. The log level can be set globally by passing in the --logLevel parameter upon arkouda\_server startup. For example, passing the --logLevel=LogLevel.DEBUG parameter as shown below sets the global log level to DEBUG:
+
+```
+./arkouda_server --logLevel=LogLevel.DEBUG
+```
+
+In addition to setting the global logging level, the logging level for individual Arkouda modules can also be configured. For example, to set MsgProcessing to DEBUG for the purposes of debugging Arkouda array creation, pass the MsgProcessing.logLevel=LogLevel.DEBUG parameter upon arkouda\_server startup as shown below:
+
+```
+./arkouda_server --MsgProcessing.logLevel=LogLevel.DEBUG --logLevel=LogLevel.WARN
+```
+
+The logging level for all other Arkouda modules will be set to the global value, which in the example above is WARN.
 
 <a id="typecheck-ak"></a>
 ## Type Checking in Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>

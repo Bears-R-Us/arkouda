@@ -63,6 +63,7 @@ class ClientTest(ArkoudaTest):
             raise AssertionError(e)
         self.assertEqual(ArkoudaTest.port, config['ServerPort'])
         self.assertTrue('arkoudaVersion' in config)
+        self.assertTrue('INFO', config['logLevel'])
         
     def test_client_context(self):   
         '''
