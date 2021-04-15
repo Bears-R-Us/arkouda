@@ -911,7 +911,7 @@ class Strings:
 
         See also
         --------
-        register, unregister
+        register, attach
 
         Notes
         -----
@@ -920,6 +920,7 @@ class Strings:
         """
         self.offsets.unregister()
         self.bytes.unregister()
+        self.name = None
 
     @staticmethod
     @typechecked
@@ -956,3 +957,28 @@ class Strings:
                        pdarray.attach(user_defined_name+'_bytes'))
         s.name = user_defined_name
         return s
+
+    @staticmethod
+    @typechecked
+    def unregister_strings_by_name(user_defined_name : str) -> None:
+        """
+        Unregister a Strings object in the arkouda server previously registered via register()
+        WARNING: This will cause the underlying object to go out-of-scope issuing a deletion
+         message to the server.  If you wish to retain access to the underlying
+         object, you should attach manually and then unregister the object so you
+         can maintain a python reference to it, keeping it in scope.
+
+        Parameters
+        ----------
+        user_defined_name : str
+            The name of the Strings object
+
+        See also
+        --------
+        register, unregister, attach
+
+        Notes
+        -----
+        Will attempt to Strings.attach(user_defined_name).unregister()
+        """
+        Strings.attach(user_defined_name).unregister()

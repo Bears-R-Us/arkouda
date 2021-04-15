@@ -1,7 +1,4 @@
 from context import arkouda as ak
-from typing import Tuple
-import numpy as np
-from collections import Counter
 from base_test import ArkoudaTest
 from arkouda.pdarrayclass import RegistrationError
 N = 100
@@ -262,14 +259,12 @@ class RegistrationTest(ArkoudaTest):
     def test_string_registration(self):
         # Initial registration should set name
         keep = ak.random_strings_uniform(1, 10, UNIQUE, characters='printable')
-        keep.register("keep_me")
-        self.assertTrue(keep.name is "keep_me")
+        self.assertTrue(keep.register("keep_me").name == "keep_me")
         self.assertTrue(keep.offsets.name == "keep_me_offsets")
         self.assertTrue(keep.bytes.name == "keep_me_bytes")
 
         # Register a second time to confirm name change
-        keep.register("kept")
-        self.assertTrue(keep.name is "kept")
+        self.assertTrue(keep.register("kept").name == "kept")
         self.assertTrue(keep.offsets.name == "kept_offsets")
         self.assertTrue(keep.bytes.name == "kept_bytes")
 
@@ -305,6 +300,41 @@ class RegistrationTest(ArkoudaTest):
         keep.unregister()
         self.assertFalse(keep.is_registered())
         ak.clear()
+
+    def test_categorical_registration_suite(self):
+        """
+        Test register, is_registered, attach, unregister, unregister_categorical_by_name
+        """
+        cleanup()  # Make sure we start with a clean registry
+        c = ak.Categorical(ak.array([f"my_cat {i}" for i in range(1, 11)]))
+        self.assertTrue(c.register("test_me").is_registered(), "test_me categorical should be registered")
+        c = None
+        self.assertTrue(c is None, "The reference to `c` should be None")
+        c = ak.Categorical.attach("test_me")
+        self.assertTrue(c.is_registered(), "test_me categorical should be registered after attach")
+        c.unregister()
+        self.assertFalse(c.is_registered(), "test_me should be unregistered")
+        self.assertTrue(c.register("another_name").name == "another_name" and c.is_registered())
+
+        # Ultimately pdarrayclass issues delete calls to the server when a bound object goes out of scope, if you bind
+        # to a server object more than once and one of those goes out of scope it affects all other references to it.
+        # unregister_categorical_by_name is one of those cases, it will trigger garbage collection for the named object
+        ak.Categorical.unregister_categorical_by_name("another_name")
+        self.assertTrue(ak.info(ak.client.AllSymbols) == ak.client.EmptySymbolTable)
+
+    def test_attach_weak_binding(self):
+        """
+        Ultimately pdarrayclass issues delete calls to the server when a bound object goes out of scope, if you bind
+        to a server object more than once and one of those goes out of scope it affects all other references to it.
+        """
+        cleanup()
+        a = ak.ones(3, dtype=ak.int64).register("a_reg")
+        self.assertTrue(str(a), "Expected to pass")
+        b = ak.attach_pdarray("a_reg")
+        b.unregister()
+        b = None  # Force out of scope
+        with self.assertRaises(RuntimeError):
+            str(a)
 
 
 def cleanup():
