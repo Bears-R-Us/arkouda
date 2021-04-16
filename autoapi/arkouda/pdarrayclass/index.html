@@ -62,61 +62,64 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.info" title="arkouda.pdarrayclass.info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">info</span></code></a>(pda: Union[pdarray, str]) → str</p></td>
 <td><p>Returns information about the pdarray instance</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.clear" title="arkouda.pdarrayclass.clear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code></a>() → None</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.list_registry" title="arkouda.pdarrayclass.list_registry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_registry</span></code></a>() → List[str]</p></td>
+<td><p>Return a list containing the names of all registered objects</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.clear" title="arkouda.pdarrayclass.clear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code></a>() → None</p></td>
 <td><p>Send a clear message to clear all unregistered data from the server symbol table</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.any" title="arkouda.pdarrayclass.any"><code class="xref py py-obj docutils literal notranslate"><span class="pre">any</span></code></a>(pda: pdarray) → numpy.bool_</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.any" title="arkouda.pdarrayclass.any"><code class="xref py py-obj docutils literal notranslate"><span class="pre">any</span></code></a>(pda: pdarray) → numpy.bool_</p></td>
 <td><p>Return True iff any element of the array evaluates to True.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.all" title="arkouda.pdarrayclass.all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all</span></code></a>(pda: pdarray) → numpy.bool_</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.all" title="arkouda.pdarrayclass.all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all</span></code></a>(pda: pdarray) → numpy.bool_</p></td>
 <td><p>Return True iff all elements of the array evaluate to True.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.is_sorted" title="arkouda.pdarrayclass.is_sorted"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_sorted</span></code></a>(pda: pdarray) → numpy.bool_</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.is_sorted" title="arkouda.pdarrayclass.is_sorted"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_sorted</span></code></a>(pda: pdarray) → numpy.bool_</p></td>
 <td><p>Return True iff the array is monotonically non-decreasing.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.sum" title="arkouda.pdarrayclass.sum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sum</span></code></a>(pda: pdarray) → numpy.float64</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.sum" title="arkouda.pdarrayclass.sum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sum</span></code></a>(pda: pdarray) → numpy.float64</p></td>
 <td><p>Return the sum of all elements in the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.prod" title="arkouda.pdarrayclass.prod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prod</span></code></a>(pda: pdarray) → numpy.float64</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.prod" title="arkouda.pdarrayclass.prod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prod</span></code></a>(pda: pdarray) → numpy.float64</p></td>
 <td><p>Return the product of all elements in the array. Return value is</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.min" title="arkouda.pdarrayclass.min"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min</span></code></a>(pda: pdarray) → arkouda.dtypes.numpy_scalars</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.min" title="arkouda.pdarrayclass.min"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min</span></code></a>(pda: pdarray) → arkouda.dtypes.numpy_scalars</p></td>
 <td><p>Return the minimum value of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.max" title="arkouda.pdarrayclass.max"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max</span></code></a>(pda: pdarray) → arkouda.dtypes.numpy_scalars</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.max" title="arkouda.pdarrayclass.max"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max</span></code></a>(pda: pdarray) → arkouda.dtypes.numpy_scalars</p></td>
 <td><p>Return the maximum value of the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.argmin" title="arkouda.pdarrayclass.argmin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmin</span></code></a>(pda: pdarray) → numpy.int64</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.argmin" title="arkouda.pdarrayclass.argmin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmin</span></code></a>(pda: pdarray) → numpy.int64</p></td>
 <td><p>Return the index of the first occurrence of the array min value.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.argmax" title="arkouda.pdarrayclass.argmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmax</span></code></a>(pda: pdarray) → numpy.int64</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.argmax" title="arkouda.pdarrayclass.argmax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmax</span></code></a>(pda: pdarray) → numpy.int64</p></td>
 <td><p>Return the index of the first occurrence of the array max value.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.mean" title="arkouda.pdarrayclass.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean</span></code></a>(pda: pdarray) → numpy.float64</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.mean" title="arkouda.pdarrayclass.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean</span></code></a>(pda: pdarray) → numpy.float64</p></td>
 <td><p>Return the mean of the array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.var" title="arkouda.pdarrayclass.var"><code class="xref py py-obj docutils literal notranslate"><span class="pre">var</span></code></a>(pda: pdarray, ddof: arkouda.dtypes.int_scalars = 0) → numpy.float64</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.var" title="arkouda.pdarrayclass.var"><code class="xref py py-obj docutils literal notranslate"><span class="pre">var</span></code></a>(pda: pdarray, ddof: arkouda.dtypes.int_scalars = 0) → numpy.float64</p></td>
 <td><p>Return the variance of values in the array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.std" title="arkouda.pdarrayclass.std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">std</span></code></a>(pda: pdarray, ddof: arkouda.dtypes.int_scalars = 0) → numpy.float64</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.std" title="arkouda.pdarrayclass.std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">std</span></code></a>(pda: pdarray, ddof: arkouda.dtypes.int_scalars = 0) → numpy.float64</p></td>
 <td><p>Return the standard deviation of values in the array. The standard</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.mink" title="arkouda.pdarrayclass.mink"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mink</span></code></a>(pda: pdarray, k: arkouda.dtypes.int_scalars) → pdarray</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.mink" title="arkouda.pdarrayclass.mink"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mink</span></code></a>(pda: pdarray, k: arkouda.dtypes.int_scalars) → pdarray</p></td>
 <td><p>Find the <cite>k</cite> minimum values of an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.maxk" title="arkouda.pdarrayclass.maxk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">maxk</span></code></a>(pda: pdarray, k: arkouda.dtypes.int_scalars) → pdarray</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.maxk" title="arkouda.pdarrayclass.maxk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">maxk</span></code></a>(pda: pdarray, k: arkouda.dtypes.int_scalars) → pdarray</p></td>
 <td><p>Find the <cite>k</cite> maximum values of an array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.argmink" title="arkouda.pdarrayclass.argmink"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmink</span></code></a>(pda: pdarray, k: arkouda.dtypes.int_scalars) → pdarray</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.argmink" title="arkouda.pdarrayclass.argmink"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmink</span></code></a>(pda: pdarray, k: arkouda.dtypes.int_scalars) → pdarray</p></td>
 <td><p>Finds the indices corresponding to the <cite>k</cite> minimum values of an array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.argmaxk" title="arkouda.pdarrayclass.argmaxk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmaxk</span></code></a>(pda: pdarray, k: arkouda.dtypes.int_scalars) → pdarray</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.argmaxk" title="arkouda.pdarrayclass.argmaxk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmaxk</span></code></a>(pda: pdarray, k: arkouda.dtypes.int_scalars) → pdarray</p></td>
 <td><p>Find the indices corresponding to the <cite>k</cite> maximum values of an array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.attach_pdarray" title="arkouda.pdarrayclass.attach_pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach_pdarray</span></code></a>(user_defined_name: str) → pdarray</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.attach_pdarray" title="arkouda.pdarrayclass.attach_pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach_pdarray</span></code></a>(user_defined_name: str) → pdarray</p></td>
 <td><p>class method to return a pdarray attached to the registered name in the arkouda</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.unregister_pdarray" title="arkouda.pdarrayclass.unregister_pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray</span></code></a>(pda: Union[str, pdarray]) → None</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.pdarrayclass.unregister_pdarray" title="arkouda.pdarrayclass.unregister_pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray</span></code></a>(pda: Union[str, pdarray]) → None</p></td>
 <td><p>Unregister a pdarray in the arkouda server which was previously</p></td>
 </tr>
 </tbody>
@@ -586,6 +589,26 @@ a supported dtype</p></li>
 <dt id="arkouda.pdarrayclass.pdarray.all">
 <code class="sig-name descname"><span class="pre">all</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.bool_</span><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True iff all elements of the array evaluate to True.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.pdarrayclass.pdarray.is_registered">
+<code class="sig-name descname"><span class="pre">is_registered</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.bool_</span><a class="headerlink" href="#arkouda.pdarrayclass.pdarray.is_registered" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True iff the object is contained in the registry</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Indicates if the object is contained in the registry</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1069,6 +1092,26 @@ until they are unregistered.</p>
 <li><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown in the process of
 retrieving information about the pdarray</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.pdarrayclass.list_registry">
+<code class="sig-prename descclassname"><span class="pre">arkouda.pdarrayclass.</span></code><code class="sig-name descname"><span class="pre">list_registry</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.pdarrayclass.list_registry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list containing the names of all registered objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of all object names in the registry</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p>
 </dd>
 </dl>
 </dd></dl>

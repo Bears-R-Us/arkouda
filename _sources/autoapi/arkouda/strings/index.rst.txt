@@ -516,6 +516,18 @@ Classes
       segments and values and (4) save logic is delegated to pdarray.save
 
 
+   .. method:: is_registered(self) -> numpy.bool_
+
+      Return True iff the object is contained in the registry
+
+      :param None:
+
+      :returns: Indicates if the object is contained in the registry
+      :rtype: bool
+
+      :raises RuntimeError: Raised if there's a server-side error thrown
+
+
    .. method:: register(self, user_defined_name: str) -> Strings
 
       Register this Strings object with a user defined name in the arkouda server

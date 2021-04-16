@@ -22,6 +22,7 @@ Functions
 .. autoapisummary::
 
    arkouda.pdarrayclass.info
+   arkouda.pdarrayclass.list_registry
    arkouda.pdarrayclass.clear
    arkouda.pdarrayclass.any
    arkouda.pdarrayclass.all
@@ -352,6 +353,18 @@ Functions
    .. method:: all(self) -> numpy.bool_
 
       Return True iff all elements of the array evaluate to True.
+
+
+   .. method:: is_registered(self) -> numpy.bool_
+
+      Return True iff the object is contained in the registry
+
+      :param None:
+
+      :returns: Indicates if the object is contained in the registry
+      :rtype: bool
+
+      :raises RuntimeError: Raised if there's a server-side error thrown
 
 
    .. method:: is_sorted(self) -> numpy.bool_
@@ -718,6 +731,18 @@ Functions
    :raises TypeError: Raised if the parameter is neither a pdarray or string
    :raises RuntimeError: Raised if a server-side error is thrown in the process of
        retrieving information about the pdarray
+
+
+.. function:: list_registry() -> List[str]
+
+   Return a list containing the names of all registered objects
+
+   :param None:
+
+   :returns: List of all object names in the registry
+   :rtype: list
+
+   :raises RuntimeError: Raised if there's a server-side error thrown
 
 
 .. function:: clear() -> None

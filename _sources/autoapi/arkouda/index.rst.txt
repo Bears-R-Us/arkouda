@@ -68,6 +68,7 @@ Functions
    arkouda.any
    arkouda.all
    arkouda.is_sorted
+   arkouda.list_registry
    arkouda.sum
    arkouda.prod
    arkouda.min
@@ -147,6 +148,8 @@ Attributes
 
    arkouda.AllSymbols
    arkouda.RegisteredSymbols
+   arkouda.EmptySymbolTable
+   arkouda.EmptyRegistry
    arkouda.__version__
    arkouda.DTypes
    arkouda.DTypeObjects
@@ -178,6 +181,16 @@ Attributes
 
 .. data:: RegisteredSymbols
    :annotation: = __RegisteredSymbols__
+
+   
+
+.. data:: EmptySymbolTable
+   :annotation: = __EMPTY_SYMBOLTABLE__
+
+   
+
+.. data:: EmptyRegistry
+   :annotation: = __EMPTY_REGISTRY__
 
    
 
@@ -700,6 +713,18 @@ Attributes
       Return True iff all elements of the array evaluate to True.
 
 
+   .. method:: is_registered(self) -> numpy.bool_
+
+      Return True iff the object is contained in the registry
+
+      :param None:
+
+      :returns: Indicates if the object is contained in the registry
+      :rtype: bool
+
+      :raises RuntimeError: Raised if there's a server-side error thrown
+
+
    .. method:: is_sorted(self) -> numpy.bool_
 
       Return True iff the array is monotonically non-decreasing.
@@ -1115,6 +1140,18 @@ Attributes
    :rtype: bool
 
    :raises TypeError: Raised if pda is not a pdarray instance
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. function:: list_registry() -> List[str]
+
+   Return a list containing the names of all registered objects
+
+   :param None:
+
+   :returns: List of all object names in the registry
+   :rtype: list
+
    :raises RuntimeError: Raised if there's a server-side error thrown
 
 
@@ -3884,6 +3921,18 @@ Attributes
       segments and values and (4) save logic is delegated to pdarray.save
 
 
+   .. method:: is_registered(self) -> numpy.bool_
+
+      Return True iff the object is contained in the registry
+
+      :param None:
+
+      :returns: Indicates if the object is contained in the registry
+      :rtype: bool
+
+      :raises RuntimeError: Raised if there's a server-side error thrown
+
+
    .. method:: register(self, user_defined_name: str) -> Strings
 
       Register this Strings object with a user defined name in the arkouda server
@@ -4683,6 +4732,18 @@ Attributes
    .. method:: all(self) -> numpy.bool_
 
       Return True iff all elements of the array evaluate to True.
+
+
+   .. method:: is_registered(self) -> numpy.bool_
+
+      Return True iff the object is contained in the registry
+
+      :param None:
+
+      :returns: Indicates if the object is contained in the registry
+      :rtype: bool
+
+      :raises RuntimeError: Raised if there's a server-side error thrown
 
 
    .. method:: is_sorted(self) -> numpy.bool_

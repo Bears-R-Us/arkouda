@@ -726,6 +726,26 @@ segments and values and (4) save logic is delegated to pdarray.save</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="arkouda.strings.Strings.is_registered">
+<code class="sig-name descname"><span class="pre">is_registered</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.bool_</span><a class="headerlink" href="#arkouda.strings.Strings.is_registered" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True iff the object is contained in the registry</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Indicates if the object is contained in the registry</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="arkouda.strings.Strings.register">
 <code class="sig-name descname"><span class="pre">register</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><a class="headerlink" href="#arkouda.strings.Strings.register" title="Permalink to this definition">¶</a></dt>
 <dd><p>Register this Strings object with a user defined name in the arkouda server
