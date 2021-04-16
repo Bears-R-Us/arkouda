@@ -1,9 +1,9 @@
 from __future__ import annotations
-from typing import cast, Sequence, Union
+from typing import cast, Sequence, Union, List
 from typeguard import typechecked
 import json, struct
 import numpy as np # type: ignore
-from arkouda.client import generic_msg
+from arkouda.client import generic_msg, RegisteredSymbols, EmptyRegistry
 from arkouda.dtypes import dtype, DTypes, resolve_scalar_dtype, \
      structDtypeCodes, translate_np_dtype, NUMBER_FORMAT_STRINGS, \
      int_scalars, numeric_scalars, numpy_scalars
@@ -13,7 +13,7 @@ from arkouda.dtypes import bool as npbool
 from arkouda.logger import getArkoudaLogger
 import builtins
 
-__all__ = ["pdarray", "info", "clear", "any", "all", "is_sorted", "sum", "prod", 
+__all__ = ["pdarray", "info", "clear", "any", "all", "is_sorted", "list_registry", "sum", "prod",
            "min", "max", "argmin", "argmax", "mean", "var", "std", "mink", 
            "maxk", "argmink", "argmaxk", "attach_pdarray",
            "unregister_pdarray", "RegistrationError"]
@@ -538,6 +538,26 @@ class pdarray:
         Return True iff all elements of the array evaluate to True.
         """
         return all(self)
+
+    def is_registered(self) -> np.bool_:
+        """
+        Return True iff the object is contained in the registry
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        bool
+            Indicates if the object is contained in the registry
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there's a server-side error thrown
+        """
+        return np.bool_(self.name in list_registry())
 
     def is_sorted(self) -> np.bool_:
         """
@@ -1167,6 +1187,35 @@ def info(pda : Union[pdarray, str]) -> str:
     else:
         raise TypeError("info: must be pdarray or string".format(pda))
         return generic_msg(cmd="info", args="{}".format(pda))
+
+def list_registry() -> List[str]:
+    """
+    Return a list containing the names of all registered objects
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    list
+        List of all object names in the registry
+
+    Raises
+    ------
+    RuntimeError
+        Raised if there's a server-side error thrown
+    """
+    registered_list: List[str] = []
+
+    if info(RegisteredSymbols) != EmptyRegistry:
+        registered_object: str
+        for registered_object in filter(None, info(RegisteredSymbols).split('\n')):
+            if registered_object is not None:
+                name = registered_object.split()[0].split(':')[1].replace('"', '')
+                registered_list.append(name)
+
+    return registered_list
 
 def clear() -> None:
     """

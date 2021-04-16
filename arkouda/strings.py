@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import cast, Tuple, Union
 from typeguard import typechecked
 from arkouda.client import generic_msg
-from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value
+from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value, list_registry
 from arkouda.logger import getArkoudaLogger
 import numpy as np # type: ignore
 from arkouda.dtypes import npstr, int_scalars, str_scalars
@@ -828,6 +828,26 @@ class Strings:
         self.bytes.save(prefix_path=prefix_path, 
                                     dataset='{}/values'.format(dataset), mode=mode)
 
+    def is_registered(self) -> np.bool_:
+        """
+        Return True iff the object is contained in the registry
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        bool
+            Indicates if the object is contained in the registry
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there's a server-side error thrown
+        """
+        return np.bool_(self.offsets.is_registered() and self.bytes.is_registered())
+
     @typechecked
     def register(self, user_defined_name: str) -> Strings:
         """
@@ -932,5 +952,7 @@ class Strings:
         Registered names/Strings objects in the server are immune to deletion
         until they are unregistered.
         """
-        return Strings(pdarray.attach(user_defined_name+'_offsets'),
+        s = Strings(pdarray.attach(user_defined_name+'_offsets'),
                        pdarray.attach(user_defined_name+'_bytes'))
+        s.name = user_defined_name
+        return s
