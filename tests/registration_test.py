@@ -248,6 +248,9 @@ class RegistrationTest(ArkoudaTest):
         Tests the generic ak.list_registry() function
         """
         cleanup()
+        # Test list_registry when the symbol table is empty
+        self.assertFalse(ak.list_registry(), "registry should be empty")
+
         a = ak.ones(10, dtype=ak.int64)
         # list_registry() should return an empty list which is implicitly False
         self.assertFalse(ak.list_registry())

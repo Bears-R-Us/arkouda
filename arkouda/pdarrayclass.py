@@ -3,7 +3,7 @@ from typing import cast, Sequence, Union, List
 from typeguard import typechecked
 import json, struct
 import numpy as np # type: ignore
-from arkouda.client import generic_msg, RegisteredSymbols, EmptyRegistry
+from arkouda.client import generic_msg, RegisteredSymbols, EmptyRegistry, EmptySymbolTable
 from arkouda.dtypes import dtype, DTypes, resolve_scalar_dtype, \
      structDtypeCodes, translate_np_dtype, NUMBER_FORMAT_STRINGS, \
      int_scalars, numeric_scalars, numpy_scalars
@@ -1208,7 +1208,7 @@ def list_registry() -> List[str]:
     """
     registered_list: List[str] = []
 
-    if info(RegisteredSymbols) != EmptyRegistry:
+    if info(RegisteredSymbols) not in [EmptyRegistry, EmptySymbolTable]:
         registered_object: str
         for registered_object in filter(None, info(RegisteredSymbols).split('\n')):
             if registered_object is not None:
