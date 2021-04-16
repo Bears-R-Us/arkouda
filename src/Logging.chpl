@@ -93,26 +93,4 @@ module Logging {
             return "%s:%s".format(cd,rawCms(0));        
         }
     }
-    
-    /*
-     * Returns the LogLevel enum corresponding to the supplied log
-     * level string.
-     */
-    proc getLogLevel(level : string) : LogLevel throws {
-        select level {
-            when 'DEBUG' { return LogLevel.DEBUG; }
-            when 'INFO' { return LogLevel.INFO; }
-            when 'WARN' { return LogLevel.WARN; }
-            when 'ERROR' { return LogLevel.ERROR; }
-            when 'CRITICAL' { return LogLevel.CRITICAL; }  
-            otherwise { 
-                throw new owned ErrorWithContext(
-                        "level must be DEBUG, INFO, WARN, ERROR, or CRITICAL",
-                        getLineNumber(),
-                        getRoutineName(),
-                        getModuleName(),
-                        "IllegalArgumentError");
-            }  
-        } 
-    }
 }

@@ -511,7 +511,6 @@ for all logged messages. An example is shown below:
 2021-04-15:06:22:59 [MultiTypeSymbolTable] addEntry Line 127 DEBUG [Chapel] adding symbol: id_4 
 ```
 
-
 Available logging levels are ERROR, CRITICAL, WARN, INFO, and DEBUG. The default logging level is INFO where all messages at the ERROR, CRITICAL, WARN, and INFO levels are printed. The log level can be set globally by passing in the --logLevel parameter upon arkouda\_server startup. For example, passing the --logLevel=LogLevel.DEBUG parameter as shown below sets the global log level to DEBUG:
 
 ```
@@ -524,7 +523,7 @@ In addition to setting the global logging level, the logging level for individua
 ./arkouda_server --MsgProcessing.logLevel=LogLevel.DEBUG --logLevel=LogLevel.WARN
 ```
 
-The logging level for all other Arkouda modules will be set to the global value, which in the example above is WARN.
+In this example, the logging level for all other Arkouda modules will be set to the global value WARN.
 
 <a id="typecheck-ak"></a>
 ## Type Checking in Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
