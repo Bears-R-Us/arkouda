@@ -16,8 +16,9 @@ module ConcatenateMsg
     use PrivateDist;
     
     use AryUtil;
-
-    const cmLogger = new Logger(ServerConfig.logLevel);
+    
+    private config const logLevel = ServerConfig.logLevel;
+    const cmLogger = new Logger(logLevel);
 
     /* Concatenate a list of arrays together
        to form one array

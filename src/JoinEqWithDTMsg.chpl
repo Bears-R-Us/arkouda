@@ -18,15 +18,10 @@ module JoinEqWithDTMsg
     param TRUE_DT = 0;
     param ABS_DT = 1;
     param POS_DT = 2;
-    
-    const jeLogger = new Logger();
-  
-    if v {
-        jeLogger.level = LogLevel.DEBUG;
-    } else {
-        jeLogger.level = LogLevel.INFO;
-    }
-    
+
+    private config const logLevel = ServerConfig.logLevel;
+    const jeLogger = new Logger(logLevel);
+
     // operator overloads so + reduce and + scan can work on atomic int arrays
     proc +(x: atomic int, y: atomic int) {
         return x.read() + y.read();

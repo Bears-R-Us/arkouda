@@ -14,12 +14,8 @@ module In1dMsg
 
     use In1d;
 
-    var iLogger = new Logger();
-    if v {
-        iLogger.level = LogLevel.DEBUG;
-    } else {
-        iLogger.level = LogLevel.INFO;    
-    }
+    private config const logLevel = ServerConfig.logLevel;
+    const iLogger = new Logger(logLevel);
     
     /*
     Small bound const. Brute force in1d implementation recommended.

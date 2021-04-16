@@ -19,12 +19,7 @@ module ServerConfig
     config const trace = true;
 
     /*
-    Verbose debug flag
-    */
-    config const v = false;
-
-    /*
-    Log level flag that defaults to LogLevel.INFO
+    Global log level flag that defaults to LogLevel.INFO
     */
     config var logLevel = LogLevel.INFO;
 
@@ -48,14 +43,6 @@ module ServerConfig
     */
     config const serverConnectionInfo: string = getEnv("ARKOUDA_SERVER_CONNECTION_INFO", "");
 
-    const scLogger = new Logger(logLevel);
-  
-    if v {
-        scLogger.level = LogLevel.DEBUG;
-    } else {
-        scLogger.level = LogLevel.INFO;
-    }
-
     /*
     Hostname where I am running
     */
@@ -69,6 +56,9 @@ module ServerConfig
     Indicates whether token authentication is being used for Akrouda server requests
     */
     config const authenticate : bool = false;
+
+    private config const lLevel = ServerConfig.logLevel;
+    const scLogger = new Logger(lLevel);
    
     proc getConfig(): string {
         use SysCTypes;

@@ -30,14 +30,9 @@ module ArgSortMsg
     use Logging;
     use Message;
 
-    const asLogger = new Logger();
+    private config const logLevel = ServerConfig.logLevel;
+    const asLogger = new Logger(logLevel);
 
-    if v {
-        asLogger.level = LogLevel.DEBUG;
-    } else {
-        asLogger.level = LogLevel.INFO;
-    }
-    
     // thresholds for different sized sorts
     var lgSmall = 10;
     var small = 2**lgSmall;

@@ -17,12 +17,8 @@ module FindSegmentsMsg
     use PrivateDist;
     use CommAggregation;
 
-    const fsLogger = new Logger();
-    if v {
-        fsLogger.level = LogLevel.DEBUG;
-    } else {
-        fsLogger.level = LogLevel.INFO;    
-    }
+    private config const logLevel = ServerConfig.logLevel;
+    const fsLogger = new Logger(logLevel);
 
     /*
 

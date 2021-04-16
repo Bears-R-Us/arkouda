@@ -2,6 +2,7 @@
 module MultiTypeSymEntry
 {
     use ServerConfig;
+    use Logging;
 
     public use NumPyDType;
 
@@ -107,7 +108,7 @@ module MultiTypeSymEntry
         Verbose flag utility method
         */
         proc deinit() {
-            if v {writeln("deinit SymEntry");try! stdout.flush();}
+            if logLevel == LogLevel.DEBUG {writeln("deinit SymEntry");try! stdout.flush();}
         }
         
         override proc writeThis(f) throws {

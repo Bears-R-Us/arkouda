@@ -12,7 +12,8 @@ module SegmentedMsg {
   use IO;
   use GenSymIO only jsonToPdArray;
 
-  const smLogger = new Logger(ServerConfig.logLevel);
+  private config const logLevel = ServerConfig.logLevel;
+  const smLogger = new Logger(logLevel);
 
   proc randomStringsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
