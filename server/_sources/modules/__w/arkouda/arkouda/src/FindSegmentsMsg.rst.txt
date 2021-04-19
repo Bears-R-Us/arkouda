@@ -17,7 +17,7 @@ or
 
    import FindSegmentsMsg;
 
-.. data:: const fsLogger = new Logger()
+.. data:: const fsLogger = new Logger(logLevel)
 
 .. function:: proc findSegmentsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 

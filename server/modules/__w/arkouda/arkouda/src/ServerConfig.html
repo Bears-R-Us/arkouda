@@ -221,9 +221,9 @@
 </dd></dl>
 
 <dl class="data">
-<dt id="ServerConfig.v">
-<em class="property">config const </em><code class="descname">v</code> = false<a class="headerlink" href="#ServerConfig.v" title="Permalink to this definition">¶</a></dt>
-<dd><p>Verbose debug flag</p>
+<dt id="ServerConfig.logLevel">
+<em class="property">config var </em><code class="descname">logLevel</code> = LogLevel.INFO<a class="headerlink" href="#ServerConfig.logLevel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Global log level flag that defaults to LogLevel.INFO</p>
 </dd></dl>
 
 <dl class="data">
@@ -251,11 +251,6 @@
 </dd></dl>
 
 <dl class="data">
-<dt id="ServerConfig.scLogger">
-<em class="property">const </em><code class="descname">scLogger</code> = new Logger()<a class="headerlink" href="#ServerConfig.scLogger" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="data">
 <dt id="ServerConfig.serverHostname">
 <em class="property">var </em><code class="descname">serverHostname</code>: string = AppendExpr.Call09<a class="headerlink" href="#ServerConfig.serverHostname" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hostname where I am running</p>
@@ -271,6 +266,11 @@
 <em class="property">config const </em><code class="descname">authenticate</code>: bool = false<a class="headerlink" href="#ServerConfig.authenticate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Indicates whether token authentication is being used for Akrouda server requests</p>
 </dd></dl>
+
+<dl class="data">
+<dt id="ServerConfig.scLogger">
+<em class="property">const </em><code class="descname">scLogger</code> = new Logger(lLevel)<a class="headerlink" href="#ServerConfig.scLogger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="function">
 <dt id="ServerConfig.getConfig">

@@ -23,7 +23,7 @@ or
 
 .. data:: const defaultSipHashKey: [0..#16] uint(8) = AppendExpr.Loop04
 
-.. data:: const shLogger = new Logger()
+.. data:: const shLogger = new Logger(logLevel)
 
 .. function:: proc ROTL(x, b)
 

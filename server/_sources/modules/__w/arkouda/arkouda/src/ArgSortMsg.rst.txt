@@ -22,7 +22,7 @@ arg sort algorithm
 these pass back an index vector which can be used
 to permute the original array into sorted order 
 
-.. data:: const asLogger = new Logger()
+.. data:: const asLogger = new Logger(logLevel)
 
 .. data:: var lgSmall = 10
 

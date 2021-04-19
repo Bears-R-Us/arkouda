@@ -17,11 +17,7 @@ or
 
    import arkouda_server;
 
-.. data:: const asLogger = new Logger()
-
-   arkouda server
-   backend chapel program to mimic ndarray from numpy
-   This is the main driver for the arkouda server 
+.. data:: const asLogger = new Logger(logLevel)
 
 .. function:: proc initArkoudaDirectory()
 

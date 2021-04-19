@@ -17,7 +17,7 @@ or
 
    import In1dMsg;
 
-.. data:: var iLogger = new Logger()
+.. data:: const iLogger = new Logger(logLevel)
 
 .. function:: proc in1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 

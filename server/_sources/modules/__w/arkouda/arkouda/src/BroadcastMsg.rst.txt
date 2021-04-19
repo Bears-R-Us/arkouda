@@ -17,7 +17,7 @@ or
 
    import BroadcastMsg;
 
-.. data:: const bmLogger = new Logger()
+.. data:: const bmLogger = new Logger(logLevel)
 
 .. function:: proc broadcastMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 

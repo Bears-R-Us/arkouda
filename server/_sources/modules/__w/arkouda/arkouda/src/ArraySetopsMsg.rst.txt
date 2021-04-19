@@ -24,7 +24,7 @@ includes intersection, union, xor, and diff
 currently, only performs operations with integer arrays 
 
 
-.. data:: var asLogger = new Logger()
+.. data:: const asLogger = new Logger(logLevel)
 
 .. function:: proc intersect1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 

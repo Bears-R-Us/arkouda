@@ -17,7 +17,7 @@ or
 
    import Histogram;
 
-.. data:: const hgLogger = new Logger()
+.. data:: const hgLogger = new Logger(logLevel)
 
 .. function:: proc histogramGlobalAtomic(a: [?aD] ?etype, aMin: etype, aMax: etype, bins: int, binWidth: real)
 

@@ -17,7 +17,7 @@ or
 
    import SegmentedArray;
 
-.. data:: const saLogger = new Logger()
+.. data:: const saLogger = new Logger(logLevel)
 
 .. data:: param SegmentedArrayUseHash = useHash
 

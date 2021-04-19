@@ -17,7 +17,7 @@ or
 
    import ReductionMsg;
 
-.. data:: const rmLogger = new Logger()
+.. data:: const rmLogger = new Logger(logLevel)
 
 .. function:: proc reductionMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 

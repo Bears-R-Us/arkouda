@@ -17,7 +17,7 @@ or
 
    import IndexingMsg;
 
-.. data:: const imLogger = new Logger()
+.. data:: const imLogger = new Logger(logLevel)
 
 .. function:: proc intIndexMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 

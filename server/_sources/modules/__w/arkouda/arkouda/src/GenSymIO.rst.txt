@@ -17,7 +17,7 @@ or
 
    import GenSymIO;
 
-.. data:: const gsLogger = new Logger()
+.. data:: const gsLogger = new Logger(logLevel)
 
 .. data:: config const GenSymIO_DEBUG = false
 

@@ -17,7 +17,7 @@ or
 
    import HistogramMsg;
 
-.. data:: const hgmLogger = new Logger()
+.. data:: const hgmLogger = new Logger(logLevel)
 
 .. function:: proc histogramMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 

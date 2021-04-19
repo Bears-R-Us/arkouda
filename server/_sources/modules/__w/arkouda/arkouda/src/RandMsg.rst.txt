@@ -17,7 +17,7 @@ or
 
    import RandMsg;
 
-.. data:: const randLogger = new Logger()
+.. data:: const randLogger = new Logger(logLevel)
 
 .. function:: proc randintMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 

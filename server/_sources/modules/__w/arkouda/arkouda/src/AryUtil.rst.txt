@@ -17,7 +17,7 @@ or
 
    import AryUtil;
 
-.. data:: const auLogger = new Logger()
+.. data:: const auLogger = new Logger(logLevel)
 
 .. data:: var printThresh = 30
 

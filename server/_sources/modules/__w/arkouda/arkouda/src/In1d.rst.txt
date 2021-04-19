@@ -17,7 +17,7 @@ or
 
    import In1d;
 
-.. data:: var inLogger = new Logger()
+.. data:: const inLogger = new Logger(logLevel)
 
 .. function:: proc in1dGlobalAr1Bcast(ar1: [?aD1] int, ar2: [?aD2] int)
 

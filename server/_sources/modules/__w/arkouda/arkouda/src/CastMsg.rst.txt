@@ -17,7 +17,7 @@ or
 
    import CastMsg;
 
-.. data:: const castLogger = new Logger()
+.. data:: const castLogger = new Logger(logLevel)
 
 .. function:: proc castMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 

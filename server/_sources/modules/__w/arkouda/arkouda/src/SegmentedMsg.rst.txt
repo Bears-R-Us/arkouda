@@ -17,7 +17,7 @@ or
 
    import SegmentedMsg;
 
-.. data:: const smLogger = new Logger()
+.. data:: const smLogger = new Logger(logLevel)
 
 .. function:: proc randomStringsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 

@@ -17,7 +17,7 @@ or
 
    import ConcatenateMsg;
 
-.. data:: const cmLogger = new Logger()
+.. data:: const cmLogger = new Logger(logLevel)
 
 .. function:: proc concatenateMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 

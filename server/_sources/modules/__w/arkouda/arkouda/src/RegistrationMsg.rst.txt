@@ -17,7 +17,7 @@ or
 
    import RegistrationMsg;
 
-.. data:: const regLogger = new Logger()
+.. data:: const regLogger = new Logger(logLevel)
 
 .. function:: proc registerMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 

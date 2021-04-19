@@ -17,7 +17,7 @@ or
 
    import MultiTypeSymbolTable;
 
-.. data:: var mtLogger = new Logger()
+.. data:: const mtLogger = new Logger(logLevel)
 
 .. class:: SymTab
 

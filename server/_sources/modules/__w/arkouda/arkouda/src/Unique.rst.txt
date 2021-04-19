@@ -29,7 +29,7 @@ for example if (a.max-a.min > a.size) means that a's are sparse
 
 
 
-.. data:: const uLogger = new Logger()
+.. data:: const uLogger = new Logger(logLevel)
 
 .. function:: proc uniqueSort(a: [?aD] int, param needCounts = true)
 

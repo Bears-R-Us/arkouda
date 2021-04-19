@@ -26,10 +26,10 @@ arkouda server config param and config const
    Trace logging flag
    
 
-.. data:: config const v = false
+.. data:: config var logLevel = LogLevel.INFO
 
    
-   Verbose debug flag
+   Global log level flag that defaults to LogLevel.INFO
    
 
 .. data:: config const ServerPort = 5555
@@ -56,8 +56,6 @@ arkouda server config param and config const
    Write the server `hostname:port` to this file.
    
 
-.. data:: const scLogger = new Logger()
-
 .. data:: var serverHostname: string = AppendExpr.Call09
 
    
@@ -71,6 +69,8 @@ arkouda server config param and config const
    
    Indicates whether token authentication is being used for Akrouda server requests
    
+
+.. data:: const scLogger = new Logger(lLevel)
 
 .. function:: proc getConfig(): string
 

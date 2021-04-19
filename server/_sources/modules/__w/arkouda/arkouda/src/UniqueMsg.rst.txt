@@ -29,7 +29,7 @@ for example if (a.max-a.min > a.size) means that a's are sparse
 
 
 
-.. data:: const umLogger = new Logger()
+.. data:: const umLogger = new Logger(logLevel)
 
 .. function:: proc uniqueMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 

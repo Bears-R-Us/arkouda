@@ -17,7 +17,7 @@ or
 
    import OperatorMsg;
 
-.. data:: const omLogger = new Logger()
+.. data:: const omLogger = new Logger(logLevel)
 
 .. function:: proc binopvvMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 

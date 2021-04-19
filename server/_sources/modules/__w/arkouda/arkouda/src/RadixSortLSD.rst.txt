@@ -32,7 +32,7 @@ Radix Sort Least Significant Digit
 
 .. data:: config param RSLSD_bitsPerDigit = 16
 
-.. data:: const rsLogger = new Logger()
+.. data:: const rsLogger = new Logger(logLevel)
 
 .. function:: proc getBitWidth(a: [?aD] int): (int, bool)
 

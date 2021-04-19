@@ -17,7 +17,7 @@ or
 
    import RandArray;
 
-.. data:: const raLogger = new Logger()
+.. data:: const raLogger = new Logger(logLevel)
 
 .. function:: proc fillInt(a: [] ?t, const aMin, const aMax, const seedStr: string = "None") throws
 

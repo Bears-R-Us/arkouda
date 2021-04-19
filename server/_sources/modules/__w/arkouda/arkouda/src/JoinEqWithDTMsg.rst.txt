@@ -23,7 +23,7 @@ or
 
 .. data:: param POS_DT = 2
 
-.. data:: const jeLogger = new Logger()
+.. data:: const jeLogger = new Logger(logLevel)
 
 .. function:: proc +(x: atomic int, y: atomic int)
 

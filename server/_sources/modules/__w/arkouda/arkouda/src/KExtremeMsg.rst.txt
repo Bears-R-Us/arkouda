@@ -22,7 +22,7 @@ min-k reduction
 * Stores the sorted minimum k values onto the server
 
 
-.. data:: const keLogger = new Logger()
+.. data:: const keLogger = new Logger(logLevel)
 
 .. function:: proc minkMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 

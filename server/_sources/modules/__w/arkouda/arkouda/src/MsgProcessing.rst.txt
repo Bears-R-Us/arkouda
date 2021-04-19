@@ -17,7 +17,7 @@ or
 
    import MsgProcessing;
 
-.. data:: const mpLogger = new Logger()
+.. data:: const mpLogger = new Logger(logLevel)
 
 .. function:: proc createMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 

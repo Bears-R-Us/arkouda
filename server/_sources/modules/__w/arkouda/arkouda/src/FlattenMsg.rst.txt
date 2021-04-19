@@ -17,7 +17,7 @@ or
 
    import FlattenMsg;
 
-.. data:: const fmLogger = new Logger()
+.. data:: const fmLogger = new Logger(logLevel)
 
 .. function:: proc segFlattenMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 

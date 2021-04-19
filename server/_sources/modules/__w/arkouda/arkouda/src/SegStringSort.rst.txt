@@ -17,7 +17,7 @@ or
 
    import SegStringSort;
 
-.. data:: const ssLogger = new Logger()
+.. data:: const ssLogger = new Logger(logLevel)
 
 .. record:: StringIntComparator
 

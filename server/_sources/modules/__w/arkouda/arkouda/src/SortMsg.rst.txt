@@ -17,7 +17,7 @@ or
 
    import SortMsg;
 
-.. data:: const sortLogger = new Logger()
+.. data:: const sortLogger = new Logger(logLevel)
 
 .. function:: proc sort(a: [?aD] ?t): [aD] t
 
