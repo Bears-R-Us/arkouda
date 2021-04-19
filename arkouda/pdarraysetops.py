@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import cast, Optional, Sequence, Tuple, Union, ForwardRef
 from typeguard import typechecked
-from arkouda.client import generic_msg
+from arkouda.client import generic_msg, get_config
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros_like, array
 from arkouda.sorting import argsort
@@ -216,10 +216,22 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings,'Categorical']], #type: 
         mode = 'append'
     else:
         mode = 'interleave'
+
+    if mode == 'interleave' and isinstance(arrays[0],(type(Strings),type(Categorical))):
+        '''
+        Check if any Strings or Categorical objeeccts have length < numLocales per 
+        #710 and #721. TODO: remove once #710 is resolved.
+        '''
+        numLocales = get_config()['numLocales']
+        for arr in arrays:
+            if len(arr) < numLocales:
+                raise ValueError('Lengths of Strings or Categoricals must be >= numLocales')        
+
     if len(arrays) < 1:
         raise ValueError("concatenate called on empty iterable")
     if len(arrays) == 1:
         return cast(Union[pdarray,Strings,Categorical_], arrays[0])
+    
     if hasattr(arrays[0], 'concatenate'):
         return cast(Sequence[Categorical_],
                     cast(Categorical_,

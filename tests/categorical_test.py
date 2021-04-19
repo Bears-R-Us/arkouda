@@ -166,6 +166,7 @@ class CategoricalTest(ArkoudaTest):
         c12ord = ak.concatenate([c1, c2], ordered=True)
         self.assertTrue((ak.Categorical(s12ord) == c12ord).all())
         # Unordered (but still deterministic) concatenation
-        s12unord = ak.concatenate([s1, s2], ordered=False)
-        c12unord = ak.concatenate([c1, c2], ordered=False)
-        self.assertTrue((ak.Categorical(s12unord) == c12unord).all())
+        # TODO: the unordered concantenation is disabled per #710 #721
+        #s12unord = ak.concatenate([s1, s2], ordered=False)
+        #c12unord = ak.concatenate([c1, c2], ordered=False)
+        #self.assertTrue((ak.Categorical(s12unord) == c12unord).all())
