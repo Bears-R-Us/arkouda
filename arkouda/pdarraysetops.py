@@ -222,7 +222,7 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings,'Categorical']], #type: 
         Check if any Strings or Categorical objeeccts have length < numLocales per 
         #710 and #721. TODO: remove once #710 is resolved.
         '''
-        numLocales = get_config()['numLocales']
+        numLocales = int(get_config()['numLocales'])
         for arr in arrays:
             if len(arr) < numLocales:
                 raise ValueError('Lengths of Strings or Categoricals must be >= numLocales')        
