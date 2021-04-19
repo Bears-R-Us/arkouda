@@ -27,15 +27,9 @@ module Unique
     use AryUtil;
     use Reflection;
     use Logging;
-    
-    const uLogger = new Logger();
-  
-    if v {
-        uLogger.level = LogLevel.DEBUG;
-    } else {
-        uLogger.level = LogLevel.INFO;
-    } 
 
+    private config const logLevel = ServerConfig.logLevel;
+    const uLogger = new Logger(logLevel);
 
     /* // thresholds for different unique counting algorithms */
     /* var sBins = 2**10; // small-range maybe for using reduce intents on forall loops */

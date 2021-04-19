@@ -12,13 +12,9 @@ module HistogramMsg
     use ServerErrorStrings;
 
     use Histogram;
-
-    const hgmLogger = new Logger();
-    if v {
-        hgmLogger.level = LogLevel.DEBUG;
-    } else {
-        hgmLogger.level = LogLevel.INFO;    
-    }
+ 
+    private config const logLevel = ServerConfig.logLevel;
+    const hgmLogger = new Logger(logLevel);
     
     private config const sBound = 2**12;
     private config const mBound = 2**25;

@@ -26,13 +26,8 @@ module UniqueMsg
 
     use Unique;
     
-    const umLogger = new Logger();
-  
-    if v {
-        umLogger.level = LogLevel.DEBUG;
-    } else {
-        umLogger.level = LogLevel.INFO;
-    }
+    private config const logLevel = ServerConfig.logLevel;
+    const umLogger = new Logger(logLevel);
     
     /* unique take a pdarray and returns a pdarray with the unique values */
     proc uniqueMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {

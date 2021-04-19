@@ -19,9 +19,9 @@ module ServerConfig
     config const trace = true;
 
     /*
-    Verbose debug flag
+    Global log level flag that defaults to LogLevel.INFO
     */
-    config const v = false;
+    config var logLevel = LogLevel.INFO;
 
     /*
     Port for zeromq
@@ -43,14 +43,6 @@ module ServerConfig
     */
     config const serverConnectionInfo: string = getEnv("ARKOUDA_SERVER_CONNECTION_INFO", "");
 
-    const scLogger = new Logger();
-  
-    if v {
-        scLogger.level = LogLevel.DEBUG;
-    } else {
-        scLogger.level = LogLevel.INFO;
-    }
-
     /*
     Hostname where I am running
     */
@@ -64,6 +56,9 @@ module ServerConfig
     Indicates whether token authentication is being used for Akrouda server requests
     */
     config const authenticate : bool = false;
+
+    private config const lLevel = ServerConfig.logLevel;
+    const scLogger = new Logger(lLevel);
    
     proc getConfig(): string {
         use SysCTypes;
@@ -89,6 +84,7 @@ module ServerConfig
             var LocaleConfigs: [LocaleSpace] owned LocaleConfig =
                 [loc in LocaleSpace] new owned LocaleConfig();
             var authenticate: bool;
+            var logLevel: LogLevel;
         }
         var (Zmajor, Zminor, Zmicro) = ZMQ.version;
         var H5major: c_uint, H5minor: c_uint, H5micro: c_uint;
@@ -105,6 +101,7 @@ module ServerConfig
         cfg.physicalMemory = getPhysicalMemHere();
         cfg.distributionType = (makeDistDom(10).type):string;
         cfg.authenticate = authenticate; 
+        cfg.logLevel = logLevel;
 
         for loc in Locales {
             on loc {

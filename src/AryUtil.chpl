@@ -5,12 +5,8 @@ module AryUtil
     use Logging;
     use ServerConfig;
     
-    const auLogger = new Logger();
-    if v {
-        auLogger.level = LogLevel.DEBUG;
-    } else {
-        auLogger.level = LogLevel.INFO;    
-    }
+    private config const logLevel = ServerConfig.logLevel;
+    const auLogger = new Logger(logLevel);
     
     /*
       Threshold for the amount of data that will be printed. 

@@ -13,12 +13,8 @@ module RegistrationMsg
     use MultiTypeSymEntry;
     use ServerErrorStrings;
 
-    const regLogger = new Logger();
-    if v {
-        regLogger.level = LogLevel.DEBUG;
-    } else {
-        regLogger.level = LogLevel.INFO;    
-    }
+    private config const logLevel = ServerConfig.logLevel;
+    const regLogger = new Logger(logLevel);
 
     /* 
     Parse, execute, and respond to a register message 

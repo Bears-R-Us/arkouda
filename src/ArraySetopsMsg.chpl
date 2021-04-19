@@ -24,13 +24,9 @@ module ArraySetopsMsg
     use Errors;
     use Logging;
     use Message;
-    
-    var asLogger = new Logger();
-    if v {
-        asLogger.level = LogLevel.DEBUG;
-    } else {
-        asLogger.level = LogLevel.INFO;    
-    }
+
+    private config const logLevel = ServerConfig.logLevel;
+    const asLogger = new Logger(logLevel);
     
     /*
     Parse, execute, and respond to a intersect1d message

@@ -12,13 +12,9 @@ module In1d
 
     use PrivateDist;
     use Logging;
-    
-    var inLogger = new Logger();
-    if v {
-        inLogger.level = LogLevel.DEBUG;
-    } else {
-        inLogger.level = LogLevel.INFO;    
-    }
+
+    private config const logLevel = ServerConfig.logLevel;
+    const inLogger = new Logger(logLevel);
 
     /* Brute force:
     forward-way reduction per element of ar1 over ar2.
@@ -93,23 +89,23 @@ module In1d
 
                 var t = new Time.Timer();
                 
-                if v {t.start();}
+                if logLevel == LogLevel.DEBUG {t.start();}
 
                 var ar2Set: domain(int, parSafe=false); // create a set to hold ar2, parSafe modification is OFF
                 ar2Set.requestCapacity(ar2.size); // request a capacity for the initial set
 
-                if v {t.stop(); timings[here.id][0] = t.elapsed(); t.clear(); t.start();}
+                if logLevel == LogLevel.DEBUG {t.stop(); timings[here.id][0] = t.elapsed(); t.clear(); t.start();}
 
                 // serially add all elements of ar2 to ar2Set
                 for e in ar2 { ar2Set += e; }
                 // all elements of ar2 have been added to ar2Set so modification done.
                 
-                if v {t.stop(); timings[here.id][1] = t.elapsed(); t.clear(); t.start();}
+                if logLevel == LogLevel.DEBUG {t.stop(); timings[here.id][1] = t.elapsed(); t.clear(); t.start();}
 
                 // in parallel check all elements of ar1 to see if ar2Set contains them
                 [i in truth.localSubdomain()] truth[i] = ar2Set.contains(ar1[i]);
 
-                if v {t.stop(); timings[here.id][2] = t.elapsed();}
+                if logLevel == LogLevel.DEBUG {t.stop(); timings[here.id][2] = t.elapsed();}
             }
         }
 

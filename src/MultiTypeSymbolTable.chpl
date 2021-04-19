@@ -10,12 +10,8 @@ module MultiTypeSymbolTable
     use MultiTypeSymEntry;
     use Map;
     
-    var mtLogger = new Logger();
-    if v {
-        mtLogger.level = LogLevel.DEBUG;
-    } else {
-        mtLogger.level = LogLevel.INFO;    
-    }
+    private config const logLevel = ServerConfig.logLevel;
+    const mtLogger = new Logger(logLevel);
 
     /* symbol table */
     class SymTab
