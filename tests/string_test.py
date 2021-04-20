@@ -320,6 +320,9 @@ class StringTest(ArkoudaTest):
         self.gremlins_test_strings = self.gremlins_strings.to_ndarray()
         self.gremlins_cat = ak.Categorical(self.gremlins_strings)
 
+    def _get_strings(self, prefix : str='string', size : int=11) -> ak.Strings:
+        return ak.array(['{} {}'.format(prefix,i) for i in range(1,size)])
+
     def _get_delimiter(self,x : Tuple, w : Tuple, gremlins : np.ndarray) -> str:
         delim = np.random.choice(x, p=(np.array(w)/sum(w)))
         if delim in gremlins:
@@ -472,3 +475,29 @@ class StringTest(ArkoudaTest):
         thickrange = thirds[0].stick(thirds[1], delimiter=', ').stick(thirds[2], delimiter=', ')
         flatrange = thickrange.flatten(', ')
         self.assertTrue((ak.cast(flatrange, 'int64') == ak.arange(99)).all())
+        
+    def test_concatenate(self):
+        s1 = self._get_strings('string',51)
+        s2 = self._get_strings('string-two', 51)
+        
+        resultStrings = ak.concatenate([s1,s2])
+        self.assertIsInstance(resultStrings, ak.Strings)
+        self.assertEqual(100,resultStrings.size)
+        
+        resultStrings = ak.concatenate([s1,s1], ordered=False)
+        self.assertIsInstance(resultStrings, ak.Strings)
+        self.assertEqual(100,resultStrings.size)
+
+
+        s1 = self._get_strings('string',6)
+        s2 = self._get_strings('string-two', 6)
+        expectedResult = ak.array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5', 
+                                   'string-two 1', 'string-two 2', 'string-two 3', 'string-two 4', 
+                                   'string-two 5'])
+
+        # Ordered concatenation
+        s12ord = ak.concatenate([s1, s2], ordered=True)
+        self.assertTrue((expectedResult == s12ord).all())
+        # Unordered (but still deterministic) concatenation
+        # TODO: the unordered concatenation test is disabled per #710 #721
+        #s12unord = ak.concatenate([s1, s2], ordered=False)

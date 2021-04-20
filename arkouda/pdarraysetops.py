@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import cast, Optional, Sequence, Tuple, Union, ForwardRef
 from typeguard import typechecked
-from arkouda.client import generic_msg
+from arkouda.client import generic_msg, get_config
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraycreation import zeros_like, array
 from arkouda.sorting import argsort
@@ -206,6 +206,7 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings,'Categorical']], #type: 
     
     >>> ak.concatenate([ak.array(['one','two']),ak.array(['three','four','five'])])
     array(['one', 'two', 'three', 'four', 'five'])
+
     """
     from arkouda.categorical import Categorical as Categorical_
     size = 0
@@ -216,10 +217,26 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings,'Categorical']], #type: 
         mode = 'append'
     else:
         mode = 'interleave'
+
+    if mode == 'interleave' and isinstance(arrays[0],(Strings,Categorical_)): # type: ignore
+        '''
+        Check if any Strings or Categorical objects have length < numLocales per 
+        #710 and #721 (Strings and Categorical concatenate in interleave mode fails with
+        an array index out of bounds error where 1..n of the Strings/Categoricals objects
+        have a length < numLocales) TODO: remove once #710 and #721 are resolved.
+        '''
+        numLocales = int(get_config()['numLocales'])
+        for arr in arrays:
+            if len(arr) < numLocales:
+                raise RuntimeError(('Strings or Categorical concatenate with ' +
+                'ordered=False currently only supported with lengths >= numLocales. ' +
+                'Please retry with ordered=True'))       
+
     if len(arrays) < 1:
         raise ValueError("concatenate called on empty iterable")
     if len(arrays) == 1:
         return cast(Union[pdarray,Strings,Categorical_], arrays[0])
+    
     if hasattr(arrays[0], 'concatenate'):
         return cast(Sequence[Categorical_],
                     cast(Categorical_,
