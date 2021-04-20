@@ -217,7 +217,7 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings,'Categorical']], #type: 
     else:
         mode = 'interleave'
 
-    if mode == 'interleave' and isinstance(arrays[0],(type(Strings),type(Categorical))):
+    if mode == 'interleave' and isinstance(arrays[0],(Strings,Categorical)):
         '''
         Check if any Strings or Categorical objects have length < numLocales per 
         #710 and #721 (Strings and Categorical concatenate in interleave mode fails with
