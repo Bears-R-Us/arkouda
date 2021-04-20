@@ -206,6 +206,7 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings,'Categorical']], #type: 
     
     >>> ak.concatenate([ak.array(['one','two']),ak.array(['three','four','five'])])
     array(['one', 'two', 'three', 'four', 'five'])
+
     """
     from arkouda.categorical import Categorical as Categorical_
     size = 0
@@ -217,7 +218,7 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings,'Categorical']], #type: 
     else:
         mode = 'interleave'
 
-    if mode == 'interleave' and isinstance(arrays[0],(Strings,Categorical)):
+    if mode == 'interleave' and isinstance(arrays[0],(Strings,Categorical_)): # type: ignore
         '''
         Check if any Strings or Categorical objects have length < numLocales per 
         #710 and #721 (Strings and Categorical concatenate in interleave mode fails with
@@ -227,7 +228,7 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings,'Categorical']], #type: 
         numLocales = int(get_config()['numLocales'])
         for arr in arrays:
             if len(arr) < numLocales:
-                raise ValueError(('Strings or Categorical concatenate with ' +
+                raise RuntimeError(('Strings or Categorical concatenate with ' +
                 'ordered=False currently only supported with lengths >= numLocales. ' +
                 'Please retry with ordered=True'))       
 
