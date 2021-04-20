@@ -1399,7 +1399,7 @@ module GenSymIO {
                       * Account for the special case where the following is true about the
                       * current locale (idx):
                       *
-                      * 1. This is the last locale
+                      * 1. This is the last locale in a multi-locale deployment
                       * 2. There is one partial string started in the previous locale
                       * 3. The previous locale has no trailing slice to complete the partial
                       *    string in the current locale
@@ -1408,13 +1408,13 @@ module GenSymIO {
                       * the previous locale (idx-1) and (2) clear out the current locale
                       * segments list because the current locale values list is now empty.
                       */                     
-                     if isLastLocale(idx) {
+                     if numLocales > 1 && isLastLocale(idx) {
                          if !endsWithCompleteString[idx-1] && isSingleString[idx] 
                                                         && trailingSliceIndices[idx-1] == -1 {
                              valuesList.clear();
                              segmentsList.clear();
                          }
-                      }
+                     }
 
                       // Write the finalized valuesList and segmentsList to the hdf5 group
                       writeStringsToHdf(myFileID, group, valuesList, segmentsList);
