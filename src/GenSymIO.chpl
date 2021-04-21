@@ -1,5 +1,6 @@
 module GenSymIO {
     use HDF5;
+    use Time only;
     use IO;
     use CPtr;
     use Path;
@@ -1170,13 +1171,21 @@ module GenSymIO {
          * endsWithCompleteString, which indicates if the local slice array has 
          * a complete string at the end of the array.
          */
+        // initialize timer
+        var t1 = new Time.Timer();
+        t1.clear();
+        t1.start();
+      
         coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) 
                       with (ref leadingSliceIndices, ref trailingSliceIndices, 
                             ref isSingleString, ref endsWithCompleteString) do on loc {
             generateValuesMetadata(idx,leadingSliceIndices, trailingSliceIndices, 
                                         isSingleString, endsWithCompleteString, A);
         }
-                                                       
+        t1.stop();  
+        var elapsed = t1.elapsed();
+        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                  "Time for generating all values metadata: %t".format(elapsed));                                             
         /*
          * Iterate through each locale and (1) open the hdf5 file corresponding to the
          * locale (2) prepare values and segments lists to be written (3) write each
@@ -1599,10 +1608,17 @@ module GenSymIO {
      */
     proc generateFilenames(prefix : string, extension : string, A) : [] string throws { 
         // Generate the filenames based upon the number of targetLocales.
+        var t1 = new Time.Timer();
+        t1.clear();
+        t1.start(); 
         var filenames: [0..#A.targetLocales().size] string;
         for i in 0..#A.targetLocales().size {
             filenames[i] = generateFilename(prefix, extension, i);
         }
+        t1.stop();  
+        var elapsed = t1.elapsed();
+        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                  "Time for generateFilenames: %t".format(elapsed));    
         return filenames;
     }
 
@@ -1626,6 +1642,11 @@ module GenSymIO {
                                             A, group: string) throws {
       // if appending, make sure number of files hasn't changed and all are present
       var warnFlag: bool;
+
+      // initialize timer
+      var t1 = new Time.Timer();
+      t1.clear();
+      t1.start();
       
       /*
        * Generate a list of matching filenames to test against. If in 
@@ -1718,7 +1739,11 @@ module GenSymIO {
                                     routineName=getRoutineName(), 
                                     moduleName=getModuleName(), 
                                     errorClass='IllegalArgumentError');
-        }    
+        }  
+        t1.stop();  
+        var elapsed = t1.elapsed();
+        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                         "Time for processing file names: %t".format(elapsed));        
         return warnFlag;
     }
 
@@ -1731,6 +1756,12 @@ module GenSymIO {
     proc processFilenames(filenames: [] string, matchingFilenames: [] string, mode: int, A) throws {
       // if appending, make sure number of files hasn't changed and all are present
       var warnFlag: bool;
+
+      // initialize timer
+      var t1 = new Time.Timer();
+      t1.clear();
+      t1.start();
+
       if (mode == APPEND) {
           var allexist = true;
           var anyexist = false;
@@ -1813,6 +1844,11 @@ module GenSymIO {
                                      moduleName=getModuleName(), 
                                      errorClass='IllegalArgumentError');            
         }    
+        t1.stop();  
+        var elapsed = t1.elapsed();
+        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                         "Time for processing file names: %t".format(elapsed));        
+
         return warnFlag;
     }
     
@@ -1848,6 +1884,10 @@ module GenSymIO {
          * array has the null uint(8) as the final character, which means the final 
          * string in the locale is complete (does not span to the next locale).
          */
+        // initialize timer
+        var t1 = new Time.Timer();
+        t1.clear();
+        t1.start();
         on Locales[idx] {
             const locDom = A.localSubdomain();
             var leadingSliceSet = false;
@@ -1935,6 +1975,10 @@ module GenSymIO {
                 trailingSliceIndices[idx] = -1;
             }
         }
+        t1.stop();  
+        var elapsed = t1.elapsed();
+        try! gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                  "Time for generateValuesMetadata: %t".format(elapsed)); 
     }
 
     /*
@@ -1942,9 +1986,14 @@ module GenSymIO {
      * that finalize the values array elements following any shuffle operations and (2)
      * a segments list representing starting indices for each string in the values list.
      */
-    private proc sliceToValuesAndSegments(rawChars) {
+    private proc sliceToValuesAndSegments(rawChars) throws {
         var charList: list(uint(8), parSafe=false);
         var indices: list(int, parSafe=false);
+
+        // initialize timer
+        var t1 = new Time.Timer();
+        t1.clear();
+        t1.start();
 
         //initialize segments with index to first char in values
         indices.append(0);
@@ -1962,6 +2011,10 @@ module GenSymIO {
             }
         }
 
+        t1.stop();  
+        var elapsed = t1.elapsed();
+        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                  "Time for sliceToValuesAndSegments: %t".format(elapsed)); 
         return (charList, indices);
     }
 
@@ -1974,12 +2027,15 @@ module GenSymIO {
      * corresponds to the new values list
      */
     private proc adjustForLeadingSlice(sliceIndex : int,
-                                   charList : list(uint(8))) {
+                                   charList : list(uint(8))) throws {
         var valuesList: list(uint(8), parSafe=false);
         var indices: list(int);
         var i: int = 0;
         indices.append(0);
-        
+        // initialize timer
+        var t1 = new Time.Timer();
+        t1.clear();
+        t1.start();       
         var segmentsBound = charList.size - sliceIndex - 1;
 
         for value in charList(sliceIndex..charList.size-1)  {
@@ -1995,7 +2051,10 @@ module GenSymIO {
             }
             i+=1;
         }
-
+        t1.stop();  
+        var elapsed = t1.elapsed();
+        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                  "Time for adjustForLeadingSlice: %t".format(elapsed)); 
         return (valuesList,indices);
     }
 
@@ -2008,12 +2067,14 @@ module GenSymIO {
      * to the new values list for the current locale
      */
     private proc adjustForTrailingSlice(sliceIndex : int,
-                                   charList : list(uint(8))) {
+                                   charList : list(uint(8))) throws {
         var valuesList: list(uint(8), parSafe=false);
         var indices: list(int);
         var i: int = 0;
         indices.append(0);
-
+        var t1 = new Time.Timer();
+        t1.clear();
+        t1.start();  
         for value in charList(0..sliceIndex-1)  {
             valuesList.append(value:uint(8));
             if value == NULL_STRINGS_VALUE && i < sliceIndex-1 {
@@ -2021,7 +2082,10 @@ module GenSymIO {
             }
             i+=1;
         }
-
+        t1.stop();  
+        var elapsed = t1.elapsed();
+        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                  "Time for adjustForTrailingSlice: %t".format(elapsed)); 
         return (valuesList,indices);
     }
 
@@ -2061,6 +2125,10 @@ module GenSymIO {
      */
     private proc writeStringsToHdf(fileId: int, group: string, 
                               valuesList: list(uint(8)), segmentsList: list(int)) throws {
+        // initialize timer
+        var t1 = new Time.Timer();
+        t1.clear();
+        t1.start();
         H5LTmake_dataset_WAR(fileId, '/%s/values'.format(group).c_str(), 1,
                      c_ptrTo([valuesList.size:uint(64)]), getHDF5Type(uint(8)),
                             c_ptrTo(valuesList.toArray()));
@@ -2068,6 +2136,12 @@ module GenSymIO {
         H5LTmake_dataset_WAR(fileId, '/%s/segments'.format(group).c_str(), 1,
                      c_ptrTo([segmentsList.size:uint(64)]),getHDF5Type(int),
                            c_ptrTo(segmentsList.toArray()));
+                           
+        t1.stop();  
+        var elapsed = t1.elapsed();
+        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                  "Time for writing Strings to hdf5: %t".format(elapsed));        
+
     }
     
     /*
