@@ -1171,21 +1171,24 @@ module GenSymIO {
          * endsWithCompleteString, which indicates if the local slice array has 
          * a complete string at the end of the array.
          */
-        // initialize timer
-        var t1 = new Time.Timer();
-        t1.clear();
-        t1.start();
+        if numLocales > 1 {
+            // initialize timer
+            var t1 = new Time.Timer();
+            t1.clear();
+            t1.start();
       
-        coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) 
+            coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) 
                       with (ref leadingSliceIndices, ref trailingSliceIndices, 
                             ref isSingleString, ref endsWithCompleteString) do on loc {
-            generateValuesMetadata(idx,leadingSliceIndices, trailingSliceIndices, 
+                 generateValuesMetadata(idx,leadingSliceIndices, trailingSliceIndices, 
                                         isSingleString, endsWithCompleteString, A);
-        }
-        t1.stop();  
-        var elapsed = t1.elapsed();
-        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "Time for generating all values metadata: %t".format(elapsed));                                             
+            }
+            t1.stop();  
+            var elapsed = t1.elapsed();
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                  "Time for generating all values metadata: %t".format(elapsed));   
+        }   
+                                       
         /*
          * Iterate through each locale and (1) open the hdf5 file corresponding to the
          * locale (2) prepare values and segments lists to be written (3) write each
@@ -1193,6 +1196,11 @@ module GenSymIO {
          */
         coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) with 
                         (ref leadingSliceIndices, ref trailingSliceIndices) do on loc {
+                        
+            /*
+             * Generate metadata such as file name, file id, and dataset name
+             * for each file to be written
+             */
             const myFilename = filenames[idx];
             gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                    "%s exists? %t".format(myFilename, exists(myFilename)));
@@ -1216,6 +1224,21 @@ module GenSymIO {
                 prepareGroup(myFileID, group);
             }
 
+            var charList : list(uint(8));
+            var segmentsList : list(int);
+          
+            /* 
+             * Generate the chars and segments lists from the locale domain; these
+             * lists will be used to generate post-shuffle values and segments arrays
+             * to be written to hdf5
+             */
+            (charList, segmentsList) = sliceToValuesAndSegments(A.localSlice(locDom));  
+
+            if numLocales == 1 {           
+                writeStringsToHdf(myFileID, group, charList, segmentsList);          
+            }
+
+            else {
             /*
              * Check for the possibility that 1..n strings in the values array span 
              * two neighboring locales; by seeing if the final character in the local 
@@ -1231,15 +1254,15 @@ module GenSymIO {
                  * 1. Add all current locale values to a list
                  * 2. Obtain remaining uint(8) values from the next locale
                  */
-                var charList : list(uint(8));
-                var segmentsList : list(int);
+                //var charList : list(uint(8));
+                //var segmentsList : list(int);
 
                 /* 
                  * Generate the values and segments lists from the locale domain; these
                  * lists will be used to generate post-shuffle values and segments arrays
                  * to be written to hdf5
                  */
-                (charList, segmentsList) = sliceToValuesAndSegments(A.localSlice(locDom));
+                //(charList, segmentsList) = sliceToValuesAndSegments(A.localSlice(locDom));
 
                 /*
                  * If this locale contains a single string/string segment (and therefore no 
@@ -1458,7 +1481,7 @@ module GenSymIO {
                       writeStringsToHdf(myFileID, group, valuesList, segmentsList);
                     }
                 }
-            
+            }
             // Close the file now that the values and segments pdarrays have been written
             C_HDF5.H5Fclose(myFileID);
         }
