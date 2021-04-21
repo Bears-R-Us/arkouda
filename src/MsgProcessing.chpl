@@ -102,7 +102,7 @@ module MsgProcessing
             repMsg = "deleted %s".format(name);
         }
         else {
-            repMsg = "failed to delete registered symbol %s".format(name);
+            repMsg = "registered symbol, %s, not deleted".format(name);
         }
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);       
         return new MsgTuple(repMsg, MsgType.NORMAL);

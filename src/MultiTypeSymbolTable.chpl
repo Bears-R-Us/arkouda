@@ -195,7 +195,7 @@ module MultiTypeSymbolTable
         :arg name: name of the array
         :type name: string
 
-        :returns: bool indicating whether deletion was successful
+        :returns: bool indicating whether the deletion occurred
         */
         proc deleteEntry(name: string): bool throws {
             if tab.contains(name) { 

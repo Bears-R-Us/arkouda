@@ -1,5 +1,5 @@
 from context import arkouda as ak
-from typing import Tuple, List
+from typing import Tuple
 import numpy as np
 from collections import Counter
 from base_test import ArkoudaTest
@@ -320,30 +320,18 @@ class RegistrationTest(ArkoudaTest):
 
         # registered objects are not deleted from symbol table
         a.register('keep')
-        self.assertEqual(ak.client.generic_msg(cmd='delete', args='keep'),
-                         'failed to delete registered symbol keep')
-        self.assertTrue(a.name in list_symbol_table())
+        self.assertEqual(ak.client.generic_msg(cmd='delete', args=a.name),
+                         f'registered symbol, {a.name}, not deleted')
+        self.assertTrue(a.name in ak.list_symbol_table())
 
         # non-registered objects are deleted from symbol table
         self.assertEqual(ak.client.generic_msg(cmd='delete', args=b.name),
                          'deleted ' + b.name)
-        self.assertTrue(b.name not in list_symbol_table())
+        self.assertTrue(b.name not in ak.list_symbol_table())
 
         # RuntimeError when calling delete on an object not in the symbol table
         with self.assertRaises(RuntimeError):
             ak.client.generic_msg(cmd='delete', args='not_in_table')
-
-def list_symbol_table() -> List[str]:
-    symbol_list: List[str] = []
-
-    if ak.info(ak.AllSymbols) not in [ak.EmptyRegistry, ak.EmptySymbolTable]:
-        bject: str
-        for object in filter(None, ak.info(ak.AllSymbols).split('\n')):
-            if object is not None:
-                name = object.split()[0].split(':')[1].replace('"', '')
-                symbol_list.append(name)
-
-    return symbol_list
 
 def cleanup():
     ak.clear()
