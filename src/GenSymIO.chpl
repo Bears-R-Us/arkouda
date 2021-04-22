@@ -19,6 +19,7 @@ module GenSymIO {
     use Logging;
     use Message;
     use ServerConfig;
+    use Search;
     
     private config const logLevel = ServerConfig.logLevel;
     const gsLogger = new Logger(logLevel);
@@ -1079,7 +1080,10 @@ module GenSymIO {
                 }
                 when DType.UInt8 {
                     var e = toSymEntry(entry, uint(8));
-                    warnFlag = write1DDistStrings(filename, mode, dsetName, e.a, DType.UInt8);
+                    gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"ARRAY %s".format(arrayName));
+                    var segsEntry = st.lookup('%s_offsets'.format(arrayName));                   
+                    var s_e = toSymEntry(segsEntry, int);
+                    warnFlag = write1DDistStrings(filename, mode, dsetName, e.a, DType.UInt8,s_e.a);
                 } otherwise {
                     var errorMsg = unrecognizedTypeError("tohdf", dtype2str(entry.dtype));
                     gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
@@ -1117,7 +1121,7 @@ module GenSymIO {
      * Writes out the two pdarrays composing a Strings object to hdf5.
      */
     private proc write1DDistStrings(filename: string, mode: int, dsetName: string, A, 
-                                                                array_type: DType) throws {
+                                                                array_type: DType, SA) throws {
         var prefix: string;
         var extension: string;  
         var warnFlag: bool;      
@@ -1175,24 +1179,23 @@ module GenSymIO {
          * endsWithCompleteString, which indicates if the local slice array has 
          * a complete string at the end of the array.
          */
-        if numLocales > 1 {
-            // initialize timer
-            var t1 = new Time.Timer();
-            t1.clear();
-            t1.start();
-      
-            coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) 
-                      with (ref leadingSliceIndices, ref trailingSliceIndices, 
-                            ref isSingleString, ref endsWithCompleteString) do on loc {
-                 generateValuesMetadata(idx,leadingSliceIndices, trailingSliceIndices, 
-                                        isSingleString, endsWithCompleteString, A);
-            }
 
-            t1.stop();  
-            var elapsed = t1.elapsed();
-            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "Time for generating all values metadata: %.17r".format(elapsed));   
-        }   
+        // initialize timer
+        var t1 = new Time.Timer();
+        t1.clear();
+        t1.start();
+  
+        coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) 
+                  with (ref leadingSliceIndices, ref trailingSliceIndices, 
+                        ref isSingleString, ref endsWithCompleteString) do on loc {
+             generateValuesMetadata(idx,leadingSliceIndices, trailingSliceIndices, 
+                                    isSingleString, endsWithCompleteString, A, SA);
+        }
+
+        t1.stop();  
+        var elapsed = t1.elapsed();
+        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                              "Time for generating all values metadata: %.17r".format(elapsed));   
                                        
         /*
          * Iterate through each locale and (1) open the hdf5 file corresponding to the
@@ -1228,35 +1231,31 @@ module GenSymIO {
             if mode == APPEND {
                 prepareGroup(myFileID, group);
             }
-         
-            /* 
-             * Generate the chars and segments lists from the locale domain; these
-             * lists will be used to generate values and segments arrays to be 
-             * written to hdf5
+
+            /*
+             * Check for the possibility that 1..n strings in the values array span 
+             * two neighboring locales; by seeing if the final character in the local 
+             * slice is the null uint(8) character. If it is not, then the last string 
+             * is only a partial string and the remainder of the string is in the 
+             * next locale
              */
-            var charList : list(uint(8));
-            var segmentsList : list(int);
-
-            (charList, segmentsList) = sliceToValuesAndSegments(A.localSlice(locDom));  
-
-            if numLocales == 1 {           
-                writeStringsToHdf(myFileID, group, charList, segmentsList);          
-            } else {
+            if A.localSlice(locDom).back() != NULL_STRINGS_VALUE {
                 /*
-                 * Check for the possibility that 1..n strings in the values array span 
-                 * two neighboring locales; by seeing if the final character in the local 
-                 * slice is the null uint(8) character. If it is not, then the last string 
-                 * is only a partial string and the remainder of the string is in the 
-                 * next locale
+                 * Since the last value of the local slice is other than the uint(8) null
+                 * character, this means the last string in the current locale (idx) spans 
+                 * the current AND next locale. Consequently, need to do the following:
+                 * 1. Add all current locale values to a list
+                 * 2. Obtain remaining uint(8) values from the next locale
                  */
-                if A.localSlice(locDom).back() != NULL_STRINGS_VALUE {
-                    /*
-                     * Since the last value of the local slice is other than the uint(8) null
-                     * character, this means the last string in the current locale (idx) spans 
-                     * the current AND next locale. Consequently, need to do the following:
-                     * 1. Add all current locale values to a list
-                     * 2. Obtain remaining uint(8) values from the next locale
-                     */
+                var charList : list(uint(8));
+                var segmentsList : list(int);
+
+                /* 
+                 * Generate the values and segments lists from the locale domain; these
+                 * lists will be used to generate post-shuffle values and segments arrays
+                 * to be written to hdf5
+                 */
+                (charList, segmentsList) = sliceToValuesAndSegments(A.localSlice(locDom));
 
                 /*
                  * If this locale contains a single string/string segment (and therefore no 
@@ -1487,7 +1486,7 @@ module GenSymIO {
                       writeStringsToHdf(myFileID, group, valuesList, segmentsList);
                     }
                 }
-            }
+            
             // Close the file now that the values and segments pdarrays have been written
             C_HDF5.H5Fclose(myFileID);
         }
@@ -1900,7 +1899,7 @@ module GenSymIO {
      * contains one string and if the values array ends with a complete string.
      */
     private proc generateValuesMetadata(idx : int, leadingSliceIndices, 
-                       trailingSliceIndices, isSingleString, endsWithCompleteString, A) {
+                       trailingSliceIndices, isSingleString, endsWithCompleteString, A, SA) throws {
         /*
          * Generate the leadlingSliceIndex, which is used to (1) indicate the chars to be
          * pulled down to the previous locale to complete the last string there and (2)
@@ -1922,14 +1921,28 @@ module GenSymIO {
         t1.start();
         on Locales[idx] {
             const locDom = A.localSubdomain();
+            const segsLocDom = SA.localSubdomain();
             var leadingSliceSet = false;
 
             //Initialize both indices to -1 to indicate neither exists for locale
             leadingSliceIndices[idx] = -1;
             trailingSliceIndices[idx] = -1;
 
-            for (value, i) in zip(A.localSlice(locDom), 0..A.localSlice(locDom).size-1) {
-            
+            var bytesArray = A.localSlice(locDom);
+            var segsArray = SA.localSlice(segsLocDom);
+            var numBytes = bytesArray.size;
+            var numSegs = segsArray.size;
+
+            if bytesArray[numBytes-1] = NULL_STRINGS_VALUE {
+                endsWithCompleteString[idx] = true;
+            } else {
+                endsWithCompleteString[idx] = false;
+            }
+
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                  "segsArray %t numBytes %t".format(segsArray,numBytes)); 
+                                              
+            for (value, i) in zip(A.localSlice(locDom), 0..A.localSlice(locDom).size-1) {           
                 /*
                  * Check all chars leading up to the last char in the values array. If a
                  * char is the null uint(8) char and is not the last char, this is a segment

@@ -94,7 +94,7 @@ class Strings:
             self.shape = self.offsets.shape
         except Exception as e:
             raise ValueError(e)   
-
+        self.offsets.register('{}_offsets'.format(self.bytes.name))
         self.dtype = npstr
         self.name:Union[str, None] = None
         self.logger = getArkoudaLogger(name=__class__.__name__) # type: ignore
