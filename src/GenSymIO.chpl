@@ -1121,6 +1121,10 @@ module GenSymIO {
         var prefix: string;
         var extension: string;  
         var warnFlag: bool;      
+
+        var total = new Time.Timer();
+        total.clear();
+        total.start(); 
         
         (prefix,extension) = getFileMetadata(filename);
  
@@ -1466,7 +1470,7 @@ module GenSymIO {
                       var valuesList : list(uint(8));
                      
                       (charList, segmentsList) = sliceToValuesAndSegments(A.localSlice(locDom)); 
-          
+                       
                       /*
                        * Check to see if previous locale (idx-1) ends with a complete string.
                        * If not, then the leading slice of this string was used to complete
@@ -1487,6 +1491,9 @@ module GenSymIO {
             // Close the file now that the values and segments pdarrays have been written
             C_HDF5.H5Fclose(myFileID);
         }
+        total.stop();  
+        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                  "Total write1DDistStrings time: %.17r".format(total.elapsed()));  
         return warnFlag;
     }
 
