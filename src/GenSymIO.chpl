@@ -1289,7 +1289,7 @@ module GenSymIO {
                         t1.stop();  
                         var elapsed = t1.elapsed();
                         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              "Time to adjust single string starting chars: %.17r".format(elapsed));  
+                              "Time to adjust single string starting chars for locale %i: %.17r".format(idx,elapsed));  
                     }
                 }
 
@@ -1327,7 +1327,7 @@ module GenSymIO {
                         t1.stop();  
                         var elapsed = t1.elapsed();
                         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              "Time to shuffle chars to complete last string: %.17r".format(elapsed)); 
+                              "Time to shuffle chars to complete last string for locale %i: %.17r".format(idx,elapsed)); 
                     }
                 }
 
@@ -2003,7 +2003,7 @@ module GenSymIO {
         t1.stop();  
         var elapsed = t1.elapsed();
         try! gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "Time to generateValuesMetadata: %.17r".format(elapsed)); 
+                                  "Time to generateValuesMetadata for locale %i: %.17r".format(idx,elapsed)); 
     }
 
     /*
