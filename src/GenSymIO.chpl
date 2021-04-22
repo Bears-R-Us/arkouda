@@ -1183,10 +1183,11 @@ module GenSymIO {
                  generateValuesMetadata(idx,leadingSliceIndices, trailingSliceIndices, 
                                         isSingleString, endsWithCompleteString, A);
             }
+
             t1.stop();  
             var elapsed = t1.elapsed();
             gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "Time for generating all values metadata: %t".format(elapsed));   
+                                  "Time for generating all values metadata: %.17r".format(elapsed));   
         }   
                                        
         /*
@@ -1223,46 +1224,35 @@ module GenSymIO {
             if mode == APPEND {
                 prepareGroup(myFileID, group);
             }
-
-            var charList : list(uint(8));
-            var segmentsList : list(int);
-          
+         
             /* 
              * Generate the chars and segments lists from the locale domain; these
-             * lists will be used to generate post-shuffle values and segments arrays
-             * to be written to hdf5
+             * lists will be used to generate values and segments arrays to be 
+             * written to hdf5
              */
+            var charList : list(uint(8));
+            var segmentsList : list(int);
+
             (charList, segmentsList) = sliceToValuesAndSegments(A.localSlice(locDom));  
 
             if numLocales == 1 {           
                 writeStringsToHdf(myFileID, group, charList, segmentsList);          
-            }
-
-            else {
-            /*
-             * Check for the possibility that 1..n strings in the values array span 
-             * two neighboring locales; by seeing if the final character in the local 
-             * slice is the null uint(8) character. If it is not, then the last string 
-             * is only a partial string and the remainder of the string is in the 
-             * next locale
-             */
-            if A.localSlice(locDom).back() != NULL_STRINGS_VALUE {
+            } else {
                 /*
-                 * Since the last value of the local slice is other than the uint(8) null
-                 * character, this means the last string in the current locale (idx) spans 
-                 * the current AND next locale. Consequently, need to do the following:
-                 * 1. Add all current locale values to a list
-                 * 2. Obtain remaining uint(8) values from the next locale
+                 * Check for the possibility that 1..n strings in the values array span 
+                 * two neighboring locales; by seeing if the final character in the local 
+                 * slice is the null uint(8) character. If it is not, then the last string 
+                 * is only a partial string and the remainder of the string is in the 
+                 * next locale
                  */
-                //var charList : list(uint(8));
-                //var segmentsList : list(int);
-
-                /* 
-                 * Generate the values and segments lists from the locale domain; these
-                 * lists will be used to generate post-shuffle values and segments arrays
-                 * to be written to hdf5
-                 */
-                //(charList, segmentsList) = sliceToValuesAndSegments(A.localSlice(locDom));
+                if A.localSlice(locDom).back() != NULL_STRINGS_VALUE {
+                    /*
+                     * Since the last value of the local slice is other than the uint(8) null
+                     * character, this means the last string in the current locale (idx) spans 
+                     * the current AND next locale. Consequently, need to do the following:
+                     * 1. Add all current locale values to a list
+                     * 2. Obtain remaining uint(8) values from the next locale
+                     */
 
                 /*
                  * If this locale contains a single string/string segment (and therefore no 
@@ -1275,7 +1265,9 @@ module GenSymIO {
                  */
                 if isSingleString[idx] && idx > 0 {
                     var trailingIndex = trailingSliceIndices[idx-1];
-
+                    var t1 = new Time.Timer();
+                    t1.clear();
+                    t1.start(); 
                     if trailingIndex > -1 {
                         /*
                          * There are 1..n chars to be shuffled from the previous locale
@@ -1294,6 +1286,10 @@ module GenSymIO {
                             }
                         }
                         charList.insert(0, trailingValuesList);
+                        t1.stop();  
+                        var elapsed = t1.elapsed();
+                        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                              "Time to adjust single string starting chars: %.17r".format(elapsed));  
                     }
                 }
 
@@ -1311,7 +1307,9 @@ module GenSymIO {
                     on Locales[idx+1] {
                         const locDom = A.localSubdomain();
                         var sliceList: list(uint(8), parSafe=false);
-
+                        var t1 = new Time.Timer();
+                        t1.clear();
+                        t1.start(); 
                         /*
                          * Iterate through the local slice values for the next locale and add
                          * each to the sliceList until the null uint(8) character is reached;
@@ -1326,6 +1324,10 @@ module GenSymIO {
                             }
                         }                       
                         charList.extend(sliceList);   
+                        t1.stop();  
+                        var elapsed = t1.elapsed();
+                        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                              "Time to shuffle chars to complete last string: %.17r".format(elapsed)); 
                     }
                 }
 
@@ -1641,7 +1643,7 @@ module GenSymIO {
         t1.stop();  
         var elapsed = t1.elapsed();
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "Time for generateFilenames: %t".format(elapsed));    
+                                  "Time to generateFilenames: %.17r".format(elapsed));    
         return filenames;
     }
 
@@ -1766,7 +1768,7 @@ module GenSymIO {
         t1.stop();  
         var elapsed = t1.elapsed();
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                         "Time for processing file names: %t".format(elapsed));        
+                                             "Time to process file names: %.17r".format(elapsed));        
         return warnFlag;
     }
 
@@ -1870,7 +1872,7 @@ module GenSymIO {
         t1.stop();  
         var elapsed = t1.elapsed();
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                         "Time for processing file names: %t".format(elapsed));        
+                                       "Time to process file names: %.17r".format(elapsed));        
 
         return warnFlag;
     }
@@ -2001,7 +2003,7 @@ module GenSymIO {
         t1.stop();  
         var elapsed = t1.elapsed();
         try! gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "Time for generateValuesMetadata: %t".format(elapsed)); 
+                                  "Time to generateValuesMetadata: %.17r".format(elapsed)); 
     }
 
     /*
@@ -2037,7 +2039,7 @@ module GenSymIO {
         t1.stop();  
         var elapsed = t1.elapsed();
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "Time for sliceToValuesAndSegments: %t".format(elapsed)); 
+                      "Time to convert raw chars via sliceToValuesAndSegments: %.17r".format(elapsed)); 
         return (charList, indices);
     }
 
@@ -2077,7 +2079,7 @@ module GenSymIO {
         t1.stop();  
         var elapsed = t1.elapsed();
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "Time for adjustForLeadingSlice: %t".format(elapsed)); 
+                                  "Time to adjustForLeadingSlice: %.17r".format(elapsed)); 
         return (valuesList,indices);
     }
 
@@ -2108,7 +2110,7 @@ module GenSymIO {
         t1.stop();  
         var elapsed = t1.elapsed();
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "Time for adjustForTrailingSlice: %t".format(elapsed)); 
+                                  "Time to adjustForTrailingSlice: %.17r".format(elapsed)); 
         return (valuesList,indices);
     }
 
@@ -2163,7 +2165,7 @@ module GenSymIO {
         t1.stop();  
         var elapsed = t1.elapsed();
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "Time for writing Strings to hdf5: %t".format(elapsed));        
+                                  "Time for writing Strings to hdf5: %.17r".format(elapsed));        
 
     }
     
