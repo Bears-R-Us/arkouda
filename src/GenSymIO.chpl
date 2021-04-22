@@ -1933,10 +1933,22 @@ module GenSymIO {
             var numBytes = bytesArray.size;
             var numSegs = segsArray.size;
 
-            if bytesArray[numBytes-1] = NULL_STRINGS_VALUE {
+            if bytesArray[numBytes-1] == NULL_STRINGS_VALUE {
                 endsWithCompleteString[idx] = true;
             } else {
                 endsWithCompleteString[idx] = false;
+            }
+
+            if segsArray[0] == 0 {
+                leadingSliceIndices[idx] = -1;
+            } else {
+                leadingSliceIndices[idx] = segsArray[0];
+            }
+            
+            if !endsWithCompleteString[idx] {
+                trailingSliceIndices[idx] = segsArray[segsArray.size-1];
+            } else {
+                trailingSliceIndices[idx] = -1;
             }
 
             gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
