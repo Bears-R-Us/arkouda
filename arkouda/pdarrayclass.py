@@ -1207,14 +1207,13 @@ def list_registry() -> List[str]:
         Raised if there's a server-side error thrown
     """
     registered_list: List[str] = []
-
-    if info(RegisteredSymbols) not in [EmptyRegistry, EmptySymbolTable]:
+    all_registered = info(RegisteredSymbols)
+    if all_registered not in [EmptyRegistry, EmptySymbolTable]:
         registered_object: str
-        for registered_object in filter(None, info(RegisteredSymbols).split('\n')):
-            if registered_object is not None:
+        for registered_object in all_registered.split('\n'):
+            if registered_object:
                 name = registered_object.split()[0].split(':')[1].replace('"', '')
                 registered_list.append(name)
-
     return registered_list
 
 def list_symbol_table() -> List[str]:
@@ -1236,14 +1235,13 @@ def list_symbol_table() -> List[str]:
         Raised if there's a server-side error thrown
     """
     symbol_list: List[str] = []
-
-    if info(AllSymbols) not in [EmptyRegistry, EmptySymbolTable]:
+    all_symbols = info(AllSymbols)
+    if all_symbols not in [EmptyRegistry, EmptySymbolTable]:
         symbol: str
-        for symbol in filter(None, info(AllSymbols).split('\n')):
-            if symbol is not None:
+        for symbol in all_symbols.split('\n'):
+            if symbol:
                 name = symbol.split()[0].split(':')[1].replace('"', '')
                 symbol_list.append(name)
-
     return symbol_list
 
 def clear() -> None:
