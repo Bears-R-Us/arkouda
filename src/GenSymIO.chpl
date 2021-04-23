@@ -368,8 +368,6 @@ module GenSymIO {
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR); 
         }
-        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                            "Got subdomains and total length");
 
         select (isSegArray, dataclass) {
             when (true, C_HDF5.H5T_INTEGER) {
@@ -1080,7 +1078,6 @@ module GenSymIO {
                 }
                 when DType.UInt8 {
                     var e = toSymEntry(entry, uint(8));
-                    gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"ARRAY %s".format(arrayName));
                     var segsEntry = st.lookup('%s_offsets'.format(arrayName));                   
                     var s_e = toSymEntry(segsEntry, int);
                     warnFlag = write1DDistStrings(filename, mode, dsetName, e.a, DType.UInt8,s_e.a);
@@ -1167,6 +1164,7 @@ module GenSymIO {
         var trailingSliceIndices: [PrivateSpace] int;
         var isSingleString: [PrivateSpace] bool;
         var endsWithCompleteString: [PrivateSpace] bool;
+        var indicesNormalize: [PrivateSpace] int;
 
         /*
          * Loop through all locales and set (1) leadingSliceIndices, which are
@@ -1184,7 +1182,7 @@ module GenSymIO {
         var t1 = new Time.Timer();
         t1.clear();
         t1.start();
-  
+
         coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) 
                   with (ref leadingSliceIndices, ref trailingSliceIndices, 
                         ref isSingleString, ref endsWithCompleteString) do on loc {
@@ -1933,27 +1931,72 @@ module GenSymIO {
             var numBytes = bytesArray.size;
             var numSegs = segsArray.size;
 
-            if bytesArray[numBytes-1] == NULL_STRINGS_VALUE {
+            var lastChar = bytesArray.back();
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                      "lastChar %t for locale %i".format(lastChar,idx));
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                      "numBytes: %t numSegs %t for locale %i".format(
+                                                      numBytes,numSegs,idx));   
+            if bytesArray.back() == NULL_STRINGS_VALUE {
                 endsWithCompleteString[idx] = true;
             } else {
                 endsWithCompleteString[idx] = false;
             }
+                                             
+         
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                      "locDom.first: %t segsLocDom.first %t for locale %i".format(
+                                                      locDom.first,segsLocDom.first,idx));    
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                      "segsArray.front(): %t segsArray.back() %t for locale %i".format(
+                                                      segsArray.front(),segsArray.back(),idx));   
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                      "locDom.last: %t segsArray %t for locale %i".format(
+                                                      locDom.last,segsArray[segsLocDom.last],idx));                                                   
+            
+            var firstSeg = -1;
 
-            if segsArray[0] == 0 {
+            if idx == 0 {
+                firstSeg = 0;
+            } else {                                                         
+                var (nullString,fSeg) = bytesArray.find(NULL_STRINGS_VALUE);
+                if nullString {
+                    firstSeg = fSeg + 1;
+                }
+            }
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"firstSeg: %i and segsArray.front(): %i".format(firstSeg,segsArray.front()));
+            var normalize = 0;
+            if idx > 0 {
+                normalize = locDom.first;
+            }
+    
+            var adjFirstSeg = firstSeg - normalize;
+            var adjLastSeg = segsArray.back() - normalize;
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"adjFS: %i adjLS: %i for locale %i".format(adjFirstSeg,adjLastSeg,idx));
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"normalize %i for locale %i".format(normalize,idx));
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                                      "firstSeg %t for locale %i".format(firstSeg,idx));
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                        "segsArray %t for locale %i".format(segsArray,idx));
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                        "bytesArray %t for locale %i".format(bytesArray,idx));
+                                                
+            if adjFirstSeg == 0 {
                 leadingSliceIndices[idx] = -1;
             } else {
-                leadingSliceIndices[idx] = segsArray[0];
+                leadingSliceIndices[idx] = adjFirstSeg;
             }
             
             if !endsWithCompleteString[idx] {
-                trailingSliceIndices[idx] = segsArray[segsArray.size-1];
+                trailingSliceIndices[idx] = adjLastSeg;
             } else {
                 trailingSliceIndices[idx] = -1;
             }
 
             gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "segsArray %t numBytes %t".format(segsArray,numBytes)); 
-                                              
+                    "v2 TSI %t LSI %t ESI %t for locale %i".format(trailingSliceIndices[idx],leadingSliceIndices[idx],
+                    endsWithCompleteString[idx],idx));             
+
             for (value, i) in zip(A.localSlice(locDom), 0..A.localSlice(locDom).size-1) {           
                 /*
                  * Check all chars leading up to the last char in the values array. If a
@@ -2034,10 +2077,14 @@ module GenSymIO {
         }
         t1.stop();  
         var elapsed = t1.elapsed();
+        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                    "v1 TSI %t LSI %t ESI %t for locale %i".format(trailingSliceIndices[idx],leadingSliceIndices[idx],
+                    endsWithCompleteString[idx],idx));             
+
         try! gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                   "Time to generateValuesMetadata for locale %i: %.17r".format(idx,elapsed)); 
     }
-
+    
     /*
      * Processes a local Strings slice into (1) a uint(8) values list for use in methods 
      * that finalize the values array elements following any shuffle operations and (2)
