@@ -94,13 +94,15 @@ or
       :returns: borrow of newly created GenSymEntry
       
 
-   .. method:: proc deleteEntry(name: string) throws
+   .. method:: proc deleteEntry(name: string): bool throws
 
       
       Removes an unregistered entry from the symTable
       
       :arg name: name of the array
       :type name: string
+      
+      :returns: bool indicating whether the deletion occurred
       
 
    .. method:: proc clear() throws

@@ -69,6 +69,7 @@ Functions
    arkouda.all
    arkouda.is_sorted
    arkouda.list_registry
+   arkouda.list_symbol_table
    arkouda.sum
    arkouda.prod
    arkouda.min
@@ -1150,6 +1151,18 @@ Attributes
    :param None:
 
    :returns: List of all object names in the registry
+   :rtype: list
+
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. function:: list_symbol_table() -> List[str]
+
+   Return a list containing the names of all objects in the symbol table
+
+   :param None:
+
+   :returns: List of all object names in the symbol table
    :rtype: list
 
    :raises RuntimeError: Raised if there's a server-side error thrown
