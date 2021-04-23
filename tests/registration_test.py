@@ -306,6 +306,32 @@ class RegistrationTest(ArkoudaTest):
         self.assertFalse(keep.is_registered())
         ak.clear()
 
+    def test_delete_registered(self):
+        """
+        Tests the following:
+
+        1. delete cmd doesn't delete registered objects and returns appropriate message
+        2. delete cmd does delete non-registered objects and returns appropriate message
+        3. delete cmd raises RuntimeError for unknown symbols
+        """
+        cleanup()
+        a = ak.ones(3, dtype=ak.int64)
+        b = ak.ones(3, dtype=ak.int64)
+
+        # registered objects are not deleted from symbol table
+        a.register('keep')
+        self.assertEqual(ak.client.generic_msg(cmd='delete', args=a.name),
+                         f'registered symbol, {a.name}, not deleted')
+        self.assertTrue(a.name in ak.list_symbol_table())
+
+        # non-registered objects are deleted from symbol table
+        self.assertEqual(ak.client.generic_msg(cmd='delete', args=b.name),
+                         'deleted ' + b.name)
+        self.assertTrue(b.name not in ak.list_symbol_table())
+
+        # RuntimeError when calling delete on an object not in the symbol table
+        with self.assertRaises(RuntimeError):
+            ak.client.generic_msg(cmd='delete', args='not_in_table')
 
 def cleanup():
     ak.clear()
