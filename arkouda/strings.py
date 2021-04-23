@@ -1,5 +1,7 @@
 from __future__ import annotations
-from typing import cast, Optional, Tuple, Union
+
+import itertools
+from typing import cast, Optional, Tuple, List, Union
 from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value, unregister_pdarray_by_name, RegistrationError
@@ -9,6 +11,7 @@ from arkouda.dtypes import npstr, int_scalars, str_scalars
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS, resolve_scalar_dtype, \
      translate_np_dtype
 import json
+from arkouda.infoclass import information, pretty_print_information
 
 __all__ = ['Strings']
 
@@ -866,6 +869,50 @@ class Strings:
 
         return np.bool_(np.any(parts_registered))
 
+    def _list_component_names(self) -> List[str]:
+        """
+        Internal Function that returns a list of all component names
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        List[str]
+            List of all component names
+        """
+        return list(itertools.chain.from_iterable([self.offsets._list_component_names(), self.bytes._list_component_names()]))
+
+    def info(self) -> str:
+        """
+        Returns a JSON formatted string containing information about all components of self
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            JSON string containing information about all components of self
+        """
+        return information(self._list_component_names())
+
+    def pretty_print_info(self) -> None:
+        """
+        Prints information about all components of self in a human readable format
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+        self.offsets.pretty_print_info()
+        self.bytes.pretty_print_info()
 
     @typechecked
     def register(self, user_defined_name: str) -> Strings:

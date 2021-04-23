@@ -8,6 +8,7 @@ module MultiTypeSymbolTable
     
     use MultiTypeSymEntry;
     use Map;
+    use IO;
     
     private config const logLevel = ServerConfig.logLevel;
     const mtLogger = new Logger(logLevel);
@@ -319,66 +320,84 @@ module MultiTypeSymbolTable
         }
         
         /*
-        Returns verbose attributes of the sym entry at the given string, if the string maps to an entry.
+        Returns verbose attributes of the sym entries at the given string, if the string is a JSON formmated list of entry names.
         Pass __AllSymbols__ to process all sym entries in the sym table.
         Pass __RegisteredSymbols__ to process all registered sym entries.
 
-        Returns: name, dtype, size, ndim, shape, item size, and registration status
+        Returns: name, dtype, size, ndim, shape, item size, and registration status for each entry in names
 
-        :arg name: name of entry to be processed
-        :type name: string
+        :arg names: list containing names of entries to be processed
+        :type names: string
 
-        :returns: s (string) containing info
+        :returns: JSON formatted list containing info for each entry in names
         */
-        proc info(name:string): string throws {
-            var s: string;
-            if tab.size == 0 {
-                s = "__EMPTY_SYMBOLTABLE__";
+        proc info(names:string): string throws {
+            var entries;
+            select names
+            {
+                when "__AllSymbols__"         {entries = getEntries(tab);}
+                when "__RegisteredSymbols__"  {entries = getEntries(registry);}
+                otherwise                     {entries = getEntries(parseJson(names));}
             }
-            else if name == "__AllSymbols__" {
-                for n in tab {
-                    s += formatEntry(n, tab.getBorrowed(n));
-                }
-            } 
-            else if name == "__RegisteredSymbols__" {
-                if registry.size == 0 {
-                    s = "__EMPTY_REGISTRY__";
-                }
-                else {
-                    for n in registry {
-                        s += formatEntry(n, tab.getBorrowed(n));
-                    }
-                }
-            }
-            else {
-                if (tab.contains(name)) {
-                    s += formatEntry(name, tab.getBorrowed(name));
-                }
-                else {
-                    throw getErrorWithContext(
-                        msg=unknownSymbolError(pname="info",sname=name),
-                        lineNumber=getLineNumber(),
-                        routineName=getRoutineName(),
-                        moduleName=getModuleName(),
-                        errorClass="UnknownSymbolError");                
-                }
-            }
-            return s;
+            return "[%s]".format(','.join(entries));
         }
 
         /*
-        Returns formatted string for info call. 
+        Convert JSON formmated list of entry names into a [] string object
+
+        :arg names: JSON formatted list containing entry names
+        :type names: string
+
+        :returns: [] string of entry names
+        */
+        proc parseJson(names:string): [] string throws {
+            var mem = openmem();
+            var writer = mem.writer().write(names);
+            var reader = mem.reader();
+
+            var num_elements = 0;
+            for i in names.split(',') {
+                num_elements += 1;
+            }
+
+            var parsed_names: [1..num_elements] string;
+            reader.readf("%jt", parsed_names);
+            return parsed_names;
+        }
+
+        /*
+        Returns an array of JSON formatted strings for each entry in infoList (tab, registry, or [names])
+
+        :arg infoList: Iterable containing sym entries to be returned by info
+        :type infoList: map(string, shared GenSymEntry), domain(string), or [] string
+                        for tab, registry, and [names] respectively
+
+        :returns: array of JSON formatted strings
+        */
+        proc getEntries(infoList): [] string throws {
+            var entries: [1..infoList.size] string;
+            var i = 0;
+            for name in infoList {
+                i+=1;
+                check(name);
+                entries[i] = formatEntry(name, tab.getBorrowed(name));
+            }
+            return entries;
+        }
+
+        /*
+        Returns formatted string for an info entry.
 
         :arg name: name of entry to be formatted
         :type name: string
 
-        :arg entry: Generic Sym Entry to be formatted (tab.getBorrowed(name))
-        :type entry: GenSymEntry
+        :arg item: Generic Sym Entry to be formatted (tab.getBorrowed(name))
+        :type item: GenSymEntry
 
-        :returns: formatted string
+        :returns: JSON formatted dictionary
         */
         proc formatEntry(name:string, item:borrowed GenSymEntry): string throws {
-            return "name:%t dtype:%t size:%t ndim:%t shape:%t itemsize:%t registered:%t\n".format(name, 
+            return '{"name":%jt, "dtype":%jt, "size":%jt, "ndim":%jt, "shape":%jt, "itemsize":%jt, "registered":%jt}'.format(name,
                               dtype2str(item.dtype), item.size, item.ndim, item.shape, item.itemsize, registry.contains(name));
         }
 
