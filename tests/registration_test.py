@@ -1,9 +1,7 @@
+import pytest
 from context import arkouda as ak
-from typing import Tuple
-import numpy as np
-from collections import Counter
 from base_test import ArkoudaTest
-from arkouda.pdarrayclass import RegistrationError
+from arkouda.pdarrayclass import RegistrationError, unregister_pdarray_by_name
 N = 100
 UNIQUE = N // 4
 
@@ -259,38 +257,52 @@ class RegistrationTest(ArkoudaTest):
         self.assertTrue('keep' in ak.list_registry())
         cleanup()
 
-    def test_string_registration(self):
+    def test_string_registration_suite(self):
+        cleanup()
         # Initial registration should set name
         keep = ak.random_strings_uniform(1, 10, UNIQUE, characters='printable')
-        keep.register("keep_me")
-        self.assertTrue(keep.name is "keep_me")
-        self.assertTrue(keep.offsets.name == "keep_me_offsets")
-        self.assertTrue(keep.bytes.name == "keep_me_bytes")
+        self.assertTrue(keep.register("keep_me").name == "keep_me")
+        self.assertTrue(keep.offsets.name == "keep_me.offsets")
+        self.assertTrue(keep.bytes.name == "keep_me.bytes")
+
+        self.assertTrue(keep.is_registered(), "Expected Strings object to be registered")
 
         # Register a second time to confirm name change
-        keep.register("kept")
-        self.assertTrue(keep.name is "kept")
-        self.assertTrue(keep.offsets.name == "kept_offsets")
-        self.assertTrue(keep.bytes.name == "kept_bytes")
+        self.assertTrue(keep.register("kept").name == "kept")
+        self.assertTrue(keep.offsets.name == "kept.offsets")
+        self.assertTrue(keep.bytes.name == "kept.bytes")
+        self.assertTrue(keep.is_registered(), "Object should be registered with updated name")
 
-        # Add an item to discard
+        # Add an item to discard, confirm our registered item remains and discarded item is gone
         discard = ak.random_strings_uniform(1, 10, UNIQUE, characters='printable')
-
         ak.clear()
         self.assertTrue(keep.name == "kept")
-        self.assertTrue(keep.offsets.name == "kept_offsets")
-        self.assertTrue(keep.bytes.name == "kept_bytes")
-
+        self.assertTrue(keep.offsets.name == "kept.offsets")
+        self.assertTrue(keep.bytes.name == "kept.bytes")
         with self.assertRaises(RuntimeError, msg="discard was not registered and should be discarded"):
             str(discard)
 
         # Unregister, should remain usable until we clear
         keep.unregister()
         str(keep) # Should not cause error
-        self.assertTrue(keep.offsets.name == "kept_offsets", msg="name should remain intact even after unregister")
+        self.assertFalse(keep.is_registered(), "This item should no longer be registered")
         ak.clear()
         with self.assertRaises(RuntimeError, msg="keep was unregistered and should be cleared"):
             str(keep) # should cause RuntimeError
+
+        # Test attach functionality
+        s1 = ak.random_strings_uniform(1, 10, UNIQUE, characters='printable')
+        self.assertTrue(s1.register("uut").is_registered(), "uut should be registered")
+        s1 = None
+        self.assertTrue(s1 is None, "Reference should be cleared")
+        s1 = ak.Strings.attach("uut")
+        self.assertTrue(s1.is_registered(), "Should have re-attached to registered object")
+        str(s1)  # This will throw an exception if the object doesn't exist server-side
+
+        # Test the Strings unregister by name using previously registered object
+        ak.Strings.unregister_strings_by_name("uut")
+        self.assertFalse(s1.is_registered(), "Expected object to be unregistered")
+        cleanup()
 
     def test_string_is_registered(self):
         """
@@ -304,6 +316,13 @@ class RegistrationTest(ArkoudaTest):
 
         keep.unregister()
         self.assertFalse(keep.is_registered())
+
+        # Now mess with one of the internal pieces to test is_registered() logic
+        self.assertTrue(keep.register("uut").is_registered(), "Re-register keep as uut")
+        ak.unregister_pdarray_by_name("uut.bytes")
+        with self.assertRaises(RegistrationError, msg="Expected RegistrationError on mis-matched pieces"):
+            keep.is_registered()
+
         ak.clear()
 
     def test_delete_registered(self):
@@ -333,10 +352,50 @@ class RegistrationTest(ArkoudaTest):
         with self.assertRaises(RuntimeError):
             ak.client.generic_msg(cmd='delete', args='not_in_table')
 
+    def test_categorical_registration_suite(self):
+        """
+        Test register, is_registered, attach, unregister, unregister_categorical_by_name
+        """
+        cleanup()  # Make sure we start with a clean registry
+        c = ak.Categorical(ak.array([f"my_cat {i}" for i in range(1, 11)]))
+        self.assertFalse(c.is_registered(), "test_me should be unregistered")
+        self.assertTrue(c.register("test_me").is_registered(), "test_me categorical should be registered")
+        c = None  # Should trigger destructor, but survive server deletion because it is registered
+        self.assertTrue(c is None, "The reference to `c` should be None")
+        c = ak.Categorical.attach("test_me")
+        self.assertTrue(c.is_registered(), "test_me categorical should be registered after attach")
+        c.unregister()
+        self.assertFalse(c.is_registered(), "test_me should be unregistered")
+        self.assertTrue(c.register("another_name").name == "another_name" and c.is_registered())
+
+        # Test static unregister_by_name
+        ak.Categorical.unregister_categorical_by_name("another_name")
+        self.assertFalse(c.is_registered(), "another_name should be unregistered")
+
+        # now mess with the subcomponents directly to test is_registered mis-match logic
+        c.register("another_name")
+        unregister_pdarray_by_name("another_name.codes")
+        with pytest.raises(RegistrationError):
+            c.is_registered()
+
+    def test_attach_weak_binding(self):
+        """
+        Ultimately pdarrayclass issues delete calls to the server when a bound object goes out of scope, if you bind
+        to a server object more than once and one of those goes out of scope it affects all other references to it.
+        """
+        cleanup()
+        a = ak.ones(3, dtype=ak.int64).register("a_reg")
+        self.assertTrue(str(a), "Expected to pass")
+        b = ak.attach_pdarray("a_reg")
+        b.unregister()
+        b = None  # Force out of scope
+        with self.assertRaises(RuntimeError):
+            str(a)
+
 def cleanup():
     ak.clear()
     if ak.info(ak.AllSymbols) != ak.EmptySymbolTable:
         for registered_object in filter(None, ak.info(ak.AllSymbols).split('\n')):
             name = registered_object.split()[0].split(':')[1].replace('"', '')
-            ak.unregister_pdarray(name)
+            ak.unregister_pdarray_by_name(name)
         ak.clear()
