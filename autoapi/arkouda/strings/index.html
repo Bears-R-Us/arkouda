@@ -801,7 +801,7 @@ registered using register() and/or attached to using attach()</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.strings.Strings.register" title="arkouda.strings.Strings.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.strings.Strings.unregister" title="arkouda.strings.Strings.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a></p>
+<p><a class="reference internal" href="#arkouda.strings.Strings.register" title="arkouda.strings.Strings.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.strings.Strings.attach" title="arkouda.strings.Strings.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>Registered names/Strings objects in the server are immune to deletion until
@@ -834,6 +834,21 @@ server which was registered using register()</p>
 <p class="rubric">Notes</p>
 <p>Registered names/Strings objects in the server are immune to deletion
 until they are unregistered.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.strings.Strings.unregister_strings_by_name">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">unregister_strings_by_name</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#arkouda.strings.Strings.unregister_strings_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unregister a Strings object in the arkouda server previously registered via register()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – The registered name of the Strings object</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.strings.Strings.register" title="arkouda.strings.Strings.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.strings.Strings.unregister" title="arkouda.strings.Strings.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.strings.Strings.attach" title="arkouda.strings.Strings.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.strings.Strings.is_registered" title="arkouda.strings.Strings.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+</div>
 </dd></dl>
 
 </dd></dl>

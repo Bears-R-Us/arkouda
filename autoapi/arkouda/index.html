@@ -198,8 +198,8 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#arkouda.attach_pdarray" title="arkouda.attach_pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach_pdarray</span></code></a>(user_defined_name: str) → pdarray</p></td>
 <td><p>class method to return a pdarray attached to the registered name in the arkouda</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.unregister_pdarray" title="arkouda.unregister_pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray</span></code></a>(pda: Union[str, pdarray]) → None</p></td>
-<td><p>Unregister a pdarray in the arkouda server which was previously</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.unregister_pdarray_by_name" title="arkouda.unregister_pdarray_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray_by_name</span></code></a>(user_defined_name: str) → None</p></td>
+<td><p>Unregister a named pdarray in the arkouda server which was previously</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../../usage/argsort.html#arkouda.argsort" title="arkouda.argsort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argsort</span></code></a>(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]) → arkouda.pdarrayclass.pdarray</p></td>
 <td><p>Return the permutation that sorts the array.</p></td>
@@ -1594,7 +1594,7 @@ unregistered first to free up the registration name.</p></li>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#id91" title="arkouda.pdarray.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#id90" title="arkouda.pdarray.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a></p>
+<p><a class="reference internal" href="#id91" title="arkouda.pdarray.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#id90" title="arkouda.pdarray.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#id71" title="arkouda.pdarray.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a>, <a class="reference internal" href="#arkouda.list_registry" title="arkouda.list_registry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_registry</span></code></a>, <a class="reference internal" href="#arkouda.unregister_pdarray_by_name" title="arkouda.unregister_pdarray_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray_by_name</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>Registered names/pdarrays in the server are immune to deletion
@@ -1628,7 +1628,7 @@ registered using register() and/or attahced to using attach()</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#id89" title="arkouda.pdarray.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#id90" title="arkouda.pdarray.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a></p>
+<p><a class="reference internal" href="#id89" title="arkouda.pdarray.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#id90" title="arkouda.pdarray.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#id71" title="arkouda.pdarray.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a>, <a class="reference internal" href="#arkouda.unregister_pdarray_by_name" title="arkouda.unregister_pdarray_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray_by_name</span></code></a>, <a class="reference internal" href="#arkouda.list_registry" title="arkouda.list_registry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_registry</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>Registered names/pdarrays in the server are immune to deletion until
@@ -1665,7 +1665,7 @@ server which was registered using register()</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#id89" title="arkouda.pdarray.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#id90" title="arkouda.pdarray.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a></p>
+<p><a class="reference internal" href="#id89" title="arkouda.pdarray.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#id90" title="arkouda.pdarray.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#id71" title="arkouda.pdarray.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a>, <a class="reference internal" href="#arkouda.unregister_pdarray_by_name" title="arkouda.unregister_pdarray_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray_by_name</span></code></a>, <a class="reference internal" href="#arkouda.list_registry" title="arkouda.list_registry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_registry</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>Registered names/pdarrays in the server are immune to deletion
@@ -2275,7 +2275,7 @@ server which was registered using register()</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code>, <a class="reference internal" href="#arkouda.unregister_pdarray" title="arkouda.unregister_pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray</span></code></a></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code>, <a class="reference internal" href="#arkouda.unregister_pdarray_by_name" title="arkouda.unregister_pdarray_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray_by_name</span></code></a>, <a class="reference internal" href="#arkouda.list_registry" title="arkouda.list_registry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_registry</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>Registered names/pdarrays in the server are immune to deletion
@@ -2286,30 +2286,33 @@ until they are unregistered.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># potentially disconnect from server and reconnect to server</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">attach_pdarray</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># ...other work...</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">unregister_pdarray</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">unregister</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="py function">
-<dt id="arkouda.unregister_pdarray">
-<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">unregister_pdarray</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray"><span class="pre">pdarray</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#arkouda.unregister_pdarray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Unregister a pdarray in the arkouda server which was previously
+<dt id="arkouda.unregister_pdarray_by_name">
+<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">unregister_pdarray_by_name</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#arkouda.unregister_pdarray_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unregister a named pdarray in the arkouda server which was previously
 registered using register() and/or attahced to using attach_pdarray()</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name which array was registered under</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>None</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
 </dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if the server could not find the internal name/symbol to remove</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – Raised if the server could not find the internal name/symbol to remove</p>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code>, <a class="reference internal" href="#arkouda.unregister_pdarray" title="arkouda.unregister_pdarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray</span></code></a></p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code>, <a class="reference internal" href="#arkouda.list_registry" title="arkouda.list_registry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_registry</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></p>
 </div>
 <p class="rubric">Notes</p>
 <p>Registered names/pdarrays in the server are immune to deletion until
@@ -2320,7 +2323,7 @@ they are unregistered.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># potentially disconnect from server and reconnect to server</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">attach_pdarray</span><span class="p">(</span><span class="s2">&quot;my_zeros&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># ...other work...</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">unregister_pdarray</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">unregister_pdarray_by_name</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -5508,7 +5511,7 @@ registered using register() and/or attached to using attach()</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#arkouda.Strings.register" title="arkouda.Strings.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.Strings.unregister" title="arkouda.Strings.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a></p>
+<p><a class="reference internal" href="#arkouda.Strings.register" title="arkouda.Strings.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.Strings.attach" title="arkouda.Strings.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>Registered names/Strings objects in the server are immune to deletion until
@@ -5541,6 +5544,21 @@ server which was registered using register()</p>
 <p class="rubric">Notes</p>
 <p>Registered names/Strings objects in the server are immune to deletion
 until they are unregistered.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.Strings.unregister_strings_by_name">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">unregister_strings_by_name</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#arkouda.Strings.unregister_strings_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unregister a Strings object in the arkouda server previously registered via register()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – The registered name of the Strings object</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.Strings.register" title="arkouda.Strings.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.Strings.unregister" title="arkouda.Strings.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.Strings.attach" title="arkouda.Strings.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.Strings.is_registered" title="arkouda.Strings.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -5683,6 +5701,11 @@ work in initialization.</p>
 <dl class="py attribute">
 <dt id="arkouda.Categorical.BinOps">
 <code class="sig-name descname"><span class="pre">BinOps</span></code><a class="headerlink" href="#arkouda.Categorical.BinOps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="arkouda.Categorical.RegisterablePieces">
+<code class="sig-name descname"><span class="pre">RegisterablePieces</span></code><a class="headerlink" href="#arkouda.Categorical.RegisterablePieces" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -6071,6 +6094,132 @@ results in non-deterministic ordering of elements.</p></li>
 </dl>
 <p class="rubric">Notes</p>
 <p>This operation can be expensive – slower than concatenating Strings.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.Categorical.register">
+<code class="sig-name descname"><span class="pre">register</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><span class="pre">Categorical</span></a><a class="headerlink" href="#arkouda.Categorical.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register this Categorical object and underlying components with the Arkouda server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name the Categorical is to be registered under,
+this will be the root name for underlying components</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The same Categorical which is now registered with the arkouda server and has an updated name.
+This is an in-place modification, the original is returned to support a fluid programming style.
+Please note you cannot register two different Categoricals with the same name.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical">Categorical</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
+<li><p><a class="reference internal" href="#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Categorical with the user_defined_name</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.Categorical.unregister" title="arkouda.Categorical.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.Categorical.attach" title="arkouda.Categorical.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.Categorical.unregister_categorical_by_name" title="arkouda.Categorical.unregister_categorical_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_categorical_by_name</span></code></a>, <a class="reference internal" href="#arkouda.Categorical.is_registered" title="arkouda.Categorical.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.Categorical.unregister">
+<code class="sig-name descname"><span class="pre">unregister</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#arkouda.Categorical.unregister" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unregister this Categorical object in the arkouda server which was previously
+registered using register() and/or attached to using attach()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+when attempting to unregister</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.Categorical.register" title="arkouda.Categorical.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.Categorical.attach" title="arkouda.Categorical.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.Categorical.unregister_categorical_by_name" title="arkouda.Categorical.unregister_categorical_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_categorical_by_name</span></code></a>, <a class="reference internal" href="#arkouda.Categorical.is_registered" title="arkouda.Categorical.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.Categorical.is_registered">
+<code class="sig-name descname"><span class="pre">is_registered</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.bool_</span><a class="headerlink" href="#arkouda.Categorical.is_registered" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True iff the object is contained in the registry</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Indicates if the object is contained in the registry</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.bool</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mis-match of registered components</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.Categorical.register" title="arkouda.Categorical.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.Categorical.attach" title="arkouda.Categorical.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.Categorical.unregister" title="arkouda.Categorical.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.Categorical.unregister_categorical_by_name" title="arkouda.Categorical.unregister_categorical_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_categorical_by_name</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.Categorical.attach">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">attach</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><span class="pre">Categorical</span></a><a class="headerlink" href="#arkouda.Categorical.attach" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>Function to return a Categorical object attached to the registered name in the</dt><dd><p>arkouda server which was registered using register()</p>
+<dl class="simple">
+<dt>user_defined_name<span class="classifier">str</span></dt><dd><p>user defined name which Categorical object was registered under</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Categorical</dt><dd><p>The Categorical object created by re-attaching to the corresponding server components</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>TypeError</strong> – <p>if user_defined_name is not a string</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.Categorical.register" title="arkouda.Categorical.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.Categorical.is_registered" title="arkouda.Categorical.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a>, <a class="reference internal" href="#arkouda.Categorical.unregister" title="arkouda.Categorical.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.Categorical.unregister_categorical_by_name" title="arkouda.Categorical.unregister_categorical_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_categorical_by_name</span></code></a></p>
+</div>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.Categorical.unregister_categorical_by_name">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">unregister_categorical_by_name</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#arkouda.Categorical.unregister_categorical_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to unregister Categorical object by name which was registered
+with the arkouda server via register()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – Name under which the Categorical object was registered</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – if user_defined_name is not a string</p></li>
+<li><p><a class="reference internal" href="#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.Categorical.register" title="arkouda.Categorical.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.Categorical.unregister" title="arkouda.Categorical.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.Categorical.attach" title="arkouda.Categorical.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.Categorical.is_registered" title="arkouda.Categorical.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -6955,7 +7104,7 @@ unregistered first to free up the registration name.</p></li>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#id91" title="arkouda.pdarray.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#id90" title="arkouda.pdarray.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a></p>
+<p><a class="reference internal" href="#id91" title="arkouda.pdarray.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#id90" title="arkouda.pdarray.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#id71" title="arkouda.pdarray.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a>, <a class="reference internal" href="#arkouda.list_registry" title="arkouda.list_registry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_registry</span></code></a>, <a class="reference internal" href="#arkouda.unregister_pdarray_by_name" title="arkouda.unregister_pdarray_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray_by_name</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>Registered names/pdarrays in the server are immune to deletion
@@ -6989,7 +7138,7 @@ registered using register() and/or attahced to using attach()</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#id89" title="arkouda.pdarray.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#id90" title="arkouda.pdarray.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a></p>
+<p><a class="reference internal" href="#id89" title="arkouda.pdarray.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#id90" title="arkouda.pdarray.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#id71" title="arkouda.pdarray.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a>, <a class="reference internal" href="#arkouda.unregister_pdarray_by_name" title="arkouda.unregister_pdarray_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray_by_name</span></code></a>, <a class="reference internal" href="#arkouda.list_registry" title="arkouda.list_registry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_registry</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>Registered names/pdarrays in the server are immune to deletion until
@@ -7026,7 +7175,7 @@ server which was registered using register()</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#id89" title="arkouda.pdarray.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#id90" title="arkouda.pdarray.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a></p>
+<p><a class="reference internal" href="#id89" title="arkouda.pdarray.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#id90" title="arkouda.pdarray.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#id71" title="arkouda.pdarray.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a>, <a class="reference internal" href="#arkouda.unregister_pdarray_by_name" title="arkouda.unregister_pdarray_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_pdarray_by_name</span></code></a>, <a class="reference internal" href="#arkouda.list_registry" title="arkouda.list_registry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_registry</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>Registered names/pdarrays in the server are immune to deletion

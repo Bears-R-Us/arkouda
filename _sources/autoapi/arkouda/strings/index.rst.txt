@@ -568,7 +568,7 @@ Classes
 
       :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove
 
-      .. seealso:: :obj:`register`, :obj:`unregister`
+      .. seealso:: :obj:`register`, :obj:`attach`
 
       .. rubric:: Notes
 
@@ -596,6 +596,17 @@ Classes
 
       Registered names/Strings objects in the server are immune to deletion
       until they are unregistered.
+
+
+   .. method:: unregister_strings_by_name(user_defined_name: str) -> None
+      :staticmethod:
+
+      Unregister a Strings object in the arkouda server previously registered via register()
+
+      :param user_defined_name: The registered name of the Strings object
+      :type user_defined_name: str
+
+      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
 
 
 

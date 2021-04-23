@@ -42,7 +42,7 @@ Functions
    arkouda.pdarrayclass.argmink
    arkouda.pdarrayclass.argmaxk
    arkouda.pdarrayclass.attach_pdarray
-   arkouda.pdarrayclass.unregister_pdarray
+   arkouda.pdarrayclass.unregister_pdarray_by_name
 
 
 
@@ -642,7 +642,7 @@ Functions
           If the user is attempting to register more than one pdarray with the same name, the former should be
           unregistered first to free up the registration name.
 
-      .. seealso:: :obj:`attach`, :obj:`unregister`
+      .. seealso:: :obj:`attach`, :obj:`unregister`, :obj:`is_registered`, :obj:`list_registry`, :obj:`unregister_pdarray_by_name`
 
       .. rubric:: Notes
 
@@ -670,7 +670,7 @@ Functions
 
       :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove
 
-      .. seealso:: :obj:`register`, :obj:`unregister`
+      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`is_registered`, :obj:`unregister_pdarray_by_name`, :obj:`list_registry`
 
       .. rubric:: Notes
 
@@ -701,7 +701,7 @@ Functions
 
       :raises TypeError: Raised if user_defined_name is not a str
 
-      .. seealso:: :obj:`register`, :obj:`unregister`
+      .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`is_registered`, :obj:`unregister_pdarray_by_name`, :obj:`list_registry`
 
       .. rubric:: Notes
 
@@ -1138,7 +1138,7 @@ Functions
 
    :raises TypeError: Raised if user_defined_name is not a str
 
-   .. seealso:: :obj:`register`, :obj:`unregister_pdarray`
+   .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`is_registered`, :obj:`unregister_pdarray_by_name`, :obj:`list_registry`
 
    .. rubric:: Notes
 
@@ -1152,21 +1152,23 @@ Functions
    >>> # potentially disconnect from server and reconnect to server
    >>> b = ak.attach_pdarray("my_zeros")
    >>> # ...other work...
-   >>> ak.unregister_pdarray(b)
+   >>> b.unregister()
 
 
-.. function:: unregister_pdarray(pda: Union[str, pdarray]) -> None
+.. function:: unregister_pdarray_by_name(user_defined_name: str) -> None
 
-   Unregister a pdarray in the arkouda server which was previously
+   Unregister a named pdarray in the arkouda server which was previously
    registered using register() and/or attahced to using attach_pdarray()
 
+   :param user_defined_name: user defined name which array was registered under
+   :type user_defined_name: str
 
    :returns:
    :rtype: None
 
    :raises RuntimeError: Raised if the server could not find the internal name/symbol to remove
 
-   .. seealso:: :obj:`register`, :obj:`unregister_pdarray`
+   .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`is_registered`, :obj:`list_registry`, :obj:`attach`
 
    .. rubric:: Notes
 
@@ -1180,7 +1182,7 @@ Functions
    >>> # potentially disconnect from server and reconnect to server
    >>> b = ak.attach_pdarray("my_zeros")
    >>> # ...other work...
-   >>> ak.unregister_pdarray(b)
+   >>> ak.unregister_pdarray_by_name(b)
 
 
 .. exception:: RegistrationError

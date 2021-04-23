@@ -156,6 +156,11 @@ work in initialization.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt id="arkouda.categorical.Categorical.RegisterablePieces">
+<code class="sig-name descname"><span class="pre">RegisterablePieces</span></code><a class="headerlink" href="#arkouda.categorical.Categorical.RegisterablePieces" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt id="arkouda.categorical.Categorical.objtype">
 <code class="sig-name descname"><span class="pre">objtype</span></code><em class="property"> <span class="pre">=</span> <span class="pre">category</span></em><a class="headerlink" href="#arkouda.categorical.Categorical.objtype" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -541,6 +546,132 @@ results in non-deterministic ordering of elements.</p></li>
 </dl>
 <p class="rubric">Notes</p>
 <p>This operation can be expensive – slower than concatenating Strings.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.categorical.Categorical.register">
+<code class="sig-name descname"><span class="pre">register</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">Categorical</span></a><a class="headerlink" href="#arkouda.categorical.Categorical.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register this Categorical object and underlying components with the Arkouda server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – user defined name the Categorical is to be registered under,
+this will be the root name for underlying components</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The same Categorical which is now registered with the arkouda server and has an updated name.
+This is an in-place modification, the original is returned to support a fluid programming style.
+Please note you cannot register two different Categoricals with the same name.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical">Categorical</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if user_defined_name is not a str</p></li>
+<li><p><a class="reference internal" href="../index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the server was unable to register the Categorical with the user_defined_name</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.categorical.Categorical.unregister" title="arkouda.categorical.Categorical.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.categorical.Categorical.attach" title="arkouda.categorical.Categorical.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.categorical.Categorical.unregister_categorical_by_name" title="arkouda.categorical.Categorical.unregister_categorical_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_categorical_by_name</span></code></a>, <a class="reference internal" href="#arkouda.categorical.Categorical.is_registered" title="arkouda.categorical.Categorical.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.categorical.Categorical.unregister">
+<code class="sig-name descname"><span class="pre">unregister</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#arkouda.categorical.Categorical.unregister" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unregister this Categorical object in the arkouda server which was previously
+registered using register() and/or attached to using attach()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – If the object is already unregistered or if there is a server error
+when attempting to unregister</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.categorical.Categorical.register" title="arkouda.categorical.Categorical.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.categorical.Categorical.attach" title="arkouda.categorical.Categorical.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.categorical.Categorical.unregister_categorical_by_name" title="arkouda.categorical.Categorical.unregister_categorical_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_categorical_by_name</span></code></a>, <a class="reference internal" href="#arkouda.categorical.Categorical.is_registered" title="arkouda.categorical.Categorical.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.categorical.Categorical.is_registered">
+<code class="sig-name descname"><span class="pre">is_registered</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.bool_</span><a class="headerlink" href="#arkouda.categorical.Categorical.is_registered" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True iff the object is contained in the registry</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Indicates if the object is contained in the registry</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.bool</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – Raised if there’s a server-side error or a mis-match of registered components</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.categorical.Categorical.register" title="arkouda.categorical.Categorical.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.categorical.Categorical.attach" title="arkouda.categorical.Categorical.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.categorical.Categorical.unregister" title="arkouda.categorical.Categorical.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.categorical.Categorical.unregister_categorical_by_name" title="arkouda.categorical.Categorical.unregister_categorical_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_categorical_by_name</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Objects registered with the server are immune to deletion until
+they are unregistered.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.categorical.Categorical.attach">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">attach</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">Categorical</span></a><a class="headerlink" href="#arkouda.categorical.Categorical.attach" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>Function to return a Categorical object attached to the registered name in the</dt><dd><p>arkouda server which was registered using register()</p>
+<dl class="simple">
+<dt>user_defined_name<span class="classifier">str</span></dt><dd><p>user defined name which Categorical object was registered under</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Categorical</dt><dd><p>The Categorical object created by re-attaching to the corresponding server components</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>TypeError</strong> – <p>if user_defined_name is not a string</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.categorical.Categorical.register" title="arkouda.categorical.Categorical.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.categorical.Categorical.is_registered" title="arkouda.categorical.Categorical.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a>, <a class="reference internal" href="#arkouda.categorical.Categorical.unregister" title="arkouda.categorical.Categorical.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.categorical.Categorical.unregister_categorical_by_name" title="arkouda.categorical.Categorical.unregister_categorical_by_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister_categorical_by_name</span></code></a></p>
+</div>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.categorical.Categorical.unregister_categorical_by_name">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">unregister_categorical_by_name</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#arkouda.categorical.Categorical.unregister_categorical_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to unregister Categorical object by name which was registered
+with the arkouda server via register()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>user_defined_name</strong> (<em>str</em>) – Name under which the Categorical object was registered</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – if user_defined_name is not a string</p></li>
+<li><p><a class="reference internal" href="../index.html#arkouda.RegistrationError" title="arkouda.RegistrationError"><strong>RegistrationError</strong></a> – if there is an issue attempting to unregister any underlying components</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.categorical.Categorical.register" title="arkouda.categorical.Categorical.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.categorical.Categorical.unregister" title="arkouda.categorical.Categorical.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.categorical.Categorical.attach" title="arkouda.categorical.Categorical.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.categorical.Categorical.is_registered" title="arkouda.categorical.Categorical.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+</div>
 </dd></dl>
 
 </dd></dl>
