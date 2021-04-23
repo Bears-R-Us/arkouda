@@ -46,11 +46,12 @@ module CommAggregation {
 
     proc postinit() {
       lBuffers = c_malloc(c_ptr(aggType), numLocales);
+      bufferIdxs = c_aligned_alloc(int, 64, numLocales);
       for loc in myLocaleSpace {
         lBuffers[loc] = c_malloc(aggType, bufferSize);
+        bufferIdxs[loc] = 0;
         rBuffers[loc] = new remoteBuffer(aggType, bufferSize, loc);
       }
-      bufferIdxs = c_calloc(int, numLocales);
     }
 
     proc deinit() {
@@ -162,13 +163,14 @@ module CommAggregation {
     proc postinit() {
       dstAddrs = c_malloc(c_ptr(aggType), numLocales);
       lSrcAddrs = c_malloc(c_ptr(aggType), numLocales);
+      bufferIdxs = c_aligned_alloc(int, 64, numLocales);
       for loc in myLocaleSpace {
         dstAddrs[loc] = c_malloc(aggType, bufferSize);
         lSrcAddrs[loc] = c_malloc(aggType, bufferSize);
+        bufferIdxs[loc] = 0;
         rSrcAddrs[loc] = new remoteBuffer(aggType, bufferSize, loc);
         rSrcVals[loc] = new remoteBuffer(elemType, bufferSize, loc);
       }
-      bufferIdxs = c_calloc(int, numLocales);
     }
 
     proc deinit() {
