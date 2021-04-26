@@ -24,6 +24,7 @@ Functions
    arkouda.numeric.where
    arkouda.numeric.histogram
    arkouda.numeric.value_counts
+   arkouda.numeric.isnan
 
 
 
@@ -337,5 +338,20 @@ Functions
    >>> A = ak.array([2, 0, 2, 4, 0, 0])
    >>> ak.value_counts(A)
    (array([0, 2, 4]), array([3, 2, 1]))
+
+
+.. function:: isnan(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+
+   Test a pdarray for Not a number / NaN values
+   Currently only supports float-value-based arrays
+
+   :param pda:
+   :type pda: pdarray to test
+
+   :returns:
+   :rtype: pdarray consisting of True / False values; True where NaN, False otherwise
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+   :raises RuntimeError: if the underlying pdarray is not float-based
 
 

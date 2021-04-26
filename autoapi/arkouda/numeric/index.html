@@ -78,6 +78,9 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.numeric.value_counts" title="arkouda.numeric.value_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value_counts</span></code></a>(pda: arkouda.pdarrayclass.pdarray) → Union[Categorical, Tuple[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Optional[arkouda.pdarrayclass.pdarray]]]</p></td>
 <td><p>Count the occurrences of the unique values of an array.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.numeric.isnan" title="arkouda.numeric.isnan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isnan</span></code></a>(pda: arkouda.pdarrayclass.pdarray) → arkouda.pdarrayclass.pdarray</p></td>
+<td><p>Test a pdarray for Not a number / NaN values</p></td>
+</tr>
 </tbody>
 </table>
 <dl class="py function">
@@ -475,6 +478,30 @@ return_counts parameter is set to True.</p>
 <span class="go">(array([0, 2, 4]), array([3, 2, 1]))</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.numeric.isnan">
+<code class="sig-prename descclassname"><span class="pre">arkouda.numeric.</span></code><code class="sig-name descname"><span class="pre">isnan</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#arkouda.numeric.isnan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test a pdarray for Not a number / NaN values
+Currently only supports float-value-based arrays</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pda</strong> (<em>pdarray to test</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pdarray consisting of True / False values; True where NaN, False otherwise</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if the parameter is not a pdarray</p></li>
+<li><p><strong>RuntimeError</strong> – if the underlying pdarray is not float-based</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
