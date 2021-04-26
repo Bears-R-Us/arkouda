@@ -118,7 +118,7 @@ module EfuncMsg
                         var a = st.addEntry(rname, e.size, real);
                         a.a = Math.cos(e.a);
                     }
-                    when "isna" {
+                    when "isnan" {
                         var a = st.addEntry(rname, e.size, bool);
                         a.a = isnan(e.a);
                     }
