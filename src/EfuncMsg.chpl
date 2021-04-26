@@ -118,6 +118,10 @@ module EfuncMsg
                         var a = st.addEntry(rname, e.size, real);
                         a.a = Math.cos(e.a);
                     }
+                    when "isnan" {
+                        var a = st.addEntry(rname, e.size, bool);
+                        a.a = isnan(e.a);
+                    }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
                         eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 

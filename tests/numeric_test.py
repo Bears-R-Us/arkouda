@@ -175,3 +175,20 @@ class NumericTest(ArkoudaTest):
             ak.value_counts([0]) 
         self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
                         cm.exception.args[0])   
+
+    def test_isnan(self):
+        """
+        Test efunc `isnan`; it returns a pdarray of element-wise T/F values for whether it is NaN (not a number)
+        Currently we only support float based arrays since numpy doesn't support NaN in int-based arrays
+        """
+        npa = np.array([1, 2, None, 3, 4], dtype="float64")
+        ark_s_float64 = ak.array(npa)
+        ark_isna_float64 = ak.isnan(ark_s_float64)
+        actual = ark_isna_float64.to_ndarray()
+        expected = np.isnan(npa)
+        self.assertTrue(np.array_equal(expected, actual))
+
+        # Currently we can't make an int64 array with a NaN in it so verify that we throw an Exception
+        ark_s_int64 = ak.array(np.array([1, 2, 3, 4], dtype="int64"))
+        with self.assertRaises(RuntimeError, msg="Currently isnan on int64 is not supported"):
+            ak.isnan(ark_s_int64)
