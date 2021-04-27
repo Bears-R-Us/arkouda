@@ -1489,8 +1489,8 @@ module GenSymIO {
             C_HDF5.H5Fclose(myFileID);
         }
         total.stop();  
-        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "Total write1DDistStrings time: %.17r".format(total.elapsed()));  
+        gsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                                  "Completeted write1DDistStrings in %.17r seconds".format(total.elapsed()));  
         return warnFlag;
     }
 
@@ -1928,58 +1928,51 @@ module GenSymIO {
 
             var bytesArray = A.localSlice(locDom);
             var segsArray = SA.localSlice(segsLocDom);
-            var numBytes = bytesArray.size;
-            var numSegs = segsArray.size;
 
-            var lastChar = bytesArray.back();
-            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                      "lastChar %t for locale %i".format(lastChar,idx));
-            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                      "numBytes: %t numSegs %t for locale %i".format(
-                                                      numBytes,numSegs,idx));   
+            /*
+             * Check if the last char is the null uint(8) char. If so, the last
+             * string on the locale completes within one locale. Otherwise,
+             * the last string spans to the next locale.
+             */
             if bytesArray.back() == NULL_STRINGS_VALUE {
                 endsWithCompleteString[idx] = true;
             } else {
                 endsWithCompleteString[idx] = false;
             }
-                                             
-         
-            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                      "locDom.first: %t segsLocDom.first %t for locale %i".format(
-                                                      locDom.first,segsLocDom.first,idx));    
-            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                      "segsArray.front(): %t segsArray.back() %t for locale %i".format(
-                                                      segsArray.front(),segsArray.back(),idx));   
-            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                      "locDom.last: %t segsArray %t for locale %i".format(
-                                                      locDom.last,segsArray[segsLocDom.last],idx));                                                   
             
+            // initialize the firstSeg and lastSeg variables
             var firstSeg = -1;
+            var lastSeg = -1;
 
+            /*
+             * If the first locale (locale 0), the first segment is at char 0
+             * and the last segment starts after the first null uint(8) char.
+             * Otherwise, find the first occurrence of the null uint(8) char 
+             * and the firstSeg is the next non-null char. The lastSeg is the 
+             * final segsArray element.
+             */
             if idx == 0 {
                 firstSeg = 0;
+                lastSeg = segsArray.front();
             } else {                                                         
                 var (nullString,fSeg) = bytesArray.find(NULL_STRINGS_VALUE);
                 if nullString {
                     firstSeg = fSeg + 1;
                 }
+                lastSeg = segsArray.back();
             }
-            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"firstSeg: %i and segsArray.front(): %i".format(firstSeg,segsArray.front()));
+
+            /*
+             * Normalize the first and last seg elements (make then zero-based) by
+             * subtracting the bytes domain first element. 
+'            */
             var normalize = 0;
             if idx > 0 {
                 normalize = locDom.first;
             }
     
             var adjFirstSeg = firstSeg - normalize;
-            var adjLastSeg = segsArray.back() - normalize;
-            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"adjFS: %i adjLS: %i for locale %i".format(adjFirstSeg,adjLastSeg,idx));
-            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"normalize %i for locale %i".format(normalize,idx));
-            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                      "firstSeg %t for locale %i".format(firstSeg,idx));
-            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "segsArray %t for locale %i".format(segsArray,idx));
-            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "bytesArray %t for locale %i".format(bytesArray,idx));
+            var adjLastSeg = lastSeg - normalize;
                                                 
             if adjFirstSeg == 0 {
                 leadingSliceIndices[idx] = -1;
@@ -1994,49 +1987,9 @@ module GenSymIO {
             }
 
             gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "v2 TSI %t LSI %t ESI %t for locale %i".format(trailingSliceIndices[idx],leadingSliceIndices[idx],
+                    "trailingSliceIndex %t leadingSliceIndex %t endsWithCompleteString %t for locale %i".format(
+                    trailingSliceIndices[idx],leadingSliceIndices[idx],
                     endsWithCompleteString[idx],idx));             
-
-            for (value, i) in zip(A.localSlice(locDom), 0..A.localSlice(locDom).size-1) {           
-                /*
-                 * Check all chars leading up to the last char in the values array. If a
-                 * char is the null uint(8) char and is not the last char, this is a segment
-                 * index that could be a leadingSliceIndex or a trailingSliceIndex.
-                 */
-                if i < A.localSlice(locDom).size-1 {
-                    if value == NULL_STRINGS_VALUE {
-                        /*
-                         * The first null char of the values array is the leadingSliceIndex,
-                         * which wil be used to pull chars from current locale to complete
-                         * the string started in the previous locale, if applicable.
-                         */
-                        if !leadingSliceSet {
-                            leadingSliceIndices[idx] = i + 1;
-                            leadingSliceSet = true; 
-                        } else {
-                            /*
-                             * If the leadingSliceIndex has already been set, the next null
-                             * char is a candidate to be the trailingSliceIndex.
-                             */
-                             trailingSliceIndices[idx] = i + 1;
-                        }
-                    }
-                } else {
-                    /*
-                     * Since this is the last character within the array, check to see if it 
-                     * is a null char. If it is, that means that the last string in this values 
-                     * array does not span to the next locale. Consequently, (1) no chars from
-                     * the next locale will be used to complete the last string in this locale
-                     * and (2) no chars from this locale will be sliced to complete the first
-                     * string in the next locale.
-                     */
-                     if value == NULL_STRINGS_VALUE {
-                        endsWithCompleteString[idx] = true;
-                     } else {
-                        endsWithCompleteString[idx] = false;
-                     }
-                }
-            }    
         
             if leadingSliceIndices[idx] > -1 || trailingSliceIndices[idx] > -1 {    
                 /*
@@ -2077,9 +2030,6 @@ module GenSymIO {
         }
         t1.stop();  
         var elapsed = t1.elapsed();
-        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "v1 TSI %t LSI %t ESI %t for locale %i".format(trailingSliceIndices[idx],leadingSliceIndices[idx],
-                    endsWithCompleteString[idx],idx));             
 
         try! gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                   "Time to generateValuesMetadata for locale %i: %.17r".format(idx,elapsed)); 
