@@ -613,13 +613,13 @@ module SegmentedArray {
       ref va = values.a;
       // Fill left values
       forall (srcStart, dstStart, len) in zip(oa, leftOffsets, leftLengths) {
-        for i in 0..#len {
+        for i in 0..#(len-1) {
           unorderedCopy(leftVals[dstStart+i], va[srcStart+i]);
         }
       }
       // Fill right values
       forall (srcStart, dstStart, len) in zip(rightStart, rightOffsets, rightLengths) {
-        for i in 0..#len {
+        for i in 0..#(len-1) {
           unorderedCopy(rightVals[dstStart+i], va[srcStart+i]);
         }
       }
