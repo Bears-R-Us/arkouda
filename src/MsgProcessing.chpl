@@ -98,9 +98,12 @@ module MsgProcessing
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                      "cmd: %s array: %s".format(cmd,st.attrib(name)));
         // delete entry from symbol table
-        st.deleteEntry(name);
-
-        repMsg =  "deleted %s".format(name);      
+        if st.deleteEntry(name) {
+            repMsg = "deleted %s".format(name);
+        }
+        else {
+            repMsg = "registered symbol, %s, not deleted".format(name);
+        }
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);       
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }

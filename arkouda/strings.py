@@ -1,8 +1,8 @@
 from __future__ import annotations
-from typing import cast, Tuple, Union
+from typing import cast, Optional, Tuple, Union
 from typeguard import typechecked
 from arkouda.client import generic_msg
-from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value, list_registry
+from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value, unregister_pdarray_by_name, RegistrationError
 from arkouda.logger import getArkoudaLogger
 import numpy as np # type: ignore
 from arkouda.dtypes import npstr, int_scalars, str_scalars
@@ -96,7 +96,7 @@ class Strings:
             raise ValueError(e)   
         self.offsets.register('{}_offsets'.format(self.bytes.name))
         self.dtype = npstr
-        self.name:Union[str, None] = None
+        self.name:Optional[str] = None
         self.logger = getArkoudaLogger(name=__class__.__name__) # type: ignore
 
     def __iter__(self):
@@ -846,7 +846,12 @@ class Strings:
         RuntimeError
             Raised if there's a server-side error thrown
         """
-        return np.bool_(self.offsets.is_registered() and self.bytes.is_registered())
+        parts_registered = [np.bool_(self.offsets.is_registered()), self.bytes.is_registered()]
+        if np.any(parts_registered) and not np.all(parts_registered):  # test for error
+            raise RegistrationError(f"Not all registerable components of Strings {self.name} are registered.")
+
+        return np.bool_(np.any(parts_registered))
+
 
     @typechecked
     def register(self, user_defined_name: str) -> Strings:
@@ -887,8 +892,8 @@ class Strings:
         Registered names/Strings objects in the server are immune to deletion
         until they are unregistered.
         """
-        self.offsets.register(user_defined_name+'_offsets')
-        self.bytes.register(user_defined_name+'_bytes')
+        self.offsets.register(f"{user_defined_name}.offsets")
+        self.bytes.register(f"{user_defined_name}.bytes")
         self.name = user_defined_name
         return self
 
@@ -911,7 +916,7 @@ class Strings:
 
         See also
         --------
-        register, unregister
+        register, attach
 
         Notes
         -----
@@ -920,6 +925,7 @@ class Strings:
         """
         self.offsets.unregister()
         self.bytes.unregister()
+        self.name = None
 
     @staticmethod
     @typechecked
@@ -952,7 +958,25 @@ class Strings:
         Registered names/Strings objects in the server are immune to deletion
         until they are unregistered.
         """
-        s = Strings(pdarray.attach(user_defined_name+'_offsets'),
-                       pdarray.attach(user_defined_name+'_bytes'))
+        s = Strings(pdarray.attach(f"{user_defined_name}.offsets"),
+                    pdarray.attach(f"{user_defined_name}.bytes"))
         s.name = user_defined_name
         return s
+
+    @staticmethod
+    @typechecked
+    def unregister_strings_by_name(user_defined_name : str) -> None:
+        """
+        Unregister a Strings object in the arkouda server previously registered via register()
+
+        Parameters
+        ----------
+        user_defined_name : str
+            The registered name of the Strings object
+
+        See also
+        --------
+        register, unregister, attach, is_registered
+        """
+        unregister_pdarray_by_name(f"{user_defined_name}.bytes")
+        unregister_pdarray_by_name(f"{user_defined_name}.offsets")

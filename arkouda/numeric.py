@@ -13,7 +13,7 @@ from arkouda.strings import Strings
 Categorical = ForwardRef('Categorical')
 
 __all__ = ["cast", "abs", "log", "exp", "cumsum", "cumprod", "sin", "cos", 
-           "where", "histogram", "value_counts"]    
+           "where", "histogram", "value_counts", "isnan"]
 
 @typechecked
 def cast(pda : Union[pdarray, Strings], dt: Union[np.dtype,str]) -> Union[pdarray, Strings]:
@@ -508,3 +508,28 @@ def value_counts(pda : pdarray) -> Union[Categorical, # type: ignore
     (array([0, 2, 4]), array([3, 2, 1]))
     """
     return unique(pda, return_counts=True)
+
+
+@typechecked
+def isnan(pda : pdarray) -> pdarray:
+    """
+    Test a pdarray for Not a number / NaN values
+    Currently only supports float-value-based arrays
+
+    Parameters
+    ----------
+    pda : pdarray to test
+
+    Returns
+    -------
+    pdarray consisting of True / False values; True where NaN, False otherwise
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+    RuntimeError
+        if the underlying pdarray is not float-based
+    """
+    rep_msg = generic_msg(cmd="efunc", args=f"isnan {pda.name}")
+    return create_pdarray(type_cast(str, rep_msg))
