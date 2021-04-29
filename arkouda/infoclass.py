@@ -2,9 +2,12 @@ import json
 from json import JSONEncoder
 from typing import cast, List, Union
 from typeguard import typechecked
-from arkouda.client import generic_msg, RegisteredSymbols, AllSymbols
+from arkouda.client import generic_msg
 
-__all__ = ["information", "list_registry", "list_symbol_table", 'pretty_print_information']
+__all__ = ["AllSymbols", "RegisteredSymbols", "information", "list_registry", "list_symbol_table",
+           'pretty_print_information']
+AllSymbols = "__AllSymbols__"
+RegisteredSymbols = "__RegisteredSymbols__"
 
 
 def auto_str(cls):
