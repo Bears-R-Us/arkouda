@@ -1,5 +1,6 @@
 module GenSymIO {
     use HDF5;
+    use Time only;
     use IO;
     use CPtr;
     use Path;
@@ -18,6 +19,7 @@ module GenSymIO {
     use Logging;
     use Message;
     use ServerConfig;
+    use Search;
     
     private config const logLevel = ServerConfig.logLevel;
     const gsLogger = new Logger(logLevel);
@@ -366,8 +368,6 @@ module GenSymIO {
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR); 
         }
-        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                            "Got subdomains and total length");
 
         select (isSegArray, dataclass) {
             when (true, C_HDF5.H5T_INTEGER) {
@@ -1043,9 +1043,9 @@ module GenSymIO {
         return {low..high by stride};
     }
 
-    proc tohdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-        var (arrayName, dsetName, modeStr, jsonfile, dataType)
-            = payload.splitMsgToTuple(5);
+    proc tohdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {               
+        var (arrayName, dsetName, modeStr, jsonfile, 
+                                      dataType, segsName) = payload.splitMsgToTuple(6);
 
         var mode = try! modeStr: int;
         var filename: string;
@@ -1055,7 +1055,7 @@ module GenSymIO {
             filename = jsonToPdArray(jsonfile, 1)[0];
         } catch {
             var errorMsg = "Could not decode json filenames via tempfile " +
-                                                      "(%i files: %s)".format(1, jsonfile);
+                                                    "(%i files: %s)".format(1, jsonfile);
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
@@ -1077,8 +1077,14 @@ module GenSymIO {
                     warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.Bool);
                 }
                 when DType.UInt8 {
+                    /*
+                     * Look up the values and segments arrays, both of which are needed to write
+                     * uint8 arrays such as Strings out to external systems.
+                     */
                     var e = toSymEntry(entry, uint(8));
-                    warnFlag = write1DDistStrings(filename, mode, dsetName, e.a, DType.UInt8);
+                    var segsEntry = st.lookup(segsName);                   
+                    var s_e = toSymEntry(segsEntry, int);
+                    warnFlag = write1DDistStrings(filename, mode, dsetName, e.a, s_e.a, DType.UInt8);
                 } otherwise {
                     var errorMsg = unrecognizedTypeError("tohdf", dtype2str(entry.dtype));
                     gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
@@ -1116,10 +1122,14 @@ module GenSymIO {
      * Writes out the two pdarrays composing a Strings object to hdf5.
      */
     private proc write1DDistStrings(filename: string, mode: int, dsetName: string, A, 
-                                                                array_type: DType) throws {
+                                                                SA, array_type: DType) throws {
         var prefix: string;
         var extension: string;  
         var warnFlag: bool;      
+
+        var total = new Time.Timer();
+        total.clear();
+        total.start(); 
         
         (prefix,extension) = getFileMetadata(filename);
  
@@ -1158,6 +1168,7 @@ module GenSymIO {
         var trailingSliceIndices: [PrivateSpace] int;
         var isSingleString: [PrivateSpace] bool;
         var endsWithCompleteString: [PrivateSpace] bool;
+        var indicesNormalize: [PrivateSpace] int;
 
         /*
          * Loop through all locales and set (1) leadingSliceIndices, which are
@@ -1171,12 +1182,12 @@ module GenSymIO {
          * a complete string at the end of the array.
          */
         coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) 
-                      with (ref leadingSliceIndices, ref trailingSliceIndices, 
-                            ref isSingleString, ref endsWithCompleteString) do on loc {
-            generateValuesMetadata(idx,leadingSliceIndices, trailingSliceIndices, 
-                                        isSingleString, endsWithCompleteString, A);
+                  with (ref leadingSliceIndices, ref trailingSliceIndices, 
+                        ref isSingleString, ref endsWithCompleteString) do on loc {
+             generateValuesMetadata(idx,leadingSliceIndices, trailingSliceIndices, 
+                                    isSingleString, endsWithCompleteString, A, SA);
         }
-                                                       
+                                       
         /*
          * Iterate through each locale and (1) open the hdf5 file corresponding to the
          * locale (2) prepare values and segments lists to be written (3) write each
@@ -1184,6 +1195,11 @@ module GenSymIO {
          */
         coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) with 
                         (ref leadingSliceIndices, ref trailingSliceIndices) do on loc {
+                        
+            /*
+             * Generate metadata such as file name, file id, and dataset name
+             * for each file to be written
+             */
             const myFilename = filenames[idx];
             gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                    "%s exists? %t".format(myFilename, exists(myFilename)));
@@ -1432,7 +1448,7 @@ module GenSymIO {
                       var valuesList : list(uint(8));
                      
                       (charList, segmentsList) = sliceToValuesAndSegments(A.localSlice(locDom)); 
-          
+                       
                       /*
                        * Check to see if previous locale (idx-1) ends with a complete string.
                        * If not, then the leading slice of this string was used to complete
@@ -1453,6 +1469,9 @@ module GenSymIO {
             // Close the file now that the values and segments pdarrays have been written
             C_HDF5.H5Fclose(myFileID);
         }
+        total.stop();  
+        gsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                                  "Completeted write1DDistStrings in %.17r seconds".format(total.elapsed()));  
         return warnFlag;
     }
 
@@ -1603,6 +1622,7 @@ module GenSymIO {
         for i in 0..#A.targetLocales().size {
             filenames[i] = generateFilename(prefix, extension, i);
         }
+   
         return filenames;
     }
 
@@ -1718,7 +1738,7 @@ module GenSymIO {
                                     routineName=getRoutineName(), 
                                     moduleName=getModuleName(), 
                                     errorClass='IllegalArgumentError');
-        }    
+        }        
         return warnFlag;
     }
 
@@ -1731,6 +1751,7 @@ module GenSymIO {
     proc processFilenames(filenames: [] string, matchingFilenames: [] string, mode: int, A) throws {
       // if appending, make sure number of files hasn't changed and all are present
       var warnFlag: bool;
+
       if (mode == APPEND) {
           var allexist = true;
           var anyexist = false;
@@ -1812,7 +1833,8 @@ module GenSymIO {
                                      routineName=getRoutineName(), 
                                      moduleName=getModuleName(), 
                                      errorClass='IllegalArgumentError');            
-        }    
+        }       
+
         return warnFlag;
     }
     
@@ -1832,7 +1854,7 @@ module GenSymIO {
      * contains one string and if the values array ends with a complete string.
      */
     private proc generateValuesMetadata(idx : int, leadingSliceIndices, 
-                       trailingSliceIndices, isSingleString, endsWithCompleteString, A) {
+                       trailingSliceIndices, isSingleString, endsWithCompleteString, A, SA) throws {
         /*
          * Generate the leadlingSliceIndex, which is used to (1) indicate the chars to be
          * pulled down to the previous locale to complete the last string there and (2)
@@ -1850,53 +1872,77 @@ module GenSymIO {
          */
         on Locales[idx] {
             const locDom = A.localSubdomain();
+            const segsLocDom = SA.localSubdomain();
             var leadingSliceSet = false;
 
             //Initialize both indices to -1 to indicate neither exists for locale
             leadingSliceIndices[idx] = -1;
             trailingSliceIndices[idx] = -1;
 
-            for (value, i) in zip(A.localSlice(locDom), 0..A.localSlice(locDom).size-1) {
+            var bytesArray = A.localSlice(locDom);
+            var segsArray = SA.localSlice(segsLocDom);
+
+            /*
+             * Check if the last char is the null uint(8) char. If so, the last
+             * string on the locale completes within one locale. Otherwise,
+             * the last string spans to the next locale.
+             */
+            if bytesArray.back() == NULL_STRINGS_VALUE {
+                endsWithCompleteString[idx] = true;
+            } else {
+                endsWithCompleteString[idx] = false;
+            }
             
-                /*
-                 * Check all chars leading up to the last char in the values array. If a
-                 * char is the null uint(8) char and is not the last char, this is a segment
-                 * index that could be a leadingSliceIndex or a trailingSliceIndex.
-                 */
-                if i < A.localSlice(locDom).size-1 {
-                    if value == NULL_STRINGS_VALUE {
-                        /*
-                         * The first null char of the values array is the leadingSliceIndex,
-                         * which wil be used to pull chars from current locale to complete
-                         * the string started in the previous locale, if applicable.
-                         */
-                        if !leadingSliceSet {
-                            leadingSliceIndices[idx] = i + 1;
-                            leadingSliceSet = true; 
-                        } else {
-                            /*
-                             * If the leadingSliceIndex has already been set, the next null
-                             * char is a candidate to be the trailingSliceIndex.
-                             */
-                             trailingSliceIndices[idx] = i + 1;
-                        }
-                    }
-                } else {
-                    /*
-                     * Since this is the last character within the array, check to see if it 
-                     * is a null char. If it is, that means that the last string in this values 
-                     * array does not span to the next locale. Consequently, (1) no chars from
-                     * the next locale will be used to complete the last string in this locale
-                     * and (2) no chars from this locale will be sliced to complete the first
-                     * string in the next locale.
-                     */
-                     if value == NULL_STRINGS_VALUE {
-                        endsWithCompleteString[idx] = true;
-                     } else {
-                        endsWithCompleteString[idx] = false;
-                     }
+            // initialize the firstSeg and lastSeg variables
+            var firstSeg = -1;
+            var lastSeg = -1;
+
+            /*
+             * If the first locale (locale 0), the first segment is at char 0
+             * and the last segment starts after the first null uint(8) char.
+             * Otherwise, find the first occurrence of the null uint(8) char 
+             * and the firstSeg is the next non-null char. The lastSeg is the 
+             * final segsArray element.
+             */
+            if idx == 0 {
+                firstSeg = 0;
+                lastSeg = segsArray.front();
+            } else {                                                         
+                var (nullString,fSeg) = bytesArray.find(NULL_STRINGS_VALUE);
+                if nullString {
+                    firstSeg = fSeg + 1;
                 }
-            }    
+                lastSeg = segsArray.back();
+            }
+
+            /*
+             * Normalize the first and last seg elements (make then zero-based) by
+             * subtracting the bytes domain first element. 
+'            */
+            var normalize = 0;
+            if idx > 0 {
+                normalize = locDom.first;
+            }
+    
+            var adjFirstSeg = firstSeg - normalize;
+            var adjLastSeg = lastSeg - normalize;
+                                                
+            if adjFirstSeg == 0 {
+                leadingSliceIndices[idx] = -1;
+            } else {
+                leadingSliceIndices[idx] = adjFirstSeg;
+            }
+            
+            if !endsWithCompleteString[idx] {
+                trailingSliceIndices[idx] = adjLastSeg;
+            } else {
+                trailingSliceIndices[idx] = -1;
+            }
+
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                    "trailingSliceIndex %t leadingSliceIndex %t endsWithCompleteString %t for locale %i".format(
+                    trailingSliceIndices[idx],leadingSliceIndices[idx],
+                    endsWithCompleteString[idx],idx));             
         
             if leadingSliceIndices[idx] > -1 || trailingSliceIndices[idx] > -1 {    
                 /*
@@ -1936,13 +1982,13 @@ module GenSymIO {
             }
         }
     }
-
+    
     /*
      * Processes a local Strings slice into (1) a uint(8) values list for use in methods 
      * that finalize the values array elements following any shuffle operations and (2)
      * a segments list representing starting indices for each string in the values list.
      */
-    private proc sliceToValuesAndSegments(rawChars) {
+    private proc sliceToValuesAndSegments(rawChars) throws {
         var charList: list(uint(8), parSafe=false);
         var indices: list(int, parSafe=false);
 
@@ -1974,12 +2020,11 @@ module GenSymIO {
      * corresponds to the new values list
      */
     private proc adjustForLeadingSlice(sliceIndex : int,
-                                   charList : list(uint(8))) {
+                                   charList : list(uint(8))) throws {
         var valuesList: list(uint(8), parSafe=false);
         var indices: list(int);
         var i: int = 0;
-        indices.append(0);
-        
+        indices.append(0);   
         var segmentsBound = charList.size - sliceIndex - 1;
 
         for value in charList(sliceIndex..charList.size-1)  {
@@ -2008,7 +2053,7 @@ module GenSymIO {
      * to the new values list for the current locale
      */
     private proc adjustForTrailingSlice(sliceIndex : int,
-                                   charList : list(uint(8))) {
+                                   charList : list(uint(8))) throws {
         var valuesList: list(uint(8), parSafe=false);
         var indices: list(int);
         var i: int = 0;

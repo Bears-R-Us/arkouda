@@ -785,11 +785,11 @@ class Strings:
 
     @typechecked
     def save(self, prefix_path : str, dataset : str='strings_array', 
-             mode : str='truncate') -> None:
+             mode : str='truncate') -> str:
         """
         Save the Strings object to HDF5. The result is a collection of HDF5 files,
         one file per locale of the arkouda server, where each filename starts
-        with prefix_path. Each locale saves its chunk of the array to its
+        with prefix_path. Each locale saves its chunk of the Strings array to its
         corresponding file.
 
         Parameters
@@ -821,12 +821,26 @@ class Strings:
         Notes
         -----
         Important implementation notes: (1) Strings state is saved as two datasets
-        within an hdf5 group, (2) the hdf5 group is named via the dataset parameter, 
-        (3) the hdf5 group encompasses the two pdarrays composing a Strings object:
-        segments and values and (4) save logic is delegated to pdarray.save
+        within an hdf5 group: one for the string characters and one for the
+        segments corresponding to the start of each string, (2) the hdf5 group is named 
+        via the dataset parameter. 
         """       
-        self.bytes.save(prefix_path=prefix_path, 
-                                    dataset='{}/values'.format(dataset), mode=mode)
+        if mode.lower() in 'append':
+            m = 1
+        elif mode.lower() in 'truncate':
+            m = 0
+        else:
+            raise ValueError("Allowed modes are 'truncate' and 'append'")
+
+        try:
+            json_array = json.dumps([prefix_path])
+        except Exception as e:
+            raise ValueError(e)
+        
+        return cast(str, generic_msg(cmd="tohdf", args="{} {} {} {} {} {}".\
+                           format(self.bytes.name, dataset, m, json_array, 
+                                  self.dtype, self.offsets.name)))
+        
 
     def is_registered(self) -> np.bool_:
         """
