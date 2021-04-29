@@ -1324,7 +1324,7 @@ module GenSymIO {
                  * the last locale in the Arkouda cluster If so, all of the chars 
                  * from the next locale (idx+1) are shuffled to the current locale (idx).
                  */
-                var leadingSlice: [1..leadingSliceIndices[idx+1]] uint(8);
+                var leadingSlice: [1..leadingSliceIndices[idx+1] - 1] uint(8);
 
                 if leadingSliceIndices[idx+1] > -1 || isLastLocale(idx+1) {
                     on Locales[idx+1] {
@@ -1336,7 +1336,9 @@ module GenSymIO {
                         
                         var localeArray = A.localSlice(locDom);
                         var leadingSliceIndex = leadingSliceIndices[here.id];
-                        leadingSlice = localeArray[1..leadingSliceIndex];                        
+                        var localStart = locDom.first;
+                        var localLeadingSliceIndex = localStart + leadingSliceIndex - 2;
+                        leadingSlice = localeArray[localStart..localLeadingSliceIndex];                        
                         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                         "leadingSlice: %t for locale %i".format(
                                                  leadingSlice,here.id));                             
@@ -1395,7 +1397,10 @@ module GenSymIO {
                       */
                      (valuesList, segmentsList) = 
                                          adjustForLeadingSlice(leadingSliceIndex, charList);
-                     var adjCharArray = adjustArrayForLeadingSlice(leadingSliceIndex, 
+                     var localStart = locDom.first;
+                     var localLeadingSliceIndex = localStart + leadingSliceIndex - 1;
+
+                     var adjCharArray = adjustArrayForLeadingSlice(localLeadingSliceIndex, 
                                          A.localSlice(locDom));
                      gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),   
                                'valuesList: %t'.format(valuesList));    
@@ -1529,7 +1534,10 @@ module GenSymIO {
                       if !endsWithCompleteString(idx-1) {
                           (valuesList, segmentsList) = 
                                              adjustForLeadingSlice(leadingSliceIndex, charList);
-                          var adjCharArray = adjustArrayForLeadingSlice(leadingSliceIndex, 
+                          var localStart = locDom.first;
+                          var localLeadingSliceIndex = localStart + leadingSliceIndex - 1;
+
+                          var adjCharArray = adjustArrayForLeadingSlice(localLeadingSliceIndex, 
                                          A.localSlice(locDom));
                           gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),   
                                'valuesList: %t'.format(valuesList));    
@@ -2184,7 +2192,7 @@ module GenSymIO {
         t1.clear();
         t1.start();       
 
-        var adjCharArray = charArray[sliceIndex..charArray.size]; 
+        var adjCharArray = charArray[sliceIndex..charArray.size-1]; 
 
         t1.stop();  
         var elapsed = t1.elapsed();
@@ -2237,7 +2245,7 @@ module GenSymIO {
         t1.clear();
         t1.start();  
         
-        var adjCharArray = charArray[1..sliceIndex]; 
+        var adjCharArray = charArray[1..sliceIndex-1]; 
 
         t1.stop();  
         var elapsed = t1.elapsed();
