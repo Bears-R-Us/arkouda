@@ -1044,9 +1044,9 @@ module GenSymIO {
         return {low..high by stride};
     }
 
-    proc tohdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-        var (arrayName, dsetName, modeStr, jsonfile, dataType)
-            = payload.splitMsgToTuple(5);
+    proc tohdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {               
+        var (arrayName, dsetName, modeStr, jsonfile, 
+                                      dataType, segsName) = payload.splitMsgToTuple(6);
 
         var mode = try! modeStr: int;
         var filename: string;
@@ -1056,7 +1056,7 @@ module GenSymIO {
             filename = jsonToPdArray(jsonfile, 1)[0];
         } catch {
             var errorMsg = "Could not decode json filenames via tempfile " +
-                                                      "(%i files: %s)".format(1, jsonfile);
+                                                    "(%i files: %s)".format(1, jsonfile);
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
@@ -1078,8 +1078,12 @@ module GenSymIO {
                     warnFlag = write1DDistArray(filename, mode, dsetName, e.a, DType.Bool);
                 }
                 when DType.UInt8 {
+                    /*
+                     * Look up the values and segments arrays, both of which are needed to write
+                     * uint8 arrays such as Strings out to external systems.
+                     */
                     var e = toSymEntry(entry, uint(8));
-                    var segsEntry = st.lookup('%s_offsets'.format(arrayName));                   
+                    var segsEntry = st.lookup(segsName);                   
                     var s_e = toSymEntry(segsEntry, int);
                     warnFlag = write1DDistStrings(filename, mode, dsetName, e.a, DType.UInt8,s_e.a);
                 } otherwise {

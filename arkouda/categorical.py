@@ -1,15 +1,16 @@
 from __future__ import annotations
-from typing import cast, List, Union
+from typing import cast, List, Optional, Union
 import numpy as np # type: ignore
 from typeguard import typechecked
 from arkouda.strings import Strings
-from arkouda.pdarrayclass import pdarray
+from arkouda.pdarrayclass import pdarray, RegistrationError, unregister_pdarray_by_name
 from arkouda.groupbyclass import GroupBy
 from arkouda.pdarraycreation import zeros, zeros_like, arange
 from arkouda.dtypes import resolve_scalar_dtype, str_scalars
 from arkouda.dtypes import int64 as akint64
 from arkouda.sorting import argsort
 from arkouda.pdarraysetops import concatenate, in1d
+from arkouda.logger import getArkoudaLogger
 
 __all__ = ['Categorical']
 
@@ -46,11 +47,13 @@ class Categorical:
 
     """
     BinOps = frozenset(["==", "!="])
+    RegisterablePieces = frozenset(["categories", "codes", "permutation", "segments"])
     objtype = "category"
     permutation = None
     segments = None
     
     def __init__(self, values, **kwargs) -> None:
+        self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
         if 'codes' in kwargs and 'categories' in kwargs:
             # This initialization is called by Categorical.from_codes()
             # The values arg is ignored
@@ -77,6 +80,7 @@ class Categorical:
         self.nlevels = self.categories.size
         self.ndim = self.codes.ndim
         self.shape = self.codes.shape
+        self.name : Optional[str] = None
 
     @classmethod
     @typechecked
@@ -529,3 +533,161 @@ class Categorical:
                                   ordered=ordered)
             newvals = wherediditgo[oldvals]
             return Categorical.from_codes(newvals, newidx)
+
+    @typechecked()
+    def register(self, user_defined_name:str) -> Categorical:
+        """
+        Register this Categorical object and underlying components with the Arkouda server
+
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name the Categorical is to be registered under,
+            this will be the root name for underlying components
+
+        Returns
+        -------
+        Categorical
+            The same Categorical which is now registered with the arkouda server and has an updated name.
+            This is an in-place modification, the original is returned to support a fluid programming style.
+            Please note you cannot register two different Categoricals with the same name.
+
+        Raises
+        ------
+        TypeError
+            Raised if user_defined_name is not a str
+        RegistrationError
+            If the server was unable to register the Categorical with the user_defined_name
+
+        See also
+        --------
+        unregister, attach, unregister_categorical_by_name, is_registered
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+        [getattr(self, p).register(f"{user_defined_name}.{p}") for p in Categorical.RegisterablePieces]
+        self.name = user_defined_name
+        return self
+
+    def unregister(self) -> None:
+        """
+        Unregister this Categorical object in the arkouda server which was previously
+        registered using register() and/or attached to using attach()
+
+        Raises
+        ------
+        RegistrationError
+            If the object is already unregistered or if there is a server error
+            when attempting to unregister
+
+        See also
+        --------
+        register, attach, unregister_categorical_by_name, is_registered
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+        if not self.name:
+            raise RegistrationError("This item does not have a name and does not appear to be registered.")
+        [getattr(self, p).unregister() for p in Categorical.RegisterablePieces]
+        self.name = None  # Clear our internal Categorical object name
+
+    def is_registered(self) -> np.bool_:
+        """
+         Return True iff the object is contained in the registry
+
+        Returns
+        -------
+        numpy.bool
+            Indicates if the object is contained in the registry
+
+        Raises
+        ------
+        RegistrationError
+            Raised if there's a server-side error or a mis-match of registered components
+
+        See Also
+        --------
+        register, attach, unregister, unregister_categorical_by_name
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+        parts_registered:List[np.bool_] = [getattr(self, p).is_registered() for p in Categorical.RegisterablePieces]
+        if np.any(parts_registered) and not np.all(parts_registered):  # test for error
+            raise RegistrationError(f"Not all registerable components of Categorical {self.name} are registered.")
+
+        return np.bool_(np.any(parts_registered))
+
+    @staticmethod
+    @typechecked
+    def attach(user_defined_name:str) -> Categorical:
+        """
+        Function to return a Categorical object attached to the registered name in the
+        arkouda server which was registered using register()
+
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name which Categorical object was registered under
+
+        Returns
+        -------
+        Categorical
+               The Categorical object created by re-attaching to the corresponding server components
+
+       Raises
+       ------
+       TypeError
+            if user_defined_name is not a string
+
+        See Also
+        --------
+        register, is_registered, unregister, unregister_categorical_by_name
+        """
+        # Build dict of registered components by invoking their corresponding Class.attach functions
+        parts = {
+            "categories" : Strings.attach(f"{user_defined_name}.categories"),
+            "codes"      : pdarray.attach(f"{user_defined_name}.codes"),
+            "permutation": pdarray.attach(f"{user_defined_name}.permutation"),
+            "segments"   : pdarray.attach(f"{user_defined_name}.segments")
+        }
+        c = Categorical(None, **parts)  # Call constructor with unpacked kwargs
+        c.name = user_defined_name # Update our name
+        return c
+
+    @staticmethod
+    @typechecked
+    def unregister_categorical_by_name(user_defined_name:str) -> None:
+        """
+        Function to unregister Categorical object by name which was registered
+        with the arkouda server via register()
+
+        Parameters
+        ----------
+        user_defined_name : str
+            Name under which the Categorical object was registered
+
+        Raises
+        -------
+        TypeError
+            if user_defined_name is not a string
+        RegistrationError
+            if there is an issue attempting to unregister any underlying components
+
+        See Also
+        --------
+        register, unregister, attach, is_registered
+        """
+        # We have 4 subcomponents, unregister each of them
+        Strings.unregister_strings_by_name(f"{user_defined_name}.categories")
+        unregister_pdarray_by_name(f"{user_defined_name}.codes")
+        unregister_pdarray_by_name(f"{user_defined_name}.permutation")
+        unregister_pdarray_by_name(f"{user_defined_name}.segments")

@@ -1,4 +1,3 @@
-
 module MultiTypeSymbolTable
 {
     use ServerConfig;
@@ -195,16 +194,20 @@ module MultiTypeSymbolTable
 
         :arg name: name of the array
         :type name: string
+
+        :returns: bool indicating whether the deletion occurred
         */
-        proc deleteEntry(name: string) throws {
+        proc deleteEntry(name: string): bool throws {
             if tab.contains(name) { 
                if !registry.contains(name) {
                    mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                            "Deleting unregistered entry: %s".format(name)); 
                    tab.remove(name);
+                   return true;
                } else {
                     mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                            "Skipping registered entry: %s".format(name)); 
+                    return false;
                }            
             } else {
                 if registry.contains(name) {
@@ -213,7 +216,13 @@ module MultiTypeSymbolTable
                 } else {
                     mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                                      "Unregistered entry is not in SymTab: %s".format(name));    
-                }           
+                }
+                throw getErrorWithContext(
+                    msg=unknownSymbolError(pname="deleteEntry", sname=name),
+                    lineNumber=getLineNumber(),
+                    routineName=getRoutineName(),
+                    moduleName=getModuleName(),
+                    errorClass="UnknownSymbolError");
             }
         }
 

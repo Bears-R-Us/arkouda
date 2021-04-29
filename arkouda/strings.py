@@ -1,8 +1,8 @@
 from __future__ import annotations
-from typing import cast, Tuple, Union
+from typing import cast, Optional, Tuple, Union
 from typeguard import typechecked
 from arkouda.client import generic_msg
-from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value, list_registry
+from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value, unregister_pdarray_by_name, RegistrationError
 from arkouda.logger import getArkoudaLogger
 import numpy as np # type: ignore
 from arkouda.dtypes import npstr, int_scalars, str_scalars
@@ -94,9 +94,9 @@ class Strings:
             self.shape = self.offsets.shape
         except Exception as e:
             raise ValueError(e)   
-        self.offsets.register('{}_offsets'.format(self.bytes.name))
+
         self.dtype = npstr
-        self.name:Union[str, None] = None
+        self.name:Optional[str] = None
         self.logger = getArkoudaLogger(name=__class__.__name__) # type: ignore
 
     def __iter__(self):
@@ -785,11 +785,11 @@ class Strings:
 
     @typechecked
     def save(self, prefix_path : str, dataset : str='strings_array', 
-             mode : str='truncate') -> None:
+             mode : str='truncate') -> str:
         """
         Save the Strings object to HDF5. The result is a collection of HDF5 files,
         one file per locale of the arkouda server, where each filename starts
-        with prefix_path. Each locale saves its chunk of the array to its
+        with prefix_path. Each locale saves its chunk of the Strings array to its
         corresponding file.
 
         Parameters
@@ -821,12 +821,26 @@ class Strings:
         Notes
         -----
         Important implementation notes: (1) Strings state is saved as two datasets
-        within an hdf5 group, (2) the hdf5 group is named via the dataset parameter, 
-        (3) the hdf5 group encompasses the two pdarrays composing a Strings object:
-        segments and values and (4) save logic is delegated to pdarray.save
+        within an hdf5 group: one for the string characters and one for the
+        segments corresponding to the start of each string, (2) the hdf5 group is named 
+        via the dataset parameter. 
         """       
-        self.bytes.save(prefix_path=prefix_path, 
-                                    dataset='{}/values'.format(dataset), mode=mode)
+        if mode.lower() in 'append':
+            m = 1
+        elif mode.lower() in 'truncate':
+            m = 0
+        else:
+            raise ValueError("Allowed modes are 'truncate' and 'append'")
+
+        try:
+            json_array = json.dumps([prefix_path])
+        except Exception as e:
+            raise ValueError(e)
+        
+        return cast(str, generic_msg(cmd="tohdf", args="{} {} {} {} {} {}".\
+                           format(self.bytes.name, dataset, m, json_array, 
+                                  self.dtype, self.offsets.name)))
+        
 
     def is_registered(self) -> np.bool_:
         """
@@ -846,7 +860,12 @@ class Strings:
         RuntimeError
             Raised if there's a server-side error thrown
         """
-        return np.bool_(self.offsets.is_registered() and self.bytes.is_registered())
+        parts_registered = [np.bool_(self.offsets.is_registered()), self.bytes.is_registered()]
+        if np.any(parts_registered) and not np.all(parts_registered):  # test for error
+            raise RegistrationError(f"Not all registerable components of Strings {self.name} are registered.")
+
+        return np.bool_(np.any(parts_registered))
+
 
     @typechecked
     def register(self, user_defined_name: str) -> Strings:
@@ -887,8 +906,8 @@ class Strings:
         Registered names/Strings objects in the server are immune to deletion
         until they are unregistered.
         """
-        self.offsets.register(user_defined_name+'_offsets')
-        self.bytes.register(user_defined_name+'_bytes')
+        self.offsets.register(f"{user_defined_name}.offsets")
+        self.bytes.register(f"{user_defined_name}.bytes")
         self.name = user_defined_name
         return self
 
@@ -911,7 +930,7 @@ class Strings:
 
         See also
         --------
-        register, unregister
+        register, attach
 
         Notes
         -----
@@ -920,6 +939,7 @@ class Strings:
         """
         self.offsets.unregister()
         self.bytes.unregister()
+        self.name = None
 
     @staticmethod
     @typechecked
@@ -952,7 +972,25 @@ class Strings:
         Registered names/Strings objects in the server are immune to deletion
         until they are unregistered.
         """
-        s = Strings(pdarray.attach(user_defined_name+'_offsets'),
-                       pdarray.attach(user_defined_name+'_bytes'))
+        s = Strings(pdarray.attach(f"{user_defined_name}.offsets"),
+                    pdarray.attach(f"{user_defined_name}.bytes"))
         s.name = user_defined_name
         return s
+
+    @staticmethod
+    @typechecked
+    def unregister_strings_by_name(user_defined_name : str) -> None:
+        """
+        Unregister a Strings object in the arkouda server previously registered via register()
+
+        Parameters
+        ----------
+        user_defined_name : str
+            The registered name of the Strings object
+
+        See also
+        --------
+        register, unregister, attach, is_registered
+        """
+        unregister_pdarray_by_name(f"{user_defined_name}.bytes")
+        unregister_pdarray_by_name(f"{user_defined_name}.offsets")
