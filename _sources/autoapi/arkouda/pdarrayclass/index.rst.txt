@@ -21,9 +21,6 @@ Functions
 
 .. autoapisummary::
 
-   arkouda.pdarrayclass.info
-   arkouda.pdarrayclass.list_registry
-   arkouda.pdarrayclass.list_symbol_table
    arkouda.pdarrayclass.clear
    arkouda.pdarrayclass.any
    arkouda.pdarrayclass.all
@@ -366,6 +363,36 @@ Functions
       :rtype: bool
 
       :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+   .. method:: _list_component_names(self) -> List[str]
+
+      Internal Function that returns a list of all component names
+
+      :param None:
+
+      :returns: List of all component names
+      :rtype: List[str]
+
+
+   .. method:: info(self) -> str
+
+      Returns a JSON formatted string containing information about all components of self
+
+      :param None:
+
+      :returns: JSON string containing information about all components of self
+      :rtype: str
+
+
+   .. method:: pretty_print_info(self) -> None
+
+      Prints information about all components of self in a human readable format
+
+      :param None:
+
+      :returns:
+      :rtype: None
 
 
    .. method:: is_sorted(self) -> numpy.bool_
@@ -717,45 +744,6 @@ Functions
       >>> # ...other work...
       >>> b.unregister()
 
-
-
-.. function:: info(pda: Union[pdarray, str]) -> str
-
-   Returns information about the pdarray instance
-
-   :param pda: pda is either the pdarray instance or the pdarray.name string
-   :type pda: Union[pdarray, str]
-
-   :returns: Information regarding the pdarray in the form of a string
-   :rtype: str
-
-   :raises TypeError: Raised if the parameter is neither a pdarray or string
-   :raises RuntimeError: Raised if a server-side error is thrown in the process of
-       retrieving information about the pdarray
-
-
-.. function:: list_registry() -> List[str]
-
-   Return a list containing the names of all registered objects
-
-   :param None:
-
-   :returns: List of all object names in the registry
-   :rtype: list
-
-   :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-.. function:: list_symbol_table() -> List[str]
-
-   Return a list containing the names of all objects in the symbol table
-
-   :param None:
-
-   :returns: List of all object names in the symbol table
-   :rtype: list
-
-   :raises RuntimeError: Raised if there's a server-side error thrown
 
 
 .. function:: clear() -> None

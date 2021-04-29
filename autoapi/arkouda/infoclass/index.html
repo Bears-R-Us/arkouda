@@ -1,0 +1,263 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>arkouda.infoclass &#8212; arkouda 2020.07.07 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="arkouda.io_util" href="../io_util/index.html" />
+    <link rel="prev" title="arkouda.groupbyclass" href="../groupbyclass/index.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-arkouda.infoclass">
+<span id="arkouda-infoclass"></span><h1><a class="reference internal" href="#module-arkouda.infoclass" title="arkouda.infoclass"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.infoclass</span></code></a><a class="headerlink" href="#module-arkouda.infoclass" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.infoclass.information" title="arkouda.infoclass.information"><code class="xref py py-obj docutils literal notranslate"><span class="pre">information</span></code></a>(names: Union[List[str], str] = RegisteredSymbols) → str</p></td>
+<td><p>Returns JSON formatted string containing information about the objects in names</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.infoclass.list_registry" title="arkouda.infoclass.list_registry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_registry</span></code></a>() → List[str]</p></td>
+<td><p>Return a list containing the names of all registered objects</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.infoclass.list_symbol_table" title="arkouda.infoclass.list_symbol_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_symbol_table</span></code></a>() → List[str]</p></td>
+<td><p>Return a list containing the names of all objects in the symbol table</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.infoclass.pretty_print_information" title="arkouda.infoclass.pretty_print_information"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pretty_print_information</span></code></a>(names: Union[List[str], str] = RegisteredSymbols) → None</p></td>
+<td><p>Prints verbose information for each object in names in a human readable format</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.infoclass.AllSymbols" title="arkouda.infoclass.AllSymbols"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AllSymbols</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.infoclass.RegisteredSymbols" title="arkouda.infoclass.RegisteredSymbols"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RegisteredSymbols</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt id="arkouda.infoclass.AllSymbols">
+<code class="sig-prename descclassname"><span class="pre">arkouda.infoclass.</span></code><code class="sig-name descname"><span class="pre">AllSymbols</span></code><em class="property"> <span class="pre">=</span> <span class="pre">__AllSymbols__</span></em><a class="headerlink" href="#arkouda.infoclass.AllSymbols" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt id="arkouda.infoclass.RegisteredSymbols">
+<code class="sig-prename descclassname"><span class="pre">arkouda.infoclass.</span></code><code class="sig-name descname"><span class="pre">RegisteredSymbols</span></code><em class="property"> <span class="pre">=</span> <span class="pre">__RegisteredSymbols__</span></em><a class="headerlink" href="#arkouda.infoclass.RegisteredSymbols" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.infoclass.information">
+<code class="sig-prename descclassname"><span class="pre">arkouda.infoclass.</span></code><code class="sig-name descname"><span class="pre">information</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">RegisteredSymbols</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.infoclass.information" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns JSON formatted string containing information about the objects in names</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>names</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>str</em><em>]</em>) – names is either the name of an object or list of names of objects to retrieve info
+if names is ak.AllSymbols, retrieves info for all symbols in the symbol table
+if names is ak.RegisteredSymbols, retrieves info for all symbols in the registry</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>JSON formatted string containing a list of information for each object in names</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown in the process of
+retrieving information about the objects in names</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.infoclass.list_registry">
+<code class="sig-prename descclassname"><span class="pre">arkouda.infoclass.</span></code><code class="sig-name descname"><span class="pre">list_registry</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.infoclass.list_registry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list containing the names of all registered objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of all object names in the registry</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.infoclass.list_symbol_table">
+<code class="sig-prename descclassname"><span class="pre">arkouda.infoclass.</span></code><code class="sig-name descname"><span class="pre">list_symbol_table</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.infoclass.list_symbol_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list containing the names of all objects in the symbol table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of all object names in the symbol table</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – Raised if there’s a server-side error thrown</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="arkouda.infoclass.pretty_print_information">
+<code class="sig-prename descclassname"><span class="pre">arkouda.infoclass.</span></code><code class="sig-name descname"><span class="pre">pretty_print_information</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">RegisteredSymbols</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#arkouda.infoclass.pretty_print_information" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints verbose information for each object in names in a human readable format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>names</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>str</em><em>]</em>) – names is either the name of an object or list of names of objects to retrieve info
+if names is ak.AllSymbols, retrieves info for all symbols in the symbol table
+if names is ak.RegisteredSymbols, retrieves info for all symbols in the registry</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown in the process of
+retrieving information about the objects in names</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">arkouda</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">API Reference</a><ul>
+  <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><ul>
+      <li>Previous: <a href="../groupbyclass/index.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.groupbyclass</span></code></a></li>
+      <li>Next: <a href="../io_util/index.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.io_util</span></code></a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Michael Merrill and William Reus.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/autoapi/arkouda/infoclass/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,97 @@
+:mod:`arkouda.infoclass`
+========================
+
+.. py:module:: arkouda.infoclass
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.infoclass.information
+   arkouda.infoclass.list_registry
+   arkouda.infoclass.list_symbol_table
+   arkouda.infoclass.pretty_print_information
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   arkouda.infoclass.AllSymbols
+   arkouda.infoclass.RegisteredSymbols
+
+
+.. data:: AllSymbols
+   :annotation: = __AllSymbols__
+
+   
+
+.. data:: RegisteredSymbols
+   :annotation: = __RegisteredSymbols__
+
+   
+
+.. function:: information(names: Union[List[str], str] = RegisteredSymbols) -> str
+
+   Returns JSON formatted string containing information about the objects in names
+
+   :param names: names is either the name of an object or list of names of objects to retrieve info
+                 if names is ak.AllSymbols, retrieves info for all symbols in the symbol table
+                 if names is ak.RegisteredSymbols, retrieves info for all symbols in the registry
+   :type names: Union[List[str], str]
+
+   :returns: JSON formatted string containing a list of information for each object in names
+   :rtype: str
+
+   :raises RuntimeError: Raised if a server-side error is thrown in the process of
+       retrieving information about the objects in names
+
+
+.. function:: list_registry() -> List[str]
+
+   Return a list containing the names of all registered objects
+
+   :param None:
+
+   :returns: List of all object names in the registry
+   :rtype: list
+
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. function:: list_symbol_table() -> List[str]
+
+   Return a list containing the names of all objects in the symbol table
+
+   :param None:
+
+   :returns: List of all object names in the symbol table
+   :rtype: list
+
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. function:: pretty_print_information(names: Union[List[str], str] = RegisteredSymbols) -> None
+
+   Prints verbose information for each object in names in a human readable format
+
+   :param names: names is either the name of an object or list of names of objects to retrieve info
+                 if names is ak.AllSymbols, retrieves info for all symbols in the symbol table
+                 if names is ak.RegisteredSymbols, retrieves info for all symbols in the registry
+   :type names: Union[List[str], str]
+
+   :returns:
+   :rtype: None
+
+   :raises RuntimeError: Raised if a server-side error is thrown in the process of
+       retrieving information about the objects in names
+
+

@@ -746,6 +746,57 @@ via the dataset parameter.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="arkouda.strings.Strings._list_component_names">
+<code class="sig-name descname"><span class="pre">_list_component_names</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.strings.Strings._list_component_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Internal Function that returns a list of all component names</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of all component names</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.strings.Strings.info">
+<code class="sig-name descname"><span class="pre">info</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.strings.Strings.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a JSON formatted string containing information about all components of self</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>JSON string containing information about all components of self</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="arkouda.strings.Strings.pretty_print_info">
+<code class="sig-name descname"><span class="pre">pretty_print_info</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#arkouda.strings.Strings.pretty_print_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints information about all components of self in a human readable format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="arkouda.strings.Strings.register">
 <code class="sig-name descname"><span class="pre">register</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">Strings</span></a><a class="headerlink" href="#arkouda.strings.Strings.register" title="Permalink to this definition">¶</a></dt>
 <dd><p>Register this Strings object with a user defined name in the arkouda server

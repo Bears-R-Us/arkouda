@@ -14,6 +14,7 @@ Submodules
    client/index.rst
    dtypes/index.rst
    groupbyclass/index.rst
+   infoclass/index.rst
    io_util/index.rst
    join/index.rst
    logger/index.rst
@@ -63,13 +64,10 @@ Functions
    arkouda.check_np_dtype
    arkouda.translate_np_dtype
    arkouda.resolve_scalar_dtype
-   arkouda.info
    arkouda.clear
    arkouda.any
    arkouda.all
    arkouda.is_sorted
-   arkouda.list_registry
-   arkouda.list_symbol_table
    arkouda.sum
    arkouda.prod
    arkouda.min
@@ -140,6 +138,10 @@ Functions
    arkouda._identity
    arkouda.date_range
    arkouda.timedelta_range
+   arkouda.information
+   arkouda.list_registry
+   arkouda.list_symbol_table
+   arkouda.pretty_print_information
 
 
 
@@ -148,10 +150,6 @@ Attributes
 
 .. autoapisummary::
 
-   arkouda.AllSymbols
-   arkouda.RegisteredSymbols
-   arkouda.EmptySymbolTable
-   arkouda.EmptyRegistry
    arkouda.__version__
    arkouda.DTypes
    arkouda.DTypeObjects
@@ -174,27 +172,9 @@ Attributes
    arkouda._BASE_UNIT
    arkouda._unit2normunit
    arkouda._unit2factor
+   arkouda.AllSymbols
+   arkouda.RegisteredSymbols
 
-
-.. data:: AllSymbols
-   :annotation: = __AllSymbols__
-
-   
-
-.. data:: RegisteredSymbols
-   :annotation: = __RegisteredSymbols__
-
-   
-
-.. data:: EmptySymbolTable
-   :annotation: = __EMPTY_SYMBOLTABLE__
-
-   
-
-.. data:: EmptyRegistry
-   :annotation: = __EMPTY_REGISTRY__
-
-   
 
 .. function:: connect(server: str = 'localhost', port: int = 5555, timeout: int = 0, access_token: str = None, connect_url=None) -> None
 
@@ -727,6 +707,36 @@ Attributes
       :raises RuntimeError: Raised if there's a server-side error thrown
 
 
+   .. method:: _list_component_names(self) -> List[str]
+
+      Internal Function that returns a list of all component names
+
+      :param None:
+
+      :returns: List of all component names
+      :rtype: List[str]
+
+
+   .. method:: info(self) -> str
+
+      Returns a JSON formatted string containing information about all components of self
+
+      :param None:
+
+      :returns: JSON string containing information about all components of self
+      :rtype: str
+
+
+   .. method:: pretty_print_info(self) -> None
+
+      Prints information about all components of self in a human readable format
+
+      :param None:
+
+      :returns:
+      :rtype: None
+
+
    .. method:: is_sorted(self) -> numpy.bool_
 
       Return True iff the array is monotonically non-decreasing.
@@ -1078,21 +1088,6 @@ Attributes
 
 
 
-.. function:: info(pda: Union[pdarray, str]) -> str
-
-   Returns information about the pdarray instance
-
-   :param pda: pda is either the pdarray instance or the pdarray.name string
-   :type pda: Union[pdarray, str]
-
-   :returns: Information regarding the pdarray in the form of a string
-   :rtype: str
-
-   :raises TypeError: Raised if the parameter is neither a pdarray or string
-   :raises RuntimeError: Raised if a server-side error is thrown in the process of
-       retrieving information about the pdarray
-
-
 .. function:: clear() -> None
 
    Send a clear message to clear all unregistered data from the server symbol table
@@ -1142,30 +1137,6 @@ Attributes
    :rtype: bool
 
    :raises TypeError: Raised if pda is not a pdarray instance
-   :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-.. function:: list_registry() -> List[str]
-
-   Return a list containing the names of all registered objects
-
-   :param None:
-
-   :returns: List of all object names in the registry
-   :rtype: list
-
-   :raises RuntimeError: Raised if there's a server-side error thrown
-
-
-.. function:: list_symbol_table() -> List[str]
-
-   Return a list containing the names of all objects in the symbol table
-
-   :param None:
-
-   :returns: List of all object names in the symbol table
-   :rtype: list
-
    :raises RuntimeError: Raised if there's a server-side error thrown
 
 
@@ -3964,6 +3935,36 @@ Attributes
       :raises RuntimeError: Raised if there's a server-side error thrown
 
 
+   .. method:: _list_component_names(self) -> List[str]
+
+      Internal Function that returns a list of all component names
+
+      :param None:
+
+      :returns: List of all component names
+      :rtype: List[str]
+
+
+   .. method:: info(self) -> str
+
+      Returns a JSON formatted string containing information about all components of self
+
+      :param None:
+
+      :returns: JSON string containing information about all components of self
+      :rtype: str
+
+
+   .. method:: pretty_print_info(self) -> None
+
+      Prints information about all components of self in a human readable format
+
+      :param None:
+
+      :returns:
+      :rtype: None
+
+
    .. method:: register(self, user_defined_name: str) -> Strings
 
       Register this Strings object with a user defined name in the arkouda server
@@ -4511,6 +4512,36 @@ Attributes
       they are unregistered.
 
 
+   .. method:: _list_component_names(self) -> List[str]
+
+      Internal Function that returns a list of all component names
+
+      :param None:
+
+      :returns: List of all component names
+      :rtype: List[str]
+
+
+   .. method:: info(self) -> str
+
+      Returns a JSON formatted string containing information about all components of self
+
+      :param None:
+
+      :returns: JSON string containing information about all components of self
+      :rtype: str
+
+
+   .. method:: pretty_print_info(self) -> None
+
+      Prints information about all components of self in a human readable format
+
+      :param None:
+
+      :returns:
+      :rtype: None
+
+
    .. method:: attach(user_defined_name: str) -> Categorical
       :staticmethod:
 
@@ -4884,6 +4915,36 @@ Attributes
       :rtype: bool
 
       :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+   .. method:: _list_component_names(self) -> List[str]
+
+      Internal Function that returns a list of all component names
+
+      :param None:
+
+      :returns: List of all component names
+      :rtype: List[str]
+
+
+   .. method:: info(self) -> str
+
+      Returns a JSON formatted string containing information about all components of self
+
+      :param None:
+
+      :returns: JSON string containing information about all components of self
+      :rtype: str
+
+
+   .. method:: pretty_print_info(self) -> None
+
+      Prints information about all components of self in a human readable format
+
+      :param None:
+
+      :returns:
+      :rtype: None
 
 
    .. method:: is_sorted(self) -> numpy.bool_
@@ -5886,5 +5947,71 @@ Attributes
 
    To learn more about the frequency strings, please see `this link
    <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`__.
+
+
+.. data:: AllSymbols
+   :annotation: = __AllSymbols__
+
+   
+
+.. data:: RegisteredSymbols
+   :annotation: = __RegisteredSymbols__
+
+   
+
+.. function:: information(names: Union[List[str], str] = RegisteredSymbols) -> str
+
+   Returns JSON formatted string containing information about the objects in names
+
+   :param names: names is either the name of an object or list of names of objects to retrieve info
+                 if names is ak.AllSymbols, retrieves info for all symbols in the symbol table
+                 if names is ak.RegisteredSymbols, retrieves info for all symbols in the registry
+   :type names: Union[List[str], str]
+
+   :returns: JSON formatted string containing a list of information for each object in names
+   :rtype: str
+
+   :raises RuntimeError: Raised if a server-side error is thrown in the process of
+       retrieving information about the objects in names
+
+
+.. function:: list_registry() -> List[str]
+
+   Return a list containing the names of all registered objects
+
+   :param None:
+
+   :returns: List of all object names in the registry
+   :rtype: list
+
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. function:: list_symbol_table() -> List[str]
+
+   Return a list containing the names of all objects in the symbol table
+
+   :param None:
+
+   :returns: List of all object names in the symbol table
+   :rtype: list
+
+   :raises RuntimeError: Raised if there's a server-side error thrown
+
+
+.. function:: pretty_print_information(names: Union[List[str], str] = RegisteredSymbols) -> None
+
+   Prints verbose information for each object in names in a human readable format
+
+   :param names: names is either the name of an object or list of names of objects to retrieve info
+                 if names is ak.AllSymbols, retrieves info for all symbols in the symbol table
+                 if names is ak.RegisteredSymbols, retrieves info for all symbols in the registry
+   :type names: Union[List[str], str]
+
+   :returns:
+   :rtype: None
+
+   :raises RuntimeError: Raised if a server-side error is thrown in the process of
+       retrieving information about the objects in names
 
 

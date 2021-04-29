@@ -28,34 +28,10 @@ Attributes
 .. autoapisummary::
 
    arkouda.client.__version__
-   arkouda.client.AllSymbols
-   arkouda.client.EmptySymbolTable
-   arkouda.client.RegisteredSymbols
-   arkouda.client.EmptyRegistry
 
 
 .. data:: __version__
    
-
-   
-
-.. data:: AllSymbols
-   :annotation: = __AllSymbols__
-
-   
-
-.. data:: EmptySymbolTable
-   :annotation: = __EMPTY_SYMBOLTABLE__
-
-   
-
-.. data:: RegisteredSymbols
-   :annotation: = __RegisteredSymbols__
-
-   
-
-.. data:: EmptyRegistry
-   :annotation: = __EMPTY_REGISTRY__
 
    
 

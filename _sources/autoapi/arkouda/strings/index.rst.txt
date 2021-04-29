@@ -528,6 +528,36 @@ Classes
       :raises RuntimeError: Raised if there's a server-side error thrown
 
 
+   .. method:: _list_component_names(self) -> List[str]
+
+      Internal Function that returns a list of all component names
+
+      :param None:
+
+      :returns: List of all component names
+      :rtype: List[str]
+
+
+   .. method:: info(self) -> str
+
+      Returns a JSON formatted string containing information about all components of self
+
+      :param None:
+
+      :returns: JSON string containing information about all components of self
+      :rtype: str
+
+
+   .. method:: pretty_print_info(self) -> None
+
+      Prints information about all components of self in a human readable format
+
+      :param None:
+
+      :returns:
+      :rtype: None
+
+
    .. method:: register(self, user_defined_name: str) -> Strings
 
       Register this Strings object with a user defined name in the arkouda server
