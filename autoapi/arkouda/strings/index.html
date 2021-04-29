@@ -686,10 +686,10 @@ value, but proceed with caution.</p>
 
 <dl class="py method">
 <dt id="arkouda.strings.Strings.save">
-<code class="sig-name descname"><span class="pre">save</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'strings_array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'truncate'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#arkouda.strings.Strings.save" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">save</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'strings_array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'truncate'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.strings.Strings.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save the Strings object to HDF5. The result is a collection of HDF5 files,
 one file per locale of the arkouda server, where each filename starts
-with prefix_path. Each locale saves its chunk of the array to its
+with prefix_path. Each locale saves its chunk of the Strings array to its
 corresponding file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -720,9 +720,9 @@ neither ‘truncate’ nor ‘append’</p></li>
 </div>
 <p class="rubric">Notes</p>
 <p>Important implementation notes: (1) Strings state is saved as two datasets
-within an hdf5 group, (2) the hdf5 group is named via the dataset parameter,
-(3) the hdf5 group encompasses the two pdarrays composing a Strings object:
-segments and values and (4) save logic is delegated to pdarray.save</p>
+within an hdf5 group: one for the string characters and one for the
+segments corresponding to the start of each string, (2) the hdf5 group is named
+via the dataset parameter.</p>
 </dd></dl>
 
 <dl class="py method">
