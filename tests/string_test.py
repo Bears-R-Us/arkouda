@@ -1,5 +1,6 @@
-from typing import Tuple
+from typing import List, Tuple
 import numpy as np
+import pandas as pd
 from collections import Counter
 from context import arkouda as ak
 from base_test import ArkoudaTest
@@ -9,7 +10,12 @@ UNIQUE = N//4
 
 def compare_strings(a, b):
     return all(x == y for x, y in zip(a, b))
-  
+
+
+def convert_to_ord(s:List[str]) -> List[int]:
+    return [ord(i) for i in "\x00".join(s)] + [ord("\x00")]
+
+
 errors = False
 
 def run_test_argsort(strings, test_strings, cat):
@@ -441,7 +447,24 @@ class StringTest(ArkoudaTest):
         with self.assertRaises(ValueError):
             run_test_peel(self.gremlins_strings, self.gremlins_test_strings, '')  
         run_test_peel(self.gremlins_strings, self.gremlins_test_strings, '"')  
-        run_test_peel(self.gremlins_strings, self.gremlins_test_strings, ' ') 
+        run_test_peel(self.gremlins_strings, self.gremlins_test_strings, ' ')
+
+        # Run a test with a specific set of strings to verify strings.bytes matches expected output
+        series = pd.Series(["k1:v1", "k2:v2", "k3:v3", "no_colon"])
+        pda = ak.from_series(series, "string")
+
+        # Convert Pandas series of strings into a byte array where each string is terminated by a null byte.
+        # This mimics what should be stored server-side in the strings.bytes pdarray
+        expected_series_dec = convert_to_ord(series.to_list())
+        actual_dec = pda.bytes.to_ndarray().tolist()
+        self.assertListEqual(expected_series_dec, actual_dec)
+
+        # Now perform the peel and verify
+        a, b = pda.peel(":")
+        expected_a = convert_to_ord(["k1", "k2", "k3", ""])
+        expected_b = convert_to_ord(["v1", "v2", "v3", "no_colon"])
+        self.assertListEqual(expected_a, a.bytes.to_ndarray().tolist())
+        self.assertListEqual(expected_b, b.bytes.to_ndarray().tolist())
 
     def test_stick(self):
         run_test_stick(self.strings, self.test_strings, self.base_words, 
