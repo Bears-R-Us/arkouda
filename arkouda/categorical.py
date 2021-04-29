@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import cast, List, Optional, Union
 import numpy as np # type: ignore
+import itertools
 from typeguard import typechecked
 from arkouda.strings import Strings
 from arkouda.pdarrayclass import pdarray, RegistrationError, unregister_pdarray_by_name
@@ -11,6 +12,7 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.sorting import argsort
 from arkouda.pdarraysetops import concatenate, in1d
 from arkouda.logger import getArkoudaLogger
+from arkouda.infoclass import information, pretty_print_information
 
 __all__ = ['Categorical']
 
@@ -625,6 +627,50 @@ class Categorical:
             raise RegistrationError(f"Not all registerable components of Categorical {self.name} are registered.")
 
         return np.bool_(np.any(parts_registered))
+
+    def _list_component_names(self) -> List[str]:
+        """
+        Internal Function that returns a list of all component names
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        List[str]
+            List of all component names
+        """
+        return list(itertools.chain.from_iterable([getattr(self, p)._list_component_names() for p in Categorical.RegisterablePieces]))
+
+    def info(self) -> str:
+        """
+        Returns a JSON formatted string containing information about all components of self
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            JSON string containing information about all components of self
+        """
+        return information(self._list_component_names())
+
+    def pretty_print_info(self) -> None:
+        """
+        Prints information about all components of self in a human readable format
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+        [getattr(self, p).pretty_print_info() for p in Categorical.RegisterablePieces]
 
     @staticmethod
     @typechecked
