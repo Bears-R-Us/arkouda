@@ -265,7 +265,7 @@
 
 <dl class="attribute">
 <dt id="CommAggregation.DstAggregator.lBuffers">
-<em class="property">var </em><code class="descname">lBuffers</code>: [myLocaleSpace] [0..#bufferSize] aggType<a class="headerlink" href="#CommAggregation.DstAggregator.lBuffers" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="descname">lBuffers</code>: c_ptr(c_ptr(aggType))<a class="headerlink" href="#CommAggregation.DstAggregator.lBuffers" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -275,7 +275,7 @@
 
 <dl class="attribute">
 <dt id="CommAggregation.DstAggregator.bufferIdxs">
-<em class="property">var </em><code class="descname">bufferIdxs</code>: [myLocaleSpace] int<a class="headerlink" href="#CommAggregation.DstAggregator.bufferIdxs" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="descname">bufferIdxs</code>: c_ptr(int)<a class="headerlink" href="#CommAggregation.DstAggregator.bufferIdxs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -340,12 +340,12 @@
 
 <dl class="attribute">
 <dt id="CommAggregation.SrcAggregator.dstAddrs">
-<em class="property">var </em><code class="descname">dstAddrs</code>: [myLocaleSpace] [0..#bufferSize] aggType<a class="headerlink" href="#CommAggregation.SrcAggregator.dstAddrs" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="descname">dstAddrs</code>: c_ptr(c_ptr(aggType))<a class="headerlink" href="#CommAggregation.SrcAggregator.dstAddrs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
 <dt id="CommAggregation.SrcAggregator.lSrcAddrs">
-<em class="property">var </em><code class="descname">lSrcAddrs</code>: [myLocaleSpace] [0..#bufferSize] aggType<a class="headerlink" href="#CommAggregation.SrcAggregator.lSrcAddrs" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="descname">lSrcAddrs</code>: c_ptr(c_ptr(aggType))<a class="headerlink" href="#CommAggregation.SrcAggregator.lSrcAddrs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -365,7 +365,7 @@
 
 <dl class="attribute">
 <dt id="CommAggregation.SrcAggregator.bufferIdxs">
-<em class="property">var </em><code class="descname">bufferIdxs</code>: [myLocaleSpace] int<a class="headerlink" href="#CommAggregation.SrcAggregator.bufferIdxs" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="descname">bufferIdxs</code>: c_ptr(int)<a class="headerlink" href="#CommAggregation.SrcAggregator.bufferIdxs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -441,6 +441,11 @@
 <dl class="method">
 <dt id="CommAggregation.remoteBuffer.PUT">
 <em class="property">proc </em><code class="descname">PUT</code><span class="sig-paren">(</span><em>lArr: [] elemType</em>, <em>size: int</em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.remoteBuffer.PUT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">proc </em><code class="descname">PUT</code><span class="sig-paren">(</span><em>lArr: c_ptr(elemType)</em>, <em>size: int</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="method">
