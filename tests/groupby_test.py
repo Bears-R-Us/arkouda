@@ -283,3 +283,14 @@ class GroupByTest(ArkoudaTest):
             self.igb.argmax(ak.randint(0,1,10,dtype=bool))
         self.assertEqual('argmax is only supported for pdarrays of dtype float64 and int64', 
                          cm.exception.args[0])  
+
+    def test_aggregate_strings(self):
+        s = ak.array(['a', 'b', 'a', 'b', 'c'])
+        i = ak.arange(s.size)
+        grouping = ak.GroupBy(s)
+        labels, values = grouping.nunique(i)
+
+        expected = {'a': 2, 'b': 2, 'c': 1}
+        actual = {label: value for (label, value) in zip(labels.to_ndarray(), values.to_ndarray())}
+
+        self.assertDictEqual(expected, actual)
