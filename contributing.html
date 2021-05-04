@@ -106,7 +106,7 @@
 <span class="k">select</span> <span class="nx">cmd</span>
 <span class="p">{</span>
     <span class="c1">// ...</span>
-    <span class="k">when</span> <span class="s2">&quot;foo&quot;</span>             <span class="p">{</span><span class="nx">repMsg</span> <span class="o">=</span> <span class="nx">fooMsg</span><span class="p">(</span><span class="nx">reqMsg</span><span class="p">,</span> <span class="nx">st</span><span class="p">);}</span>
+    <span class="k">when</span> <span class="s">&quot;foo&quot;</span>             <span class="p">{</span><span class="nx">repMsg</span> <span class="o">=</span> <span class="nx">fooMsg</span><span class="p">(</span><span class="nx">reqMsg</span><span class="p">,</span> <span class="nx">st</span><span class="p">);}</span>
     <span class="c1">// ...</span>
 <span class="p">}</span>
 </pre></div>
@@ -159,19 +159,19 @@
         <span class="kd">var</span> <span class="nx">rname</span> <span class="o">=</span> <span class="nx">st</span><span class="p">.</span><span class="nx">nextName</span><span class="p">();</span>
 
         <span class="kd">var</span> <span class="nx">gEnt</span><span class="p">:</span> <span class="k">borrowed</span> <span class="nx">GenSymEntry</span> <span class="o">=</span> <span class="nx">st</span><span class="p">.</span><span class="nx">lookup</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">gEnt</span> <span class="o">==</span> <span class="kc">nil</span><span class="p">)</span> <span class="p">{</span><span class="k">return</span> <span class="nx">unknownSymbolError</span><span class="p">(</span><span class="s2">&quot;set&quot;</span><span class="p">,</span><span class="nx">name</span><span class="p">);}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">gEnt</span> <span class="o">==</span> <span class="kc">nil</span><span class="p">)</span> <span class="p">{</span><span class="k">return</span> <span class="nx">unknownSymbolError</span><span class="p">(</span><span class="s">&quot;set&quot;</span><span class="p">,</span><span class="nx">name</span><span class="p">);}</span>
         <span class="c1">// if verbose print action</span>
-        <span class="k">if</span> <span class="nx">v</span> <span class="p">{</span><span class="k">try</span><span class="o">!</span> <span class="nx">writeln</span><span class="p">(</span><span class="s2">&quot;%s %s: %s&quot;</span><span class="p">.</span><span class="nx">format</span><span class="p">(</span><span class="nx">cmd</span><span class="p">,</span><span class="nx">name</span><span class="p">,</span><span class="nx">rname</span><span class="p">));</span> <span class="k">try</span><span class="o">!</span> <span class="nx">stdout</span><span class="p">.</span><span class="nx">flush</span><span class="p">();}</span>
+        <span class="k">if</span> <span class="nx">v</span> <span class="p">{</span><span class="k">try</span><span class="o">!</span> <span class="nx">writeln</span><span class="p">(</span><span class="s">&quot;%s %s: %s&quot;</span><span class="p">.</span><span class="nx">format</span><span class="p">(</span><span class="nx">cmd</span><span class="p">,</span><span class="nx">name</span><span class="p">,</span><span class="nx">rname</span><span class="p">));</span> <span class="k">try</span><span class="o">!</span> <span class="nx">stdout</span><span class="p">.</span><span class="nx">flush</span><span class="p">();}</span>
         <span class="k">select</span> <span class="p">(</span><span class="nx">gEnt</span><span class="p">.</span><span class="nx">dtype</span><span class="p">)</span> <span class="p">{</span>
             <span class="k">when</span> <span class="p">(</span><span class="nx">DType</span><span class="p">.</span><span class="nx">Int64</span><span class="p">)</span> <span class="p">{</span>
                 <span class="kd">var</span> <span class="nx">e</span> <span class="o">=</span> <span class="nx">toSymEntry</span><span class="p">(</span><span class="nx">gEnt</span><span class="p">,</span><span class="kt">int</span><span class="p">);</span>
                 <span class="kd">var</span> <span class="nx">ret</span> <span class="o">=</span> <span class="nx">foo</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">a</span><span class="p">);</span>
-                <span class="nx">st</span><span class="p">.</span><span class="nx">addEntry</span><span class="p">(</span><span class="nx">rname</span><span class="p">,</span> <span class="nx">new</span> <span class="k">shared</span> <span class="nx">SymEntry</span><span class="p">(</span><span class="nx">ret</span><span class="p">));</span>
+                <span class="nx">st</span><span class="p">.</span><span class="nx">addEntry</span><span class="p">(</span><span class="nx">rname</span><span class="p">,</span> <span class="k">new</span> <span class="k">shared</span> <span class="nx">SymEntry</span><span class="p">(</span><span class="nx">ret</span><span class="p">));</span>
             <span class="p">}</span>
-            <span class="k">otherwise</span> <span class="p">{</span><span class="k">return</span> <span class="nx">notImplementedError</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span><span class="nx">gEnt</span><span class="p">.</span><span class="nx">dtype</span><span class="p">);}</span>
+            <span class="k">otherwise</span> <span class="p">{</span><span class="k">return</span> <span class="nx">notImplementedError</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">,</span><span class="nx">gEnt</span><span class="p">.</span><span class="nx">dtype</span><span class="p">);}</span>
         <span class="p">}</span>
         <span class="c1">// response message</span>
-        <span class="k">return</span> <span class="k">try</span><span class="o">!</span> <span class="s2">&quot;created &quot;</span> <span class="o">+</span> <span class="nx">st</span><span class="p">.</span><span class="nx">attrib</span><span class="p">(</span><span class="nx">rname</span><span class="p">);</span>
+        <span class="k">return</span> <span class="k">try</span><span class="o">!</span> <span class="s">&quot;created &quot;</span> <span class="o">+</span> <span class="nx">st</span><span class="p">.</span><span class="nx">attrib</span><span class="p">(</span><span class="nx">rname</span><span class="p">);</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
