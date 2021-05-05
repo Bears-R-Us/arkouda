@@ -1444,9 +1444,9 @@ module GenSymIO {
                      charArrayList = new list(adjustCharArrayForTrailingSlice(charArrayList));
                      segmentsArrayList.pop();
                      gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),   
-                               'valuesList: %t for locale %i'.format(valuesList,idx));  
+                               'REMOVED TRAILING VALUES FROM valuesList: %t for locale %i'.format(valuesList,idx));  
                      gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               'charArray: %t for locale %i'.format(charArray,idx));
+                               'REMOVED TRAILING VALUES FROM charArrayList: %t for locale %i'.format(charArrayList,idx));
                       
                  } else {
                      valuesList.append(NULL_STRINGS_VALUE);    
