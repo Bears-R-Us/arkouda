@@ -1485,7 +1485,7 @@ module GenSymIO {
                      var segmentsList : list(int);
 
                      (valuesList, segmentsList) = sliceToValuesAndSegments(A.localSlice(locDom));
-
+                     charArrayList.extend(A.localSlice(locDom));
                      /*
                       * If (1) this locale (idx) contains one string/string segment and (2) ends 
                       * with the null uint(8) char, check to see if the trailingSliceIndex from 
@@ -1510,7 +1510,7 @@ module GenSymIO {
                                      }
                                  } 
                                  gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),   
-                                        'APPENDING WITHtrailingValuesList %t and singleStringTrailingSlice: %t for locale %i'.format(
+                                        'APPENDING WITH trailingValuesList %t and singleStringTrailingSlice: %t for locale %i'.format(
                                         trailingValuesList,singleStringTrailingSlice,here.id));
                              }
                              gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),   
@@ -1521,7 +1521,7 @@ module GenSymIO {
                              charArrayList.insert(0,singleStringTrailingSlice);
                          }
                      }
-                      
+
                      /*
                       * Account for the special case where the following is true about the
                       * current locale (idx):
@@ -1544,13 +1544,14 @@ module GenSymIO {
                              segmentsArrayList.clear();
                          }
                      }
-                      gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),   
+                     segmentsArrayList = generateSegmentsList(charArrayList);
+                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),   
                                'final valuesList: %t for %i'.format(valuesList,here.id));
-                      gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                'final charArrayList %t for %i'.format(charArrayList,here.id));
-                      gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                'final segmentsList %t for %i'.format(segmentsList,here.id));
-                      gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                'final segmentsArrayList %t for %i'.format(segmentsArrayList,here.id));
  
                       // Write the finalized valuesList and segmentsList to the hdf5 group
