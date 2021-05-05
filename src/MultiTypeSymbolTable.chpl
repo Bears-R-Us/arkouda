@@ -264,12 +264,12 @@ module MultiTypeSymbolTable
         /*
         checks to see if a symbol is defined if it is not it throws an exception 
         */
-        proc check(name: string) throws { 
+        proc check(name: string, calling_func="check") throws { 
             if (!tab.contains(name)) { 
                 mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                                                 "undefined symbol: %s".format(name));
                 throw getErrorWithContext(
-                    msg=unknownSymbolError(pname="check", sname=name),
+                    msg=unknownSymbolError(pname=calling_func, sname=name),
                     lineNumber=getLineNumber(),
                     routineName=getRoutineName(),
                     moduleName=getModuleName(),
@@ -443,77 +443,16 @@ module MultiTypeSymbolTable
         :returns: s (string) containing the array data
         */
         proc datastr(name: string, thresh:int): string throws {
-            var s:string;
-            if (tab.contains(name)) {
-                var u: borrowed GenSymEntry = tab.getBorrowed(name);
-                select u.dtype
-                {
-                    when DType.Int64
-                    {
-                        var e = toSymEntry(u,int);
-                        if e.size == 0 {s =  "[]";}
-                        else if e.size < thresh || e.size <= 6 {
-                            s =  "[";
-                            for i in 0..(e.size-2) {s += try! "%t ".format(e.a[i]);}
-                            s += try! "%t]".format(e.a[e.size-1]);
-                        }
-                        else {
-                            s = try! "[%t %t %t ... %t %t %t]".format(e.a[0],e.a[1],e.a[2],
-                                                                      e.a[e.size-3],
-                                                                      e.a[e.size-2],
-                                                                      e.a[e.size-1]);
-                        }
-                    }
-                    when DType.Float64
-                    {
-                        var e = toSymEntry(u,real);
-                        if e.size == 0 {s =  "[]";}
-                        else if e.size < thresh || e.size <= 6 {
-                            s =  "[";
-                            for i in 0..(e.size-2) {s += try! "%t ".format(e.a[i]);}
-                            s += try! "%t]".format(e.a[e.size-1]);
-                        }
-                        else {
-                            s = try! "[%t %t %t ... %t %t %t]".format(e.a[0],e.a[1],e.a[2],
-                                                                      e.a[e.size-3],
-                                                                      e.a[e.size-2],
-                                                                      e.a[e.size-1]);
-                        }
-                    }
-                    when DType.Bool
-                    {
-                        var e = toSymEntry(u,bool);
-                        if e.size == 0 {s =  "[]";}
-                        else if e.size < thresh || e.size <= 6 {
-                            s =  "[";
-                            for i in 0..(e.size-2) {s += try! "%t ".format(e.a[i]);}
-                            s += try! "%t]".format(e.a[e.size-1]);
-                        }
-                        else {
-                            s = try! "[%t %t %t ... %t %t %t]".format(e.a[0],e.a[1],e.a[2],
-                                                                      e.a[e.size-3],
-                                                                      e.a[e.size-2],
-                                                                      e.a[e.size-1]);
-                        }
-                        s = s.replace("true","True");
-                        s = s.replace("false","False");
-                    }
-                    otherwise {
-                        s = unrecognizedTypeError("datastr",dtype2str(u.dtype));
-                        mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),s);                        
-                    }
-                }
+            check(name, "datastr");
+            var u: borrowed GenSymEntry = tab.getBorrowed(name);
+            if (u.dtype == DType.UNDEF || u.dtype == DType.UInt8) {
+                var s = unrecognizedTypeError("datastr",dtype2str(u.dtype));
+                mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),s);
+                return s;
             }
-            else {
-                throw getErrorWithContext(
-                    msg=unknownSymbolError("datastr",name),
-                    lineNumber=getLineNumber(),
-                    routineName=getRoutineName(),
-                    moduleName=getModuleName(),
-                    errorClass="UnknownSymbolError");                          
-            }
-            return s;
+            return u.__str__(thresh=thresh, prefix="[", suffix="]", baseFormat="%t");
         }
+
         /*
         Attempts to find a sym entry mapped to the provided string, then 
         returns the data in the entry up to the specified threshold. 
@@ -530,80 +469,15 @@ module MultiTypeSymbolTable
         :returns: s (string) containing the array data
         */
         proc datarepr(name: string, thresh:int): string throws {
-            var s:string;
-            if (tab.contains(name)) {
-                var u: borrowed GenSymEntry = tab.getBorrowed(name);
-                select u.dtype
-                {
-                    when DType.Int64
-                    {
-                        var e = toSymEntry(u,int);
-                        if e.size == 0 {s =  "array([])";}
-                        else if e.size < thresh || e.size <= 6 {
-                            s =  "array([";
-                            for i in 0..(e.size-2) {s += try! "%t, ".format(e.a[i]);}
-                            s += try! "%t])".format(e.a[e.size-1]);
-                        }
-                        else {
-                            s = try! "array([%t, %t, %t, ..., %t, %t, %t])".format(e.a[0],e.a[1],e.a[2],
-                                                                                    e.a[e.size-3],
-                                                                                    e.a[e.size-2],
-                                                                                    e.a[e.size-1]);
-                        }
-                    }
-                    when DType.Float64
-                    {
-                        var e = toSymEntry(u,real);
-                        if e.size == 0 {s =  "array([])";}
-                        else if e.size < thresh || e.size <= 6 {
-                            s =  "array([";
-                            for i in 0..(e.size-2) {s += try! "%.17r, ".format(e.a[i]);}
-                            s += try! "%.17r])".format(e.a[e.size-1]);
-                        }
-                        else {
-                            s = try! "array([%.17r, %.17r, %.17r, ..., %.17r, %.17r, %.17r])".format(e.a[0],e.a[1],e.a[2],
-                                                                                    e.a[e.size-3],
-                                                                                    e.a[e.size-2],
-                                                                                    e.a[e.size-1]);
-                        }
-                    }
-                    when DType.Bool
-                    {
-                        var e = toSymEntry(u,bool);
-                        if e.size == 0 {s =  "array([])";}
-                        else if e.size < thresh || e.size <= 6 {
-                            s =  "array([";
-                            for i in 0..(e.size-2) {s += try! "%t, ".format(e.a[i]);}
-                            s += try! "%t])".format(e.a[e.size-1]);
-                        }
-                        else {
-                            s = try! "array([%t, %t, %t, ..., %t, %t, %t])".format(e.a[0],e.a[1],e.a[2],
-                                                                                    e.a[e.size-3],
-                                                                                    e.a[e.size-2],
-                                                                                    e.a[e.size-1]);
-                        }
-                        s = s.replace("true","True");
-                        s = s.replace("false","False");
-                    }
-                    otherwise {
-                        throw getErrorWithContext(
-                            msg=unrecognizedTypeError("datarepr",dtype2str(u.dtype)),
-                            lineNumber=getLineNumber(),
-                            routineName=getRoutineName(),
-                            moduleName=getModuleName(),
-                            errorClass="TypeError");                            
-                    }
-                }
+            check(name, "datarepr");
+            var u: borrowed GenSymEntry = tab.getBorrowed(name);
+            if (u.dtype == DType.UNDEF || u.dtype == DType.UInt8) {
+                var s = unrecognizedTypeError("datarepr",dtype2str(u.dtype));
+                mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),s);
+                return s;
             }
-            else {
-                throw getErrorWithContext(
-                    msg=unknownSymbolError("datarepr",name),
-                    lineNumber=getLineNumber(),
-                    routineName=getRoutineName(),
-                    moduleName=getModuleName(),
-                    errorClass="UnknownSymbolError");                  
-            }
-            return s;
+            var frmt:string = if (u.dtype == DType.Float64) then "%.17r" else "%t";
+            return u.__str__(thresh=thresh, prefix="array([", suffix="])", baseFormat=frmt);
         }
     }      
 }
