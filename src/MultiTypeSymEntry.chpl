@@ -51,6 +51,30 @@ module MultiTypeSymEntry
         inline proc toSymEntry(type etype) {
             return try! this :borrowed SymEntry(etype);
         }
+
+        /* 
+        Formats and returns data in this entry up to the specified threshold. 
+        Arrays of size less than threshold will be printed in their entirety. 
+        Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
+
+            :arg thresh: threshold for data to return
+            :type thresh: int
+
+            :arg prefix: String to prepend to the front of the data string
+            :type prefix: string
+
+            :arg suffix: String to append to the tail of the data string
+            :type suffix: string
+
+            :arg baseFormat: String which represents the base format string for the data type
+            :type baseFormat: string
+
+            :returns: s (string) containing the array data
+        */
+        proc __str__(thresh:int=1, prefix:string="", suffix:string="", baseFormat:string=""): string throws {
+            var s = "DType: %s, itemsize: %t, size: %t".format(this.dtype, this.itemsize, this.size);
+            return prefix + s + suffix;
+        }
     }
 
     /* Symbol table entry
@@ -130,6 +154,48 @@ module MultiTypeSymEntry
           }
           writeField(f, nFields-1);
           f <~> "}";
+        }
+
+        /*
+        Formats and returns data in this entry up to the specified threshold. 
+        Arrays of size less than threshold will be printed in their entirety. 
+        Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
+
+            :arg thresh: threshold for data to return
+            :type thresh: int
+
+            :arg prefix: String to pre-pend to the front of the data string
+            :type prefix: string
+
+            :arg suffix: String to append to the tail of the data string
+            :type suffix: string
+
+            :arg baseFormat: String which represents the base format string for the data type
+            :type baseFormat: string
+
+            :returns: s (string) containing the array data
+        */
+        override proc __str__(thresh:int=6, prefix:string = "[", suffix:string = "]", baseFormat:string = "%t"): string throws {
+            var s:string = "";
+            if (this.size == 0) {
+                s =  ""; // Unnecessary, but left for clarity
+            } else if (this.size < thresh || this.size <= 6) {
+                for i in 0..(this.size-2) {s += try! baseFormat.format(this.a[i]) + " ";}
+                s += try! baseFormat.format(this.a[this.size-1]);
+            } else {
+                var b = baseFormat + " " + baseFormat + " " + baseFormat + " ... " +
+                            baseFormat + " " + baseFormat + " " + baseFormat;
+                s = try! b.format(
+                            this.a[0], this.a[1], this.a[2],
+                            this.a[this.size-3], this.a[this.size-2], this.a[this.size-1]);
+            }
+            
+            if (bool == this.etype) {
+                s = s.replace("true","True");
+                s = s.replace("false","False");
+            }
+
+            return prefix + s + suffix;
         }
     }
 
