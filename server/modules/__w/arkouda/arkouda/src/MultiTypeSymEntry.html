@@ -277,6 +277,41 @@ instantiations of SymEntry.</p>
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="MultiTypeSymEntry.GenSymEntry.__str__">
+<em class="property">proc </em><code class="descname">__str__</code><span class="sig-paren">(</span><em>thresh: int = 1</em>, <em>prefix: string = &quot;&quot;</em>, <em>suffix: string = &quot;&quot;</em>, <em>baseFormat: string = &quot;&quot;</em><span class="sig-paren">)</span>: string throws<a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.__str__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Formats and returns data in this entry up to the specified threshold.
+Arrays of size less than threshold will be printed in their entirety.
+Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">arg thresh:</th><td class="field-body">threshold for data to return</td>
+</tr>
+<tr class="field-even field"><th class="field-name">type thresh:</th><td class="field-body">int</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">arg prefix:</th><td class="field-body">String to prepend to the front of the data string</td>
+</tr>
+<tr class="field-even field"><th class="field-name">type prefix:</th><td class="field-body">string</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">arg suffix:</th><td class="field-body">String to append to the tail of the data string</td>
+</tr>
+<tr class="field-even field"><th class="field-name">type suffix:</th><td class="field-body">string</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">arg baseFormat:</th><td class="field-body">String which represents the base format string for the data type</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">type baseFormat:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">string</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">s (string) containing the array data</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -351,6 +386,41 @@ are defined by makeDistDom() to support varying distributions</p>
 <dt id="MultiTypeSymEntry.SymEntry.writeThis">
 <em class="property">override proc </em><code class="descname">writeThis</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#MultiTypeSymEntry.SymEntry.writeThis" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="MultiTypeSymEntry.SymEntry.__str__">
+<em class="property">override proc </em><code class="descname">__str__</code><span class="sig-paren">(</span><em>thresh: int = 6</em>, <em>prefix: string = &quot;[&quot;</em>, <em>suffix: string = &quot;]&quot;</em>, <em>baseFormat: string = &quot;%t&quot;</em><span class="sig-paren">)</span>: string throws<a class="headerlink" href="#MultiTypeSymEntry.SymEntry.__str__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Formats and returns data in this entry up to the specified threshold.
+Arrays of size less than threshold will be printed in their entirety.
+Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">arg thresh:</th><td class="field-body">threshold for data to return</td>
+</tr>
+<tr class="field-even field"><th class="field-name">type thresh:</th><td class="field-body">int</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">arg prefix:</th><td class="field-body">String to pre-pend to the front of the data string</td>
+</tr>
+<tr class="field-even field"><th class="field-name">type prefix:</th><td class="field-body">string</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">arg suffix:</th><td class="field-body">String to append to the tail of the data string</td>
+</tr>
+<tr class="field-even field"><th class="field-name">type suffix:</th><td class="field-body">string</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">arg baseFormat:</th><td class="field-body">String which represents the base format string for the data type</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">type baseFormat:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">string</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">s (string) containing the array data</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</dd></dl>
 
 </dd></dl>
 

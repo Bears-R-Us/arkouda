@@ -56,6 +56,28 @@ or
       :type etype: type
       
 
+   .. method:: proc __str__(thresh: int = 1, prefix: string = "", suffix: string = "", baseFormat: string = ""): string throws
+
+      
+      Formats and returns data in this entry up to the specified threshold. 
+      Arrays of size less than threshold will be printed in their entirety. 
+      Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
+      
+          :arg thresh: threshold for data to return
+          :type thresh: int
+      
+          :arg prefix: String to prepend to the front of the data string
+          :type prefix: string
+      
+          :arg suffix: String to append to the tail of the data string
+          :type suffix: string
+      
+          :arg baseFormat: String which represents the base format string for the data type
+          :type baseFormat: string
+      
+          :returns: s (string) containing the array data
+      
+
 .. class:: SymEntry : GenSymEntry
 
    Symbol table entry
@@ -111,4 +133,26 @@ or
       
 
    .. method:: override proc writeThis(f) throws
+
+   .. method:: override proc __str__(thresh: int = 6, prefix: string = "[", suffix: string = "]", baseFormat: string = "%t"): string throws
+
+      
+      Formats and returns data in this entry up to the specified threshold. 
+      Arrays of size less than threshold will be printed in their entirety. 
+      Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements
+      
+          :arg thresh: threshold for data to return
+          :type thresh: int
+      
+          :arg prefix: String to pre-pend to the front of the data string
+          :type prefix: string
+      
+          :arg suffix: String to append to the tail of the data string
+          :type suffix: string
+      
+          :arg baseFormat: String which represents the base format string for the data type
+          :type baseFormat: string
+      
+          :returns: s (string) containing the array data
+      
 
