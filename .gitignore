@@ -21,6 +21,8 @@ Makefile.paths
 SysInfo.chpl
 Untitled.ipynb
 dist/
+env/
+build-client-env/
 arkouda.egg-info/
 build/
 dep/*-install/
