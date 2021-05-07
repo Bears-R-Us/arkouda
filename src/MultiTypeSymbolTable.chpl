@@ -36,18 +36,7 @@ module MultiTypeSymbolTable
         }
 
         proc regName(name: string, userDefinedName: string) throws {
-
-            // check to see if name is defined
-            if (!tab.contains(name)) {
-                mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "regName: undefined symbol: %s".format(name));
-                throw getErrorWithContext(
-                                   msg=unknownSymbolError("regName", name),
-                                   lineNumber=getLineNumber(),
-                                   routineName=getRoutineName(),
-                                   moduleName=getModuleName(),
-                                   errorClass="UnknownSymbolError");
-            }
+            checkTable(name, "regName");
 
             // check to see if userDefinedName is already defined, with in-place modification, this will be an error
             if (registry.contains(userDefinedName)) {
@@ -76,25 +65,13 @@ module MultiTypeSymbolTable
         }
 
         proc unregName(name: string) throws {
-            
-            // check to see if name is defined
-            if !tab.contains(name)  {
-                mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                                             "unregName: undefined symbol: %s ".format(name));
-                throw getErrorWithContext(
-                                   msg=unknownSymbolError("regName", name),
-                                   lineNumber=getLineNumber(),
-                                   routineName=getRoutineName(),
-                                   moduleName=getModuleName(),
-                                   errorClass="UnknownSymbolError");
+            checkTable(name, "unregName");
+            if registry.contains(name) {
+                mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                         "Unregistering symbol: %s ".format(name));  
             } else {
-                if registry.contains(name) {
-                    mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                             "Unregistering symbol: %s ".format(name));  
-                } else {
-                    mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                                             "The symbol %s is not registered".format(name));                  
-                }          
+                mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                                         "The symbol %s is not registered".format(name));                  
             }
 
             registry -= name; // take name out of registry
@@ -199,32 +176,17 @@ module MultiTypeSymbolTable
         :returns: bool indicating whether the deletion occurred
         */
         proc deleteEntry(name: string): bool throws {
-            if tab.contains(name) { 
-               if !registry.contains(name) {
-                   mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                           "Deleting unregistered entry: %s".format(name)); 
-                   tab.remove(name);
-                   return true;
-               } else {
-                    mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                           "Skipping registered entry: %s".format(name)); 
-                    return false;
-               }            
+            checkTable(name, "deleteEntry");
+            if !registry.contains(name) {
+                mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                       "Deleting unregistered entry: %s".format(name)); 
+                tab.remove(name);
+                return true;
             } else {
-                if registry.contains(name) {
-                    mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "Registered entry is not in SymTab: %s".format(name));
-                } else {
-                    mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "Unregistered entry is not in SymTab: %s".format(name));    
-                }
-                throw getErrorWithContext(
-                    msg=unknownSymbolError(pname="deleteEntry", sname=name),
-                    lineNumber=getLineNumber(),
-                    routineName=getRoutineName(),
-                    moduleName=getModuleName(),
-                    errorClass="UnknownSymbolError");
-            }
+                mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                       "Skipping registered entry: %s".format(name)); 
+                return false;
+            }  
         }
 
         /*
@@ -247,24 +209,14 @@ module MultiTypeSymbolTable
         :throws: `unkownSymbolError(name)`
         */
         proc lookup(name: string): borrowed GenSymEntry throws {
-            if (!tab.contains(name)) {
-                throw getErrorWithContext(
-                    msg=unknownSymbolError(pname="lookup", sname=name),
-                    lineNumber=getLineNumber(),
-                    routineName=getRoutineName(),
-                    moduleName=getModuleName(),
-                    errorClass="UnknownSymbolError");
-            } else {
-                mtLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                "found symbol: %s".format(name));
-                return tab.getBorrowed(name);
-            }
+            checkTable(name, "lookup");
+            return tab.getBorrowed(name);
         }
 
         /*
         checks to see if a symbol is defined if it is not it throws an exception 
         */
-        proc check(name: string, calling_func="check") throws { 
+        proc checkTable(name: string, calling_func="check") throws { 
             if (!tab.contains(name)) { 
                 mtLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                                                 "undefined symbol: %s".format(name));
@@ -307,16 +259,9 @@ module MultiTypeSymbolTable
         proc dump(name:string): string throws {
             if name == "__AllSymbols__" {
                 return "%jt".format(this);
-            } else if (tab.contains(name)) {
-                return "%jt %jt".format(name, tab.getReference(name));
-            } else {
-                throw getErrorWithContext(
-                    msg=unknownSymbolError(pname="dump",sname=name),
-                    lineNumber=getLineNumber(),
-                    routineName=getRoutineName(),
-                    moduleName=getModuleName(),
-                    errorClass="UnknownSymbolError");
-            }
+            } 
+            checkTable(name, "dump");
+            return "%jt %jt".format(name, tab.getReference(name));
         }
         
         /*
@@ -379,7 +324,7 @@ module MultiTypeSymbolTable
             var i = 0;
             for name in infoList {
                 i+=1;
-                check(name);
+                checkTable(name);
                 entries[i] = formatEntry(name, tab.getBorrowed(name));
             }
             return entries;
@@ -411,20 +356,11 @@ module MultiTypeSymbolTable
         :returns: s (string) containing info
         */
         proc attrib(name:string):string throws {
+            checkTable(name, "attrib");
             var s:string;
-            if (tab.contains(name)) {
-                s = "%s %s %t %t %t %t".format(name, dtype2str(tab.getBorrowed(name).dtype), 
+            s = "%s %s %t %t %t %t".format(name, dtype2str(tab.getBorrowed(name).dtype), 
                           tab.getBorrowed(name).size, tab.getBorrowed(name).ndim, 
                           tab.getBorrowed(name).shape, tab.getBorrowed(name).itemsize);
-            }
-            else {
-                throw getErrorWithContext(
-                    msg=unknownSymbolError("attrib",name),
-                    lineNumber=getLineNumber(),
-                    routineName=getRoutineName(),
-                    moduleName=getModuleName(),
-                    errorClass="UnknownSymbolError");                   
-            }
             return s;
         }
 
@@ -443,7 +379,7 @@ module MultiTypeSymbolTable
         :returns: s (string) containing the array data
         */
         proc datastr(name: string, thresh:int): string throws {
-            check(name, "datastr");
+            checkTable(name, "datastr");
             var u: borrowed GenSymEntry = tab.getBorrowed(name);
             if (u.dtype == DType.UNDEF || u.dtype == DType.UInt8) {
                 var s = unrecognizedTypeError("datastr",dtype2str(u.dtype));
@@ -469,7 +405,7 @@ module MultiTypeSymbolTable
         :returns: s (string) containing the array data
         */
         proc datarepr(name: string, thresh:int): string throws {
-            check(name, "datarepr");
+            checkTable(name, "datarepr");
             var u: borrowed GenSymEntry = tab.getBorrowed(name);
             if (u.dtype == DType.UNDEF || u.dtype == DType.UInt8) {
                 var s = unrecognizedTypeError("datarepr",dtype2str(u.dtype));
