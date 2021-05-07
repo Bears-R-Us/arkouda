@@ -123,7 +123,7 @@ or
       :throws: `unkownSymbolError(name)`
       
 
-   .. method:: proc check(name: string, calling_func = "check") throws
+   .. method:: proc checkTable(name: string, calling_func = "check") throws
 
       
       checks to see if a symbol is defined if it is not it throws an exception 
