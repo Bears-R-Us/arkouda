@@ -1213,8 +1213,6 @@ module GenSymIO {
              * for each file to be written
              */
             const myFilename = filenames[idx];
-            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                   "%s exists? %t".format(myFilename, exists(myFilename)));
 
             var myFileID = C_HDF5.H5Fopen(myFilename.c_str(), 
                                        C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
@@ -1250,17 +1248,7 @@ module GenSymIO {
                  * 1. Add all current locale values to a list
                  * 2. Obtain remaining uint(8) values from the next locale
                  */
-                var charList : list(uint(8));
-                var segmentsList : list(int);
-
-                /* 
-                 * Generate the values and segments lists from the locale domain; these
-                 * lists will be used to generate post-shuffle values and segments arrays
-                 * to be written to hdf5
-                 */
-                (charList, segmentsList) = sliceToValuesAndSegments(A.localSlice(locDom));
-
-
+ 
                 /*
                  * Retrive the chars array slice from tnis locale and populate the charArrayList
                  * that will be updated per left and/or right shuffle operations until the 
@@ -1291,30 +1279,17 @@ module GenSymIO {
                          * (idx-1) to complete the beginning of the one string assigned 
                          * to the current locale (idx)
                          */
-                        var trailingValuesList : list(uint(8));
                         var trailingSlice : [trailingIndex..charArraySize[idx-1]-1] uint(8);
                         on Locales[idx-1] {
                             const locDom = A.localSubdomain();
                             var localeArray = A.localSlice(locDom);
                             trailingSlice = localeArray[trailingIndex..localeArray.size-1];
-                            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "trailingSlice: %t for locale %i".format(trailingSlice,here.id));     
-                            for (value, i) in zip(localeArray,
-                                                        0..localeArray.size-1) {
-                                if i >= trailingIndex {
-                                    trailingValuesList.append(value:uint(8));
-                                }
-                            }
-                            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "INSERTING trailingValuesList: %t and trailingSlice %t for locale %i".format(
-                                        trailingValuesList,trailingSlice,here.id)); 
                         }
                         charArrayList.insert(0,trailingSlice);
-                        charList.insert(0, trailingValuesList);
+
                         t1.stop();  
                         var elapsed = t1.elapsed();
-                        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                            "charList: %t charArrayList: %t locale %i".format(charList, charArrayList,idx));  
+ 
                         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                             "Time to adjust single string starting chars for locale %i: %.17r".format(
                                            idx,elapsed));  
@@ -1336,7 +1311,6 @@ module GenSymIO {
                 if leadingSliceIndices[idx+1] > -1 || isLastLocale(idx+1) {
                     on Locales[idx+1] {
                         const locDom = A.localSubdomain();
-                        var sliceList: list(uint(8), parSafe=false);
                         var t1 = new Time.Timer();
                         t1.clear();
                         t1.start(); 
@@ -1345,34 +1319,9 @@ module GenSymIO {
                         var leadingSliceIndex = leadingSliceIndices[here.id];
                         var localStart = locDom.first;
                         var localLeadingSliceIndex = localStart + leadingSliceIndex -2;
-                        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               'APPENDING TO %i with leadingSliceIndex %i localStart %i localLeadlingSliceIndex %i FROM locale %i'.format(
-                               idx,leadingSliceIndex,localStart,localLeadingSliceIndex,here.id));
-                        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"charArray %t FROM %i FOR %i".format(localeArray,here.id,idx));
                         leadingSlice = localeArray[localStart..localLeadingSliceIndex];                        
-                        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "APPENDING TO %i leadingSlice: %t FROM locale %i".format(
-                                                 idx,leadingSlice,here.id));                             
-                        /*
-                         * Iterate through the local slice values for the next locale and add
-                         * each to the sliceList until the null uint(8) character is reached;
-                         * this subset of the next locale (idx+1) chars corresponds to the
-                         * chars that complete the last string of the current locale (idx)
-                         */
-                        for value in localeArray {
-                            if value != NULL_STRINGS_VALUE {
-                                sliceList.append(value:uint(8));
-                            } else {
-                                break;
-                            }
-                        } 
-                        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "APPENDING TO %i sliceList: %t and leadingSlice %t FROM locale %i".format(
-                                        idx,sliceList,leadingSlice, here.id));                         
-                        charList.extend(sliceList); 
+
                         charArrayList.extend(leadingSlice);  
-                        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"charList AFTER APPEND %t for locale %i".format(charList,idx));
-                        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"charArrayList AFTER APPEND %t for locale %i".format(charArrayList,idx));
                         t1.stop();  
                         var elapsed = t1.elapsed();
                         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -1391,8 +1340,6 @@ module GenSymIO {
                 var leadingSliceIndex = leadingSliceIndices[idx]:int;
                 var trailingSliceIndex = trailingSliceIndices[idx]:int;
 
-                var valuesList: list(uint(8), parSafe=false);
-
                 /*
                  * Verify if the current locale (idx) contains chars shuffled to the previous 
                  * locale (idx-1) by checking the leadingSliceIndex, the number of strings in 
@@ -1410,30 +1357,15 @@ module GenSymIO {
                       * Since the leading slice was used to complete the last string in
                       * the previous locale (idx-1), slice those chars from the charList
                       */
-                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               'charList BEFORE SLICE: %t for locale %i '.format(
-                               charList,here.id));
-                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               'charArrayList BEFORE SLICE: %t for locale %i '.format(charArrayList,here.id));
 
-                     (valuesList, segmentsList) = 
-                                         adjustForLeadingSlice(leadingSliceIndex, charList);
                      var localStart = locDom.first;
                      var localLeadingSliceIndex = localStart + leadingSliceIndex;
-                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               'leadingSliceIndex %i localStart %i localLeadlingSliceIndex %i'.format(leadingSliceIndex,localStart,localLeadingSliceIndex));
-                     var adjCharArray = adjustCharListForLeadingSlice(leadingSliceIndex,charArrayList);
-                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),   
-                               'valuesList AFTER SLICE: %t for locale %i '.format(
-                               valuesList,here.id));    
-                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               'charArrayList AFTER SLICE: %t for locale %i '.format(charArrayList,here.id));
+                     var adjCharArray = adjustCharListForLeadingSlice(leadingSliceIndex,charArrayList);    
 
                      charArrayList.clear();
                      charArrayList.extend(adjCharArray);
                  } else {
                      gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),'NO ADJUSTMENT FOR SLICE for locale %i'.format(idx));
-                     valuesList = charList;
                  }
 
                  /*
@@ -1446,38 +1378,15 @@ module GenSymIO {
                   */
                  var segmentsArrayList = generateSegmentsList(charArrayList);
                  if trailingSliceIndex > -1 && isSingleString[idx+1] {
-                     var sliceIndex = segmentsList.last();
-                     (valuesList, segmentsList) = 
-                                          adjustForTrailingSlice(sliceIndex, valuesList);  
                      charArrayList = new list(adjustCharArrayForTrailingSlice(charArrayList));
-                     segmentsArrayList.pop();
-                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),   
-                               'REMOVED TRAILING VALUES FROM valuesList: %t for locale %i'.format(valuesList,idx));  
-                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               'REMOVED TRAILING VALUES FROM charArrayList: %t for locale %i'.format(charArrayList,idx));
+                     segmentsArrayList.pop(); 
                       
                  } else {
-                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               'NO TRAILING VALUES IN valuesList: %t for locale %i'.format(valuesList,idx));
-                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               'NO TRAILING VALUES IN charArrayList: %t for locale %i'.format(charArrayList,idx));
-                     valuesList.append(NULL_STRINGS_VALUE);    
                      charArrayList.append(NULL_STRINGS_VALUE);        
                  }
 
-                 gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),   
-                               'final valuesList: %t for %i'.format(valuesList,here.id)); 
-                 gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               'finalcharArrayList %t for %i'.format(charArrayList,here.id));
- 
-                 gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),   
-                               'final segmentsList: %t for %i'.format(
-                               segmentsList,here.id));
-                 gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               'final segmentsArrayList %t for %i'.format(segmentsArrayList,here.id));
                                   
                  // Write the finalized valuesList and segmentsList to the hdf5 group
-                 //writeStringsToHdf(myFileID, group, valuesList, segmentsList);
                  writeStringsToHdf(myFileID, group, charArrayList, segmentsArrayList);
              } else {
                  /*
@@ -1494,11 +1403,8 @@ module GenSymIO {
                       * Since the leadingSliceIndex is -1, the current local slice (idx) does 
                       * not contain chars from the previous locale (idx-1).
                       */
-                     var valuesList : list(uint(8));
-                     var segmentsList : list(int);
-
-                     (valuesList, segmentsList) = sliceToValuesAndSegments(A.localSlice(locDom));
                      charArrayList.extend(A.localSlice(locDom));
+
                      /*
                       * If (1) this locale (idx) contains one string/string segment and (2) ends 
                       * with the null uint(8) char, check to see if the trailingSliceIndex from 
@@ -1516,21 +1422,7 @@ module GenSymIO {
                                  const locDom = A.localSubdomain();  
                                  var localeArray = A.localSlice(locDom);
                                  singleStringTrailingSlice = localeArray[trailingIndex..localeArray.size-1];
-                                 for (value, i) in zip(localeArray, 
-                                                               0..localeArray.size-1) {
-                                     if i >= trailingIndex {
-                                         trailingValuesList.append(value:uint(8));
-                                     }
-                                 } 
-                                 gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),   
-                                        'APPENDING WITH trailingValuesList %t and singleStringTrailingSlice: %t for locale %i'.format(
-                                        trailingValuesList,singleStringTrailingSlice,here.id));
                              }
-                             gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),   
-                               'trailingValuesList %t and singleStringTrailingSlice: %t for locale %i'.format(
-                                                            trailingValuesList,singleStringTrailingSlice,idx-1));
-                             //prepend the current locale valuesList with the trailingValuesList
-                             valuesList.insert(0, trailingValuesList);
                              charArrayList.insert(0,singleStringTrailingSlice);
                          }
                      }
@@ -1551,25 +1443,14 @@ module GenSymIO {
                      if numLocales > 1 && isLastLocale(idx) {
                          if !endsWithCompleteString[idx-1] && isSingleString[idx] 
                                                         && trailingSliceIndices[idx-1] == -1 {
-                             valuesList.clear();
-                             segmentsList.clear();
                              charArrayList.clear();
                              segmentsArrayList.clear();
                          }
                      }
                      segmentsArrayList = generateSegmentsList(charArrayList);
-                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),   
-                               'final valuesList: %t for %i'.format(valuesList,here.id));
-                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               'final charArrayList %t for %i'.format(charArrayList,here.id));
-                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               'final segmentsList %t for %i'.format(segmentsList,here.id));
-                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               'final segmentsArrayList %t for %i'.format(segmentsArrayList,here.id));
  
-                      // Write the finalized valuesList and segmentsList to the hdf5 group
-                      //writeStringsToHdf(myFileID, group, valuesList, segmentsList);
-                      writeStringsToHdf(myFileID, group, charArrayList, segmentsArrayList);
+                     // Write the finalized valuesList and segmentsList to the hdf5 group
+                     writeStringsToHdf(myFileID, group, charArrayList, segmentsArrayList);
                   } else {
                       /*
                        * The local slice (idx) does possibly contain chars from previous locale 
@@ -1579,47 +1460,23 @@ module GenSymIO {
                        * correspond to chars shuffled to the previous locale (idx-1) and 
                        * (2) generate a new, corresponding Strings segments list. 
                        */  
-                      var charList : list(uint(8));
-                      var segmentsList : list(int);
-                      var valuesList : list(uint(8));
-                     
-                      (charList, segmentsList) = sliceToValuesAndSegments(A.localSlice(locDom)); 
-                       
+
                       /*
                        * Check to see if previous locale (idx-1) ends with a complete string.
                        * If not, then the leading slice of this string was used to complete
                        * the last string in the previous locale, so slice those chars.
                        */
                       if !endsWithCompleteString(idx-1) {
-                          (valuesList, segmentsList) = 
-                                             adjustForLeadingSlice(leadingSliceIndex, charList);
                           var localStart = locDom.first;
                           var localLeadingSliceIndex = localStart + leadingSliceIndex;
-                          gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               'leadingSliceIndex %i localStart %i localLeadlingSliceIndex %i'.format(leadingSliceIndex,localStart,localLeadingSliceIndex));
-
                           var leadingCharArray = adjustArrayForLeadingSlice(localLeadingSliceIndex, 
                                          A.localSlice(locDom),locDom.last);
-                          gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),   
-                               'valuesList: %t for %i'.format(valuesList,here.id));
-                          gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               'leadingCharArray %t for %i'.format(leadingCharArray,here.id)); 
                           charArrayList.extend(leadingCharArray);  
                       } else {
-                          valuesList = charList;
                           charArrayList.extend(A.localSlice(locDom));
                       }
                       var segmentsArrayList = generateSegmentsList(charArrayList);
-                      gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),   
-                               'final valuesList: %t for %i'.format(valuesList,here.id));
-                      gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               'final charArrayList %t for %i'.format(charArrayList,here.id));
-                      gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),   
-                               'final segmentsList: %t for %i'.format(segmentsList,here.id));
-                      gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               'final segmentsArrayList %t for %i'.format(segmentsArrayList,here.id));
                       // Write the finalized valuesList and segmentsList to the hdf5 group
-                      //writeStringsToHdf(myFileID, group, valuesList, segmentsList);
                       writeStringsToHdf(myFileID, group, charArrayList, segmentsArrayList);
                     }
                 }
