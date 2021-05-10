@@ -1145,12 +1145,12 @@ module GenSymIO {
         warnFlag = processFilenames(filenames, matchingFilenames, mode, A, group);
         
         /*
-         * The leadingSliceIndices object, which is a globally-scoped PrivateSpace 
+         * The shuffleLeftIndices object, which is a globally-scoped PrivateSpace 
          * array, contains the leading slice index for each locale, which is used 
-         * to remove the uint(8) characters moved to the previous locale; this
+         * to remove the uint(8) characters shuffled left to the previous locale; this
          * situation occurs when a string spans two locales.
          *
-         * The trailingSliceIndices PrivateSpace is used in the special case 
+         * The shuffleRightIndices PrivateSpace is used in the special case 
          * where the majority of a large string spanning two locales is the sole
          * string on a locale; in this case, the trailing slice index is used
          * to move the smaller string chunk to the locale containing the large
@@ -1165,16 +1165,16 @@ module GenSymIO {
          * array for each locale ends with complete string, meaning that the last
          * character in the local slice is a null uint(8) char.
          */
-        var leadingSliceIndices: [PrivateSpace] int;    
-        var trailingSliceIndices: [PrivateSpace] int;
+        var shuffleLeftIndices: [PrivateSpace] int;    
+        var shuffleRightIndices: [PrivateSpace] int;
         var isSingleString: [PrivateSpace] bool;
         var endsWithCompleteString: [PrivateSpace] bool;
         var charArraySize: [PrivateSpace] int;
 
         /*
-         * Loop through all locales and set (1) leadingSliceIndices, which are
+         * Loop through all locales and set (1) shuffleLeftIndices, which are
          * used to remove leading uint(8) characters from the local slice that
-         * complete a string started in the previous locale (2) trailingSliceIndices,
+         * complete a string started in the previous locale (2) shuffleRightIndices,
          * which are used to removing trailing uint(8) characters used to start
          * strings that are completed in the next locale locale (3) isSingleString,
          * which indicates if a locale contains a Strings values array that
@@ -1188,9 +1188,9 @@ module GenSymIO {
         t1.start();
 
         coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) 
-                  with (ref leadingSliceIndices, ref trailingSliceIndices, 
+                  with (ref shuffleLeftIndices, ref shuffleRightIndices, 
                         ref isSingleString, ref endsWithCompleteString, ref charArraySize) do on loc {
-             generateValuesMetadata(idx,leadingSliceIndices, trailingSliceIndices, 
+             generateValuesMetadata(idx,shuffleLeftIndices, shuffleRightIndices, 
                                     isSingleString, endsWithCompleteString, charArraySize, A, SA);
         }
 
@@ -1205,7 +1205,7 @@ module GenSymIO {
          * list as a Chapel array to the open hdf5 file and (4) close the hdf5 file
          */
         coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) with 
-                        (ref leadingSliceIndices, ref trailingSliceIndices, 
+                        (ref shuffleLeftIndices, ref shuffleRightIndices, 
                                                             ref charArraySize) do on loc {
                         
             /*
@@ -1234,23 +1234,14 @@ module GenSymIO {
             }
 
             /*
-             * Check for the possibility that 1..n strings in the values array span 
-             * two neighboring locales; by seeing if the final character in the local 
-             * slice is the null uint(8) character. If it is not, then the last string 
-             * is only a partial string and the remainder of the string is in the 
-             * next locale
+             * Check for the possibility that a string in the current locale spans
+             * two neighboring locales by seeing if the final character in the local 
+             * slice is the null uint(8) character. If it is not, this means the last string 
+             * in the current locale (idx) spans the current AND next locale.
              */
-            if A.localSlice(locDom).back() != NULL_STRINGS_VALUE {
+            if A.localSlice(locDom).back() != NULL_STRINGS_VALUE { 
                 /*
-                 * Since the last value of the local slice is other than the uint(8) null
-                 * character, this means the last string in the current locale (idx) spans 
-                 * the current AND next locale. Consequently, need to do the following:
-                 * 1. Add all current locale values to a list
-                 * 2. Obtain remaining uint(8) values from the next locale
-                 */
- 
-                /*
-                 * Retrive the chars array slice from tnis locale and populate the charArrayList
+                 * Retrieve the chars array slice from this locale and populate the charArrayList
                  * that will be updated per left and/or right shuffle operations until the 
                  * final char list is assembled
                  */ 
@@ -1268,15 +1259,15 @@ module GenSymIO {
                  * previous locale, so this code block is not executed in this case.
                  */                
                 if isSingleString[idx] && idx > 0 {
-                    var trailingIndex = trailingSliceIndices[idx-1];
+                    var shuffleRightIndex = shuffleRightIndices[idx-1];
                     
-                    if trailingIndex > -1 {
+                    if shuffleRightIndex > -1 {
                         /*
                          * There are 1..n chars to be shuffled from the previous locale
                          * (idx-1) to complete the beginning of the one string assigned 
                          * to the current locale (idx)
                          */
-                        var trailingSlice : [trailingIndex..charArraySize[idx-1]-1] uint(8);
+                        var trailingSlice : [shuffleRightIndex..charArraySize[idx-1]-1] uint(8);
                         on Locales[idx-1] {
                             const locDom = A.localSubdomain();
                             var localeArray = A.localSlice(locDom);
@@ -1285,12 +1276,12 @@ module GenSymIO {
                             t1.clear();
                             t1.start(); 
 
-                            trailingSlice = localeArray[trailingIndex..localeArray.size-1];
+                            trailingSlice = localeArray[shuffleRightIndex..localeArray.size-1];
 
                             t1.stop();  
                             var elapsed = t1.elapsed();
                             gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                "Time to generate trailingSlice FROM %i to complete first string FOR locale %i: %.17r".format(
+                                "Time to generate chars shuffled right FROM %i TO locale %i: %.17r".format(
                                            here.id,idx,elapsed));  
                         }                        
                         var t1 = new Time.Timer();
@@ -1302,7 +1293,7 @@ module GenSymIO {
                         t1.stop();  
                         var elapsed = t1.elapsed(); 
                         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                            "Time to insert single string starting chars FOR locale %i FROM %i: %.17r".format(
+                            "Time to insert chars shuffled right TO locale %i FROM %i: %.17r".format(
                                            idx,idx-1,elapsed));  
                     }
                 }
@@ -1311,15 +1302,15 @@ module GenSymIO {
                  * Now that the start of the first string of the current locale (idx) is correct,
                  * shuffle chars to place a complete string at the end the current locale. 
                  * There are two possible scenarios to account for. First, the next locale 
-                 * has a leadingSliceIndex > -1. If so, the chars up to the leadingSliceIndex 
+                 * has a shuffleLeftIndex > -1. If so, the chars up to the shuffleLeftIndex 
                  * will be shuffled from the next locale (idx+1) to complete the last string 
                  * in the current locale (idx). In the second scenario, the next locale is 
                  * the last locale in the Arkouda cluster If so, all of the chars 
                  * from the next locale (idx+1) are shuffled to the current locale (idx).
                  */
-                var leadingSlice: [0..leadingSliceIndices[idx+1]-2] uint(8);
+                var leadingSlice: [0..shuffleLeftIndices[idx+1]-2] uint(8);
 
-                if leadingSliceIndices[idx+1] > -1 || isLastLocale(idx+1) {
+                if shuffleLeftIndices[idx+1] > -1 || isLastLocale(idx+1) {
                     on Locales[idx+1] {
                         const locDom = A.localSubdomain();
                         var t1 = new Time.Timer();
@@ -1327,9 +1318,9 @@ module GenSymIO {
                         t1.start(); 
                         
                         var localeArray = A.localSlice(locDom);
-                        var leadingSliceIndex = leadingSliceIndices[here.id];
+                        var shuffleLeftIndex = shuffleLeftIndices[here.id];
                         var localStart = locDom.first;
-                        var localLeadingSliceIndex = localStart + leadingSliceIndex -2;
+                        var localLeadingSliceIndex = localStart + shuffleLeftIndex -2;
                         leadingSlice = localeArray[localStart..localLeadingSliceIndex];    
                         t1.stop();  
                         var elapsed = t1.elapsed();
@@ -1355,38 +1346,30 @@ module GenSymIO {
                  * 2. Remove the trailing slice characters shuffled to the next locale
                  * 3. If (2) does not apply, add null uint(8) char to end of the valuesList
                  */
-                var leadingSliceIndex = leadingSliceIndices[idx]:int;
-                var trailingSliceIndex = trailingSliceIndices[idx]:int;
+                var shuffleLeftIndex = shuffleLeftIndices[idx]:int;
+                var shuffleRightIndex = shuffleRightIndices[idx]:int;
 
                 /*
                  * Verify if the current locale (idx) contains chars shuffled to the previous 
-                 * locale (idx-1) by checking the leadingSliceIndex, the number of strings in 
+                 * locale (idx-1) by checking the shuffleLeftIndex, the number of strings in 
                  * the current locale, and whether the preceding locale ends with a complete
-                 * string. If (1) the leadingSliceIndex > -1, (2) this locale contains 2..n 
+                 * string. If (1) the shuffleLeftIndex > -1, (2) this locale contains 2..n 
                  * strings, and (3) the previous locale does not end with a complete string
                  * this means that the charList contains chars that were shuffled to complete
                  * the last string from the previous locale (idx-1). If so, generate
                  * a new valuesList that has those values sliced out. Otherwise, set the
                  * valuesList reference to the charList
                  */
-                 if leadingSliceIndex > -1 && !isSingleString[idx] 
+                 if shuffleLeftIndex > -1 && !isSingleString[idx] 
                                                        && !endsWithCompleteString[idx-1] {
                      /*
                       * Since the leading slice was used to complete the last string in
                       * the previous locale (idx-1), slice those chars from the charList
                       */
-
                      var localStart = locDom.first;
-                     var localLeadingSliceIndex = localStart + leadingSliceIndex;
-                     var adjCharArray = adjustCharListForLeadingSlice(leadingSliceIndex,charArrayList,idx);    
+                     var localLeadingSliceIndex = localStart + shuffleLeftIndex;
+                     charArrayList = new list(adjustForLeftShuffle(shuffleLeftIndex,charArrayList,idx));    
 
-                     var t1 = new Time.Timer();
-                     t1.clear();
-                     t1.start(); 
-                     charArrayList.clear();
-                     charArrayList.extend(adjCharArray);
-                     t1.stop();  
-                     var elapsed = t1.elapsed();
                      gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                             "Time to generate new charList FOR locale %i after shuffle left to %i: %.17r".format(
                                                    idx,idx-1,elapsed)); 
@@ -1396,24 +1379,24 @@ module GenSymIO {
                  }
 
                  /*
-                  * Verify if the current locale contains chars shuffled to the next locale 
-                  * (idx+1) because the next locale only has one string/string segment and
-                  * the current locale's trailingSliceIndex > -1. If so, remove the
-                  * chars starting with the trailingSliceIndex, which will place the null 
-                  * uint(8) char is at the end of the valuesList. Otherwise, manually 
-                  * add the null uint(8) char to the end of the valuesList.
+                  * Verify if the current locale contains chars shuffled right to the next locale 
+                  * because (1) the next locale only has one string/string segment
+                  * and (2) the current locale's shuffleRightIndex > -1. If so, remove the
+                  * chars starting with the shuffleRightIndex, which will place the null 
+                  * uint(8) char is at the end of the charArrayList. Otherwise, manually 
+                  * add the null uint(8) char to the end of the charArrayList.
                   */
-                 var segmentsArrayList = generateSegmentsList(charArrayList,idx);
-                 if trailingSliceIndex > -1 && isSingleString[idx+1] {
-                     charArrayList = new list(adjustCharListForTrailingSlice(
-                                                            trailingSliceIndex,charArrayList,idx));
-                     segmentsArrayList.pop(); 
-                      
+                 if shuffleRightIndex > -1 && isSingleString[idx+1] {
+                     charArrayList = new list(adjustForRightShuffle(
+                                                  shuffleRightIndex,charArrayList,idx));
                  } else {
                      gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              'No trailing slice FOR locale %i, just appending null uint(8)'.format(idx));
+                              'No trailing slice FOR locale %i, appending null uint(8)'.format(idx));
                      charArrayList.append(NULL_STRINGS_VALUE);        
                  }
+                 
+                 // Generate the segments list now that the char list is finalized
+                 var segmentsArrayList = generateFinalSegmentsLIst(charArrayList,idx);
              
                  // Write the finalized valuesList and segmentsList to the hdf5 group
                  writeStringsToHdf(myFileID, group, charArrayList, segmentsArrayList);
@@ -1424,18 +1407,22 @@ module GenSymIO {
                   * confirmed, check to see if the current locale (idx) slice contains
                   * 1..n chars that compose a string from the previous (idx-1) locale.
                   */
-                 var leadingSliceIndex = leadingSliceIndices[idx]:int;
+                 var shuffleLeftIndex = shuffleLeftIndices[idx]:int;
                  var charArrayList : list(uint(8));
                  var segmentsArrayList: list(int);
-                 if leadingSliceIndex == -1 {
+
+                 if shuffleLeftIndex == -1 {
                      /*
-                      * Since the leadingSliceIndex is -1, the current local slice (idx) does 
-                      * not contain chars from the previous locale (idx-1).
+                      * Since the shuffleLeftIndex is -1, the current local slice (idx) does 
+                      * not contain chars from the previous locale (idx-1). Accordingly, 
+                      * initialize with the current locale slice.
                       */
                      var t1 = new Time.Timer();
                      t1.clear();
                      t1.start(); 
-                     charArrayList.extend(A.localSlice(locDom));
+
+                     charArrayList = new list(A.localSlice(locDom));
+
                      t1.stop();  
                      var elapsed = t1.elapsed();
                      gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -1444,38 +1431,39 @@ module GenSymIO {
 
                      /*
                       * If (1) this locale (idx) contains one string/string segment and (2) ends 
-                      * with the null uint(8) char, check to see if the trailingSliceIndex from 
+                      * with the null uint(8) char, check to see if the shuffleRightIndex from 
                       * the previous locale (idx-1) is > -1. If so, the chars following the 
-                      * trailingSliceIndex from the previous locale (idx-1) complete the one 
+                      * shuffleRightIndex from the previous locale (idx-1) complete the one 
                       * string/string segment within the current locale (idx). 
                       */
                      if isSingleString[idx] && idx > 0 {
-                         var trailingIndex = trailingSliceIndices[idx-1];
+                         var shuffleRightIndex = shuffleRightIndices[idx-1];
 
-                         if trailingIndex > -1 {
-                             var trailingValuesList : list(uint(8));
-                             var singleStringTrailingSlice: [trailingIndex..charArraySize[idx-1]-1] uint(8);
+                         if shuffleRightIndex > -1 {
+                             var shuffleRightSlice: [shuffleRightIndex..charArraySize[idx-1]-1] uint(8);
                              on Locales[idx-1] {
                                  const locDom = A.localSubdomain();  
                                  var localeArray = A.localSlice(locDom);
+
                                  var t1 = new Time.Timer();
                                  t1.clear();
                                  t1.start(); 
-                                 singleStringTrailingSlice = localeArray[trailingIndex..localeArray.size-1];
+                                 shuffleRightSlice = localeArray[shuffleRightIndex..localeArray.size-1];
                                  t1.stop();  
                                  var elapsed = t1.elapsed();
                                  gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "Time to generate singleStringTrailingSlice FOR locale %i FROM %i: %.17r".format(
+                                     "Time to generate chars shuffled right to locale %i FROM %i: %.17r".format(
                                                    idx,idx-1,elapsed)); 
                              }
+
                              var t1 = new Time.Timer();
                              t1.clear();
                              t1.start(); 
-                             charArrayList.insert(0,singleStringTrailingSlice);
+                             charArrayList.insert(0,shuffleRightSlice);
                              t1.stop();
                              var elapsed = t1.elapsed();
                              gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "Time to insert singleStringTrailingSlice into charArrayList for locale %i: %.17r".format(
+                                     "Time to insert chars shuffled right to locale %i: %.17r".format(
                                                    idx,elapsed)); 
                          }
                      }
@@ -1495,12 +1483,14 @@ module GenSymIO {
                       */                     
                      if numLocales > 1 && isLastLocale(idx) {
                          if !endsWithCompleteString[idx-1] && isSingleString[idx] 
-                                                        && trailingSliceIndices[idx-1] == -1 {
+                                                        && shuffleRightIndices[idx-1] == -1 {
                              charArrayList.clear();
                              segmentsArrayList.clear();
                          }
                      }
-                     segmentsArrayList = generateSegmentsList(charArrayList,idx);
+                    
+                     // Generate the segments list now that the char list is finalized
+                     segmentsArrayList = generateFinalSegmentsLIst(charArrayList,idx);
  
                      // Write the finalized valuesList and segmentsList to the hdf5 group
                      writeStringsToHdf(myFileID, group, charArrayList, segmentsArrayList);
@@ -1521,7 +1511,7 @@ module GenSymIO {
                        */
                       if !endsWithCompleteString(idx-1) {
                           var localStart = locDom.first;
-                          var localLeadingSliceIndex = localStart + leadingSliceIndex;
+                          var localLeadingSliceIndex = localStart + shuffleLeftIndex;
                           var leadingCharArray = adjustCharArrayForLeadingSlice(localLeadingSliceIndex, 
                                          A.localSlice(locDom),locDom.last,idx);
                           var t1 = new Time.Timer();
@@ -1530,8 +1520,11 @@ module GenSymIO {
                           charArrayList.extend(leadingCharArray);  
                       } else {
                           charArrayList.extend(A.localSlice(locDom));
-                      }
-                      var segmentsArrayList = generateSegmentsList(charArrayList,idx);
+                      } 
+                      
+                      // Generate the segments list now that the char list is finalized
+                      var segmentsArrayList = generateFinalSegmentsLIst(charArrayList,idx);
+
                       // Write the finalized valuesList and segmentsList to the hdf5 group
                       writeStringsToHdf(myFileID, group, charArrayList, segmentsArrayList);
                     }
@@ -1948,8 +1941,8 @@ module GenSymIO {
      * trailing slice indices as well as flags indicating whether the values array
      * contains one string and if the values array ends with a complete string.
      */
-    private proc generateValuesMetadata(idx : int, leadingSliceIndices, 
-                       trailingSliceIndices, isSingleString, endsWithCompleteString, 
+    private proc generateValuesMetadata(idx : int, shuffleLeftIndices, 
+                       shuffleRightIndices, isSingleString, endsWithCompleteString, 
                        charArraySize, A, SA) throws {
         /*
          * Generate the leadlingSliceIndex, which is used to (1) indicate the chars to be
@@ -1957,7 +1950,7 @@ module GenSymIO {
          * filter out the chars from the current locale that were used to complete the 
          * string in the previous locale, along with the null uint(8) char. 
          *
-         * Next, generate the trailingSliceIndex, which is used to (1) indicate the chars
+         * Next, generate the shuffleRightIndex, which is used to (1) indicate the chars
          * to be pulled up to the next locale to complete the first string in that 
          * locale and (2) filter out the chars from the current locale used to complete
          * the first string in the next locale. 
@@ -1980,8 +1973,8 @@ module GenSymIO {
             var leadingSliceSet = false;
 
             //Initialize both indices to -1 to indicate neither exists for locale
-            leadingSliceIndices[idx] = -1;
-            trailingSliceIndices[idx] = -1;
+            shuffleLeftIndices[idx] = -1;
+            shuffleRightIndices[idx] = -1;
 
             /*
              * Check if the last char is the null uint(8) char. If so, the last
@@ -2029,23 +2022,18 @@ module GenSymIO {
             var adjLastSeg = lastSeg - normalize;
                                                 
             if adjFirstSeg == 0 {
-                leadingSliceIndices[idx] = -1;
+                shuffleLeftIndices[idx] = -1;
             } else {
-                leadingSliceIndices[idx] = adjFirstSeg;
+                shuffleLeftIndices[idx] = adjFirstSeg;
             }
             
             if !endsWithCompleteString[idx] {
-                trailingSliceIndices[idx] = adjLastSeg;
+                shuffleRightIndices[idx] = adjLastSeg;
             } else {
-                trailingSliceIndices[idx] = -1;
+                shuffleRightIndices[idx] = -1;
             }
-
-            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "trailingSliceIndex %t leadingSliceIndex %t endsWithCompleteString %t for locale %i".format(
-                    trailingSliceIndices[idx],leadingSliceIndices[idx],
-                    endsWithCompleteString[idx],idx));             
         
-            if leadingSliceIndices[idx] > -1 || trailingSliceIndices[idx] > -1 {    
+            if shuffleLeftIndices[idx] > -1 || shuffleRightIndices[idx] > -1 {    
                 /*
                  * If either of the indices are > -1, this means there's 2..n null characters
                  * in the string corresponding to the values array, which means the values
@@ -2054,32 +2042,32 @@ module GenSymIO {
                 isSingleString[idx] = false;
             } else {
                 /*
-                 * Since there is neither a leadingSliceIndex nor a trailingSliceIndex for 
+                 * Since there is neither a shuffleLeftIndex nor a shuffleRightIndex for 
                  * this locale, it only contains a single complete string or string segment.
                  */
                 isSingleString[idx] = true;
             }
 
             /* 
-             * For the special case of this being the first locale, set the leadingSliceIndex 
+             * For the special case of this being the first locale, set the shuffleLeftIndex 
              * to -1 since there is no previous locale that has an incomplete string at the
              * end that will require chars sliced from locale 0 to complete. If there is one
              * null uint(8) char that is not at the end of the values array, this is the 
-             * trailingSliceIndex for the first locale.
+             * shuffleRightIndex for the first locale.
              */
             if idx == 0 {
-                if leadingSliceIndices[idx] > -1 {
-                    trailingSliceIndices[idx] = leadingSliceIndices[idx];
+                if shuffleLeftIndices[idx] > -1 {
+                    shuffleRightIndices[idx] = shuffleLeftIndices[idx];
                 }
-                leadingSliceIndices[idx] = -1;
+                shuffleLeftIndices[idx] = -1;
             }
             
             /*
-             * For the special case of this being the last locale, set the trailingSliceIndex 
-             * to -1 since there is no next locale to shuffle trailing slice to.
+             * For the special case of this being the last locale, set the shuffleRightIndex 
+             * to -1 since there is no next locale to shuffle a trailing slice to.
              */
             if isLastLocale(idx) {
-                trailingSliceIndices[idx] = -1;
+                shuffleRightIndices[idx] = -1;
             }
         }
         t1.stop();  
@@ -2087,83 +2075,6 @@ module GenSymIO {
 
         try! gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                         "Time to generateValuesMetadata for locale %i: %.17r".format(idx,elapsed)); 
-    }
-    
-    /*
-     * Processes a local Strings slice into (1) a uint(8) values list for use in methods 
-     * that finalize the values array elements following any shuffle operations and (2)
-     * a segments list representing starting indices for each string in the values list.
-     */
-    private proc sliceToValuesAndSegments(rawChars) throws {
-        var charList: list(uint(8), parSafe=false);
-        var indices: list(int, parSafe=false);
-
-        // initialize timer
-        var t1 = new Time.Timer();
-        t1.clear();
-        t1.start();
-
-        //initialize segments with index to first char in values
-        indices.append(0);
-        
-        for (value, i) in zip(rawChars, 0..rawChars.size-1) do {
-            charList.append(value:uint(8));
-            /*
-             * If the char is the null uint(8) char, check to see if it is the 
-             * last char. If not, added to the indices. If it is the last char,  
-             * don't add, because it is the correct ending char for a Strings 
-             * values array to be written to a locale.
-             */ 
-            if value == NULL_STRINGS_VALUE && i < rawChars.size-1 {
-                indices.append(i+1);
-            }
-        }
-
-        t1.stop();  
-        var elapsed = t1.elapsed();
-        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                      "Time to convert raw chars via sliceToValuesAndSegments: %.17r".format(elapsed)); 
-        return (charList, indices);
-    }
-
-    /*
-     * Adjusts for the shuffling of a leading char sequence to the 
-     * previous locale by (1) slicing leading chars that compose
-     * a string started in the previous locale and returning (1) 
-     * a new values list that composes all of the strings that start
-     * in the current locale and (2) a new segments list that 
-     * corresponds to the new values list
-     */
-    private proc adjustForLeadingSlice(sliceIndex : int,
-                                   charList : list(uint(8))) throws {
-        var valuesList: list(uint(8), parSafe=false);
-        var indices: list(int);
-        var i: int = 0;
-        indices.append(0);
-        // initialize timer
-        var t1 = new Time.Timer();
-        t1.clear();
-        t1.start();       
-        var segmentsBound = charList.size - sliceIndex - 1;
-
-        for value in charList(sliceIndex..charList.size-1)  {
-            valuesList.append(value:uint(8));
-            
-            /*
-             * If the value is a null char and is not the last char
-             * in the list, then it is a segment use to delimit
-             * strings within the corresponding values array.
-             */
-            if value == NULL_STRINGS_VALUE && i < segmentsBound {
-                indices.append(i+1);
-            }
-            i+=1;
-        }
-        t1.stop();  
-        var elapsed = t1.elapsed();
-        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "Time to adjustForLeadingSlice: %.17r".format(elapsed)); 
-        return (valuesList,indices);
     }
     
     /*
@@ -2185,78 +2096,47 @@ module GenSymIO {
     }    
 
     /*
-     * Adjusts for the shuffling of a leading char sequence to the
-     * previous locale by slicing leading chars that compose a string
-     * started in the previous locale and returning a new char array.
+     * Adjusts for the left shuffle of the leading char sequence from the current locale
+     * to the previous locale by returning a slice containing chars from the shuffleLeftIndex
+     * to the end of the charList.
      */
-    private proc adjustCharListForLeadingSlice(sliceIndex: int, charList, idx: int) throws {
+    private proc adjustForLeftShuffle(shuffleLeftIndex: int, charList, idx: int) throws {
         // initialize timer
         var t1 = new Time.Timer();
         t1.clear();
         t1.start();
 
-        var adjCharList = charList[sliceIndex..charList.size-1];
+        var adjCharList = charList[shuffleLeftIndex..charList.size-1];
         t1.stop();
         var elapsed = t1.elapsed();
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                   "Time to slice leading chars FROM locale %i used to complete last string FOR %i: %.17r".format(
+                "Time to slice chars FROM locale %i shuffled left to locale %i: %.17r".format(
                              elapsed,idx,idx-1));
         return adjCharList;
     }
 
-
     /* 
-     * Adjusts for the shuffling of a trailing char sequence to the next 
-     * locale by (1) slicing trailing chars that correspond to 1..n
-     * chars composing a string that completes in the next locale,
-     * returning a new list that composes all strings that end in the 
-     * current locale and (2) returns a new segments list corresponding
-     * to the new values list for the current locale
+     * Adjusts for the right shuffle of the trailing char sequence from the current locale
+     * to the next locale by returning a slice containing chars up to and including 
+     * the rightShuffleIndex. 
      */
-    private proc adjustForTrailingSlice(sliceIndex : int,
-                                   charList : list(uint(8))) throws {
-        var valuesList: list(uint(8), parSafe=false);
-        var indices: list(int);
-        var i: int = 0;
-        indices.append(0);
-        var t1 = new Time.Timer();
-        t1.clear();
-        t1.start();  
-        for value in charList(0..sliceIndex-1)  {
-            valuesList.append(value:uint(8));
-            if value == NULL_STRINGS_VALUE && i < sliceIndex-1 {
-                indices.append(i+1);
-            }
-            i+=1;
-        }
-        t1.stop();  
-        var elapsed = t1.elapsed();
-        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "Time to adjustForTrailingSlice: %.17r".format(elapsed)); 
-        return (valuesList,indices);
-    }
-
-    /* 
-     * Adjusts for the shuffling of a trailing char sequence to the next 
-     * locale by slicing trailing chars that correspond to 1..n
-     * chars composing a string that completes in the next locale,
-     * returning a new, corresponding list for the current locale. 
-     */
-    private proc adjustCharListForTrailingSlice(sliceIndex: int, charsList: list(uint(8)), idx : int) throws {
+    private proc adjustForRightShuffle(shuffleRightIndex: int, 
+                                               charsList: list(uint(8)), idx : int) throws {
         var t1 = new Time.Timer();
         t1.clear();
         t1.start();  
         
-        var newChars = charsList[0..sliceIndex];
+        var newCharsList = charsList[0..shuffleRightIndex];
  
         t1.stop();  
         var elapsed = t1.elapsed();
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                   "Time to remove trailing slice FROM locale %i: %.17r".format(idx,elapsed)); 
-        return newChars;
+                   "Time to slice chars FROM locale %i shuffled right to locale %i: %.17r".format(
+                        idx,idx+1,elapsed)); 
+        return newCharsList;
     }
 
-    private proc generateSegmentsList(charList : list(uint(8)), idx: int) throws {
+    private proc generateFinalSegmentsLIst(charList : list(uint(8)), idx: int) throws {
         var segments: list(int);
         segments.append(0);
 
