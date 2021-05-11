@@ -5,7 +5,8 @@ import itertools
 from typeguard import typechecked
 from arkouda.strings import Strings
 from arkouda.pdarrayclass import pdarray, RegistrationError, unregister_pdarray_by_name
-from arkouda.groupbyclass import GroupBy
+from arkouda.groupbyclass import GroupBy, broadcast
+from arkouda.pdarraysetops import in1d, unique, concatenate
 from arkouda.pdarraycreation import zeros, zeros_like, arange
 from arkouda.dtypes import resolve_scalar_dtype, str_scalars
 from arkouda.dtypes import int64 as akint64
@@ -210,24 +211,24 @@ class Categorical:
                 return self.codes._binop(other.codes, op)
             else:
                 # Remap both codes to the union of categories
-                union = ak.union1d(self.categories, other.categories)
-                newinds = ak.arange(union.size)
+                union = unique(concatenate((self.categories, other.categories), ordered=False))
+                newinds = arange(union.size)
                 # Inds of self.categories in unioned categories
-                selfnewinds = newinds(ak.in1d(union, self.categories))
+                selfnewinds = newinds[in1d(union, self.categories)]
                 # Need a permutation and segments to broadcast new codes
                 if self.permutation is None or self.segments is None:
-                    g = ak.GroupBy(self.codes)
+                    g = GroupBy(self.codes)
                     self.permutation = g.permutation
                     self.segments = g.segments
                 # Form new codes by broadcasting new indices for unioned categories
-                selfnewcodes = ak.broadcast(self.segments, selfnewinds, self.size, self.permutation)
+                selfnewcodes = broadcast(self.segments, selfnewinds, self.size, self.permutation)
                 # Repeat for other
-                othernewinds = newinds(ak.in1d(union, other.categories))
+                othernewinds = newinds[in1d(union, other.categories)]
                 if other.permutation is None or other.segments is None:
-                    g = ak.GroupBy(other.codes)
+                    g = GroupBy(other.codes)
                     other.permutation = g.permutation
                     other.segments = g.segments
-                othernewcodes = ak.broadcast(other.segments, othernewinds, other.size, other.permutation)
+                othernewcodes = broadcast(other.segments, othernewinds, other.size, other.permutation)
                 # selfnewcodes and othernewcodes now refer to same unioned categories
                 # and can be compared directly
                 return selfnewcodes._binop(othernewcodes, op)
