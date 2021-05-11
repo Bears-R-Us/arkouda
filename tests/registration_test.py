@@ -1,4 +1,5 @@
 import pytest
+import json
 from context import arkouda as ak
 from base_test import ArkoudaTest
 from arkouda.pdarrayclass import RegistrationError, unregister_pdarray_by_name
@@ -169,62 +170,89 @@ class RegistrationTest(ArkoudaTest):
         '''
         Tests the following:
 
-        1. info() with an empty symbol table returns ak.EmptySymbolTable regardless of arguments
-        2. info(ak.RegisteredSymbols) when no objects are registered returns ak.EmptyRegistry
+        1. json.loads(info(AllSymbols)) is an empty list when the symbol table is empty
+        2. json.loads(info(RegisteredSymbols)) is an empty list when the registry is empty
         3. The registered field is set to false for objects that have not been registered
         4. The registered field is set to true for objects that have been registered
         5. info(ak.AllSymbols) contains both registered and non-registered objects
         6. info(ak.RegisteredSymbols) only contains registered objects
+        7. info raises RunTimeError when called on objects not found in symbol table
         '''
         # Cleanup symbol table from previous tests
         cleanup()
 
-        self.assertEqual(ak.info(ak.AllSymbols), ak.EmptySymbolTable,
-                         msg='info(AllSymbols) empty symbol table message failed')
-        self.assertEqual(ak.info(ak.RegisteredSymbols), ak.EmptySymbolTable,
-                         msg='info(RegisteredSymbols) empty symbol table message failed')
+        self.assertFalse(json.loads(ak.information(ak.AllSymbols)),
+                         msg='info(AllSymbols) should be empty list')
+        self.assertFalse(json.loads(ak.information(ak.RegisteredSymbols)),
+                         msg='info(RegisteredSymbols) should be empty list')
 
-        my_array = ak.ones(10, dtype=ak.int64)
-        self.assertTrue('registered:false' in ak.info(ak.AllSymbols).split(),
-                        msg='info(AllSymbols) should contain non-registered objects')
-
-        self.assertEqual(ak.info(ak.RegisteredSymbols), ak.EmptyRegistry,
-                         msg='info(RegisteredSymbols) empty registry message failed')
+        my_pdarray = ak.ones(10, dtype=ak.int64)
+        self.assertFalse(json.loads(my_pdarray.info())[0]['registered'],
+                         msg='my_array should be in all symbols but not be registered')
 
         # After register(), the registered field should be set to true for all info calls
-        my_array.register('keep_me')
-        self.assertTrue('registered:true' in ak.info('keep_me').split(),
+        my_pdarray.register('keep_me')
+        self.assertTrue(json.loads(ak.information('keep_me'))[0]['registered'],
                         msg='keep_me array not found or not registered')
-        self.assertTrue('registered:true' in ak.info(ak.AllSymbols).split(),
+        self.assertTrue(any([sym['registered'] for sym in json.loads(ak.information(ak.AllSymbols))]),
                         msg='No registered objects were found in symbol table')
-        self.assertTrue('registered:true' in ak.info(ak.RegisteredSymbols).split(),
+        self.assertTrue(any([sym['registered'] for sym in json.loads(ak.information(ak.RegisteredSymbols))]),
                         msg='No registered objects were found in registry')
 
         not_registered_array = ak.ones(10, dtype=ak.int64)
-        self.assertTrue(len(ak.info(ak.AllSymbols).split('\n')) > len(ak.info(ak.RegisteredSymbols).split('\n')),
+        self.assertTrue(len(json.loads(ak.information(ak.AllSymbols))) > len(json.loads(ak.information(ak.RegisteredSymbols))),
                         msg='info(AllSymbols) should have more objects than info(RegisteredSymbols) before clear()')
         ak.clear()
-        self.assertTrue(len(ak.info(ak.AllSymbols).split('\n')) == len(ak.info(ak.RegisteredSymbols).split('\n')),
+        self.assertTrue(len(json.loads(ak.information(ak.AllSymbols))) == len(json.loads(ak.information(ak.RegisteredSymbols))),
                         msg='info(AllSymbols) and info(RegisteredSymbols) should have same num of objects after clear()')
 
         # After unregister(), the registered field should be set to false for AllSymbol and object name info calls
         # RegisteredSymbols info calls should return ak.EmptyRegistry
-        my_array.unregister()
-        self.assertTrue('registered:false' in ak.info("keep_me").split(),
-                        msg='info(keep_me) registered field should be false after unregister()')
-        self.assertTrue('registered:false' in ak.info(ak.AllSymbols).split(),
+        my_pdarray.unregister()
+        self.assertFalse(any([obj['registered'] for obj in json.loads(my_pdarray.info())]),
+                        msg='info(my_array) registered field should be false after unregister()')
+        self.assertFalse(all([obj['registered'] for obj in json.loads(ak.information(ak.AllSymbols))]),
                         msg='info(AllSymbols) should contain unregistered objects')
-        self.assertEqual(ak.info(ak.RegisteredSymbols), ak.EmptyRegistry,
-                         msg='info(RegisteredSymbols) empty registry message failed after unregister()')
+        self.assertFalse(json.loads(ak.information(ak.RegisteredSymbols)),
+                         msg='info(RegisteredSymbols) empty list failed after unregister()')
 
-        # After clear(), every info call should return ak.EmptySymbolTable
         ak.clear()
-        self.assertEqual(ak.info("keep_me"), ak.EmptySymbolTable,
-                         msg='info(keep_me) empty symbol message failed')
-        self.assertEqual(ak.info(ak.AllSymbols), ak.EmptySymbolTable,
-                         msg='info(AllSymbols) empty symbol table message failed')
-        self.assertEqual(ak.info(ak.RegisteredSymbols), ak.EmptySymbolTable,
-                         msg='info(RegisteredSymbols) empty symbol table message failed')
+        # RuntimeError when calling info on an object not in the symbol table
+        with self.assertRaises(RuntimeError, msg="RuntimeError for info on object not in symbol table"):
+            ak.information('keep_me')
+        self.assertFalse(json.loads(ak.information(ak.AllSymbols)),
+                         msg='info(AllSymbols) should be empty list')
+        self.assertFalse(json.loads(ak.information(ak.RegisteredSymbols)),
+                         msg='info(RegisteredSymbols) should be empty list')
+        cleanup()
+
+    def test_in_place_info(self):
+        """
+        Tests the class level info method for pdarray, String, and Categorical
+        """
+        cleanup()
+        my_pda = ak.ones(10, ak.int64)
+        self.assertFalse(any([sym['registered'] for sym in json.loads(my_pda.info())]),
+                        msg='no components of my_pda should be registered before register call')
+        my_pda.register('my_pda')
+        self.assertTrue(all([sym['registered'] for sym in json.loads(my_pda.info())]),
+                        msg='all components of my_pda should be registered after register call')
+
+        my_str = ak.random_strings_uniform(1, 10, UNIQUE, characters='printable')
+        self.assertFalse(any([sym['registered'] for sym in json.loads(my_str.info())]),
+                        msg='no components of my_str should be registered before register call')
+        my_str.register('my_str')
+        self.assertTrue(all([sym['registered'] for sym in json.loads(my_str.info())]),
+                        msg='all components of my_str should be registered after register call')
+
+        my_cat = ak.Categorical(ak.array([f"my_cat {i}" for i in range(1, 11)]))
+        self.assertFalse(any([sym['registered'] for sym in json.loads(my_cat.info())]),
+                        msg='no components of my_cat should be registered before register call')
+        my_cat.register('my_cat')
+        self.assertTrue(all([sym['registered'] for sym in json.loads(my_cat.info())]),
+                        msg='all components of my_cat should be registered after register call')
+        cleanup()
+
 
     def test_is_registered(self):
         """
@@ -394,8 +422,6 @@ class RegistrationTest(ArkoudaTest):
 
 def cleanup():
     ak.clear()
-    if ak.info(ak.AllSymbols) != ak.EmptySymbolTable:
-        for registered_object in filter(None, ak.info(ak.AllSymbols).split('\n')):
-            name = registered_object.split()[0].split(':')[1].replace('"', '')
-            ak.unregister_pdarray_by_name(name)
-        ak.clear()
+    for registered_name in ak.list_registry():
+        ak.unregister_pdarray_by_name(registered_name)
+    ak.clear()

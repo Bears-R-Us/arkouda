@@ -4,6 +4,8 @@ import pandas as pd
 from collections import Counter
 from context import arkouda as ak
 from base_test import ArkoudaTest
+from collections import namedtuple
+
 ak.verbose = False
 N = 100
 UNIQUE = N//4
@@ -224,6 +226,7 @@ if __name__ == '__main__':
     else:
         ak.connect()
 
+    print("Running test from string_test.__main__")
     # with open(__file__, 'r') as f:
     #     base_words = np.array(f.read().split())
     # test_strings = np.random.choice(base_words, N, replace=True)
@@ -300,11 +303,14 @@ if __name__ == '__main__':
     print("peel passed")
 
     # stick
-    run_test_stick(strings, test_strings, base_words, delim)
+    run_test_stick(strings, test_strings, base_words, delim, 100)
     print("stick passed")
 
+
 class StringTest(ArkoudaTest):
-  
+
+    Gremlins = namedtuple('Gremlins', 'gremlins_base_words gremlins_strings gremlins_test_strings gremlins_cat')
+
     def setUp(self):
         self.maxDiff = None
         ArkoudaTest.setUp(self)
@@ -314,53 +320,60 @@ class StringTest(ArkoudaTest):
         self.gremlins = ak.array(gremlins)
         self.base_words = ak.concatenate((base_words1, base_words2))
         self.np_base_words = np.hstack((base_words1.to_ndarray(), base_words2.to_ndarray()))
-        choices = ak.randint(0, self.base_words.size, N)
-        self.strings = self.base_words[choices]
+        self.choices = ak.randint(0, self.base_words.size, N)
+        self.strings = self.base_words[self.choices]
         self.test_strings = self.strings.to_ndarray()
-        self.cat = ak.Categorical(self.strings)
+
         x, w = tuple(zip(*Counter(''.join(self.base_words.to_ndarray())).items()))
         self.delim = self._get_delimiter(x,w,gremlins)
-        self.akset = set(ak.unique(self.strings).to_ndarray())
-        self.gremlins_base_words = ak.concatenate((self.base_words, self.gremlins))
-        self.gremlins_strings = ak.concatenate((self.base_words[choices], self.gremlins))
-        self.gremlins_test_strings = self.gremlins_strings.to_ndarray()
-        self.gremlins_cat = ak.Categorical(self.gremlins_strings)
 
     def _get_strings(self, prefix : str='string', size : int=11) -> ak.Strings:
         return ak.array(['{} {}'.format(prefix,i) for i in range(1,size)])
 
-    def _get_delimiter(self,x : Tuple, w : Tuple, gremlins : np.ndarray) -> str:
+    def _get_delimiter(self, x : Tuple, w : Tuple, gremlins : np.ndarray) -> str:
         delim = np.random.choice(x, p=(np.array(w)/sum(w)))
         if delim in gremlins:
             self._get_delimiter(x,w,gremlins)
         return delim
-              
+
+    def _get_ak_gremlins(self):
+        gremlins_base_words = ak.concatenate((self.base_words, self.gremlins))
+        gremlins_strings = ak.concatenate((self.base_words[self.choices], self.gremlins))
+        gremlins_test_strings = gremlins_strings.to_ndarray()
+        gremlins_cat = ak.Categorical(gremlins_strings)
+        return self.Gremlins(gremlins_base_words, gremlins_strings, gremlins_test_strings, gremlins_cat)
+
+    def _get_categorical(self):
+        return ak.Categorical(self.strings)
+
     def test_compare_strings(self):
         assert compare_strings(self.base_words.to_ndarray(), self.np_base_words)
 
     def test_argsort(self):
-        run_test_argsort(self.strings, self.test_strings, self.cat)
+        run_test_argsort(self.strings, self.test_strings, self._get_categorical())
 
     def test_in1d(self):
-        run_test_in1d(self.strings, self.cat, self.base_words)
+        run_test_in1d(self.strings, self._get_categorical(), self.base_words)
                       
     def test_unique(self):
-        run_test_unique(self.strings, self.test_strings, self.cat)
+        run_test_unique(self.strings, self.test_strings, self._get_categorical())
 
     def test_groupby(self):
-        run_test_groupby(self.strings, self.cat, self.akset)
+        akset = set(ak.unique(self.strings).to_ndarray())
+        run_test_groupby(self.strings, self._get_categorical(), akset)
 
     def test_index(self):
-        run_test_index(self.strings, self.test_strings, self.cat, 
+        run_test_index(self.strings, self.test_strings, self._get_categorical(),
                        range(-len(self.gremlins), 0))
-        run_test_index(self.gremlins_strings, self.gremlins_test_strings, 
-                       self.gremlins_cat, range(-len(self.gremlins), 0))
+        g = self._get_ak_gremlins()
+        run_test_index(g.gremlins_strings, g.gremlins_test_strings,
+                       g.gremlins_cat, range(-len(self.gremlins), 0))
         
     def test_slice(self):
-        run_test_slice(self.strings, self.test_strings, self.cat)
+        run_test_slice(self.strings, self.test_strings, self._get_categorical())
         
     def test_pdarray_index(self):
-        run_test_pdarray_index(self.strings, self.test_strings, self.cat)
+        run_test_pdarray_index(self.strings, self.test_strings, self._get_categorical())
 
     def test_contains(self):
         run_test_contains(self.strings, self.test_strings, self.delim)
@@ -378,11 +391,12 @@ class StringTest(ArkoudaTest):
         run_test_ends_with(self.strings, self.test_strings, str.encode(str(self.delim)))
 
         # Test gremlins delimiters
-        run_test_ends_with(self.gremlins_strings, self.gremlins_test_strings, ' ')        
-        run_test_ends_with(self.gremlins_strings, self.gremlins_test_strings, '"')
+        g = self._get_ak_gremlins()
+        run_test_ends_with(g.gremlins_strings, g.gremlins_test_strings, ' ')
+        run_test_ends_with(g.gremlins_strings, g.gremlins_test_strings, '"')
         with self.assertRaises(AssertionError):
-            self.assertFalse(run_test_ends_with(self.gremlins_strings, 
-                                            self.gremlins_test_strings, ''))
+            self.assertFalse(run_test_ends_with(g.gremlins_strings,
+                                            g.gremlins_test_strings, ''))
     
     def test_ends_with_delimiter_match(self):
         strings = ak.array(['string{} '.format(i) for i in range(0,5)])
@@ -443,11 +457,12 @@ class StringTest(ArkoudaTest):
         run_test_peel(self.strings, self.test_strings, np.str_(self.delim))
         run_test_peel(self.strings, self.test_strings, str.encode(str(self.delim)))
         
-        # Test gremlins delimiters 
+        # Test gremlins delimiters
+        g = self._get_ak_gremlins()
         with self.assertRaises(ValueError):
-            run_test_peel(self.gremlins_strings, self.gremlins_test_strings, '')  
-        run_test_peel(self.gremlins_strings, self.gremlins_test_strings, '"')  
-        run_test_peel(self.gremlins_strings, self.gremlins_test_strings, ' ')
+            run_test_peel(g.gremlins_strings, g.gremlins_test_strings, '')
+        run_test_peel(g.gremlins_strings, g.gremlins_test_strings, '"')
+        run_test_peel(g.gremlins_strings, g.gremlins_test_strings, ' ')
 
         # Run a test with a specific set of strings to verify strings.bytes matches expected output
         series = pd.Series(["k1:v1", "k2:v2", "k3:v3", "no_colon"])
@@ -474,13 +489,14 @@ class StringTest(ArkoudaTest):
         run_test_stick(self.strings, self.test_strings, self.base_words, 
                        str.encode(str(self.delim)), 100)
         
-        # Test gremlins delimiters 
-        run_test_stick(self.gremlins_strings, self.gremlins_test_strings, 
-                       self.gremlins_base_words, ' ', 103) 
-        run_test_stick(self.gremlins_strings, self.gremlins_test_strings, 
-                       self.gremlins_base_words, '', 103)  
-        run_test_stick(self.gremlins_strings, self.gremlins_test_strings, 
-                       self.gremlins_base_words, '"', 103)
+        # Test gremlins delimiters
+        g = self._get_ak_gremlins()
+        run_test_stick(g.gremlins_strings, g.gremlins_test_strings,
+                       g.gremlins_base_words, ' ', 103)
+        run_test_stick(g.gremlins_strings, g.gremlins_test_strings,
+                       g.gremlins_base_words, '', 103)
+        run_test_stick(g.gremlins_strings, g.gremlins_test_strings,
+                       g.gremlins_base_words, '"', 103)
         
     def test_str_output(self):
         strings = ak.array(['string {}'.format(i) for i in range (0,101)])

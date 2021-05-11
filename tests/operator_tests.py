@@ -1,10 +1,8 @@
 import numpy as np
-import numpy
-import warnings, os
+import warnings
 from itertools import product
 from base_test import ArkoudaTest
 from context import arkouda as ak
-from context import arkouda
 SIZE = 10
 verbose = ArkoudaTest.verbose
 
@@ -294,8 +292,35 @@ class OperatorsTest(ArkoudaTest):
 
         self.assertEqual('Error: concatenateMsg: Incompatible arguments: ' +
                          'Expected float64 dtype but got bool dtype', 
-                         cm.exception.args[0])     
-        
+                         cm.exception.args[0])
+
+    def test_str_repr(self):
+        """
+        Test 3 different types: int, float, bool with lengths under/over threshold
+        Do this for both __str__() and __repr__()
+        """
+        ak.client.pdarrayIterThresh = 5
+        # Test __str__()
+        self.assertEqual("[1 2 3]", ak.array([1, 2, 3]).__str__())
+        self.assertEqual("[1 2 3 ... 17 18 19]", ak.arange(1, 20).__str__())
+        self.assertEqual("[1.100000e+00 2.300000e+00 5.000000e+00]", ak.array([1.1, 2.3, 5]).__str__())
+        self.assertEqual("[0.000000e+00 5.263158e-01 1.052632e+00 ... 8.947368e+00 9.473684e+00 1.000000e+01]",
+                         ak.linspace(0, 10, 20).__str__())
+        self.assertEqual("[False False False]", ak.isnan(ak.array([1.1, 2.3, 5])).__str__())
+        self.assertEqual("[False False False ... False False False]", ak.isnan(ak.linspace(0, 10, 20)).__str__())
+
+        # Test __repr__()
+        self.assertEqual("array([1 2 3])", ak.array([1, 2, 3]).__repr__())
+        self.assertEqual("array([1 2 3 ... 17 18 19])", ak.arange(1, 20).__repr__())
+        self.assertEqual("array([1.1000000000000001 2.2999999999999998 5])", ak.array([1.1, 2.3, 5]).__repr__())
+        self.assertEqual("array([0 0.52631578947368418 1.0526315789473684 ... 8.9473684210526319 9.473684210526315 10])",
+                         ak.linspace(0, 10, 20).__repr__())
+        self.assertEqual("array([False False False])", ak.isnan(ak.array([1.1, 2.3, 5])).__repr__())
+        self.assertEqual("array([False False False ... False False False])", ak.isnan(ak.linspace(0, 10, 20)).__repr__())
+        ak.client.pdarrayIterThresh = ak.client.pdarrayIterThreshDefVal  # Don't forget to set this back for other tests.
+
+
+
 if __name__ == '__main__':
     '''
     Enables invocation of operator tests outside of pytest test harness

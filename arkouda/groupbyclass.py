@@ -226,8 +226,8 @@ class GroupBy:
         return self.unique_keys, create_pdarray(repMsg)
     
     @typechecked
-    def aggregate(self, values : pdarray, operator : str, skipna : bool=True) \
-                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+    def aggregate(self, values: pdarray, operator: str, skipna: bool=True) \
+                    -> Tuple[Union[pdarray, Strings, List[Union[pdarray, Strings]]], pdarray]:
         '''
         Using the permutation stored in the GroupBy instance, group another 
         array of values and apply a reduction to each group's values. 
@@ -670,17 +670,21 @@ class GroupBy:
             
         Examples
         --------
-        >>> a = ak.randint(1,5,10)
-        >>> a
-        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
-        >>> g = ak.GroupBy(a)
+        >>> data = ak.array([3, 4, 3, 1, 1, 4, 3, 4, 1, 4])
+        >>> data
+        array([3, 4, 3, 1, 1, 4, 3, 4, 1, 4])
+        >>> labels = ak.array([1, 1, 1, 2, 2, 2, 3, 3, 3, 4])
+        >>> labels
+        ak.array([1, 1, 1, 2, 2, 2, 3, 3, 3, 4])
+        >>> g = ak.GroupBy(labels)
         >>> g.keys
-        array([3, 3, 4, 3, 3, 2, 3, 2, 4, 2])
-        >>> b = ak.randint(1,5,10)
-        >>> b
-        array([3, 3, 3, 4, 1, 1, 3, 3, 3, 4])
-        >>> g.nunique(b)
-        (array([2, 3, 4]), array([3, 3, 1]))
+        ak.array([1, 1, 1, 2, 2, 2, 3, 3, 3, 4])
+        >>> g.nunique(data)
+        array([1,2,3,4]), array([2, 2, 3, 1])
+        #    Group (1,1,1) has values [3,4,3] -> there are 2 unique values 3&4
+        #    Group (2,2,2) has values [1,1,4] -> 2 unique values 1&4
+        #    Group (3,3,3) has values [3,4,1] -> 3 unique values
+        #    Group (4) has values [4] -> 1 unique value
         """
         if values.dtype != int64:
             raise TypeError('the pdarray dtype must be int64')

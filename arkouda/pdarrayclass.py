@@ -1,9 +1,9 @@
 from __future__ import annotations
-from typing import cast, Sequence, Union, List
+from typing import cast, List, Sequence
 from typeguard import typechecked
 import json, struct
 import numpy as np # type: ignore
-from arkouda.client import generic_msg, RegisteredSymbols, AllSymbols, EmptyRegistry, EmptySymbolTable
+from arkouda.client import generic_msg
 from arkouda.dtypes import dtype, DTypes, resolve_scalar_dtype, \
      structDtypeCodes, translate_np_dtype, NUMBER_FORMAT_STRINGS, \
      int_scalars, numeric_scalars, numpy_scalars
@@ -11,11 +11,11 @@ from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import str_ as akstr_
 from arkouda.dtypes import bool as npbool
 from arkouda.logger import getArkoudaLogger
+from arkouda.infoclass import list_registry, information, pretty_print_information
 import builtins
 
-__all__ = ["pdarray", "info", "clear", "any", "all", "is_sorted", "list_registry", "list_symbol_table",
-           "sum", "prod", "min", "max", "argmin", "argmax", "mean", "var", "std", "mink",
-           "maxk", "argmink", "argmaxk", "attach_pdarray",
+__all__ = ["pdarray", "clear", "any", "all", "is_sorted", "sum", "prod", "min", "max", "argmin",
+           "argmax", "mean", "var", "std", "mink", "maxk", "argmink", "argmaxk", "attach_pdarray",
            "unregister_pdarray_by_name", "RegistrationError"]
 
 logger = getArkoudaLogger(name='pdarrayclass')    
@@ -558,6 +558,50 @@ class pdarray:
             Raised if there's a server-side error thrown
         """
         return np.bool_(self.name in list_registry())
+
+    def _list_component_names(self) -> List[str]:
+        """
+        Internal Function that returns a list of all component names
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        List[str]
+            List of all component names
+        """
+        return [self.name]
+
+    def info(self) -> str:
+        """
+        Returns a JSON formatted string containing information about all components of self
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            JSON string containing information about all components of self
+        """
+        return information(self._list_component_names())
+
+    def pretty_print_info(self) -> None:
+        """
+        Prints information about all components of self in a human readable format
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+        pretty_print_information(self._list_component_names())
 
     def is_sorted(self) -> np.bool_:
         """
@@ -1156,93 +1200,6 @@ def create_pdarray(repMsg : str) -> pdarray:
     logger.debug(("created Chapel array with name: {} dtype: {} size: {} ndim: {} shape: {} " +
                   "itemsize: {}").format(name, mydtype, size, ndim, shape, itemsize))
     return pdarray(name, mydtype, size, ndim, shape, itemsize)
-
-@typechecked
-def info(pda : Union[pdarray, str]) -> str:
-    """
-    Returns information about the pdarray instance
-    
-    Parameters
-    ----------
-    pda : Union[pdarray, str]
-       pda is either the pdarray instance or the pdarray.name string
-    
-    Returns
-    ------
-    str
-        Information regarding the pdarray in the form of a string
-    
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is neither a pdarray or string
-    RuntimeError
-        Raised if a server-side error is thrown in the process of 
-        retrieving information about the pdarray
-    """
-    if isinstance(pda, pdarray):
-        return cast(str,generic_msg(cmd="info", args="{}".format(pda.name)))
-    elif isinstance(pda, str):
-        return cast(str,generic_msg(cmd="info", args="{}".format(pda)))
-    else:
-        raise TypeError("info: must be pdarray or string".format(pda))
-        return generic_msg(cmd="info", args="{}".format(pda))
-
-def list_registry() -> List[str]:
-    """
-    Return a list containing the names of all registered objects
-
-    Parameters
-    ----------
-    None
-
-    Returns
-    -------
-    list
-        List of all object names in the registry
-
-    Raises
-    ------
-    RuntimeError
-        Raised if there's a server-side error thrown
-    """
-    registered_list: List[str] = []
-    all_registered = info(RegisteredSymbols)
-    if all_registered not in [EmptyRegistry, EmptySymbolTable]:
-        registered_object: str
-        for registered_object in all_registered.split('\n'):
-            if registered_object:
-                name = registered_object.split()[0].split(':')[1].replace('"', '')
-                registered_list.append(name)
-    return registered_list
-
-def list_symbol_table() -> List[str]:
-    """
-    Return a list containing the names of all objects in the symbol table
-
-    Parameters
-    ----------
-    None
-
-    Returns
-    -------
-    list
-        List of all object names in the symbol table
-
-    Raises
-    ------
-    RuntimeError
-        Raised if there's a server-side error thrown
-    """
-    symbol_list: List[str] = []
-    all_symbols = info(AllSymbols)
-    if all_symbols not in [EmptyRegistry, EmptySymbolTable]:
-        symbol: str
-        for symbol in all_symbols.split('\n'):
-            if symbol:
-                name = symbol.split()[0].split(':')[1].replace('"', '')
-                symbol_list.append(name)
-    return symbol_list
 
 def clear() -> None:
     """
