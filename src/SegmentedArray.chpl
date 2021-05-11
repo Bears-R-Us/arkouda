@@ -870,11 +870,11 @@ module SegmentedArray {
     return truth;
   }
 
-  private config const in1dAssocSortThreshold = 10**4;
+  private config const in1dAssocSortThreshold = 10**6;
 
   /* Test array of strings for membership in another array (set) of strings. Returns
      a boolean vector the same size as the first array. */
-  proc in1d(mainStr: SegString, testStr: SegString, invert=false) throws where useHash {
+  proc in1d(mainStr: SegString, testStr: SegString, invert=false, forceSort=false) throws where useHash {
     var truth: [mainStr.offsets.aD] bool;
     // Early exit for zero-length result
     if (mainStr.size == 0) {
@@ -892,7 +892,7 @@ module SegmentedArray {
         t.clear();
     }
 
-    if testStr.size <= in1dAssocSortThreshold {
+    if (testStr.size <= in1dAssocSortThreshold) && !forceSort {
       if logLevel == LogLevel.DEBUG {
         saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                        "Making associative domains for test set on each locale");
@@ -906,7 +906,8 @@ module SegmentedArray {
           // Local hashes of second array
           ref mySet = localTestHashes[here.id];
           mySet.requestCapacity(testStr.size);
-          const testHashes = testStr.hash();
+          var testHashes: [{0..#testStr.size}] 2*uint(64);
+          testHashes = testStr.hash();
           for h in testHashes {
             mySet += h;
           }
@@ -930,10 +931,15 @@ module SegmentedArray {
                        "%t seconds".format(t.elapsed()));
       }
     } else {
+      if logLevel == LogLevel.DEBUG {
+        saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                       "Using sort-based strategy");
+        t.start();
+      }
       const testHashes = testStr.hash();
       // Unique the hashes of each array, preserving reverse index for main
-      (umain, cmain, revIdx) = uniqueSortWithInverse(hashes);
-      utest = uniqueSort(testHashes);
+      var (umain, cmain, revIdx) = uniqueSortWithInverse(hashes);
+      var utest = uniqueSort(testHashes, needCounts=false);
       // Concat unique hashes
       var combinedDom = makeDistDom(umain.size + utest.size);
       var combined: [combinedDom] 2*uint(64);
@@ -950,7 +956,7 @@ module SegmentedArray {
       var dupe: [combinedDom] bool = false;
       forall (sortedIdx, origIdx, s) in zip(combinedDom, iv, sorted) with (var agg = newDstAggregator(bool)){
         // When next hash is same as current, string exists in both arrays
-        if i < combinedDom.high && (s == sorted[sortedIdx+1]){
+        if sortedIdx < combinedDom.high && (s == sorted[sortedIdx+1]){
           // Use the iv to scatter back to pre-sorted order
           agg.copy(dupe[origIdx], true);
         }
@@ -958,6 +964,11 @@ module SegmentedArray {
       // Use revIdx to broadcast dupe to original non-unique domain
       forall (t, ri) in zip(truth, revIdx) with (var agg = newSrcAggregator(bool)) {
         agg.copy(t, dupe[ri]);
+      }
+      if logLevel == LogLevel.DEBUG {
+        t.stop(); 
+        saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                       "%t seconds".format(t.elapsed()));
       }
     }
     return truth;
@@ -978,13 +989,13 @@ module SegmentedArray {
 
   private config const in1dSortThreshold = 64;
   
-  proc in1d(mainStr: SegString, testStr: SegString, invert=false) throws where !useHash {
+  proc in1d(mainStr: SegString, testStr: SegString, invert=false, forceSort=false) throws where !useHash {
     var truth: [mainStr.offsets.aD] bool;
     // Early exit for zero-length result
     if (mainStr.size == 0) {
       return truth;
     }
-    if (testStr.size <= in1dSortThreshold) {
+    if (testStr.size <= in1dSortThreshold) && !forceSort {
       for i in 0..#testStr.size {
         truth |= (mainStr == testStr[i]);
       }
