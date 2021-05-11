@@ -1266,35 +1266,14 @@ module GenSymIO {
                         on Locales[idx-1] {
                             const locDom = A.localSubdomain();
                             var localeArray = A.localSlice(locDom);
-
-                            var t1 = new Time.Timer();
-                            t1.clear();
-                            t1.start(); 
-
                             rightShuffleSlice = localeArray[shuffleRightIndex..localeArray.size-1];
-
-                            t1.stop();  
-                            var elapsed = t1.elapsed();
-                            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                "Time to generate chars slice shuffled right FROM %i TO locale %i: %.17r".format(
-                                           here.id,idx,elapsed));  
                         }      
-                  
-                        var t1 = new Time.Timer();
-                        t1.clear();
-                        t1.start(); 
-                        
+                                          
                         /* 
                          * Prepend the current locale charsList with the chars shuffled right from 
                          * the previous locale
                          */
                         charList.insert(0,rightShuffleSlice);
-
-                        t1.stop();  
-                        var elapsed = t1.elapsed(); 
-                        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                            "Time to insert chars shuffled right TO locale %i FROM %i: %.17r".format(
-                                           idx,idx-1,elapsed));  
                     }
                 }
 
@@ -1313,29 +1292,14 @@ module GenSymIO {
                 if shuffleLeftIndices[idx+1] > -1 || isLastLocale(idx+1) {
                     on Locales[idx+1] {
                         const locDom = A.localSubdomain();
-                        var t1 = new Time.Timer();
-                        t1.clear();
-                        t1.start(); 
                         
                         var localeArray = A.localSlice(locDom);
                         var shuffleLeftIndex = shuffleLeftIndices[here.id];
                         var localStart = locDom.first;
                         var localLeadingSliceIndex = localStart + shuffleLeftIndex -2;
+
                         shuffleLeftSlice = localeArray[localStart..localLeadingSliceIndex];    
-                        t1.stop();  
-                        var elapsed = t1.elapsed();
-                        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                            "Time to generate left shuffle slice FROM locale %i to complete last string IN locale %i: %.17r".format(
-                                                   here.id,idx,elapsed));                     
-                        t1 = new Time.Timer();
-                        t1.clear();
-                        t1.start(); 
                         charList.extend(shuffleLeftSlice);  
-                        t1.stop();  
-                        elapsed = t1.elapsed();
-                        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                            "Time to extend charList with left shuffle slice to complete last string FOR locale %i: %.17r".format(
-                                                   idx,elapsed)); 
                     }
                 }
 
@@ -1412,17 +1376,7 @@ module GenSymIO {
                       * not contain chars from a string started in the previous locale (idx-1). 
                       * Accordingly, initialize with the current locale slice.
                       */
-                     var t1 = new Time.Timer();
-                     t1.clear();
-                     t1.start(); 
-
                      charList = new list(A.localSlice(locDom));
-
-                     t1.stop();  
-                     var elapsed = t1.elapsed();
-                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                            "Time to initialize char list FOR locale %i: %.17r".format(
-                                                   idx,elapsed)); 
 
                      /*
                       * If (1) this locale (idx) contains one string/string segment and (2) ends 
@@ -1439,27 +1393,10 @@ module GenSymIO {
                              on Locales[idx-1] {
                                  const locDom = A.localSubdomain();  
                                  var localeArray = A.localSlice(locDom);
-
-                                 var t1 = new Time.Timer();
-                                 t1.clear();
-                                 t1.start(); 
-                                 shuffleRightSlice = localeArray[shuffleRightIndex..localeArray.size-1];
-                                 t1.stop();  
-                                 var elapsed = t1.elapsed();
-                                 gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "Time to generate chars shuffled right to locale %i FROM %i: %.17r".format(
-                                                   idx,idx-1,elapsed)); 
+                                 shuffleRightSlice = localeArray[shuffleRightIndex..localeArray.size-1]; 
                              }
 
-                             var t1 = new Time.Timer();
-                             t1.clear();
-                             t1.start(); 
                              charList.insert(0,shuffleRightSlice);
-                             t1.stop();
-                             var elapsed = t1.elapsed();
-                             gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "Time to insert chars shuffled right TO locale %i FROM %i: %.17r".format(
-                                                   idx,idx-1,elapsed)); 
                          }
                      }
 
@@ -1507,9 +1444,6 @@ module GenSymIO {
                           var localLeadingSliceIndex = localStart + shuffleLeftIndex;
                           var leadingCharArray = adjustCharArrayForLeadingSlice(localLeadingSliceIndex, 
                                          A.localSlice(locDom),locDom.last,idx);
-                          var t1 = new Time.Timer();
-                          t1.clear();
-                          t1.start(); 
                           charList.extend(leadingCharArray);  
                       } else {
                           charList.extend(A.localSlice(locDom));
@@ -1675,17 +1609,10 @@ module GenSymIO {
      */
     proc generateFilenames(prefix : string, extension : string, A) : [] string throws { 
         // Generate the filenames based upon the number of targetLocales.
-        var t1 = new Time.Timer();
-        t1.clear();
-        t1.start(); 
         var filenames: [0..#A.targetLocales().size] string;
         for i in 0..#A.targetLocales().size {
             filenames[i] = generateFilename(prefix, extension, i);
-        }
-        t1.stop();  
-        var elapsed = t1.elapsed();
-        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "Time to generateFilenames: %.17r".format(elapsed));    
+        }   
         return filenames;
     }
 
@@ -1709,11 +1636,6 @@ module GenSymIO {
                                             A, group: string) throws {
       // if appending, make sure number of files hasn't changed and all are present
       var warnFlag: bool;
-
-      // initialize timer
-      var t1 = new Time.Timer();
-      t1.clear();
-      t1.start();
       
       /*
        * Generate a list of matching filenames to test against. If in 
@@ -1806,11 +1728,7 @@ module GenSymIO {
                                     routineName=getRoutineName(), 
                                     moduleName=getModuleName(), 
                                     errorClass='IllegalArgumentError');
-        }  
-        t1.stop();  
-        var elapsed = t1.elapsed();
-        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                             "Time to process file names: %.17r".format(elapsed));        
+        }      
         return warnFlag;
     }
 
@@ -1823,11 +1741,6 @@ module GenSymIO {
     proc processFilenames(filenames: [] string, matchingFilenames: [] string, mode: int, A) throws {
       // if appending, make sure number of files hasn't changed and all are present
       var warnFlag: bool;
-
-      // initialize timer
-      var t1 = new Time.Timer();
-      t1.clear();
-      t1.start();
 
       if (mode == APPEND) {
           var allexist = true;
@@ -1911,10 +1824,6 @@ module GenSymIO {
                                      moduleName=getModuleName(), 
                                      errorClass='IllegalArgumentError');            
         }    
-        t1.stop();  
-        var elapsed = t1.elapsed();
-        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                       "Time to process file names: %.17r".format(elapsed));        
 
         return warnFlag;
     }
@@ -1938,10 +1847,6 @@ module GenSymIO {
     private proc generateStringsMetadata(idx : int, shuffleLeftIndices, 
                        shuffleRightIndices, isSingleString, endsWithCompleteString, 
                        charArraySize, A, SA) throws {
-        // initialize timer
-        var t1 = new Time.Timer();
-        t1.clear();
-        t1.start();
         on Locales[idx] {
             //Retrieve the chars and segs local slices (portions of arrays on this locale)
             const locDom = A.localSubdomain();
@@ -2050,11 +1955,6 @@ module GenSymIO {
                 shuffleRightIndices[idx] = -1;
             }
         }
-        t1.stop();  
-        var elapsed = t1.elapsed();
-
-        try! gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                  "Time to generateStringsMetadata for locale %i: %.17r".format(idx,elapsed)); 
     }
     
     /*
@@ -2062,18 +1962,8 @@ module GenSymIO {
      * slicing leading chars that compose a string started in the previous locale and 
      * returning a new char array.
      */
-    private proc adjustCharArrayForLeadingSlice(sliceIndex, charArray, last, idx) throws {
-        // initialize timer
-        var t1 = new Time.Timer();
-        t1.clear();
-        t1.start();    
-        var adjCharArray = charArray[sliceIndex..last]; 
-        t1.stop();  
-        var elapsed = t1.elapsed();
-        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                 "Time to generate array with leading chars sliced for locale %i: %.17r".format(
-                                    idx,elapsed)); 
-        return adjCharArray;
+    private proc adjustCharArrayForLeadingSlice(sliceIndex, charArray, last, idx) throws { 
+        return charArray[sliceIndex..last]; 
     }    
 
     /*
@@ -2082,18 +1972,7 @@ module GenSymIO {
      * to the end of the charList.
      */
     private proc adjustForLeftShuffle(shuffleLeftIndex: int, charList, idx: int) throws {
-        // initialize timer
-        var t1 = new Time.Timer();
-        t1.clear();
-        t1.start();
-
-        var adjCharList = charList[shuffleLeftIndex..charList.size-1];
-        t1.stop();
-        var elapsed = t1.elapsed();
-        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                "Time to slice chars FROM locale %i shuffled left to locale %i: %.17r".format(
-                             elapsed,idx,idx-1));
-        return adjCharList;
+        return charList[shuffleLeftIndex..charList.size-1];
     }
 
     /* 
@@ -2102,28 +1981,14 @@ module GenSymIO {
      * the rightShuffleIndex. 
      */
     private proc adjustForRightShuffle(shuffleRightIndex: int, 
-                                               charsList: list(uint(8)), idx : int) throws {
-        var t1 = new Time.Timer();
-        t1.clear();
-        t1.start();  
-        
-        var newCharsList = charsList[0..shuffleRightIndex];
- 
-        t1.stop();  
-        var elapsed = t1.elapsed();
-        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                   "Time to slice chars FROM locale %i shuffled right TO locale %i: %.17r".format(
-                        idx,idx+1,elapsed)); 
-        return newCharsList;
+                                               charsList: list(uint(8)), idx : int) throws {        
+        return charsList[0..shuffleRightIndex];
     }
 
     private proc generateFinalSegmentsList(charList : list(uint(8)), idx: int) throws {
         var segments: list(int);
         segments.append(0);
 
-        var t1 = new Time.Timer();
-        t1.clear();
-        t1.start(); 
         for (value, i) in zip(charList, 0..charList.size-1) do {
             /*
              * If the char is the null uint(8) char, check to see if it is the 
@@ -2136,10 +2001,6 @@ module GenSymIO {
             }
         }
         
-        t1.stop();  
-        var elapsed = t1.elapsed();
-        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                   "Time to generate segmentsList FOR locale %i: %.17r".format(idx,elapsed)); 
         return segments;
     }
 
@@ -2180,9 +2041,14 @@ module GenSymIO {
     private proc writeStringsToHdf(fileId: int, idx: int, group: string, 
                               valuesList: list(uint(8)), segmentsList: list(int)) throws {
         // initialize timer
-        var t1 = new Time.Timer();
-        t1.clear();
-        t1.start();
+        var t1: Time.Timer;
+        var elapsed: real(64);
+        if logLevel == LogLevel.DEBUG {
+            t1 = new Time.Timer();
+            t1.clear();
+            t1.start();
+        }
+
         H5LTmake_dataset_WAR(fileId, '/%s/values'.format(group).c_str(), 1,
                      c_ptrTo([valuesList.size:uint(64)]), getHDF5Type(uint(8)),
                             c_ptrTo(valuesList.toArray()));
@@ -2190,9 +2056,11 @@ module GenSymIO {
         H5LTmake_dataset_WAR(fileId, '/%s/segments'.format(group).c_str(), 1,
                      c_ptrTo([segmentsList.size:uint(64)]),getHDF5Type(int),
                            c_ptrTo(segmentsList.toArray()));
-                           
-        t1.stop();  
-        var elapsed = t1.elapsed();
+
+        if logLevel == LogLevel.DEBUG {           
+            t1.stop();  
+            var elapsed = t1.elapsed();
+        }
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                   "Time for writing Strings to hdf5 file %t on locale %i: %.17r".format(
                        fileId,idx,elapsed));        
