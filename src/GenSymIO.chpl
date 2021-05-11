@@ -1145,19 +1145,19 @@ module GenSymIO {
         warnFlag = processFilenames(filenames, matchingFilenames, mode, A, group);
         
         /*
-         * The shuffleLeftIndices object, which is a globally-scoped PrivateSpace 
-         * array, contains the leading slice index for each locale, which is used 
-         * to remove the uint(8) characters shuffled left to the previous locale; this
-         * situation occurs when a string spans two locales.
+         * The shuffleLeftIndices object, which is a globally-scoped PrivateSpace, 
+         * contains indices for each locale that (1) specify the chars that can be 
+         * shuffled left to complete the last string in the previous locale and (2)
+         * are used to remove the corresponding chars from the donor locale.  
          *
          * The shuffleRightIndices PrivateSpace is used in the special case 
          * where the majority of a large string spanning two locales is the sole
-         * string on a locale; in this case, the trailing slice index is used
-         * to move the smaller string chunk to the locale containing the large
-         * string chunk that is the sole string chunk on a locale.
+         * string on a locale; in this case, each index specifies the chars that 
+         * can be shuffled right to start the string completed in the next locale
+         * and remove the corresponding chars from the donor locale 
          *
          * The isSingleString PrivateSpace indicates whether each locale contains
-         * chars corresponding to one string/string segment, which occurs if 
+         * chars corresponding to one string/string segment; this occurs if 
          * (1) the char array contains no null uint(8) characters or (2) there is
          * only one null uint(8) char at the end of the string/string segment
          *
@@ -1172,15 +1172,8 @@ module GenSymIO {
         var charArraySize: [PrivateSpace] int;
 
         /*
-         * Loop through all locales and set (1) shuffleLeftIndices, which are
-         * used to remove leading uint(8) characters from the local slice that
-         * complete a string started in the previous locale (2) shuffleRightIndices,
-         * which are used to removing trailing uint(8) characters used to start
-         * strings that are completed in the next locale locale (3) isSingleString,
-         * which indicates if a locale contains a Strings values array that
-         * corresponds to only one complete string or string segment and (4)
-         * endsWithCompleteString, which indicates if the local slice array has 
-         * a complete string at the end of the array.
+         * Loop through all locales and set the shuffleLeftIndices, shuffleRightIndices,
+         * isSingleString, endsWithCompleteString, and charArraySize PrivateSpaces
          */
         // initialize timer
         var t1 = new Time.Timer();
@@ -1188,10 +1181,10 @@ module GenSymIO {
         t1.start();
 
         coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) 
-                  with (ref shuffleLeftIndices, ref shuffleRightIndices, 
-                        ref isSingleString, ref endsWithCompleteString, ref charArraySize) do on loc {
-             generateValuesMetadata(idx,shuffleLeftIndices, shuffleRightIndices, 
-                                    isSingleString, endsWithCompleteString, charArraySize, A, SA);
+                with (ref shuffleLeftIndices, ref shuffleRightIndices, 
+                     ref isSingleString, ref endsWithCompleteString, ref charArraySize) do on loc {
+             generateStringsMetadata(idx,shuffleLeftIndices, shuffleRightIndices, 
+                          isSingleString, endsWithCompleteString, charArraySize, A, SA);
         }
 
         t1.stop();  
@@ -1201,7 +1194,7 @@ module GenSymIO {
                                        
         /*
          * Iterate through each locale and (1) open the hdf5 file corresponding to the
-         * locale (2) prepare values and segments lists to be written (3) write each
+         * locale (2) prepare char and segment lists to be written (3) write each
          * list as a Chapel array to the open hdf5 file and (4) close the hdf5 file
          */
         coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) with 
@@ -1254,19 +1247,22 @@ module GenSymIO {
                  * the trailing chars from the previous locale, if applicable, to set the
                  * correct starting chars for the lone string/string segment on this locale.
                  *
-                 * Note: if this is the first locale, there are no trailing chars from a
-                 * previous locale, so this code block is not executed in this case.
+                 * Note: if this is the first locale, there are no chars from a prevoius 
+                 * locale to shuffle right, so this code block is not executed in this case.
                  */                
                 if isSingleString[idx] && idx > 0 {
+                    // Retrieve the shuffleRightIndex from the previous locale
                     var shuffleRightIndex = shuffleRightIndices[idx-1];
                     
                     if shuffleRightIndex > -1 {
                         /*
-                         * There are 1..n chars to be shuffled from the previous locale
+                         * There are 1..n chars to be shuffled right from the previous locale
                          * (idx-1) to complete the beginning of the one string assigned 
                          * to the current locale (idx)
                          */
                         var rightShuffleSlice : [shuffleRightIndex..charArraySize[idx-1]-1] uint(8);
+
+                        // Slice the chars from the previous locale chars array
                         on Locales[idx-1] {
                             const locDom = A.localSubdomain();
                             var localeArray = A.localSlice(locDom);
@@ -1282,11 +1278,16 @@ module GenSymIO {
                             gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                 "Time to generate chars slice shuffled right FROM %i TO locale %i: %.17r".format(
                                            here.id,idx,elapsed));  
-                        }                        
+                        }      
+                  
                         var t1 = new Time.Timer();
                         t1.clear();
                         t1.start(); 
                         
+                        /* 
+                         * Prepend the current locale charsList with the chars shuffled right from 
+                         * the previous locale
+                         */
                         charList.insert(0,rightShuffleSlice);
 
                         t1.stop();  
@@ -1391,10 +1392,10 @@ module GenSymIO {
                  }
                  
                  // Generate the segments list now that the char list is finalized
-                 var segmentsList = generateFinalSegmentsLIst(charList,idx);
+                 var segmentsList = generateFinalSegmentsList(charList,idx);
              
                  // Write the finalized valuesList and segmentsList to the hdf5 group
-                 writeStringsToHdf(myFileID, group, charList, segmentsList);
+                 writeStringsToHdf(myFileID, idx, group, charList, segmentsList);
              } else {
                  /*
                   * The current local slice (idx) ends with the uint(8) null character,  
@@ -1482,10 +1483,10 @@ module GenSymIO {
                      }
                     
                      // Generate the segments list now that the char list is finalized
-                     var segmentsList = generateFinalSegmentsLIst(charList,idx);
+                     var segmentsList = generateFinalSegmentsList(charList,idx);
  
                      // Write the finalized valuesList and segmentsList to the hdf5 group
-                     writeStringsToHdf(myFileID, group, charList, segmentsList);
+                     writeStringsToHdf(myFileID, idx, group, charList, segmentsList);
                   } else {
                       /*
                        * The local slice (idx) does possibly contain chars from previous locale 
@@ -1515,10 +1516,10 @@ module GenSymIO {
                       } 
                       
                       // Generate the segments list now that the char list is finalized
-                      var segmentsList = generateFinalSegmentsLIst(charList,idx);
+                      var segmentsList = generateFinalSegmentsList(charList,idx);
 
                       // Write the finalized valuesList and segmentsList to the hdf5 group
-                      writeStringsToHdf(myFileID, group, charList, segmentsList);
+                      writeStringsToHdf(myFileID, idx, group, charList, segmentsList);
                     }
                 }
             
@@ -1928,29 +1929,15 @@ module GenSymIO {
     }
 
     /*
-     * Generates values array metadata required to partition the corresponding strings
-     * across 1..n locales via shuffle operations. The metadata includes leading and
-     * trailing slice indices as well as flags indicating whether the values array
-     * contains one string and if the values array ends with a complete string.
+     * Generates Strings metadata required to partition the corresponding string sequences
+     * across 1..n locales via shuffle operations. The metadata includes (1) left and
+     * right shuffle slice indices (2) flags indicating whether the locale char arrays
+     * contain one string (3) if the char arrays end with a complete string and (4)
+     * the length of each locale slice of the chars array (used for some array slice ops).
      */
-    private proc generateValuesMetadata(idx : int, shuffleLeftIndices, 
+    private proc generateStringsMetadata(idx : int, shuffleLeftIndices, 
                        shuffleRightIndices, isSingleString, endsWithCompleteString, 
                        charArraySize, A, SA) throws {
-        /*
-         * Generate the leadlingSliceIndex, which is used to (1) indicate the chars to be
-         * pulled down to the previous locale to complete the last string there and (2)
-         * filter out the chars from the current locale that were used to complete the 
-         * string in the previous locale, along with the null uint(8) char. 
-         *
-         * Next, generate the shuffleRightIndex, which is used to (1) indicate the chars
-         * to be pulled up to the next locale to complete the first string in that 
-         * locale and (2) filter out the chars from the current locale used to complete
-         * the first string in the next locale. 
-         
-         * Finally, set the endsWithCompleteString value, which indicates if the values
-         * array has the null uint(8) as the final character, which means the final 
-         * string in the locale is complete (does not span to the next locale).
-         */
         // initialize timer
         var t1 = new Time.Timer();
         t1.clear();
@@ -2067,15 +2054,15 @@ module GenSymIO {
         var elapsed = t1.elapsed();
 
         try! gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                       "Time to generateValuesMetadata for locale %i: %.17r".format(idx,elapsed)); 
+                  "Time to generateStringsMetadata for locale %i: %.17r".format(idx,elapsed)); 
     }
     
     /*
-     * Adjusts for the shuffling of a leading char sequence to the 
-     * previous locale by slicing leading chars that compose a string
-     * started in the previous locale and returning a new char array.
+     * Adjusts for the shuffling of a leading char sequence to the previous locale by 
+     * slicing leading chars that compose a string started in the previous locale and 
+     * returning a new char array.
      */
-    private proc adjustCharArrayForLeadingSlice(sliceIndex : int, charArray, last,idx) throws {
+    private proc adjustCharArrayForLeadingSlice(sliceIndex, charArray, last, idx) throws {
         // initialize timer
         var t1 = new Time.Timer();
         t1.clear();
@@ -2084,7 +2071,8 @@ module GenSymIO {
         t1.stop();  
         var elapsed = t1.elapsed();
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                   "Time to generate array with leading chars sliced out for locale %i: %.17r".format(idx,elapsed)); 
+                 "Time to generate array with leading chars sliced for locale %i: %.17r".format(
+                                    idx,elapsed)); 
         return adjCharArray;
     }    
 
@@ -2124,12 +2112,12 @@ module GenSymIO {
         t1.stop();  
         var elapsed = t1.elapsed();
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                   "Time to slice chars FROM locale %i shuffled right to locale %i: %.17r".format(
+                   "Time to slice chars FROM locale %i shuffled right TO locale %i: %.17r".format(
                         idx,idx+1,elapsed)); 
         return newCharsList;
     }
 
-    private proc generateFinalSegmentsLIst(charList : list(uint(8)), idx: int) throws {
+    private proc generateFinalSegmentsList(charList : list(uint(8)), idx: int) throws {
         var segments: list(int);
         segments.append(0);
 
@@ -2189,7 +2177,7 @@ module GenSymIO {
     /*
      * Writes the values and segments lists to hdf5 within a group.
      */
-    private proc writeStringsToHdf(fileId: int, group: string, 
+    private proc writeStringsToHdf(fileId: int, idx: int, group: string, 
                               valuesList: list(uint(8)), segmentsList: list(int)) throws {
         // initialize timer
         var t1 = new Time.Timer();
@@ -2206,7 +2194,8 @@ module GenSymIO {
         t1.stop();  
         var elapsed = t1.elapsed();
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                  "Time for writing Strings to hdf5: %.17r".format(elapsed));        
+                  "Time for writing Strings to hdf5 file %t on locale %i: %.17r".format(
+                       fileId,idx,elapsed));        
 
     }
     
