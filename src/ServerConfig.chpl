@@ -127,7 +127,7 @@ module ServerConfig
     Get the physical memory available on this locale
     */ 
     proc getPhysicalMemHere() {
-        use Memory.Diagnostics;
+        use MemDiagnostics;
         return here.physicalMemory();
     }
 
@@ -135,7 +135,7 @@ module ServerConfig
     Get the memory used on this locale
     */
     proc getMemUsed() {
-        use Memory.Diagnostics;
+        use MemDiagnostics;
         return memoryUsed();
     }
 
