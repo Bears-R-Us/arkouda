@@ -76,6 +76,12 @@ class CategoricalTest(ArkoudaTest):
         
         self.assertTrue((cat == catDupe).all())
         self.assertTrue((cat != catNonDupe).all())
+
+        c1 = ak.Categorical(ak.array(['a', 'b', 'c', 'a', 'b']))
+        c2 = ak.Categorical(ak.array(['a', 'x', 'c', 'y', 'b']))
+        res = (c1 == c2)
+        ans = ak.array([True, False, True, False, True])
+        self.assertTrue((res == ans).all())
         
     def testBinop(self):
         cat = self._getCategorical()

@@ -205,7 +205,32 @@ class Categorical:
             raise ValueError("Categorical {}: size mismatch {} {}".\
                              format(op, self.size, cast(Categorical,other).size))
         if isinstance(other, Categorical):
-            return self.codes._binop(other.codes, op)
+            if (self.categories.size == other.categories.size) and (self.categories == other.categories).all():
+                # Because categories are identical, codes can be compared directly
+                return self.codes._binop(other.codes, op)
+            else:
+                # Remap both codes to the union of categories
+                union = ak.union1d(self.categories, other.categories)
+                newinds = ak.arange(union.size)
+                # Inds of self.categories in unioned categories
+                selfnewinds = newinds(ak.in1d(union, self.categories))
+                # Need a permutation and segments to broadcast new codes
+                if self.permutation is None or self.segments is None:
+                    g = ak.GroupBy(self.codes)
+                    self.permutation = g.permutation
+                    self.segments = g.segments
+                # Form new codes by broadcasting new indices for unioned categories
+                selfnewcodes = ak.broadcast(self.segments, selfnewinds, self.size, self.permutation)
+                # Repeat for other
+                othernewinds = newinds(ak.in1d(union, other.categories))
+                if other.permutation is None or other.segments is None:
+                    g = ak.GroupBy(other.codes)
+                    other.permutation = g.permutation
+                    other.segments = g.segments
+                othernewcodes = ak.broadcast(other.segments, othernewinds, other.size, other.permutation)
+                # selfnewcodes and othernewcodes now refer to same unioned categories
+                # and can be compared directly
+                return selfnewcodes._binop(othernewcodes, op)
         else:
             raise NotImplementedError(("Operations between Categorical and " +
                                 "non-Categorical not yet implemented. " +
