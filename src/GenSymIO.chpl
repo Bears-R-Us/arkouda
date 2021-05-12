@@ -2081,7 +2081,6 @@ module GenSymIO {
                               valuesList: list(uint(8)), segmentsList: list(int)) throws {
         // initialize timer
         var t1: Time.Timer;
-        var elapsed: real(64);
         if logLevel == LogLevel.DEBUG {
             t1 = new Time.Timer();
             t1.clear();
@@ -2098,12 +2097,10 @@ module GenSymIO {
 
         if logLevel == LogLevel.DEBUG {           
             t1.stop();  
-            var elapsed = t1.elapsed();
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                  "Time for writing Strings to hdf5 file on locale %i: %.17r".format(
+                       idx,t1.elapsed()));        
         }
-        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                  "Time for writing Strings to hdf5 file %t on locale %i: %.17r".format(
-                       fileId,idx,elapsed));        
-
     }
     
     /*
