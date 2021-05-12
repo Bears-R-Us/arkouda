@@ -11,7 +11,7 @@ env:
 
 jobs:
   docs:
-    if: github.repository == 'mhmerrill/arkouda'
+    if: github.repository == 'Bears-R-Us/arkouda'
     runs-on: ubuntu-latest
     container:
       image: chapel/chapel:1.23.0
