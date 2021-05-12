@@ -4,12 +4,13 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>arkouda.message &#8212; arkouda 2020.07.07 documentation</title>
-    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
-    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
@@ -33,11 +34,11 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="module-arkouda.message">
+  <section id="module-arkouda.message">
 <span id="arkouda-message"></span><h1><a class="reference internal" href="#module-arkouda.message" title="arkouda.message"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.message</span></code></a><a class="headerlink" href="#module-arkouda.message" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-contents">
+<section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="classes">
+<section id="classes">
 <h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h3>
 <table class="longtable docutils align-default">
 <colgroup>
@@ -60,31 +61,31 @@
 </tbody>
 </table>
 <dl class="py class">
-<dt id="arkouda.message.MessageFormat">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">arkouda.message.</span></code><code class="sig-name descname"><span class="pre">MessageFormat</span></code><a class="headerlink" href="#arkouda.message.MessageFormat" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.MessageFormat">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">arkouda.message.</span></span><span class="sig-name descname"><span class="pre">MessageFormat</span></span><a class="headerlink" href="#arkouda.message.MessageFormat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
 <p>Generic enumeration.</p>
 <p>Derive from this class to define new enumerations.</p>
 <dl class="py attribute">
-<dt id="arkouda.message.MessageFormat.STRING">
-<code class="sig-name descname"><span class="pre">STRING</span></code><em class="property"> <span class="pre">=</span> <span class="pre">STRING</span></em><a class="headerlink" href="#arkouda.message.MessageFormat.STRING" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.MessageFormat.STRING">
+<span class="sig-name descname"><span class="pre">STRING</span></span><em class="property"> <span class="pre">=</span> <span class="pre">STRING</span></em><a class="headerlink" href="#arkouda.message.MessageFormat.STRING" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="arkouda.message.MessageFormat.BINARY">
-<code class="sig-name descname"><span class="pre">BINARY</span></code><em class="property"> <span class="pre">=</span> <span class="pre">BINARY</span></em><a class="headerlink" href="#arkouda.message.MessageFormat.BINARY" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.MessageFormat.BINARY">
+<span class="sig-name descname"><span class="pre">BINARY</span></span><em class="property"> <span class="pre">=</span> <span class="pre">BINARY</span></em><a class="headerlink" href="#arkouda.message.MessageFormat.BINARY" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="arkouda.message.MessageFormat.__str__">
-<code class="sig-name descname"><span class="pre">__str__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.message.MessageFormat.__str__" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.MessageFormat.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.message.MessageFormat.__str__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Overridden method returns value, which is useful in outputting
 a MessageFormat object to JSON.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="arkouda.message.MessageFormat.__repr__">
-<code class="sig-name descname"><span class="pre">__repr__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.message.MessageFormat.__repr__" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.MessageFormat.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.message.MessageFormat.__repr__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Overridden method returns value, which is useful in outputting
 a MessageFormat object to JSON.</p>
 </dd></dl>
@@ -92,36 +93,36 @@ a MessageFormat object to JSON.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="arkouda.message.MessageType">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">arkouda.message.</span></code><code class="sig-name descname"><span class="pre">MessageType</span></code><a class="headerlink" href="#arkouda.message.MessageType" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.MessageType">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">arkouda.message.</span></span><span class="sig-name descname"><span class="pre">MessageType</span></span><a class="headerlink" href="#arkouda.message.MessageType" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
 <p>Generic enumeration.</p>
 <p>Derive from this class to define new enumerations.</p>
 <dl class="py attribute">
-<dt id="arkouda.message.MessageType.NORMAL">
-<code class="sig-name descname"><span class="pre">NORMAL</span></code><em class="property"> <span class="pre">=</span> <span class="pre">NORMAL</span></em><a class="headerlink" href="#arkouda.message.MessageType.NORMAL" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.MessageType.NORMAL">
+<span class="sig-name descname"><span class="pre">NORMAL</span></span><em class="property"> <span class="pre">=</span> <span class="pre">NORMAL</span></em><a class="headerlink" href="#arkouda.message.MessageType.NORMAL" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="arkouda.message.MessageType.WARNING">
-<code class="sig-name descname"><span class="pre">WARNING</span></code><em class="property"> <span class="pre">=</span> <span class="pre">WARNING</span></em><a class="headerlink" href="#arkouda.message.MessageType.WARNING" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.MessageType.WARNING">
+<span class="sig-name descname"><span class="pre">WARNING</span></span><em class="property"> <span class="pre">=</span> <span class="pre">WARNING</span></em><a class="headerlink" href="#arkouda.message.MessageType.WARNING" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="arkouda.message.MessageType.ERROR">
-<code class="sig-name descname"><span class="pre">ERROR</span></code><em class="property"> <span class="pre">=</span> <span class="pre">ERROR</span></em><a class="headerlink" href="#arkouda.message.MessageType.ERROR" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.MessageType.ERROR">
+<span class="sig-name descname"><span class="pre">ERROR</span></span><em class="property"> <span class="pre">=</span> <span class="pre">ERROR</span></em><a class="headerlink" href="#arkouda.message.MessageType.ERROR" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="arkouda.message.MessageType.__str__">
-<code class="sig-name descname"><span class="pre">__str__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.message.MessageType.__str__" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.MessageType.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.message.MessageType.__str__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Overridden method returns value, which is useful in outputting
 a MessageType object to JSON.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="arkouda.message.MessageType.__repr__">
-<code class="sig-name descname"><span class="pre">__repr__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.message.MessageType.__repr__" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.MessageType.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.message.MessageType.__repr__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Overridden method returns value, which is useful in outputting
 a MessageType object to JSON.</p>
 </dd></dl>
@@ -129,41 +130,41 @@ a MessageType object to JSON.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="arkouda.message.RequestMessage">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">arkouda.message.</span></code><code class="sig-name descname"><span class="pre">RequestMessage</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#arkouda.message.MessageFormat" title="arkouda.message.MessageFormat"><span class="pre">MessageFormat</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">MessageFormat.STRING</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.message.RequestMessage" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.RequestMessage">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">arkouda.message.</span></span><span class="sig-name descname"><span class="pre">RequestMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmd</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#arkouda.message.MessageFormat" title="arkouda.message.MessageFormat"><span class="pre">MessageFormat</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">MessageFormat.STRING</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.message.RequestMessage" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py attribute">
-<dt id="arkouda.message.RequestMessage.__slots">
-<code class="sig-name descname"><span class="pre">__slots</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['user',</span> <span class="pre">'token',</span> <span class="pre">'cmd',</span> <span class="pre">'format',</span> <span class="pre">'args']</span></em><a class="headerlink" href="#arkouda.message.RequestMessage.__slots" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.RequestMessage.__slots">
+<span class="sig-name descname"><span class="pre">__slots</span></span><em class="property"> <span class="pre">=</span> <span class="pre">['user',</span> <span class="pre">'token',</span> <span class="pre">'cmd',</span> <span class="pre">'format',</span> <span class="pre">'args']</span></em><a class="headerlink" href="#arkouda.message.RequestMessage.__slots" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="arkouda.message.RequestMessage.user">
-<code class="sig-name descname"><span class="pre">user</span></code><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#arkouda.message.RequestMessage.user" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.RequestMessage.user">
+<span class="sig-name descname"><span class="pre">user</span></span><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#arkouda.message.RequestMessage.user" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="arkouda.message.RequestMessage.token">
-<code class="sig-name descname"><span class="pre">token</span></code><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#arkouda.message.RequestMessage.token" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.RequestMessage.token">
+<span class="sig-name descname"><span class="pre">token</span></span><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#arkouda.message.RequestMessage.token" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="arkouda.message.RequestMessage.cmd">
-<code class="sig-name descname"><span class="pre">cmd</span></code><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#arkouda.message.RequestMessage.cmd" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.RequestMessage.cmd">
+<span class="sig-name descname"><span class="pre">cmd</span></span><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#arkouda.message.RequestMessage.cmd" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="arkouda.message.RequestMessage.format">
-<code class="sig-name descname"><span class="pre">format</span></code><em class="property"> <span class="pre">:MessageFormat</span></em><a class="headerlink" href="#arkouda.message.RequestMessage.format" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.RequestMessage.format">
+<span class="sig-name descname"><span class="pre">format</span></span><em class="property"> <span class="pre">:MessageFormat</span></em><a class="headerlink" href="#arkouda.message.RequestMessage.format" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="arkouda.message.RequestMessage.args">
-<code class="sig-name descname"><span class="pre">args</span></code><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#arkouda.message.RequestMessage.args" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.RequestMessage.args">
+<span class="sig-name descname"><span class="pre">args</span></span><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#arkouda.message.RequestMessage.args" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="arkouda.message.RequestMessage.asdict">
-<code class="sig-name descname"><span class="pre">asdict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Dict</span><a class="headerlink" href="#arkouda.message.RequestMessage.asdict" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.RequestMessage.asdict">
+<span class="sig-name descname"><span class="pre">asdict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Dict</span><a class="headerlink" href="#arkouda.message.RequestMessage.asdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Overridden asdict implementation sets the values of non-required
 fields to an empty space (for Chapel JSON processing) and invokes
 str() on the format instance attribute.</p>
@@ -180,31 +181,31 @@ str() on the format instance attribute.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="arkouda.message.ReplyMessage">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">arkouda.message.</span></code><code class="sig-name descname"><span class="pre">ReplyMessage</span></code><a class="headerlink" href="#arkouda.message.ReplyMessage" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.ReplyMessage">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">arkouda.message.</span></span><span class="sig-name descname"><span class="pre">ReplyMessage</span></span><a class="headerlink" href="#arkouda.message.ReplyMessage" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py attribute">
-<dt id="arkouda.message.ReplyMessage.__slots__">
-<code class="sig-name descname"><span class="pre">__slots__</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['msg',</span> <span class="pre">'msgType',</span> <span class="pre">'user']</span></em><a class="headerlink" href="#arkouda.message.ReplyMessage.__slots__" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.ReplyMessage.__slots__">
+<span class="sig-name descname"><span class="pre">__slots__</span></span><em class="property"> <span class="pre">=</span> <span class="pre">['msg',</span> <span class="pre">'msgType',</span> <span class="pre">'user']</span></em><a class="headerlink" href="#arkouda.message.ReplyMessage.__slots__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="arkouda.message.ReplyMessage.msg">
-<code class="sig-name descname"><span class="pre">msg</span></code><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#arkouda.message.ReplyMessage.msg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.ReplyMessage.msg">
+<span class="sig-name descname"><span class="pre">msg</span></span><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#arkouda.message.ReplyMessage.msg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="arkouda.message.ReplyMessage.msgType">
-<code class="sig-name descname"><span class="pre">msgType</span></code><em class="property"> <span class="pre">:MessageType</span></em><a class="headerlink" href="#arkouda.message.ReplyMessage.msgType" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.ReplyMessage.msgType">
+<span class="sig-name descname"><span class="pre">msgType</span></span><em class="property"> <span class="pre">:MessageType</span></em><a class="headerlink" href="#arkouda.message.ReplyMessage.msgType" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="arkouda.message.ReplyMessage.user">
-<code class="sig-name descname"><span class="pre">user</span></code><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#arkouda.message.ReplyMessage.user" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.ReplyMessage.user">
+<span class="sig-name descname"><span class="pre">user</span></span><em class="property"> <span class="pre">:str</span></em><a class="headerlink" href="#arkouda.message.ReplyMessage.user" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="arkouda.message.ReplyMessage.fromdict">
-<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">fromdict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#arkouda.message.ReplyMessage" title="arkouda.message.ReplyMessage"><span class="pre">ReplyMessage</span></a><a class="headerlink" href="#arkouda.message.ReplyMessage.fromdict" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.message.ReplyMessage.fromdict">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">fromdict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#arkouda.message.ReplyMessage" title="arkouda.message.ReplyMessage"><span class="pre">ReplyMessage</span></a><a class="headerlink" href="#arkouda.message.ReplyMessage.fromdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates a ReplyMessage from a dict encapsulating the data and
 metadata from a reply returned by the Arkouda server.</p>
 <dl class="field-list simple">
@@ -226,9 +227,9 @@ a ReplyMessage</p>
 
 </dd></dl>
 
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
           </div>
@@ -302,7 +303,7 @@ a ReplyMessage</p>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -4,12 +4,13 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Sorting &#8212; arkouda 2020.07.07 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -33,12 +34,12 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="sorting">
+  <section id="sorting">
 <span id="sorting-label"></span><h1>Sorting<a class="headerlink" href="#sorting" title="Permalink to this headline">¶</a></h1>
 <p>Note: The sorting algorithm in arkouda is currently optimized for a Cray interconnect with a high message rate. For now, sorting runs slowly on Infiniband because of the lower message rate, but upcoming changes to the Chapel runtime involving message buffering should greatly improve sorting speed.</p>
 <dl class="py function">
-<dt id="arkouda.argsort">
-<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">argsort</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Categorical</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#arkouda.argsort" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.argsort">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Categorical</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#arkouda.argsort" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the permutation that sorts the array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -71,8 +72,8 @@ resilient to non-uniformity in data but communication intensive.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="arkouda.coargsort">
-<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">coargsort</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrays</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Strings</span><span class="p"><span class="pre">,</span> </span><span class="pre">pdarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pdarray</span><a class="headerlink" href="#arkouda.coargsort" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.coargsort">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">coargsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrays</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Strings</span><span class="p"><span class="pre">,</span> </span><span class="pre">pdarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pdarray</span><a class="headerlink" href="#arkouda.coargsort" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the permutation that groups the rows (left-to-right), if the
 input arrays are treated as columns. The permutation sorts numeric
 columns, but not strings – strings are grouped, but not ordered.</p>
@@ -115,7 +116,7 @@ strings is guaranteed, lexicographic ordering of the groups is not.</p>
 </div>
 </dd></dl>
 
-</div>
+</section>
 
 
           </div>
@@ -198,7 +199,7 @@ strings is guaranteed, lexicographic ordering of the groups is not.</p>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

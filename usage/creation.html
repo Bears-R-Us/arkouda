@@ -4,12 +4,13 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Creating Arrays &#8212; arkouda 2020.07.07 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -33,14 +34,14 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="creating-arrays">
+  <section id="creating-arrays">
 <h1>Creating Arrays<a class="headerlink" href="#creating-arrays" title="Permalink to this headline">¶</a></h1>
 <p>There are several ways to initialize arkouda <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects, most of which come from NumPy.</p>
-<div class="section" id="constant">
+<section id="constant">
 <h2>Constant<a class="headerlink" href="#constant" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
-<dt id="arkouda.zeros">
-<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">zeros</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">size:</span> <span class="pre">Union[int,</span> <span class="pre">numpy.int64],</span> <span class="pre">dtype:</span> <span class="pre">type</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#arkouda.zeros" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.zeros">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">zeros</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">size:</span> <span class="pre">Union[int,</span> <span class="pre">numpy.int64],</span> <span class="pre">dtype:</span> <span class="pre">type</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#arkouda.zeros" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a pdarray filled with zeros.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -80,8 +81,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="arkouda.ones">
-<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">ones</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">type</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">dtype('float64')</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#arkouda.ones" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.ones">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">ones</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">type</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">dtype('float64')</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#arkouda.ones" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a pdarray filled with ones.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -121,8 +122,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="arkouda.zeros_like">
-<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">zeros_like</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#arkouda.zeros_like" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.zeros_like">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">zeros_like</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#arkouda.zeros_like" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a zero-filled pdarray of the same size and dtype as an existing
 pdarray.</p>
 <dl class="field-list simple">
@@ -162,8 +163,8 @@ pdarray.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="arkouda.ones_like">
-<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">ones_like</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#arkouda.ones_like" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.ones_like">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">ones_like</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#arkouda.ones_like" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a one-filled pdarray of the same size and dtype as an existing
 pdarray.</p>
 <dl class="field-list simple">
@@ -205,12 +206,12 @@ Accordingly, the supported dtypes match are defined by the ak.ones method.</p>
 </div>
 </dd></dl>
 
-</div>
-<div class="section" id="regular">
+</section>
+<section id="regular">
 <h2>Regular<a class="headerlink" href="#regular" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
-<dt id="arkouda.arange">
-<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">arange</span></code><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param"><span class="pre">start</span></em>, <span class="optional">]</span><em class="sig-param"><span class="pre">stop</span></em><span class="optional">[</span>, <em class="sig-param"><span class="pre">stride</span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.arange" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.arange">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">arange</span></span><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param"><span class="pre">start</span></em>, <span class="optional">]</span><em class="sig-param"><span class="pre">stop</span></em><span class="optional">[</span>, <em class="sig-param"><span class="pre">stride</span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.arange" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a pdarray of consecutive integers within the interval [start, stop).
 If only one arg is given then arg is the stop parameter. If two args are
 given, then the first arg is start and second is stop. If three args are
@@ -265,8 +266,8 @@ the linspace method.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="arkouda.linspace">
-<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">linspace</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.float64</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.float64</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#arkouda.linspace" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.linspace">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">linspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.float64</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.float64</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#arkouda.linspace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a pdarray of linearly-spaced floats in a closed interval.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -308,12 +309,12 @@ in descending order.</p>
 </div>
 </dd></dl>
 
-</div>
-<div class="section" id="random">
+</section>
+<section id="random">
 <h2>Random<a class="headerlink" href="#random" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
-<dt id="arkouda.randint">
-<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">randint</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.float64</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.float64</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">dtype('int64')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#arkouda.randint" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.randint">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">randint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.float64</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.float64</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">dtype('int64')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#arkouda.randint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a pdarray of randomized int, float, or bool values in a
 specified range bounded by the low and high parameters.</p>
 <dl class="field-list simple">
@@ -370,13 +371,13 @@ floating point values.</p>
 </div>
 </dd></dl>
 
-</div>
-<div class="section" id="concatenation">
+</section>
+<section id="concatenation">
 <span id="concatenate-label"></span><h2>Concatenation<a class="headerlink" href="#concatenation" title="Permalink to this headline">¶</a></h2>
 <p>Performance note: in multi-locale settings, the default (ordered) mode of <code class="docutils literal notranslate"><span class="pre">concatenate</span></code> is very communication-intensive because the distribution of the original and resulting arrays are unrelated and most data must be moved non-locally. If the application does not require the concatenated array to be ordered (e.g. if the result is simply going to be sorted anyway), then using the keyword <code class="docutils literal notranslate"><span class="pre">ordered=False</span></code> will greatly speed up concatenation by minimizing non-local data movement.</p>
 <dl class="py function">
-<dt id="arkouda.concatenate">
-<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">concatenate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrays</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence[Union[pdarray,</span> <span class="pre">Strings,</span> <span class="pre">‘Categorical’]]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ordered</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union[pdarray,</span> <span class="pre">Strings,</span> <span class="pre">‘Categorical’]</span><a class="headerlink" href="#arkouda.concatenate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.concatenate">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">concatenate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrays</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence[Union[pdarray,</span> <span class="pre">Strings,</span> <span class="pre">‘Categorical’]]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ordered</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union[pdarray,</span> <span class="pre">Strings,</span> <span class="pre">‘Categorical’]</span><a class="headerlink" href="#arkouda.concatenate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Concatenate a list or tuple of <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> or <code class="docutils literal notranslate"><span class="pre">Strings</span></code> objects into
 one <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> or <code class="docutils literal notranslate"><span class="pre">Strings</span></code> object, respectively.</p>
 <dl class="field-list simple">
@@ -422,8 +423,8 @@ the original order</p>
 </div>
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
@@ -506,7 +507,7 @@ the original order</p>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

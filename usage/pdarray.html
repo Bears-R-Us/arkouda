@@ -4,12 +4,13 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>The pdarray class &#8212; arkouda 2020.07.07 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -33,12 +34,12 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="the-pdarray-class">
+  <section id="the-pdarray-class">
 <h1>The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class<a class="headerlink" href="#the-pdarray-class" title="Permalink to this headline">¶</a></h1>
 <p>Just as the backbone of NumPy is the <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>, the backbone of arkouda is an array class called <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>. And just as the <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> object is a Python wrapper for C-style data with C and Fortran methods, the <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> object is a Python wrapper for distributed data with parallel methods written in Chapel. The API of <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> is similar, but not identical, to that of <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>.</p>
 <dl class="py class">
-<dt id="arkouda.pdarray">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">pdarray</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mydtype</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndim</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">itemsize</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.pdarray" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.pdarray">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">pdarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mydtype</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndim</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">itemsize</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.int64</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.pdarray" title="Permalink to this definition">¶</a></dt>
 <dd><p>The basic arkouda array class. This class contains only the
 attributies of the array; the data resides on the arkouda
 server. When a server operation results in a new array, arkouda
@@ -46,8 +47,8 @@ will create a pdarray instance that points to the array data on
 the server. As such, the user should not initialize pdarray
 instances directly.</p>
 <dl class="py attribute">
-<dt id="arkouda.pdarray.name">
-<code class="sig-name descname"><span class="pre">name</span></code><a class="headerlink" href="#arkouda.pdarray.name" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.pdarray.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#arkouda.pdarray.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>The server-side identifier for the array</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -57,8 +58,8 @@ instances directly.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="arkouda.pdarray.dtype">
-<code class="sig-name descname"><span class="pre">dtype</span></code><a class="headerlink" href="#arkouda.pdarray.dtype" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.pdarray.dtype">
+<span class="sig-name descname"><span class="pre">dtype</span></span><a class="headerlink" href="#arkouda.pdarray.dtype" title="Permalink to this definition">¶</a></dt>
 <dd><p>The element type of the array</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -68,8 +69,8 @@ instances directly.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="arkouda.pdarray.size">
-<code class="sig-name descname"><span class="pre">size</span></code><a class="headerlink" href="#arkouda.pdarray.size" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.pdarray.size">
+<span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#arkouda.pdarray.size" title="Permalink to this definition">¶</a></dt>
 <dd><p>The number of elements in the array</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -79,8 +80,8 @@ instances directly.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="arkouda.pdarray.ndim">
-<code class="sig-name descname"><span class="pre">ndim</span></code><a class="headerlink" href="#arkouda.pdarray.ndim" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.pdarray.ndim">
+<span class="sig-name descname"><span class="pre">ndim</span></span><a class="headerlink" href="#arkouda.pdarray.ndim" title="Permalink to this definition">¶</a></dt>
 <dd><p>The rank of the array (currently only rank 1 arrays supported)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -90,8 +91,8 @@ instances directly.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="arkouda.pdarray.shape">
-<code class="sig-name descname"><span class="pre">shape</span></code><a class="headerlink" href="#arkouda.pdarray.shape" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.pdarray.shape">
+<span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#arkouda.pdarray.shape" title="Permalink to this definition">¶</a></dt>
 <dd><p>A list or tuple containing the sizes of each dimension of the array</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -101,8 +102,8 @@ instances directly.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="arkouda.pdarray.itemsize">
-<code class="sig-name descname"><span class="pre">itemsize</span></code><a class="headerlink" href="#arkouda.pdarray.itemsize" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.pdarray.itemsize">
+<span class="sig-name descname"><span class="pre">itemsize</span></span><a class="headerlink" href="#arkouda.pdarray.itemsize" title="Permalink to this definition">¶</a></dt>
 <dd><p>The size in bytes of each element</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -113,7 +114,7 @@ instances directly.</p>
 
 </dd></dl>
 
-<div class="section" id="data-type">
+<section id="data-type">
 <h2>Data Type<a class="headerlink" href="#data-type" title="Permalink to this headline">¶</a></h2>
 <p>Currently, <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> supports three user-facing data types (strings are exposed via a separate class, see <span class="xref std std-ref">Strings in Arkouda</span>):</p>
 <ul class="simple">
@@ -122,24 +123,24 @@ instances directly.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">bool</span></code>: 8-bit boolean value</p></li>
 </ul>
 <p>Arkouda inherits all of its data types from numpy. For example, <code class="docutils literal notranslate"><span class="pre">ak.int64</span></code> is derived from <code class="docutils literal notranslate"><span class="pre">np.int64</span></code>.</p>
-</div>
-<div class="section" id="rank">
+</section>
+<section id="rank">
 <h2>Rank<a class="headerlink" href="#rank" title="Permalink to this headline">¶</a></h2>
 <p>Currently, a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> can only have rank 1. We plan to support sparse, multi-dimensional arrays via data structures incorporating rank-1 <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects.</p>
-</div>
-<div class="section" id="name">
+</section>
+<section id="name">
 <h2>Name<a class="headerlink" href="#name" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">name</span></code> attribute of an array is a string used by the arkouda server to identify the <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> object in its symbol table. This name is chosen by the server, and the user should not overwrite it.</p>
-</div>
-<div class="section" id="operators">
+</section>
+<section id="operators">
 <h2>Operators<a class="headerlink" href="#operators" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> class supports most Python special methods, including arithmetic, bitwise, and comparison operators.</p>
-</div>
-<div class="section" id="iteration">
+</section>
+<section id="iteration">
 <h2>Iteration<a class="headerlink" href="#iteration" title="Permalink to this headline">¶</a></h2>
 <p>While it is possible to iterate directly over a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> with <code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">x</span> <span class="pre">in</span> <span class="pre">array</span></code>, this is not recommended because it triggers a transfer of all array data from the arkouda server to the Python client as a <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>. This transfer will raise an error if it exceeds the byte limit defined in <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>. There is almost always a more array-oriented way to express an iterator-based computation; see the coming sections for details.</p>
-</div>
-<div class="section" id="type-casting">
+</section>
+<section id="type-casting">
 <span id="cast-label"></span><h2>Type Casting<a class="headerlink" href="#type-casting" title="Permalink to this headline">¶</a></h2>
 <p>Conversion between dtypes is sometimes implicit, as in the following example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
@@ -150,8 +151,8 @@ instances directly.</p>
 </div>
 <p>Explicit conversion is supported via the <code class="docutils literal notranslate"><span class="pre">cast</span></code> function.</p>
 <dl class="py function">
-<dt id="arkouda.cast">
-<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">cast</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.dtype</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.cast" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.cast">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">cast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.dtype</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.cast" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cast an array to another dtype.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -190,8 +191,8 @@ has the precision and capacity to hold the desired result.</p>
 </div>
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
@@ -274,7 +275,7 @@ has the precision and capacity to hold the desired result.</p>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

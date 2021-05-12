@@ -4,12 +4,13 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Quickstart &#8212; arkouda 2020.07.07 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -33,10 +34,10 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="quickstart">
+  <section id="quickstart">
 <h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
 <p>This guide assumes you have satisfied the <a class="reference internal" href="prerequisites.html#prerequisites-label"><span class="std std-ref">Prerequisites</span></a> and followed the <a class="reference internal" href="installation.html#installation-label"><span class="std std-ref">Installation</span></a> to build the arkouda server. Also, both your <code class="docutils literal notranslate"><span class="pre">PATH</span></code> and <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code> environment variables should contain the arkouda root directory.</p>
-<div class="section" id="launch-arkouda-server">
+<section id="launch-arkouda-server">
 <h2>Launch Arkouda Server<a class="headerlink" href="#launch-arkouda-server" title="Permalink to this headline">¶</a></h2>
 <p>In a terminal, run the arkouda server program with one locale</p>
 <p>You should see a startup message like</p>
@@ -60,8 +61,8 @@ server listening on tcp://node01:5555?token=vikq8Co2fqv20usbrRnRtFsLr9nNbad
 </pre></div>
 </div>
 <p>The last line is the most important, because it contains the connection url with the hostname and port required for the client to connect to the server.</p>
-</div>
-<div class="section" id="connect-the-python-3-client">
+</section>
+<section id="connect-the-python-3-client">
 <h2>Connect the Python 3 Client<a class="headerlink" href="#connect-the-python-3-client" title="Permalink to this headline">¶</a></h2>
 <p>In another terminal window, launch an interactive Python 3 session, such as <code class="docutils literal notranslate"><span class="pre">ipython</span></code> or <code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">notebook</span></code> (both included with the Anaconda distribution). To connect to the arkouda server, you must import the arkouda module and call connect with the connection url from the server startup messages. In Python, run</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">arkouda</span> <span class="k">as</span> <span class="nn">ak</span>
@@ -72,10 +73,10 @@ server listening on tcp://node01:5555?token=vikq8Co2fqv20usbrRnRtFsLr9nNbad
 </pre></div>
 </div>
 <p>substituting the hostname and port appropriately (defaults are ‘localhost’ and 5555).</p>
-</div>
-<div class="section" id="simple-computations">
+</section>
+<section id="simple-computations">
 <h2>Simple Computations<a class="headerlink" href="#simple-computations" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="create-and-sum-an-array">
+<section id="create-and-sum-an-array">
 <h3>Create and sum an array<a class="headerlink" href="#create-and-sum-an-array" title="Permalink to this headline">¶</a></h3>
 <p>The following code creates an arkouda <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> that resides on the arkouda server and performs a server-side computation, returning the result to the Python client.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a server-side array with integers from 1 to N inclusive</span>
@@ -88,8 +89,8 @@ server listening on tcp://node01:5555?token=vikq8Co2fqv20usbrRnRtFsLr9nNbad
 <span class="o">&gt;&gt;&gt;</span> <span class="k">assert</span> <span class="n">A</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="n">N</span> <span class="o">*</span> <span class="p">(</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">//</span> <span class="mi">2</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="array-arithmetic">
+</section>
+<section id="array-arithmetic">
 <h3>Array arithmetic<a class="headerlink" href="#array-arithmetic" title="Permalink to this headline">¶</a></h3>
 <p>Now, we will perform an operation on two <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects to create a new <code class="docutils literal notranslate"><span class="pre">pdarray</span></code>. This time, the result will not be returned to the Python client, but will be stored on the server. In general, only scalar results are automatically returned to Python; <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> results remain on the server unless explicitly transferred by the user (see <a class="reference internal" href="../usage/IO.html#arkouda.pdarray.to_ndarray" title="arkouda.pdarray.to_ndarray"><code class="xref py py-meth docutils literal notranslate"><span class="pre">arkouda.pdarray.to_ndarray()</span></code></a>).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate two (server-side) arrays of random integers 0-9</span>
@@ -107,8 +108,8 @@ server listening on tcp://node01:5555?token=vikq8Co2fqv20usbrRnRtFsLr9nNbad
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">minVal</span><span class="p">,</span> <span class="n">maxVal</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="indexing">
+</section>
+<section id="indexing">
 <h3>Indexing<a class="headerlink" href="#indexing" title="Permalink to this headline">¶</a></h3>
 <p>Arkouda <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects support most of the same indexing and assignment syntax of 1-dimensional NumPy <code class="docutils literal notranslate"><span class="pre">ndarray``s</span> <span class="pre">(arkouda</span> <span class="pre">currently</span> <span class="pre">only</span> <span class="pre">supports</span> <span class="pre">1-D</span> <span class="pre">arrays).</span> <span class="pre">This</span> <span class="pre">code</span> <span class="pre">shows</span> <span class="pre">two</span> <span class="pre">ways</span> <span class="pre">to</span> <span class="pre">get</span> <span class="pre">the</span> <span class="pre">even</span> <span class="pre">elements</span> <span class="pre">of</span> <span class="pre">``A</span></code> from above: with a slice, and with logical indexing.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use a slice</span>
@@ -122,8 +123,8 @@ server listening on tcp://node01:5555?token=vikq8Co2fqv20usbrRnRtFsLr9nNbad
 <span class="o">&gt;&gt;&gt;</span> <span class="k">assert</span> <span class="p">(</span><span class="n">evens1</span> <span class="o">==</span> <span class="n">evens2</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="sorting">
+</section>
+<section id="sorting">
 <h3>Sorting<a class="headerlink" href="#sorting" title="Permalink to this headline">¶</a></h3>
 <p>Sorting arrays is a ubiquitous operation, and it is often useful to use the sorting of one array to order other arrays. Like NumPy, arkouda provides this functionality via the <code class="docutils literal notranslate"><span class="pre">argsort</span></code> function, which returns a permutation vector that can be used as an index to order other arrays. Here, we will order the arrays <code class="docutils literal notranslate"><span class="pre">B</span></code> and <code class="docutils literal notranslate"><span class="pre">C</span></code> from above according to the product of their elements (<code class="docutils literal notranslate"><span class="pre">D</span></code>).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute the permutation that sorts the product array</span>
@@ -138,21 +139,21 @@ server listening on tcp://node01:5555?token=vikq8Co2fqv20usbrRnRtFsLr9nNbad
 <span class="o">&gt;&gt;&gt;</span> <span class="k">assert</span> <span class="p">((</span><span class="n">B</span> <span class="o">*</span> <span class="n">C</span><span class="p">)</span> <span class="o">==</span> <span class="n">D</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="and-more">
+</section>
+<section id="and-more">
 <h3>And More<a class="headerlink" href="#and-more" title="Permalink to this headline">¶</a></h3>
 <p>See the <a class="reference internal" href="../usage.html#usage-label"><span class="std std-ref">Usage</span></a> section for the full list of operations supported on arkouda arrays. These operations are quite composable and can be used to implement more complex algorithms as in the <a class="reference internal" href="../examples.html#examples-label"><span class="std std-ref">Examples</span></a> section.</p>
-</div>
-</div>
-<div class="section" id="shutdown-the-server-optional">
+</section>
+</section>
+<section id="shutdown-the-server-optional">
 <h2>Shutdown the server (optional)<a class="headerlink" href="#shutdown-the-server-optional" title="Permalink to this headline">¶</a></h2>
 <p>If desired, you can shutdown the arkouda server from a connected client with</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ak</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>This command will delete all server-side arrays and cause the <code class="docutils literal notranslate"><span class="pre">arkouda_server</span></code> process in the first terminal to exit.</p>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
@@ -225,7 +226,7 @@ server listening on tcp://node01:5555?token=vikq8Co2fqv20usbrRnRtFsLr9nNbad
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

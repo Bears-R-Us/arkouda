@@ -4,12 +4,13 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Array Set Operations &#8212; arkouda 2020.07.07 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -33,13 +34,13 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="array-set-operations">
+  <section id="array-set-operations">
 <span id="setops-label"></span><h1>Array Set Operations<a class="headerlink" href="#array-set-operations" title="Permalink to this headline">¶</a></h1>
 <p>Following <code class="docutils literal notranslate"><span class="pre">numpy.lib.arraysetops</span></code>, arkouda supports parallel, distributed set operations using <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> objects.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">unique</span></code> function effectively converts a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> to a set:</p>
 <dl class="py function">
-<dt id="arkouda.unique">
-<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">unique</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union[pdarray,</span> <span class="pre">Strings,</span> <span class="pre">‘Categorical’]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_counts</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union[Union[pdarray,</span> <span class="pre">Strings,</span> <span class="pre">‘Categorical’],</span> <span class="pre">Tuple[Union[pdarray,</span> <span class="pre">Strings,</span> <span class="pre">‘Categorical’],</span> <span class="pre">Optional[pdarray]]]</span><a class="headerlink" href="#arkouda.unique" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.unique">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">unique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union[pdarray,</span> <span class="pre">Strings,</span> <span class="pre">‘Categorical’]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_counts</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union[Union[pdarray,</span> <span class="pre">Strings,</span> <span class="pre">‘Categorical’],</span> <span class="pre">Tuple[Union[pdarray,</span> <span class="pre">Strings,</span> <span class="pre">‘Categorical’],</span> <span class="pre">Optional[pdarray]]]</span><a class="headerlink" href="#arkouda.unique" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the unique elements of an array.</p>
 <p>Returns the unique elements of an array, sorted if the values are integers.
 There is an optional output in addition to the unique elements: the number
@@ -80,8 +81,8 @@ computation. Otherwise, this function will sort <cite>pda</cite>.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="arkouda.in1d">
-<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">in1d</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda1</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Categorical</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pda2</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Categorical</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invert</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#arkouda.in1d" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.in1d">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">in1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda1</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Categorical</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pda2</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../autoapi/arkouda/strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Categorical</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invert</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="../autoapi/arkouda/pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><a class="headerlink" href="#arkouda.in1d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test whether each element of a 1-D array is also present in a second array.</p>
 <p>Returns a boolean array the same length as <cite>pda1</cite> that is True
 where an element of <cite>pda1</cite> is in <cite>pda2</cite> and False otherwise.</p>
@@ -133,8 +134,8 @@ faster and scales to arbitrarily large <code class="docutils literal notranslate
 </dd></dl>
 
 <dl class="py function">
-<dt id="arkouda.union1d">
-<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">union1d</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda1</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pdarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pda2</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pdarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pdarray</span><a class="headerlink" href="#arkouda.union1d" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.union1d">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">union1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda1</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pdarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pda2</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pdarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pdarray</span><a class="headerlink" href="#arkouda.union1d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the union of two arrays.</p>
 <p>Return the unique, sorted array of values that are in either
 of the two input arrays.</p>
@@ -172,8 +173,8 @@ of the two input arrays.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="arkouda.intersect1d">
-<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">intersect1d</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda1</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pdarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pda2</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pdarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pdarray</span><a class="headerlink" href="#arkouda.intersect1d" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.intersect1d">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">intersect1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda1</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pdarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pda2</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pdarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pdarray</span><a class="headerlink" href="#arkouda.intersect1d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the intersection of two arrays.</p>
 <p>Return the sorted, unique values that are in both of the input arrays.</p>
 <dl class="field-list simple">
@@ -212,8 +213,8 @@ can speed up the calculation.  Default is False.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="arkouda.setdiff1d">
-<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">setdiff1d</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda1</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pdarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pda2</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pdarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pdarray</span><a class="headerlink" href="#arkouda.setdiff1d" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.setdiff1d">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">setdiff1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda1</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pdarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pda2</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pdarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pdarray</span><a class="headerlink" href="#arkouda.setdiff1d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the set difference of two arrays.</p>
 <p>Return the sorted, unique values in <cite>pda1</cite> that are not in <cite>pda2</cite>.</p>
 <dl class="field-list simple">
@@ -254,8 +255,8 @@ can speed up the calculation.  Default is False.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="arkouda.setxor1d">
-<code class="sig-prename descclassname"><span class="pre">arkouda.</span></code><code class="sig-name descname"><span class="pre">setxor1d</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda1</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pdarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pda2</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pdarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pdarray</span><a class="headerlink" href="#arkouda.setxor1d" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="arkouda.setxor1d">
+<span class="sig-prename descclassname"><span class="pre">arkouda.</span></span><span class="sig-name descname"><span class="pre">setxor1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pda1</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pdarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pda2</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pdarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assume_unique</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pdarray</span><a class="headerlink" href="#arkouda.setxor1d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the set exclusive-or (symmetric difference) of two arrays.</p>
 <p>Return the sorted, unique values that are in only one (not both) of the
 input arrays.</p>
@@ -293,7 +294,7 @@ arrays.</p>
 </div>
 </dd></dl>
 
-</div>
+</section>
 
 
           </div>
@@ -376,7 +377,7 @@ arrays.</p>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
