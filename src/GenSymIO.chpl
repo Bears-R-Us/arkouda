@@ -1939,7 +1939,7 @@ module GenSymIO {
             /*
              * Normalize the first and last seg elements (make them zero-based) by
              * subtracting the char domain first index element. 
-'            */
+             */
             var normalize = 0;
             if idx > 0 {
                 normalize = locDom.first;
