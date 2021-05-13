@@ -1148,13 +1148,13 @@ module GenSymIO {
          * The shuffleLeftIndices object, which is a globally-scoped PrivateSpace, 
          * contains indices for each locale that (1) specify the chars that can be 
          * shuffled left to complete the last string in the previous locale and (2)
-         * are used to remove the corresponding chars from the donor locale.  
+         * are used to remove the corresponding chars from the current, donor locale.  
          *
          * The shuffleRightIndices PrivateSpace is used in the special case 
          * where the majority of a large string spanning two locales is the sole
          * string on a locale; in this case, each index specifies the chars that 
          * can be shuffled right to start the string completed in the next locale
-         * and remove the corresponding chars from the donor locale 
+         * and remove the corresponding chars from the current, donor locale 
          *
          * The isSingleString PrivateSpace indicates whether each locale contains
          * chars corresponding to one string/string segment; this occurs if 
@@ -1164,6 +1164,9 @@ module GenSymIO {
          * The endsWithCompleteString PrivateSpace indicates whether the values
          * array for each locale ends with complete string, meaning that the last
          * character in the local slice is a null uint(8) char.
+         *
+         * The charArraySize PrivateSpace contains the size of char local slice
+         * corresponding to each locale.
          */
         var shuffleLeftIndices: [PrivateSpace] int;    
         var shuffleRightIndices: [PrivateSpace] int;
@@ -1181,8 +1184,8 @@ module GenSymIO {
         t1.start();
 
         coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) 
-                with (ref shuffleLeftIndices, ref shuffleRightIndices, 
-                     ref isSingleString, ref endsWithCompleteString, ref charArraySize) do on loc {
+             with (ref shuffleLeftIndices, ref shuffleRightIndices, 
+                   ref isSingleString, ref endsWithCompleteString, ref charArraySize) do on loc {
              generateStringsMetadata(idx,shuffleLeftIndices, shuffleRightIndices, 
                           isSingleString, endsWithCompleteString, charArraySize, A, SA);
         }
@@ -1325,7 +1328,7 @@ module GenSymIO {
 
                 /* 
                  * To prepare for writing the charList to hdf5, do the following, if applicable:
-                 * 1. Remove the characters shuffled left to previous locale
+                 * 1. Remove the characters shuffled left to the previous locale
                  * 2. Remove the characters shuffled right to the next locale
                  * 3. If (2) does not apply, add null uint(8) char to end of the charList
                  */
@@ -1408,11 +1411,10 @@ module GenSymIO {
                      charList = new list(A.localSlice(locDom));
 
                      /*
-                      * If (1) this locale (idx) contains one string/string segment and (2) ends 
-                      * with the null uint(8) char, check to see if the shuffleRightIndex from 
-                      * the previous locale (idx-1) is > -1. If so, the chars following the 
-                      * shuffleRightIndex from the previous locale (idx-1) complete the one 
-                      * string/string segment within the current locale (idx). 
+                      * If this locale (idx) ends with the null uint(8) char, check to see if 
+                      * the shuffleRightIndex from the previous locale (idx-1) is > -1. If so, 
+                      * the chars following the shuffleRightIndex from the previous locale complete 
+                      * the one string/string segment within the current locale. 
                       */
                      if isSingleString[idx] && idx > 0 {
                          /*
@@ -1468,9 +1470,10 @@ module GenSymIO {
                      writeStringsToHdf(myFileID, idx, group, charList, segmentsList);
                   } else {
                       /*
-                       * Check to see if previous locale (idx-1) ends with a complete string.
+                       * Check to see if previous locale (idx-1) ends with a null character.
                        * If not, then the left shuffle slice of this locale was used to complete
-                       * the last string in the previous locale, so slice those chars.
+                       * the last string in the previous locale, so slice those chars from 
+                       * this locale and create a new, corresponding charList.
                        */
                       if !endsWithCompleteString(idx-1) {
                           var localStart = locDom.first;
@@ -1935,7 +1938,7 @@ module GenSymIO {
 
             /*
              * Normalize the first and last seg elements (make them zero-based) by
-             * subtracting the bytes domain first element. 
+             * subtracting the char domain first index element. 
 '            */
             var normalize = 0;
             if idx > 0 {
@@ -1967,7 +1970,7 @@ module GenSymIO {
             } else {
                 /*
                  * Since there is neither a shuffleLeftIndex nor a shuffleRightIndex for 
-                 * this locale, this local contains a single complete string.
+                 * this locale, this local contains a single, complete string.
                  */
                 isSingleString[idx] = true;
             }
