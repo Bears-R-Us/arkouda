@@ -1926,8 +1926,8 @@ module GenSymIO {
              * final segsArray element.
              */
             if idx == 0 {
-                firstSeg = 0;
-                lastSeg = segsArray.front();
+                firstSeg = segsArray.front();
+                lastSeg = segsArray.back();
             } else {                                                         
                 var (nullString,fSeg) = charArray.find(NULL_STRINGS_VALUE);
                 if nullString {
