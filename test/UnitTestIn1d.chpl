@@ -99,7 +99,11 @@ prototype module UnitTestIn1d
         d.start();
         // returns a boolean vector
         var truth = in1d(str1, str2);
-        d.stop("in1d");
+        d.stop("in1d (associative domain)");
+        d.start();
+        var truth2 = in1d(str1, str2, forceSort=true);
+        d.stop("in1d (sort-based)");
+        writeln("Results of both strategies match? >>> ", && reduce (truth == truth2), " <<<");
         if printExpected then writeln("<<< #str1[i] in str2 = ", + reduce truth, " (expected ", expected, ")");try! stdout.flush();
         if thorough {
           var res: [truth.domain] bool;
