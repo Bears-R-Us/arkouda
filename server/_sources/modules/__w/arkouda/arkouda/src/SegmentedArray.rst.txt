@@ -183,14 +183,14 @@ or
    or inequality (polarity=false, result is true where elements differ from 
    target). 
 
-.. function:: proc in1d(mainStr: SegString, testStr: SegString, invert = false) throws
+.. function:: proc in1d(mainStr: SegString, testStr: SegString, invert = false, forceSort = false) throws
 
    Test array of strings for membership in another array (set) of strings. Returns
    a boolean vector the same size as the first array. 
 
 .. function:: proc concat(s1: [] int, v1: [] uint(8), s2: [] int, v2: [] uint(8)) throws
 
-.. function:: proc in1d(mainStr: SegString, testStr: SegString, invert = false) throws
+.. function:: proc in1d(mainStr: SegString, testStr: SegString, invert = false, forceSort = false) throws
 
 .. function:: proc interpretAsString(bytearray: [?D] uint(8)): string
 
