@@ -466,8 +466,11 @@ class Timedelta(_AbstractBaseTime):
         '''
         return to_timedelta(self.to_ndarray())
 
-    def std(self, ddof : Union[int, np.int64] = 0):
-        return Timedelta(ak_array([np.int64(self._data.std(ddof=ddof))]))
+    def std(self, ddof: Union[int, np.int64] = 0):
+        '''
+        Returns the standard deviation as a pd.Timedelta object
+        '''
+        return self._scalar_callback(self._data.std(ddof=ddof))
 
     def sum(self):
         # Sum as a pd.Timedelta

@@ -237,7 +237,7 @@ class DatetimeTest(ArkoudaTest):
         ak_timedel_std = ak.Timedelta(ak.array([123, 456, 789]), unit='s').std(ddof=1)
         pd_timedel_std = pd.to_datetime([123, 456, 789], unit='s').std()
 
-        self.assertEqual(ak_timedel_std.to_pandas(), pd_timedel_std)
+        self.assertEqual(ak_timedel_std, pd_timedel_std)
 
     def test_scalars(self):
         self.assertTrue((self.dtscalar <= self.dtvec1).all()) # pandas.Timestamp
