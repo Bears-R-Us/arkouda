@@ -1919,11 +1919,11 @@ module GenSymIO {
             var lastSeg = -1;
 
             /*
-             * If the first locale (locale 0), the first segment is at char 0
-             * and the last segment starts after the first null uint(8) char.
-             * Otherwise, find the first occurrence of the null uint(8) char 
-             * and the firstSeg is the next non-null char. The lastSeg is the 
-             * final segsArray element.
+             * If the first locale (locale 0), the first segment is retrieved
+             * via segsArray.front(), corresponding to 0. Otherwise, find the 
+             * first occurrence of the null uint(8) char and the firstSeg is the 
+             * next non-null char. The lastSeg in all cases is the final segsArray 
+             * element retrieved via segsArray.back()
              */
             if idx == 0 {
                 firstSeg = segsArray.front();
