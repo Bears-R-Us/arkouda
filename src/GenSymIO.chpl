@@ -1351,7 +1351,7 @@ module GenSymIO {
                       * Since the leading slice was used to complete the last string in
                       * the previous locale (idx-1), slice those chars from the charList
                       */
-                     charList = new list(adjustForLeftShuffle(shuffleLeftIndex,charList,idx));    
+                     charList = new list(adjustForLeftShuffle(shuffleLeftIndex,charList));    
 
                      gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                             'adjusted locale %i for left shuffle to %i'.format(idx,idx-1)); 
@@ -1370,7 +1370,7 @@ module GenSymIO {
                   */
                  if shuffleRightIndex > -1 && isSingleString[idx+1] {
                      charList = new list(adjustForRightShuffle(
-                                                  shuffleRightIndex,charList,idx));
+                                                  shuffleRightIndex,charList));
                      gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                         'adjusted locale %i for right shuffle to locale %i'.format(
                                         idx,idx+1));
@@ -1479,7 +1479,7 @@ module GenSymIO {
                           var localStart = locDom.first;
                           var localLeadingSliceIndex = localStart + shuffleLeftIndex;
                           var leadingCharArray = adjustCharArrayForLeadingSlice(localLeadingSliceIndex, 
-                                         A.localSlice(locDom),locDom.last,idx);
+                                         A.localSlice(locDom),locDom.last);
                           charList = new list(leadingCharArray);  
                           gsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
                                   'adjusted locale %i for left shuffle to locale %i'.format(
@@ -2004,7 +2004,7 @@ module GenSymIO {
      * slicing leading chars that compose a string started in the previous locale and 
      * returning a new char array.
      */
-    private proc adjustCharArrayForLeadingSlice(sliceIndex, charArray, last, idx) throws { 
+    private proc adjustCharArrayForLeadingSlice(sliceIndex, charArray, last) throws { 
         return charArray[sliceIndex..last]; 
     }    
 
@@ -2013,7 +2013,7 @@ module GenSymIO {
      * to the previous locale by returning a slice containing chars from the shuffleLeftIndex
      * to the end of the charList.
      */
-    private proc adjustForLeftShuffle(shuffleLeftIndex: int, charList, idx: int) throws {
+    private proc adjustForLeftShuffle(shuffleLeftIndex: int, charList) throws {
         return charList[shuffleLeftIndex..charList.size-1];
     }
 
@@ -2023,7 +2023,7 @@ module GenSymIO {
      * the rightShuffleIndex. 
      */
     private proc adjustForRightShuffle(shuffleRightIndex: int, 
-                                               charsList: list(uint(8)), idx : int) throws {        
+                                               charsList: list(uint(8))) throws {        
         return charsList[0..shuffleRightIndex];
     }
 
