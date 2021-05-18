@@ -503,7 +503,7 @@ class Categorical:
         return Categorical.from_codes(newvals, self.categories[idxperm])
     
     @typechecked
-    def concatenate(self, others : List[Categorical], ordered : bool=True) -> Categorical:
+    def concatenate(self, others : Sequence[Categorical], ordered : bool=True) -> Categorical:
         """
         Merge this Categorical with other Categorical objects in the array, 
         concatenating the arrays and synchronizing the categories.
