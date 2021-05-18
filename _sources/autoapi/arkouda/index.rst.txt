@@ -4436,13 +4436,13 @@ Attributes
    .. method:: sort(self)
 
 
-   .. method:: concatenate(self, others: List[Categorical], ordered: bool = True) -> Categorical
+   .. method:: concatenate(self, others: Sequence[Categorical], ordered: bool = True) -> Categorical
 
       Merge this Categorical with other Categorical objects in the array,
       concatenating the arrays and synchronizing the categories.
 
       :param others: The Categorical arrays to concatenate and merge with this one
-      :type others: List[Categorical]
+      :type others: Sequence[Categorical]
       :param ordered: If True (default), the arrays will be appended in the
                       order given. If False, array data may be interleaved
                       in blocks, which can greatly improve performance but
