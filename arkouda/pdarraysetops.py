@@ -217,21 +217,6 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings,'Categorical']], #type: 
         mode = 'append'
     else:
         mode = 'interleave'
-
-    if mode == 'interleave' and isinstance(arrays[0],(Strings,Categorical_)): # type: ignore
-        '''
-        Check if any Strings or Categorical objects have length < numLocales per 
-        #710 and #721 (Strings and Categorical concatenate in interleave mode fails with
-        an array index out of bounds error where 1..n of the Strings/Categoricals objects
-        have a length < numLocales) TODO: remove once #710 and #721 are resolved.
-        '''
-        numLocales = int(get_config()['numLocales'])
-        for arr in arrays:
-            if len(arr) < numLocales:
-                raise RuntimeError(('Strings or Categorical concatenate with ' +
-                'ordered=False currently only supported with lengths >= numLocales. ' +
-                'Please retry with ordered=True'))       
-
     if len(arrays) < 1:
         raise ValueError("concatenate called on empty iterable")
     if len(arrays) == 1:

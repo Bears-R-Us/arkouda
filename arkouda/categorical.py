@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import cast, List, Optional, Union
+from typing import cast, List, Sequence, Optional, Union
 import numpy as np # type: ignore
 import itertools
 from typeguard import typechecked
@@ -503,14 +503,14 @@ class Categorical:
         return Categorical.from_codes(newvals, self.categories[idxperm])
     
     @typechecked
-    def concatenate(self, others : List[Categorical], ordered : bool=True) -> Categorical:
+    def concatenate(self, others : Sequence[Categorical], ordered : bool=True) -> Categorical:
         """
         Merge this Categorical with other Categorical objects in the array, 
         concatenating the arrays and synchronizing the categories.
 
         Parameters
         ----------
-        others : List[Categorical]
+        others : Sequence[Categorical]
             The Categorical arrays to concatenate and merge with this one
         ordered : bool
             If True (default), the arrays will be appended in the

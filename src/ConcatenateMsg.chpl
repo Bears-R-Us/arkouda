@@ -111,12 +111,24 @@ module ConcatenateMsg
               const dummyDomain = makeDistDom(g.size);
               coforall loc in Locales {
                 on loc {
-                  blocksizes[here.id] += dummyDomain.localSubdomain().size;
-                  if objtype == "str" {
+                  const mynumsegs = dummyDomain.localSubdomain().size;
+                  blocksizes[here.id] += mynumsegs;
+                  /* If the size of the array is less than the number of locales,
+                   * some locales will have no segments. For those locales, skip
+                   * the byte size computation because, not only is it unnecessary,
+                   * but it also causes an out of bounds array index due to the 
+                   * way the low and high of the empty domain are computed. 
+                   */
+                  if (objtype == "str") && (mynumsegs > 0) {
                     const e = toSymEntry(g, int);
                     const firstSeg = e.a[e.aD.localSubdomain().low];
                     var mybytes: int;
-                    if here.id == numLocales - 1 {
+                    /* If this locale contains the last segment, we cannot use the
+                     * next segment offset to calculate the number of bytes for this
+                     * locale, and we must instead use the total size of the values
+                     * array.
+                     */
+                    if (e.aD.localSubdomain().high >= e.aD.high) {
                       mybytes = valSize - firstSeg;
                     } else {
                       mybytes = e.a[e.aD.localSubdomain().high + 1] - firstSeg;
@@ -156,21 +168,27 @@ module ConcatenateMsg
                         on loc {
                           // Number of strings on this locale for this input array
                           const mynsegs = thisSegs.aD.localSubdomain().size;
-                          ref mysegs = thisSegs.a.localSlice[thisSegs.aD.localSubdomain()];
-                          // Segments must be rebased to start from blockValStart,
-                          // which is the current pointer to this locale's chunk of
-                          // the values array
-                          esegs.a[{blockstarts[here.id]..#mynsegs}] = mysegs - mysegs[thisSegs.aD.localSubdomain().low] + blockValStarts[here.id];
-                          blockstarts[here.id] += mynsegs;
-                          const firstSeg = thisSegs.a[thisSegs.aD.localSubdomain().low];
-                          var mybytes: int;
-                          if here.id == numLocales - 1 {
-                            mybytes = thisVals.size - firstSeg;
-                          } else {
-                            mybytes = thisSegs.a[thisSegs.aD.localSubdomain().high + 1] - firstSeg;
+                          // If no strings on this locale, skip to avoid out of bounds array
+                          // accesses
+                          if mynsegs > 0 {
+                            ref mysegs = thisSegs.a.localSlice[thisSegs.aD.localSubdomain()];
+                            // Segments must be rebased to start from blockValStart,
+                            // which is the current pointer to this locale's chunk of
+                            // the values array
+                            esegs.a[{blockstarts[here.id]..#mynsegs}] = mysegs - mysegs[thisSegs.aD.localSubdomain().low] + blockValStarts[here.id];
+                            blockstarts[here.id] += mynsegs;
+                            const firstSeg = thisSegs.a[thisSegs.aD.localSubdomain().low];
+                            var mybytes: int;
+                            // If locale contains last string, must use overall number of bytes
+                            // to compute size, instead of start of next string
+                            if (thisSegs.aD.localSubdomain().high >= thisSegs.aD.high) {
+                              mybytes = thisVals.size - firstSeg;
+                            } else {
+                              mybytes = thisSegs.a[thisSegs.aD.localSubdomain().high + 1] - firstSeg;
+                            }
+                            evals.a[{blockValStarts[here.id]..#mybytes}] = thisVals.a[firstSeg..#mybytes];
+                            blockValStarts[here.id] += mybytes;
                           }
-                          evals.a[{blockValStarts[here.id]..#mybytes}] = thisVals.a[firstSeg..#mybytes];
-                          blockValStarts[here.id] += mybytes;
                         }
                       }
                     } else {

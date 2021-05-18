@@ -172,7 +172,17 @@ class CategoricalTest(ArkoudaTest):
         c12ord = ak.concatenate([c1, c2], ordered=True)
         self.assertTrue((ak.Categorical(s12ord) == c12ord).all())
         # Unordered (but still deterministic) concatenation
-        # TODO: the unordered concantenation is disabled per #710 #721
-        #s12unord = ak.concatenate([s1, s2], ordered=False)
-        #c12unord = ak.concatenate([c1, c2], ordered=False)
-        #self.assertTrue((ak.Categorical(s12unord) == c12unord).all())
+        s12unord = ak.concatenate([s1, s2], ordered=False)
+        c12unord = ak.concatenate([c1, c2], ordered=False)
+        self.assertTrue((ak.Categorical(s12unord) == c12unord).all())
+
+        # Tiny concatenation
+        # Used to fail when length of array was less than numLocales
+        # CI uses 2 locales, so try with length-1 arrays
+        a = ak.Categorical(ak.array(['a']))
+        b = ak.Categorical(ak.array(['b']))
+        c = ak.concatenate((a, b), ordered=False)
+        ans = ak.Categorical(ak.array(['a', 'b']))
+        self.assertTrue((c == ans).all())
+        
+        
