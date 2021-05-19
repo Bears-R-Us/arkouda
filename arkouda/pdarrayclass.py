@@ -443,7 +443,7 @@ class pdarray:
         return self.opeq(other,"**=")
     
     def __iter__(self):
-        raise NotImplementedError('pdarray does not support iteration')
+        raise NotImplementedError('pdarray does not support iteration. To force data transfer from server, use to_ndarray')
 
     # overload a[] to treat like list
     def __getitem__(self, key):
