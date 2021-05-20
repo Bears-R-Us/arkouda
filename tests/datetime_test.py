@@ -235,7 +235,7 @@ class DatetimeTest(ArkoudaTest):
     def test_timedel_std(self):
         # pandas std uses unbiased estimator by default, in order to compare we set ddof=1 for arkouda std
         ak_timedel_std = ak.Timedelta(ak.array([123, 456, 789]), unit='s').std(ddof=1)
-        pd_timedel_std = pd.to_datetime([123, 456, 789], unit='s').std()
+        pd_timedel_std = pd.to_timedelta([123, 456, 789], unit='s').std()
 
         self.assertEqual(ak_timedel_std, pd_timedel_std)
 
