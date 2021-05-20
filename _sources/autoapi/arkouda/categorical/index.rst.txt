@@ -148,6 +148,7 @@ Classes
 
 
    .. method:: __iter__(self)
+      :abstractmethod:
 
 
    .. method:: __len__(self)

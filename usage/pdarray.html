@@ -138,7 +138,50 @@ instances directly.</p>
 </section>
 <section id="iteration">
 <h2>Iteration<a class="headerlink" href="#iteration" title="Permalink to this headline">¶</a></h2>
-<p>While it is possible to iterate directly over a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> with <code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">x</span> <span class="pre">in</span> <span class="pre">array</span></code>, this is not recommended because it triggers a transfer of all array data from the arkouda server to the Python client as a <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>. This transfer will raise an error if it exceeds the byte limit defined in <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>. There is almost always a more array-oriented way to express an iterator-based computation; see the coming sections for details.</p>
+<p>Iterating directly over a <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> with <code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">x</span> <span class="pre">in</span> <span class="pre">array</span></code> is not supported to discourage transferring all array data from the arkouda server to the Python client since there is almost always a more array-oriented way to express an iterator-based computation. To force this transfer, use the <code class="docutils literal notranslate"><span class="pre">to_ndarray</span></code> function to return the <code class="docutils literal notranslate"><span class="pre">pdarray</span></code> as a <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>. This transfer will raise an error if it exceeds the byte limit defined in <code class="docutils literal notranslate"><span class="pre">arkouda.maxTransferBytes</span></code>.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.pdarray.to_ndarray">
+<span class="sig-prename descclassname"><span class="pre">arkouda.pdarray.</span></span><span class="sig-name descname"><span class="pre">to_ndarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="headerlink" href="#arkouda.pdarray.to_ndarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the array to a np.ndarray, transferring array data from the
+Arkouda server to client-side Python. Note: if the pdarray size exceeds
+client.maxTransferBytes, a RuntimeError is raised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A numpy ndarray with the same attributes and data as the pdarray</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown, if the pdarray size
+    exceeds the built-in client.maxTransferBytes size limit, or if the bytes
+    received does not match expected number of bytes</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The number of bytes in the array cannot exceed <code class="docutils literal notranslate"><span class="pre">client.maxTransferBytes</span></code>,
+otherwise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> will be raised. This is to protect the user
+from overflowing the memory of the system on which the Python client
+is running, under the assumption that the server is running on a
+distributed system with much more memory than the client. The user
+may override this limit by setting client.maxTransferBytes to a larger
+value, but proceed with caution.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">()</span>
+<span class="go">array([0, 1, 2, 3, 4])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">to_ndarray</span><span class="p">())</span>
+<span class="go">numpy.ndarray</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </section>
 <section id="type-casting">
 <span id="cast-label"></span><h2>Type Casting<a class="headerlink" href="#type-casting" title="Permalink to this headline">¶</a></h2>
