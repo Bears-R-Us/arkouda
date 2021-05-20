@@ -150,7 +150,7 @@ class Categorical:
         return idx[valcodes]
 
     def __iter__(self):
-        return iter(self.to_ndarray())
+        raise NotImplementedError('Categorical does not support iteration. To force data transfer from server, use to_ndarray')
         
     def __len__(self):
         return self.shape[0]

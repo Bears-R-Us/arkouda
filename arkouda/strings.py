@@ -103,7 +103,7 @@ class Strings:
         self.logger = getArkoudaLogger(name=__class__.__name__) # type: ignore
 
     def __iter__(self):
-        raise NotImplementedError('Strings does not support iteration')
+        raise NotImplementedError('Strings does not support iteration. To force data transfer from server, use to_ndarray')
 
     def __len__(self) -> int:
         return self.shape[0]

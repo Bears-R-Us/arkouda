@@ -14,12 +14,21 @@ Performance
 
 Because strings are a variable-width data type, and because of the way Arkouda represents strings, operations on strings are considerably slower than operations on numeric data. Use numeric data whenever possible. For example, if your raw data contains string data that could be represented numerically, consider setting up a processing pipeline performs the conversion (and stores the result in HDF5 format) on ingest.
 
+.. _string-io-label:
+
 I/O
 ===========
 
 Arrays of strings can be transferred between the Arkouda client and server using the ``arkouda.array`` and ``Strings.to_ndarray`` functions (see :ref:`IO-label`). The former converts a Python list or NumPy ``ndarray`` of strings to an Arkouda ``Strings`` object, whereas the latter converts an Arkouda ``Strings`` object to a NumPy ``ndarray``. As with numeric arrays, if the size of the data exceeds the threshold set by ``arkouda.maxTransferBytes``, the client will raise an exception.
 
 Arkouda currently only supports the HDF5 file format for disk-based I/O. In order to read an array of strings from an HDF5 file, the strings must be stored in an HDF5 ``group`` containing two datasets: ``segments`` (an integer array corresponding to ``offsets`` above) and ``values`` (a ``uint8`` array corresponding to ``bytes`` above). See :ref:`data-preprocessing-label` for more information and guidelines.
+
+Iteration
+=========
+
+Iterating directly over a ``Strings`` with ``for x in string`` is not supported to discourage transferring all the ``Strings`` object's data from the arkouda server to the Python client since there is almost always a more array-oriented way to express an iterator-based computation. To force this transfer, use the ``to_ndarray`` function to return the ``Strings`` as a ``numpy.ndarray``. See :ref:`string-io-label` for more details about using ``to_ndarray`` with ``Strings``
+
+.. autofunction:: arkouda.Strings.to_ndarray
 
 Operations
 ===========
