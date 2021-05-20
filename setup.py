@@ -135,7 +135,7 @@ setup(
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
         'numpy>=1.16.5,<=1.19.5',
-        'pandas>=1.1.0',
+        'pandas>=1.2.0',
         'pyzmq>=20.0.0',
         'typeguard==2.10.0',
         'pyfiglet'
