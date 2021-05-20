@@ -1,17 +1,18 @@
 from __future__ import annotations
 
 import itertools
-from typing import cast, Optional, Tuple, List, Union
+from typing import cast, Tuple, List, Optional, Union
 from typeguard import typechecked
 from arkouda.client import generic_msg
-from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value, unregister_pdarray_by_name, RegistrationError
+from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value, \
+     unregister_pdarray_by_name, RegistrationError
 from arkouda.logger import getArkoudaLogger
 import numpy as np # type: ignore
 from arkouda.dtypes import npstr, int_scalars, str_scalars
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS, resolve_scalar_dtype, \
      translate_np_dtype
 import json
-from arkouda.infoclass import information, pretty_print_information
+from arkouda.infoclass import information
 
 __all__ = ['Strings']
 
@@ -228,7 +229,7 @@ class Strings:
                                                          self.offsets.name,
                                                          self.bytes.name,
                                                          key.name)
-            repMsg = generic_msg(cmd,args)
+            repMsg = generic_msg(cmd=cmd,args=args)
             offsets, values = repMsg.split('+')
             return Strings(offsets, values)
         else:
@@ -248,9 +249,10 @@ class Strings:
         RuntimeError
             Raised if there is a server-side error thrown
         """
-        msg = "segmentLengths {} {} {}".\
+        cmd = "segmentLengths"
+        args = "{} {} {}".\
                         format(self.objtype, self.offsets.name, self.bytes.name)
-        return create_pdarray(generic_msg(msg))
+        return create_pdarray(generic_msg(cmd=cmd,args=args))
 
     @typechecked
     def contains(self, substr : Union[bytes,str_scalars]) -> pdarray:
@@ -631,7 +633,7 @@ class Strings:
                             other.bytes.name,
                             NUMBER_FORMAT_STRINGS['bool'].format(toLeft),
                             json.dumps([delimiter]))
-        repMsg = generic_msg(cmd,args)
+        repMsg = generic_msg(cmd=cmd,args=args)
         return Strings(*cast(str,repMsg).split('+'))
 
     def __add__(self, other : Strings) -> Strings:
@@ -737,7 +739,7 @@ class Strings:
         cmd = "segmentedGroup"
         args = "{} {} {}".\
                            format(self.objtype, self.offsets.name, self.bytes.name)
-        return create_pdarray(generic_msg(cmd,args))
+        return create_pdarray(generic_msg(cmd=cmd,args=args))
 
     def to_ndarray(self) -> np.ndarray:
         """
