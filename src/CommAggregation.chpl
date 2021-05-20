@@ -46,7 +46,7 @@ module CommAggregation {
 
     proc postinit() {
       lBuffers = c_malloc(c_ptr(aggType), numLocales);
-      bufferIdxs = c_aligned_alloc(int, 64, numLocales);
+      bufferIdxs = bufferIdxAlloc();
       for loc in myLocaleSpace {
         lBuffers[loc] = c_malloc(aggType, bufferSize);
         bufferIdxs[loc] = 0;
@@ -163,7 +163,7 @@ module CommAggregation {
     proc postinit() {
       dstAddrs = c_malloc(c_ptr(aggType), numLocales);
       lSrcAddrs = c_malloc(c_ptr(aggType), numLocales);
-      bufferIdxs = c_aligned_alloc(int, 64, numLocales);
+      bufferIdxs = bufferIdxAlloc();
       for loc in myLocaleSpace {
         dstAddrs[loc] = c_malloc(aggType, bufferSize);
         lSrcAddrs[loc] = c_malloc(aggType, bufferSize);
@@ -376,6 +376,12 @@ module CommAggregation {
   //
   // Helper routines
   //
+
+  // Cacheline aligned and padded allocation to avoid false-sharing
+  inline proc bufferIdxAlloc() {
+    const cachePaddedLocales = (numLocales + 7) & ~7;
+    return c_aligned_alloc(int, 64, cachePaddedLocales);
+  }
 
   private proc getEnvInt(name: string, default: int): int {
     extern proc getenv(name : c_string) : c_string;
