@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import cast, List, Sequence, Union
+from typing import cast, List, Optional, Sequence, Union
 import numpy as np # type: ignore
 import itertools
 from typeguard import typechecked

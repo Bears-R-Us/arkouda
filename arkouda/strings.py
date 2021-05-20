@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import itertools
-from typing import cast, Tuple, List, Union
+from typing import cast, Tuple, List, Optional, Union
 from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value, \
