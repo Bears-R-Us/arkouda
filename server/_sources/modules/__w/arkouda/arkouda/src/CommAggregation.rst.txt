@@ -129,3 +129,5 @@ or
 
    .. method:: proc deinit()
 
+.. function:: proc bufferIdxAlloc()
+
