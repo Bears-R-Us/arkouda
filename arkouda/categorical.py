@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import cast, List, Sequence, Optional, Union
+from typing import cast, List, Sequence, Union
 import numpy as np # type: ignore
 import itertools
 from typeguard import typechecked
@@ -11,9 +11,8 @@ from arkouda.pdarraycreation import zeros, zeros_like, arange
 from arkouda.dtypes import resolve_scalar_dtype, str_scalars
 from arkouda.dtypes import int64 as akint64
 from arkouda.sorting import argsort
-from arkouda.pdarraysetops import concatenate, in1d
 from arkouda.logger import getArkoudaLogger
-from arkouda.infoclass import information, pretty_print_information
+from arkouda.infoclass import information
 
 __all__ = ['Categorical']
 

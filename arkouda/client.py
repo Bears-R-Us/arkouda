@@ -8,7 +8,8 @@ from arkouda.logger import getArkoudaLogger
 from arkouda.message import RequestMessage, MessageFormat, ReplyMessage, \
      MessageType
 
-__all__ = [ "connect", "disconnect", "shutdown", "get_config", "get_mem_used", "__version__", "ruok"]
+__all__ = [ "connect", "disconnect", "shutdown", "get_config", "get_mem_used", 
+           "__version__", "ruok"]
 
 # Try to read the version from the file located at ../VERSION
 VERSIONFILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
@@ -508,14 +509,16 @@ def shutdown() -> None:
 def generic_msg(cmd : str, args : Union[str,bytes]=None, send_bytes : bool=False, 
                 recv_bytes : bool=False) -> Union[str, bytes]:
     """
-    Sends the binary or string message to the arkouda_server and returns 
-    the response sent by the server which is either a success confirmation
-    or error message
+    Sends a binary or string message composed of a command and corresponding 
+    arguments to the arkouda_server, returning the response sent by the server.
 
     Parameters
     ----------
-    message : Union[str, bytes]
-        The message to be sent in the form of a string or bytes array
+    cmd : str
+        The server-side command to be executed
+    args : Union[str,bytes]
+        A space-delimited list of command arguments or a byte array, the latter
+        of which is for creating an Arkouda array
     send_bytes : bool
         Indicates if the message to be sent is binary, defaults to False
     recv_bypes : bool
@@ -533,6 +536,12 @@ def generic_msg(cmd : str, args : Union[str,bytes]=None, send_bytes : bool=False
     RuntimeError
         Raised if the client is not connected to the server or if
         there is a server-side error thrown
+        
+    Notes
+    -----
+    If the server response is a string, the string corresponds to a success  
+    confirmation, warn message, or error message. A response of type bytes 
+    corresponds to an Arkouda array output as a numpy array.
     """
     global socket, pspStr, connected, verbose
 
@@ -617,7 +626,7 @@ def _no_op() -> str:
     RuntimeError
         Raised if there is a server-side error in executing noop request
     """
-    return cast(str,generic_msg("noop"))
+    return cast(str,generic_msg(cmd="noop"))
   
 def ruok() -> str:
     """
@@ -636,7 +645,7 @@ def ruok() -> str:
         both of the latter cases
     """
     try:
-        res = cast(str,generic_msg('ruok'))
+        res = cast(str,generic_msg(cmd='ruok'))
         if res == 'imok':
             return 'imok'
         else:

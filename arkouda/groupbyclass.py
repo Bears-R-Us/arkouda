@@ -289,7 +289,7 @@ class GroupBy:
                                     self.segments.name,
                                     operator,
                                     skipna)
-        repMsg = generic_msg(cmd,args)
+        repMsg = generic_msg(cmd=cmd,args=args)
         self.logger.debug(repMsg)
         if operator.startswith('arg'):
             return (self.unique_keys, 

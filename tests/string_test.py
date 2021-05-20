@@ -515,6 +515,11 @@ class StringTest(ArkoudaTest):
         flatrange = thickrange.flatten(', ')
         self.assertTrue((ak.cast(flatrange, 'int64') == ak.arange(99)).all())
         
+    def test_get_lengths(self):
+        s1 = ak.array(['one', 'two', 'three', 'four', 'five'])
+        lengths = s1.get_lengths()
+        self.assertTrue((ak.array([3,3,5,4,4]) == lengths).all())
+
     def test_concatenate(self):
         s1 = self._get_strings('string',51)
         s2 = self._get_strings('string-two', 51)
