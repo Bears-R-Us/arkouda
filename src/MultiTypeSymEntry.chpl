@@ -22,9 +22,9 @@ module MultiTypeSymEntry
         return gse.toSymEntry(etype);
     }
 
-    // inline proc toSegStringSymEntry(gse: borrowed GenSymEntry) {
-    //     return gse.toSegStringSymEntry();
-    // }
+    inline proc toSegStringSymEntry(gse: borrowed GenSymEntry) {
+        return try! gse: borrowed SegStringSymEntry(string);
+    }
 
     /* This is a dummy class to avoid having to talk about specific
        instantiations of SymEntry. */
@@ -55,10 +55,6 @@ module MultiTypeSymEntry
         inline proc toSymEntry(type etype) {
             return try! this :borrowed SymEntry(etype);
         }
-
-        // inline proc toSegStringSymEntry(type etype) {
-        //     return try! this :borrowed SegStringSymEntry(etype);
-        // }
 
         /* 
         Formats and returns data in this entry up to the specified threshold. 
@@ -218,13 +214,6 @@ module MultiTypeSymEntry
             this.offsetsEntry = offsetsSymEntry;
             this.bytesEntry = bytesSymEntry;
         }
-
-        proc init(type etype, len: int = 0) {
-            super.init(etype);
-        }
-
-        proc init(gen: borrowed GenSymEntry){
-            super.init(string);
-        }
     }
+
 }
