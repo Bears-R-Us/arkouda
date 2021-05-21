@@ -31,12 +31,13 @@ module SegmentedArray {
    */
   proc getSegString(offsetName: string, valName: string, 
                                           st: borrowed SymTab): owned SegString throws {
+      /* TEMPORARY: until the messaging layer / client side gets updated */
       var combined_name = offsetName + "+" + valName;
       return getSegString(combined_name, st);
   }
 
   proc getSegString(name: string, st: borrowed SymTab): owned SegString throws {
-      return new owned SegString(st.lookup(name));
+      return new owned SegString(name, st.lookup(name));
   }
 
   /*
@@ -49,9 +50,8 @@ module SegmentedArray {
       var offsetEntry = new shared SymEntry(segments);
       var valEntry = new shared SymEntry(values);
       var stringsEntry = new shared SegStringSymEntry(offsetEntry, valEntry, string);
-      var name = "strings-" + st.nextName();
+      var name = st.nextName();
       st.addEntry(name, stringsEntry);
-      // return new owned SegString(stringsEntry);
       return getSegString(name, st);
   }
 
@@ -64,23 +64,15 @@ module SegmentedArray {
    */
   class SegString {
  
-    /**
-     * The name of the SymEntry corresponding to the pdarray containing
-     * the offsets, which are start indices for each string bytearray
-     */
-    var offsetName: string;
+    var name: string;
+
+    var composite: borrowed SegStringSymEntry;
 
     /**
      * The pdarray containing the offsets, which are the start indices of
      * the bytearrays, each of which corresponds to an individual string.
      */ 
     var offsets: borrowed SymEntry(int);
-
-    /**
-     * The name of the SymEntry corresponding to the pdarray containing
-     * the string values where each value is byte array.
-     */
-    var valueName: string;
 
     /**
      * The pdarray containing the complete byte array composed of bytes
@@ -105,10 +97,10 @@ module SegmentedArray {
      * This method should not be called directly. Instead, call one of the
      * getSegString factory methods.
      */
-    proc init(gse: borrowed GenSymEntry) {
-        var foo:SegStringSymEntry = toSegStringSymEntry(gse);
-        offsets = foo.offsetsEntry: unmanaged SymEntry(int);
-        values = foo.bytesEntry: unmanaged SymEntry(uint(8));
+    proc init(entryName:string, gse:borrowed GenSymEntry) {
+        composite = toSegStringSymEntry(gse);
+        offsets = composite.offsetsEntry: unmanaged SymEntry(int);
+        values = composite.bytesEntry: unmanaged SymEntry(uint(8));
         size = offsets.size;
         nBytes = values.size;
     }

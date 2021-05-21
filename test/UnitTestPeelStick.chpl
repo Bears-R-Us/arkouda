@@ -128,7 +128,7 @@ proc testMessageLayer(substr, n, minLen, maxLen) throws {
   d.start();
   var (answer, strings) = make_strings(substr, n, minLen, maxLen, charSet.Uppercase, st);
   d.stop("make_strings");
-  var reqMsg = "peel str %s %s str 1 True True True %jt".format(strings.offsetName, strings.valueName, [substr]);
+  var reqMsg = "peel str %s str 1 True True True %jt".format(strings.name, [substr]);
   writeReq(reqMsg);
   var repMsg = segmentedPeelMsg(cmd="segmentedPeel", payload=reqMsg, st).msg;
   writeRep(repMsg);
