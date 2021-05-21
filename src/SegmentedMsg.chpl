@@ -21,11 +21,7 @@ module SegmentedMsg {
           = payload.splitMsgToTuple(6);
       var len = lenStr: int;
       var charset = str2CharSet(charsetStr);
-      var segName = st.nextName();
-      var valName = st.nextName();
       var repMsg: string;
-      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-             "dist: %s segName: %t valName: %t".format(dist.toLower(),segName,valName));
       select dist.toLower() {
           when "uniform" {
               var minLen = arg1str:int;
@@ -33,11 +29,8 @@ module SegmentedMsg {
               // Lengths + 2*segs + 2*vals (copied to SymTab)
               overMemLimit(8*len + 16*len + (maxLen + minLen)*len);
               var (segs, vals) = newRandStringsUniformLength(len, minLen, maxLen, charset, seedStr);
-              var segEntry = new shared SymEntry(segs);
-              var valEntry = new shared SymEntry(vals);
-              st.addEntry(segName, segEntry);
-              st.addEntry(valName, valEntry);
-              repMsg = 'created ' + st.attrib(segName) + '+created ' + st.attrib(valName);
+              var strings = getSegString(segs, vals, st);
+              repMsg = 'created ' + st.attrib(strings.name) + '+created legacy_placeholder';
           }
           when "lognormal" {
               var logMean = arg1str:real;
@@ -45,11 +38,8 @@ module SegmentedMsg {
               // Lengths + 2*segs + 2*vals (copied to SymTab)
               overMemLimit(8*len + 16*len + exp(logMean + (logStd**2)/2):int*len);
               var (segs, vals) = newRandStringsLogNormalLength(len, logMean, logStd, charset, seedStr);
-              var segEntry = new shared SymEntry(segs);
-              var valEntry = new shared SymEntry(vals);
-              st.addEntry(segName, segEntry);
-              st.addEntry(valName, valEntry);
-              repMsg = 'created ' + st.attrib(segName) + '+created ' + st.attrib(valName);
+              var strings = getSegString(segs, vals, st);
+              repMsg = 'created ' + st.attrib(strings.name) + '+created legacy_placeholder';
           }
           otherwise { 
               var errorMsg = notImplementedError(pn, dist);      
@@ -65,20 +55,19 @@ module SegmentedMsg {
   proc segmentLengthsMsg(cmd: string, payload: string, 
                                           st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
-    var (objtype, segName, valName) = payload.splitMsgToTuple(3);
+    var (objtype, name, legacy_placeholder) = payload.splitMsgToTuple(3);
 
     // check to make sure symbols defined
-    st.checkTable(segName);
-    st.checkTable(valName);
+    st.checkTable(name);
     
     var rname = st.nextName();
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-            "cmd: %s objtype: %t segName: %t valName: %t".format(
-                   cmd,objtype,segName,valName));
+            "cmd: %s objtype: %t name: %t legacy_placeholder: %t".format(
+                   cmd,objtype,name,"legacy_placeholder"));
 
     select objtype {
       when "str" {
-        var strings = getSegString(segName, valName, st);
+        var strings = getSegString(name, st);
         var lengths = st.addEntry(rname, strings.size, int);
         // Do not include the null terminator in the length
         lengths.a = strings.getLengths() - 1;
@@ -98,12 +87,11 @@ module SegmentedMsg {
   proc segmentedEfuncMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var repMsg: string;
-      var (subcmd, objtype, segName, valName, valtype, valStr) = 
+      var (subcmd, objtype, name, legacy_placeholder, valtype, valStr) = 
                                               payload.splitMsgToTuple(6);
 
       // check to make sure symbols defined
-      st.checkTable(segName);
-      st.checkTable(valName);
+      st.checkTable(name);
 
       var json = jsonToPdArray(valStr, 1);
       var val = json[json.domain.low];
@@ -115,7 +103,7 @@ module SegmentedMsg {
     
         select (objtype, valtype) {
           when ("str", "str") {
-            var strings = getSegString(segName, valName, st);
+            var strings = getSegString(name, st);
             select subcmd {
                 when "contains" {
                 var truth = st.addEntry(rname, strings.size, bool);
@@ -154,12 +142,11 @@ module SegmentedMsg {
 proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (subcmd, objtype, segName, valName, valtype, valStr,
+    var (subcmd, objtype, name, legacy_placeholder, valtype, valStr,
          idStr, kpStr, lStr, jsonStr) = payload.splitMsgToTuple(10);
 
     // check to make sure symbols defined
-    st.checkTable(segName);
-    st.checkTable(valName);
+    st.checkTable(name);
 
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                          "cmd: %s subcmd: %s objtype: %t valtype: %t".format(
@@ -167,7 +154,7 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
 
     select (objtype, valtype) {
     when ("str", "str") {
-      var strings = getSegString(segName, valName, st);
+      var strings = getSegString(name, st);
       select subcmd {
         when "peel" {
           var times = valStr:int;
@@ -176,59 +163,41 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
           var left = (lStr.toLower() == "true");
           var json = jsonToPdArray(jsonStr, 1);
           var val = json[json.domain.low];
-          var loname = st.nextName();
-          var lvname = st.nextName();
-          var roname = st.nextName();
-          var rvname = st.nextName();
+          var leftName = "";
+          var rightName = "";
           select (includeDelimiter, keepPartial, left) {
           when (false, false, false) {
             var (lo, lv, ro, rv) = strings.peel(val, times, false, false, false);
-            st.addEntry(loname, new shared SymEntry(lo));
-            st.addEntry(lvname, new shared SymEntry(lv));
-            st.addEntry(roname, new shared SymEntry(ro));
-            st.addEntry(rvname, new shared SymEntry(rv));
+            leftName = getSegString(lo, lv, st).name;
+            rightName = getSegString(ro, rv, st).name;
           } when (false, false, true) {
             var (lo, lv, ro, rv) = strings.peel(val, times, false, false, true);
-            st.addEntry(loname, new shared SymEntry(lo));
-            st.addEntry(lvname, new shared SymEntry(lv));
-            st.addEntry(roname, new shared SymEntry(ro));
-            st.addEntry(rvname, new shared SymEntry(rv));
+            leftName = getSegString(lo, lv, st).name;
+            rightName = getSegString(ro, rv, st).name;
           } when (false, true, false) {
             var (lo, lv, ro, rv) = strings.peel(val, times, false, true, false);
-            st.addEntry(loname, new shared SymEntry(lo));
-            st.addEntry(lvname, new shared SymEntry(lv));
-            st.addEntry(roname, new shared SymEntry(ro));
-            st.addEntry(rvname, new shared SymEntry(rv));
+            leftName = getSegString(lo, lv, st).name;
+            rightName = getSegString(ro, rv, st).name;
           } when (false, true, true) {
             var (lo, lv, ro, rv) = strings.peel(val, times, false, true, true);
-            st.addEntry(loname, new shared SymEntry(lo));
-            st.addEntry(lvname, new shared SymEntry(lv));
-            st.addEntry(roname, new shared SymEntry(ro));
-            st.addEntry(rvname, new shared SymEntry(rv));
+            leftName = getSegString(lo, lv, st).name;
+            rightName = getSegString(ro, rv, st).name;
           } when (true, false, false) {
             var (lo, lv, ro, rv) = strings.peel(val, times, true, false, false);
-            st.addEntry(loname, new shared SymEntry(lo));
-            st.addEntry(lvname, new shared SymEntry(lv));
-            st.addEntry(roname, new shared SymEntry(ro));
-            st.addEntry(rvname, new shared SymEntry(rv));
+            leftName = getSegString(lo, lv, st).name;
+            rightName = getSegString(ro, rv, st).name;
           } when (true, false, true) {
             var (lo, lv, ro, rv) = strings.peel(val, times, true, false, true);
-            st.addEntry(loname, new shared SymEntry(lo));
-            st.addEntry(lvname, new shared SymEntry(lv));
-            st.addEntry(roname, new shared SymEntry(ro));
-            st.addEntry(rvname, new shared SymEntry(rv));
+            leftName = getSegString(lo, lv, st).name;
+            rightName = getSegString(ro, rv, st).name;
           } when (true, true, false) {
             var (lo, lv, ro, rv) = strings.peel(val, times, true, true, false);
-            st.addEntry(loname, new shared SymEntry(lo));
-            st.addEntry(lvname, new shared SymEntry(lv));
-            st.addEntry(roname, new shared SymEntry(ro));
-            st.addEntry(rvname, new shared SymEntry(rv));
+            leftName = getSegString(lo, lv, st).name;
+            rightName = getSegString(ro, rv, st).name;
           } when (true, true, true) {
             var (lo, lv, ro, rv) = strings.peel(val, times, true, true, true);
-            st.addEntry(loname, new shared SymEntry(lo));
-            st.addEntry(lvname, new shared SymEntry(lv));
-            st.addEntry(roname, new shared SymEntry(ro));
-            st.addEntry(rvname, new shared SymEntry(rv));
+            leftName = getSegString(lo, lv, st).name;
+            rightName = getSegString(ro, rv, st).name;
           } otherwise {
               var errorMsg = notImplementedError(pn, 
                                "subcmd: %s, (%s, %s)".format(subcmd, objtype, valtype));
@@ -236,10 +205,10 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
               return new MsgTuple(errorMsg, MsgType.ERROR);                            
               }
           }
-          repMsg = "created %s+created %s+created %s+created %s".format(st.attrib(loname),
-                                                                        st.attrib(lvname),
-                                                                        st.attrib(roname),
-                                                                        st.attrib(rvname));
+          repMsg = "created %s+created %s+created %s+created %s".format(st.attrib(leftName),
+                                                                        st.attrib(leftName + "legacy_placeholder"),
+                                                                        st.attrib(rightName),
+                                                                        st.attrib(rightName + "legacy_placeholder"));
         }
         otherwise {
             var errorMsg = notImplementedError(pn, 
@@ -263,15 +232,14 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
   proc segmentedHashMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (objtype, segName, valName) = payload.splitMsgToTuple(3);
+    var (objtype, name, legacy_placeholder) = payload.splitMsgToTuple(3);
 
     // check to make sure symbols defined
-    st.checkTable(segName);
-    st.checkTable(valName);
+    st.checkTable(name);
 
     select objtype {
         when "str" {
-            var strings = getSegString(segName, valName, st);
+            var strings = getSegString(name, st);
             var hashes = strings.hash();
             var name1 = st.nextName();
             var hash1 = st.addEntry(name1, hashes.size, int);
@@ -349,13 +317,12 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
       var pn = Reflection.getRoutineName();
 
       // check to make sure symbols defined
-      st.checkTable(args[1]);
-      st.checkTable(args[2]);
+      st.checkTable(args[1]); // TODO move to single name
       
       select objtype {
           when "str" {
               // Make a temporary strings array
-              var strings = getSegString(args[1], args[2], st);
+              var strings = getSegString(args[1], st);
               // Parse the index
               var idx = args[3]:int;
               // TO DO: in the future, we will force the client to handle this
@@ -390,15 +357,14 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
     var pn = Reflection.getRoutineName();
 
     // check to make sure symbols defined
-    st.checkTable(args[1]);
-    st.checkTable(args[2]);
+    st.checkTable(args[1]); //TODO remove legacy_placeholder and bump indices below
 
     select objtype {
         when "str" {
             // Make a temporary string array
-            var strings = getSegString(args[1], args[2], st);
+            var strings = getSegString(args[1], st);
 
-            // Parse the slice parameters
+            // Parse the slice parameters TODO bump this indicies after legacy_placeholder removal
             var start = args[3]:int;
             var stop = args[4]:int;
             var stride = args[5]:int;
@@ -411,17 +377,12 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
             }
             // TO DO: in the future, we will force the client to handle this
             var slice: range(stridable=true) = convertPythonSliceToChapel(start, stop, stride);
-            var newSegName = st.nextName();
-            var newValName = st.nextName();
             // Compute the slice
             var (newSegs, newVals) = strings[slice];
             // Store the resulting offsets and bytes arrays
-            var newSegsEntry = new shared SymEntry(newSegs);
-            var newValsEntry = new shared SymEntry(newVals);
-            st.addEntry(newSegName, newSegsEntry);
-            st.addEntry(newValName, newValsEntry);
-        
-            var repMsg = "created " + st.attrib(newSegName) + " +created " + st.attrib(newValName);
+            var newStringsObj = getSegString(newSegs, newVals, st);
+            // TODO after legacy_placeholder removal, drop second created piece
+            var repMsg = "created " + st.attrib(newStringsObj.name) + " +created " + st.attrib(newStringsObj.name);
             smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
             return new MsgTuple(repMsg, MsgType.NORMAL);
         }
@@ -450,18 +411,16 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
     var pn = Reflection.getRoutineName();
 
     // check to make sure symbols defined
-    st.checkTable(args[1]);
-    st.checkTable(args[2]);
+    st.checkTable(args[1]);  // TODO update positional args below after removing legacy_placeholder
 
-    var newSegName = st.nextName();
-    var newValName = st.nextName();
+    var newStringsName = st.nextName();
     
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                   "objtype:%s".format(objtype));
     
     select objtype {
         when "str" {
-            var strings = getSegString(args[1], args[2], st);
+            var strings = getSegString(args[1], st);
             var iname = args[3];
             var gIV: borrowed GenSymEntry = st.lookup(iname);
             try {
@@ -469,18 +428,12 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
                     when DType.Int64 {
                         var iv = toSymEntry(gIV, int);
                         var (newSegs, newVals) = strings[iv.a];
-                        var newSegsEntry = new shared SymEntry(newSegs);
-                        var newValsEntry = new shared SymEntry(newVals);
-                        st.addEntry(newSegName, newSegsEntry);
-                        st.addEntry(newValName, newValsEntry);
+                        var newStringsObj = getSegString(newSegs, newVals, st);
                     }
                     when DType.Bool {
                         var iv = toSymEntry(gIV, bool);
                         var (newSegs, newVals) = strings[iv.a];
-                        var newSegsEntry = new shared SymEntry(newSegs);
-                        var newValsEntry = new shared SymEntry(newVals);
-                        st.addEntry(newSegName, newSegsEntry);
-                        st.addEntry(newValName, newValsEntry);
+                        var newStringsObj = getSegString(newSegs, newVals, st);
                     }
                     otherwise {
                         var errorMsg = "("+objtype+","+dtype2str(gIV.dtype)+")";
@@ -501,7 +454,8 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
             return new MsgTuple(notImplementedError(pn, objtype), MsgType.ERROR);
         }
     }
-    var repMsg = "created " + st.attrib(newSegName) + "+created " + st.attrib(newValName);
+    // TODO remove second created objet after legacy_placeholder removal 
+    var repMsg = "created " + st.attrib(newStringsName) + "+created " + st.attrib(newStringsName);
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
 
     return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -512,21 +466,19 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
     var repMsg: string;
     var (op,
          // Type and attrib names of left segmented array
-         ltype, lsegName, lvalName,
+         ltype, leftName, left_legacy_placeholder,
          // Type and attrib names of right segmented array
-         rtype, rsegName, rvalName, leftStr, jsonStr)
+         rtype, rightName, right_legacy_placeholder, leftStr, jsonStr)
            = payload.splitMsgToTuple(9);
 
     // check to make sure symbols defined
-    st.checkTable(lsegName);
-    st.checkTable(lvalName);
-    st.checkTable(rsegName);
-    st.checkTable(rvalName);
+    st.checkTable(leftName);
+    st.checkTable(rightName);
 
     select (ltype, rtype) {
         when ("str", "str") {
-            var lstrings = getSegString(lsegName, lvalName, st);
-            var rstrings = getSegString(rsegName, rvalName, st);
+            var lstrings = getSegString(leftName, st);
+            var rstrings = getSegString(rightName, st);
 
             select op {
                 when "==" {
@@ -545,18 +497,16 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
                     var left = (leftStr.toLower() != "false");
                     var json = jsonToPdArray(jsonStr, 1);
                     const delim = json[json.domain.low];
-                    var oname = st.nextName();
-                    var vname = st.nextName();
+                    var strings:SegString;
                     if left {
                         var (newOffsets, newVals) = lstrings.stick(rstrings, delim, false);
-                        st.addEntry(oname, new shared SymEntry(newOffsets));
-                        st.addEntry(vname, new shared SymEntry(newVals));
+                        strings = getSegString(newOffsets, newVals, st);
                     } else {
                         var (newOffsets, newVals) = lstrings.stick(rstrings, delim, true);
-                        st.addEntry(oname, new shared SymEntry(newOffsets));
-                        st.addEntry(vname, new shared SymEntry(newVals));
+                        strings = getSegString(newOffsets, newVals, st);
                     }
-                    repMsg = "created %s+created %s".format(st.attrib(oname), st.attrib(vname));
+                    // TODO remove second created entry after legacy_placeholder removal
+                    repMsg = "created %s+created %s".format(st.attrib(strings.name), st.attrib(strings.name));
                     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
                 }
                 otherwise {
@@ -579,12 +529,11 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
   proc segBinopvsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var repMsg: string;
-      var (op, objtype, segName, valName, valtype, encodedVal)
+      var (op, objtype, name, legacy_placeholder, valtype, encodedVal)
           = payload.splitMsgToTuple(6);
 
       // check to make sure symbols defined
-      st.checkTable(segName);
-      st.checkTable(valName);
+      st.checkTable(name);
 
       var json = jsonToPdArray(encodedVal, 1);
       var value = json[json.domain.low];
@@ -592,7 +541,7 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
 
       select (objtype, valtype) {
           when ("str", "str") {
-              var strings = getSegString(segName, valName, st);
+              var strings = getSegString(name, st);
               select op {
                   when "==" {
                       var e = st.addEntry(rname, strings.size, bool);
@@ -624,14 +573,12 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
   proc segIn1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var repMsg: string;
-      var (mainObjtype, mainSegName, mainValName, testObjtype, testSegName,
-         testValName, invertStr) = payload.splitMsgToTuple(7);
+      var (mainObjtype, mainName, main_legacy_placeholder, testObjtype, testName,
+         test_legacy_placeholder, invertStr) = payload.splitMsgToTuple(7);
 
       // check to make sure symbols defined
-      st.checkTable(mainSegName);
-      st.checkTable(mainValName);
-      st.checkTable(testSegName);
-      st.checkTable(testValName);
+      st.checkTable(mainName);
+      st.checkTable(testName);
 
       var invert: bool;
       if invertStr == "True" {invert = true;
@@ -646,8 +593,8 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
  
       select (mainObjtype, testObjtype) {
           when ("str", "str") {
-              var mainStr = getSegString(mainSegName, mainValName, st);
-              var testStr = getSegString(testSegName, testValName, st);
+              var mainStr = getSegString(mainName, st);
+              var testStr = getSegString(testName, st);
               var e = st.addEntry(rname, mainStr.size, bool);
               if invert {
                   e.a = !in1d(mainStr, testStr);
@@ -669,16 +616,15 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
 
   proc segGroupMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
-      var (objtype, segName, valName) = payload.splitMsgToTuple(3);
+      var (objtype, name, legacy_placeholder) = payload.splitMsgToTuple(3);
 
       // check to make sure symbols defined
-      st.checkTable(segName);
-      st.checkTable(valName);
+      st.checkTable(name);
       
       var rname = st.nextName();
       select (objtype) {
           when "str" {
-              var strings = getSegString(segName, valName, st);
+              var strings = getSegString(name, st);
               var iv = st.addEntry(rname, strings.size, int);
               iv.a = strings.argGroup();
           }

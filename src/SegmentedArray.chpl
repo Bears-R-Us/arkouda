@@ -25,17 +25,6 @@ module SegmentedArray {
   
   class OutOfBoundsError: Error {}
 
-  /* 
-   * This version of the getSegString method is the most common and is only used 
-   * when the names of the segments (offsets) and values SymEntries are known.
-   */
-  proc getSegString(offsetName: string, valName: string, 
-                                          st: borrowed SymTab): owned SegString throws {
-      /* TEMPORARY: until the messaging layer / client side gets updated */
-      var combined_name = offsetName + "+" + valName;
-      return getSegString(combined_name, st);
-  }
-
   proc getSegString(name: string, st: borrowed SymTab): owned SegString throws {
       return new owned SegString(name, st.lookup(name));
   }
