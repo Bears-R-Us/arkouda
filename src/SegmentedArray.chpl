@@ -31,9 +31,9 @@ module SegmentedArray {
    */
   proc getSegString(offsetName: string, valName: string, 
                                           st: borrowed SymTab): owned SegString throws {
-      var offsetEntry = st.lookup(offsetName);
-      var valEntry = st.lookup(valName);
-      return new owned SegString(offsetEntry, offsetName, valEntry, valName, st);
+      var combined_name = offsetName + "+" + valName;
+      var combined_entry:GenSymEntry = st.lookup(combined_name);
+      return new owned SegString(combined_entry);
   }
 
   /*
@@ -51,7 +51,11 @@ module SegmentedArray {
       var valEntry = new shared SymEntry(values);
       st.addEntry(valName, valEntry);
 
-      return new SegString(offsetEntry, offsetName, valEntry, valName, st);
+      var combined_name = offsetName + "+" + valName;
+      var combined_entry = new shared SegStringSymEntry(offsetEntry, valEntry, string);
+      st.addEntry(combined_name, combined_entry);
+      return new SegString(combined_entry);
+      // return new SegString(offsetEntry, offsetName, valEntry, valName);
   }
 
   /**
@@ -100,12 +104,22 @@ module SegmentedArray {
      */ 
     var nBytes: int;
 
+    proc init(gse: borrowed GenSymEntry) {
+        var foo:SegStringSymEntry = gse: SegStringSymEntry(string);
+        offsets = foo.offsetsEntry: unmanaged SymEntry(int);
+        values = foo.bytesEntry: unmanaged SymEntry(uint(8));
+        // var foo = gse:unmanaged SegStringSymEntry(string);
+        // var foo:SegStringSymEntry = gse: unmanaged SegStringSymEntry;
+        // var foo = toSegStringSymEntry(gse, string): unmanaged SegStringSymEntry(string);
+        // init(foo.offsetsEntry, "", foo.bytesEntry, "");
+    }
+
     /* 
      * This method should not be called directly. Instead, call one of the
      * getSegString factory methods.
      */
     proc init(offsetEntry: borrowed GenSymEntry, segsName: string, 
-                   valEntry: borrowed GenSymEntry, valName: string, st: borrowed SymTab) {
+                   valEntry: borrowed GenSymEntry, valName: string) {
       offsetName = segsName;
       //Must be unmanaged because borrowed throws a lifetime error
       offsets = toSymEntry(offsetEntry, int): unmanaged SymEntry(int);
