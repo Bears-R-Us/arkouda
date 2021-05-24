@@ -406,6 +406,35 @@ class RegistrationTest(ArkoudaTest):
         with pytest.raises(RegistrationError):
             c.is_registered()
 
+    def test_categorical_from_codes_registration_suite(self):
+        """
+        Test register, is_registered, attach, unregister, unregister_categorical_by_name
+        for Categorical made using .from_codes
+        """
+        cleanup()  # Make sure we start with a clean registry
+        categories = ak.array(['a', 'b', 'c'])
+        codes = ak.array([0, 1, 0, 2, 1])
+        cat = ak.Categorical.from_codes(codes, categories)
+        self.assertFalse(cat.is_registered(), "test_me should be unregistered")
+        self.assertTrue(cat.register("test_me").is_registered(), "test_me categorical should be registered")
+        cat = None  # Should trigger destructor, but survive server deletion because it is registered
+        self.assertTrue(cat is None, "The reference to `c` should be None")
+        cat = ak.Categorical.attach("test_me")
+        self.assertTrue(cat.is_registered(), "test_me categorical should be registered after attach")
+        cat.unregister()
+        self.assertFalse(cat.is_registered(), "test_me should be unregistered")
+        self.assertTrue(cat.register("another_name").name == "another_name" and cat.is_registered())
+
+        # Test static unregister_by_name
+        ak.Categorical.unregister_categorical_by_name("another_name")
+        self.assertFalse(cat.is_registered(), "another_name should be unregistered")
+
+        # now mess with the subcomponents directly to test is_registered mis-match logic
+        cat.register("another_name")
+        unregister_pdarray_by_name("another_name.codes")
+        with pytest.raises(RegistrationError):
+            cat.is_registered()
+
     def test_attach_weak_binding(self):
         """
         Ultimately pdarrayclass issues delete calls to the server when a bound object goes out of scope, if you bind
