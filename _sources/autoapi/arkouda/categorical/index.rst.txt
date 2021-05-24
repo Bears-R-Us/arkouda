@@ -86,6 +86,11 @@ Classes
 
       
 
+   .. attribute:: RequiredPieces
+      
+
+      
+
    .. attribute:: objtype
       :annotation: = category
 
@@ -452,6 +457,9 @@ Classes
 
       Objects registered with the server are immune to deletion until
       they are unregistered.
+
+
+   .. method:: _get_components(self) -> List
 
 
    .. method:: _list_component_names(self) -> List[str]
