@@ -139,7 +139,7 @@ module SegmentedMsg {
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+  proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
     var (subcmd, objtype, name, legacy_placeholder, valtype, valStr,
@@ -413,7 +413,7 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
     // check to make sure symbols defined
     st.checkTable(args[1]);  // TODO update positional args below after removing legacy_placeholder
 
-    var newStringsName = st.nextName();
+    var newStringsName = "";
     
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                   "objtype:%s".format(objtype));
@@ -429,11 +429,13 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
                         var iv = toSymEntry(gIV, int);
                         var (newSegs, newVals) = strings[iv.a];
                         var newStringsObj = getSegString(newSegs, newVals, st);
+                        newStringsName = newStringsObj.name;
                     }
                     when DType.Bool {
                         var iv = toSymEntry(gIV, bool);
                         var (newSegs, newVals) = strings[iv.a];
                         var newStringsObj = getSegString(newSegs, newVals, st);
+                        newStringsName = newStringsObj.name;
                     }
                     otherwise {
                         var errorMsg = "("+objtype+","+dtype2str(gIV.dtype)+")";
