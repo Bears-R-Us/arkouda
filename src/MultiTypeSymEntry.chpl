@@ -213,6 +213,10 @@ module MultiTypeSymEntry
             super.init(string);
             this.offsetsEntry = offsetsSymEntry;
             this.bytesEntry = bytesSymEntry;
+            this.size = this.offsetsEntry.size;
+            this.ndim = this.offsetsEntry.ndim;
+            this.shape = this.offsetsEntry.shape;
+            this.itemsize = this.bytesEntry.itemsize;
         }
     }
 

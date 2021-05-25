@@ -48,7 +48,7 @@ module NumPyDType
         if dstr == "float64" {return DType.Float64;}        
         if dstr == "bool" {return DType.Bool;}
         if dstr == "uint8" {return DType.UInt8;}
-        if dstr == "string" {return DType.Strings;}
+        if dstr == "str" {return DType.Strings;}
         return DType.UNDEF;
     }
     
@@ -64,7 +64,7 @@ module NumPyDType
         if dtype == DType.Float64 {return "float64";}        
         if dtype == DType.Bool {return "bool";}
         if dtype == DType.UInt8 {return "uint8";}
-        if dtype == DType.Strings {return "string";}
+        if dtype == DType.Strings {return "str";}
         return "UNDEF";
     }
 

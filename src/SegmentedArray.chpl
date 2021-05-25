@@ -34,11 +34,20 @@ module SegmentedArray {
    * inputs, generates the SymEntry objects for each and passes the
    * offset and value SymTab lookup names to the alternate init method
    */
-  proc getSegString(segments: [] int, values: [] uint(8), 
-                                          st: borrowed SymTab): owned SegString throws {
-      var offsetEntry = new shared SymEntry(segments);
-      var valEntry = new shared SymEntry(values);
-      var stringsEntry = new shared SegStringSymEntry(offsetEntry, valEntry, string);
+  proc getSegString(segments: [] int, values: [] uint(8), st: borrowed SymTab): owned SegString throws {
+      var offsetsEntry = new shared SymEntry(segments);
+      var valuesEntry = new shared SymEntry(values);
+      return assembleSegStringFromParts(offsetsEntry, valuesEntry, st);
+  }
+
+  proc assembleSegStringFromParts(offsets:GenSymEntry, values:GenSymEntry, st:borrowed SymTab): owned SegString throws {
+      var offs = toSymEntry(offsets, int);
+      var vals = toSymEntry(values, uint(8));
+      return assembleSegStringFromParts(offs, vals, st);
+  }
+
+  proc assembleSegStringFromParts(offsets:SymEntry, values:SymEntry, st:borrowed SymTab): owned SegString throws {
+      var stringsEntry = new shared SegStringSymEntry(offsets, values, string);
       var name = st.nextName();
       st.addEntry(name, stringsEntry);
       return getSegString(name, st);
@@ -87,6 +96,7 @@ module SegmentedArray {
      * getSegString factory methods.
      */
     proc init(entryName:string, gse:borrowed GenSymEntry) {
+        name = entryName;
         composite = toSegStringSymEntry(gse);
         offsets = composite.offsetsEntry: unmanaged SymEntry(int);
         values = composite.bytesEntry: unmanaged SymEntry(uint(8));

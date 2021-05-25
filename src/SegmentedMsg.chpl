@@ -15,6 +15,33 @@ module SegmentedMsg {
   private config const logLevel = ServerConfig.logLevel;
   const smLogger = new Logger(logLevel);
 
+  /**
+   * Procedure for assembling disjoint Strings-object / SegString parts
+   * This should be a transitional procedure for current client procedure
+   * of building and passing the two components separately.  Eventually
+   * we'll either encapsulate both parts in a single message or do the
+   * parsing and offsets construction on the server.
+  */
+  proc assembleStringsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    var (offsetsName, valuesName) = payload.splitMsgToTuple(2);
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+            "cmd: %s offsetsName: %s valuesName: %s".format(cmd, offsetsName, valuesName));
+    st.checkTable(offsetsName);
+    st.checkTable(valuesName);
+    var offsets = st.lookup(offsetsName);
+    var values = st.lookup(valuesName);
+    var segString = assembleSegStringFromParts(offsets, values, st);
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "created segString.name: %s".format(segString.name));
+    // clean up the parts since we only want a single encapsulated "Strings" entry
+    // st.deleteEntry(offsetsName);
+    // st.deleteEntry(valuesName);
+
+    // Now return msg binding our newly created SegString object
+    var repMsg = "created " + st.attrib(segString.name);
+    smLogger.debug(getModuleName(), getRoutineName(), getLineNumber(), repMsg);
+    return new MsgTuple(repMsg, MsgType.NORMAL);
+  }
+
   proc randomStringsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var (lenStr, dist, charsetStr, arg1str, arg2str, seedStr)
