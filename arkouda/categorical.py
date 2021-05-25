@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import cast, List, Optional, Sequence, Union
+from typing import cast, List, Optional, Sequence, Union, Dict
 import numpy as np # type: ignore
 import itertools
 from typeguard import typechecked
@@ -596,8 +596,7 @@ class Categorical:
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-        [getattr(self, p).register(f"{user_defined_name}.{p}") for p in Categorical.RegisterablePieces
-         if p in Categorical.RequiredPieces or getattr(self, p) is not None]
+        [p.register(f"{user_defined_name}.{n}") for n, p in Categorical._get_components_dict(self).items()]
         self.name = user_defined_name
         return self
 
@@ -623,7 +622,7 @@ class Categorical:
         """
         if not self.name:
             raise RegistrationError("This item does not have a name and does not appear to be registered.")
-        [p.unregister() for p in Categorical._get_components(self)]
+        [p.unregister() for p in Categorical._get_components_dict(self).values()]
         self.name = None  # Clear our internal Categorical object name
 
     def is_registered(self) -> np.bool_:
@@ -649,19 +648,32 @@ class Categorical:
         Objects registered with the server are immune to deletion until
         they are unregistered.
         """
-        parts_registered: List[np.bool_] = [p.is_registered() for p in Categorical._get_components(self)]
+        parts_registered: List[np.bool_] = [p.is_registered() for p in Categorical._get_components_dict(self).values()]
         if np.any(parts_registered) and not np.all(parts_registered):  # test for error
             raise RegistrationError(f"Not all registerable components of Categorical {self.name} are registered.")
 
         return np.bool_(np.any(parts_registered))
 
-    def _get_components(self) -> List:
-        return [getattr(self, p) for p in Categorical.RegisterablePieces if p in Categorical.RequiredPieces
-                or getattr(self, p) is not None]
+    def _get_components_dict(self) -> Dict:
+        """
+        Internal function that returns a dictionary with all required or non-None components of self
+
+        Required Categorical components (Codes and Categories) are always included in returned components_dict
+        Optional Categorical components (Permutation and Segments) are only included if they've been set (are not None)
+
+        Returns
+        -------
+        Dict
+            Dictionary of all required or non-None components of self
+                Keys: component names (Codes, Categories, Permutation, Segments)
+                Values: components of self
+        """
+        return {piece_name: getattr(self, piece_name) for piece_name in Categorical.RegisterablePieces
+                if piece_name in Categorical.RequiredPieces or getattr(self, piece_name) is not None}
 
     def _list_component_names(self) -> List[str]:
         """
-        Internal Function that returns a list of all component names
+        Internal function that returns a list of all component names
 
         Parameters
         ----------
@@ -673,7 +685,7 @@ class Categorical:
             List of all component names
         """
         return list(itertools.chain.from_iterable(
-            [p._list_component_names() for p in Categorical._get_components(self)]))
+            [p._list_component_names() for p in Categorical._get_components_dict(self).values()]))
 
     def info(self) -> str:
         """
@@ -702,7 +714,7 @@ class Categorical:
         -------
         None
         """
-        [p.pretty_print_info() for p in Categorical._get_components(self)]
+        [p.pretty_print_info() for p in Categorical._get_components_dict(self).values()]
 
     @staticmethod
     @typechecked
@@ -735,6 +747,8 @@ class Categorical:
             "categories": Strings.attach(f"{user_defined_name}.categories"),
             "codes": pdarray.attach(f"{user_defined_name}.codes"),
         }
+
+        # Add optional pieces only if they're contained in the registry
         registry = list_registry()
         if f"{user_defined_name}.permutation" in registry:
             parts["permutation"] = pdarray.attach(f"{user_defined_name}.permutation")
@@ -771,6 +785,8 @@ class Categorical:
         # We have 4 subcomponents, unregister each of them
         Strings.unregister_strings_by_name(f"{user_defined_name}.categories")
         unregister_pdarray_by_name(f"{user_defined_name}.codes")
+
+        # Unregister optional pieces only if they are contained in the registry
         registry = list_registry()
         if f"{user_defined_name}.permutation" in registry:
             unregister_pdarray_by_name(f"{user_defined_name}.permutation")
