@@ -163,12 +163,12 @@ def read_all(filenames : Union[str,List[str]],
             d : Dict[str,Union[pdarray,Strings]] = dict()
             for dset, rm in zip(datasets, rep_msgs):
                 if('+' in cast(str,rm)): #String
-                    d[dset]=Strings(*cast(str,rm).split('+'))
+                    d[dset]=Strings.from_parts(*cast(str,rm).split('+'))
                 else:
                     d[dset]=create_pdarray(cast(str,rm))
             return d
         elif '+' in rep_msg:
-            return Strings(*cast(str,rep_msg).split('+'))
+            return Strings.from_parts(*cast(str,rep_msg).split('+'))
         else:
             return create_pdarray(cast(str,rep_msg))
 

@@ -51,8 +51,26 @@ class Strings:
     BinOps = frozenset(["==", "!="])
     objtype = "str"
 
-    def __init__(self, offset_attrib : Union[pdarray,str], 
-                 bytes_attrib : Union[pdarray,str]) -> None:
+    @staticmethod
+    def from_parts(offset_attrib : Union[pdarray,str], bytes_attrib : Union[pdarray,str]) -> pdarray:
+        if not isinstance(offset_attrib, pdarray):
+            try:
+                offset_attrib = create_pdarray(offset_attrib)
+            except Exception as e:
+                raise RuntimeError(e)
+        if not isinstance(bytes_attrib, pdarray):
+            try:
+                bytes_attrib = create_pdarray(bytes_attrib)
+            except Exception as e:
+                raise RuntimeError(e)
+        # Now we have two pdarray objects
+        cmd = "assembleStrings"
+        args = f"{offset_attrib.name} {bytes_attrib.name}"
+        response = generic_msg(cmd=cmd, args=args)
+        return Strings(create_pdarray(response), bytes_attrib.size)
+        
+
+    def __init__(self, strings_pdarray:pdarray, bytes_size:int_scalars) -> None:
         """
         Initializes the Strings instance by setting all instance
         attributes, some of which are derived from the array parameters.
@@ -77,25 +95,12 @@ class Strings:
             Raised if there's an error in generating instance attributes 
             from either the offset_attrib or bytes_attrib parameter 
         """
-        if isinstance(offset_attrib, pdarray):
-            self.offsets = offset_attrib
-        else:
-            try:
-                self.offsets = create_pdarray(offset_attrib)
-            except Exception as e:
-                raise RuntimeError(e)
-        if isinstance(bytes_attrib, pdarray):
-            self.bytes = bytes_attrib
-        else:
-            try:
-                self.bytes = create_pdarray(bytes_attrib)
-            except Exception as e:
-                raise RuntimeError(e)
+        self.entry:pdarray = strings_pdarray
         try:
-            self.size = self.offsets.size
-            self.nbytes = self.bytes.size
-            self.ndim = self.offsets.ndim
-            self.shape = self.offsets.shape
+            self.size = self.entry.size
+            self.nbytes = bytes_size  # This is a deficiency of server GenSymEntry right now
+            self.ndim = self.entry.ndim
+            self.shape = self.entry.shape
         except Exception as e:
             raise ValueError(e)   
 
@@ -160,17 +165,17 @@ class Strings:
             cmd = "segmentedBinopvv"
             args = "{} {} {} {} {} {} {}".format(op,
                                                  self.objtype,
-                                                 self.offsets.name,
-                                                 self.bytes.name,
+                                                 self.entry.name,
+                                                 self.entry.name,
                                                  other.objtype,
-                                                 other.offsets.name,
-                                                 other.bytes.name)
+                                                 other.entry.name,
+                                                 other.entry.name)
         elif resolve_scalar_dtype(other) == 'str':
             cmd = "segmentedBinopvs"
             args = "{} {} {} {} {} {}".format(op,
                                                               self.objtype,
-                                                              self.offsets.name,
-                                                              self.bytes.name,
+                                                              self.entry.name,
+                                                              self.entry.name,
                                                               self.objtype,
                                                               json.dumps([other]))
         else:
@@ -194,8 +199,8 @@ class Strings:
                 cmd = "segmentedIndex"
                 args = " {} {} {} {} {}".format('intIndex',
                                                 self.objtype,
-                                                self.offsets.name,
-                                                self.bytes.name,
+                                                self.entry.name,
+                                                self.entry.name,
                                                 key)
                 repMsg = generic_msg(cmd=cmd,args=args)
                 _, value = repMsg.split(maxsplit=1)
@@ -209,8 +214,8 @@ class Strings:
             cmd = "segmentedIndex"
             args = " {} {} {} {} {} {} {}".format('sliceIndex',
                                                   self.objtype,
-                                                  self.offsets.name,
-                                                  self.bytes.name,
+                                                  self.entry.name,
+                                                  "legacy_placeholder",
                                                   start,
                                                   stop,
                                                   stride)
@@ -226,8 +231,8 @@ class Strings:
             cmd = "segmentedIndex"
             args = "{} {} {} {} {}".format('pdarrayIndex',
                                                          self.objtype,
-                                                         self.offsets.name,
-                                                         self.bytes.name,
+                                                         self.entry.name,
+                                                         "legacy_placeholder",
                                                          key.name)
             repMsg = generic_msg(cmd=cmd,args=args)
             offsets, values = repMsg.split('+')
@@ -293,8 +298,8 @@ class Strings:
         cmd = "segmentedEfunc"
         args = "{} {} {} {} {} {}".format("contains",
                                                         self.objtype,
-                                                        self.offsets.name,
-                                                        self.bytes.name,
+                                                        self.entry.name,
+                                                        self.entry.name,
                                                         "str",
                                                         json.dumps([substr]))
         return create_pdarray(generic_msg(cmd=cmd,args=args))
@@ -338,8 +343,8 @@ class Strings:
         cmd = "segmentedEfunc"
         args = "{} {} {} {} {} {}".format("startswith",
                                                         self.objtype,
-                                                        self.offsets.name,
-                                                        self.bytes.name,
+                                                        self.entry.name,
+                                                        self.entry.name,
                                                         "str",
                                                         json.dumps([substr]))
         return create_pdarray(generic_msg(cmd=cmd,args=args))
@@ -383,8 +388,8 @@ class Strings:
         cmd = "segmentedEfunc"
         args = "{} {} {} {} {} {}".format("endswith",
                                           self.objtype,
-                                          self.offsets.name,
-                                          self.bytes.name,
+                                          self.entry.name,
+                                          self.entry.name,
                                           "str",
                                           json.dumps([substr]))
         return create_pdarray(generic_msg(cmd=cmd,args=args))
@@ -422,8 +427,8 @@ class Strings:
         array([0, 2, 5])
         """
         cmd = "segmentedFlatten"
-        args = "{}+{} {} {} {}".format(self.offsets.name,
-                                       self.bytes.name,
+        args = "{}+{} {} {} {}".format(self.entry.name,
+                                       self.entry.name,
                                        self.objtype,
                                        return_segments,
                                        json.dumps([delimiter]))
@@ -506,8 +511,8 @@ class Strings:
         cmd = "segmentedPeel"
         args = "{} {} {} {} {} {} {} {} {} {}".format("peel",
                             self.objtype,
-                            self.offsets.name,
-                            self.bytes.name,
+                            self.entry.name,
+                            self.entry.name,
                             "str",
                             NUMBER_FORMAT_STRINGS['int64'].format(times),
                             NUMBER_FORMAT_STRINGS['bool'].format(includeDelimiter),
@@ -626,11 +631,11 @@ class Strings:
         args = "{} {} {} {} {} {} {} {} {}".\
                             format("stick",
                             self.objtype,
-                            self.offsets.name,
-                            self.bytes.name,
+                            self.entry.name,
+                            self.entry.name,
                             other.objtype,
-                            other.offsets.name,
-                            other.bytes.name,
+                            other.entry.name,
+                            other.entry.name,
                             NUMBER_FORMAT_STRINGS['bool'].format(toLeft),
                             json.dumps([delimiter]))
         repMsg = generic_msg(cmd=cmd,args=args)
@@ -700,8 +705,8 @@ class Strings:
         values is negligible.
         """
         cmd = "segmentedHash"
-        args = "{} {} {}".format(self.objtype, self.offsets.name, 
-                                              self.bytes.name)
+        args = "{} {} {}".format(self.objtype, self.entry.name, 
+                                              self.entry.name)
         repMsg = generic_msg(cmd=cmd,args=args)
         h1, h2 = cast(str,repMsg).split('+')
         return create_pdarray(h1), create_pdarray(h2)
@@ -738,7 +743,7 @@ class Strings:
         """
         cmd = "segmentedGroup"
         args = "{} {} {}".\
-                           format(self.objtype, self.offsets.name, self.bytes.name)
+                           format(self.objtype, self.entry.name, self.entry.name)
         return create_pdarray(generic_msg(cmd=cmd,args=args))
 
     def to_ndarray(self) -> np.ndarray:
@@ -843,8 +848,8 @@ class Strings:
             raise ValueError(e)
         
         return cast(str, generic_msg(cmd="tohdf", args="{} {} {} {} {} {}".\
-                           format(self.bytes.name, dataset, m, json_array, 
-                                  self.dtype, self.offsets.name)))
+                           format(self.entry.name, dataset, m, json_array,
+                                  self.dtype, self.entry.name)))
         
 
     def is_registered(self) -> np.bool_:
