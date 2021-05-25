@@ -33,6 +33,7 @@ module SegmentedMsg {
     var segString = assembleSegStringFromParts(offsets, values, st);
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "created segString.name: %s".format(segString.name));
     // clean up the parts since we only want a single encapsulated "Strings" entry
+    // Although the client may do this when the objects go out of scope.
     // st.deleteEntry(offsetsName);
     // st.deleteEntry(valuesName);
 
@@ -57,7 +58,7 @@ module SegmentedMsg {
               overMemLimit(8*len + 16*len + (maxLen + minLen)*len);
               var (segs, vals) = newRandStringsUniformLength(len, minLen, maxLen, charset, seedStr);
               var strings = getSegString(segs, vals, st);
-              repMsg = 'created ' + st.attrib(strings.name) + '+created legacy_placeholder';
+              repMsg = 'created ' + st.attrib(strings.name) + '+created bytes.size %t'.format(strings.nBytes);
           }
           when "lognormal" {
               var logMean = arg1str:real;
@@ -66,7 +67,7 @@ module SegmentedMsg {
               overMemLimit(8*len + 16*len + exp(logMean + (logStd**2)/2):int*len);
               var (segs, vals) = newRandStringsLogNormalLength(len, logMean, logStd, charset, seedStr);
               var strings = getSegString(segs, vals, st);
-              repMsg = 'created ' + st.attrib(strings.name) + '+created legacy_placeholder';
+              repMsg = 'created ' + st.attrib(strings.name) + '+created bytes.size %t'.format(strings.nBytes);
           }
           otherwise { 
               var errorMsg = notImplementedError(pn, dist);      
@@ -344,12 +345,14 @@ module SegmentedMsg {
       var pn = Reflection.getRoutineName();
 
       // check to make sure symbols defined
+      var strName = args[1];
+      smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "strName: %s".format(strName));
       st.checkTable(args[1]); // TODO move to single name
       
       select objtype {
           when "str" {
               // Make a temporary strings array
-              var strings = getSegString(args[1], st);
+              var strings = getSegString(strName, st);
               // Parse the index
               var idx = args[3]:int;
               // TO DO: in the future, we will force the client to handle this

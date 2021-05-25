@@ -3,6 +3,7 @@ module MultiTypeSymEntry
 {
     use ServerConfig;
     use Logging;
+    use Reflection;
 
     public use NumPyDType;
 
@@ -10,6 +11,9 @@ module MultiTypeSymEntry
 
     use AryUtil;
     
+    private config const logLevel = ServerConfig.logLevel;
+    const genLogger = new Logger(logLevel);
+
     /* Casts a GenSymEntry to the specified type and returns it.
        
        :arg gse: generic sym entry
@@ -76,6 +80,7 @@ module MultiTypeSymEntry
             :returns: s (string) containing the array data
         */
         proc __str__(thresh:int=1, prefix:string="", suffix:string="", baseFormat:string=""): string throws {
+            genLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "__str__ invoked");
             var s = "DType: %s, itemsize: %t, size: %t".format(this.dtype, this.itemsize, this.size);
             return prefix + s + suffix;
         }
@@ -206,10 +211,10 @@ module MultiTypeSymEntry
     class SegStringSymEntry : GenSymEntry {
         type etype = string;
 
-        var offsetsEntry: borrowed SymEntry(int);
-        var bytesEntry: borrowed SymEntry(uint(8));
+        var offsetsEntry: shared SymEntry(int);
+        var bytesEntry: shared SymEntry(uint(8));
 
-        proc init(offsetsSymEntry: borrowed SymEntry, bytesSymEntry: borrowed SymEntry, type etype) {
+        proc init(offsetsSymEntry: shared SymEntry, bytesSymEntry: shared SymEntry, type etype) {
             super.init(string);
             this.offsetsEntry = offsetsSymEntry;
             this.bytesEntry = bytesSymEntry;

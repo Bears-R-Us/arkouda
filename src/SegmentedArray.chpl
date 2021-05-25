@@ -37,13 +37,18 @@ module SegmentedArray {
   proc getSegString(segments: [] int, values: [] uint(8), st: borrowed SymTab): owned SegString throws {
       var offsetsEntry = new shared SymEntry(segments);
       var valuesEntry = new shared SymEntry(values);
-      return assembleSegStringFromParts(offsetsEntry, valuesEntry, st);
+      var stringsEntry = new shared SegStringSymEntry(offsetsEntry, valuesEntry, string);
+      var name = st.nextName();
+      st.addEntry(name, stringsEntry);
+      return getSegString(name, st);
   }
 
   proc assembleSegStringFromParts(offsets:GenSymEntry, values:GenSymEntry, st:borrowed SymTab): owned SegString throws {
       var offs = toSymEntry(offsets, int);
       var vals = toSymEntry(values, uint(8));
-      return assembleSegStringFromParts(offs, vals, st);
+      // This probably invokes a copy, but it's a temporary legacy bridge until we can pass
+      // array components as a single message.
+      return getSegString(offs.a, vals.a, st);
   }
 
   proc assembleSegStringFromParts(offsets:SymEntry, values:SymEntry, st:borrowed SymTab): owned SegString throws {
@@ -70,14 +75,14 @@ module SegmentedArray {
      * The pdarray containing the offsets, which are the start indices of
      * the bytearrays, each of which corresponds to an individual string.
      */ 
-    var offsets: borrowed SymEntry(int);
+    var offsets: shared SymEntry(int);
 
     /**
      * The pdarray containing the complete byte array composed of bytes
      * corresponding to each string, joined by nulls. Note: the null byte
      * is uint(8) value of zero.
      */ 
-    var values: borrowed SymEntry(uint(8));
+    var values: shared SymEntry(uint(8));
     
     /**
      * The number of strings in the segmented array
@@ -98,8 +103,8 @@ module SegmentedArray {
     proc init(entryName:string, gse:borrowed GenSymEntry) {
         name = entryName;
         composite = toSegStringSymEntry(gse);
-        offsets = composite.offsetsEntry: unmanaged SymEntry(int);
-        values = composite.bytesEntry: unmanaged SymEntry(uint(8));
+        offsets = composite.offsetsEntry: shared SymEntry(int);
+        values = composite.bytesEntry: shared SymEntry(uint(8));
         size = offsets.size;
         nBytes = values.size;
     }
