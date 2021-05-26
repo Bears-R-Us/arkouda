@@ -294,3 +294,20 @@ class GroupByTest(ArkoudaTest):
         actual = {label: value for (label, value) in zip(labels.to_ndarray(), values.to_ndarray())}
 
         self.assertDictEqual(expected, actual)
+
+    def test_cat_from_codes(self):
+        cat1 = ak.Categorical(ak.array(['a', 'b', 'a', 'b', 'c']))
+        cat2 = ak.Categorical.from_codes(codes=ak.array([0, 1, 0, 1, 2]), categories=ak.array(['a', 'b', 'c']))
+        i = ak.arange(cat1.size)
+
+        expected = {'a': 2, 'b': 2, 'c': 1}
+
+        cat1_group = ak.GroupBy(cat1)
+        cat1_labels, cat1_values = cat1_group.nunique(i)
+        cat1_actual = {label: value for (label, value) in zip(cat1_labels.to_ndarray(), cat1_values.to_ndarray())}
+        self.assertDictEqual(expected, cat1_actual)
+
+        cat2_group = ak.GroupBy(cat2)
+        cat2_labels, cat2_values = cat2_group.nunique(i)
+        cat2_actual = {label: value for (label, value) in zip(cat2_labels.to_ndarray(), cat2_values.to_ndarray())}
+        self.assertDictEqual(expected, cat2_actual)

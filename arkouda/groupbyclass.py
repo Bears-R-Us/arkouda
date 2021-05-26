@@ -224,10 +224,9 @@ class GroupBy:
         repMsg = generic_msg(cmd=cmd, args=args)
         self.logger.debug(repMsg)
         return self.unique_keys, create_pdarray(repMsg)
-    
-    @typechecked
+
     def aggregate(self, values: pdarray, operator: str, skipna: bool=True) \
-                    -> Tuple[Union[pdarray, Strings, List[Union[pdarray, Strings]]], pdarray]:
+            -> Tuple[Union[pdarray, Strings, 'Categorical', List[Union[pdarray, Strings]]], pdarray]:  # type: ignore
         '''
         Using the permutation stored in the GroupBy instance, group another 
         array of values and apply a reduction to each group's values. 
@@ -298,7 +297,7 @@ class GroupBy:
             return self.unique_keys, create_pdarray(repMsg)
 
     def sum(self, values : pdarray, skipna : bool=True) \
-                         -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+                         -> Tuple[Union[pdarray, Strings, 'Categorical', List[Union[pdarray,Strings]]],pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group 
         another array of values and sum each group's values. 
@@ -344,7 +343,7 @@ class GroupBy:
         return self.aggregate(values, "sum", skipna)
     
     def prod(self, values : pdarray, skipna : bool=True) \
-                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+                    -> Tuple[Union[pdarray, Strings, 'Categorical', List[Union[pdarray,Strings]]],pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group
         another array of values and compute the product of each group's 
@@ -393,7 +392,7 @@ class GroupBy:
         return self.aggregate(values, "prod", skipna)
     
     def mean(self, values : pdarray, skipna : bool=True) \
-                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+                    -> Tuple[Union[pdarray, Strings, 'Categorical', List[Union[pdarray,Strings]]],pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group 
         another array of values and compute the mean of each group's 
@@ -440,7 +439,7 @@ class GroupBy:
         return self.aggregate(values, "mean", skipna)
     
     def min(self, values : pdarray, skipna : bool=True) \
-                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+                    -> Tuple[Union[pdarray, Strings, 'Categorical', List[Union[pdarray,Strings]]],pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group 
         another array of values and return the minimum of each group's 
@@ -488,7 +487,7 @@ class GroupBy:
         return self.aggregate(values, "min", skipna)
     
     def max(self, values : pdarray, skipna : bool=True) \
-                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+                    -> Tuple[Union[pdarray, Strings, 'Categorical', List[Union[pdarray,Strings]]],pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group
         another array of values and return the maximum of each 
@@ -536,7 +535,7 @@ class GroupBy:
         return self.aggregate(values, "max", skipna)
     
     def argmin(self, values : pdarray) \
-                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+                    -> Tuple[Union[pdarray, Strings, 'Categorical', List[Union[pdarray,Strings]]],pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group   
         another array of values and return the location of the first 
@@ -589,7 +588,7 @@ class GroupBy:
         return self.aggregate(values, "argmin")
     
     def argmax(self, values : pdarray)\
-                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+                    -> Tuple[Union[pdarray, Strings, 'Categorical', List[Union[pdarray,Strings]]],pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group   
         another array of values and return the location of the first 
@@ -640,7 +639,7 @@ class GroupBy:
         return self.aggregate(values, "argmax")
     
     def nunique(self, values : pdarray) \
-                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+                    -> Tuple[Union[pdarray, Strings, 'Categorical', List[Union[pdarray,Strings]]],pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group another
         array of values and return the number of unique values in each group. 
@@ -691,7 +690,7 @@ class GroupBy:
         return self.aggregate(values, "nunique")
     
     def any(self, values : pdarray) \
-                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+                    -> Tuple[Union[pdarray, Strings, 'Categorical', List[Union[pdarray,Strings]]],pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group another 
         array of values and perform an "or" reduction on each group. 
@@ -722,7 +721,7 @@ class GroupBy:
         return self.aggregate(values, "any")
 
     def all(self, values : pdarray) \
-                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+                    -> Tuple[Union[pdarray, Strings, 'Categorical', List[Union[pdarray,Strings]]],pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group  
         another array of values and perform an "and" reduction on 
@@ -757,7 +756,7 @@ class GroupBy:
         return self.aggregate(values, "all")
 
     def OR(self, values : pdarray) \
-                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+                    -> Tuple[Union[pdarray, Strings, 'Categorical', List[Union[pdarray,Strings]]],pdarray]:
         """
         Bitwise OR of values in each segment.
         
@@ -794,7 +793,7 @@ class GroupBy:
         return self.aggregate(values, "or")
 
     def AND(self, values : pdarray) \
-                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+                    -> Tuple[Union[pdarray, Strings, 'Categorical', List[Union[pdarray,Strings]]],pdarray]:
         """
         Bitwise AND of values in each segment.
         
@@ -831,7 +830,7 @@ class GroupBy:
         return self.aggregate(values, "and")
 
     def XOR(self, values : pdarray) \
-                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+                    -> Tuple[Union[pdarray, Strings, 'Categorical', List[Union[pdarray,Strings]]],pdarray]:
         """
         Bitwise XOR of values in each segment.
         
