@@ -411,8 +411,7 @@ module SegmentedMsg {
             var (newSegs, newVals) = strings[slice];
             // Store the resulting offsets and bytes arrays
             var newStringsObj = getSegString(newSegs, newVals, st);
-            // TODO after legacy_placeholder removal, drop second created piece
-            var repMsg = "created " + st.attrib(newStringsObj.name) + " +created " + st.attrib(newStringsObj.name);
+            var repMsg = "created " + st.attrib(newStringsObj.name) + "+created bytes.size %t".format(newStringsObj.nBytes);
             smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
             return new MsgTuple(repMsg, MsgType.NORMAL);
         }
@@ -444,6 +443,7 @@ module SegmentedMsg {
     st.checkTable(args[1]);  // TODO update positional args below after removing legacy_placeholder
 
     var newStringsName = "";
+    var nBytes = 0;
     
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                   "objtype:%s".format(objtype));
@@ -460,12 +460,14 @@ module SegmentedMsg {
                         var (newSegs, newVals) = strings[iv.a];
                         var newStringsObj = getSegString(newSegs, newVals, st);
                         newStringsName = newStringsObj.name;
+                        nBytes = newStringsObj.nBytes;
                     }
                     when DType.Bool {
                         var iv = toSymEntry(gIV, bool);
                         var (newSegs, newVals) = strings[iv.a];
                         var newStringsObj = getSegString(newSegs, newVals, st);
                         newStringsName = newStringsObj.name;
+                        nBytes = newStringsObj.nBytes;
                     }
                     otherwise {
                         var errorMsg = "("+objtype+","+dtype2str(gIV.dtype)+")";
@@ -486,8 +488,8 @@ module SegmentedMsg {
             return new MsgTuple(notImplementedError(pn, objtype), MsgType.ERROR);
         }
     }
-    // TODO remove second created objet after legacy_placeholder removal 
-    var repMsg = "created " + st.attrib(newStringsName) + "+created " + st.attrib(newStringsName);
+    var repMsg = "created " + st.attrib(newStringsName) + "+created bytes.size %t".format(nBytes);
+
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
 
     return new MsgTuple(repMsg, MsgType.NORMAL);

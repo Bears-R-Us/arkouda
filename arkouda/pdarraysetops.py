@@ -240,8 +240,8 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings,'Categorical']], #type: 
                 raise ValueError("All pdarrays must have same dtype")
             names.append(cast(pdarray,a).name)
         elif objtype == "str":
-            names.append('{}+{}'.format(cast(Strings,a).offsets.name, 
-                                                   cast(Strings,a).bytes.name))
+            names.append('{}+{}'.format(cast(Strings, a).entry.name,
+                                                   cast(Strings, a).entry.name))
         else:
             raise NotImplementedError(("concatenate not implemented " +
                                     "for object type {}".format(objtype)))
@@ -257,7 +257,8 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings,'Categorical']], #type: 
     if objtype == "pdarray":
         return create_pdarray(cast(str,repMsg))
     elif objtype == "str":
-        return Strings(*(cast(str,repMsg).split('+')))
+        # ConcatenateMsg returns created attrib(name)+created nbytes=123
+        return Strings.from_return_msg(cast(str, repMsg))
     else:
         raise TypeError('arrays must be an array of pdarray or Strings objects')
 

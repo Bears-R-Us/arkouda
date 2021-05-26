@@ -755,10 +755,7 @@ def random_strings_uniform(minlen : int_scalars, maxlen : int_scalars,
                  NUMBER_FORMAT_STRINGS['int64'].format(minlen),
                  NUMBER_FORMAT_STRINGS['int64'].format(maxlen),
                  seed))
-    left, right = cast(str, repMsg).split('+')
-    bytesSize:int_scalars = int(right.split()[-1])
-    return Strings(create_pdarray(left), bytesSize)
-    # return Strings(*(cast(str,repMsg).split('+')))
+    return Strings.from_return_msg(cast(str, repMsg))
 
 @typechecked
 def random_strings_lognormal(logmean : numeric_scalars, logstd : numeric_scalars, 

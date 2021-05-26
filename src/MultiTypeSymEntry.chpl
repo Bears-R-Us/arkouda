@@ -208,6 +208,19 @@ module MultiTypeSymEntry
         }
     }
 
+    /**
+     * Factory method for creating a typed SymEntry and checking mem limits
+     * :arg len: the number of elements to allocate
+     * :type len: int
+     * 
+     * :arg t: the element type
+     * :type t: type
+    */
+    proc createTypedSymEntry(len: int, type t) throws {
+        if t == bool {overMemLimit(len);} else {overMemLimit(len*numBytes(t));}
+        return new shared SymEntry(len, t);
+    }
+
     class SegStringSymEntry : GenSymEntry {
         type etype = string;
 

@@ -52,7 +52,7 @@ class Strings:
     objtype = "str"
 
     @staticmethod
-    def from_parts(offset_attrib : Union[pdarray,str], bytes_attrib : Union[pdarray,str]) -> pdarray:
+    def from_parts(offset_attrib : Union[pdarray,str], bytes_attrib : Union[pdarray,str]) -> Strings:
         if not isinstance(offset_attrib, pdarray):
             try:
                 offset_attrib = create_pdarray(offset_attrib)
@@ -69,6 +69,11 @@ class Strings:
         response = generic_msg(cmd=cmd, args=args)
         return Strings(create_pdarray(response), bytes_attrib.size)
         
+    @staticmethod
+    def from_return_msg(rep_msg:str) -> Strings:
+        left, right = cast(str, rep_msg).split('+')
+        bytes_size: int_scalars = int(right.split()[-1])
+        return Strings(create_pdarray(left), bytes_size)
 
     def __init__(self, strings_pdarray:pdarray, bytes_size:int_scalars) -> None:
         """
@@ -220,8 +225,7 @@ class Strings:
                                                   stop,
                                                   stride)
             repMsg = generic_msg(cmd=cmd, args=args)
-            offsets, values = repMsg.split('+')
-            return Strings(offsets, values);
+            return Strings.from_return_msg(repMsg)
         elif isinstance(key, pdarray):
             kind, _ = translate_np_dtype(key.dtype)
             if kind not in ("bool", "int"):
@@ -235,8 +239,7 @@ class Strings:
                                                          "legacy_placeholder",
                                                          key.name)
             repMsg = generic_msg(cmd=cmd,args=args)
-            offsets, values = repMsg.split('+')
-            return Strings(offsets, values)
+            return Strings.from_return_msg(repMsg)
         else:
             raise TypeError("unsupported pdarray index type {}".format(key.__class__.__name__))
 
