@@ -134,7 +134,7 @@ module UniqueMsg
               var (uo, uv, c, inv) = uniqueGroup(str);
               var myStr = getSegString(uo, uv, st);
               // TODO remove second, legacy call to st.attrib(myStr.name)
-              repMsg = "created " + st.attrib(myStr.name) + " +created " + st.attrib(myStr.name);
+              repMsg = "created %s+created bytes.size %t".format(st.attrib(myStr.name), myStr.nBytes);
 
               if returnCounts {
                   var countName = st.nextName();

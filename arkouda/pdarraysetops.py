@@ -74,15 +74,15 @@ def unique(pda : Union[pdarray,Strings,'Categorical'], # type: ignore
         else:
             return create_pdarray(cast(str,repMsg))
     elif isinstance(pda, Strings):
-        name = '{}+{}'.format(pda.offsets.name, pda.bytes.name)
+        name = '{}+{}'.format(pda.entry.name, pda.entry.name)
         repMsg = cast(str,generic_msg(cmd="unique", args="{} {} {}".\
                              format(pda.objtype, name, return_counts)))
         vc = repMsg.split('+')
         logger.debug(vc)
         if return_counts:
-            return Strings(vc[0], vc[1]), create_pdarray(cast(str,vc[2]))
+            return Strings.from_return_msg("+".join(vc[0:2])), create_pdarray(cast(str,vc[2]))
         else:
-            return Strings(vc[0], vc[1])
+            return Strings.from_return_msg(repMsg)
     else:
         raise TypeError("must be pdarray, Strings, or Categorical {}")
 
