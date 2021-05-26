@@ -43,6 +43,41 @@ module SegmentedMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
+  proc segStrTondarrayMsg(cmd: string, payload: string, st: borrowed SymTab): bytes throws {
+      var (name, comp) = payload.splitMsgToTuple(2);
+      var entry = getSegString(name, st);
+      var arrayBytes: bytes;
+      var tmpf: file;
+      try {
+          tmpf = openmem();
+          var tmpw = tmpf.writer(kind=iobig);
+          select comp
+          {
+              when "offsets" { tmpw.write(entry.offsets.a);}
+              when "values"  { tmpw.write(entry.values.a);}
+              otherwise {
+                  var msg = "Unrecognized component: %s".format(comp);
+                  smLogger.error(getModuleName(),getRoutineName(),getLineNumber(), msg);
+                  return msg.encode();
+              }
+          }
+          tmpw.close();
+      } catch {
+          try! tmpf.close();
+          return b"Error: Unable to write SymEntry to memory buffer";
+      }
+
+      try {
+          var tmpr = tmpf.reader(kind=iobig, start=0);
+          tmpr.readbytes(arrayBytes);
+          tmpr.close();
+          tmpf.close();
+      } catch {
+          return b"Error: Unable to copy array from memory buffer to string";
+      }
+      return arrayBytes;
+  }
+
   proc randomStringsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var (lenStr, dist, charsetStr, arg1str, arg2str, seedStr)

@@ -8,13 +8,17 @@ from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value, \
      unregister_pdarray_by_name, RegistrationError
 from arkouda.logger import getArkoudaLogger
 import numpy as np # type: ignore
-from arkouda.dtypes import npstr, int_scalars, str_scalars
+from arkouda.dtypes import npstr, int_scalars, str_scalars, int64, uint8
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS, resolve_scalar_dtype, \
-     translate_np_dtype
-import json
+     translate_np_dtype, structDtypeCodes
+import json, struct
 from arkouda.infoclass import information
 
 __all__ = ['Strings']
+
+# Command strings for message passing to arkouda server, specific to Strings
+CMD_ASSEMBLE = "segStr-assemble"
+CMD_TO_NDARRAY = "segStr-tondarray"
 
 class Strings:
     """
@@ -64,9 +68,8 @@ class Strings:
             except Exception as e:
                 raise RuntimeError(e)
         # Now we have two pdarray objects
-        cmd = "assembleStrings"
         args = f"{offset_attrib.name} {bytes_attrib.name}"
-        response = generic_msg(cmd=cmd, args=args)
+        response = generic_msg(cmd=CMD_ASSEMBLE, args=args)
         return Strings(create_pdarray(response), bytes_attrib.size)
         
     @staticmethod
@@ -783,9 +786,9 @@ class Strings:
         numpy.ndarray
         """
         # Get offsets and append total bytes for length calculation
-        npoffsets = np.hstack((self.offsets.to_ndarray(), np.array([self.nbytes])))
+        npoffsets = np.hstack((self._comp_to_ndarray("offsets"), np.array([self.nbytes])))
         # Get contents of strings (will error if too large)
-        npvalues = self.bytes.to_ndarray()
+        npvalues = self._comp_to_ndarray("values")
         # Compute lengths, discounting null terminators
         lengths = np.diff(npoffsets) - 1
         # Numpy dtype is based on max string length
@@ -795,6 +798,66 @@ class Strings:
         for i, (o, l) in enumerate(zip(npoffsets, lengths)):
             res[i] = np.str_(''.join(chr(b) for b in npvalues[o:o+l]))
         return res
+
+    def _comp_to_ndarray(self, comp: str) -> np.ndarray:
+        """
+        Convert the array to a np.ndarray, transferring array data from the
+        Arkouda server to client-side Python. Note: if the pdarray size exceeds
+        client.maxTransferBytes, a RuntimeError is raised.
+
+        Returns
+        -------
+        np.ndarray
+            A numpy ndarray with the same attributes and data as the pdarray
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there is a server-side error thrown, if the pdarray size
+            exceeds the built-in client.maxTransferBytes size limit, or if the bytes
+            received does not match expected number of bytes
+        Notes
+        -----
+        The number of bytes in the array cannot exceed ``client.maxTransferBytes``,
+        otherwise a ``RuntimeError`` will be raised. This is to protect the user
+        from overflowing the memory of the system on which the Python client
+        is running, under the assumption that the server is running on a
+        distributed system with much more memory than the client. The user
+        may override this limit by setting client.maxTransferBytes to a larger
+        value, but proceed with caution.
+
+        See Also
+        --------
+        array
+
+        Examples
+        --------
+        >>> a = ak.arange(0, 5, 1)
+        >>> a.to_ndarray()
+        array([0, 1, 2, 3, 4])
+
+        >>> type(a.to_ndarray())
+        numpy.ndarray
+        """
+        from arkouda.client import maxTransferBytes
+        # Total number of bytes in the array data
+        array_bytes = self.size * int64.itemsize if comp == "offsets" else self.nbytes * uint8.itemsize
+
+        # Guard against overflowing client memory
+        if array_bytes > maxTransferBytes:
+            raise RuntimeError(('Array exceeds allowed size for transfer. Increase ' +
+                               'client.maxTransferBytes to allow'))
+        # The reply from the server will be a bytes object
+        rep_msg = generic_msg(cmd=CMD_TO_NDARRAY, args="{} {}".format(self.entry.name, comp), recv_bytes=True)
+
+        # Make sure the received data has the expected length
+        if len(rep_msg) != array_bytes:
+            raise RuntimeError(f"Expected {array_bytes} bytes but received {len(rep_msg)}")
+        # Use struct to interpret bytes as a big-endian numeric array
+        sz, dt = (self.size, "int64") if "offsets" == comp else (self.nbytes, "uint8")
+        fmt = '>{:n}{}'.format(sz, structDtypeCodes[dt])
+        # Return a numpy ndarray
+        return np.array(struct.unpack(fmt, rep_msg))  # type: ignore
 
     @typechecked
     def save(self, prefix_path : str, dataset : str='strings_array', 
