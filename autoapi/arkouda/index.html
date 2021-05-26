@@ -6227,14 +6227,30 @@ they are unregistered.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="arkouda.Categorical._get_components">
-<span class="sig-name descname"><span class="pre">_get_components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><a class="headerlink" href="#arkouda.Categorical._get_components" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="arkouda.Categorical._get_components_dict">
+<span class="sig-name descname"><span class="pre">_get_components_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Dict</span><a class="headerlink" href="#arkouda.Categorical._get_components_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Internal function that returns a dictionary with all required or non-None components of self</p>
+<p>Required Categorical components (Codes and Categories) are always included in returned components_dict
+Optional Categorical components (Permutation and Segments) are only included if they’ve been set (are not None)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>Dictionary of all required or non-None components of self</dt><dd><p>Keys: component names (Codes, Categories, Permutation, Segments)
+Values: components of self</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Categorical._list_component_names">
 <span class="sig-name descname"><span class="pre">_list_component_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#arkouda.Categorical._list_component_names" title="Permalink to this definition">¶</a></dt>
-<dd><p>Internal Function that returns a list of all component names</p>
+<dd><p>Internal function that returns a list of all component names</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>None</strong> – </p>

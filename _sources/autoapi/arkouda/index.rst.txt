@@ -4522,12 +4522,24 @@ Attributes
       they are unregistered.
 
 
-   .. method:: _get_components(self) -> List
+   .. method:: _get_components_dict(self) -> Dict
+
+      Internal function that returns a dictionary with all required or non-None components of self
+
+      Required Categorical components (Codes and Categories) are always included in returned components_dict
+      Optional Categorical components (Permutation and Segments) are only included if they've been set (are not None)
+
+      :returns:
+
+                Dictionary of all required or non-None components of self
+                    Keys: component names (Codes, Categories, Permutation, Segments)
+                    Values: components of self
+      :rtype: Dict
 
 
    .. method:: _list_component_names(self) -> List[str]
 
-      Internal Function that returns a list of all component names
+      Internal function that returns a list of all component names
 
       :param None:
 
