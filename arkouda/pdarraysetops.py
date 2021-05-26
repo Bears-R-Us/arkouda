@@ -151,11 +151,11 @@ def in1d(pda1 : Union[pdarray,Strings,'Categorical'], pda2 : Union[pdarray,Strin
     elif isinstance(pda1, Strings) and isinstance(pda2, Strings):
         repMsg = generic_msg(cmd="segmentedIn1d", args="{} {} {} {} {} {} {}".\
                                     format(pda1.objtype,
-                                    pda1.offsets.name,
-                                    pda1.bytes.name,
+                                    pda1.entry.name,
+                                    "legacy_placeholder",
                                     pda2.objtype,
-                                    pda2.offsets.name,
-                                    pda2.bytes.name,
+                                    pda2.entry.name,
+                                    "legacy_placeholder",
                                     invert))
         return create_pdarray(cast(str,repMsg))
     else:
