@@ -163,6 +163,11 @@ module ArgSortMsg
             thisSize = g.size;
             hasStr = true;
           }
+          when "category" {
+            // passed only Categorical.codes.name to be sorted on
+            var g = st.lookup(name);
+            thisSize = g.size;
+          }
           otherwise {
               var errorMsg = unrecognizedTypeError(pn, objtype);
               asLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);  

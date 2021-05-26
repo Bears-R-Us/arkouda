@@ -139,7 +139,37 @@ class CoargsortTest(ArkoudaTest):
             ak.coargsort([ones, short_ones])
             
         with self.assertRaises(TypeError):
-            ak.coargsort([list(range(0,10)), [0]])       
+            ak.coargsort([list(range(0,10)), [0]])
+
+    def test_coargsort_categorical(self):
+        string = ak.array(['a', 'b', 'a', 'b', 'c'])
+        cat = ak.Categorical(string)
+        cat_from_codes = ak.Categorical.from_codes(codes=ak.array([0, 1, 0, 1, 2]),
+                                                   categories=ak.array(['a', 'b', 'c']))
+        str_perm = ak.coargsort([string])
+        str_sorted = string[str_perm].to_ndarray()
+
+        # coargsort on categorical
+        cat_perm = ak.coargsort([cat])
+        cat_sorted = cat[cat_perm].to_ndarray()
+        self.assertTrue((str_sorted == cat_sorted).all())
+
+        # coargsort on categorical.from_codes
+        # coargsort sorts using codes, the order isn't guaranteed, only grouping
+        from_codes_perm = ak.coargsort([cat_from_codes])
+        from_codes_sorted = cat_from_codes[from_codes_perm].to_ndarray()
+        self.assertTrue((['a', 'a', 'b', 'b', 'c'] == from_codes_sorted).all())
+
+        # coargsort on 2 categoricals (one from_codes)
+        cat_perm = ak.coargsort([cat, cat_from_codes])
+        cat_sorted = cat[cat_perm].to_ndarray()
+        self.assertTrue((str_sorted == cat_sorted).all())
+
+        # coargsort on mixed strings and categoricals
+        mixed_perm = ak.coargsort([cat, string, cat_from_codes])
+        mixed_sorted = cat_from_codes[mixed_perm].to_ndarray()
+        self.assertTrue((str_sorted == mixed_sorted).all())
+
 
 def create_parser():
     parser = argparse.ArgumentParser(description="Check coargsort correctness.")

@@ -60,17 +60,17 @@ def argsort(pda : Union[pdarray,Strings,'Categorical']) -> pdarray: # type: igno
     repMsg = generic_msg(cmd="argsort", args="{} {}".format(pda.objtype, name))
     return create_pdarray(cast(str,repMsg))
 
-@typechecked
-def coargsort(arrays : Sequence[Union[Strings,pdarray]]) -> pdarray:
+
+def coargsort(arrays: Sequence[Union[Strings, pdarray, 'Categorical']]) -> pdarray:  # type: ignore
     """
     Return the permutation that groups the rows (left-to-right), if the
     input arrays are treated as columns. The permutation sorts numeric
-    columns, but not strings -- strings are grouped, but not ordered.
+    columns, but not strings/Categoricals -- strings/Categoricals are grouped, but not ordered.
     
     Parameters
     ----------
-    arrays : Sequence[Union[Strings,pdarray]]
-        The columns (int64, float64, or Strings) to sort by row
+    arrays : Sequence[Union[Strings, pdarray, Categorical]]
+        The columns (int64, float64, Strings, or Categorical) to sort by row
 
     Returns
     -------
@@ -81,7 +81,7 @@ def coargsort(arrays : Sequence[Union[Strings,pdarray]]) -> pdarray:
     ------
     ValueError
         Raised if the pdarrays are not of the same size or if the parameter
-        is not an Iterable containing pdarrays or Strings
+        is not an Iterable containing pdarrays, Strings, or Categoricals
 
     See Also
     --------
@@ -93,7 +93,9 @@ def coargsort(arrays : Sequence[Union[Strings,pdarray]]) -> pdarray:
     to non-uniformity in data but communication intensive. Starts with the
     last array and moves forward. This sort operates directly on numeric types,
     but for Strings, it operates on a hash. Thus, while grouping of equivalent
-    strings is guaranteed, lexicographic ordering of the groups is not.
+    strings is guaranteed, lexicographic ordering of the groups is not. For Categoricals,
+    coargsort sorts based on Categorical.codes which guarantees grouping of equivalent categories
+    but not lexicographic ordering of those groups.
 
     Examples
     --------
@@ -107,27 +109,29 @@ def coargsort(arrays : Sequence[Union[Strings,pdarray]]) -> pdarray:
     >>> b[perm]
     array([0, 1, 0, 1])
     """
+    from arkouda.categorical import Categorical
+    check_type(argname='coargsort', value=arrays, expected_type=Sequence[Union[pdarray, Strings, Categorical]])
     size = -1
     anames = []
     atypes = []
     for a in arrays:
-        if isinstance(a, Strings):
-            anames.append('{}+{}'.format(a.offsets.name, a.bytes.name))
+        if isinstance(a, (pdarray, Strings)):
+            anames.append('+'.join(a._list_component_names()))
             atypes.append(a.objtype)
-        elif isinstance(a, pdarray):
-            anames.append(a.name)
-            atypes.append('pdarray')
+        elif isinstance(a, Categorical):
+            anames.append(a.codes.name)
+            atypes.append(a.objtype)
         else:
-            raise ValueError("Argument must be an iterable of pdarrays or Strings")
+            raise ValueError("Argument must be an iterable of pdarrays, Strings, or Categoricals")
         if size == -1:
             size = a.size
         elif size != a.size:
-            raise ValueError("All pdarrays or Strings must be of the same size")
+            raise ValueError("All pdarrays, Strings, or Categoricals must be of the same size")
     if size == 0:
         return zeros(0, dtype=int64)
     repMsg = generic_msg(cmd="coargsort", args="{:n} {} {}".format(len(arrays), 
-                                                ' '.join(anames), ' '.join(atypes)))
-    return create_pdarray(cast(str,repMsg))
+                                                                   ' '.join(anames), ' '.join(atypes)))
+    return create_pdarray(cast(str, repMsg))
 
 @typechecked
 def sort(pda : pdarray) -> pdarray:
