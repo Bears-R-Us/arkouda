@@ -21,6 +21,7 @@ module GenSymIO {
     use ServerConfig;
     use Search;
     use IndexingMsg;
+    use SegmentedArray;
     
     private config const logLevel = ServerConfig.logLevel;
     const gsLogger = new Logger(logLevel);
@@ -386,12 +387,9 @@ module GenSymIO {
                 read_files_into_distributed_array(entryVal.a, subdoms, filenames, 
                                                          dsetName + "/" + SEGARRAY_VALUE_NAME);
 
-                var segName = st.nextName();
-                st.addEntry(segName, entrySeg);
-                var valName = st.nextName();
-                st.addEntry(valName, entryVal);
-                
-                var repMsg = "created " + st.attrib(segName) + " +created " + st.attrib(valName);
+
+                var segString = assembleSegStringFromParts(entrySeg, entryVal, st);
+                var repMsg = "created %s+create bytes.size %t".format(st.attrib(segString.name), segString.nBytes);
                 gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
                 return new MsgTuple(repMsg, MsgType.NORMAL);
             }
@@ -576,11 +574,8 @@ module GenSymIO {
                     fixupSegBoundaries(entrySeg.a, segSubdoms, subdoms);
                     var entryVal = new shared SymEntry(len, uint(8));
                     read_files_into_distributed_array(entryVal.a, subdoms, filenames, dsetName + "/" + SEGARRAY_VALUE_NAME);
-                    var stringsEntry = new shared SegStringSymEntry(entrySeg, entryVal, string);
-                    var stringsName = st.nextName();
-                    st.addEntry(stringsName, stringsEntry);
-                    // TODO remove legacy_placeholder second entry below.  Also think about possible improvements to manual SegStringSymEntry above
-                    rnames = rnames + "created " + st.attrib(stringsName) + " +created " + st.attrib(stringsName) + " , ";
+                    var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
+                    rnames = rnames + "created %s+created bytes.size %t".format(st.attrib(stringsEntry.name), stringsEntry.nBytes)+ " , ";
                 }
                 when (false, C_HDF5.H5T_INTEGER) {
                     var entryInt = new shared SymEntry(len, int);
