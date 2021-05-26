@@ -121,9 +121,9 @@ module ConcatenateMsg
                    * but it also causes an out of bounds array index due to the 
                    * way the low and high of the empty domain are computed. 
                    */
-                  // TODO: Fix this for strings as single entity
                   if (objtype == "str") && (mynumsegs > 0) {
-                    const e = toSymEntry(g, int);
+                    const stringEntry = toSegStringSymEntry(g);
+                    const e = stringEntry.offsetsEntry;
                     const firstSeg = e.a[e.aD.localSubdomain().low];
                     var mybytes: int;
                     /* If this locale contains the last segment, we cannot use the
