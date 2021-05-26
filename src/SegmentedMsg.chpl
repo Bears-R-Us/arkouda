@@ -575,7 +575,7 @@ module SegmentedMsg {
                         strings = getSegString(newOffsets, newVals, st);
                     }
                     // TODO remove second created entry after legacy_placeholder removal
-                    repMsg = "created %s+created %s".format(st.attrib(strings.name), st.attrib(strings.name));
+                    repMsg = "created %s+created bytes.size %t".format(st.attrib(strings.name), strings.nBytes);
                     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
                 }
                 otherwise {

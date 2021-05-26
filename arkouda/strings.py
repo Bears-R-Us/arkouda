@@ -441,10 +441,9 @@ class Strings:
         repMsg = cast(str,generic_msg(cmd=cmd,args=args))
         if return_segments:
             arrays = repMsg.split('+', maxsplit=2)
-            return Strings(arrays[0], arrays[1]), create_pdarray(arrays[2])
+            return Strings.from_return_msg("+".join(arrays[0:2])), create_pdarray(arrays[2])
         else:
-            arrays = repMsg.split('+', maxsplit=1)
-            return Strings(arrays[0], arrays[1])
+            return Strings.from_return_msg(repMsg)
     
     @typechecked
     def peel(self, delimiter : Union[bytes,str_scalars], times : int_scalars=1, 
@@ -644,8 +643,8 @@ class Strings:
                             other.entry.name,
                             NUMBER_FORMAT_STRINGS['bool'].format(toLeft),
                             json.dumps([delimiter]))
-        repMsg = generic_msg(cmd=cmd,args=args)
-        return Strings(*cast(str,repMsg).split('+'))
+        rep_msg = generic_msg(cmd=cmd,args=args)
+        return Strings.from_return_msg(cast(str, rep_msg))
 
     def __add__(self, other : Strings) -> Strings:
         return self.stick(other)

@@ -27,8 +27,7 @@ module FlattenMsg {
         const strings = getSegString(stringsName, st);
         var (off, val, segs) = strings.flatten(delim, returnSegs);
         var stringsObj = getSegString(off, val, st);
-        // TODO remove second created after legacy_placeholder removal.
-        repMsg = "created %s+created %s".format(st.attrib(stringsObj.name), st.attrib(stringsObj.name));
+        repMsg = "created %s+created bytes.size %t".format(st.attrib(stringsObj.name), stringsObj.nBytes);
         if returnSegs {
           const optName: string = st.nextName();
           st.addEntry(optName, new shared SymEntry(segs));
