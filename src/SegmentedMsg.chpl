@@ -205,6 +205,7 @@ module SegmentedMsg {
   proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
+    // 'peel str id_8 id_8 str 1 True True True ["t"]'
     var (subcmd, objtype, name, legacy_placeholder, valtype, valStr,
          idStr, kpStr, lStr, jsonStr) = payload.splitMsgToTuple(10);
 
@@ -268,10 +269,13 @@ module SegmentedMsg {
               return new MsgTuple(errorMsg, MsgType.ERROR);                            
               }
           }
-          repMsg = "created %s+created %s+created %s+created %s".format(st.attrib(leftName),
-                                                                        st.attrib(leftName + "legacy_placeholder"),
+          // TODO: Make SegString nil-able and then we don't have to play the game of names here.
+          var myLeft = getSegString(leftName, st);
+          var urRight = getSegString(rightName, st);
+          repMsg = "created %s+created bytes.size %t+created %s+created bytes.size %t".format(st.attrib(leftName),
+                                                                        myLeft.nBytes,
                                                                         st.attrib(rightName),
-                                                                        st.attrib(rightName + "legacy_placeholder"));
+                                                                        urRight.nBytes);
         }
         otherwise {
             var errorMsg = notImplementedError(pn, 

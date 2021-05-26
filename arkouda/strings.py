@@ -526,9 +526,10 @@ class Strings:
                             json.dumps([delimiter]))
         repMsg = generic_msg(cmd=cmd,args=args)
         arrays = cast(str,repMsg).split('+', maxsplit=3)
-        leftStr = Strings(arrays[0], arrays[1])
-        rightStr = Strings(arrays[2], arrays[3])
-        return leftStr, rightStr
+        # first two created are left Strings, last two are right strings
+        left_str = Strings.from_return_msg("+".join(arrays[0:2]))
+        right_str = Strings.from_return_msg("+".join(arrays[2:4]))
+        return left_str, right_str
 
     def rpeel(self, delimiter : Union[bytes,str_scalars], times : int_scalars=1, 
               includeDelimiter : bool=False, keepPartial : bool=False):
