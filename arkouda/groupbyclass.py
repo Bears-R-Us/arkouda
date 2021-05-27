@@ -1,6 +1,6 @@
 from __future__ import annotations
 import enum
-from typing import cast, List, Sequence, Tuple, Union, TYPE_CHECKING
+from typing import cast, List, Sequence, Tuple, Union, TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
 import numpy as np # type: ignore
@@ -227,7 +227,7 @@ class GroupBy:
     
     @typechecked
     def aggregate(self, values: pdarray, operator: str, skipna: bool=True) \
-                    -> Tuple[Union[pdarray, Strings, List[Union[pdarray, Strings]]], pdarray]:
+                    -> Tuple[Any, pdarray]:
         '''
         Using the permutation stored in the GroupBy instance, group another 
         array of values and apply a reduction to each group's values. 
@@ -241,7 +241,7 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : [Union[pdarray,List[Union[pdarray,Strings]]]
+        unique_keys : [Union[pdarray,List[Union[pdarray,Strings]],Categorical]
             The unique keys, in grouped order
         aggregates : pdarray
             One aggregate value per unique key in the GroupBy instance
@@ -639,8 +639,7 @@ class GroupBy:
             raise TypeError('argmax is only supported for pdarrays of dtype float64 and int64')
         return self.aggregate(values, "argmax")
     
-    def nunique(self, values : pdarray) \
-                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+    def nunique(self, values : pdarray) -> Tuple[Any,pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group another
         array of values and return the number of unique values in each group. 
@@ -652,7 +651,7 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : (list of) pdarray or Strings
+        unique_keys : [Union[pdarray,List[Union[pdarray,Strings]],Categorical]
             The unique keys, in grouped order
         group_nunique : pdarray, int64
             Number of unique values per unique key in the GroupBy instance
