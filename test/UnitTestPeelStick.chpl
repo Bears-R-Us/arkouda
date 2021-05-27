@@ -128,16 +128,14 @@ proc testMessageLayer(substr, n, minLen, maxLen) throws {
   d.start();
   var (answer, strings) = make_strings(substr, n, minLen, maxLen, charSet.Uppercase, st);
   d.stop("make_strings");
-  var reqMsg = "peel str %s str 1 True True True %jt".format(strings.name, [substr]);
+  var reqMsg = "peel str %s legacy_placeholder str 1 True True True %jt".format(strings.name, [substr]);
   writeReq(reqMsg);
   var repMsg = segmentedPeelMsg(cmd="segmentedPeel", payload=reqMsg, st).msg;
   writeRep(repMsg);
   var (loAttribs,lvAttribs,roAttribs,rvAttribs) = repMsg.splitMsgToTuple('+', 4);
   var loname = parseName(loAttribs);
-  var lvname = parseName(lvAttribs);
   var roname = parseName(roAttribs);
-  var rvname = parseName(rvAttribs);
-  reqMsg = "stick str %s %s str %s %s False %jt".format(loname, lvname, roname, rvname, [""]);
+  reqMsg = "stick str %s %s str %s %s False %jt".format(loname, "legacy_placeholder", roname, "legacy_placeholder", [""]);
   writeReq(reqMsg);
   repMsg = segBinopvvMsg(cmd="segBinopvv", payload=reqMsg, st).msg;
   writeRep(repMsg);
