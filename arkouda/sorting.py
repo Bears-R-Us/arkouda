@@ -112,7 +112,7 @@ def coargsort(arrays : Sequence[Union[Strings,pdarray]]) -> pdarray:
     atypes = []
     for a in arrays:
         if isinstance(a, Strings):
-            anames.append('{}+{}'.format(a.offsets.name, a.bytes.name))
+            anames.append('{}+{}'.format(a.entry.name, "legacy_placeholder"))
             atypes.append(a.objtype)
         elif isinstance(a, pdarray):
             anames.append(a.name)

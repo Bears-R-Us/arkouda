@@ -168,6 +168,7 @@ def read_all(filenames : Union[str,List[str]],
                     d[dset]=create_pdarray(cast(str,rm))
             return d
         elif '+' in rep_msg:
+            rep_msg = cast(str, rep_msg)
             return Strings.from_return_msg(rep_msg)
         else:
             return create_pdarray(cast(str,rep_msg))

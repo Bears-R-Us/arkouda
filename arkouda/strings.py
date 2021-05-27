@@ -68,9 +68,9 @@ class Strings:
             except Exception as e:
                 raise RuntimeError(e)
         # Now we have two pdarray objects
-        args = f"{offset_attrib.name} {bytes_attrib.name}"
+        args = f"{offset_attrib.name} {bytes_attrib.name}" # type: ignore
         response = generic_msg(cmd=CMD_ASSEMBLE, args=args)
-        return Strings(create_pdarray(response), bytes_attrib.size)
+        return Strings(create_pdarray(response), bytes_attrib.size) # type: ignore
         
     @staticmethod
     def from_return_msg(rep_msg:str) -> Strings:
@@ -710,6 +710,7 @@ class Strings:
         to about 10**15), the probability of a collision between two 128-bit hash
         values is negligible.
         """
+        # TODO fix this to return a single pdarray of hashes
         cmd = "segmentedHash"
         args = "{} {} {}".format(self.objtype, self.entry.name, 
                                               self.entry.name)
@@ -980,8 +981,7 @@ class Strings:
         -------
         None
         """
-        self.offsets.pretty_print_info()
-        self.bytes.pretty_print_info()
+        self.entry.pretty_print_info()
 
     @typechecked
     def register(self, user_defined_name: str) -> Strings:
@@ -1086,7 +1086,7 @@ class Strings:
         Registered names/Strings objects in the server are immune to deletion
         until they are unregistered.
         """
-        rep_msg = generic_msg(cmd="attach", args="{}".format(user_defined_name))
+        rep_msg:str = cast(str, generic_msg(cmd="attach", args="{}".format(user_defined_name)))
         s = Strings.from_return_msg(rep_msg)
         s.name = user_defined_name
         return s

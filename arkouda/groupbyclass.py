@@ -153,7 +153,7 @@ class GroupBy:
         keytypes = []
         effectiveKeys = self.nkeys
         for k in mykeys:
-            if isinstance(k, Strings):
+            if isinstance(k, Strings):  # TODO fix Strings to perform as a single entity
                 if self.hash_strings:
                     h1, h2 = k.hash()
                     keyobjs.extend([h1,h2])
@@ -162,8 +162,8 @@ class GroupBy:
                     effectiveKeys += 1
                 else:
                     keyobjs.append(k)
-                    keynames.append('{}+{}'.format(k.offsets.name, 
-                                                   k.bytes.name))
+                    keynames.append('{}+{}'.format(k.entry.name,
+                                                   "legacy_placeholder"))
                     keytypes.append(k.objtype)
             # for Categorical
             elif hasattr(k, 'codes'):
