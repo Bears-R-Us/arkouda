@@ -141,6 +141,10 @@ def in1d(pda1 : Union[pdarray,Strings,'Categorical'], pda2 : Union[pdarray,Strin
     >>> ak.in1d(ak.array(['one','two']),ak.array(['two', 'three','four','five']))
     array([False, True])
     """
+    # If the second array is empty, it will crash the server when pda1.size > mBound=2**25
+    # This is because of an issue with the in1dSort process in arkouda/src/In1d.chpl, lines 135-170
+    if pda2.size == 0:
+        return arkouda.pdarraycreation.array([])
     from arkouda.categorical import Categorical as Categorical_
     if hasattr(pda1, 'categories'):
         return cast(Categorical_,pda1).in1d(pda2)
