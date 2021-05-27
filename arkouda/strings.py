@@ -174,7 +174,7 @@ class Strings:
             args = "{} {} {} {} {} {} {}".format(op,
                                                  self.objtype,
                                                  self.entry.name,
-                                                 self.entry.name,
+                                                 "legacy_placeholder",
                                                  other.objtype,
                                                  other.entry.name,
                                                  other.entry.name)
@@ -183,7 +183,7 @@ class Strings:
             args = "{} {} {} {} {} {}".format(op,
                                                               self.objtype,
                                                               self.entry.name,
-                                                              self.entry.name,
+                                                              "legacy_placeholder",
                                                               self.objtype,
                                                               json.dumps([other]))
         else:
@@ -208,7 +208,7 @@ class Strings:
                 args = " {} {} {} {} {}".format('intIndex',
                                                 self.objtype,
                                                 self.entry.name,
-                                                self.entry.name,
+                                                "legacy_placeholder",
                                                 key)
                 repMsg = generic_msg(cmd=cmd,args=args)
                 _, value = repMsg.split(maxsplit=1)
@@ -261,8 +261,7 @@ class Strings:
             Raised if there is a server-side error thrown
         """
         cmd = "segmentLengths"
-        args = "{} {} {}".\
-                        format(self.objtype, self.offsets.name, self.bytes.name)
+        args = "{} {} {}".format(self.objtype, self.entry.name, "legacy_placeholder")
         return create_pdarray(generic_msg(cmd=cmd,args=args))
 
     @typechecked
@@ -305,7 +304,7 @@ class Strings:
         args = "{} {} {} {} {} {}".format("contains",
                                                         self.objtype,
                                                         self.entry.name,
-                                                        self.entry.name,
+                                                        "legacy_placeholder",
                                                         "str",
                                                         json.dumps([substr]))
         return create_pdarray(generic_msg(cmd=cmd,args=args))
@@ -350,7 +349,7 @@ class Strings:
         args = "{} {} {} {} {} {}".format("startswith",
                                                         self.objtype,
                                                         self.entry.name,
-                                                        self.entry.name,
+                                                        "legacy_placeholder",
                                                         "str",
                                                         json.dumps([substr]))
         return create_pdarray(generic_msg(cmd=cmd,args=args))
@@ -395,7 +394,7 @@ class Strings:
         args = "{} {} {} {} {} {}".format("endswith",
                                           self.objtype,
                                           self.entry.name,
-                                          self.entry.name,
+                                          "legacy_placeholder",
                                           "str",
                                           json.dumps([substr]))
         return create_pdarray(generic_msg(cmd=cmd,args=args))
@@ -434,7 +433,7 @@ class Strings:
         """
         cmd = "segmentedFlatten"
         args = "{}+{} {} {} {}".format(self.entry.name,
-                                       self.entry.name,
+                                       "legacy_placeholder",
                                        self.objtype,
                                        return_segments,
                                        json.dumps([delimiter]))
@@ -517,7 +516,7 @@ class Strings:
         args = "{} {} {} {} {} {} {} {} {} {}".format("peel",
                             self.objtype,
                             self.entry.name,
-                            self.entry.name,
+                            "legacy_placeholder",
                             "str",
                             NUMBER_FORMAT_STRINGS['int64'].format(times),
                             NUMBER_FORMAT_STRINGS['bool'].format(includeDelimiter),
@@ -638,10 +637,10 @@ class Strings:
                             format("stick",
                             self.objtype,
                             self.entry.name,
-                            self.entry.name,
+                            "legacy_placeholder",
                             other.objtype,
                             other.entry.name,
-                            other.entry.name,
+                            "legacy_placeholder",
                             NUMBER_FORMAT_STRINGS['bool'].format(toLeft),
                             json.dumps([delimiter]))
         rep_msg = generic_msg(cmd=cmd,args=args)
@@ -712,8 +711,7 @@ class Strings:
         """
         # TODO fix this to return a single pdarray of hashes
         cmd = "segmentedHash"
-        args = "{} {} {}".format(self.objtype, self.entry.name, 
-                                              self.entry.name)
+        args = "{} {} {}".format(self.objtype, self.entry.name, "legacy_placeholder")
         repMsg = generic_msg(cmd=cmd,args=args)
         h1, h2 = cast(str,repMsg).split('+')
         return create_pdarray(h1), create_pdarray(h2)
@@ -749,8 +747,7 @@ class Strings:
             creating the pdarray encapsulating the return message
         """
         cmd = "segmentedGroup"
-        args = "{} {} {}".\
-                           format(self.objtype, self.entry.name, self.entry.name)
+        args = "{} {} {}".format(self.objtype, self.entry.name, "legacy_placeholder")
         return create_pdarray(generic_msg(cmd=cmd,args=args))
 
     def to_ndarray(self) -> np.ndarray:

@@ -74,7 +74,7 @@ def unique(pda : Union[pdarray,Strings,'Categorical'], # type: ignore
         else:
             return create_pdarray(cast(str,repMsg))
     elif isinstance(pda, Strings):
-        name = '{}+{}'.format(pda.entry.name, pda.entry.name)
+        name = '{}+{}'.format(pda.entry.name, "legacy_placeholder")
         repMsg = cast(str,generic_msg(cmd="unique", args="{} {} {}".\
                              format(pda.objtype, name, return_counts)))
         vc = repMsg.split('+')
@@ -240,8 +240,7 @@ def concatenate(arrays : Sequence[Union[pdarray,Strings,'Categorical']], #type: 
                 raise ValueError("All pdarrays must have same dtype")
             names.append(cast(pdarray,a).name)
         elif objtype == "str":
-            names.append('{}+{}'.format(cast(Strings, a).entry.name,
-                                                   cast(Strings, a).entry.name))
+            names.append('{}+{}'.format(cast(Strings, a).entry.name, "legacy_placeholder"))
         else:
             raise NotImplementedError(("concatenate not implemented " +
                                     "for object type {}".format(objtype)))

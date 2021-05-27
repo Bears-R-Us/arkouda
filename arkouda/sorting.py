@@ -54,7 +54,7 @@ def argsort(pda : Union[pdarray,Strings,'Categorical']) -> pdarray: # type: igno
     if pda.size == 0:
         return zeros(0, dtype=int64)
     if isinstance(pda, Strings):
-        name = '{}+{}'.format(pda.entry.name, pda.entry.name)
+        name = '{}+{}'.format(pda.entry.name, "legacy_placeholder")
     else:
         name = pda.name
     repMsg = generic_msg(cmd="argsort", args="{} {}".format(pda.objtype, name))
