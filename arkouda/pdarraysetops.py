@@ -141,18 +141,19 @@ def in1d(pda1 : Union[pdarray,Strings,'Categorical'], pda2 : Union[pdarray,Strin
     >>> ak.in1d(ak.array(['one','two']),ak.array(['two', 'three','four','five']))
     array([False, True])
     """
-    # If the second array is empty, it will crash the server when pda1.size > mBound=2**25
-    # This is because of an issue with the in1dSort process in arkouda/src/In1d.chpl, lines 135-170
-    if pda2.size == 0:
-        return arkouda.pdarraycreation.array([])
     from arkouda.categorical import Categorical as Categorical_
+    if isinstance(pda2, pdarray) or isinstance(pda2, Strings) or isinstance(pda2, Categorical_):
+        from arkouda.dtypes import int_scalars, structDtypeCodes
+        if pda2.size == 0:  # If pda2 is empty, in1d shouldn't do anything.
+            repMsg = generic_msg(cmd="create", args="int64 0")
+            return  create_pdarray(cast(str,repMsg))
     if hasattr(pda1, 'categories'):
         return cast(Categorical_,pda1).in1d(pda2)
     elif isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
         repMsg = generic_msg(cmd="in1d", args="{} {} {}".\
                              format(pda1.name, pda2.name, invert))
-        return create_pdarray(cast(str,repMsg))
-    elif isinstance(pda1, Strings) and isinstance(pda2, Strings):
+        return create_pdarray(repMsg)
+    if isinstance(pda1, Strings) and isinstance(pda2, Strings):
         repMsg = generic_msg(cmd="segmentedIn1d", args="{} {} {} {} {} {} {}".\
                                     format(pda1.objtype,
                                     pda1.offsets.name,
