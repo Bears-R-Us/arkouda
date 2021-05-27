@@ -936,11 +936,7 @@ class Strings:
         RuntimeError
             Raised if there's a server-side error thrown
         """
-        parts_registered = [np.bool_(self.offsets.is_registered()), self.bytes.is_registered()]
-        if np.any(parts_registered) and not np.all(parts_registered):  # test for error
-            raise RegistrationError(f"Not all registerable components of Strings {self.name} are registered.")
-
-        return np.bool_(np.any(parts_registered))
+        return np.bool_(self.entry.is_registered())
 
     def _list_component_names(self) -> List[str]:
         """
@@ -955,7 +951,7 @@ class Strings:
         List[str]
             List of all component names
         """
-        return list(itertools.chain.from_iterable([self.offsets._list_component_names(), self.bytes._list_component_names()]))
+        return list(itertools.chain.from_iterable([self.entry._list_component_names()]))
 
     def info(self) -> str:
         """
@@ -1026,8 +1022,7 @@ class Strings:
         Registered names/Strings objects in the server are immune to deletion
         until they are unregistered.
         """
-        self.offsets.register(f"{user_defined_name}.offsets")
-        self.bytes.register(f"{user_defined_name}.bytes")
+        self.entry.register(user_defined_name)
         self.name = user_defined_name
         return self
 
@@ -1057,8 +1052,7 @@ class Strings:
         Registered names/Strings objects in the server are immune to deletion until
         they are unregistered.
         """
-        self.offsets.unregister()
-        self.bytes.unregister()
+        self.entry.unregister()
         self.name = None
 
     @staticmethod
@@ -1092,8 +1086,8 @@ class Strings:
         Registered names/Strings objects in the server are immune to deletion
         until they are unregistered.
         """
-        s = Strings(pdarray.attach(f"{user_defined_name}.offsets"),
-                    pdarray.attach(f"{user_defined_name}.bytes"))
+        rep_msg = generic_msg(cmd="attach", args="{}".format(user_defined_name))
+        s = Strings.from_return_msg(rep_msg)
         s.name = user_defined_name
         return s
 
@@ -1112,5 +1106,4 @@ class Strings:
         --------
         register, unregister, attach, is_registered
         """
-        unregister_pdarray_by_name(f"{user_defined_name}.bytes")
-        unregister_pdarray_by_name(f"{user_defined_name}.offsets")
+        unregister_pdarray_by_name(user_defined_name)
