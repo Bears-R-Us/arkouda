@@ -24,6 +24,7 @@ module GenSymIO {
     use ServerConfig;
     use Search;
     use IndexingMsg;
+    use SegmentedArray;
 
     require "c_helpers/help_h5ls.h", "c_helpers/help_h5ls.c";
 
@@ -574,23 +575,25 @@ module GenSymIO {
                     // Load the strings bytes/values first
                     var entryVal = new shared SymEntry(len, uint(8));
                     read_files_into_distributed_array(entryVal.a, subdoms, filenames, dsetName + "/" + SEGARRAY_VALUE_NAME, skips);
-                    var valName = st.nextName();
-                    st.addEntry(valName, entryVal);
 
-                    // Either load or derive the offsets array based on user preference
-                    var offsetsName = st.nextName();
-                    if (calcStringOffsets || nSeg < 1) {
+                    proc _buildEntryCalcOffsets(): shared SymEntry throws {
                         var offsetsArray = segmentedCalcOffsets(entryVal.a, entryVal.aD);
-                        var offsetsEntry = new shared SymEntry(offsetsArray);
-                        st.addEntry(offsetsName, offsetsEntry);
-                    } else {
+                        return new shared SymEntry(offsetsArray);
+                    }
+
+                    proc _buildEntryLoadOffsets() throws {
                         var offsetsEntry = new shared SymEntry(nSeg, int);
                         read_files_into_distributed_array(offsetsEntry.a, segSubdoms, filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME, skips);
                         fixupSegBoundaries(offsetsEntry.a, segSubdoms, subdoms);
-                        st.addEntry(offsetsName, offsetsEntry);
+                        return offsetsEntry;
                     }
 
-                    rnames.append((dsetName, "seg_string", "%s+%s".format(offsetsName, valName)));
+                    var entrySeg = if (calcStringOffsets || nSeg < 1) then _buildEntryCalcOffsets() else _buildEntryLoadOffsets();
+
+                    var stringsEntry = assembleSegStringFromParts(entrySeg, entryVal, st);
+                    // TODO fix the transformation to json after rebasing.
+                    // rnames = rnames + "created %s+created bytes.size %t".format(st.attrib(stringsEntry.name), stringsEntry.nBytes)+ " , ";
+                    rnames.append((dsetName, "seg_string", "%s+%t".format(stringsEntry.name, stringsEntry.nBytes)));
                 }
                 when (false, C_HDF5.H5T_INTEGER) {
                     var entryInt = new shared SymEntry(len, int);
@@ -693,8 +696,8 @@ module GenSymIO {
                     item +="," + Q + "created" + QCQ + "created " + st.attrib(id) + Q + "}";
                 }
                 when ("seg_string") {
-                    var (segName, valName) = id.splitMsgToTuple("+", 2);
-                    item += "," + Q + "created" + QCQ + "created " + st.attrib(segName) + "+created " + st.attrib(valName) + Q + "}";
+                    var (segName, nBytes) = id.splitMsgToTuple("+", 2);
+                    item += "," + Q + "created" + QCQ + "created " + st.attrib(segName) + "+created bytes.size " + nBytes + Q + "}";
                 }
                 otherwise {
                     item += "}";
@@ -1197,12 +1200,17 @@ module GenSymIO {
                     /*
                      * Look up the values and segments arrays, both of which are needed to write
                      * uint8 arrays such as Strings out to external systems.
+                     * UPDATE: with SegStringSymEntry, it's now encapsulated, also UInt8 is a #legacy_placeholder
+                     *         The type is now DType.Strings so this should be unreachable
                      */
-                    var e = toSymEntry(entry, uint(8));
-                    var segsEntry = st.lookup(segsName);
-                    var s_e = toSymEntry(segsEntry, int);
-                    warnFlag = write1DDistStrings(filename, mode, dsetName, e.a, DType.UInt8, s_e.a, writeOffsets);
-                } otherwise {
+                    var segString:SegStringSymEntry = toSegStringSymEntry(entry);
+                    warnFlag = write1DDistStrings(filename, mode, dsetName, segString.bytesEntry.a, DType.UInt8, segString.offsetsEntry.a, writeOffsets);
+                }
+                when DType.Strings {
+                    var segString:SegStringSymEntry = toSegStringSymEntry(entry);
+                    warnFlag = write1DDistStrings(filename, mode, dsetName, segString.bytesEntry.a, DType.UInt8, segString.offsetsEntry.a, writeOffsets);
+                }
+                otherwise {
                     var errorMsg = unrecognizedTypeError("tohdf", dtype2str(entry.dtype));
                     gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                     return new MsgTuple(errorMsg, MsgType.ERROR);
