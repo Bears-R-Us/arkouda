@@ -8,7 +8,7 @@ BOOLOPS = ('any', 'all')
 def generate_arrays(N, seed):
     # Sort keys so that aggregations will not have to permute values
     # We just want to measure aggregation time, not gather
-    keys = ak.sort(ak.randint(0, N//8, N, seed=seed))
+    keys = ak.sort(ak.randint(0, 2**32, N, seed=seed))
     if seed is not None: seed += 1
     intvals = ak.randint(0, 2**16, N, seed=seed)
     boolvals = (intvals % 2) == 0
