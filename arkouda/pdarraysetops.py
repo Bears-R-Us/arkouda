@@ -145,8 +145,7 @@ def in1d(pda1 : Union[pdarray,Strings,'Categorical'], pda2 : Union[pdarray,Strin
     if isinstance(pda1, pdarray) or isinstance(pda1, Strings) or isinstance (pda1, Categorical_):
         # While isinstance(thing, type) can be called on a tuple of types, this causes an issue with mypy for unknown reasons.
         if pda1.size == 0:
-            repMsg = generic_msg(cmd="create", args="bool 0")
-            return  create_pdarray(cast(str,repMsg))
+            return  zeros(0, dtype=bool)
     if isinstance(pda2, pdarray) or isinstance(pda2, Strings) or isinstance(pda2, Categorical_):
         if pda2.size == 0:
             return  zeros(pda1.size, dtype=bool)
