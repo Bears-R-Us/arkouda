@@ -148,7 +148,7 @@ def in1d(pda1 : Union[pdarray,Strings,'Categorical'], pda2 : Union[pdarray,Strin
             return  create_pdarray(cast(str,repMsg))
     if isinstance(pda2, (pdarray, Strings, Categorical_)):
         if pda2.size == 0:
-            return  zeros(pda1.size, dtype='bool')
+            return  zeros(pda1.size, dtype=bool)
     if hasattr(pda1, 'categories'):
         return cast(Categorical_,pda1).in1d(pda2)
     elif isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
