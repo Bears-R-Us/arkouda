@@ -23,8 +23,6 @@ import time
 
 from collections import namedtuple
 
-from context import arkouda
-
 util_dir = os.path.dirname(os.path.realpath(__file__))
 
 ##################
