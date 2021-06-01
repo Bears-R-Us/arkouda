@@ -11,7 +11,7 @@ def generate_arrays(N, numArrays, dtype, seed):
     arrays = []
     for i in range(numArrays):
         if dtype == 'int64' or (i % 2 == 0 and dtype == 'mixed'):
-            a = ak.randint(0, N//8, N//numArrays, seed=seed)
+            a = ak.randint(0, 2**32, N//numArrays, seed=seed)
             arrays.append(a)
             totalbytes += a.size * a.itemsize
         else:
