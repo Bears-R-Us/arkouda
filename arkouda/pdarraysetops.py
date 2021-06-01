@@ -3,7 +3,7 @@ from typing import cast, Optional, Sequence, Tuple, Union, ForwardRef
 from typeguard import typechecked
 from arkouda.client import generic_msg, get_config
 from arkouda.pdarrayclass import pdarray, create_pdarray
-from arkouda.pdarraycreation import zeros_like, array
+from arkouda.pdarraycreation import zeros, zeros_like, array
 from arkouda.sorting import argsort
 from arkouda.strings import Strings
 from arkouda.logger import getArkoudaLogger
@@ -142,11 +142,13 @@ def in1d(pda1 : Union[pdarray,Strings,'Categorical'], pda2 : Union[pdarray,Strin
     array([False, True])
     """
     from arkouda.categorical import Categorical as Categorical_
-    if isinstance(pda2, pdarray) or isinstance(pda2, Strings) or isinstance(pda2, Categorical_):
-        from arkouda.dtypes import int_scalars, structDtypeCodes
-        if pda2.size == 0:  # If pda2 is empty, in1d shouldn't do anything.
-            repMsg = generic_msg(cmd="create", args="int64 0")
+    if isinstance(pda1, pdarray) or isinstance(pda1, Strings) or isinstance(pda1, Categorical_):
+        if pda1.size == 0:
+            repMsg = generic_msg(cmd="create", args="bool 0")
             return  create_pdarray(cast(str,repMsg))
+    if isinstance(pda2, pdarray) or isinstance(pda2, Strings) or isinstance(pda2, Categorical_):
+        if pda2.size == 0:
+            return  zeros(pda1.size, dtype='bool')
     if hasattr(pda1, 'categories'):
         return cast(Categorical_,pda1).in1d(pda2)
     elif isinstance(pda1, pdarray) and isinstance(pda2, pdarray):
