@@ -2950,7 +2950,7 @@ Attributes
       array([1, 2, 4, 3])
 
 
-   .. method:: aggregate(self, values: arkouda.pdarrayclass.pdarray, operator: str, skipna: bool = True) -> Tuple[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
+   .. method:: aggregate(self, values: arkouda.pdarrayclass.pdarray, operator: str, skipna: bool = True) -> Tuple[Any, arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group another
       array of values and apply a reduction to each group's values.
@@ -2960,7 +2960,7 @@ Attributes
       :param operator: The name of the reduction operator to use
       :type operator: str
 
-      :returns: * **unique_keys** (*[Union[pdarray,List[Union[pdarray,Strings]]]*) -- The unique keys, in grouped order
+      :returns: * **unique_keys** (*[Union[pdarray,List[Union[pdarray,Strings]],Categorical]*) -- The unique keys, in grouped order
                 * **aggregates** (*pdarray*) -- One aggregate value per unique key in the GroupBy instance
 
       :raises TypeError: Raised if the values array is not a pdarray
@@ -3231,7 +3231,7 @@ Attributes
       (array([2, 3, 4]), array([9, 3, 2]))
 
 
-   .. method:: nunique(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
+   .. method:: nunique(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[Any, arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group another
       array of values and return the number of unique values in each group.
@@ -3239,7 +3239,7 @@ Attributes
       :param values: The values to group and find unique values
       :type values: pdarray, int64
 
-      :returns: * **unique_keys** (*(list of) pdarray or Strings*) -- The unique keys, in grouped order
+      :returns: * **unique_keys** (*[Union[pdarray,List[Union[pdarray,Strings]],Categorical]*) -- The unique keys, in grouped order
                 * **group_nunique** (*pdarray, int64*) -- Number of unique values per unique key in the GroupBy instance
 
       :raises TypeError: Raised if the values array is not a pdarray or the pdarray
