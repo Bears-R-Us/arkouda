@@ -8,7 +8,7 @@ from arkouda.pdarrayclass import pdarray, RegistrationError, unregister_pdarray_
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.pdarraysetops import in1d, unique, concatenate
 from arkouda.pdarraycreation import zeros, zeros_like, arange
-from arkouda.dtypes import resolve_scalar_dtype, str_scalars
+from arkouda.dtypes import resolve_scalar_dtype, str_scalars, int_scalars
 from arkouda.dtypes import int64 as akint64
 from arkouda.sorting import argsort
 from arkouda.logger import getArkoudaLogger
@@ -79,7 +79,7 @@ class Categorical:
             self.permutation = cast(pdarray, g.permutation)
             self.segments = g.segments
         # Always set these values
-        self.size = self.codes.size
+        self.size: int_scalars = self.codes.size
         self.nlevels = self.categories.size
         self.ndim = self.codes.ndim
         self.shape = self.codes.shape

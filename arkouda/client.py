@@ -521,7 +521,7 @@ def generic_msg(cmd : str, args : Union[str,bytes]=None, send_bytes : bool=False
         of which is for creating an Arkouda array
     send_bytes : bool
         Indicates if the message to be sent is binary, defaults to False
-    recv_bypes : bool
+    recv_bytes : bool
         Indicates if the return message will be binary, default to False
 
     Returns
