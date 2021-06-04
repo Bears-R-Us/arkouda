@@ -37,11 +37,16 @@ module GenSymIO {
      * retrieve the pdarray from the SymTab.
      */
     proc arrayMsg(cmd: string, payload: bytes, st: borrowed SymTab): MsgTuple throws {
-        var repMsg: string;
+        // Set up our return items
+        var msgType = MsgType.NORMAL;
+        var msg:string = "";
+        var rname:string = "";
+
+        // TODO: Surround everything with a try/catch to eliminate try! killing the server
         var (dtypeBytes, sizeBytes, data) = payload.splitMsgToTuple(b" ", 3);
         var dtype = str2dtype(try! dtypeBytes.decode());
         var size = try! sizeBytes:int;
-        var tmpf:file;
+        var tmpf:file; defer { ensureClose(tmpf); }
         overMemLimit(2*8*size);
 
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -52,65 +57,67 @@ module GenSymIO {
             tmpf = openmem();
             var tmpw = tmpf.writer(kind=iobig);
             tmpw.write(data);
-            try! tmpw.close();
+            tmpw.close();
         } catch {
             var errorMsg = "Could not write to memory buffer";
-            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
-        // Get the next name from the SymTab cache
-        var rname = st.nextName();
-
-        /*
-         * Read the data payload from the memory buffer, encapsulate
-         * within a SymEntry, and write to the SymTab cache  
-         */
-        try {
-            var tmpr = tmpf.reader(kind=iobig, start=0);
+        try {  // Read data in SymEntry based on type
             if dtype == DType.Int64 {
-                var entryInt = new shared SymEntry(size, int);
-                tmpr.read(entryInt.a);
-                tmpr.close(); tmpf.close();
-                st.addEntry(rname, entryInt);
+                rname = makeEntry(size, int, st, tmpf);
             } else if dtype == DType.Float64 {
-                var entryReal = new shared SymEntry(size, real);
-                tmpr.read(entryReal.a);
-                tmpr.close(); tmpf.close();
-                st.addEntry(rname, entryReal);
+                rname = makeEntry(size, real, st, tmpf);
             } else if dtype == DType.Bool {
-                var entryBool = new shared SymEntry(size, bool);
-                tmpr.read(entryBool.a);
-                tmpr.close(); tmpf.close();
-                st.addEntry(rname, entryBool);
+                rname = makeEntry(size, bool, st, tmpf);
             } else if dtype == DType.UInt8 {
-                var entryUInt = new shared SymEntry(size, uint(8));
-                tmpr.read(entryUInt.a);
-                tmpr.close(); tmpf.close();
-                st.addEntry(rname, entryUInt);
+                rname = makeEntry(size, uint(8), st, tmpf);
             } else {
-                tmpr.close();
-                tmpf.close();
-
-                var errorMsg = "Unhandled data type %s".format(dtypeBytes);
-                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
-                return new MsgTuple(errorMsg, MsgType.ERROR);
+                msg = "Unhandled data type %s".format(dtypeBytes);
+                msgType = MsgType.ERROR;
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
             }
-            tmpr.close();
+        } catch {
+            msg = "Could not read from memory buffer into SymEntry";
+            msgType = MsgType.ERROR;
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
+        }
+
+        if (MsgType.ERROR != msgType) {  // success condition
+            // Set up return message indicating SymTab name corresponding to new pdarray
+            msg = "created " + st.attrib(rname);
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),msg);
+        }
+        return new MsgTuple(msg, msgType);
+    }
+
+    /*
+    * Read the data payload from the memory buffer, encapsulate
+    * within a SymEntry, and write to the SymTab cache
+    * Here tmpf is a memory buffer which contains the data we want to read.
+    */
+    private proc makeEntry(size:int, type t, st: borrowed SymTab, tmpf:file): string throws {
+        var entry = new shared SymEntry(size, t);
+        var tmpr = tmpf.reader(kind=iobig, start=0);
+        tmpr.read(entry.a);
+        tmpr.close(); 
+        var name = st.nextName();
+        st.addEntry(name, entry);
+        return name;
+    }
+
+    /*
+    * Ensure the file is closed, disregard errors
+    */
+    private proc ensureClose(tmpf:file): bool {
+        var success = true;
+        try {
             tmpf.close();
         } catch {
-            var errorMsg = "Could not read from memory buffer into SymEntry";
-            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
-            return new MsgTuple(errorMsg, MsgType.ERROR);
+            success = false;
         }
-
-        /*
-         * Return message indicating the SymTab name corresponding to the
-         * newly-created pdarray
-         */
-        repMsg = "created " + st.attrib(rname);
-        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);         
-        return new MsgTuple(repMsg, MsgType.NORMAL);
+        return success;
     }
 
     /*
@@ -122,7 +129,7 @@ module GenSymIO {
         var arrayBytes: bytes;
         var entry = st.lookup(payload);
         overMemLimit(2*entry.size*entry.itemsize);
-        var tmpf: file;
+        var tmpf: file; defer { ensureClose(tmpf); }
         try {
             tmpf = openmem();
             var tmpw = tmpf.writer(kind=iobig);
@@ -141,7 +148,6 @@ module GenSymIO {
             }
             tmpw.close();
         } catch {
-            try! tmpf.close();
             return b"Error: Unable to write SymEntry to memory buffer";
         }
 
@@ -149,7 +155,6 @@ module GenSymIO {
             var tmpr = tmpf.reader(kind=iobig, start=0);
             tmpr.readbytes(arrayBytes);
             tmpr.close();
-            tmpf.close();
         } catch {
             return b"Error: Unable to copy array from memory buffer to string";
         }
@@ -168,7 +173,7 @@ module GenSymIO {
      * Converts the JSON array to a pdarray
      */
     proc jsonToPdArray(json: string, size: int) throws {
-        var f = opentmp();
+        var f = opentmp(); defer { ensureClose(f); }
         var w = f.writer();
         w.write(json);
         w.close();
@@ -176,7 +181,6 @@ module GenSymIO {
         var array: [0..#size] string;
         r.readf("%jt", array);
         r.close();
-        f.close();
         return array;
     }
 
@@ -230,11 +234,13 @@ module GenSymIO {
             exitCode = sub.exit_status;
             
             var f = open(tmpfile, iomode.r);
+            defer {  // This will ensure we try to close f when we exit the proc scope.
+                ensureClose(f);
+                try { remove(tmpfile); } catch {}
+            }
             var r = f.reader(start=0);
             r.readstring(repMsg);
             r.close();
-            f.close();
-            remove(tmpfile);
         } catch e : Error {
             var errorMsg = "failed to spawn process and read output %t".format(e);
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
@@ -712,6 +718,9 @@ module GenSymIO {
         var isSegArray: bool;
 
         try {
+            defer { // Close the file on exit
+                C_HDF5.H5Fclose(file_id);
+            }
             if isStringsDataset(file_id, dsetName) {
                 var offsetDset = dsetName + "/" + SEGARRAY_OFFSET_NAME;
                 var (offsetClass, offsetByteSize, offsetSign) = 
@@ -736,9 +745,6 @@ module GenSymIO {
             } else {
                 (dataclass, bytesize, isSigned) = get_dataset_info(file_id, dsetName);
                 isSegArray = false;
-            }
-            defer {
-                C_HDF5.H5Fclose(file_id);
             }
         } catch e : Error {
             //:TODO: recommend revisiting this catch block 
@@ -868,18 +874,14 @@ module GenSymIO {
      */
     proc isBooleanDataset(fileName: string, dsetName: string): bool throws {
         var fileId = C_HDF5.H5Fopen(fileName.c_str(), C_HDF5.H5F_ACC_RDONLY, 
-                                           C_HDF5.H5P_DEFAULT);                  
+                                           C_HDF5.H5P_DEFAULT);
+        defer { // Close the file on exit
+            C_HDF5.H5Fclose(fileId);
+        }
         var boolDataset: bool;
 
         try {
             boolDataset = isBooleanDataset(fileId, dsetName);
-            /*
-             * Put close function call in defer block to ensure it's invoked, 
-             * which prevents accumulation of open file descriptors
-             */
-            defer {
-                C_HDF5.H5Fclose(fileId);
-            }
         } catch e: Error {
             /*
              * If there's an actual error, print it here. :TODO: revisit this
@@ -903,19 +905,16 @@ module GenSymIO {
             try {
                 var file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, 
                                            C_HDF5.H5P_DEFAULT);
+                defer { // Close the file on exit
+                    C_HDF5.H5Fclose(file_id);
+                }
+
                 var dims: [0..#1] C_HDF5.hsize_t; // Only rank 1 for now
                 var dName = try! getReadDsetName(file_id, dsetName);
 
                 // Read array length into dims[0]
                 C_HDF5.HDF5_WAR.H5LTget_dataset_info_WAR(file_id, dName.c_str(), 
                                            c_ptrTo(dims), nil, nil);
-                defer {
-                    /*
-                     * Put close function call in defer block to ensure it's invoked, 
-                     * which prevents accumulation of open file descriptors
-                     */
-                    C_HDF5.H5Fclose(file_id);
-                }
                 lengths[i] = dims[0]: int;
             } catch e: Error {
                 throw getErrorWithContext(
@@ -1212,6 +1211,9 @@ module GenSymIO {
 
             var myFileID = C_HDF5.H5Fopen(myFilename.c_str(), 
                                        C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
+            defer { // Close the file on exit
+                C_HDF5.H5Fclose(myFileID);
+            }
             const locDom = A.localSubdomain();
             var dims: [0..#1] C_HDF5.hsize_t;
             dims[0] = locDom.size: C_HDF5.hsize_t;
@@ -1498,9 +1500,6 @@ module GenSymIO {
                       writeStringsToHdf(myFileID, idx, group, charList, segmentsList);
                     }
                 }
-            
-            // Close the file now that the values and segments pdarrays have been written
-            C_HDF5.H5Fclose(myFileID);
         }
         total.stop();  
         gsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
@@ -1545,6 +1544,10 @@ module GenSymIO {
 
             var myFileID = C_HDF5.H5Fopen(myFilename.c_str(), 
                                        C_HDF5.H5F_ACC_RDWR, C_HDF5.H5P_DEFAULT);
+            defer { // Close the file on scope exit
+                C_HDF5.H5Fclose(myFileID);
+            }
+
             const locDom = A.localSubdomain();
             var dims: [0..#1] C_HDF5.hsize_t;
             dims[0] = locDom.size: C_HDF5.hsize_t;
@@ -1569,9 +1572,6 @@ module GenSymIO {
              */           
             H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
                                       dType, c_ptrTo(A.localSlice(locDom)));
-
-            // Close the file now that the 1..n pdarrays have been written
-            C_HDF5.H5Fclose(myFileID);
         }
         return warnFlag;
     }
@@ -1745,7 +1745,9 @@ module GenSymIO {
 
               file_id = C_HDF5.H5Fcreate(filenames[loc.id].localize().c_str(), C_HDF5.H5F_ACC_TRUNC,
                                                         C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
-              
+              defer { // Close file upon exiting scope
+                  C_HDF5.H5Fclose(file_id);
+              }
               prepareGroup(file_id, group);
 
               if file_id < 0 { // Negative file_id means error
@@ -1756,12 +1758,6 @@ module GenSymIO {
                                     moduleName=getModuleName(), 
                                     errorClass='FileNotFoundError');
               }
-
-              /*
-               * Close the file now that it has been created and, if applicable, the 
-               * Strings group derived from the dsetName has been created.
-               */
-              C_HDF5.H5Fclose(file_id);
            }
         } else {
             throw getErrorWithContext(
@@ -1842,7 +1838,9 @@ module GenSymIO {
 
               file_id = C_HDF5.H5Fcreate(filenames[loc.id].localize().c_str(), C_HDF5.H5F_ACC_TRUNC,
                                                       C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
-
+              defer { // close file upon exiting scope
+                  C_HDF5.H5Fclose(file_id);
+              }
               if file_id < 0 { // Negative file_id means error
                   throw getErrorWithContext(
                                      msg="The file %s does not exist".format(filenames[loc.id]),
@@ -1851,12 +1849,6 @@ module GenSymIO {
                                      moduleName=getModuleName(), 
                                      errorClass='FileNotFoundError');
               }
-
-              /*
-               * Close the file now that it has been created and, if applicable, the 
-               * Strings group derived from the dsetName has been created.
-               */
-              C_HDF5.H5Fclose(file_id);
            }
         } else {
             throw getErrorWithContext(
