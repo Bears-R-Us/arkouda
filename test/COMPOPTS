@@ -13,11 +13,14 @@ TEST_FLAGS=$(cd $ARKOUDA_HOME && make print-TEST_CHPL_FLAGS)
 # -M dir
 SRC_DIR=$(cd $ARKOUDA_HOME && make print-ARKOUDA_SOURCE_DIR)
 
+# Compat modules due to movement of Memory -> Memory.Diagnostics in 1.24
+COMPAT_MODULES=$(cd $ARKOUDA_HOME && make print-ARKOUDA_COMPAT_MODULES)
+
 # Location of the configuration file, so we always include it and disable extra
 # debugging that might make noise in the tests
 CONFIG_FILE="${SRC_DIR}/ServerConfig.chpl"
-CONFIG_OPTS="${CONFIG_FILE} -sv=false -strace=false"
+CONFIG_OPTS="${CONFIG_FILE} -strace=false"
 
 TEST_OPTS="-sprintTimes=false -sprintDiags=false -sprintDiagsSum=false"
 
-echo "${TEST_FLAGS} -M ${SRC_DIR} ${CONFIG_OPTS} ${TEST_OPTS}"
+echo "${TEST_FLAGS} -M ${SRC_DIR} ${COMPAT_MODULES} ${CONFIG_OPTS} ${TEST_OPTS}"

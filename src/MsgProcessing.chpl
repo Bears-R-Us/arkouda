@@ -9,7 +9,6 @@ module MsgProcessing
     use Errors;
     use Logging;
     use Message;
-    use Memory;
     
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -38,13 +37,8 @@ module MsgProcessing
     public use BroadcastMsg;
     public use FlattenMsg;
     
-    const mpLogger = new Logger();
-    
-    if v {
-        mpLogger.level = LogLevel.DEBUG;
-    } else {
-        mpLogger.level = LogLevel.INFO;
-    }
+    private config const logLevel = ServerConfig.logLevel;
+    const mpLogger = new Logger(logLevel);
     
     /* 
     Parse, execute, and respond to a create message 
@@ -104,9 +98,12 @@ module MsgProcessing
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                      "cmd: %s array: %s".format(cmd,st.attrib(name)));
         // delete entry from symbol table
-        st.deleteEntry(name);
-
-        repMsg =  "deleted %s".format(name);      
+        if st.deleteEntry(name) {
+            repMsg = "deleted %s".format(name);
+        }
+        else {
+            repMsg = "registered symbol, %s, not deleted".format(name);
+        }
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);       
         return new MsgTuple(repMsg, MsgType.NORMAL);
     }
@@ -190,7 +187,7 @@ module MsgProcessing
         var (_) = payload.splitMsgToTuple(1); // split request into fields
         mpLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"cmd: %s".format(cmd));
         if (memTrack) {
-            return new MsgTuple((memoryUsed():uint * numLocales:uint):string, MsgType.NORMAL);
+            return new MsgTuple((getMemUsed():uint * numLocales:uint):string, MsgType.NORMAL);
         }
         else {
             return new MsgTuple(st.memUsed():string, MsgType.NORMAL);

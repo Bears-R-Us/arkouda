@@ -7,15 +7,10 @@ module BroadcastMsg {
   use ServerConfig;
   use Logging;
   use Message;
-  
-  const bmLogger = new Logger();
 
-  if v {
-        bmLogger.level = LogLevel.DEBUG;
-  } else {
-        bmLogger.level = LogLevel.INFO;
-  }
-  
+  private config const logLevel = ServerConfig.logLevel;
+  const bmLogger = new Logger(logLevel);
+
   /* 
    * Broadcast a value per segment of a segmented array to the
    * full size of the array, optionally applying a permutation

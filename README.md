@@ -8,6 +8,8 @@
 
 [Arkouda PDF Documentation](https://arkouda.readthedocs.io/_/downloads/en/latest/pdf/)
 
+[Arkouda docs at Github Pages](https://bears-r-us.github.io/arkouda/)
+
 ## Nightly Arkouda Performance Charts
 [Arkouda nightly performance charts](https://chapel-lang.org/perf/arkouda/)
 
@@ -17,6 +19,11 @@
 [Chapel Gitter channel](https://gitter.im/chapel-lang/chapel)
 
 ## Talks on Arkouda
+
+[Arkouda Hack-a-thon videos](https://www.youtube.com/playlist?list=PLpuVAiniqZRXnOAhfHmxbAcVPtMKb-RHN)
+
+[Bill Reus' March 2021 talk at the NJIT Data Science Seminar](https://www.youtube.com/watch?v=hzLbJF-fvjQ&t=3s)
+
 Bill Reus' CHIUW 2020 Keynote [video](https://youtu.be/g-G_Z_3pgUE) and [slides](https://chapel-lang.org/CHIUW/2020/Reus.pdf)
 
 [Mike Merrill's CHIUW 2019 talk](https://chapel-lang.org/CHIUW/2019/Merrill.pdf)
@@ -87,6 +94,7 @@ This yielded a >20TB dataframe in Arkouda.
    - [Linux](#prereq-linux)
      - [Install Chapel](#prereq-linux-chapel)
      - [Python environment - Anaconda](#prereq-linux-anaconda)
+   - [Windows - WSL](#prereq-windows)
 2. [Building Arkouda](#build-ak)
    - [Building the source](#build-ak-source)
    - [Building the docs](#build-ak-docs)
@@ -98,7 +106,8 @@ This yielded a >20TB dataframe in Arkouda.
    - [Connecting to Arkouda](#run-ak-connect)
 6. [Logging](#log-ak)
 7. [Type Checking in Arkouda](#typecheck-ak)
-8. [Contributing](#contrib-ak)
+8. [Environment Variables](#env-vars-ak)
+9. [Contributing](#contrib-ak)
 
 
 <a id="prereq-main"></a>
@@ -106,7 +115,7 @@ This yielded a >20TB dataframe in Arkouda.
 
 <a id="prereq-reqs"></a>
 ### Requirements: <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
- * requires chapel 1.23.0
+ * requires chapel 1.24.1
  * requires zeromq version >= 4.2.5, tested with 4.2.5 and 4.3.1
  * requires hdf5 
  * requires python 3.7 or greater
@@ -145,7 +154,7 @@ Option 2: Build Chapel from source
 
 ```bash
 # build chapel in the user home directory with these settings...
-export CHPL_HOME=~/chapel/chapel-1.23.0
+export CHPL_HOME=~/chapel/chapel-1.24.1
 source $CHPL_HOME/util/setchplenv.bash
 export CHPL_COMM=gasnet
 export CHPL_COMM_SUBSTRATE=smp
@@ -201,9 +210,9 @@ sudo apt-get update
 sudo apt-get install gcc g++ m4 perl python python-dev python-setuptools bash make mawk git pkg-config
 
 # Download latest Chapel release, explode archive, and navigate to source root directory
-wget https://github.com/chapel-lang/chapel/releases/download/1.23.0/chapel-1.23.0.tar.gz
-tar xvf chapel-1.23.0.tar.gz
-cd chapel-1.23.0/
+wget https://github.com/chapel-lang/chapel/releases/download/1.24.1/chapel-1.24.1.tar.gz
+tar xvf chapel-1.24.1.tar.gz
+cd chapel-1.24.1/
 
 # Set CHPL_HOME
 export CHPL_HOME=$PWD
@@ -244,6 +253,36 @@ As is the case with the MacOS install, it is highly recommended to [install Anac
 ```
 
 </details>
+
+
+<a id="prereq-windows"></a>
+### Windows Environment (WSL2) <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+It is possible to set up a basic arkouda installation on MS Windows using the Windows Subsystem for Linux (WSL2).
+The general strategy here is to use Linux terminals on WSL to launch the server
+If you are going to try this route we suggest using WSL-2 with Ubuntu 20.04 LTS.  There are a number of tutorials
+available online such has [MicroSoft's](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+
+Key installation points:
+  - Make sure to use WSL2
+  - Ubuntu 20.04 LTS from the MS app store
+  - Don't forget to create a user account and password as part of the Linux install
+
+Once configured you can follow the basic [Linux installation instructions](#prereq-linux)
+for installing Chapel & Arkouda.  We also recommend installing Anaconda for windows.
+
+The general plan is to compile & run the `arkouda-server` process from a Linux terminal on WSL and then either connect
+to it with the python client using another Linux terminal running on WSL _or_ using the Windows Anaconda-Powershell.
+
+If running an IDE you can use either the Windows or Linux version, however, you may need to install an X-window system
+on Windows such as VcXsrv, X410, or an alternative.  Follow the setup instructions for whichever one you choose, but
+keep in mind you may need to update your Windows firewall to allow the Xserver to connect.  Also, on the Linux side of
+the house we found it necessary to add 
+```bash
+export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2; exit;}'):0.0
+```
+to our `~/.bashrc` file to get the display correctly forwarded.
+
+
 
 <a id="build-ak"></a>
 ## Building Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
@@ -356,9 +395,9 @@ For more details regarding Arkouda testing, please consult the Python test [READ
 
 <a id="install-ak"></a>
 ## Installing the Arkouda Python Library and Dependencies <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
-Now that the arkouda\_server is built and tested, install the Python library.
+Now that the arkouda_server is built and tested, install the Python library.
 
-The Arkouda Python library along with it's dependent libraries are installed with pip. There are four types of 
+The Arkouda Python library along with its dependent libraries are installed with pip. There are four types of 
 Python dependencies for the Arkouda developer to install: requires, dev, test, and doc. The required libraries, 
 which are the runtime dependencies of the Arkouda python library, are installed as follows:
 
@@ -366,11 +405,30 @@ which are the runtime dependencies of the Arkouda python library, are installed 
  pip3 install -e .
 ```
 
-Arkouda and the Python libaries required for development, test, and doc generation activities are installed
+Arkouda and the Python libraries required for development, test, and doc generation activities are installed
 as follows:
 
 ```bash
 pip3 install -e .[dev]
+```
+
+Alternatively you can build a distributable package via
+```bash
+# We'll use a virtual environment to build
+python -m venv build-client-env
+source build-client-env/bin/activate
+python -m pip install --upgrade pip build wheel
+python setup.py clean --all
+python -m build
+
+# Clean up our virtual env
+deactivate
+rm -rf build-client-env
+
+# You should now have 2 files in the dist/ directory which can be installed via pip
+pip install dist/arkouda*.whl
+# or
+pip install dist/arkouda*.tar.gz
 ```
 
 <a id="run-ak"></a>
@@ -466,11 +524,28 @@ connect without specifying the token via the access_token parameter or token url
 <a id="log-ak"></a>
 ## Logging <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 
-The Arkouda server features a Chapel logging framework that prints out the module name, routine name and line number
-for all logged messages. Available logging levels are ERROR, CRITICAL, WARN, INFO, and DEBUG. 
+The Arkouda server features a Chapel logging framework that prints out the module name, function name and line number
+for all logged messages. An example is shown below:
 
-The default logging level is INFO where all messages at the ERROR, CRITICAL, WARN, and INFO levels are printed. For debugging, 
-the DEBUG level is enabled by passing in the --v flag upon arkouda\_server startup.
+```
+2021-04-15:06:22:59 [ConcatenateMsg] concatenateMsg Line 193 DEBUG [Chapel] creating pdarray id_4 of type Int64
+2021-04-15:06:22:59 [ServerConfig] overMemLimit Line 175 INFO [Chapel] memory high watermark = 44720 memory limit = 30923764531
+2021-04-15:06:22:59 [MultiTypeSymbolTable] addEntry Line 127 DEBUG [Chapel] adding symbol: id_4 
+```
+
+Available logging levels are ERROR, CRITICAL, WARN, INFO, and DEBUG. The default logging level is INFO where all messages at the ERROR, CRITICAL, WARN, and INFO levels are printed. The log level can be set globally by passing in the --logLevel parameter upon arkouda\_server startup. For example, passing the --logLevel=LogLevel.DEBUG parameter as shown below sets the global log level to DEBUG:
+
+```
+./arkouda_server --logLevel=LogLevel.DEBUG
+```
+
+In addition to setting the global logging level, the logging level for individual Arkouda modules can also be configured. For example, to set MsgProcessing to DEBUG for the purposes of debugging Arkouda array creation, pass the MsgProcessing.logLevel=LogLevel.DEBUG parameter upon arkouda\_server startup as shown below:
+
+```
+./arkouda_server --MsgProcessing.logLevel=LogLevel.DEBUG --logLevel=LogLevel.WARN
+```
+
+In this example, the logging level for all other Arkouda modules will be set to the global value WARN.
 
 <a id="typecheck-ak"></a>
 ## Type Checking in Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
@@ -514,6 +589,10 @@ type checking require type hints. Consequently, to opt-out of type checking, sim
 
 </details>
 
+<a id="env-vars-ak"></a>
+## Environment Variables <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+The various Arkouda aspects (compilation, run-time, client, tests, etc.) can be configured using a number of environment
+variables (env vars).  See the [ENVIRONMENT](ENVIRONMENT.md) documentation for more details.
 
 <a id="contrib-ak"></a>
 ## Contributing to Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>

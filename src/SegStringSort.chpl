@@ -20,14 +20,9 @@ module SegStringSort {
   private const MEMFACTOR = SSS_MEMFACTOR;
   private config const SSS_PARTITION_LONG_STRING = false;
   private const PARTITION_LONG_STRING = SSS_PARTITION_LONG_STRING;
- 
-  
-  const ssLogger = new Logger();
-  if v {
-      ssLogger.level = LogLevel.DEBUG;
-  } else {
-      ssLogger.level = LogLevel.INFO;    
-  }
+
+  private config const logLevel = ServerConfig.logLevel;
+  const ssLogger = new Logger(logLevel);
 
   record StringIntComparator {
     proc keyPart((a0,_): (string, int), in i: int) {

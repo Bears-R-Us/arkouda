@@ -12,14 +12,9 @@ module IndexingMsg
     use MultiTypeSymbolTable;
 
     use CommAggregation;
-    
-    const imLogger = new Logger();
 
-    if v {
-        imLogger.level = LogLevel.DEBUG;
-    } else {
-        imLogger.level = LogLevel.INFO;
-    }
+    private config const logLevel = ServerConfig.logLevel;
+    const imLogger = new Logger(logLevel);
 
     /* intIndex "a[int]" response to __getitem__(int) */
     proc intIndexMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
@@ -427,7 +422,7 @@ module IndexingMsg
         var gIV: borrowed GenSymEntry = st.lookup(iname);
         var gY: borrowed GenSymEntry = st.lookup(yname);
         
-        if v {
+        if logLevel == LogLevel.DEBUG {
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                              "cmd: %s gX: %t gIV: %t gY: %t".format(
                                               cmd, st.attrib(name), st.attrib(iname),

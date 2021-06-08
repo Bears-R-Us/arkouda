@@ -63,6 +63,7 @@ class ClientTest(ArkoudaTest):
             raise AssertionError(e)
         self.assertEqual(ArkoudaTest.port, config['ServerPort'])
         self.assertTrue('arkoudaVersion' in config)
+        self.assertTrue('INFO', config['logLevel'])
         
     def test_client_context(self):   
         '''
@@ -101,8 +102,16 @@ class ClientTest(ArkoudaTest):
         :return: None
         :raise: AssertionError if return message is not 'noop'
         '''   
-        noop = ak.client._no_op()
-        self.assertEqual('noop', noop)
+        self.assertEqual('noop', ak.client._no_op())
+        
+    def test_ruok(self):
+        '''
+        Tests the ak.client.ruok method
+        
+        :return: None
+        :raise: AssertionError if return message is not 'imok'
+        '''
+        self.assertEqual('imok', ak.client.ruok())
         
     def test_client_configuration(self):
         '''

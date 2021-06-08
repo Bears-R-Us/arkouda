@@ -13,3 +13,4 @@ from arkouda.join import *
 from arkouda.categorical import *
 from arkouda.logger import *
 from arkouda.timeclass import *
+from arkouda.infoclass import *

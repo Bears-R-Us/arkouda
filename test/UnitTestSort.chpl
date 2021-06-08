@@ -3,7 +3,6 @@ prototype module UnitTestSort
 
   use TestBase;
 
-  use Memory;
   use Random;
 
   use RadixSortLSD;
@@ -184,7 +183,7 @@ prototype module UnitTestSort
 
   proc testPerformance() {
     param elemSize = numBytes(perfElemType);
-    const totMem = here.physicalMemory(unit = MemUnits.Bytes);
+    const totMem = getPhysicalMemHere();
     const fraction = totMem / elemSize / perfMemFraction * numLocales;
     const nElems = if numElems > 0 then numElems else fraction;
 

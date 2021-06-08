@@ -14,14 +14,9 @@ module EfuncMsg
     use ServerErrorStrings;
     
     use AryUtil;
-    
-    const eLogger = new Logger();
 
-    if v {
-        eLogger.level = LogLevel.DEBUG;
-    } else {
-        eLogger.level = LogLevel.INFO;
-    }
+    private config const logLevel = ServerConfig.logLevel;
+    const eLogger = new Logger(logLevel);
     
     /* These ops are functions which take an array and produce an array.
        
@@ -122,6 +117,10 @@ module EfuncMsg
                     when "cos" {
                         var a = st.addEntry(rname, e.size, real);
                         a.a = Math.cos(e.a);
+                    }
+                    when "isnan" {
+                        var a = st.addEntry(rname, e.size, bool);
+                        a.a = isnan(e.a);
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);

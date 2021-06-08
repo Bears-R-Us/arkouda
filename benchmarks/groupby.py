@@ -11,13 +11,13 @@ def generate_arrays(N, numArrays, dtype, seed):
     arrays = []
     for i in range(numArrays):
         if dtype == 'int64' or (i % 2 == 0 and dtype == 'mixed'):
-            a = ak.randint(0, N//8, N//numArrays, seed=seed)
+            a = ak.randint(0, 2**32, N//numArrays, seed=seed)
             arrays.append(a)
             totalbytes += a.size * a.itemsize
         else:
             a = ak.random_strings_uniform(1, 16, N//numArrays, seed=seed)
             arrays.append(a)
-            totalbytes += (a.offsets.size * a.offsets.itemsize) + (a.bytes.size * a.bytes.itemsize)
+            totalbytes += (a.bytes.size * a.bytes.itemsize)
         if seed is not None:
             seed += 1
     if numArrays == 1:
@@ -39,10 +39,10 @@ def time_ak_groupby(N_per_locale, trials, dtype, seed):
             g = ak.GroupBy(arrays)
             end = time.time()
             timings.append(end - start)
-            tavg = sum(timings) / trials
-            print("{}-array Average time = {:.4f} sec".format(numArrays, tavg))
-            bytes_per_sec = totalbytes / tavg
-            print("{}-array Average rate = {:.4f} GiB/sec".format(numArrays, bytes_per_sec/2**30))
+        tavg = sum(timings) / trials
+        print("{}-array Average time = {:.4f} sec".format(numArrays, tavg))
+        bytes_per_sec = totalbytes / tavg
+        print("{}-array Average rate = {:.4f} GiB/sec".format(numArrays, bytes_per_sec/2**30))
 
 def check_correctness(dtype, seed):
     arrays, totalbytes = generate_arrays(1000, 2, dtype, seed)

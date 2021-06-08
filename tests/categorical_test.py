@@ -76,6 +76,12 @@ class CategoricalTest(ArkoudaTest):
         
         self.assertTrue((cat == catDupe).all())
         self.assertTrue((cat != catNonDupe).all())
+
+        c1 = ak.Categorical(ak.array(['a', 'b', 'c', 'a', 'b']))
+        c2 = ak.Categorical(ak.array(['a', 'x', 'c', 'y', 'b']))
+        res = (c1 == c2)
+        ans = ak.array([True, False, True, False, True])
+        self.assertTrue((res == ans).all())
         
     def testBinop(self):
         cat = self._getCategorical()
@@ -112,22 +118,31 @@ class CategoricalTest(ArkoudaTest):
         self.assertEqual(('type of argument "other" must be one of (Categorical, str, str_);' +
                           ' got int instead'), 
                          cm.exception.args[0])
-            
+
+    def testIn1d(self):
+        vals = [i % 3 for i in range(10)]
+        valsTwo = [i % 2 for i in range(10)]
+
+        stringsOne = ak.array(['String {}'.format(i) for i in vals])
+        stringsTwo = ak.array(['String {}'.format(i) for i in valsTwo])
+        catOne = ak.Categorical(stringsOne)
+        catTwo = ak.Categorical(stringsTwo)
+
+        answer = ak.array([x < 2 for x in vals])
+
+        self.assertTrue((answer == ak.in1d(catOne,catTwo)).all())
+        self.assertTrue((answer == ak.in1d(catOne,stringsTwo)).all())
+
+        with self.assertRaises(TypeError) as cm:
+            ak.in1d(catOne, ak.randint(0,5,5))
+        self.assertEqual(('type of argument "test" must be one of (Strings, Categorical); got ' + 
+                          'arkouda.pdarrayclass.pdarray instead'), cm.exception.args[0])    
+    
     def testConcatenate(self):
         catOne = self._getCategorical('string',51)
         catTwo = self._getCategorical('string-two', 51)
         
         resultCat = catOne.concatenate([catTwo])
-        self.assertEqual('category', resultCat.objtype)
-        self.assertIsInstance(resultCat, ak.Categorical)
-        self.assertEqual(100,resultCat.size)
-
-        # Since Categorical.concatenate uses Categorical.from_codes method, confirm
-        # that both permutation and segments are None
-        self.assertFalse(resultCat.permutation)
-        self.assertFalse(resultCat.segments)
-
-        resultCat = ak.concatenate([catOne,catOne])
         self.assertEqual('category', resultCat.objtype)
         self.assertIsInstance(resultCat, ak.Categorical)
         self.assertEqual(100,resultCat.size)
@@ -146,3 +161,28 @@ class CategoricalTest(ArkoudaTest):
         # that both permutation and segments are None
         self.assertFalse(resultCat.permutation)
         self.assertFalse(resultCat.segments)
+
+        # Concatenate two Categoricals with different categories, and test result against original strings
+        s1 = ak.array(['abc', 'de', 'abc', 'fghi', 'de'])
+        s2 = ak.array(['jkl', 'mno', 'fghi', 'abc', 'fghi', 'mno'])
+        c1 = ak.Categorical(s1)
+        c2 = ak.Categorical(s2)
+        # Ordered concatenation
+        s12ord = ak.concatenate([s1, s2], ordered=True)
+        c12ord = ak.concatenate([c1, c2], ordered=True)
+        self.assertTrue((ak.Categorical(s12ord) == c12ord).all())
+        # Unordered (but still deterministic) concatenation
+        s12unord = ak.concatenate([s1, s2], ordered=False)
+        c12unord = ak.concatenate([c1, c2], ordered=False)
+        self.assertTrue((ak.Categorical(s12unord) == c12unord).all())
+
+        # Tiny concatenation
+        # Used to fail when length of array was less than numLocales
+        # CI uses 2 locales, so try with length-1 arrays
+        a = ak.Categorical(ak.array(['a']))
+        b = ak.Categorical(ak.array(['b']))
+        c = ak.concatenate((a, b), ordered=False)
+        ans = ak.Categorical(ak.array(['a', 'b']))
+        self.assertTrue((c == ans).all())
+        
+        

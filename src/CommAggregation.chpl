@@ -5,9 +5,10 @@ module CommAggregation {
   use CommPrimitives;
 
   // TODO should tune these values at startup
+  param defaultBuffSize = if CHPL_COMM == "ugni" then 4096 else 8096;
   private config const yieldFrequency = getEnvInt("ARKOUDA_SERVER_AGGREGATION_YIELD_FREQUENCY", 1024);
-  private config const dstBuffSize = getEnvInt("ARKOUDA_SERVER_AGGREGATION_DST_BUFF_SIZE", 4096);
-  private config const srcBuffSize = getEnvInt("ARKOUDA_SERVER_AGGREGATION_SRC_BUFF_SIZE", 4096);
+  private config const dstBuffSize = getEnvInt("ARKOUDA_SERVER_AGGREGATION_DST_BUFF_SIZE", defaultBuffSize);
+  private config const srcBuffSize = getEnvInt("ARKOUDA_SERVER_AGGREGATION_SRC_BUFF_SIZE", defaultBuffSize);
 
 
   /* Creates a new destination aggregator (dst/lhs will be remote). */
@@ -39,18 +40,27 @@ module CommAggregation {
     const bufferSize = dstBuffSize;
     const myLocaleSpace = LocaleSpace;
     var opsUntilYield = yieldFrequency;
-    var lBuffers: [myLocaleSpace] [0..#bufferSize] aggType;
+    var lBuffers: c_ptr(c_ptr(aggType));
     var rBuffers: [myLocaleSpace] remoteBuffer(aggType);
-    var bufferIdxs: [myLocaleSpace] int;
+    var bufferIdxs: c_ptr(int);
 
     proc postinit() {
+      lBuffers = c_malloc(c_ptr(aggType), numLocales);
+      bufferIdxs = bufferIdxAlloc();
       for loc in myLocaleSpace {
+        lBuffers[loc] = c_malloc(aggType, bufferSize);
+        bufferIdxs[loc] = 0;
         rBuffers[loc] = new remoteBuffer(aggType, bufferSize, loc);
       }
     }
 
     proc deinit() {
       flush();
+      for loc in myLocaleSpace {
+        c_free(lBuffers[loc]);
+      }
+      c_free(lBuffers);
+      c_free(bufferIdxs);
     }
 
     proc flush() {
@@ -142,16 +152,22 @@ module CommAggregation {
     const bufferSize = srcBuffSize;
     const myLocaleSpace = LocaleSpace;
     var opsUntilYield = yieldFrequency;
-    var dstAddrs: [myLocaleSpace][0..#bufferSize] aggType;
-    var lSrcAddrs: [myLocaleSpace][0..#bufferSize] aggType;
+    var dstAddrs: c_ptr(c_ptr(aggType));
+    var lSrcAddrs: c_ptr(c_ptr(aggType));
     var lSrcVals: [myLocaleSpace][0..#bufferSize] elemType;
     var rSrcAddrs: [myLocaleSpace] remoteBuffer(aggType);
     var rSrcVals: [myLocaleSpace] remoteBuffer(elemType);
 
-    var bufferIdxs: [myLocaleSpace] int;
+    var bufferIdxs: c_ptr(int);
 
     proc postinit() {
+      dstAddrs = c_malloc(c_ptr(aggType), numLocales);
+      lSrcAddrs = c_malloc(c_ptr(aggType), numLocales);
+      bufferIdxs = bufferIdxAlloc();
       for loc in myLocaleSpace {
+        dstAddrs[loc] = c_malloc(aggType, bufferSize);
+        lSrcAddrs[loc] = c_malloc(aggType, bufferSize);
+        bufferIdxs[loc] = 0;
         rSrcAddrs[loc] = new remoteBuffer(aggType, bufferSize, loc);
         rSrcVals[loc] = new remoteBuffer(elemType, bufferSize, loc);
       }
@@ -159,6 +175,13 @@ module CommAggregation {
 
     proc deinit() {
       flush();
+      for loc in myLocaleSpace {
+        c_free(dstAddrs[loc]);
+        c_free(lSrcAddrs[loc]);
+      }
+      c_free(dstAddrs);
+      c_free(lSrcAddrs);
+      c_free(bufferIdxs);
     }
 
     proc flush() {
@@ -168,7 +191,9 @@ module CommAggregation {
     }
 
     inline proc copy(ref dst: elemType, const ref src: elemType) {
-      assert(dst.locale.id == here.id);
+      if boundsChecking {
+        assert(dst.locale.id == here.id);
+      }
       const dstAddr = getAddr(dst);
 
       const loc = src.locale.id;
@@ -318,6 +343,14 @@ module CommAggregation {
       CommPrimitives.PUT(c_ptrTo(lArr[0]), loc, data, byte_size);
     }
 
+    proc PUT(lArr: c_ptr(elemType), size: int) {
+      if boundsChecking {
+        assert(size <= this.size);
+      }
+      const byte_size = size:size_t * c_sizeof(elemType);
+      CommPrimitives.PUT(lArr, loc, data, byte_size);
+    }
+
     proc GET(lArr: [] elemType, size: int) where lArr.isDefaultRectangular() {
       if boundsChecking {
         assert(size <= this.size);
@@ -343,6 +376,12 @@ module CommAggregation {
   //
   // Helper routines
   //
+
+  // Cacheline aligned and padded allocation to avoid false-sharing
+  inline proc bufferIdxAlloc() {
+    const cachePaddedLocales = (numLocales + 7) & ~7;
+    return c_aligned_alloc(int, 64, cachePaddedLocales);
+  }
 
   private proc getEnvInt(name: string, default: int): int {
     extern proc getenv(name : c_string) : c_string;

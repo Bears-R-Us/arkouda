@@ -35,7 +35,10 @@ The ``pdarray`` class supports most Python special methods, including arithmetic
 Iteration
 =========
 
-While it is possible to iterate directly over a ``pdarray`` with ``for x in array``, this is not recommended because it triggers a transfer of all array data from the arkouda server to the Python client as a ``numpy.ndarray``. This transfer will raise an error if it exceeds the byte limit defined in ``arkouda.maxTransferBytes``. There is almost always a more array-oriented way to express an iterator-based computation; see the coming sections for details.
+Iterating directly over a ``pdarray`` with ``for x in array`` is not supported to discourage transferring all array data from the arkouda server to the Python client since there is almost always a more array-oriented way to express an iterator-based computation. To force this transfer, use the ``to_ndarray`` function to return the ``pdarray`` as a ``numpy.ndarray``. This transfer will raise an error if it exceeds the byte limit defined in ``arkouda.maxTransferBytes``.
+
+.. autofunction:: arkouda.pdarray.to_ndarray
+
 
 .. _cast-label:
 

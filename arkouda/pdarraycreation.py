@@ -5,7 +5,8 @@ from typing import cast, Iterable, Optional, Union
 from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS, float64, int64, \
-     DTypes, isSupportedInt, isSupportedNumber, NumericDTypes, SeriesDTypes
+     DTypes, isSupportedInt, isSupportedNumber, NumericDTypes, SeriesDTypes,\
+    int_scalars, numeric_scalars
 from arkouda.dtypes import dtype as akdtype
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.strings import Strings, SArrays
@@ -79,16 +80,27 @@ def from_series(series : pd.Series,
     data type is either inferred from the the Series or is set via the dtype parameter. 
     
     Series of datetime or timedelta are converted to Arkouda arrays of dtype int64 (nanoseconds)
+    
+    A Pandas Series containing strings has a dtype of object. Arkouda assumes the Series
+    contains strings and sets the dtype to str
     """ 
     if not dtype:   
         dt = series.dtype.name
     else:
         dt = str(dtype)
     try:
+        '''
+        If the Series has a object dtype, set dtype to string to comply with method
+        signature that does not require a dtype; this is required because Pandas can infer
+        non-str dtypes from the input np or Python array.
+        '''
+        if dt == 'object':
+            dt = 'string'
+
         n_array = series.to_numpy(dtype=SeriesDTypes[dt])
     except KeyError:
         raise ValueError(('dtype {} is unsupported. Supported dtypes are bool, ' +
-                          'float64, int64, string, datetime64[ns], and timedelta64[ns]').format(dt))
+                      'float64, int64, string, datetime64[ns], and timedelta64[ns]').format(dt))
     return array(n_array)
 
 def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
@@ -198,15 +210,15 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     repMsg = generic_msg(cmd='array', args=req_msg, send_bytes=True)
     return create_pdarray(repMsg)
 
-def zeros(size : Union[int,np.int64], dtype : type=np.float64) -> pdarray:
+def zeros(size : int_scalars, dtype : type=np.float64) -> pdarray:
     """
     Create a pdarray filled with zeros.
 
     Parameters
     ----------
-    size : Union[int,int64]
+    size : int_scalars
         Size of the array (only rank-1 arrays supported)
-    dtype : Union[float, np.float64, int, np.int64, bool, np.bool}
+    dtype : all_scalars
         Type of resulting array, default float64
 
     Returns
@@ -247,13 +259,13 @@ def zeros(size : Union[int,np.int64], dtype : type=np.float64) -> pdarray:
     
     return create_pdarray(repMsg)
 
-def ones(size : Union[int,np.int64], dtype : type=float64) -> pdarray:
+def ones(size : int_scalars, dtype : type=float64) -> pdarray:
     """
     Create a pdarray filled with ones.
 
     Parameters
     ----------
-    size : Union[int,np.int64]
+    size : int_scalars
         Size of the array (only rank-1 arrays supported)
     dtype : Union[float64, int64, bool]
         Resulting array type, default float64
@@ -395,11 +407,11 @@ def arange(*args) -> pdarray:
 
     Parameters
     ----------
-    start : Union[int,np.int64], optional
+    start : int_scalars, optional
         Starting value (inclusive)
-    stop : Union[int,np.int64]
+    stop : int_scalars
         Stopping value (exclusive)
-    stride : Union[int,np.int64], optional
+    stride : int_scalars, optional
         The difference between consecutive elements, the default stride is 1,
         if stride is specified then start must also be specified. 
 
@@ -472,18 +484,18 @@ def arange(*args) -> pdarray:
                                     format(start,stop,stride))
 
 @typechecked
-def linspace(start : Union[float,np.float64,int,np.int64], 
-             stop : Union[float,np.float64,int,np.int64], length : Union[int,np.int64]) -> pdarray:
+def linspace(start : numeric_scalars, 
+             stop : numeric_scalars, length : int_scalars) -> pdarray:
     """
     Create a pdarray of linearly-spaced floats in a closed interval.
 
     Parameters
     ----------
-    start : Union[float,np.float64, int, np.int64]
+    start : numeric_scalars
         Start of interval (inclusive)
-    stop : Union[float,np.float64, int, np.int64]
+    stop : numeric_scalars
         End of interval (inclusive)
-    length : Union[int,np.int64]
+    length : int_scalars
         Number of points
 
     Returns
@@ -524,23 +536,23 @@ def linspace(start : Union[float,np.float64,int,np.int64],
     return create_pdarray(repMsg)
 
 @typechecked
-def randint(low : Union[int,np.int64,float,np.float64], high : Union[int,np.int64,float,np.float64], 
-            size : Union[int,np.int64], dtype=int64, seed : Union[int,np.int64]=None) -> pdarray:
+def randint(low : numeric_scalars, high : numeric_scalars, 
+            size : int_scalars, dtype=int64, seed : int_scalars=None) -> pdarray:
     """
     Generate a pdarray of randomized int, float, or bool values in a 
     specified range bounded by the low and high parameters.
 
     Parameters
     ----------
-    low : Union[int,np.int64,float,np.float64]
+    low : numeric_scalars
         The low value (inclusive) of the range
-    high : Union[int,np.int64,float,np.float64]
+    high : numeric_scalars
         The high value (exclusive for int, inclusive for float) of the range
-    size : Union[int,np.int64]
+    size : int_scalars
         The length of the returned array
     dtype : Union[int64, float64, bool]
         The dtype of the array
-    seed : Union[int,np.int64]
+    seed : int_scalars
         Index for where to pull the first returned value
         
 
@@ -597,22 +609,22 @@ def randint(low : Union[int,np.int64,float,np.float64], high : Union[int,np.int6
     return create_pdarray(cast(str,repMsg))
 
 @typechecked
-def uniform(size : Union[int,np.int64], low : Union[float,np.float64]=0.0, 
-            high : Union[float,np.float64]=1.0, seed: Union[None, 
-                                               Union[int,np.int64]]=None) -> pdarray:
+def uniform(size : int_scalars, low : numeric_scalars=float(0.0), 
+            high : numeric_scalars=1.0, seed: Union[None, 
+                                               int_scalars]=None) -> pdarray:
     """
     Generate a pdarray with uniformly distributed random float values 
     in a specified range.
 
     Parameters
     ----------
-    low : Union[float,np.float64]
+    low : float_scalars
         The low value (inclusive) of the range, defaults to 0.0
-    high : Union[float,np.float64]
+    high : float_scalars
         The high value (inclusive) of the range, defaults to 1.0
-    size : Union[int,np.int64]
+    size : int_scalars
         The length of the returned array
-    seed : Union[int,np.int64], optional
+    seed : int_scalars, optional
         Value used to initialize the random number generator
 
     Returns
@@ -644,15 +656,15 @@ def uniform(size : Union[int,np.int64], low : Union[float,np.float64]=0.0,
     return randint(low=low, high=high, size=size, dtype='float64', seed=seed)
 
 @typechecked
-def standard_normal(size : Union[int,np.int64], seed : Union[None, Union[int,np.int64]]=None) -> pdarray:
+def standard_normal(size : int_scalars, seed : Union[None, int_scalars]=None) -> pdarray:
     """
     Draw real numbers from the standard normal distribution.
 
     Parameters
     ----------
-    size : Union[int,np.int64]
+    size : int_scalars
         The number of samples to draw (size of the returned array)
-    seed : Union[int,np.int64]
+    seed : int_scalars
         Value used to initialize the random number generator
     
     Returns
@@ -688,24 +700,24 @@ def standard_normal(size : Union[int,np.int64], seed : Union[None, Union[int,np.
                     format(NUMBER_FORMAT_STRINGS['int64'].format(size), seed)))
 
 @typechecked
-def random_strings_uniform(minlen : Union[int,np.int64], maxlen : Union[int,np.int64], 
-                        size : Union[int,np.int64], characters : str='uppercase', 
-                           seed : Union[None, Union[int,np.int64]]=None) -> Strings:
+def random_strings_uniform(minlen : int_scalars, maxlen : int_scalars, 
+                        size : int_scalars, characters : str='uppercase', 
+                           seed : Union[None, int_scalars]=None) -> Strings:
     """
     Generate random strings with lengths uniformly distributed between 
     minlen and maxlen, and with characters drawn from a specified set.
 
     Parameters
     ----------
-    minlen : Union[int,np.int64]
+    minlen : int_scalars
         The minimum allowed length of string
-    maxlen : Union[int,np.int64]
+    maxlen : int_scalars
         The maximum allowed length of string
-    size : Union[int,np.int64]
+    size : int_scalars
         The number of strings to generate
     characters : (uppercase, lowercase, numeric, printable, binary)
         The set of characters to draw from
-    seed :  Union[None, Union[int,np.int64]], optional
+    seed :  Union[None, int_scalars], optional
         Value used to initialize the random number generator
 
     Returns
@@ -744,25 +756,24 @@ def random_strings_uniform(minlen : Union[int,np.int64], maxlen : Union[int,np.i
     return Strings(*(cast(str,repMsg).split('+')))
 
 @typechecked
-def random_strings_lognormal(logmean : Union[int,np.int64,float,np.float64], 
-                             logstd : Union[int,np.int64,float,np.float64], 
-                             size : Union[int,np.int64], characters : str='uppercase', 
-                             seed : Union[None, Union[int,np.int64]]=None) -> Strings:
+def random_strings_lognormal(logmean : numeric_scalars, logstd : numeric_scalars, 
+            size : int_scalars, characters : str='uppercase', 
+                             seed : Optional[int_scalars]=None) -> Strings:
     """
     Generate random strings with log-normally distributed lengths and 
     with characters drawn from a specified set.
 
     Parameters
     ----------
-    logmean : Union[int,np.int64,float,np.float64]
+    logmean : numeric_scalars
         The log-mean of the length distribution
-    logstd :  Union[int,np.int64,float,np.float64]
+    logstd :  numeric_scalars
         The log-standard-deviation of the length distribution
-    size : Union[int,np.int64]
+    size : int_scalars
         The number of strings to generate
     characters : (uppercase, lowercase, numeric, printable, binary)
         The set of characters to draw from
-    seed : Union[int,np.int64], optional
+    seed : int_scalars, optional
         Value used to initialize the random number generator
 
     Returns

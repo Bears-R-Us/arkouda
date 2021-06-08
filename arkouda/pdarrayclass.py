@@ -1,21 +1,22 @@
 from __future__ import annotations
-from typing import cast, Sequence, Union
+from typing import cast, List, Sequence
 from typeguard import typechecked
 import json, struct
 import numpy as np # type: ignore
 from arkouda.client import generic_msg
-from arkouda.dtypes import dtype, DTypes, resolve_scalar_dtype, structDtypeCodes, \
-     translate_np_dtype, NUMBER_FORMAT_STRINGS
+from arkouda.dtypes import dtype, DTypes, resolve_scalar_dtype, \
+     structDtypeCodes, translate_np_dtype, NUMBER_FORMAT_STRINGS, \
+     int_scalars, numeric_scalars, numpy_scalars
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import str_ as akstr_
-from arkouda.dtypes import bool as akbool
+from arkouda.dtypes import bool as npbool
 from arkouda.logger import getArkoudaLogger
+from arkouda.infoclass import list_registry, information, pretty_print_information
 import builtins
 
-__all__ = ["pdarray", "info", "clear", "any", "all", "is_sorted", "sum", "prod", 
-           "min", "max", "argmin", "argmax", "mean", "var", "std", "mink", 
-           "maxk", "argmink", "argmaxk", "register_pdarray", "attach_pdarray", 
-           "unregister_pdarray"]
+__all__ = ["pdarray", "clear", "any", "all", "is_sorted", "sum", "prod", "min", "max", "argmin",
+           "argmax", "mean", "var", "std", "mink", "maxk", "argmink", "argmaxk", "attach_pdarray",
+           "unregister_pdarray_by_name", "RegistrationError"]
 
 logger = getArkoudaLogger(name='pdarrayclass')    
 
@@ -48,7 +49,7 @@ def parse_single_value(msg : str) -> object:
         return res
     dtname, value = msg.split(maxsplit=1)
     mydtype = dtype(dtname)
-    if mydtype == akbool:
+    if mydtype == npbool:
         if value == "True":
             return mydtype.type(True)
         elif value == "False":
@@ -121,13 +122,13 @@ class pdarray:
         The server-side identifier for the array
     dtype : dtype
         The element type of the array
-    size : Union[int,np.int64]
+    size : int_scalars
         The number of elements in the array
-    ndim : Union[int,np.int64]
+    ndim : int_scalars
         The rank of the array (currently only rank 1 arrays supported)
     shape : Sequence[int]
         A list or tuple containing the sizes of each dimension of the array
-    itemsize : Union[int,np.int64]
+    itemsize : int_scalars
         The size in bytes of each element
     """
 
@@ -139,9 +140,9 @@ class pdarray:
 
     __array_priority__ = 1000
 
-    def __init__(self, name : str, mydtype : np.dtype, size : Union[int,np.int64], 
-                 ndim : Union[int,np.int64], shape: Sequence[int], 
-                 itemsize : Union[int,np.int64]) -> None:
+    def __init__(self, name : str, mydtype : np.dtype, size : int_scalars, 
+                 ndim : int_scalars, shape: Sequence[int], 
+                 itemsize : int_scalars) -> None:
         self.name = name
         self.dtype = dtype(mydtype)
         self.size = size
@@ -482,7 +483,7 @@ class pdarray:
         return self.opeq(other,"**=")
     
     def __iter__(self):
-        raise NotImplementedError('pdarray does not support iteration')
+        raise NotImplementedError('pdarray does not support iteration. To force data transfer from server, use to_ndarray')
 
     # overload a[] to treat like list
     def __getitem__(self, key):
@@ -550,13 +551,13 @@ class pdarray:
                             format(key, type(key)))
 
     @typechecked
-    def fill(self, value : Union[int,np.int64,float,np.float64]) -> None:
+    def fill(self, value : numeric_scalars) -> None:
         """
         Fill the array (in place) with a constant value.
         
         Parameters
         ----------
-        value : Union[int,np.int64,float,np.float64]
+        value : numeric_scalars
         
         Raises
         -------
@@ -577,6 +578,70 @@ class pdarray:
         Return True iff all elements of the array evaluate to True.
         """
         return all(self)
+
+    def is_registered(self) -> np.bool_:
+        """
+        Return True iff the object is contained in the registry
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        bool
+            Indicates if the object is contained in the registry
+
+        Raises
+        ------
+        RuntimeError
+            Raised if there's a server-side error thrown
+        """
+        return np.bool_(self.name in list_registry())
+
+    def _list_component_names(self) -> List[str]:
+        """
+        Internal Function that returns a list of all component names
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        List[str]
+            List of all component names
+        """
+        return [self.name]
+
+    def info(self) -> str:
+        """
+        Returns a JSON formatted string containing information about all components of self
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            JSON string containing information about all components of self
+        """
+        return information(self._list_component_names())
+
+    def pretty_print_info(self) -> None:
+        """
+        Prints information about all components of self in a human readable format
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+        pretty_print_information(self._list_component_names())
 
     def is_sorted(self) -> np.bool_:
         """
@@ -600,7 +665,7 @@ class pdarray:
         """
         return is_sorted(self)
 
-    def sum(self) -> Union[np.float64,np.int64]:
+    def sum(self) -> numpy_scalars:
         """
         Return the sum of all elements in the array.
         """
@@ -613,13 +678,13 @@ class pdarray:
         """
         return prod(self)
 
-    def min(self) -> Union[np.float64,np.int64]:
+    def min(self) -> numpy_scalars:
         """
         Return the minimum value of the array.
         """
         return min(self)
 
-    def max(self) -> Union[np.float64,np.int64]:
+    def max(self) -> numpy_scalars:
         """
         Return the maximum value of the array.
         """
@@ -643,13 +708,13 @@ class pdarray:
         """
         return mean(self)
 
-    def var(self, ddof : Union[int,np.int64]=0) -> np.float64:
+    def var(self, ddof : int_scalars=0) -> np.float64:
         """
         Compute the variance. See ``arkouda.var`` for details.
         
         Parameters
         ----------
-        ddof : Union[int,np.int64]
+        ddof : int_scalars
             "Delta Degrees of Freedom" used in calculating var
 
         Returns
@@ -669,13 +734,13 @@ class pdarray:
         """
         return var(self, ddof=ddof)
 
-    def std(self, ddof : Union[int,np.int64]=0) -> np.float64:
+    def std(self, ddof : int_scalars=0) -> np.float64:
         """
         Compute the standard deviation. See ``arkouda.std`` for details.
         
         Parameters
         ----------
-        ddof : Union[int,np.int64]
+        ddof : int_scalars
             "Delta Degrees of Freedom" used in calculating std
 
         Returns
@@ -692,13 +757,13 @@ class pdarray:
         """
         return std(self, ddof=ddof)
 
-    def mink(self, k : Union[int,np.int64]) -> pdarray:
+    def mink(self, k : int_scalars) -> pdarray:
         """
         Compute the minimum "k" values.
         
         Parameters
         ----------
-        k : Union[int,np.int64]
+        k : int_scalars
             The desired count of maximum values to be returned by the output.
 
         Returns
@@ -714,13 +779,13 @@ class pdarray:
         return mink(self,k)
 
     @typechecked
-    def maxk(self, k : Union[int,np.int64]) -> pdarray:
+    def maxk(self, k : int_scalars) -> pdarray:
         """
         Compute the maximum "k" values.
         
         Parameters
         ----------
-        k : Union[int,np.int64]
+        k : int_scalars
             The desired count of maximum values to be returned by the output.
 
         Returns
@@ -735,13 +800,13 @@ class pdarray:
         """
         return maxk(self,k)
 
-    def argmink(self, k : Union[int,np.int64]) -> pdarray:
+    def argmink(self, k : int_scalars) -> pdarray:
         """
         Compute the minimum "k" values.
         
         Parameters
         ----------
-        k : Union[int,np.int64]
+        k : int_scalars
             The desired count of maximum values to be returned by the output.
 
         Returns
@@ -756,13 +821,13 @@ class pdarray:
         """
         return argmink(self,k)
 
-    def argmaxk(self, k : Union[int,np.int64]) -> pdarray:
+    def argmaxk(self, k : int_scalars) -> pdarray:
         """
         Finds the indices corresponding to the maximum "k" values.
         
         Parameters
         ----------
-        k : Union[int,np.int64]
+        k : int_scalars
             The desired count of maximum values to be returned by the output.
 
         Returns
@@ -988,48 +1053,65 @@ class pdarray:
         return cast(str, generic_msg(cmd="tohdf", args="{} {} {} {} {}".\
                            format(self.name, dataset, m, json_array, self.dtype)))
 
-
-    def register(self, user_defined_name : str) -> pdarray:
+    @typechecked
+    def register(self, user_defined_name: str) -> pdarray:
         """
-        Return a pdarray with a user defined name in the arkouda server 
+        Register this pdarray with a user defined name in the arkouda server
         so it can be attached to later using pdarray.attach()
-        
+        This is an in-place operation, registering a pdarray more than once will
+        update the name in the registry and remove the previously registered name.
+        A name can only be registered to one pdarray at a time.
+
         Parameters
         ----------
         user_defined_name : str
             user defined name array is to be registered under
-        
+
         Returns
         -------
         pdarray
-            pdarray which points to original input pdarray but is also 
-            registered with user defined name in the arkouda server
-        
+            The same pdarray which is now registered with the arkouda server and has an updated name.
+            This is an in-place modification, the original is returned to support a fluid programming style.
+            Please note you cannot register two different pdarrays with the same name.
+
         Raises
         ------
         TypeError
-            Raised if pda is neither a pdarray nor a str or if 
-            user_defined_name is not a str
-        
+            Raised if user_defined_name is not a str
+        RegistrationError
+            If the server was unable to register the pdarray with the user_defined_name
+            If the user is attempting to register more than one pdarray with the same name, the former should be
+            unregistered first to free up the registration name.
+
         See also
         --------
-        attach, unregister
-        
+        attach, unregister, is_registered, list_registry, unregister_pdarray_by_name
+
         Notes
         -----
-        Registered names/pdarrays in the server are immune to deletion 
+        Registered names/pdarrays in the server are immune to deletion
         until they are unregistered.
-        
+
         Examples
         --------
         >>> a = zeros(100)
-        >>> r_pda = a.register("my_zeros")
+        >>> a.register("my_zeros")
         >>> # potentially disconnect from server and reconnect to server
         >>> b = ak.pdarray.attach("my_zeros")
         >>> # ...other work...
         >>> b.unregister()
         """
-        return register_pdarray(self, user_defined_name)
+        try:
+            rep_msg = generic_msg(cmd="register", args=f"{self.name} {user_defined_name}")
+            if isinstance(rep_msg, bytes):
+                rep_msg = str(rep_msg, "UTF-8")
+            if rep_msg != "success":
+                raise RegistrationError
+        except (RuntimeError, RegistrationError):  # Registering two objects with the same name is not allowed
+            raise RegistrationError(f"Server was unable to register {user_defined_name}")
+
+        self.name = user_defined_name
+        return self
 
     def unregister(self) -> None:
         """
@@ -1038,8 +1120,6 @@ class pdarray:
         
         Parameters
         ----------
-        user_defined_name : str
-            which array was registered under
         
         Returns
         -------
@@ -1047,12 +1127,12 @@ class pdarray:
         
         Raises 
         ------
-        TypeError
-            Raised if pda is neither a pdarray nor a str
+        RuntimeError
+            Raised if the server could not find the internal name/symbol to remove
         
         See also
         --------
-        register, unregister
+        register, unregister, is_registered, unregister_pdarray_by_name, list_registry
         
         Notes
         -----
@@ -1062,20 +1142,21 @@ class pdarray:
         Examples
         --------
         >>> a = zeros(100)
-        >>> r_pda = a.register("my_zeros")
+        >>> a.register("my_zeros")
         >>> # potentially disconnect from server and reconnect to server
         >>> b = ak.pdarray.attach("my_zeros")
         >>> # ...other work...
         >>> b.unregister()
         """
-        unregister_pdarray(self)
-        
+        unregister_pdarray_by_name(self.name)
+
     # class method self is not passed in
     # invoke with ak.pdarray.attach('user_defined_name')
     @staticmethod
-    def attach(user_defined_name : str) -> pdarray:
+    @typechecked
+    def attach(user_defined_name: str) -> pdarray:
         """
-        class method to return a pdarray attached to the a registered name in the arkouda 
+        class method to return a pdarray attached to the registered name in the arkouda
         server which was registered using register()
         
         Parameters
@@ -1086,8 +1167,7 @@ class pdarray:
         Returns
         -------
         pdarray
-            pdarray which points to pdarray registered with user defined
-            name in the arkouda server
+            pdarray which is bound to corresponding server side component that was registered with user_defined_name
         
         Raises
         ------
@@ -1096,7 +1176,7 @@ class pdarray:
         
         See also
         --------
-        register, unregister
+        register, unregister, is_registered, unregister_pdarray_by_name, list_registry
         
         Notes
         -----
@@ -1106,7 +1186,7 @@ class pdarray:
         Examples
         --------
         >>> a = zeros(100)
-        >>> r_pda = a.register("my_zeros")
+        >>> a.register("my_zeros")
         >>> # potentially disconnect from server and reconnect to server
         >>> b = ak.pdarray.attach("my_zeros")
         >>> # ...other work...
@@ -1160,37 +1240,6 @@ def create_pdarray(repMsg : str) -> pdarray:
     logger.debug(("created Chapel array with name: {} dtype: {} size: {} ndim: {} shape: {} " +
                   "itemsize: {}").format(name, mydtype, size, ndim, shape, itemsize))
     return pdarray(name, mydtype, size, ndim, shape, itemsize)
-
-@typechecked
-def info(pda : Union[pdarray, str]) -> str:
-    """
-    Returns information about the pdarray instance
-    
-    Parameters
-    ----------
-    pda : Union[pdarray, str]
-       pda is either the pdarray instance or the pdarray.name string
-    
-    Returns
-    ------
-    str
-        Information regarding the pdarray in the form of a string
-    
-    Raises
-    ------
-    TypeError
-        Raised if the parameter is neither a pdarray or string
-    RuntimeError
-        Raised if a server-side error is thrown in the process of 
-        retrieving information about the pdarray
-    """
-    if isinstance(pda, pdarray):
-        return cast(str,generic_msg(cmd="info", args="{}".format(pda.name)))
-    elif isinstance(pda, str):
-        return cast(str,generic_msg(cmd="info", args="{}".format(pda)))
-    else:
-        raise TypeError("info: must be pdarray or string".format(pda))
-        return generic_msg(cmd="info", args="{}".format(pda))
 
 def clear() -> None:
     """
@@ -1320,7 +1369,7 @@ def prod(pda : pdarray) -> np.float64:
 
     Returns
     -------
-    Union[np.float64,np.int64]
+    numpy_scalars
         The product calculated from the pda
         
     Raises
@@ -1334,7 +1383,7 @@ def prod(pda : pdarray) -> np.float64:
     
     return parse_single_value(cast(str,repMsg))
 
-def min(pda : pdarray) -> Union[np.float64,np.int64]:
+def min(pda : pdarray) -> numpy_scalars:
     """
     Return the minimum value of the array.
     
@@ -1345,7 +1394,7 @@ def min(pda : pdarray) -> Union[np.float64,np.int64]:
 
     Returns
     -------
-    Union[np.float64,np.int64]
+    numpy_scalars
         The min calculated from the pda
         
     Raises
@@ -1359,7 +1408,7 @@ def min(pda : pdarray) -> Union[np.float64,np.int64]:
     return parse_single_value(cast(str,repMsg))
 
 @typechecked
-def max(pda : pdarray) -> Union[np.float64,np.int64]:
+def max(pda : pdarray) -> numpy_scalars:
     """
     Return the maximum value of the array.
     
@@ -1370,7 +1419,7 @@ def max(pda : pdarray) -> Union[np.float64,np.int64]:
 
     Returns
     -------
-    Union[np.float64,np.int64]:
+    numpy_scalars:
         The max calculated from the pda
        
     Raises
@@ -1458,7 +1507,7 @@ def mean(pda : pdarray) -> np.float64:
     return pda.sum() / pda.size
 
 @typechecked
-def var(pda : pdarray, ddof : Union[int,np.int64]=0) -> np.float64:
+def var(pda : pdarray, ddof : int_scalars=0) -> np.float64:
     """
     Return the variance of values in the array.
 
@@ -1466,7 +1515,7 @@ def var(pda : pdarray, ddof : Union[int,np.int64]=0) -> np.float64:
     ----------
     pda : pdarray
         Values for which to calculate the variance
-    ddof : Union[int,np.int64]
+    ddof : int_scalars
         "Delta Degrees of Freedom" used in calculating var
 
     Returns
@@ -1505,7 +1554,7 @@ def var(pda : pdarray, ddof : Union[int,np.int64]=0) -> np.float64:
     return ((pda - m)**2).sum() / (pda.size - ddof)
 
 @typechecked
-def std(pda : pdarray, ddof : Union[int,np.int64]=0) -> np.float64:
+def std(pda : pdarray, ddof : int_scalars=0) -> np.float64:
     """
     Return the standard deviation of values in the array. The standard
     deviation is implemented as the square root of the variance.
@@ -1514,7 +1563,7 @@ def std(pda : pdarray, ddof : Union[int,np.int64]=0) -> np.float64:
     ----------
     pda : pdarray
         values for which to calculate the standard deviation
-    ddof : Union[int,np.int64]
+    ddof : int_scalars
         "Delta Degrees of Freedom" used in calculating std
 
     Returns
@@ -1556,7 +1605,7 @@ def std(pda : pdarray, ddof : Union[int,np.int64]=0) -> np.float64:
     return np.sqrt(var(pda, ddof=ddof))
 
 @typechecked
-def mink(pda : pdarray, k : Union[int,np.int64]) -> pdarray:
+def mink(pda : pdarray, k : int_scalars) -> pdarray:
     """
     Find the `k` minimum values of an array.
 
@@ -1566,7 +1615,7 @@ def mink(pda : pdarray, k : Union[int,np.int64]) -> pdarray:
     ----------
     pda : pdarray
         Input array.
-    k : Union[int,np.int64]
+    k : int_scalars
         The desired count of minimum values to be returned by the output.
 
     Returns
@@ -1610,7 +1659,7 @@ def mink(pda : pdarray, k : Union[int,np.int64]) -> pdarray:
     return create_pdarray(cast(str,repMsg))
 
 @typechecked
-def maxk(pda : pdarray, k : Union[int,np.int64]) -> pdarray:
+def maxk(pda : pdarray, k : int_scalars) -> pdarray:
     """
     Find the `k` maximum values of an array.
 
@@ -1620,7 +1669,7 @@ def maxk(pda : pdarray, k : Union[int,np.int64]) -> pdarray:
     ----------
     pda : pdarray
         Input array.
-    k : Union[int,np.int64]
+    k : int_scalars
         The desired count of maximum values to be returned by the output.
 
     Returns
@@ -1665,7 +1714,7 @@ def maxk(pda : pdarray, k : Union[int,np.int64]) -> pdarray:
     return create_pdarray(repMsg)
 
 @typechecked
-def argmink(pda : pdarray, k : Union[int,np.int64]) -> pdarray:
+def argmink(pda : pdarray, k : int_scalars) -> pdarray:
     """
     Finds the indices corresponding to the `k` minimum values of an array.
 
@@ -1673,7 +1722,7 @@ def argmink(pda : pdarray, k : Union[int,np.int64]) -> pdarray:
     ----------
     pda : pdarray
         Input array.
-    k : Union[int,np.int64]
+    k : int_scalars
         The desired count of indices corresponding to minimum array values
 
     Returns
@@ -1717,7 +1766,7 @@ def argmink(pda : pdarray, k : Union[int,np.int64]) -> pdarray:
     return create_pdarray(repMsg)
 
 @typechecked
-def argmaxk(pda : pdarray, k : Union[int,np.int64]) -> pdarray:
+def argmaxk(pda : pdarray, k : int_scalars) -> pdarray:
     """
     Find the indices corresponding to the `k` maximum values of an array.
 
@@ -1727,7 +1776,7 @@ def argmaxk(pda : pdarray, k : Union[int,np.int64]) -> pdarray:
     ----------
     pda : pdarray
         Input array.
-    k : Union[int,np.int64]
+    k : int_scalars
         The desired count of indices corresponding to maxmum array values
 
     Returns
@@ -1771,69 +1820,12 @@ def argmaxk(pda : pdarray, k : Union[int,np.int64]) -> pdarray:
     repMsg = generic_msg(cmd="maxk", args="{} {} {}".format(pda.name, k, True))
     return create_pdarray(repMsg)
 
-
 @typechecked
-def register_pdarray(pda : Union[str,pdarray], user_defined_name : str) -> pdarray:
+def attach_pdarray(user_defined_name: str) -> pdarray:
     """
-    Return a pdarray with a user defined name in the arkouda server 
-    so it can be attached to later using attach_pdarray()
-    
-    Parameters
-    ----------
-    pda : str or pdarray
-        the array to register
-    user_defined_name : str
-        user defined name array is to be registered under
+    class method to return a pdarray attached to the registered name in the arkouda
+    server which was registered using register()
 
-    Returns
-    -------
-    pdarray
-        pdarray which points to original input pdarray but is also 
-        registered with user defined name in the arkouda server
-
-
-    Raises
-    ------
-    TypeError
-        Raised if pda is neither a pdarray nor a str or if 
-        user_defined_name is not a str
-
-    See also
-    --------
-    attach_pdarray, unregister_pdarray
-
-    Notes
-    -----
-    Registered names/pdarrays in the server are immune to deletion 
-    until they are unregistered.
-
-    Examples
-    --------
-    >>> a = zeros(100)
-    >>> r_pda = ak.register_pda(a, "my_zeros")
-    >>> # potentially disconnect from server and reconnect to server
-    >>> b = ak.attach_pda("my_zeros")
-    >>> # ...other work...
-    >>> ak.unregister_pda(b)
-    """
-
-    if isinstance(pda, pdarray):
-        repMsg = generic_msg(cmd="register", args="{} {}".\
-                             format(pda.name, user_defined_name))
-        return create_pdarray(repMsg)
-
-    if isinstance(pda, str):
-        repMsg = generic_msg(cmd="register", args="{} {}".\
-                             format(pda, user_defined_name))        
-        return create_pdarray(repMsg)
-
-
-@typechecked
-def attach_pdarray(user_defined_name : str) -> pdarray:
-    """
-    Return a pdarray attached to the a registered name in the arkouda 
-    server which was registered using register_pdarray()
-    
     Parameters
     ----------
     user_defined_name : str
@@ -1842,76 +1834,76 @@ def attach_pdarray(user_defined_name : str) -> pdarray:
     Returns
     -------
     pdarray
-        pdarray which points to pdarray registered with user defined
-        name in the arkouda server
-        
+        pdarray which is bound to corresponding server side component that was registered with user_defined_name
+
     Raises
     ------
     TypeError
-        Raised if user_defined_name is not a str
+      Raised if user_defined_name is not a str
 
     See also
     --------
-    register_pdarray, unregister_pdarray
+    register, unregister, is_registered, unregister_pdarray_by_name, list_registry
 
     Notes
     -----
-    Registered names/pdarrays in the server are immune to deletion 
+    Registered names/pdarrays in the server are immune to deletion
     until they are unregistered.
 
     Examples
     --------
     >>> a = zeros(100)
-    >>> r_pda = ak.register_pdarray(a, "my_zeros")
+    >>> a.register("my_zeros")
     >>> # potentially disconnect from server and reconnect to server
     >>> b = ak.attach_pdarray("my_zeros")
     >>> # ...other work...
-    >>> ak.unregister_pdarray(b)
+    >>> b.unregister()
     """
     repMsg = generic_msg(cmd="attach", args="{}".format(user_defined_name))
     return create_pdarray(repMsg)
 
 
 @typechecked
-def unregister_pdarray(pda : Union[str,pdarray]) -> None:
+def unregister_pdarray_by_name(user_defined_name:str) -> None:
     """
-    Unregister a pdarray in the arkouda server which was previously 
-    registered using register_pdarray() and/or attached to using attach_pdarray()
-    
+    Unregister a named pdarray in the arkouda server which was previously
+    registered using register() and/or attahced to using attach_pdarray()
+
     Parameters
     ----------
-    pda : str or pdarray
-        user define name which array was registered under
+    user_defined_name : str
+        user defined name which array was registered under
 
     Returns
     -------
     None
 
-    Raises 
+    Raises
     ------
-    TypeError
-        Raised if pda is neither a pdarray nor a str
+    RuntimeError
+        Raised if the server could not find the internal name/symbol to remove
 
     See also
     --------
-    register_pdarray, unregister_pdarray
+    register, unregister, is_registered, list_registry, attach
 
     Notes
     -----
-    Registered names/pdarrays in the server are immune to deletion until 
+    Registered names/pdarrays in the server are immune to deletion until
     they are unregistered.
 
     Examples
     --------
     >>> a = zeros(100)
-    >>> r_pda = ak.register_pdarray(a, "my_zeros")
+    >>> a.register("my_zeros")
     >>> # potentially disconnect from server and reconnect to server
     >>> b = ak.attach_pdarray("my_zeros")
     >>> # ...other work...
-    >>> ak.unregister_pdarray(b)
+    >>> ak.unregister_pdarray_by_name(b)
     """
-    if isinstance(pda, pdarray):
-        repMsg = generic_msg(cmd="unregister", args="{}".format(pda.name))
+    repMsg = generic_msg(cmd="unregister", args=user_defined_name)
 
-    if isinstance(pda, str):
-        repMsg = generic_msg(cmd="unregister", args="{}".format(pda))
+
+# TODO In the future move this to a specific errors file
+class RegistrationError(Exception):
+    """Error/Exception used when the Arkouda Server cannot register an object"""

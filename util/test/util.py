@@ -23,8 +23,6 @@ import time
 
 from collections import namedtuple
 
-from context import arkouda
-
 util_dir = os.path.dirname(os.path.realpath(__file__))
 
 ##################
@@ -180,7 +178,6 @@ def start_arkouda_server(numlocales, verbose=False, log=False, port=5555, host=N
     
     cmd = [get_arkouda_server(),
            '--trace={}'.format('true' if log else 'false'),
-           '--v={}'.format('true' if verbose else 'false'),
            '--serverConnectionInfo={}'.format(connection_file),
            '-nl {}'.format(numlocales), '--ServerPort={}'.format(port)]
 

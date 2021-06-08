@@ -11,12 +11,8 @@ module CastMsg {
   use ServerConfig;
   use CommAggregation;
 
-  const castLogger = new Logger();
-  if v {
-      castLogger.level = LogLevel.DEBUG;
-  } else {
-      castLogger.level = LogLevel.INFO;    
-  }
+  private config const logLevel = ServerConfig.logLevel;
+  const castLogger = new Logger(logLevel);
 
   proc castMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     use ServerConfig; // for string.splitMsgToTuple

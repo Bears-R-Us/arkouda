@@ -9,14 +9,10 @@ module Histogram
     use SymArrayDmap;
     use Logging;
     use Reflection;
-    
-    const hgLogger = new Logger();
-    if v {
-        hgLogger.level = LogLevel.DEBUG;
-    } else {
-        hgLogger.level = LogLevel.INFO;    
-    }
-    
+
+    private config const logLevel = ServerConfig.logLevel;
+    const hgLogger = new Logger(logLevel);
+
     /*
     Takes the data in array a, creates an atomic histogram in parallel, 
     and copies the result of the histogram operation into a distributed int array

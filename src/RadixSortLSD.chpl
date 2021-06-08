@@ -22,13 +22,9 @@ module RadixSortLSD
     use Reflection;
     use Logging;
     use ServerConfig;
-    
-    const rsLogger = new Logger();
-    if v {
-        rsLogger.level = LogLevel.DEBUG;
-    } else {
-        rsLogger.level = LogLevel.INFO;    
-    }
+
+    private config const logLevel = ServerConfig.logLevel;
+    const rsLogger = new Logger(logLevel);
 
     inline proc getBitWidth(a: [?aD] int): (int, bool) {
       var aMin = min reduce a;

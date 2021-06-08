@@ -17,7 +17,7 @@ jobs:
   mypy:
     runs-on: ubuntu-latest
     container:
-      image: chapel/chapel:1.23.0
+      image: chapel/chapel:1.24.1
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
@@ -31,7 +31,7 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     container:
-      image: chapel/chapel:1.23.0
+      image: chapel/chapel:1.24.1
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
@@ -48,7 +48,7 @@ jobs:
   #    matrix:
   #      python-version: ['3.7', '3.8', '3.9', '3.x']
   #  container:
-  #    image: chapel/chapel:1.23.0
+  #    image: chapel/chapel:1.24.1
   #  steps:
   #  - uses: actions/checkout@v2
   #  - name: Set up Python ${{ matrix.python-version }}
@@ -74,9 +74,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: [chapel, chapel-gasnet-smp]
+        include:
+          - image: chapel
+            threads: 2
+          - image: chapel-gasnet-smp
+            threads: 1
+    env:
+      CHPL_RT_NUM_THREADS_PER_LOCALE: ${{matrix.threads}}
     container:
-      image: chapel/${{matrix.image}}:1.23.0
+      image: chapel/${{matrix.image}}:1.24.1
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
@@ -97,33 +103,10 @@ jobs:
         make test-python
     - name: Arkouda benchmark --correctness-only
       run: |
-         ./benchmarks/run_benchmarks.py --correctness-only
-         ./benchmarks/run_benchmarks.py --size=100 --gen-graphs
-
-  arkouda_tests_mac:
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Install dependencies
-      run: |
-        brew install hdf5 zeromq
-        # brew install chapel@1.23.0 (except that isn't actually supported, so use sha with 1.23.0)
-        CHAPEL_FORMULA=$(mktemp -d)/chapel.rb
-        curl -fsSL https://raw.githubusercontent.com/Homebrew/homebrew-core/8a5d08fe5b/Formula/chapel.rb -o $CHAPEL_FORMULA
-        brew install $CHAPEL_FORMULA
-    - name: Build/Install Arkouda
-      run: |
-        make
-        python3 -m pip install -e .[dev]
-    - name: Arkouda make check
-      run: |
-        make check
-    - name: Arkouda unit tests
-      run: |
-        make test-python
-    - name: Arkouda benchmark --correctness-only
-      run: |
-         ./benchmarks/run_benchmarks.py --correctness-only
+        ./benchmarks/run_benchmarks.py --correctness-only
+        if [ "${{matrix.image}}" != "chapel-gasnet-smp" ]; then
+          ./benchmarks/run_benchmarks.py --size=100 --gen-graphs
+        fi
 
   chapel_unit_tests_linux:
     runs-on: ubuntu-latest
@@ -131,7 +114,7 @@ jobs:
       matrix:
         image: [chapel, chapel-gasnet-smp]
     container:
-      image: chapel/${{matrix.image}}:1.23.0
+      image: chapel/${{matrix.image}}:1.24.1
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies

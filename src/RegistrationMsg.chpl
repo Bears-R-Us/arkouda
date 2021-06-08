@@ -13,12 +13,8 @@ module RegistrationMsg
     use MultiTypeSymEntry;
     use ServerErrorStrings;
 
-    const regLogger = new Logger();
-    if v {
-        regLogger.level = LogLevel.DEBUG;
-    } else {
-        regLogger.level = LogLevel.INFO;    
-    }
+    private config const logLevel = ServerConfig.logLevel;
+    const regLogger = new Logger(logLevel);
 
     /* 
     Parse, execute, and respond to a register message 
@@ -42,12 +38,19 @@ module RegistrationMsg
                "cmd: %s name: %s userDefinedName: %s".format(cmd,name,userDefinedName));
 
         // register new user_defined_name for name
-        st.regName(name, userDefinedName);
-        
-        // response message
-        repMsg = "created %s".format(st.attrib(userDefinedName));
-        regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-        return new MsgTuple(repMsg, MsgType.NORMAL);
+        var msgTuple:MsgTuple;
+        try {
+            st.regName(name, userDefinedName);
+            repMsg = "success";
+            regLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+            msgTuple = new MsgTuple(repMsg, MsgType.NORMAL);
+        } catch e: ArgumentError {
+            repMsg = "Error: requested name '%s' was already in use.".format(userDefinedName);
+            regLogger.error(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+            msgTuple = new MsgTuple(repMsg, MsgType.ERROR);
+        }
+
+        return msgTuple;
     }
 
     /* 

@@ -23,13 +23,8 @@ module KExtremeMsg
     use RadixSortLSD;
     use ArraySetopsMsg;
 
-    const keLogger = new Logger();
-  
-    if v {
-        keLogger.level = LogLevel.DEBUG;
-    } else {
-        keLogger.level = LogLevel.INFO;
-    }
+    private config const logLevel = ServerConfig.logLevel;
+    const keLogger = new Logger(logLevel);
 
     /*
     Parse, execute, and respond to a mink message

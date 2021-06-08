@@ -14,15 +14,10 @@ module SortMsg
     use AryUtil;
     use Logging;
     use Message;
-    
-    const sortLogger = new Logger();
-  
-    if v {
-        sortLogger.level = LogLevel.DEBUG;
-    } else {
-        sortLogger.level = LogLevel.INFO;
-    }
-  
+
+    private config const logLevel = ServerConfig.logLevel;
+    const sortLogger = new Logger(logLevel);
+
     /* Sort the given pdarray using Radix Sort and
        return sorted keys as a block distributed array */
     proc sort(a: [?aD] ?t): [aD] t {

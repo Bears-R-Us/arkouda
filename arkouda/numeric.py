@@ -3,7 +3,8 @@ from typeguard import typechecked
 from typing import cast as type_cast
 from typing import Optional, Tuple, Union, ForwardRef
 from arkouda.client import generic_msg
-from arkouda.dtypes import resolve_scalar_dtype, DTypes, isSupportedNumber
+from arkouda.dtypes import resolve_scalar_dtype, DTypes, isSupportedNumber, \
+     int_scalars, numeric_scalars
 from arkouda.dtypes import _as_dtype
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.pdarraysetops import unique
@@ -12,7 +13,7 @@ from arkouda.strings import Strings
 Categorical = ForwardRef('Categorical')
 
 __all__ = ["cast", "abs", "log", "exp", "cumsum", "cumprod", "sin", "cos", 
-           "where", "histogram", "value_counts"]    
+           "where", "histogram", "value_counts", "isnan"]
 
 @typechecked
 def cast(pda : Union[pdarray, Strings], dt: Union[np.dtype,str]) -> Union[pdarray, Strings]:
@@ -292,8 +293,8 @@ def cos(pda : pdarray) -> pdarray:
     return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
-def where(condition : pdarray, A : Union[Union[int,float,np.int64,np.float64], pdarray], 
-                        B : Union[Union[int,float,np.int64,np.float64], pdarray]) -> pdarray:
+def where(condition : pdarray, A : Union[numeric_scalars, pdarray], 
+                        B : Union[numeric_scalars, pdarray]) -> pdarray:
     """
     Returns an array with elements chosen from A and B based upon a 
     conditioning array. As is the case with numpy.where, the return array
@@ -305,9 +306,9 @@ def where(condition : pdarray, A : Union[Union[int,float,np.int64,np.float64], p
     ----------
     condition : pdarray
         Used to choose values from A or B
-    A : Union[Union[int,float,np.int64,np.float64], pdarray]
+    A : Union[numeric_scalars, pdarray]
         Value(s) used when condition is True
-    B : Union[Union[int,float,np.int64,np.float64], pdarray]
+    B : Union[numeric_scalars, pdarray]
         Value(s) used when condition is False
 
     Returns
@@ -408,7 +409,7 @@ def where(condition : pdarray, A : Union[Union[int,float,np.int64,np.float64], p
     return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
-def histogram(pda : pdarray, bins : Union[int,np.int64]=10) -> pdarray:
+def histogram(pda : pdarray, bins : int_scalars=10) -> pdarray:
     """
     Compute a histogram of evenly spaced bins over the range of an array.
     
@@ -417,7 +418,7 @@ def histogram(pda : pdarray, bins : Union[int,np.int64]=10) -> pdarray:
     pda : pdarray
         The values to histogram
 
-    bins : Union[int,np.int64]
+    bins : int_scalars
         The number of equal-size bins to use (default: 10)
 
     Returns
@@ -507,3 +508,28 @@ def value_counts(pda : pdarray) -> Union[Categorical, # type: ignore
     (array([0, 2, 4]), array([3, 2, 1]))
     """
     return unique(pda, return_counts=True)
+
+
+@typechecked
+def isnan(pda : pdarray) -> pdarray:
+    """
+    Test a pdarray for Not a number / NaN values
+    Currently only supports float-value-based arrays
+
+    Parameters
+    ----------
+    pda : pdarray to test
+
+    Returns
+    -------
+    pdarray consisting of True / False values; True where NaN, False otherwise
+
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+    RuntimeError
+        if the underlying pdarray is not float-based
+    """
+    rep_msg = generic_msg(cmd="efunc", args=f"isnan {pda.name}")
+    return create_pdarray(type_cast(str, rep_msg))

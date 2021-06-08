@@ -15,12 +15,8 @@ module OperatorMsg
     use Logging;
     use Message;
     
-    const omLogger = new Logger();
-    if v {
-        omLogger.level = LogLevel.DEBUG;
-    } else {
-        omLogger.level = LogLevel.INFO;    
-    }
+    private config const logLevel = ServerConfig.logLevel;
+    const omLogger = new Logger(logLevel);
     
     /*
     Parse and respond to binopvv message.

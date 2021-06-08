@@ -16,14 +16,8 @@ module SegmentedMsg {
   use SACA;
 
 
-  private config const DEBUG = false;
-  const smLogger = new Logger();
-  
-  if v {
-      smLogger.level = LogLevel.DEBUG;
-  } else {
-      smLogger.level = LogLevel.INFO;
-  }
+  private config const logLevel = ServerConfig.logLevel;
+  const smLogger = new Logger(logLevel);
 
   proc randomStringsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
@@ -80,8 +74,8 @@ module SegmentedMsg {
     var (objtype, segName, valName) = payload.splitMsgToTuple(3);
 
     // check to make sure symbols defined
-    st.check(segName);
-    st.check(valName);
+    st.checkTable(segName);
+    st.checkTable(valName);
     
     var rname = st.nextName();
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
@@ -120,8 +114,8 @@ module SegmentedMsg {
                                               payload.splitMsgToTuple(6);
 
       // check to make sure symbols defined
-      st.check(segName);
-      st.check(valName);
+      st.checkTable(segName);
+      st.checkTable(valName);
 
       var json = jsonToPdArray(valStr, 1);
       var val = json[json.domain.low];
@@ -176,8 +170,8 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
          idStr, kpStr, lStr, jsonStr) = payload.splitMsgToTuple(10);
 
     // check to make sure symbols defined
-    st.check(segName);
-    st.check(valName);
+    st.checkTable(segName);
+    st.checkTable(valName);
 
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                          "cmd: %s subcmd: %s objtype: %t valtype: %t".format(
@@ -284,8 +278,8 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
     var (objtype, segName, valName) = payload.splitMsgToTuple(3);
 
     // check to make sure symbols defined
-    st.check(segName);
-    st.check(valName);
+    st.checkTable(segName);
+    st.checkTable(valName);
 
     select objtype {
         when "str" {
@@ -381,8 +375,8 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
       var pn = Reflection.getRoutineName();
 
       // check to make sure symbols defined
-      st.check(args[1]);
-      st.check(args[2]);
+      st.checkTable(args[1]);
+      st.checkTable(args[2]);
       
       select objtype {
           when "str" {
@@ -434,8 +428,8 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
     var pn = Reflection.getRoutineName();
 
     // check to make sure symbols defined
-    st.check(args[1]);
-    st.check(args[2]);
+    st.checkTable(args[1]);
+    st.checkTable(args[2]);
 
     select objtype {
         when "str" {
@@ -522,8 +516,8 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
     var pn = Reflection.getRoutineName();
 
     // check to make sure symbols defined
-    st.check(args[1]);
-    st.check(args[2]);
+    st.checkTable(args[1]);
+    st.checkTable(args[2]);
 
     var newSegName = st.nextName();
     var newValName = st.nextName();
@@ -626,10 +620,10 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
            = payload.splitMsgToTuple(9);
 
     // check to make sure symbols defined
-    st.check(lsegName);
-    st.check(lvalName);
-    st.check(rsegName);
-    st.check(rvalName);
+    st.checkTable(lsegName);
+    st.checkTable(lvalName);
+    st.checkTable(rsegName);
+    st.checkTable(rvalName);
 
     select (ltype, rtype) {
         when ("str", "str") {
@@ -740,8 +734,8 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
           = payload.splitMsgToTuple(6);
 
       // check to make sure symbols defined
-      st.check(segName);
-      st.check(valName);
+      st.checkTable(segName);
+      st.checkTable(valName);
 
       var json = jsonToPdArray(encodedVal, 1);
       var value = json[json.domain.low];
@@ -832,10 +826,10 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
          testValName, invertStr) = payload.splitMsgToTuple(7);
 
       // check to make sure symbols defined
-      st.check(mainSegName);
-      st.check(mainValName);
-      st.check(testSegName);
-      st.check(testValName);
+      st.checkTable(mainSegName);
+      st.checkTable(mainValName);
+      st.checkTable(testSegName);
+      st.checkTable(testValName);
 
       var invert: bool;
       if invertStr == "True" {invert = true;
@@ -920,8 +914,8 @@ proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTup
       var (objtype, segName, valName) = payload.splitMsgToTuple(3);
 
       // check to make sure symbols defined
-      st.check(segName);
-      st.check(valName);
+      st.checkTable(segName);
+      st.checkTable(valName);
       
       var rname = st.nextName();
       select (objtype) {

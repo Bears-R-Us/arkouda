@@ -99,14 +99,14 @@ check-deps: $(CHECK_DEPS)
 
 CHPL_MINOR := $(shell $(CHPL) --version | sed -n "s/chpl version 1\.\([0-9]*\).*/\1/p")
 CHPL_VERSION_OK := $(shell test $(CHPL_MINOR) -ge 22 && echo yes)
-CHPL_VERSION_WARN := $(shell test $(CHPL_MINOR) -le 22 && echo yes)
+CHPL_VERSION_WARN := $(shell test $(CHPL_MINOR) -le 23 && echo yes)
 .PHONY: check-chpl
 check-chpl:
 ifneq ($(CHPL_VERSION_OK),yes)
 	$(error Chapel 1.22.0 or newer is required)
 endif
 ifeq ($(CHPL_VERSION_WARN),yes)
-	$(warning Chapel 1.23.0 or newer is recommended)
+	$(warning Chapel 1.24.1 or newer is recommended)
 endif
 
 CHPL_VERSION_122 := $(shell test $(CHPL_MINOR) -eq 22 && echo yes)
@@ -183,8 +183,19 @@ endif
 ARKOUDA_SOURCES = $(shell find $(ARKOUDA_SOURCE_DIR)/ -type f -name '*.chpl')
 ARKOUDA_MAIN_SOURCE := $(ARKOUDA_SOURCE_DIR)/$(ARKOUDA_MAIN_MODULE).chpl
 
+# The Memory module was moved to Memory.Diagnostics in 1.24. Due to how
+# resolution of use and import statements works, we have to conditionally
+# use one of two definitions of a wrapper module as a workaround.
+# Resolving Chapel issue #17438 or making 1.24 the minimum required version
+# would fix this.
+ifeq ($(shell expr $(CHPL_MINOR) \>= 24),1)
+	ARKOUDA_COMPAT_MODULES := -M $(ARKOUDA_SOURCE_DIR)/compat/ge-124
+else
+	ARKOUDA_COMPAT_MODULES := -M $(ARKOUDA_SOURCE_DIR)/compat/lt-124
+endif
+
 $(ARKOUDA_MAIN_MODULE): check-deps $(ARKOUDA_SOURCES) $(ARKOUDA_MAKEFILES)
-	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) -o $@
+	$(CHPL) $(CHPL_DEBUG_FLAGS) $(PRINT_PASSES_FLAGS) $(CHPL_FLAGS_WITH_VERSION) $(ARKOUDA_MAIN_SOURCE) $(ARKOUDA_COMPAT_MODULES) -o $@
 
 CLEAN_TARGETS += arkouda-clean
 .PHONY: arkouda-clean
@@ -342,10 +353,7 @@ $(TEST_BINARY_DIR):
 
 .PHONY: $(TEST_TARGETS) # Force tests to always rebuild.
 $(TEST_TARGETS): $(TEST_BINARY_DIR)/$(TEST_BINARY_SIGIL)%: $(TEST_SOURCE_DIR)/%.chpl | $(TEST_BINARY_DIR)
-	$(CHPL) $(TEST_CHPL_FLAGS) -M $(ARKOUDA_SOURCE_DIR) $< -o $@
-
-test/%: test/%.chpl
-	$(CHPL) $@.chpl $(TEST_CHPL_FLAGS) -M $(ARKOUDA_SOURCE_DIR)
+	$(CHPL) $(TEST_CHPL_FLAGS) -M $(ARKOUDA_SOURCE_DIR) $(ARKOUDA_COMPAT_MODULES) $< -o $@
 
 print-%:
 	@echo "$($*)"

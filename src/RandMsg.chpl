@@ -13,14 +13,9 @@ module RandMsg
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
-    
-    const randLogger = new Logger();
-    
-    if v {
-        randLogger.level = LogLevel.DEBUG;
-    } else {
-        randLogger.level = LogLevel.INFO;
-    }   
+
+    private config const logLevel = ServerConfig.logLevel;
+    const randLogger = new Logger(logLevel);
 
     /*
     parse, execute, and respond to randint message

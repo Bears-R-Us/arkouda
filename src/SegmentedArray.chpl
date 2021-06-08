@@ -17,13 +17,8 @@ module SegmentedArray {
   use Logging;
   use Errors;
 
-  const saLogger = new Logger();
-  
-  if v {
-      saLogger.level = LogLevel.DEBUG;
-  } else {
-      saLogger.level = LogLevel.INFO;
-  }
+  private config const logLevel = ServerConfig.logLevel;
+  const saLogger = new Logger(logLevel);
 
   private config param useHash = true;
   param SegmentedArrayUseHash = useHash;
@@ -948,10 +943,8 @@ module SegmentedArray {
                                 "aggregation in %i seconds".format(getCurrentTime() - t1));
       saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Copying values");
 
-      if v {
-        writeln(getCurrentTime() - t1, " seconds");
-        writeln("Copying values"); stdout.flush();
-        t1 = getCurrentTime();
+      if logLevel == LogLevel.DEBUG {
+          t1 = getCurrentTime();
       }
       //var gatheredVals = makeDistArray(retBytes, uint(8));
       var gatheredVals = makeDistArray(retBytes, int);
@@ -1048,14 +1041,15 @@ module SegmentedArray {
       /* var gatheredOffsets = (+ scan gatheredLengths); */
       /* var retBytes = gatheredOffsets[newSize-1]; */
       /* gatheredOffsets -= gatheredLengths; */
-      /* if v { */
-      /*   writeln(getCurrentTime() - t1, " seconds"); */
-      /*   writeln("Copying values"); stdout.flush(); */
-      /*   t1 = getCurrentTime(); */
+      /* if logLevel == LogLevel.DEBUG { */
+      /*     saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                  "%i seconds".format(getCurrentTime() - t1)); */
+      /*     saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Copying values"));*/
+      /*     t1 = getCurrentTime(); */
       /* } */
       /* var gatheredVals = makeDistArray(retBytes, uint(8)); */
       /* ref va = values.a; */
-      /* if DEBUG { */
+      /* if logLevel == LogLevel.DEBUG { */
       /*   printAry("gatheredOffsets: ", gatheredOffsets); */
       /*   printAry("gatheredLengths: ", gatheredLengths); */
       /*   printAry("segInds: ", segInds); */
@@ -1103,10 +1097,10 @@ module SegmentedArray {
       if useHash {
         // Hash all strings
         saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), "Hashing strings"); 
-        if v { t.start(); }
+        if logLevel == LogLevel.DEBUG { t.start(); }
         var hashes = this.hash();
 
-        if v { 
+        if logLevel == LogLevel.DEBUG { 
             t.stop();    
             saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                            "hashing took %t seconds\nSorting hashes".format(t.elapsed())); 
@@ -1115,12 +1109,12 @@ module SegmentedArray {
 
         // Return the permutation that sorts the hashes
         var iv = radixSortLSD_ranks(hashes);
-        if v { 
+        if logLevel == LogLevel.DEBUG { 
             t.stop(); 
             saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                             "sorting took %t seconds".format(t.elapsed())); 
         }
-        if v{
+        if logLevel == LogLevel.DEBUG {
           var sortedHashes = [i in iv] hashes[i];
           var diffs = sortedHashes[(iv.domain.low+1)..#(iv.size-1)] - 
                                                  sortedHashes[(iv.domain.low)..#(iv.size-1)];
@@ -1179,14 +1173,14 @@ module SegmentedArray {
       }
       var t = new Timer();
 
-      if v {
+      if logLevel == LogLevel.DEBUG {
            saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                 "Checking bytes of substr"); 
            t.start();
       }
       const truth = findSubstringInBytes(substr);
       const D = truth.domain;
-      if v {
+      if logLevel == LogLevel.DEBUG {
             t.stop(); 
             saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                   "took %t seconds\nTranslating to segments...".format(t.elapsed())); 
@@ -1197,7 +1191,7 @@ module SegmentedArray {
       const tail = + reduce (offsets.a > D.high);
       // oD is the right-truncated domain representing segments that are candidates for containing substr
       var oD: subdomain(offsets.aD) = offsets.aD[offsets.aD.low..#(offsets.size - tail)];
-      if v {
+      if logLevel == LogLevel.DEBUG {
              t.stop(); 
              saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                    "took %t seconds\ndetermining answer...".format(t.elapsed())); 
@@ -1221,7 +1215,7 @@ module SegmentedArray {
         hits[oD.interior(-(oD.size-1))] = truth[oa[oD.interior(oD.size-1)] - substr.numBytes - 1];
         hits[oD.high] = truth[D.high-1];
       }
-      if v {
+      if logLevel == LogLevel.DEBUG {
           t.stop(); 
           saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                    "took %t seconds".format(t.elapsed()));
@@ -1333,13 +1327,13 @@ module SegmentedArray {
       ref va = values.a;
       // Fill left values
       forall (srcStart, dstStart, len) in zip(oa, leftOffsets, leftLengths) {
-        for i in 0..#len {
+        for i in 0..#(len-1) {
           unorderedCopy(leftVals[dstStart+i], va[srcStart+i]);
         }
       }
       // Fill right values
       forall (srcStart, dstStart, len) in zip(rightStart, rightOffsets, rightLengths) {
-        for i in 0..#len {
+        for i in 0..#(len-1) {
           unorderedCopy(rightVals[dstStart+i], va[srcStart+i]);
         }
       }
@@ -1597,10 +1591,11 @@ module SegmentedArray {
     return truth;
   }
 
+  private config const in1dAssocSortThreshold = 10**6;
 
   /* Test array of strings for membership in another array (set) of strings. Returns
      a boolean vector the same size as the first array. */
-  proc in1d(mainStr: SegString, testStr: SegString, invert=false) throws where useHash {
+  proc in1d(mainStr: SegString, testStr: SegString, invert=false, forceSort=false) throws where useHash {
     var truth: [mainStr.offsets.aD] bool;
     // Early exit for zero-length result
     if (mainStr.size == 0) {
@@ -1609,47 +1604,93 @@ module SegmentedArray {
     // Hash all strings for fast comparison
     var t = new Timer();
     saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Hashing strings");
-    if v { t.start(); }
+    if logLevel == LogLevel.DEBUG { t.start(); }
     const hashes = mainStr.hash();
-    if v {
+    if logLevel == LogLevel.DEBUG {
         t.stop(); 
         saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                                 "%t seconds".format(t.elapsed())); 
         t.clear();
+    }
+
+    if (testStr.size <= in1dAssocSortThreshold) && !forceSort {
+      if logLevel == LogLevel.DEBUG {
         saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
-                                           "Making associative domains for test set on each locale");
+                       "Making associative domains for test set on each locale");
         t.start();
-    }
-    // On each locale, make an associative domain with the hashes of the second array
-    // parSafe=false because we are adding in serial and it's faster
-    var localTestHashes: [PrivateSpace] domain(2*uint(64), parSafe=false);
-    coforall loc in Locales {
-      on loc {
-        // Local hashes of second array
-        ref mySet = localTestHashes[here.id];
-        mySet.requestCapacity(testStr.size);
-        const testHashes = testStr.hash();
-        for h in testHashes {
-          mySet += h;
-        }
-        /* // Check membership of hashes in this locale's chunk of the array */
-        /* [i in truth.localSubdomain()] truth[i] = mySet.contains(hashes[i]); */
       }
-    }
-    if v {
-      t.stop(); 
-      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                             "%t seconds".format(t.elapsed())); 
-      t.clear();
-      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),      
-                                             "Testing membership"); 
-      t.start();
-    }
-    [i in truth.domain] truth[i] = localTestHashes[here.id].contains(hashes[i]);
-    if v {
+      // On each locale, make an associative domain with the hashes of the second array
+      // parSafe=false because we are adding in serial and it's faster
+      var localTestHashes: [PrivateSpace] domain(2*uint(64), parSafe=false);
+      coforall loc in Locales {
+        on loc {
+          // Local hashes of second array
+          ref mySet = localTestHashes[here.id];
+          mySet.requestCapacity(testStr.size);
+          var testHashes: [{0..#testStr.size}] 2*uint(64);
+          testHashes = testStr.hash();
+          for h in testHashes {
+            mySet += h;
+          }
+          /* // Check membership of hashes in this locale's chunk of the array */
+          /* [i in truth.localSubdomain()] truth[i] = mySet.contains(hashes[i]); */
+        }
+      }
+      if logLevel == LogLevel.DEBUG {
         t.stop(); 
         saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                             "%t seconds".format(t.elapsed()));
+                       "%t seconds".format(t.elapsed())); 
+        t.clear();
+        saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),      
+                       "Testing membership"); 
+        t.start();
+      }
+      [i in truth.domain] truth[i] = localTestHashes[here.id].contains(hashes[i]);
+      if logLevel == LogLevel.DEBUG {
+        t.stop(); 
+        saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                       "%t seconds".format(t.elapsed()));
+      }
+    } else {
+      if logLevel == LogLevel.DEBUG {
+        saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
+                       "Using sort-based strategy");
+        t.start();
+      }
+      const testHashes = testStr.hash();
+      // Unique the hashes of each array, preserving reverse index for main
+      var (umain, cmain, revIdx) = uniqueSortWithInverse(hashes);
+      var utest = uniqueSort(testHashes, needCounts=false);
+      // Concat unique hashes
+      var combinedDom = makeDistDom(umain.size + utest.size);
+      var combined: [combinedDom] 2*uint(64);
+      combined[combinedDom.interior(-umain.size)] = umain;
+      combined[combinedDom.interior(utest.size)] = utest;
+      // Sort
+      var iv = radixSortLSD_ranks(combined);
+      var sorted: [combinedDom] 2*uint(64);
+      forall (i, s) in zip(iv, sorted) with (var agg = newSrcAggregator(2*uint(64))) {
+        agg.copy(s, combined[i]);
+      }
+      // Find duplicates
+      // Dupe parallels unique hashes of mainStr and is true when value is in testStr
+      var dupe: [combinedDom] bool = false;
+      forall (sortedIdx, origIdx, s) in zip(combinedDom, iv, sorted) with (var agg = newDstAggregator(bool)){
+        // When next hash is same as current, string exists in both arrays
+        if sortedIdx < combinedDom.high && (s == sorted[sortedIdx+1]){
+          // Use the iv to scatter back to pre-sorted order
+          agg.copy(dupe[origIdx], true);
+        }
+      }
+      // Use revIdx to broadcast dupe to original non-unique domain
+      forall (t, ri) in zip(truth, revIdx) with (var agg = newSrcAggregator(bool)) {
+        agg.copy(t, dupe[ri]);
+      }
+      if logLevel == LogLevel.DEBUG {
+        t.stop(); 
+        saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                       "%t seconds".format(t.elapsed()));
+      }
     }
     return truth;
   }
@@ -1725,13 +1766,13 @@ module SegmentedArray {
 
   private config const in1dSortThreshold = 64;
   
-  proc in1d(mainStr: SegString, testStr: SegString, invert=false) throws where !useHash {
+  proc in1d(mainStr: SegString, testStr: SegString, invert=false, forceSort=false) throws where !useHash {
     var truth: [mainStr.offsets.aD] bool;
     // Early exit for zero-length result
     if (mainStr.size == 0) {
       return truth;
     }
-    if (testStr.size <= in1dSortThreshold) {
+    if (testStr.size <= in1dSortThreshold) && !forceSort {
       for i in 0..#testStr.size {
         truth |= (mainStr == testStr[i]);
       }
@@ -1749,7 +1790,7 @@ module SegmentedArray {
       const order = ar.argsort();
       const (sortedSegs, sortedVals) = ar[order];
       const sar = new owned SegString(sortedSegs, sortedVals, st);
-      if v { 
+      if logLevel == LogLevel.DEBUG { 
           saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                             "Sorted concatenated unique strings:"); 
           sar.show(10); 
@@ -1790,7 +1831,7 @@ module SegmentedArray {
       forall (o, f) in zip(order, flag) with (var agg = newDstAggregator(bool)) {
         agg.copy(ret[o], f);
       }
-      if v {
+      if logLevel == LogLevel.DEBUG {
           saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                 "Ret pop: %t".format(+ reduce ret));
       }

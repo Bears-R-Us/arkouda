@@ -10,14 +10,8 @@ module FlattenMsg {
   use Logging;
   use Message;
   
-  const fmLogger = new Logger();
-  
-  if v {
-        fmLogger.level = LogLevel.DEBUG;
-  } else {
-        fmLogger.level = LogLevel.INFO;
-  } 
-  
+  private config const logLevel = ServerConfig.logLevel;
+  const fmLogger = new Logger(logLevel);
 
   proc segFlattenMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var (name, objtype, returnSegsStr, delimJson) = payload.splitMsgToTuple(4);

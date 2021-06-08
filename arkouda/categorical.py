@@ -1,15 +1,18 @@
 from __future__ import annotations
-from typing import cast, List, Union
+from typing import cast, List, Optional, Sequence, Union, Dict
 import numpy as np # type: ignore
+import itertools
 from typeguard import typechecked
 from arkouda.strings import Strings
-from arkouda.pdarrayclass import pdarray
-from arkouda.groupbyclass import GroupBy
+from arkouda.pdarrayclass import pdarray, RegistrationError, unregister_pdarray_by_name
+from arkouda.groupbyclass import GroupBy, broadcast
+from arkouda.pdarraysetops import in1d, unique, concatenate
 from arkouda.pdarraycreation import zeros, zeros_like, arange
-from arkouda.dtypes import resolve_scalar_dtype
+from arkouda.dtypes import resolve_scalar_dtype, str_scalars, int_scalars
 from arkouda.dtypes import int64 as akint64
 from arkouda.sorting import argsort
-from arkouda.pdarraysetops import concatenate, in1d
+from arkouda.logger import getArkoudaLogger
+from arkouda.infoclass import information, list_registry
 
 __all__ = ['Categorical']
 
@@ -46,11 +49,14 @@ class Categorical:
 
     """
     BinOps = frozenset(["==", "!="])
+    RegisterablePieces = frozenset(["categories", "codes", "permutation", "segments"])
+    RequiredPieces = frozenset(["categories", "codes"])
     objtype = "category"
     permutation = None
     segments = None
     
     def __init__(self, values, **kwargs) -> None:
+        self.logger = getArkoudaLogger(name=__class__.__name__)  # type: ignore
         if 'codes' in kwargs and 'categories' in kwargs:
             # This initialization is called by Categorical.from_codes()
             # The values arg is ignored
@@ -73,10 +79,11 @@ class Categorical:
             self.permutation = cast(pdarray, g.permutation)
             self.segments = g.segments
         # Always set these values
-        self.size = self.codes.size
+        self.size: int_scalars = self.codes.size
         self.nlevels = self.categories.size
         self.ndim = self.codes.ndim
         self.shape = self.codes.shape
+        self.name : Optional[str] = None
 
     @classmethod
     @typechecked
@@ -143,7 +150,7 @@ class Categorical:
         return idx[valcodes]
 
     def __iter__(self):
-        return iter(self.to_ndarray())
+        raise NotImplementedError('Categorical does not support iteration. To force data transfer from server, use to_ndarray')
         
     def __len__(self):
         return self.shape[0]
@@ -163,16 +170,16 @@ class Categorical:
         return "array({})".format(self.__str__())
 
     @typechecked
-    def _binop(self, other : Union[Categorical,str,np.str_], op : Union[str,np.str_]) -> pdarray:
+    def _binop(self, other : Union[Categorical,str_scalars], op : str_scalars) -> pdarray:
         """
         Executes the requested binop on this Categorical instance and returns 
         the results within a pdarray object.
 
         Parameters
         ----------
-        other : Union[Categorical,str,np.str_]
-            the other object is a Categorical object of string scalar
-        op : Union[str,np.str_]
+        other : Union[Categorical,str_scalars]
+            the other object is a Categorical object or string scalar
+        op : str_scalars
             name of the binary operation to be performed 
       
         Returns
@@ -199,24 +206,49 @@ class Categorical:
             raise ValueError("Categorical {}: size mismatch {} {}".\
                              format(op, self.size, cast(Categorical,other).size))
         if isinstance(other, Categorical):
-            return self.codes._binop(other.codes, op)
+            if (self.categories.size == other.categories.size) and (self.categories == other.categories).all():
+                # Because categories are identical, codes can be compared directly
+                return self.codes._binop(other.codes, op)
+            else:
+                # Remap both codes to the union of categories
+                union = unique(concatenate((self.categories, other.categories), ordered=False))
+                newinds = arange(union.size)
+                # Inds of self.categories in unioned categories
+                selfnewinds = newinds[in1d(union, self.categories)]
+                # Need a permutation and segments to broadcast new codes
+                if self.permutation is None or self.segments is None:
+                    g = GroupBy(self.codes)
+                    self.permutation = g.permutation
+                    self.segments = g.segments
+                # Form new codes by broadcasting new indices for unioned categories
+                selfnewcodes = broadcast(self.segments, selfnewinds, self.size, self.permutation)
+                # Repeat for other
+                othernewinds = newinds[in1d(union, other.categories)]
+                if other.permutation is None or other.segments is None:
+                    g = GroupBy(other.codes)
+                    other.permutation = g.permutation
+                    other.segments = g.segments
+                othernewcodes = broadcast(other.segments, othernewinds, other.size, other.permutation)
+                # selfnewcodes and othernewcodes now refer to same unioned categories
+                # and can be compared directly
+                return selfnewcodes._binop(othernewcodes, op)
         else:
             raise NotImplementedError(("Operations between Categorical and " +
                                 "non-Categorical not yet implemented. " +
                                 "Consider converting operands to Categorical."))
 
     @typechecked
-    def _r_binop(self, other : Union[Categorical,str,np.str_], 
-                                              op : Union[str,np.str]) -> pdarray:
+    def _r_binop(self, other : Union[Categorical,str_scalars], 
+                                              op : str_scalars) -> pdarray:
         """
         Executes the requested reverse binop on this Categorical instance and 
         returns the results within a pdarray object.
 
         Parameters
         ----------
-        other : Union[Categorical,str,np.str_]
+        other : Union[Categorical,str_scalars]
             the other object is a Categorical object or string scalar
-        op : Union[str,np.str_]
+        op : str_scalars
             name of the binary operation to be performed 
       
         Returns
@@ -366,9 +398,57 @@ class Categorical:
         categoriesendswith = self.categories.endswith(substr)
         return categoriesendswith[self.codes]
 
-    def in1d(self, test):
-        #__doc__ = in1d.__doc__
-        categoriesisin = in1d(self.categories, test)
+    @typechecked
+    def in1d(self, test : Union[Strings,Categorical]) -> pdarray:
+        """
+        Test whether each element of the Categorical object is 
+        also present in the test Strings or Categorical object.
+
+        Returns a boolean array the same length as `self` that is True
+        where an element of `self` is in `test` and False otherwise.
+
+        Parameters
+        ----------
+        test : Union[Strings,Categorical]
+            The values against which to test each value of 'self`.
+
+        Returns
+        -------
+        pdarray, bool
+            The values `self[in1d]` are in the `test` Strings or Categorical object.
+        
+        Raises
+        ------
+        TypeError
+            Raised if test is not a Strings or Categorical object
+
+        See Also
+        --------
+        unique, intersect1d, union1d
+
+        Notes
+        -----
+        `in1d` can be considered as an element-wise function version of the
+        python keyword `in`, for 1-D sequences. ``in1d(a, b)`` is logically
+        equivalent to ``ak.array([item in b for item in a])``, but is much
+        faster and scales to arbitrarily large ``a``.
+    
+
+        Examples
+        --------
+        >>> strings = ak.array(['String {}'.format(i) for i in range(0,5)])
+        >>> cat = ak.Categorical(strings)
+        >>> ak.in1d(cat,strings)
+        array([True, True, True, True, True])
+        >>> strings = ak.array(['String {}'.format(i) for i in range(5,9)])
+        >>> catTwo = ak.Categorical(strings)
+        >>> ak.in1d(cat,catTwo)
+        array([False, False, False, False, False])
+        """
+        if isinstance(test,Categorical):
+            categoriesisin = in1d(self.categories, test.categories)
+        else:
+            categoriesisin = in1d(self.categories, test)
         return categoriesisin[self.codes]
 
     def unique(self) -> Categorical:
@@ -423,14 +503,14 @@ class Categorical:
         return Categorical.from_codes(newvals, self.categories[idxperm])
     
     @typechecked
-    def concatenate(self, others : List[Categorical], ordered : bool=True) -> Categorical:
+    def concatenate(self, others : Sequence[Categorical], ordered : bool=True) -> Categorical:
         """
         Merge this Categorical with other Categorical objects in the array, 
         concatenating the arrays and synchronizing the categories.
 
         Parameters
         ----------
-        others : List[Categorical]
+        others : Sequence[Categorical]
             The Categorical arrays to concatenate and merge with this one
         ordered : bool
             If True (default), the arrays will be appended in the
@@ -470,10 +550,9 @@ class Categorical:
         else:
             g = GroupBy(concatenate([self.categories] + \
                                        [o.categories for o in others],
-                                       ordered=False))
+                                       ordered=True))
             newidx = g.unique_keys
-            wherediditgo = zeros(newidx.size, dtype=akint64)
-            wherediditgo[g.permutation] = arange(newidx.size)
+            wherediditgo = g.broadcast(arange(newidx.size), permute=True)
             idxsizes = np.array([self.categories.size] + \
                                 [o.categories.size for o in others])
             idxoffsets = np.cumsum(idxsizes) - idxsizes
@@ -482,3 +561,234 @@ class Categorical:
                                   ordered=ordered)
             newvals = wherediditgo[oldvals]
             return Categorical.from_codes(newvals, newidx)
+
+    @typechecked()
+    def register(self, user_defined_name: str) -> Categorical:
+        """
+        Register this Categorical object and underlying components with the Arkouda server
+
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name the Categorical is to be registered under,
+            this will be the root name for underlying components
+
+        Returns
+        -------
+        Categorical
+            The same Categorical which is now registered with the arkouda server and has an updated name.
+            This is an in-place modification, the original is returned to support a fluid programming style.
+            Please note you cannot register two different Categoricals with the same name.
+
+        Raises
+        ------
+        TypeError
+            Raised if user_defined_name is not a str
+        RegistrationError
+            If the server was unable to register the Categorical with the user_defined_name
+
+        See also
+        --------
+        unregister, attach, unregister_categorical_by_name, is_registered
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+        [p.register(f"{user_defined_name}.{n}") for n, p in Categorical._get_components_dict(self).items()]
+        self.name = user_defined_name
+        return self
+
+    def unregister(self) -> None:
+        """
+        Unregister this Categorical object in the arkouda server which was previously
+        registered using register() and/or attached to using attach()
+
+        Raises
+        ------
+        RegistrationError
+            If the object is already unregistered or if there is a server error
+            when attempting to unregister
+
+        See also
+        --------
+        register, attach, unregister_categorical_by_name, is_registered
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+        if not self.name:
+            raise RegistrationError("This item does not have a name and does not appear to be registered.")
+        [p.unregister() for p in Categorical._get_components_dict(self).values()]
+        self.name = None  # Clear our internal Categorical object name
+
+    def is_registered(self) -> np.bool_:
+        """
+         Return True iff the object is contained in the registry
+
+        Returns
+        -------
+        numpy.bool
+            Indicates if the object is contained in the registry
+
+        Raises
+        ------
+        RegistrationError
+            Raised if there's a server-side error or a mis-match of registered components
+
+        See Also
+        --------
+        register, attach, unregister, unregister_categorical_by_name
+
+        Notes
+        -----
+        Objects registered with the server are immune to deletion until
+        they are unregistered.
+        """
+        parts_registered: List[np.bool_] = [p.is_registered() for p in Categorical._get_components_dict(self).values()]
+        if np.any(parts_registered) and not np.all(parts_registered):  # test for error
+            raise RegistrationError(f"Not all registerable components of Categorical {self.name} are registered.")
+
+        return np.bool_(np.any(parts_registered))
+
+    def _get_components_dict(self) -> Dict:
+        """
+        Internal function that returns a dictionary with all required or non-None components of self
+
+        Required Categorical components (Codes and Categories) are always included in returned components_dict
+        Optional Categorical components (Permutation and Segments) are only included if they've been set (are not None)
+
+        Returns
+        -------
+        Dict
+            Dictionary of all required or non-None components of self
+                Keys: component names (Codes, Categories, Permutation, Segments)
+                Values: components of self
+        """
+        return {piece_name: getattr(self, piece_name) for piece_name in Categorical.RegisterablePieces
+                if piece_name in Categorical.RequiredPieces or getattr(self, piece_name) is not None}
+
+    def _list_component_names(self) -> List[str]:
+        """
+        Internal function that returns a list of all component names
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        List[str]
+            List of all component names
+        """
+        return list(itertools.chain.from_iterable(
+            [p._list_component_names() for p in Categorical._get_components_dict(self).values()]))
+
+    def info(self) -> str:
+        """
+        Returns a JSON formatted string containing information about all components of self
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            JSON string containing information about all components of self
+        """
+        return information(self._list_component_names())
+
+    def pretty_print_info(self) -> None:
+        """
+        Prints information about all components of self in a human readable format
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+        [p.pretty_print_info() for p in Categorical._get_components_dict(self).values()]
+
+    @staticmethod
+    @typechecked
+    def attach(user_defined_name: str) -> Categorical:
+        """
+        Function to return a Categorical object attached to the registered name in the
+        arkouda server which was registered using register()
+
+        Parameters
+        ----------
+        user_defined_name : str
+            user defined name which Categorical object was registered under
+
+        Returns
+        -------
+        Categorical
+               The Categorical object created by re-attaching to the corresponding server components
+
+       Raises
+       ------
+       TypeError
+            if user_defined_name is not a string
+
+        See Also
+        --------
+        register, is_registered, unregister, unregister_categorical_by_name
+        """
+        # Build dict of registered components by invoking their corresponding Class.attach functions
+        parts = {
+            "categories": Strings.attach(f"{user_defined_name}.categories"),
+            "codes": pdarray.attach(f"{user_defined_name}.codes"),
+        }
+
+        # Add optional pieces only if they're contained in the registry
+        registry = list_registry()
+        if f"{user_defined_name}.permutation" in registry:
+            parts["permutation"] = pdarray.attach(f"{user_defined_name}.permutation")
+        if f"{user_defined_name}.segments" in registry:
+            parts["segments"] = pdarray.attach(f"{user_defined_name}.segments")
+
+        c = Categorical(None, **parts)  # Call constructor with unpacked kwargs
+        c.name = user_defined_name  # Update our name
+        return c
+
+    @staticmethod
+    @typechecked
+    def unregister_categorical_by_name(user_defined_name: str) -> None:
+        """
+        Function to unregister Categorical object by name which was registered
+        with the arkouda server via register()
+
+        Parameters
+        ----------
+        user_defined_name : str
+            Name under which the Categorical object was registered
+
+        Raises
+        -------
+        TypeError
+            if user_defined_name is not a string
+        RegistrationError
+            if there is an issue attempting to unregister any underlying components
+
+        See Also
+        --------
+        register, unregister, attach, is_registered
+        """
+        # We have 4 subcomponents, unregister each of them
+        Strings.unregister_strings_by_name(f"{user_defined_name}.categories")
+        unregister_pdarray_by_name(f"{user_defined_name}.codes")
+
+        # Unregister optional pieces only if they are contained in the registry
+        registry = list_registry()
+        if f"{user_defined_name}.permutation" in registry:
+            unregister_pdarray_by_name(f"{user_defined_name}.permutation")
+        if f"{user_defined_name}.segments" in registry:
+            unregister_pdarray_by_name(f"{user_defined_name}.segments")

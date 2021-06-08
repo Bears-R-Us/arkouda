@@ -27,15 +27,9 @@ module Unique
     use AryUtil;
     use Reflection;
     use Logging;
-    
-    const uLogger = new Logger();
-  
-    if v {
-        uLogger.level = LogLevel.DEBUG;
-    } else {
-        uLogger.level = LogLevel.INFO;
-    } 
 
+    private config const logLevel = ServerConfig.logLevel;
+    const uLogger = new Logger(logLevel);
 
     /* // thresholds for different unique counting algorithms */
     /* var sBins = 2**10; // small-range maybe for using reduce intents on forall loops */
@@ -433,10 +427,10 @@ module Unique
 
     :returns: ([] int, [] int)
     */
-    proc uniqueSort(a: [?aD] int, param needCounts = true) {
+    proc uniqueSort(a: [?aD] ?eltType, param needCounts = true) {
         if (aD.size == 0) {
             try! uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"zero size");
-            var u = makeDistArray(0, int);
+            var u = makeDistArray(0, eltType);
             if (needCounts) {
                 var c = makeDistArray(0, int);
                 return (u,c);
@@ -445,7 +439,7 @@ module Unique
             }
         } 
 
-        var sorted: [aD] int;
+        var sorted: [aD] eltType;
         if (AryUtil.isSorted(a)) {
             sorted = a; 
         }
@@ -462,23 +456,23 @@ module Unique
         }
     }
 
-    proc uniqueSortWithInverse(a: [?aD] int) {
+    proc uniqueSortWithInverse(a: [?aD] ?eltType) {
         if (aD.size == 0) {
             try! uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"zero size");
-            var u = makeDistArray(0, int);
+            var u = makeDistArray(0, eltType);
             var c = makeDistArray(0, int);
             var inv = makeDistArray(0, int);
             return (u, c, inv);
         }
         var perm: [aD] int;
-        var sorted: [aD] int;
+        var sorted: [aD] eltType;
         if (AryUtil.isSorted(a)) {
             [(i, p) in zip(aD, perm)] p = i;
             sorted = a; 
         }
         else {
             perm = radixSortLSD_ranks(a);
-            forall (p, s) in zip(perm, sorted) with (var agg = newSrcAggregator(int)) {
+            forall (p, s) in zip(perm, sorted) with (var agg = newSrcAggregator(eltType)) {
                 agg.copy(s, a[p]);
             }
         }
@@ -497,7 +491,7 @@ module Unique
         return (u, c, inv);
     }
     
-    proc uniqueFromSorted(sorted: [?aD] int, param needCounts = true) {
+    proc uniqueFromSorted(sorted: [?aD] ?eltType, param needCounts = true) {
         var truth: [aD] bool;
         truth[0] = true;
         [(t, s, i) in zip(truth, sorted, aD)] if i > aD.low { t = (sorted[i-1] != s); }
@@ -505,7 +499,7 @@ module Unique
         if (allUnique == aD.size) {
            try!  uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                     "early out already unique");
-            var u = makeDistArray(aD.size, int);
+            var u = makeDistArray(aD.size, eltType);
             u = sorted; // array is already unique
             if (needCounts) {
                 var c = makeDistArray(aD.size, int);
@@ -522,7 +516,7 @@ module Unique
         try! uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"pop = %t".format(pop));
 
         var segs = makeDistArray(pop, int);
-        var ukeys = makeDistArray(pop, int);
+        var ukeys = makeDistArray(pop, eltType);
         
         // segment position... 1-based needs to be converted to 0-based because of inclusive-scan
         // where ever a segment break (true value) is... that index is a segment start index
@@ -534,7 +528,10 @@ module Unique
         }
         // pull out the first key in each segment as a unique key
         // unique keys guaranteed to be sorted because keys are sorted
-        [i in segs.domain] ukeys[i] = sorted[segs[i]];
+        forall (i, uk, seg) in zip(segs.domain, ukeys, segs) with (var agg = newSrcAggregator(eltType)) {
+          agg.copy(uk, sorted[seg]);
+        }
+        // [i in segs.domain] ukeys[i] = sorted[segs[i]];
 
         if (needCounts) {
             var counts = makeDistArray(pop, int);
