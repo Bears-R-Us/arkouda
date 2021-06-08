@@ -42,12 +42,20 @@ module GenSymIO {
         var msg:string = "";
         var rname:string = "";
 
-        // TODO: Surround everything with a try/catch to eliminate try! killing the server
         var (dtypeBytes, sizeBytes, data) = payload.splitMsgToTuple(b" ", 3);
-        var dtype = str2dtype(try! dtypeBytes.decode());
-        var size = try! sizeBytes:int;
-        var tmpf:file; defer { ensureClose(tmpf); }
+        var dtype = DType.UNDEF;
+        var size:int;
+        try {
+            dtype = str2dtype(dtypeBytes.decode());
+            size = sizeBytes:int;
+        } catch {
+            var errorMsg = "Error parsing/decoding either dtypeBytes or size";
+            gsLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+        }
+
         overMemLimit(2*8*size);
+        var tmpf:file; defer { ensureClose(tmpf); }
 
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                           "dtype: %t size: %i".format(dtype,size));
@@ -93,10 +101,10 @@ module GenSymIO {
     }
 
     /*
-    * Read the data payload from the memory buffer, encapsulate
-    * within a SymEntry, and write to the SymTab cache
-    * Here tmpf is a memory buffer which contains the data we want to read.
-    */
+     * Read the data payload from the memory buffer, encapsulate
+     * within a SymEntry, and write to the SymTab cache
+     * Here tmpf is a memory buffer which contains the data we want to read.
+     */
     private proc makeEntry(size:int, type t, st: borrowed SymTab, tmpf:file): string throws {
         var entry = new shared SymEntry(size, t);
         var tmpr = tmpf.reader(kind=iobig, start=0);
@@ -108,8 +116,8 @@ module GenSymIO {
     }
 
     /*
-    * Ensure the file is closed, disregard errors
-    */
+     * Ensure the file is closed, disregard errors
+     */
     private proc ensureClose(tmpf:file): bool {
         var success = true;
         try {
@@ -144,7 +152,7 @@ module GenSymIO {
             } else {
                 var errorMsg = "Error: Unhandled dtype %s".format(entry.dtype);                
                 gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
-                return try! b"Error: Unhandled dtype %s".format(entry.dtype);
+                return errorMsg.encode(); // return as bytes
             }
             tmpw.close();
         } catch {
