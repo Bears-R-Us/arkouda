@@ -1027,12 +1027,8 @@ class Strings:
                     pdarray.attach(f"{user_defined_name}.bytes"))
         s.name = user_defined_name
         return s
-      
+
     @staticmethod
-    def attach(user_defined_name : str) -> Strings:
-        return Strings(pdarray.attach(user_defined_name+'_offsets'),
-                       pdarray.attach(user_defined_name+'_bytes'))
-      
     @typechecked
     def unregister_strings_by_name(user_defined_name : str) -> None:
         """
