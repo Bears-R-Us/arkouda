@@ -750,13 +750,13 @@ module SegmentedArray {
   
   /* Test for equality between two same-length arrays of strings. Returns
      a boolean vector of the same length. */
-  operator SegString.==(lss:SegString, rss:SegString) throws {
+  operator ==(lss:SegString, rss:SegString) throws {
     return compare(lss, rss, true);
   }
 
   /* Test for inequality between two same-length arrays of strings. Returns
      a boolean vector of the same length. */
-  operator SegString.!=(lss:SegString, rss:SegString) throws {
+  operator !=(lss:SegString, rss:SegString) throws {
     return compare(lss, rss, false);
   }
 
