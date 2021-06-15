@@ -152,14 +152,13 @@ module SegmentedArray {
       return s;
     }
 
-
     /* Take a slice of strings from the array. The slice must be a 
-     *  Chapel range, i.e. low..high by stride, not a Python slice.
-     *  Returns arrays for the segment offsets and bytes of the slice.
-     */
-
+       Chapel range, i.e. low..high by stride, not a Python slice.
+       Returns arrays for the segment offsets and bytes of the slice.*/
     proc this(const slice: range(stridable=true)) throws {
       if (slice.low < offsets.aD.low) || (slice.high > offsets.aD.high) {
+          saLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+          "Array is out of bounds");
         throw new owned OutOfBoundsError();
       }
       // Early return for zero-length result
@@ -196,8 +195,7 @@ module SegmentedArray {
     }
 
     /* Gather strings by index. Returns arrays for the segment offsets
-     *  and bytes of the gathered strings.
-     */
+       and bytes of the gathered strings.*/
     proc this(iv: [?D] int) throws {
       // Early return for zero-length result
       if (D.size == 0) {
@@ -207,7 +205,9 @@ module SegmentedArray {
       var ivMin = min reduce iv;
       var ivMax = max reduce iv;
       if (ivMin < 0) || (ivMax >= offsets.size) {
-        throw new owned OutOfBoundsError();
+          saLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
+                              "Array out of bounds");
+          throw new owned OutOfBoundsError();
       }
       saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                               "Computing lengths and offsets");
@@ -246,11 +246,11 @@ module SegmentedArray {
       if CHPL_COMM != 'none' {
         // Compute the src index for each byte in gatheredVals
         /* For performance, we will do this with a scan, so first we need an array
-         *  with the difference in index between the current and previous byte. For
-         *  the interior of a segment, this is just one, but at the segment boundary,
-         *  it is the difference between the src offset of the current segment ("left")
-         *  and the src index of the last byte in the previous segment (right - 1).
-         */
+           with the difference in index between the current and previous byte. For
+           the interior of a segment, this is just one, but at the segment boundary,
+           it is the difference between the src offset of the current segment ("left")
+           and the src index of the last byte in the previous segment (right - 1).
+        */
         var srcIdx = makeDistArray(retBytes, int);
         srcIdx = 1;
         var diffs: [D] int;
@@ -279,8 +279,9 @@ module SegmentedArray {
           }
         }
       }
-      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber,
-                                                     "%i seconds".format(getCurrentTime() -t1));
+      saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                            "Gathered offsets and vals in %i seconds".format(
+                                           getCurrentTime() -t1));
       return (gatheredOffsets, gatheredVals);
     }
 
@@ -288,7 +289,9 @@ module SegmentedArray {
     proc this(iv: [?D] bool) throws {
       // Index vector must be same domain as array
       if (D != offsets.aD) {
-        throw new owned OutOfBoundsError();
+          saLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                                                           "Array out of bounds");
+          throw new owned OutOfBoundsError();
       }
       saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
                                                        "Computing lengths and offsets");
@@ -347,7 +350,6 @@ module SegmentedArray {
       /* saLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                      "%i seconds".format(getCurrentTime() - t1));*/
       /* return (gatheredOffsets, gatheredVals); */
-
     }
 
     /* Apply a hash function to all strings. This is useful for grouping
@@ -442,7 +444,7 @@ module SegmentedArray {
     proc findSubstringInBytes(const substr: string) {
       // Find the start position of every occurence of substr in the flat bytes array
       // Start by making a right-truncated subdomain representing all valid starting positions for substr of given length
-      var D: subdomain(values.aD) = values.aD[values.aD.low..#(values.size - substr.numBytes)];
+      var D: subdomain(values.aD) = values.aD[values.aD.low..#(values.size - substr.numBytes + 1)];
       // Every start position is valid until proven otherwise
       var truth: [D] bool = true;
       // Shift the flat values one byte at a time and check against corresponding byte of substr
@@ -499,7 +501,7 @@ module SegmentedArray {
         // Position where substr aligns with end of segment must be a hit
         // -1 for null byte
         hits[oD.interior(-(oD.size-1))] = truth[oa[oD.interior(oD.size-1)] - substr.numBytes - 1];
-        hits[oD.high] = truth[D.high];
+        hits[oD.high] = truth[D.high-1];
       }
       if logLevel == LogLevel.DEBUG {
           t.stop(); 
@@ -611,13 +613,13 @@ module SegmentedArray {
       ref va = values.a;
       // Fill left values
       forall (srcStart, dstStart, len) in zip(oa, leftOffsets, leftLengths) {
-        for i in 0..#len {
+        for i in 0..#(len-1) {
           unorderedCopy(leftVals[dstStart+i], va[srcStart+i]);
         }
       }
       // Fill right values
       forall (srcStart, dstStart, len) in zip(rightStart, rightOffsets, rightLengths) {
-        for i in 0..#len {
+        for i in 0..#(len-1) {
           unorderedCopy(rightVals[dstStart+i], va[srcStart+i]);
         }
       }
@@ -711,7 +713,7 @@ module SegmentedArray {
       return (&& reduce (ediff() >= 0));
     }
 
-    proc argsort(checkSorted:bool=true): [offsets.aD] int throws {
+    proc argsort(checkSorted:bool=false): [offsets.aD] int throws {
       const ref D = offsets.aD;
       const ref va = values.a;
       if checkSorted && isSorted() {
