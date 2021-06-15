@@ -528,7 +528,7 @@ module SegmentedArray {
         if oa[i] > D.high {
           // When the last string(s) is/are shorter than the substr
           hasEnough = false;
-        } else if i == high {
+        } else if ((i == high) || (oa[i+1] > D.high)) {
           hasEnough = ((+ reduce truth) - numHits[oa[i]]) >= times;
         } else {
           hasEnough = (numHits[oa[i+1]] - numHits[oa[i]]) >= times;

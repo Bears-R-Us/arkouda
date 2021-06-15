@@ -481,6 +481,26 @@ class StringTest(ArkoudaTest):
         self.assertListEqual(expected_a, a.bytes.to_ndarray().tolist())
         self.assertListEqual(expected_b, b.bytes.to_ndarray().tolist())
 
+    def test_peel_delimiter_length_issue(self):
+        # See Issue 838
+        d = "-" * 25 # 25 dashes as delimiter
+        series = pd.Series([f"abc{d}xyz", f"small{d}dog", f"blue{d}hat", "last"])
+        pda = ak.from_series(series)
+        a, b = pda.peel(d)
+        aa = a.to_ndarray().tolist()
+        bb = b.to_ndarray().tolist()
+        self.assertListEqual(["abc", "small", "blue", ""], aa)
+        self.assertListEqual(["xyz", "dog", "hat", "last"], bb)
+
+        # Try a slight permutation since we were able to get both versions to fail at one point
+        series = pd.Series([f"abc{d}xyz", f"small{d}dog", "last"])
+        pda = ak.from_series(series)
+        a, b = pda.peel(d)
+        aa = a.to_ndarray().tolist()
+        bb = b.to_ndarray().tolist()
+        self.assertListEqual(["abc", "small", ""], aa)
+        self.assertListEqual(["xyz", "dog", "last"], bb)
+
     def test_stick(self):
         run_test_stick(self.strings, self.test_strings, self.base_words, 
                        self.delim, 100)
