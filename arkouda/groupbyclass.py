@@ -4,7 +4,7 @@ from typing import cast, List, Sequence, Tuple, Union, TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from arkouda.categorical import Categorical
 import numpy as np # type: ignore
-from typeguard import typechecked
+from typeguard import typechecked, check_type
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.sorting import argsort, coargsort
@@ -49,6 +49,9 @@ class GroupByReductionType(enum.Enum):
 GROUPBY_REDUCTION_TYPES = frozenset([member.value for _, member 
                                   in GroupByReductionType.__members__.items()])
 
+groupable_element_type = Union[pdarray, Strings, 'Categorical']
+groupable = Union[groupable_element_type, Sequence[groupable_element_type]]
+
 class GroupBy:
     """
     Group an array or list of arrays by value, usually in preparation 
@@ -63,19 +66,18 @@ class GroupBy:
 
     Attributes
     ----------
-    nkeys : Union[int,np.int64]
+    nkeys : int
         The number of key arrays (columns)
-    size : Union[int,np.int64]
-        The length of the array(s), i.e. number of rows
+    size : int
+        The length of the input array(s), i.e. number of rows
     permutation : pdarray
         The permutation that sorts the keys array(s) by value (row)
     unique_keys : (list of) pdarray, Strings, or Categorical
         The unique values of the keys array(s), in grouped order
+    ngroups : int
+        The length of the unique_keys array(s), i.e. number of groups
     segments : pdarray
         The start index of each group in the grouped array(s)
-    unique_key_indices : pdarray
-        The first index in the raw (ungrouped) keys array(s) where each 
-        unique value (row) occurs
     logger : ArkoudaLogger
         Used for all logging operations
 
@@ -91,14 +93,13 @@ class GroupBy:
     """
     Reductions = GROUPBY_REDUCTION_TYPES
 
-    def __init__(self, keys: Union[pdarray, Strings, 'Categorical',
-                                   List[Union[pdarray, np.int64, Strings, 'Categorical']]],
+    def __init__(self, keys: groupable,
                  assume_sorted: bool = False, hash_strings: bool = True) -> None:
         from arkouda.categorical import Categorical
         self.logger = getArkoudaLogger(name=self.__class__.__name__)
         self.assume_sorted = assume_sorted
         self.hash_strings = hash_strings
-        self.keys : Union[pdarray,Strings,Categorical]
+        self.keys : groupable
 
         if isinstance(keys, pdarray):
             if keys.dtype != int64:
@@ -119,7 +120,7 @@ class GroupBy:
             else:
                 self.permutation = cast(Union[Strings, Categorical],keys).group()
         else:
-            self.keys = cast(Union[pdarray, Strings, Categorical],keys)
+            self.keys = cast(Sequence[groupable_element_type],keys)
             self.nkeys = len(keys)
             self.size = cast(int,keys[0].size) # type: ignore
             for k in keys:
@@ -148,7 +149,7 @@ class GroupBy:
                 mykeys = [self.keys]            
         else:
             mykeys = cast(List[pdarray], self.keys) # type: ignore
-        keyobjs : List[Union[pdarray,Strings,'Categorical']] = [] # needed to maintain obj refs esp for h1 and h2 in the strings case
+        keyobjs : List[groupable_element_type] = [] # needed to maintain obj refs esp for h1 and h2 in the strings case
         keynames = []
         keytypes = []
         effectiveKeys = self.nkeys
@@ -184,14 +185,16 @@ class GroupBy:
         self.segments = cast(pdarray, create_pdarray(repMsg=cast(str,segAttr)))
         unique_key_indices = create_pdarray(repMsg=cast(str,uniqAttr))
         if self.nkeys == 1:
-            self.unique_keys = cast(List[Union[pdarray,Strings]], 
+            self.unique_keys = cast(groupable, 
                                     self.keys[unique_key_indices])
+            self.ngroups = self.unique_keys.size
         else:
-            self.unique_keys = cast(List[Union[pdarray,Strings]], 
+            self.unique_keys = cast(groupable, 
                                     [k[unique_key_indices] for k in self.keys])
+            self.ngroups = self.unique_keys[0].size
 
 
-    def count(self) -> Tuple[List[Union[pdarray,Strings]],pdarray]:
+    def count(self) -> Tuple[groupable,pdarray]:
         '''
         Count the number of elements in each group, i.e. the number of times
         each key appears.
@@ -226,8 +229,8 @@ class GroupBy:
         return self.unique_keys, create_pdarray(repMsg)
     
     @typechecked
-    def aggregate(self, values: pdarray, operator: str, skipna: bool=True) \
-                    -> Tuple[Any, pdarray]:
+    def aggregate(self, values: groupable, operator: str, skipna: bool=True) \
+                    -> Tuple[groupable, pdarray]:
         '''
         Using the permutation stored in the GroupBy instance, group another 
         array of values and apply a reduction to each group's values. 
@@ -241,9 +244,9 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : [Union[pdarray,List[Union[pdarray,Strings]],Categorical]
+        unique_keys : groupable
             The unique keys, in grouped order
-        aggregates : pdarray
+        aggregates : groupable
             One aggregate value per unique key in the GroupBy instance
             
         Raises
@@ -279,6 +282,11 @@ class GroupBy:
         if operator not in self.Reductions:
             raise ValueError(("Unsupported reduction: {}\nMust be one of {}")\
                                   .format(operator, self.Reductions))
+        
+        # TO DO: remove once logic is ported over to Chapel
+        if operator == 'nunique':
+            return self.nunique(values)
+        
         if self.assume_sorted:
             permuted_values = values
         else:
@@ -298,7 +306,7 @@ class GroupBy:
             return self.unique_keys, create_pdarray(repMsg)
 
     def sum(self, values : pdarray, skipna : bool=True) \
-                         -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+                         -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group 
         another array of values and sum each group's values. 
@@ -344,7 +352,7 @@ class GroupBy:
         return self.aggregate(values, "sum", skipna)
     
     def prod(self, values : pdarray, skipna : bool=True) \
-                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+                    -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group
         another array of values and compute the product of each group's 
@@ -393,7 +401,7 @@ class GroupBy:
         return self.aggregate(values, "prod", skipna)
     
     def mean(self, values : pdarray, skipna : bool=True) \
-                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+                    -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group 
         another array of values and compute the mean of each group's 
@@ -440,7 +448,7 @@ class GroupBy:
         return self.aggregate(values, "mean", skipna)
     
     def min(self, values : pdarray, skipna : bool=True) \
-                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+                    -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group 
         another array of values and return the minimum of each group's 
@@ -488,7 +496,7 @@ class GroupBy:
         return self.aggregate(values, "min", skipna)
     
     def max(self, values : pdarray, skipna : bool=True) \
-                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+                    -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group
         another array of values and return the maximum of each 
@@ -536,7 +544,7 @@ class GroupBy:
         return self.aggregate(values, "max", skipna)
     
     def argmin(self, values : pdarray) \
-                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+                    -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group   
         another array of values and return the location of the first 
@@ -589,7 +597,7 @@ class GroupBy:
         return self.aggregate(values, "argmin")
     
     def argmax(self, values : pdarray)\
-                    -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
+                    -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group   
         another array of values and return the location of the first 
@@ -639,7 +647,7 @@ class GroupBy:
             raise TypeError('argmax is only supported for pdarrays of dtype float64 and int64')
         return self.aggregate(values, "argmax")
     
-    def nunique(self, values : pdarray) -> Tuple[Any,pdarray]:
+    def nunique(self, values : groupable) -> Tuple[groupable, groupable]:
         """
         Using the permutation stored in the GroupBy instance, group another
         array of values and return the number of unique values in each group. 
@@ -651,9 +659,9 @@ class GroupBy:
 
         Returns
         -------
-        unique_keys : [Union[pdarray,List[Union[pdarray,Strings]],Categorical]
+        unique_keys : groupable
             The unique keys, in grouped order
-        group_nunique : pdarray, int64
+        group_nunique : groupable
             Number of unique values per unique key in the GroupBy instance
             
         Raises
@@ -685,9 +693,25 @@ class GroupBy:
         #    Group (3,3,3) has values [3,4,1] -> 3 unique values
         #    Group (4) has values [4] -> 1 unique value
         """
-        if values.dtype != int64:
-            raise TypeError('the pdarray dtype must be int64')
-        return self.aggregate(values, "nunique")
+        # TO DO: defer to self.aggregate once logic is ported over to Chapel
+        # return self.aggregate(values, "nunique")
+        
+        ukidx = self.broadcast(arange(self.ngroups), permute=True)
+        # Test if values is single array, i.e. either pdarray, Strings,
+        # or Categorical (the last two have a .group() method).
+        # Can't directly test Categorical due to circular import.
+        if isinstance(values, pdarray) or hasattr(values, "group"):
+            togroup = [ukidx, values]
+        else:
+            togroup = [ukidx] + list(values)
+        # Find unique pairs of (key, val)
+        g = GroupBy(togroup)
+        # Group unique pairs again by original key
+        g2 = GroupBy(g.unique_keys[0], assume_sorted=True)
+        # Count number of unique values per key
+        _, nuniq = g2.count()
+        # Re-join unique counts with original keys (sorting guarantees same order)
+        return self.unique_keys, nuniq
     
     def any(self, values : pdarray) \
                     -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
