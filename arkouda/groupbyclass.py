@@ -56,7 +56,7 @@ class GroupBy:
 
     Parameters
     ----------
-    keys : (list of) pdarray, int64 or Strings
+    keys : (list of) pdarray, int64, Strings, or Categorical
         The array to group by value, or if list, the column arrays to group by row
     assume_sorted : bool
         If True, assume keys is already sorted (Default: False)
@@ -69,7 +69,7 @@ class GroupBy:
         The length of the array(s), i.e. number of rows
     permutation : pdarray
         The permutation that sorts the keys array(s) by value (row)
-    unique_keys : (list of) pdarray or Strings
+    unique_keys : (list of) pdarray, Strings, or Categorical
         The unique values of the keys array(s), in grouped order
     segments : pdarray
         The start index of each group in the grouped array(s)
@@ -86,14 +86,14 @@ class GroupBy:
 
     Notes
     -----
-    Only accepts pdarrays of int64 dtype or Strings.
+    Only accepts (list of) pdarrays of int64 dtype, Strings, or Categorical.
 
     """
     Reductions = GROUPBY_REDUCTION_TYPES
 
-    def __init__(self, keys : Union[pdarray,Strings,'Categorical', 
-                                    List[Union[pdarray,np.int64,Strings]]], 
-                assume_sorted : bool=False, hash_strings : bool=True) -> None:
+    def __init__(self, keys: Union[pdarray, Strings, 'Categorical',
+                                   List[Union[pdarray, np.int64, Strings, 'Categorical']]],
+                 assume_sorted: bool = False, hash_strings: bool = True) -> None:
         from arkouda.categorical import Categorical
         self.logger = getArkoudaLogger(name=self.__class__.__name__)
         self.assume_sorted = assume_sorted
