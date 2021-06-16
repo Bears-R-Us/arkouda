@@ -23,6 +23,7 @@ jobs:
     - name: Install dependencies
       run: |
         apt-get update && apt-get install -y python3-pip
+        python3 -m pip install types-pkg_resources
         python3 -m pip install -e .[dev]
     - name: Arkouda mypy
       run: |
