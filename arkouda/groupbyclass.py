@@ -168,7 +168,7 @@ class GroupBy:
                     keytypes.append(k.objtype)
             # for Categorical
             elif hasattr(k, 'codes'):
-                keyobjs.append(k)
+                keyobjs.append(cast(Categorical, k))
                 keynames.append(cast(Categorical,k).codes.name)
                 keytypes.append(cast(Categorical,k).codes.objtype)
             elif isinstance(k, pdarray):
@@ -187,7 +187,7 @@ class GroupBy:
         if self.nkeys == 1:
             self.unique_keys = cast(groupable, 
                                     self.keys[unique_key_indices])
-            self.ngroups = self.unique_keys.size
+            self.ngroups = cast(groupable_element_type, self.unique_keys).size
         else:
             self.unique_keys = cast(groupable, 
                                     [k[unique_key_indices] for k in self.keys])
@@ -275,9 +275,7 @@ class GroupBy:
         -0.55555555555555558, -0.33333333333333337, -0.11111111111111116, 0.11111111111111116, 
         0.33333333333333326, 0.55555555555555536, 0.77777777777777768, 1]))
         '''
-        if values.size != self.size:
-            raise ValueError(("Attempt to group array using key array of " +
-                             "different length"))
+        
         operator = operator.lower()
         if operator not in self.Reductions:
             raise ValueError(("Unsupported reduction: {}\nMust be one of {}")\
@@ -286,11 +284,16 @@ class GroupBy:
         # TO DO: remove once logic is ported over to Chapel
         if operator == 'nunique':
             return self.nunique(values)
+
+        # All other aggregations operate on pdarray
+        if cast(pdarray, values).size != self.size:
+            raise ValueError(("Attempt to group array using key array of " +
+                             "different length"))
         
         if self.assume_sorted:
-            permuted_values = values
+            permuted_values = cast(pdarray, values)
         else:
-            permuted_values = values[cast(pdarray, self.permutation)]
+            permuted_values = cast(pdarray, values)[cast(pdarray, self.permutation)]
 
         cmd = "segmentedReduction"
         args = "{} {} {} {}".format(permuted_values.name,
@@ -647,7 +650,7 @@ class GroupBy:
             raise TypeError('argmax is only supported for pdarrays of dtype float64 and int64')
         return self.aggregate(values, "argmax")
     
-    def nunique(self, values : groupable) -> Tuple[groupable, groupable]:
+    def nunique(self, values : groupable) -> Tuple[groupable, pdarray]:
         """
         Using the permutation stored in the GroupBy instance, group another
         array of values and return the number of unique values in each group. 
@@ -667,8 +670,8 @@ class GroupBy:
         Raises
         ------
         TypeError
-            Raised if the values array is not a pdarray or the pdarray
-            dtype is not supported for the nunique method
+            Raised if the dtype(s) of values array(s) does/do not support 
+            the nunique method
         ValueError
             Raised if the key array size does not match the values size or
             if the operator is not in the GroupBy.Reductions array
@@ -700,9 +703,16 @@ class GroupBy:
         # Test if values is single array, i.e. either pdarray, Strings,
         # or Categorical (the last two have a .group() method).
         # Can't directly test Categorical due to circular import.
-        if isinstance(values, pdarray) or hasattr(values, "group"):
+        if isinstance(values, pdarray):
+            if cast(pdarray, values).dtype != int64:
+                raise TypeError("nunique unsupported for this dtype")
+            togroup = [ukidx, values]
+        elif hasattr(values, "group"):
             togroup = [ukidx, values]
         else:
+            for v in values:
+                if isinstance(values, pdarray) and cast(pdarray, values).dtype != int64:
+                    raise TypeError("nunique unsupported for this dtype")
             togroup = [ukidx] + list(values)
         # Find unique pairs of (key, val)
         g = GroupBy(togroup)

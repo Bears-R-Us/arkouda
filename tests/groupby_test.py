@@ -96,7 +96,7 @@ def run_test(levels, verbose=False):
             try:
                 akkeys, akvals = akg.aggregate(akdf[vname], op)
                 akvals = akvals.to_ndarray()
-            except RuntimeError as E:
+            except Exception as E:
                 if verbose: print("Arkouda error: ", E)
                 not_impl += 1
                 do_check = False
@@ -236,12 +236,12 @@ class GroupByTest(ArkoudaTest):
         
         with self.assertRaises(TypeError) as cm:
             self.igb.nunique(ak.randint(0,1,10,dtype=bool))
-        self.assertEqual('the pdarray dtype must be int64', 
+        self.assertEqual('nunique unsupported for this dtype', 
                          cm.exception.args[0])  
 
         with self.assertRaises(TypeError) as cm:
             self.igb.nunique(ak.randint(0,1,10,dtype=float64))
-        self.assertEqual('the pdarray dtype must be int64', 
+        self.assertEqual('nunique unsupported for this dtype', 
                          cm.exception.args[0])  
         
         with self.assertRaises(TypeError) as cm:
