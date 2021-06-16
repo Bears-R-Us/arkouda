@@ -545,12 +545,16 @@ Attributes
       :raises RuntimeError: Raised if all is not supported for the values dtype
 
 
-   .. method:: broadcast(self, values: arkouda.pdarrayclass.pdarray, permute: bool = False) -> arkouda.pdarrayclass.pdarray
+   .. method:: broadcast(self, values: arkouda.pdarrayclass.pdarray, permute: bool = True) -> arkouda.pdarrayclass.pdarray
 
       Fill each group's segment with a constant value.
 
       :param values: The values to put in each group's segment
       :type values: pdarray
+      :param permute: If True (default), permute broadcast values back to the ordering
+                      of the original array on which GroupBy was called. If False, the
+                      broadcast values are grouped by value.
+      :type permute: bool
 
       :returns: The broadcast values
       :rtype: pdarray
@@ -566,24 +570,18 @@ Attributes
       this function takes a (dense) column vector and replicates
       each value to the non-zero elements in the corresponding row.
 
-      The returned array is in permuted (grouped) order. To get
-      back to the order of the array on which GroupBy was called,
-      the user must invert the permutation (see below).
-
       .. rubric:: Examples
 
       >>> a = ak.array([0, 1, 0, 1, 0])
       >>> values = ak.array([3, 5])
       >>> g = ak.GroupBy(a)
-      # Result is in grouped order
+      # By default, result is in original order
       >>> g.broadcast(values)
-      array([3, 3, 3, 5, 5]
-
-      >>> b = ak.zeros_like(a)
-      # Result is in original order
-      >>> b[g.permutation] = g.broadcast(values)
-      >>> b
       array([3, 5, 3, 5, 3])
+
+      # With permute=False, result is in grouped order
+      >>> g.broadcast(values, permute=False)
+      array([3, 3, 3, 5, 5]
 
       >>> a = ak.randint(1,5,10)
       >>> a
@@ -591,14 +589,54 @@ Attributes
       >>> g = ak.GroupBy(a)
       >>> keys,counts = g.count()
       >>> g.broadcast(counts > 2)
-      array([0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
+      array([True False True True True False True True False False])
       >>> g.broadcast(counts == 3)
-      array([0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
+      array([True False True True True False True True False False])
       >>> g.broadcast(counts < 4)
-      array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+      array([True True True True True True True True True True])
 
 
 
 .. function:: broadcast(segments: arkouda.pdarrayclass.pdarray, values: arkouda.pdarrayclass.pdarray, size: Union[int, numpy.int64] = -1, permutation: Union[arkouda.pdarrayclass.pdarray, None] = None)
+
+   Broadcast a dense column vector to the rows of a sparse matrix or grouped array.
+
+   :param segments: Offsets of the start of each row in the sparse matrix or grouped array.
+                    Must be sorted in ascending order.
+   :type segments: pdarray, int64
+   :param values: The values to broadcast, one per row (or group)
+   :type values: pdarray
+   :param size: The total number of nonzeros in the matrix. If permutation is given, this
+                argument is ignored and the size is inferred from the permutation array.
+   :type size: int
+   :param permutation: The permutation to go from the original ordering of nonzeros to the ordering
+                       grouped by row. To broadcast values back to the original ordering, this
+                       permutation will be inverted. If no permutation is supplied, it is assumed
+                       that the original nonzeros were already grouped by row. In this case, the
+                       size argument must be given.
+   :type permutation: pdarray, int64
+
+   :returns: The broadcast values, one per nonzero
+   :rtype: pdarray
+
+   :raises ValueError: - If segments and values are different sizes
+       - If segments are empty
+       - If number of nonzeros (either user-specified or inferred from permutation)
+         is less than one
+
+   .. rubric:: Examples
+
+   # Define a sparse matrix with 3 rows and 7 nonzeros
+   >>> row_starts = ak.array([0, 2, 5])
+   >>> nnz = 7
+   # Broadcast the row number to each nonzero element
+   >>> row_number = ak.arange(3)
+   >>> ak.broadcast(row_starts, row_number, nnz)
+   array([0 0 1 1 1 2 2])
+
+   # If the original nonzeros were in reverse order...
+   >>> permutation = ak.arange(6, -1, -1)
+   >>> ak.broadcast(row_starts, row_number, permutation=permutation)
+   array([2 2 1 1 1 0 0])
 
 
