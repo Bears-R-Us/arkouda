@@ -73,9 +73,7 @@ class Categorical:
                                  "Strings not yet supported"))
             g = GroupBy(values)
             self.categories = g.unique_keys
-            self.codes = zeros(values.size, dtype=np.int64)
-            self.codes[cast(pdarray, g.permutation)] = \
-                                g.broadcast(arange(self.categories.size))
+            self.codes = g.broadcast(arange(self.categories.size), permute=True)
             self.permutation = cast(pdarray, g.permutation)
             self.segments = g.segments
         # Always set these values
@@ -294,8 +292,7 @@ class Categorical:
         """
         g = GroupBy(self.codes)
         idx = self.categories[g.unique_keys]
-        newvals = zeros(self.codes.size, akint64)
-        newvals[g.permutation] = g.broadcast(arange(idx.size))
+        newvals = g.broadcast(arange(idx.size), permute=True)
         return Categorical.from_codes(newvals, idx, permutation=g.permutation, 
                                       segments=g.segments)
 
