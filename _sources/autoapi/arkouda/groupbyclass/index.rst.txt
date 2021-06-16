@@ -38,14 +38,14 @@ Attributes
 
    
 
-.. class:: GroupBy(keys: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical, List[Union[arkouda.pdarrayclass.pdarray, numpy.int64, arkouda.strings.Strings]]], assume_sorted: bool = False, hash_strings: bool = True)
+.. class:: GroupBy(keys: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical, List[Union[arkouda.pdarrayclass.pdarray, numpy.int64, arkouda.strings.Strings, arkouda.categorical.Categorical]]], assume_sorted: bool = False, hash_strings: bool = True)
 
 
    Group an array or list of arrays by value, usually in preparation
    for aggregating the within-group values of another array.
 
    :param keys: The array to group by value, or if list, the column arrays to group by row
-   :type keys: (list of) pdarray, int64 or Strings
+   :type keys: (list of) pdarray, int64, Strings, or Categorical
    :param assume_sorted: If True, assume keys is already sorted (Default: False)
    :type assume_sorted: bool
 
@@ -71,7 +71,7 @@ Attributes
 
       The unique values of the keys array(s), in grouped order
 
-      :type: (list of) pdarray or Strings
+      :type: (list of) pdarray, Strings, or Categorical
 
    .. attribute:: segments
 
@@ -96,7 +96,7 @@ Attributes
 
    .. rubric:: Notes
 
-   Only accepts pdarrays of int64 dtype or Strings.
+   Only accepts (list of) pdarrays of int64 dtype, Strings, or Categorical.
 
    .. attribute:: Reductions
       

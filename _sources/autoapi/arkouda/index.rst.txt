@@ -1550,20 +1550,20 @@ Attributes
    array([0, 1, 1, 3, 4, 5, 7, 8, 8, 9])
 
 
-.. function:: coargsort(arrays: Sequence[Union[arkouda.strings.Strings, arkouda.pdarrayclass.pdarray]]) -> arkouda.pdarrayclass.pdarray
+.. function:: coargsort(arrays: Sequence[Union[arkouda.strings.Strings, arkouda.pdarrayclass.pdarray, arkouda.categorical.Categorical]]) -> arkouda.pdarrayclass.pdarray
 
    Return the permutation that groups the rows (left-to-right), if the
    input arrays are treated as columns. The permutation sorts numeric
-   columns, but not strings -- strings are grouped, but not ordered.
+   columns, but not strings/Categoricals -- strings/Categoricals are grouped, but not ordered.
 
-   :param arrays: The columns (int64, float64, or Strings) to sort by row
-   :type arrays: Sequence[Union[Strings,pdarray]]
+   :param arrays: The columns (int64, float64, Strings, or Categorical) to sort by row
+   :type arrays: Sequence[Union[Strings, pdarray, Categorical]]
 
    :returns: The indices that permute the rows to grouped order
    :rtype: pdarray, int64
 
    :raises ValueError: Raised if the pdarrays are not of the same size or if the parameter
-       is not an Iterable containing pdarrays or Strings
+       is not an Iterable containing pdarrays, Strings, or Categoricals
 
    .. seealso:: :obj:`argsort`
 
@@ -1573,7 +1573,9 @@ Attributes
    to non-uniformity in data but communication intensive. Starts with the
    last array and moves forward. This sort operates directly on numeric types,
    but for Strings, it operates on a hash. Thus, while grouping of equivalent
-   strings is guaranteed, lexicographic ordering of the groups is not.
+   strings is guaranteed, lexicographic ordering of the groups is not. For Categoricals,
+   coargsort sorts based on Categorical.codes which guarantees grouping of equivalent categories
+   but not lexicographic ordering of those groups.
 
    .. rubric:: Examples
 
@@ -2859,14 +2861,14 @@ Attributes
    is present or dataset names already exist, a RuntimeError is raised.
 
 
-.. class:: GroupBy(keys: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical, List[Union[arkouda.pdarrayclass.pdarray, numpy.int64, arkouda.strings.Strings]]], assume_sorted: bool = False, hash_strings: bool = True)
+.. class:: GroupBy(keys: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical, List[Union[arkouda.pdarrayclass.pdarray, numpy.int64, arkouda.strings.Strings, arkouda.categorical.Categorical]]], assume_sorted: bool = False, hash_strings: bool = True)
 
 
    Group an array or list of arrays by value, usually in preparation
    for aggregating the within-group values of another array.
 
    :param keys: The array to group by value, or if list, the column arrays to group by row
-   :type keys: (list of) pdarray, int64 or Strings
+   :type keys: (list of) pdarray, int64, Strings, or Categorical
    :param assume_sorted: If True, assume keys is already sorted (Default: False)
    :type assume_sorted: bool
 
@@ -2892,7 +2894,7 @@ Attributes
 
       The unique values of the keys array(s), in grouped order
 
-      :type: (list of) pdarray or Strings
+      :type: (list of) pdarray, Strings, or Categorical
 
    .. attribute:: segments
 
@@ -2917,7 +2919,7 @@ Attributes
 
    .. rubric:: Notes
 
-   Only accepts pdarrays of int64 dtype or Strings.
+   Only accepts (list of) pdarrays of int64 dtype, Strings, or Categorical.
 
    .. attribute:: Reductions
       
