@@ -144,6 +144,7 @@ class GroupBy:
                                                        self.keys).segments is not None:
                 self.unique_keys = cast(Categorical, self.keys).categories
                 self.segments = cast(pdarray, cast(Categorical, self.keys).segments)
+                self.ngroups = self.unique_keys.size
                 return
             else:
                 mykeys = [self.keys]            

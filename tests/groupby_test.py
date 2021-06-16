@@ -321,6 +321,19 @@ class GroupByTest(ArkoudaTest):
         mixed_dict = to_tuple_dict(mixed_labels, mixed_values)
         self.assertDictEqual(expected, mixed_dict)
 
+    def test_nunique_types(self):
+        string = ak.array(['a', 'b', 'a', 'b', 'c'])
+        cat = ak.Categorical(string)
+        i = ak.array([5, 3, 5, 3, 1])
+        expected = ak.array([1, 1, 1])
+        # Try GroupBy.nunique with every combination of types, including mixed
+        keys = (string, cat, i, (string, cat, i))
+        for key in keys:
+            g = ak.GroupBy(key)
+            for val in keys:
+                k, n = g.nunique(val)
+                self.assertTrue((n == expected).all())
+
 
 def to_tuple_dict(labels, values):
     # transforms labels from list of arrays into a list of tuples by index and builds a dictionary
