@@ -38,7 +38,7 @@ Attributes
 
    
 
-.. class:: GroupBy(keys: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical, List[Union[arkouda.pdarrayclass.pdarray, numpy.int64, arkouda.strings.Strings, arkouda.categorical.Categorical]]], assume_sorted: bool = False, hash_strings: bool = True)
+.. class:: GroupBy(keys: groupable, assume_sorted: bool = False, hash_strings: bool = True)
 
 
    Group an array or list of arrays by value, usually in preparation
@@ -53,13 +53,13 @@ Attributes
 
       The number of key arrays (columns)
 
-      :type: Union[int,np.int64]
+      :type: int
 
    .. attribute:: size
 
-      The length of the array(s), i.e. number of rows
+      The length of the input array(s), i.e. number of rows
 
-      :type: Union[int,np.int64]
+      :type: int
 
    .. attribute:: permutation
 
@@ -73,16 +73,15 @@ Attributes
 
       :type: (list of) pdarray, Strings, or Categorical
 
+   .. attribute:: ngroups
+
+      The length of the unique_keys array(s), i.e. number of groups
+
+      :type: int
+
    .. attribute:: segments
 
       The start index of each group in the grouped array(s)
-
-      :type: pdarray
-
-   .. attribute:: unique_key_indices
-
-      The first index in the raw (ungrouped) keys array(s) where each
-      unique value (row) occurs
 
       :type: pdarray
 
@@ -106,7 +105,7 @@ Attributes
    .. method:: find_segments(self) -> None
 
 
-   .. method:: count(self) -> Tuple[List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]], arkouda.pdarrayclass.pdarray]
+   .. method:: count(self) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
 
       Count the number of elements in each group, i.e. the number of times
       each key appears.
@@ -129,7 +128,7 @@ Attributes
       array([1, 2, 4, 3])
 
 
-   .. method:: aggregate(self, values: arkouda.pdarrayclass.pdarray, operator: str, skipna: bool = True) -> Tuple[Any, arkouda.pdarrayclass.pdarray]
+   .. method:: aggregate(self, values: groupable, operator: str, skipna: bool = True) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group another
       array of values and apply a reduction to each group's values.
@@ -139,8 +138,8 @@ Attributes
       :param operator: The name of the reduction operator to use
       :type operator: str
 
-      :returns: * **unique_keys** (*[Union[pdarray,List[Union[pdarray,Strings]],Categorical]*) -- The unique keys, in grouped order
-                * **aggregates** (*pdarray*) -- One aggregate value per unique key in the GroupBy instance
+      :returns: * **unique_keys** (*groupable*) -- The unique keys, in grouped order
+                * **aggregates** (*groupable*) -- One aggregate value per unique key in the GroupBy instance
 
       :raises TypeError: Raised if the values array is not a pdarray
       :raises ValueError: Raised if the key array size does not match the values size or
@@ -164,7 +163,7 @@ Attributes
       0.33333333333333326, 0.55555555555555536, 0.77777777777777768, 1]))
 
 
-   .. method:: sum(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
+   .. method:: sum(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and sum each group's values.
@@ -198,7 +197,7 @@ Attributes
       (array([2, 3, 4]), array([8, 14, 6]))
 
 
-   .. method:: prod(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
+   .. method:: prod(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and compute the product of each group's
@@ -234,7 +233,7 @@ Attributes
       (array([2, 3, 4]), array([12, 108.00000000000003, 8.9999999999999982]))
 
 
-   .. method:: mean(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
+   .. method:: mean(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and compute the mean of each group's
@@ -269,7 +268,7 @@ Attributes
       (array([2, 3, 4]), array([2.6666666666666665, 2.7999999999999998, 3]))
 
 
-   .. method:: min(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
+   .. method:: min(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and return the minimum of each group's
@@ -302,7 +301,7 @@ Attributes
       (array([2, 3, 4]), array([1, 1, 3]))
 
 
-   .. method:: max(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
+   .. method:: max(self, values: arkouda.pdarrayclass.pdarray, skipna: bool = True) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and return the maximum of each
@@ -335,7 +334,7 @@ Attributes
       (array([2, 3, 4]), array([4, 4, 3]))
 
 
-   .. method:: argmin(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
+   .. method:: argmin(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and return the location of the first
@@ -373,7 +372,7 @@ Attributes
       (array([2, 3, 4]), array([5, 4, 2]))
 
 
-   .. method:: argmax(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[Union[arkouda.pdarrayclass.pdarray, List[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]], arkouda.pdarrayclass.pdarray]
+   .. method:: argmax(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group
       another array of values and return the location of the first
@@ -410,7 +409,7 @@ Attributes
       (array([2, 3, 4]), array([9, 3, 2]))
 
 
-   .. method:: nunique(self, values: arkouda.pdarrayclass.pdarray) -> Tuple[Any, arkouda.pdarrayclass.pdarray]
+   .. method:: nunique(self, values: groupable) -> Tuple[groupable, arkouda.pdarrayclass.pdarray]
 
       Using the permutation stored in the GroupBy instance, group another
       array of values and return the number of unique values in each group.
@@ -418,11 +417,11 @@ Attributes
       :param values: The values to group and find unique values
       :type values: pdarray, int64
 
-      :returns: * **unique_keys** (*[Union[pdarray,List[Union[pdarray,Strings]],Categorical]*) -- The unique keys, in grouped order
-                * **group_nunique** (*pdarray, int64*) -- Number of unique values per unique key in the GroupBy instance
+      :returns: * **unique_keys** (*groupable*) -- The unique keys, in grouped order
+                * **group_nunique** (*groupable*) -- Number of unique values per unique key in the GroupBy instance
 
-      :raises TypeError: Raised if the values array is not a pdarray or the pdarray
-          dtype is not supported for the nunique method
+      :raises TypeError: Raised if the dtype(s) of values array(s) does/do not support
+          the nunique method
       :raises ValueError: Raised if the key array size does not match the values size or
           if the operator is not in the GroupBy.Reductions array
       :raises RuntimeError: Raised if nunique is not supported for the values dtype
