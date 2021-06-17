@@ -38,39 +38,65 @@ module Logging {
         proc init() {}
         
         proc debug(moduleName, routineName, lineNumber, msg: string) throws {
-            if level == LogLevel.DEBUG  {
-                writeln(generateLogMessage(moduleName, routineName, lineNumber, 
+            try {
+                if level == LogLevel.DEBUG  {
+                    writeln(generateLogMessage(moduleName, routineName, lineNumber, 
                                             msg, "DEBUG"));
-                stdout.flush();
+                    stdout.flush();
+                }
+            } catch (e: Error) {
+                writeln(generateErrorMsg(moduleName, routineName, lineNumber, e));
             }
         }
         
         proc info(moduleName, routineName, lineNumber, msg: string) throws {
-            if infoLevels.contains(level) {
-                writeln(generateLogMessage(moduleName, routineName, lineNumber, 
+            try {
+                if infoLevels.contains(level) {
+                    writeln(generateLogMessage(moduleName, routineName, lineNumber, 
                                             msg, "INFO"));
-                stdout.flush();
+                    stdout.flush();
+                }
+            } catch (e: Error) {
+                writeln(generateErrorMsg(moduleName, routineName, lineNumber, e));
             }
         }
         
         proc warn(moduleName, routineName, lineNumber, msg: string) throws {
-            if warnLevels.contains(level) {
-                writeln(generateLogMessage(moduleName, routineName, lineNumber, 
+            try {
+                if warnLevels.contains(level) {
+                    writeln(generateLogMessage(moduleName, routineName, lineNumber, 
                                             msg, "WARN"));
-                stdout.flush();
+                    stdout.flush();
+                }
+            } catch (e: Error) {
+                writeln(generateErrorMsg(moduleName, routineName, lineNumber, e));
             }
         }
         
         proc critical(moduleName, routineName, lineNumber, msg: string) throws {
-            writeln(generateLogMessage(moduleName, routineName, lineNumber, 
+            try {
+                writeln(generateLogMessage(moduleName, routineName, lineNumber, 
                                             msg, "CRITICAL"));
-            stdout.flush();
+                stdout.flush();
+            } catch (e: Error) {
+                writeln(generateErrorMsg(moduleName, routineName, lineNumber, e));
+            }            
         }
         
         proc error(moduleName, routineName, lineNumber, msg: string) throws {
-            writeln(generateLogMessage(moduleName, routineName, lineNumber, 
+            try {
+                writeln(generateLogMessage(moduleName, routineName, lineNumber, 
                                             msg, "ERROR"));
-            stdout.flush();
+                stdout.flush();
+            } catch (e: Error) {
+                writeln(generateErrorMsg(moduleName, routineName, lineNumber, e));
+            }
+        }
+        
+        proc generateErrorMsg(moduleName: string, routineName, lineNumber, 
+                           error) throws {
+            return "Error in logging message for %s %s %i: %t".format(
+                    moduleName, routineName, lineNumber, error.message());                
         }
         
         proc generateLogMessage(moduleName: string, routineName, lineNumber, 
