@@ -59,6 +59,8 @@ or
 
    .. method:: proc error(moduleName, routineName, lineNumber, msg: string) throws
 
+   .. method:: proc generateErrorMsg(moduleName: string, routineName, lineNumber, error) throws
+
    .. method:: proc generateLogMessage(moduleName: string, routineName, lineNumber, msg, level: string) throws
 
    .. method:: proc generateDateTimeString() throws
