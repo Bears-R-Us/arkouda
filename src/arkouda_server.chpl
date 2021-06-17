@@ -158,7 +158,7 @@ proc main() {
 
     :arg repMsg: either a string or bytes to be sent
     */
-    proc sendRepMsg(repMsg: ?t) where t==string || t==bytes {
+    proc sendRepMsg(repMsg: ?t) throws where t==string || t==bytes {
         repCount += 1;
         if trace {
           if t==bytes {
