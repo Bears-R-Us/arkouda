@@ -23,10 +23,10 @@ module JoinEqWithDTMsg
     const jeLogger = new Logger(logLevel);
 
     // operator overloads so + reduce and + scan can work on atomic int arrays
-    proc +(x: atomic int, y: atomic int) {
+    operator +(x: atomic int, y: atomic int) {
         return x.read() + y.read();
     }
-    proc +=(X: [?D] int, Y: [D] atomic int) {
+    operator +=(X: [?D] int, Y: [D] atomic int) {
         [i in D] {X[i] += Y[i].read();}
     }
 
