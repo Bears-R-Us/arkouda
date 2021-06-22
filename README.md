@@ -107,7 +107,8 @@ This yielded a >20TB dataframe in Arkouda.
 6. [Logging](#log-ak)
 7. [Type Checking in Arkouda](#typecheck-ak)
 8. [Environment Variables](#env-vars-ak)
-9. [Contributing](#contrib-ak)
+9. [Versioning](#versioning-ak)
+10. [Contributing](#contrib-ak)
 
 
 <a id="prereq-main"></a>
@@ -124,6 +125,7 @@ This yielded a >20TB dataframe in Arkouda.
  * requires pandas for testing and conversion utils
  * requires pytest, pytest-env, and h5py to execute the Python test harness
  * requires sphinx, sphinx-argparse, and sphinx-autoapi to generate docs
+ * requires versioneer for versioning
 
 <a id="prereq-mac"></a>
 ### MacOS Environment <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
@@ -188,6 +190,11 @@ source ~/.bashrc
 # Otherwise, Python 3 can be installed with brew
 brew install python3
 
+# versioneer is required, use either conda or pip
+pip install versioneer
+ or
+conda install versioneer
+
 # these packages are nice but not a requirement (manual install required if Python installed with brew)
 pip3 install pandas
 pip3 install jupyter
@@ -250,6 +257,13 @@ As is the case with the MacOS install, it is highly recommended to [install Anac
  wget https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh
  sh Anaconda3-2020.07-Linux-x86_64.sh
  source ~/.bashrc
+ 
+ # Install versioneer and other required python packages if they are not included in yoru anaconda install
+ conda install versioneer
+ or
+ pip install versioneer
+ 
+ # Repeat for any missing pacakges using your package manager of choice (conda or pip)
 ```
 
 </details>
@@ -417,7 +431,7 @@ Alternatively you can build a distributable package via
 # We'll use a virtual environment to build
 python -m venv build-client-env
 source build-client-env/bin/activate
-python -m pip install --upgrade pip build wheel
+python -m pip install --upgrade pip build wheel versioneer
 python setup.py clean --all
 python -m build
 
@@ -593,6 +607,54 @@ type checking require type hints. Consequently, to opt-out of type checking, sim
 ## Environment Variables <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
 The various Arkouda aspects (compilation, run-time, client, tests, etc.) can be configured using a number of environment
 variables (env vars).  See the [ENVIRONMENT](ENVIRONMENT.md) documentation for more details.
+
+<a id="versioning-ak"></a>
+## Versioning <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>
+Beginning after tag `v2019.12.10` versioning is now performed using [Versioneer](https://github.com/python-versioneer/python-versioneer)
+which determines the version based on the location in `git`.
+
+An example using a hypothetical tag `1.2.3.4`
+```bash
+git checkout 1.2.3.4
+python -m arkouda |tail -n 2
+>> Client Version: 1.2.3.4
+>> 1.2.3.4
+
+# If you were to make uncommitted changes and repeat the command you might see something like:
+python -m arkouda|tail -n 2
+>> Client Version: 1.2.3.4+0.g9dca4c8.dirty
+>> 1.2.3.4+0.g9dca4c8.dirty
+
+# If you commit those changes you would see something like
+python -m arkouda|tail -n 2
+>> Client Version: 1.2.3.4+1.g9dca4c8
+>> 1.2.3.4+1.g9dca4c8
+```
+In the hypothetical cases above _Versioneer_ tells you the version and how far / how many commits beyond the tag your repo is.
+
+When building the server-side code the same versioning information is included in the build.  If the server and client do not
+match you will receive a warning.  For developers this is a useful reminder when you switch branches and forget to rebuild.
+
+```bash
+# Starting the arkouda when built from tag 1.2.3.4 shows the following in the startup banner 
+arkouda server version = 1.2.3.4
+
+# If you built from an arbitrary branch the version string is based on the derived coordinates from the "closest" tag
+arkouda server version = v2019.12.10+1679.abc2f48a
+
+# The .dirty extension denotes a build from uncommitted changes, or a "dirty branch" in git vernacular
+arkouda server version = v2019.12.10+1679.abc2f48a.dirty
+```
+
+For maintainers, creating a new version is as simple as creating a tag in the repository; i.e.
+```bash
+git checkout master
+git tag 1.2.3.4
+python -m arkouda |tail -n 2
+>> Client Version: 1.2.3.4
+>> 1.2.3.4
+git push --tags
+```
 
 <a id="contrib-ak"></a>
 ## Contributing to Arkouda <sup><sup><sub><a href="#toc">toc</a></sub></sup></sup>

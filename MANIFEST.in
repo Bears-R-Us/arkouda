@@ -9,4 +9,5 @@ include LICENSE
 include Makefile
 include VERSION
 include setup.py
-include installers.py
+include installers.pyinclude versioneer.py
+include arkouda/_version.py
