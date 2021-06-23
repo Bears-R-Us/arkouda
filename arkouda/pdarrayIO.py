@@ -23,7 +23,15 @@ def ls_hdf(filename : str) -> str:
     -------
     str
         The string output of `h5ls <filename>` from the server
+
+    Raises
+    ------
+    ValueError
+        Raised if filename is empty or contains only whitespace
     """
+    if not (filename and filename.strip()):
+        raise ValueError("filename cannot be an empty string")
+
     return cast(str,generic_msg(cmd="lshdf", args="{}".format(json.dumps([filename]))))
 
 @typechecked

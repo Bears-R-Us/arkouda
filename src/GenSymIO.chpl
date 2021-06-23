@@ -199,6 +199,9 @@ module GenSymIO {
         var filename: string;
         try {
             filename = jsonToPdArray(jsonfile, 1)[0];
+            if filename.isEmpty() {
+                throw new Error("filename was empty");  // will be caught by catch block
+            }
         } catch {
             var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(
                                      1, jsonfile);                                     
