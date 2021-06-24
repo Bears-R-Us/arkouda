@@ -189,7 +189,7 @@ module GenSymIO {
     }
 
     /*
-     * Converts the JSON array to a pdarray
+     * Converts the JSON array to a string pdarray
      */
     proc jsonToPdArray(json: string, size: int) throws {
         var f = opentmp(); defer { ensureClose(f); }
@@ -200,6 +200,22 @@ module GenSymIO {
         var array: [0..#size] string;
         r.readf("%jt", array);
         r.close();
+        return array;
+    }
+
+    /*
+     * Converts the JSON array to a integer pdarray
+     */
+    proc jsonToPdArrayInt(json: string, size: int) throws {
+        var f = opentmp();
+        var w = f.writer();
+        w.write(json);
+        w.close();
+        var r = f.reader(start=0);
+        var array: [0..#size] int;
+        r.readf("%jt", array);
+        r.close();
+        f.close();
         return array;
     }
 

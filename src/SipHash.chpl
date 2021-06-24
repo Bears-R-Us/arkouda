@@ -67,6 +67,28 @@ module SipHash {
     return y;
   }
 
+  private inline proc U8TO64_LE(p: [] int, D): uint(64) {
+    return ((p[D.low]: uint(64)) |
+            (p[D.low+1]: uint(64) << 8) |
+            (p[D.low+2]: uint(64) << 16) |
+            (p[D.low+3]: uint(64) << 24) |
+            (p[D.low+4]: uint(64) << 32) |
+            (p[D.low+5]: uint(64) << 40) |
+            (p[D.low+6]: uint(64) << 48) |
+            (p[D.low+7]: uint(64) << 56));
+  }
+
+  private inline proc U8TO64_LE(p: c_ptr(int)): uint(64) {
+    return ((p[0]: uint(64)) |
+            (p[1]: uint(64) << 8) |
+            (p[2]: uint(64) << 16) |
+            (p[3]: uint(64) << 24) |
+            (p[4]: uint(64) << 32) |
+            (p[5]: uint(64) << 40) |
+            (p[6]: uint(64) << 48) |
+            (p[7]: uint(64) << 56));
+  }
+
   private inline proc byte_reverse(b: uint(64)): uint(64) {
     var c: uint(64);
     c |= (b & 0xff) << 56;
@@ -90,6 +112,9 @@ module SipHash {
   proc sipHash128(msg: [] ?t, D): 2*uint(64) where ((t == uint(8)) ||
                                                     (t == int(64)) ||
                                                     (t == real(64))) {
+    return computeSipHashLocalized(msg, D, 16);
+  }
+  proc sipHash128(msg: [] int, D): 2*uint(64) {
     return computeSipHashLocalized(msg, D, 16);
   }
 
