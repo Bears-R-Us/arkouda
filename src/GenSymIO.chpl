@@ -100,7 +100,9 @@ module GenSymIO {
     private proc makeEntry(size:int, type t, st: borrowed SymTab, tmpf:file): string throws {
         var entry = new shared SymEntry(size, t);
         var tmpr = tmpf.reader(kind=iobig, start=0);
-        tmpr.read(entry.a);
+        var localA: [entry.aD.low..entry.aD.high] t;
+        tmpr.read(localA);
+        entry.a = localA;
         tmpr.close(); 
         var name = st.nextName();
         st.addEntry(name, entry);
@@ -130,17 +132,22 @@ module GenSymIO {
         var entry = st.lookup(payload);
         overMemLimit(2*entry.size*entry.itemsize);
         var tmpf: file; defer { ensureClose(tmpf); }
+
+        proc localizeArr(A: [?D] ?eltType) {
+            const localA:[D.low..D.high] eltType = A;
+            return localA;
+        }
         try {
             tmpf = openmem();
             var tmpw = tmpf.writer(kind=iobig);
             if entry.dtype == DType.Int64 {
-                tmpw.write(toSymEntry(entry, int).a);
+                tmpw.write(localizeArr(toSymEntry(entry, int).a));
             } else if entry.dtype == DType.Float64 {
-                tmpw.write(toSymEntry(entry, real).a);
+                tmpw.write(localizeArr(toSymEntry(entry, real).a));
             } else if entry.dtype == DType.Bool {
-                tmpw.write(toSymEntry(entry, bool).a);
+                tmpw.write(localizeArr(toSymEntry(entry, bool).a));
             } else if entry.dtype == DType.UInt8 {
-                tmpw.write(toSymEntry(entry, uint(8)).a);
+                tmpw.write(localizeArr(toSymEntry(entry, uint(8)).a));
             } else {
                 var errorMsg = "Error: Unhandled dtype %s".format(entry.dtype);                
                 gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
