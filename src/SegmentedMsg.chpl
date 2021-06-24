@@ -901,10 +901,10 @@ module SegmentedMsg {
            = payload.splitMsgToTuple(9);
 
     // check to make sure symbols defined
-    st.check(lsegName);
-    st.check(lvalName);
-    st.check(rsegName);
-    st.check(rvalName);
+    st.checkTable(lsegName);
+    st.checkTable(lvalName);
+    st.checkTable(rsegName);
+    st.checkTable(rvalName);
 
     select (ltype, rtype) {
         when ("int", "int") {
@@ -992,8 +992,8 @@ module SegmentedMsg {
           = payload.splitMsgToTuple(6);
 
     // check to make sure symbols defined
-    st.check(segName);
-    st.check(valName);
+    st.checkTable(segName);
+    st.checkTable(valName);
     var json = jsonToPdArrayInt(encodedVal, 1);
     var value = json[json.domain.low];
     var rname = st.nextName();
@@ -1085,10 +1085,10 @@ module SegmentedMsg {
          testValName, invertStr) = payload.splitMsgToTuple(7);
 
     // check to make sure symbols defined
-    st.check(mainSegName);
-    st.check(mainValName);
-    st.check(testSegName);
-    st.check(testValName);
+    st.checkTable(mainSegName);
+    st.checkTable(mainValName);
+    st.checkTable(testSegName);
+    st.checkTable(testValName);
 
     var invert: bool;
     if invertStr == "True" {invert = true;}
@@ -1156,8 +1156,8 @@ module SegmentedMsg {
       var repMsg: string;
 
       // check to make sure symbols defined
-      st.check(segName);
-      st.check(valName);
+      st.checkTable(segName);
+      st.checkTable(valName);
 
       //var strings = new owned SegString(segName, valName, st);
       var strings = getSegString(segName, valName, st);
@@ -1282,10 +1282,10 @@ module SegmentedMsg {
       var repMsg: string;
 
       // check to make sure symbols defined
-      st.check(segName1);
-      st.check(valName1);
-      st.check(segName2);
-      st.check(valName2);
+      st.checkTable(segName1);
+      st.checkTable(valName1);
+      st.checkTable(segName2);
+      st.checkTable(valName2);
 
       var suffixarrays = new owned SegSArray(segName1, valName1, st);
       var size=suffixarrays.size;
