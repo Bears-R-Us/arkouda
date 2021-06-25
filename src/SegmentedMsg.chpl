@@ -4,6 +4,7 @@ module SegmentedMsg {
   use Logging;
   use Message;
   use SegmentedArray;
+  use SegmentedSuffixArray only SegSuffixArray, in1d_Int;
   use ServerErrorStrings;
   use ServerConfig;
   use MultiTypeSymbolTable;
@@ -67,8 +68,6 @@ module SegmentedMsg {
 
   proc segmentLengthsMsg(cmd: string, payload: string, 
                                           st: borrowed SymTab): MsgTuple throws {
-
-
     var pn = Reflection.getRoutineName();
     var (objtype, segName, valName) = payload.splitMsgToTuple(3);
 
@@ -89,7 +88,7 @@ module SegmentedMsg {
         lengths.a = strings.getLengths() - 1;
       }
       when "int" {
-        var sarrays = new owned SegSArray(segName, valName, st);
+        var sarrays = new owned SegSuffixArray(segName, valName, st);
         var lengths = st.addEntry(rname, sarrays.size, int);
         // Do not include the null terminator in the length
         lengths.a = sarrays.getLengths() - 1;
@@ -508,20 +507,6 @@ module SegmentedMsg {
             smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL);
         }
-/*
-        when "int" {
-            var sarrays = new owned SegSArray(segName, valName, st);
-            var hashes = sarrays.hash();
-            var name1 = st.nextName();
-            var hash1 = st.addEntry(name1, hashes.size, int);
-            var name2 = st.nextName();
-            var hash2 = st.addEntry(name2, hashes.size, int);
-            forall (h, h1, h2) in zip(hashes, hash1.a, hash2.a) {
-                (h1,h2) = h:(int,int);
-            }
-            return "created " + st.attrib(name1) + "+created " + st.attrib(name2);
-        }
-*/
         otherwise {
             var errorMsg = notImplementedError(pn, objtype);
             smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
@@ -606,14 +591,14 @@ module SegmentedMsg {
           }
           when "int" {
               // Make a temporary int array
-              var arrays = new owned SegSArray(args[1], args[2], st);
+              var arrays = new owned SegSuffixArray(args[1], args[2], st);
               // Parse the index
               var idx = args[3]:int;
               // TO DO: in the future, we will force the client to handle this
               idx = convertPythonIndexToChapel(idx, arrays.size);
               var s = arrays[idx];
               var repMsg="item %s %jt".format("int", s);
-              smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
+              smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
               return new MsgTuple(repMsg, MsgType.NORMAL);
           }
           otherwise { 
@@ -671,20 +656,20 @@ module SegmentedMsg {
             st.addEntry(newSegName, newSegsEntry);
             st.addEntry(newValName, newValsEntry);
             var repMsg = "created " + st.attrib(newSegName) + " +created " + st.attrib(newValName);
-            smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
+            smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL);
       }
       when "int" {
             // Make a temporary integer  array
-            var sarrays = new owned SegSArray(args[1], args[2], st);
+            var sarrays = new owned SegSuffixArray(args[1], args[2], st);
             // Parse the slice parameters
             var start = args[3]:int;
             var stop = args[4]:int;
             var stride = args[5]:int;
             // Only stride-1 slices are allowed for now
-            if (stride != 1) { 
-                var errorMsg = notImplementedError(pn, "stride != 1"); 
-                smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
+            if (stride != 1) {
+                var errorMsg = notImplementedError(pn, "stride != 1");
+                smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
             }
             // TO DO: in the future, we will force the client to handle this
@@ -774,7 +759,7 @@ module SegmentedMsg {
             }
         }
         when "int" {
-            var sarrays = new owned SegSArray(args[1], args[2], st);
+            var sarrays = new owned SegSuffixArray(args[1], args[2], st);
             var iname = args[3];
             var gIV: borrowed GenSymEntry = st.lookup(iname);
             try {
@@ -798,15 +783,16 @@ module SegmentedMsg {
                     otherwise {
                         var errorMsg = "("+objtype+","+dtype2str(gIV.dtype)+")";
                         smLogger.error(getModuleName(),getRoutineName(),
-                                                      getLineNumber(),errorMsg); 
-                        return new MsgTuple(errorMsg, MsgType.ERROR);          
+                                                      getLineNumber(),errorMsg);
+                        return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
                 }
-            } catch e: Error {
+            }
+            catch e: Error {
                 var errorMsg= "Error: %t".format(e.message());
                 smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
                       e.message());
-                return new MsgTuple(errorMsg, MsgType.ERROR);          
+                return new MsgTuple(errorMsg, MsgType.ERROR);
             }
         }
         otherwise {
@@ -908,37 +894,38 @@ module SegmentedMsg {
 
     select (ltype, rtype) {
         when ("int", "int") {
-          var lsa = new owned SegSArray(lsegName, lvalName, st);
-          var rsa = new owned SegSArray(rsegName, rvalName, st);
+          var lsa = new owned SegSuffixArray(lsegName, lvalName, st);
+          var rsa = new owned SegSuffixArray(rsegName, rvalName, st);
           select op {
-              when "==" {
-                var rname = st.nextName();
-                var e = st.addEntry(rname, lsa.size, bool);
-                e.a = (lsa == rsa);
-                repMsg = "created " + st.attrib(rname);
-              }
-              when "!=" {
-                var rname = st.nextName();
-                var e = st.addEntry(rname, lsa.size, bool);
-                e.a = (lsa != rsa);
-                repMsg = "created " + st.attrib(rname);
-              }
-              otherwise {
-                var errorMsg= notImplementedError(pn, ltype, op, rtype);
-                smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-              }
+            when "==" {
+              var rname = st.nextName();
+              var e = st.addEntry(rname, lsa.size, bool);
+              e.a = (lsa == rsa);
+              repMsg = "created " + st.attrib(rname);
+            }
+            when "!=" {
+              var rname = st.nextName();
+              var e = st.addEntry(rname, lsa.size, bool);
+              e.a = (lsa != rsa);
+              repMsg = "created " + st.attrib(rname);
+            }
+            otherwise {
+              var errorMsg= notImplementedError(pn, ltype, op, rtype);
+              smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
           }
         }
         otherwise {
           var errorMsg= unrecognizedTypeError(pn, "("+ltype+", "+rtype+")");
           smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
           return new MsgTuple(errorMsg, MsgType.ERROR);
-        } 
+        }
     }
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), repMsg);
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
+
   proc segBinopvsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var repMsg: string;
@@ -988,8 +975,7 @@ module SegmentedMsg {
   proc segBinopvsIntMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
-    var (op, objtype, segName, valName, valtype, encodedVal)
-          = payload.splitMsgToTuple(6);
+    var (op, objtype, segName, valName, valtype, encodedVal)  = payload.splitMsgToTuple(6);
 
     // check to make sure symbols defined
     st.checkTable(segName);
@@ -998,37 +984,35 @@ module SegmentedMsg {
     var value = json[json.domain.low];
     var rname = st.nextName();
     select (objtype, valtype) {
-    when ("int", "int") {
-      var sarrays  = new owned SegSArray(segName, valName, st);
-      select op {
-        when "==" {
-          var e = st.addEntry(rname, sarrays.size, bool);
-          var tmp=sarrays[sarrays.offsets.aD.low]:int;
-          e.a = (tmp == value);
-        }
-        when "!=" {
-          var e = st.addEntry(rname, sarrays.size, bool);
-          var tmp=sarrays[sarrays.offsets.aD.low]:int;
-          e.a = (tmp != value);
-        }
-        otherwise {
-          var errorMsg= notImplementedError(pn, objtype, op, valtype);
-          smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-          return new MsgTuple(errorMsg, MsgType.ERROR);
+      when ("int", "int") {
+        var sarrays  = new owned SegSuffixArray(segName, valName, st);
+        select op {
+          when "==" {
+            var e = st.addEntry(rname, sarrays.size, bool);
+            var tmp=sarrays[sarrays.offsets.aD.low]:int;
+            e.a = (tmp == value);
+          }
+          when "!=" {
+            var e = st.addEntry(rname, sarrays.size, bool);
+            var tmp=sarrays[sarrays.offsets.aD.low]:int;
+            e.a = (tmp != value);
+          }
+          otherwise {
+            var errorMsg= notImplementedError(pn, objtype, op, valtype);
+            smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
+          }
         }
       }
-    }
-    otherwise {
-        var errorMsg= unrecognizedTypeError(pn, "("+objtype+", "+valtype+")");
-        smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-        return new MsgTuple(errorMsg, MsgType.ERROR);
-
-    } 
+      otherwise {
+          var errorMsg= unrecognizedTypeError(pn, "("+objtype+", "+valtype+")");
+          smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+          return new MsgTuple(errorMsg, MsgType.ERROR);
+      }
     }
     repMsg= "created " + st.attrib(rname);
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), repMsg);
     return new MsgTuple(repMsg, MsgType.NORMAL);
-
   }
 
   proc segIn1dMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
@@ -1094,29 +1078,29 @@ module SegmentedMsg {
     if invertStr == "True" {invert = true;}
     else if invertStr == "False" {invert = false;}
     else {
-
           var errorMsg="Error: Invalid argument in %s: %s (expected True or False)".format(pn, invertStr);
           return new MsgTuple(errorMsg, MsgType.ERROR);
     }
     var rname = st.nextName();
     select (mainObjtype, testObjtype) {
     when ("int", "int") {
-      var mainSA = new owned SegSArray(mainSegName, mainValName, st);
-      var testSA = new owned SegSArray(testSegName, testValName, st);
+      var mainSA = new owned SegSuffixArray(mainSegName, mainValName, st);
+      var testSA = new owned SegSuffixArray(testSegName, testValName, st);
       var e = st.addEntry(rname, mainSA.size, bool);
       if invert {
         e.a = !in1d_Int(mainSA, testSA);
-      } else {
+      }
+      else {
         e.a = in1d_Int(mainSA, testSA);
       }
     }
     otherwise {
         var errorMsg = unrecognizedTypeError(pn, "("+mainObjtype+", "+testObjtype+")");
-        smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
+        smLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errorMsg);
         return new MsgTuple(errorMsg, MsgType.ERROR);
       }
     }
-    repMsg= "created " + st.attrib(rname);
+    repMsg = "created " + st.attrib(rname);
     smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
@@ -1149,7 +1133,6 @@ module SegmentedMsg {
   }
 
 
-
   proc segSuffixArrayMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var (objtype, segName, valName) = payload.splitMsgToTuple(3);
@@ -1165,7 +1148,6 @@ module SegmentedMsg {
       var nBytes = strings.nBytes;
       var length=strings.getLengths();
       var offsegs = (+ scan length) - length;
-      var algorithmNum=2:int; //2:"divsufsort";1:SuffixArraySkew
       select (objtype) {
           when "str" {
               // To be checked, I am not sure if this formula can estimate the total memory requirement
@@ -1176,7 +1158,7 @@ module SegmentedMsg {
               var sasoff = offsegs;
               //allocate an values array
               var sasval:[0..(nBytes-1)] int;
-              //              var lcpval:[0..(nBytes-1)] int; now we will not build the LCP array at the same time
+              // var lcpval:[0..(nBytes-1)] int; now we will not build the LCP array at the same time
 
               var i:int;
               var j:int;
@@ -1188,74 +1170,28 @@ module SegmentedMsg {
                 startposition = offsegs[i];
                 endposition = startposition+length[i]-1;
                 // what we do in the select structure is filling the sasval array with correct index
-                select (algorithmNum) {
-                    when 1 {
-                       var sasize=length[i]:int;
-                       ref strArray=strings.values.a[startposition..endposition];
-                       var tmparray:[0..sasize+2] int;
-                       var intstrArray:[0..sasize+2] int;
-                       var x:int;
-                       var y:int;
-                       forall (x,y) in zip ( intstrArray[0..sasize-1],
-                                strings.values.a[startposition..endposition]) do x=y;
-                       intstrArray[sasize]=0;
-                       intstrArray[sasize+1]=0;
-                       intstrArray[sasize+2]=0;
-                       SuffixArraySkew(intstrArray,tmparray,sasize,256);
-                       for (x, y) in zip(sasval[startposition..endposition], tmparray[0..sasize-1]) do
-                               x = y;
-                    }
-                    when 2 {
-                       var sasize=length[i]:int(32);
-                       var localstrArray:[0..endposition-startposition] uint(8);
-                       var a:int(8);
-                       var b:int(8);
-                       ref strArray=strings.values.a[startposition..endposition];
-                       localstrArray=strArray;
-                       //for all (a,b) in zip (localstrArray[0..sasize-1],strArray) do a=b;
-                       var tmparray:[1..sasize] int(32);
-                       divsufsort(localstrArray,tmparray,sasize);
-                       //divsufsort(strArray,tmparray,sasize);
-                       var x:int;
-                       var y:int(32);
-                       for (x, y) in zip(sasval[startposition..endposition], tmparray[1..sasize]) do
-                            x = y;
-                    }
-                }
-
-/*
-// Here we calculate the lcp(Longest Common Prefix) array value
-                forall j in startposition+1..endposition do{
-                        var tmpcount=0:int;
-                        var tmpbefore=sasval[j-1]:int;
-                        var tmpcur=sasval[j]:int;
-                        var tmplen=min(sasize-tmpcur, sasize-tmpbefore);
-                        var tmpi:int;
-                        for tmpi in 0..tmplen-1 do {
-                            if (intstrArray[tmpbefore]!=intstrArray[tmpcur]) {
-                                 break;
-                            }                        
-                            tmpcount+=1;
-                        } 
-                        lcpval[j]=tmpcount;
-                }
-*/
+                var sasize=length[i]:int;
+                ref strArray=strings.values.a[startposition..endposition];
+                var tmparray:[0..sasize+2] int;
+                var intstrArray:[0..sasize+2] int;
+                var x:int;
+                var y:int;
+                forall (x,y) in zip ( intstrArray[0..sasize-1],
+                    strings.values.a[startposition..endposition]) do x=y;
+                intstrArray[sasize]=0;
+                intstrArray[sasize+1]=0;
+                intstrArray[sasize+2]=0;
+                SuffixArraySkew(intstrArray,tmparray,sasize,256);
+                for (x, y) in zip(sasval[startposition..endposition], tmparray[0..sasize-1]) do
+                    x = y;
               }
               var segName2 = st.nextName();
               var valName2 = st.nextName();
-              //              var lcpvalName = st.nextName();
 
               var segEntry = new shared SymEntry(sasoff);
               var valEntry = new shared SymEntry(sasval);
-              //              var lcpvalEntry = new shared SymEntry(lcpval);
-              /*
-              valEntry.enhancedInfo=lcpvalName;
-              lcpvalEntry.enhancedInfo=valName2;
-              we have removed enchancedInfo.
-              */
               st.addEntry(segName2, segEntry);
               st.addEntry(valName2, valEntry);
-//              st.addEntry(lcpvalName, lcpvalEntry);
               repMsg = 'created ' + st.attrib(segName2) + '+created ' + st.attrib(valName2);
               smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
               return new MsgTuple(repMsg, MsgType.NORMAL);
@@ -1263,14 +1199,8 @@ module SegmentedMsg {
           }
           otherwise {
               var errorMsg = notImplementedError(pn, "("+objtype+")");
-              writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
-              smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
-              return new MsgTuple(errorMsg, MsgType.ERROR);            
+              smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
           }
       }
 
@@ -1287,14 +1217,11 @@ module SegmentedMsg {
       st.checkTable(segName2);
       st.checkTable(valName2);
 
-      var suffixarrays = new owned SegSArray(segName1, valName1, st);
+      var suffixarrays = new owned SegSuffixArray(segName1, valName1, st);
       var size=suffixarrays.size;
       var nBytes = suffixarrays.nBytes;
       var length=suffixarrays.getLengths();
       var offsegs = (+ scan length) - length;
-
-
-      //var strings = new owned SegString(segName2, valName2, st);
       var strings = getSegString(segName2, valName2, st);
 
       select (objtype) {
@@ -1311,7 +1238,7 @@ module SegmentedMsg {
               var i:int;
               var j:int;
               forall i in 0..(size-1) do {
-              // the start position of ith surrix array  in value array
+                // the start position of ith surrix array  in value array
                 var startposition:int;
                 var endposition:int;
                 startposition = offsegs[i];
@@ -1320,7 +1247,7 @@ module SegmentedMsg {
                 var sasize=length[i]:int;
                 ref sufArray=suffixarrays.values.a[startposition..endposition];
                 ref strArray=strings.values.a[startposition..endposition];
-// Here we calculate the lcp(Longest Common Prefix) array value
+                // Here we calculate the lcp(Longest Common Prefix) array value
                 forall j in startposition+1..endposition do{
                         var tmpcount=0:int;
                         var tmpbefore=sufArray[j-1]:int;
@@ -1330,11 +1257,11 @@ module SegmentedMsg {
                         for tmpi in 0..tmplen-1 do {
                             if (strArray[tmpbefore]!=strArray[tmpcur]) {
                                  break;
-                            }                        
+                            }
                             tmpbefore+=1;
                             tmpcur+=1;
                             tmpcount+=1;
-                        } 
+                        }
                         lcpval[j]=tmpcount;
                 }
               }
@@ -1343,29 +1270,16 @@ module SegmentedMsg {
 
               var lcpsegEntry = new shared SymEntry(sasoff);
               var lcpvalEntry = new shared SymEntry(lcpval);
-              /*
-              valEntry.enhancedInfo=lcpvalName;
-              lcpvalEntry.enhancedInfo=valName2;
-              we have removed enchancedInfo.
-              */
               st.addEntry(lcpsegName, lcpsegEntry);
               st.addEntry(lcpvalName, lcpvalEntry);
               repMsg = 'created ' + st.attrib(lcpsegName) + '+created ' + st.attrib(lcpvalName);
               smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
               return new MsgTuple(repMsg, MsgType.NORMAL);
-
-
           }
           otherwise {
               var errorMsg = notImplementedError(pn, "("+objtype+")");
-              writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
-              smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
-              return new MsgTuple(errorMsg, MsgType.ERROR);            
+              smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
           }
       }
 
@@ -1374,11 +1288,9 @@ module SegmentedMsg {
 // directly read a string from given file and generate its suffix array
   proc segSAFileMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
-//      var (FileName) = payload.decode().splitMsgToTuple(1);
       var FileName = payload;
       var repMsg: string;
 
-//      var filesize:int(32);
       var filesize:int;
       var f = open(FileName, iomode.r);
       var size=1:int;
@@ -1404,8 +1316,6 @@ module SegmentedMsg {
       st.addEntry(segName, segEntry);
       st.addEntry(valName, valEntry);
 
-      var algorithmNum=2:int; //2:"divsufsort";1:SuffixArraySkew
-
       select ("str") {
           when "str" {
               // To be checked, I am not sure if this formula can estimate the total memory requirement
@@ -1416,73 +1326,41 @@ module SegmentedMsg {
               var sasoff = offsegs;
               //allocate a suffix array  values array and lcp array
               var sasval:[0..(nBytes-1)] int;
-//              var lcpval:[0..(nBytes-1)] int;
+              //var lcpval:[0..(nBytes-1)] int;
 
               var i:int;
               forall i in 0..(size-1) do {
               // the start position of ith string in value array
-                select (algorithmNum) {
-                    when 1 {
-                       var sasize=length[i]:int;
-                       var tmparray:[0..sasize+2] int;
-                       var intstrArray:[0..sasize+2] int;
-                       var x:int;
-                       var y:int;
-                       forall (x,y) in zip ( intstrArray[0..sasize-1],strArray[startposition..endposition]) do x=y;
-                       intstrArray[sasize]=0;
-                       intstrArray[sasize+1]=0;
-                       intstrArray[sasize+2]=0;
-                       SuffixArraySkew(intstrArray,tmparray,sasize,256);
-                       for (x, y) in zip(sasval[startposition..endposition], tmparray[0..sasize-1]) do
-                               x = y;
-                    }
-                    when 2 {
-                       var sasize=length[i]:int(32);
-                       //ref strArray=strings.values.a[startposition..endposition];
-                       var tmparray:[1..sasize] int(32);
-                       divsufsort(strArray,tmparray,sasize);
-                       var x:int;
-                       var y:int(32);
-                       for (x, y) in zip(sasval[startposition..endposition], tmparray[1..sasize]) do
-                            x = y;
-                    }
-                }// end of select 
+                var sasize=length[i]:int;
+                var tmparray:[0..sasize+2] int;
+                var intstrArray:[0..sasize+2] int;
+                var x:int;
+                var y:int;
+                forall (x,y) in zip ( intstrArray[0..sasize-1],strArray[startposition..endposition]) do x=y;
+                intstrArray[sasize]=0;
+                intstrArray[sasize+1]=0;
+                intstrArray[sasize+2]=0;
+                SuffixArraySkew(intstrArray,tmparray,sasize,256);
+                for (x, y) in zip(sasval[startposition..endposition], tmparray[0..sasize-1]) do
+                   x = y; 
               } // end of forall
               var segName2 = st.nextName();
               var valName2 = st.nextName();
-//              var lcpvalName = st.nextName();
 
               var segEntry = new shared SymEntry(sasoff);
               var valEntry = new shared SymEntry(sasval);
-//              var lcpvalEntry = new shared SymEntry(lcpval);
-              /*
-              valEntry.enhancedInfo=lcpvalName;
-              lcpvalEntry.enhancedInfo=valName2;
-              We have removed enhancedInfo.
-              */
               st.addEntry(segName2, segEntry);
               st.addEntry(valName2, valEntry);
-//              st.addEntry(lcpvalName, lcpvalEntry);
-              repMsg = 'created ' + st.attrib(segName2) + '+created ' + st.attrib(valName2) 
+              repMsg = 'created ' + st.attrib(segName2) + '+created ' + st.attrib(valName2)
                         + '+created ' + st.attrib(segName) + '+created ' + st.attrib(valName);
               smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
               return new MsgTuple(repMsg, MsgType.NORMAL);
-
           }
           otherwise {
               var errorMsg = notImplementedError(pn, "("+FileName+")");
-              writeln(generateErrorContext(
-                                     msg=errorMsg, 
-                                     lineNumber=getLineNumber(), 
-                                     moduleName=getModuleName(), 
-                                     routineName=getRoutineName(), 
-                                     errorClass="NotImplementedError")); 
-              smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
-              return new MsgTuple(errorMsg, MsgType.ERROR);            
+              smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+              return new MsgTuple(errorMsg, MsgType.ERROR);
           }
       }
-
   }
-
 }
-
