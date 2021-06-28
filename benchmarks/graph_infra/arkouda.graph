@@ -76,6 +76,12 @@ files: array_create.dat, array_create.dat, array_create.dat
 graphtitle: Array Creation Performance
 ylabel: Performance (GiB/s)
 
+perfkeys: to_ndarray Average rate =, ak.array Average rate =
+graphkeys: to_ndarray GiB/s, ak.array GiB/s
+files: array_transfer.dat, array_transfer.dat
+graphtitle: Array Transfer Performance
+ylabel: Performance (GiB/s)
+
 perfkeys: write Average rate =, read Average rate =
 graphkeys: Write GiB/s, Read GiB/s
 files: IO.dat, IO.dat
