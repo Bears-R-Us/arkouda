@@ -165,7 +165,7 @@ endef
 $(eval $(call create_help_target,arkouda-help,ARKOUDA_HELP_TEXT))
 
 # Set the arkouda server version from the VERSION file
-VERSION=$(shell python -m arkouda|tail -n 1)
+VERSION=$(shell python -c "import versioneer; print(versioneer.get_versions()[\"version\"])")
 # Test for existence of VERSION file
 # ifneq ("$(wildcard $(VERSIONFILE))","")
 # 	VERSION=$(shell cat ${VERSIONFILE})
