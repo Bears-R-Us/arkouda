@@ -2702,6 +2702,8 @@ Attributes
    :returns: The string output of `h5ls <filename>` from the server
    :rtype: str
 
+   :raises ValueError: Raised if filename is empty or contains only whitespace
+
 
 .. function:: read_hdf(dsetName: str, filenames: Union[str, List[str]], strictTypes: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
