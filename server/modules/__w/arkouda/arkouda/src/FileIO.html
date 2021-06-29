@@ -216,6 +216,11 @@
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">FileIO</span><span class="p">;</span>
 </pre></div>
 </div>
+<dl class="chpl enum">
+<dt id="FileIO.FileType">
+<em class="property">enum </em><code class="sig-name descname">FileType</code> { HDF5, ARROW, PARQUET, UNKNOWN }<a class="headerlink" href="#FileIO.FileType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="chpl function">
 <dt id="FileIO.appendFile">
 <em class="property">proc </em><code class="sig-name descname">appendFile</code><span class="sig-paren">(</span><em class="sig-param">filePath: string</em>, <em class="sig-param">line: string</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#FileIO.appendFile" title="Permalink to this definition">¶</a></dt>
@@ -235,6 +240,34 @@
 <dt id="FileIO.initDirectory">
 <em class="property">proc </em><code class="sig-name descname">initDirectory</code><span class="sig-paren">(</span><em class="sig-param">filePath: string</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#FileIO.initDirectory" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="chpl data">
+<dt id="FileIO.MAGIC_PARQUET">
+<em class="property">const </em><code class="sig-name descname">MAGIC_PARQUET</code>: bytes = b&quot;\x50\x41\x52\x31&quot;<a class="headerlink" href="#FileIO.MAGIC_PARQUET" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl data">
+<dt id="FileIO.MAGIC_HDF5">
+<em class="property">const </em><code class="sig-name descname">MAGIC_HDF5</code>: bytes = b&quot;\x89\x48\x44\x46\x0d\x0a\x1a\x0a&quot;<a class="headerlink" href="#FileIO.MAGIC_HDF5" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl data">
+<dt id="FileIO.MAGIC_ARROW">
+<em class="property">const </em><code class="sig-name descname">MAGIC_ARROW</code>: bytes = b&quot;\x41\x52\x52\x4F\x57\x31\x00\x00&quot;<a class="headerlink" href="#FileIO.MAGIC_ARROW" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt id="FileIO.getFileTypeByMagic">
+<em class="property">proc </em><code class="sig-name descname">getFileTypeByMagic</code><span class="sig-paren">(</span><em class="sig-param">header: bytes</em><span class="sig-paren">)</span>: FileType<a class="headerlink" href="#FileIO.getFileTypeByMagic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine FileType based on public File Magic for supported types
+:arg header: file header
+:type header: bytes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>FileType from enum.FileType</p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 
