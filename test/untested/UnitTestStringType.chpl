@@ -22,6 +22,9 @@ proc parseNames(msg, param k) {
 
 proc main() {
   var st = new owned SymTab();
+
+  // DEPRECATED - All client calls now redirect to readAllHdf
+  // TODO: Move this call to readAllHdf/Msg for this test
   var cmd = "readhdf";
   var reqMsg = "%s %i %jt".format(dsetName, 1, [filename]);
   writeln(">>> ", reqMsg);

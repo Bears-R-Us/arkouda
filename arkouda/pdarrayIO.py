@@ -99,10 +99,12 @@ def read_hdf(dsetName : str, filenames : Union[str,List[str]],
     return cast(Union[pdarray, Strings], 
                 read_all(filenames, datasets=dsetName, strictTypes=strictTypes))
 
-def read_all(filenames : Union[str,List[str]],
-             datasets : Optional[Union[str,List[str]]]=None,
-             iterative : bool=False,
-             strictTypes: bool=True) \
+
+def read_all(filenames : Union[str, List[str]],
+             datasets: Optional[Union[str, List[str]]] = None,
+             iterative: bool = False,
+             strictTypes: bool = True,
+             allow_errors: bool = False)\
              -> Union[pdarray, Strings, Mapping[str,Union[pdarray,Strings]]]:
     """
     Read datasets from HDF5 files.
@@ -122,6 +124,10 @@ def read_all(filenames : Union[str,List[str]],
         file contains a uint32 dataset and another contains an int64
         dataset with the same name, the contents of both will be read 
         into an int64 pdarray.
+    allow_errors: bool
+        Default False, if True will allow files with read errors to be skipped
+        instead of failing.  A warning will be included in the return containing
+        the total number of files skipped due to failure and up to 10 filenames.
 
     Returns
     -------
@@ -160,21 +166,22 @@ def read_all(filenames : Union[str,List[str]],
     if isinstance(filenames, str):
         filenames = [filenames]
     if datasets is None:
-        datasets = get_datasets(filenames[0])
+        datasets = get_datasets_allow_errors(filenames) if allow_errors else get_datasets(filenames[0])
     if isinstance(datasets, str):
         datasets = [datasets]
-    else: # ensure dataset(s) exist
+    else:  # ensure dataset(s) exist
         if isinstance(datasets, str):
             datasets = [datasets]
-        nonexistent = set(datasets) - set(get_datasets(filenames[0]))
+        nonexistent = set(datasets) - \
+            (set(get_datasets_allow_errors(filenames)) if allow_errors else set(get_datasets(filenames[0])))
         if len(nonexistent) > 0:
             raise ValueError("Dataset(s) not found: {}".format(nonexistent))
     if iterative == True: # iterative calls to server readhdf
         return {dset:read_hdf(dset, filenames, strictTypes=strictTypes) for dset in datasets}
     else:  # single call to server readAllHdf
-        rep_msg = generic_msg(cmd="readAllHdf", args="{} {:n} {:n} {} | {}".\
-                format(strictTypes, len(datasets), len(filenames), json.dumps(datasets), 
-                       json.dumps(filenames)))
+        rep_msg = generic_msg(cmd="readAllHdf", args="{} {:n} {:n} {} {} | {}".
+                              format(strictTypes, len(datasets), len(filenames), allow_errors, json.dumps(datasets),
+                                     json.dumps(filenames)))
         if ',' in rep_msg:
             rep_msgs = cast(str,rep_msg).split(' , ')
             d : Dict[str,Union[pdarray,Strings]] = dict()
@@ -264,6 +271,44 @@ def get_datasets(filename : str) -> List[str]:
     """
     rep_msg = ls_hdf(filename)
     datasets = [line.split()[0] for line in rep_msg.splitlines()]
+    return datasets
+
+@typechecked
+def get_datasets_allow_errors(filenames: List[str]) -> List[str]:
+    """
+    Get the names of datasets in an HDF5 file
+    Allow file read errors until success
+
+    Parameters
+    ----------
+    filenames : List[str]
+        A list of HDF5 files visible to the arkouda server
+
+    Returns
+    -------
+    List[str]
+        Names of the datasets in the file
+
+    Raises
+    ------
+    TypeError
+        Raised if filenames is not a List[str]
+    FileNotFoundError
+        If none of the files could be read successfully
+
+    See Also
+    --------
+    get_datasets, ls_hdf
+    """
+    datasets = []
+    for filename in filenames:
+        try:
+            datasets = get_datasets(filename)
+            break
+        except RuntimeError:
+            pass
+    if not datasets:  # empty
+        raise FileNotFoundError("Could not read any of the requested files")
     return datasets
 
 @typechecked

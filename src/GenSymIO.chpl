@@ -294,6 +294,7 @@ module GenSymIO {
         }
     }
 
+    // DEPRECATED - All client paths redirect to the readAllHdfMsg version
     /* Read dataset from HDF5 files into arkouda symbol table. */
     proc readhdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         var repMsg: string;
@@ -473,6 +474,25 @@ module GenSymIO {
         }
     }
 
+    /*
+     * Utility proc to test casting a string to a specified type
+     * :arg c: String to cast
+     * :type c: string
+     * 
+     * :arg toType: the type to cast into
+     * :type toType: type
+     *
+     * :returns: bool true if the cast was successful, false otherwise
+     */
+    proc checkCast(c:string, type toType): bool {
+        try {
+            var x:toType = c:toType;
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
     /* 
      * Reads all datasets from 1..n HDF5 files into an Arkouda symbol table. 
      */
@@ -480,14 +500,32 @@ module GenSymIO {
         // reqMsg = "readAllHdf <ndsets> <nfiles> [<json_dsetname>] | [<json_filenames>]"
         var repMsg: string;
         // May need a more robust delimiter then " | "
-        var (strictFlag, ndsetsStr, nfilesStr, arraysStr) = payload.splitMsgToTuple(4);
+        var (strictFlag, ndsetsStr, nfilesStr, allowErrorsFlag, arraysStr) = payload.splitMsgToTuple(5);
         var strictTypes: bool = true;
-        if (strictFlag.toLower() == "false") {
+        if (strictFlag.toLower().strip() == "false") {
           strictTypes = false;
         }
+
+        var allowErrors: bool = "true" == allowErrorsFlag.toLower(); // default is false
+        if allowErrors {
+            gsLogger.warn(getModuleName(), getRoutineName(), getLineNumber(), "Allowing file read errors");            
+        }
+
+        // Test arg casting so we can send error message instead of failing
+        if (!checkCast(ndsetsStr, int)) {
+            var errMsg = "Number of datasets:`%s` could not be cast to an integer".format(ndsetsStr);
+            gsLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errMsg);
+            return new MsgTuple(errMsg, MsgType.ERROR);
+        }
+        if (!checkCast(nfilesStr, int)) {
+            var errMsg = "Number of files:`%s` could not be cast to an integer".format(nfilesStr);
+            gsLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errMsg);
+            return new MsgTuple(errMsg, MsgType.ERROR);
+        }
+
         var (jsondsets, jsonfiles) = arraysStr.splitMsgToTuple(" | ",2);
-        var ndsets = try! ndsetsStr:int;
-        var nfiles = try! nfilesStr:int;
+        var ndsets = ndsetsStr:int; // Error checked above
+        var nfiles = nfilesStr:int; // Error checked above
         var dsetlist: [0..#ndsets] string;
         var filelist: [0..#nfiles] string;
 
@@ -496,7 +534,7 @@ module GenSymIO {
         } catch {
             var errorMsg = "Could not decode json dataset names via tempfile (%i files: %s)".format(
                                                ndsets, jsondsets);
-            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
@@ -504,7 +542,7 @@ module GenSymIO {
             filelist = jsonToPdArray(jsonfiles, nfiles);
         } catch {
             var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(nfiles, jsonfiles);
-            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
@@ -515,6 +553,11 @@ module GenSymIO {
         dsetnames = dsetlist;
 
         if filelist.size == 1 {
+            if filelist[0].strip().size == 0 {
+                var errorMsg = "filelist was empty.";
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
             var tmp = glob(filelist[0]);
             gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                   "glob expanded %s to %i files".format(filelist[0], tmp.size));
@@ -535,34 +578,52 @@ module GenSymIO {
         var bytesizes: [filedom] int;
         var signFlags: [filedom] bool;
         var rnames: string;
+        var problemFiles: [0..9] string;
+        var fileErrorCount:int = 0;
+        var fileErrorMsg:string = "";
         for dsetName in dsetnames do {
             for (i, fname) in zip(filedom, filenames) {
+                var hadError = false;
                 try {
                     (segArrayFlags[i], dclasses[i], bytesizes[i], signFlags[i]) = get_dtype(fname, dsetName);
                 } catch e: FileNotFoundError {
-                    var errorMsg = "File %s not found".format(fname);
-                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                    fileErrorMsg = "File %s not found".format(fname);
+                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
+                    hadError = true;
+                    if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
                 } catch e: PermissionError {
-                    var errorMsg = "Permission error %s opening %s".format(e.message(),fname);
-                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                    fileErrorMsg = "Permission error %s opening %s".format(e.message(),fname);
+                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
+                    hadError = true;
+                    if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
                 } catch e: DatasetNotFoundError {
-                    var errorMsg = "Dataset %s not found in file %s".format(dsetName,fname);
-                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                    fileErrorMsg = "Dataset %s not found in file %s".format(dsetName,fname);
+                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
+                    hadError = true;
+                    if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
                 } catch e: NotHDF5FileError {
-                    var errorMsg = "The file %s is not an HDF5 file: %s".format(fname,e.message());
-                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                    fileErrorMsg = "The file %s is not an HDF5 file: %s".format(fname,e.message());
+                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
+                    hadError = true;
+                    if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
                 } catch e: SegArrayError {
-                    var errorMsg = "SegmentedArray error: %s".format(e.message());
-                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                    fileErrorMsg = "SegmentedArray error: %s".format(e.message());
+                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
+                    hadError = true;
+                    if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
                 } catch e : Error {
-                    var errorMsg = "Other error in accessing file %s: %s".format(fname,e.message());
-                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                    return new MsgTuple(errorMsg, MsgType.ERROR);
+                    fileErrorMsg = "Other error in accessing file %s: %s".format(fname,e.message());
+                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
+                    hadError = true;
+                    if !allowErrors { return new MsgTuple(fileErrorMsg, MsgType.ERROR); }
+                }
+
+                if hadError {
+                    // Keep running total, but we'll only report back the first 10
+                    if fileErrorCount < 10 {
+                        problemFiles[fileErrorCount] = fileErrorMsg;
+                    }
+                    fileErrorCount += 1;
                 }
             }
             const isSegArray = segArrayFlags[filedom.first];
@@ -669,6 +730,12 @@ module GenSymIO {
             }
         }
 
+        if allowErrors && fileErrorCount > 0 {
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                "allowErrors:true, fileErrorCount:%t".format(fileErrorCount));
+        }
+        // TODO: Splice in allowErrors, fileErrorCount, and up to 10 errored files
+        //       This will likely require the return message to change structure.
         repMsg = rnames.strip(" , ", leading = false, trailing = true);
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
         return new MsgTuple(repMsg,MsgType.NORMAL);
