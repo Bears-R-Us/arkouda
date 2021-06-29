@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,27 +11,29 @@
   
 
   
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
     <link rel="next" title="ArraySetopsMsg" href="ArraySetopsMsg.html" />
@@ -50,7 +51,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> chpldoc
           
 
           
@@ -77,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -144,6 +146,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -182,7 +185,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>ArraySetops</li>
     
@@ -210,45 +213,45 @@
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="nx">import</span> <span class="nx">ArraySetops</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">ArraySetops</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>Array set operations
 includes intersection, union, xor, and diff</p>
 <p>currently, only performs operations with integer arrays</p>
-<dl class="function">
+<dl class="chpl function">
 <dt id="ArraySetops.intersect1d">
-<em class="property">proc </em><code class="descname">intersect1d</code><span class="sig-paren">(</span><em>a: [] int</em>, <em>b: [] int</em>, <em>assume_unique: bool</em><span class="sig-paren">)</span><a class="headerlink" href="#ArraySetops.intersect1d" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">intersect1d</code><span class="sig-paren">(</span><em class="sig-param">a: [] int</em>, <em class="sig-param">b: [] int</em>, <em class="sig-param">assume_unique: bool</em><span class="sig-paren">)</span><a class="headerlink" href="#ArraySetops.intersect1d" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="ArraySetops.intersect1dHelper">
-<em class="property">proc </em><code class="descname">intersect1dHelper</code><span class="sig-paren">(</span><em>a: [] ?t</em>, <em>b: [] t</em><span class="sig-paren">)</span><a class="headerlink" href="#ArraySetops.intersect1dHelper" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">intersect1dHelper</code><span class="sig-paren">(</span><em class="sig-param">a: [] ?t</em>, <em class="sig-param">b: [] t</em><span class="sig-paren">)</span><a class="headerlink" href="#ArraySetops.intersect1dHelper" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="ArraySetops.setxor1d">
-<em class="property">proc </em><code class="descname">setxor1d</code><span class="sig-paren">(</span><em>a: [] int</em>, <em>b: [] int</em>, <em>assume_unique: bool</em><span class="sig-paren">)</span><a class="headerlink" href="#ArraySetops.setxor1d" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">setxor1d</code><span class="sig-paren">(</span><em class="sig-param">a: [] int</em>, <em class="sig-param">b: [] int</em>, <em class="sig-param">assume_unique: bool</em><span class="sig-paren">)</span><a class="headerlink" href="#ArraySetops.setxor1d" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="ArraySetops.setxor1dHelper">
-<em class="property">proc </em><code class="descname">setxor1dHelper</code><span class="sig-paren">(</span><em>a: [] ?t</em>, <em>b: [] t</em><span class="sig-paren">)</span><a class="headerlink" href="#ArraySetops.setxor1dHelper" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">setxor1dHelper</code><span class="sig-paren">(</span><em class="sig-param">a: [] ?t</em>, <em class="sig-param">b: [] t</em><span class="sig-paren">)</span><a class="headerlink" href="#ArraySetops.setxor1dHelper" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="ArraySetops.setdiff1d">
-<em class="property">proc </em><code class="descname">setdiff1d</code><span class="sig-paren">(</span><em>a: [] int</em>, <em>b: [] int</em>, <em>assume_unique: bool</em><span class="sig-paren">)</span><a class="headerlink" href="#ArraySetops.setdiff1d" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">setdiff1d</code><span class="sig-paren">(</span><em class="sig-param">a: [] int</em>, <em class="sig-param">b: [] int</em>, <em class="sig-param">assume_unique: bool</em><span class="sig-paren">)</span><a class="headerlink" href="#ArraySetops.setdiff1d" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="ArraySetops.setdiff1dHelper">
-<em class="property">proc </em><code class="descname">setdiff1dHelper</code><span class="sig-paren">(</span><em>a: [] ?t</em>, <em>b: [] t</em><span class="sig-paren">)</span><a class="headerlink" href="#ArraySetops.setdiff1dHelper" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">setdiff1dHelper</code><span class="sig-paren">(</span><em class="sig-param">a: [] ?t</em>, <em class="sig-param">b: [] t</em><span class="sig-paren">)</span><a class="headerlink" href="#ArraySetops.setdiff1dHelper" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="ArraySetops.union1d">
-<em class="property">proc </em><code class="descname">union1d</code><span class="sig-paren">(</span><em>a: [] int</em>, <em>b: [] int</em><span class="sig-paren">)</span><a class="headerlink" href="#ArraySetops.union1d" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">union1d</code><span class="sig-paren">(</span><em class="sig-param">a: [] int</em>, <em class="sig-param">b: [] int</em><span class="sig-paren">)</span><a class="headerlink" href="#ArraySetops.union1d" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -273,11 +276,19 @@ includes intersection, union, xor, and diff</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2015
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -288,7 +299,6 @@ includes intersection, union, xor, and diff</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

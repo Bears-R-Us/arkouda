@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,27 +11,29 @@
   
 
   
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
     <link rel="next" title="Security" href="Security.html" />
@@ -50,7 +51,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> chpldoc
           
 
           
@@ -77,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -144,6 +146,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -182,7 +185,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>RegistrationMsg</li>
     
@@ -210,75 +213,63 @@
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="nx">import</span> <span class="nx">RegistrationMsg</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">RegistrationMsg</span><span class="p">;</span>
 </pre></div>
 </div>
-<dl class="data">
+<dl class="chpl data">
 <dt id="RegistrationMsg.regLogger">
-<em class="property">const </em><code class="descname">regLogger</code> = new Logger(logLevel)<a class="headerlink" href="#RegistrationMsg.regLogger" title="Permalink to this definition">¶</a></dt>
+<em class="property">const </em><code class="sig-name descname">regLogger</code> = new Logger(logLevel)<a class="headerlink" href="#RegistrationMsg.regLogger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="RegistrationMsg.registerMsg">
-<em class="property">proc </em><code class="descname">registerMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#RegistrationMsg.registerMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">registerMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#RegistrationMsg.registerMsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse, execute, and respond to a register message</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>reqMsg</strong> : <em>string</em> – request containing (name,user_defined_name)</li>
-<li><strong>st</strong> : <em>borrowed SymTab</em> – SymTab to act on</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reqMsg</strong> : <em>string</em> – request containing (name,user_defined_name)</p></li>
+<li><p><strong>st</strong> : <em>borrowed SymTab</em> – SymTab to act on</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">MsgTuple response message</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>MsgTuple response message</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="RegistrationMsg.attachMsg">
-<em class="property">proc </em><code class="descname">attachMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#RegistrationMsg.attachMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">attachMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#RegistrationMsg.attachMsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse, execute, and respond to a attach message</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>reqMsg</strong> : <em>string</em> – request containing (name)</li>
-<li><strong>st</strong> : <em>borrowed SymTab</em> – SymTab to act on</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reqMsg</strong> : <em>string</em> – request containing (name)</p></li>
+<li><p><strong>st</strong> : <em>borrowed SymTab</em> – SymTab to act on</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">MsgTuple response message</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>MsgTuple response message</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="RegistrationMsg.unregisterMsg">
-<em class="property">proc </em><code class="descname">unregisterMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#RegistrationMsg.unregisterMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">unregisterMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#RegistrationMsg.unregisterMsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse, execute, and respond to a unregister message</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>reqMsg</strong> : <em>string</em> – request containing (name)</li>
-<li><strong>st</strong> : <em>borrowed SymTab</em> – SymTab to act on</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reqMsg</strong> : <em>string</em> – request containing (name)</p></li>
+<li><p><strong>st</strong> : <em>borrowed SymTab</em> – SymTab to act on</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">MsgTuple response message</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>MsgTuple response message</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -303,11 +294,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2015
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -318,7 +317,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,27 +11,29 @@
   
 
   
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
     <link rel="next" title="MultiTypeSymbolTable" href="MultiTypeSymbolTable.html" />
@@ -50,7 +51,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> chpldoc
           
 
           
@@ -77,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -144,6 +146,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -182,7 +185,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>MultiTypeSymEntry</li>
     
@@ -210,215 +213,210 @@
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="nx">import</span> <span class="nx">MultiTypeSymEntry</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">MultiTypeSymEntry</span><span class="p">;</span>
 </pre></div>
 </div>
-<dl class="function">
+<dl class="chpl function">
 <dt id="MultiTypeSymEntry.toSymEntry">
-<em class="property">proc </em><code class="descname">toSymEntry</code><span class="sig-paren">(</span><em>gse: borrowed GenSymEntry</em>, <em>type etype</em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.toSymEntry" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">toSymEntry</code><span class="sig-paren">(</span><em class="sig-param">gse: borrowed GenSymEntry</em>, <em class="sig-param">type etype</em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.toSymEntry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Casts a GenSymEntry to the specified type and returns it.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>gse</strong> – generic sym entry</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><p><strong>gse</strong> – generic sym entry</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="class">
+<dl class="chpl class">
 <dt id="MultiTypeSymEntry.GenSymEntry">
-<em class="property">class </em><code class="descname">GenSymEntry</code><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">GenSymEntry</code><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is a dummy class to avoid having to talk about specific
 instantiations of SymEntry.</p>
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="MultiTypeSymEntry.GenSymEntry.dtype">
-<em class="property">var </em><code class="descname">dtype</code>: DType<a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.dtype" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">dtype</code>: DType<a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.dtype" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="MultiTypeSymEntry.GenSymEntry.itemsize">
-<em class="property">var </em><code class="descname">itemsize</code>: int<a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.itemsize" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">itemsize</code>: int<a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.itemsize" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="MultiTypeSymEntry.GenSymEntry.size">
-<em class="property">var </em><code class="descname">size</code>: int = 0<a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.size" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">size</code>: int = 0<a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.size" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="MultiTypeSymEntry.GenSymEntry.ndim">
-<em class="property">var </em><code class="descname">ndim</code>: int = 1<a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.ndim" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">ndim</code>: int = 1<a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.ndim" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="MultiTypeSymEntry.GenSymEntry.shape">
-<em class="property">var </em><code class="descname">shape</code>: 1*(int) = (0)<a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.shape" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">shape</code>: 1*(int) = (0,)<a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.shape" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="MultiTypeSymEntry.GenSymEntry.init">
-<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><em>type etype</em>, <em>len: int = 0</em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.init" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param">type etype</em>, <em class="sig-param">len: int = 0</em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.init" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="MultiTypeSymEntry.GenSymEntry.toSymEntry">
-<em class="property">proc </em><code class="descname">toSymEntry</code><span class="sig-paren">(</span><em>type etype</em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.toSymEntry" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">toSymEntry</code><span class="sig-paren">(</span><em class="sig-param">type etype</em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.toSymEntry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cast this <cite>GenSymEntry</cite> to <cite>borrowed SymEntry(etype)</cite></p>
 <p>This function will halt if the cast fails.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>etype</strong> : <em>type</em> – <cite>SymEntry</cite> type parameter</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><p><strong>etype</strong> : <em>type</em> – <cite>SymEntry</cite> type parameter</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="MultiTypeSymEntry.GenSymEntry.__str__">
-<em class="property">proc </em><code class="descname">__str__</code><span class="sig-paren">(</span><em>thresh: int = 1</em>, <em>prefix: string = &quot;&quot;</em>, <em>suffix: string = &quot;&quot;</em>, <em>baseFormat: string = &quot;&quot;</em><span class="sig-paren">)</span>: string throws<a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.__str__" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">__str__</code><span class="sig-paren">(</span><em class="sig-param">thresh: int = 1</em>, <em class="sig-param">prefix: string = &quot;&quot;</em>, <em class="sig-param">suffix: string = &quot;&quot;</em>, <em class="sig-param">baseFormat: string = &quot;&quot;</em><span class="sig-paren">)</span>: string throws<a class="headerlink" href="#MultiTypeSymEntry.GenSymEntry.__str__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Formats and returns data in this entry up to the specified threshold.
 Arrays of size less than threshold will be printed in their entirety.
 Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements</p>
 <blockquote>
-<div><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">arg thresh:</th><td class="field-body">threshold for data to return</td>
-</tr>
-<tr class="field-even field"><th class="field-name">type thresh:</th><td class="field-body">int</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">arg prefix:</th><td class="field-body">String to prepend to the front of the data string</td>
-</tr>
-<tr class="field-even field"><th class="field-name">type prefix:</th><td class="field-body">string</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">arg suffix:</th><td class="field-body">String to append to the tail of the data string</td>
-</tr>
-<tr class="field-even field"><th class="field-name">type suffix:</th><td class="field-body">string</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">arg baseFormat:</th><td class="field-body">String which represents the base format string for the data type</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">type baseFormat:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body">string</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">s (string) containing the array data</td>
-</tr>
-</tbody>
-</table>
+<div><dl class="field-list simple">
+<dt class="field-odd">arg thresh</dt>
+<dd class="field-odd"><p>threshold for data to return</p>
+</dd>
+<dt class="field-even">type thresh</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+<dt class="field-odd">arg prefix</dt>
+<dd class="field-odd"><p>String to prepend to the front of the data string</p>
+</dd>
+<dt class="field-even">type prefix</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+<dt class="field-odd">arg suffix</dt>
+<dd class="field-odd"><p>String to append to the tail of the data string</p>
+</dd>
+<dt class="field-even">type suffix</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+<dt class="field-odd">arg baseFormat</dt>
+<dd class="field-odd"><p>String which represents the base format string for the data type</p>
+</dd>
+<dt class="field-even">type baseFormat</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+<dt class="field-odd">returns</dt>
+<dd class="field-odd"><p>s (string) containing the array data</p>
+</dd>
+</dl>
 </div></blockquote>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="chpl class">
 <dt id="MultiTypeSymEntry.SymEntry">
-<em class="property">class </em><code class="descname">SymEntry</code>: GenSymEntry<a class="headerlink" href="#MultiTypeSymEntry.SymEntry" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">SymEntry</code>: GenSymEntry<a class="headerlink" href="#MultiTypeSymEntry.SymEntry" title="Permalink to this definition">¶</a></dt>
 <dd><p>Symbol table entry
 Only supports 1-d arrays for now</p>
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="MultiTypeSymEntry.SymEntry.etype">
-<em class="property">type </em><code class="descname">etype</code><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.etype" title="Permalink to this definition">¶</a></dt>
+<em class="property">type </em><code class="sig-name descname">etype</code><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.etype" title="Permalink to this definition">¶</a></dt>
 <dd><p>generic element type array
 etype is different from dtype (chapel vs numpy)</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="MultiTypeSymEntry.SymEntry.aD">
-<em class="property">var </em><code class="descname">aD</code>: makeDistDom(size).type<a class="headerlink" href="#MultiTypeSymEntry.SymEntry.aD" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">aD</code>: makeDistDom(size).type<a class="headerlink" href="#MultiTypeSymEntry.SymEntry.aD" title="Permalink to this definition">¶</a></dt>
 <dd><p>‘aD’ is the distributed domain for ‘a’ whose value and type
 are defined by makeDistDom() to support varying distributions</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="MultiTypeSymEntry.SymEntry.a">
-<em class="property">var </em><code class="descname">a</code>: [aD] etype<a class="headerlink" href="#MultiTypeSymEntry.SymEntry.a" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">a</code>: [aD] etype<a class="headerlink" href="#MultiTypeSymEntry.SymEntry.a" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="MultiTypeSymEntry.SymEntry.init">
-<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><em>len: int</em>, <em>type etype</em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.init" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param">len: int</em>, <em class="sig-param">type etype</em><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.init" title="Permalink to this definition">¶</a></dt>
 <dd><p>This init takes length and element type</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>len</strong> : <em>int</em> – length of array to be allocated</li>
-<li><strong>etype</strong> : <em>type</em> – type to be instantiated</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>len</strong> : <em>int</em> – length of array to be allocated</p></li>
+<li><p><strong>etype</strong> : <em>type</em> – type to be instantiated</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt>
-<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><em>a: [?D] ?etype</em><span class="sig-paren">)</span></dt>
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param">a: [?D] ?etype</em><span class="sig-paren">)</span></dt>
 <dd><p>This init takes an array of a type</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>a</strong> : <em>[] ?etype</em> – array</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><p><strong>a</strong> : <em>[] ?etype</em> – array</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="MultiTypeSymEntry.SymEntry.postinit">
-<em class="property">proc </em><code class="descname">postinit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.postinit" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">postinit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.postinit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verbose flag utility method</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="MultiTypeSymEntry.SymEntry.deinit">
-<em class="property">proc </em><code class="descname">deinit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.deinit" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">deinit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MultiTypeSymEntry.SymEntry.deinit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verbose flag utility method</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="MultiTypeSymEntry.SymEntry.writeThis">
-<em class="property">override proc </em><code class="descname">writeThis</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#MultiTypeSymEntry.SymEntry.writeThis" title="Permalink to this definition">¶</a></dt>
+<em class="property">override proc </em><code class="sig-name descname">writeThis</code><span class="sig-paren">(</span><em class="sig-param">f</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#MultiTypeSymEntry.SymEntry.writeThis" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="MultiTypeSymEntry.SymEntry.__str__">
-<em class="property">override proc </em><code class="descname">__str__</code><span class="sig-paren">(</span><em>thresh: int = 6</em>, <em>prefix: string = &quot;[&quot;</em>, <em>suffix: string = &quot;]&quot;</em>, <em>baseFormat: string = &quot;%t&quot;</em><span class="sig-paren">)</span>: string throws<a class="headerlink" href="#MultiTypeSymEntry.SymEntry.__str__" title="Permalink to this definition">¶</a></dt>
+<em class="property">override proc </em><code class="sig-name descname">__str__</code><span class="sig-paren">(</span><em class="sig-param">thresh: int = 6</em>, <em class="sig-param">prefix: string = &quot;[&quot;</em>, <em class="sig-param">suffix: string = &quot;]&quot;</em>, <em class="sig-param">baseFormat: string = &quot;%t&quot;</em><span class="sig-paren">)</span>: string throws<a class="headerlink" href="#MultiTypeSymEntry.SymEntry.__str__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Formats and returns data in this entry up to the specified threshold.
 Arrays of size less than threshold will be printed in their entirety.
 Arrays of size greater than or equal to threshold will print the first 3 and last 3 elements</p>
 <blockquote>
-<div><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">arg thresh:</th><td class="field-body">threshold for data to return</td>
-</tr>
-<tr class="field-even field"><th class="field-name">type thresh:</th><td class="field-body">int</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">arg prefix:</th><td class="field-body">String to pre-pend to the front of the data string</td>
-</tr>
-<tr class="field-even field"><th class="field-name">type prefix:</th><td class="field-body">string</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">arg suffix:</th><td class="field-body">String to append to the tail of the data string</td>
-</tr>
-<tr class="field-even field"><th class="field-name">type suffix:</th><td class="field-body">string</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">arg baseFormat:</th><td class="field-body">String which represents the base format string for the data type</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">type baseFormat:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body">string</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">s (string) containing the array data</td>
-</tr>
-</tbody>
-</table>
+<div><dl class="field-list simple">
+<dt class="field-odd">arg thresh</dt>
+<dd class="field-odd"><p>threshold for data to return</p>
+</dd>
+<dt class="field-even">type thresh</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+<dt class="field-odd">arg prefix</dt>
+<dd class="field-odd"><p>String to pre-pend to the front of the data string</p>
+</dd>
+<dt class="field-even">type prefix</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+<dt class="field-odd">arg suffix</dt>
+<dd class="field-odd"><p>String to append to the tail of the data string</p>
+</dd>
+<dt class="field-even">type suffix</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+<dt class="field-odd">arg baseFormat</dt>
+<dd class="field-odd"><p>String which represents the base format string for the data type</p>
+</dd>
+<dt class="field-even">type baseFormat</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+<dt class="field-odd">returns</dt>
+<dd class="field-odd"><p>s (string) containing the array data</p>
+</dd>
+</dl>
 </div></blockquote>
 </dd></dl>
 
@@ -446,11 +444,19 @@ Arrays of size greater than or equal to threshold will print the first 3 and las
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2015
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -461,7 +467,6 @@ Arrays of size greater than or equal to threshold will print the first 3 and las
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

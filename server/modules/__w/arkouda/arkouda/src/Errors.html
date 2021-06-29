@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,27 +11,29 @@
   
 
   
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
     <link rel="next" title="Extremas" href="Extremas.html" />
@@ -50,7 +51,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> chpldoc
           
 
           
@@ -77,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -144,6 +146,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -182,7 +185,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Errors</li>
     
@@ -210,255 +213,255 @@
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="nx">import</span> <span class="nx">Errors</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">Errors</span><span class="p">;</span>
 </pre></div>
 </div>
-<dl class="class">
+<dl class="chpl class">
 <dt id="Errors.ErrorWithContext">
-<em class="property">class </em><code class="descname">ErrorWithContext</code>: Error<a class="headerlink" href="#Errors.ErrorWithContext" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">ErrorWithContext</code>: Error<a class="headerlink" href="#Errors.ErrorWithContext" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Generates an error message that provides a fuller context to the error</li>
-<li>by including the line number, proc name, and module name from which the</li>
-<li>Error was thrown.</li>
+<li><p>Generates an error message that provides a fuller context to the error</p></li>
+<li><p>by including the line number, proc name, and module name from which the</p></li>
+<li><p>Error was thrown.</p></li>
 </ul>
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="Errors.ErrorWithContext.lineNumber">
-<em class="property">var </em><code class="descname">lineNumber</code>: int<a class="headerlink" href="#Errors.ErrorWithContext.lineNumber" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">lineNumber</code>: int<a class="headerlink" href="#Errors.ErrorWithContext.lineNumber" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="Errors.ErrorWithContext.routineName">
-<em class="property">var </em><code class="descname">routineName</code>: string<a class="headerlink" href="#Errors.ErrorWithContext.routineName" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">routineName</code>: string<a class="headerlink" href="#Errors.ErrorWithContext.routineName" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="Errors.ErrorWithContext.moduleName">
-<em class="property">var </em><code class="descname">moduleName</code>: string<a class="headerlink" href="#Errors.ErrorWithContext.moduleName" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">moduleName</code>: string<a class="headerlink" href="#Errors.ErrorWithContext.moduleName" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="Errors.ErrorWithContext.errorClass">
-<em class="property">var </em><code class="descname">errorClass</code>: string<a class="headerlink" href="#Errors.ErrorWithContext.errorClass" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">errorClass</code>: string<a class="headerlink" href="#Errors.ErrorWithContext.errorClass" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="Errors.ErrorWithContext.publishMsg">
-<em class="property">var </em><code class="descname">publishMsg</code>: string<a class="headerlink" href="#Errors.ErrorWithContext.publishMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">publishMsg</code>: string<a class="headerlink" href="#Errors.ErrorWithContext.publishMsg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="Errors.ErrorWithContext.init">
-<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><em>msg: string</em>, <em>lineNumber: int</em>, <em>routineName: string</em>, <em>moduleName: string</em>, <em>errorClass: string = &quot;ErrorWithContext&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#Errors.ErrorWithContext.init" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param">msg: string</em>, <em class="sig-param">lineNumber: int</em>, <em class="sig-param">routineName: string</em>, <em class="sig-param">moduleName: string</em>, <em class="sig-param">errorClass: string = &quot;ErrorWithContext&quot;</em><span class="sig-paren">)</span><a class="headerlink" href="#Errors.ErrorWithContext.init" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Accepts parameters that are used to generate the detailed, context-rich</li>
-<li>error message accessible via ErrorWithContext.message() as well as the</li>
-<li>client-formatted error message accessible via ErrorWithContext.publish()</li>
+<li><p>Accepts parameters that are used to generate the detailed, context-rich</p></li>
+<li><p>error message accessible via ErrorWithContext.message() as well as the</p></li>
+<li><p>client-formatted error message accessible via ErrorWithContext.publish()</p></li>
 </ul>
 </dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt>
-<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="Errors.ErrorWithContext.publish">
-<em class="property">proc </em><code class="descname">publish</code><span class="sig-paren">(</span><span class="sig-paren">)</span>: string<a class="headerlink" href="#Errors.ErrorWithContext.publish" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">publish</code><span class="sig-paren">(</span><span class="sig-paren">)</span>: string<a class="headerlink" href="#Errors.ErrorWithContext.publish" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Returns only the msg init parameter element prepended with “Error: “,</li>
-<li>which can be used to report errors back to the Arkouda client in a format</li>
-<li>understandable to front-end developers as well as users.</li>
+<li><p>Returns only the msg init parameter element prepended with “Error: “,</p></li>
+<li><p>which can be used to report errors back to the Arkouda client in a format</p></li>
+<li><p>understandable to front-end developers as well as users.</p></li>
 </ul>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="chpl class">
 <dt id="Errors.DatasetNotFoundError">
-<em class="property">class </em><code class="descname">DatasetNotFoundError</code>: ErrorWithContext<a class="headerlink" href="#Errors.DatasetNotFoundError" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">DatasetNotFoundError</code>: ErrorWithContext<a class="headerlink" href="#Errors.DatasetNotFoundError" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>The DatasetNotFoundError is thrown if there is no dataset in the file</li>
-<li>being accessed.</li>
+<li><p>The DatasetNotFoundError is thrown if there is no dataset in the file</p></li>
+<li><p>being accessed.</p></li>
 </ul>
-<dl class="method">
+<dl class="chpl method">
 <dt id="Errors.DatasetNotFoundError.init">
-<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><em>msg: string</em>, <em>lineNumber: int</em>, <em>routineName: string</em>, <em>moduleName: string</em><span class="sig-paren">)</span><a class="headerlink" href="#Errors.DatasetNotFoundError.init" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param">msg: string</em>, <em class="sig-param">lineNumber: int</em>, <em class="sig-param">routineName: string</em>, <em class="sig-param">moduleName: string</em><span class="sig-paren">)</span><a class="headerlink" href="#Errors.DatasetNotFoundError.init" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt>
-<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="chpl class">
 <dt id="Errors.WriteModeError">
-<em class="property">class </em><code class="descname">WriteModeError</code>: ErrorWithContext<a class="headerlink" href="#Errors.WriteModeError" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">WriteModeError</code>: ErrorWithContext<a class="headerlink" href="#Errors.WriteModeError" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>The WriteModeError is thrown if a file save operation is executed in append mode</li>
-<li>on a brand new file lacking any current datasets.</li>
+<li><p>The WriteModeError is thrown if a file save operation is executed in append mode</p></li>
+<li><p>on a brand new file lacking any current datasets.</p></li>
 </ul>
-<dl class="method">
+<dl class="chpl method">
 <dt id="Errors.WriteModeError.init">
-<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><em>msg: string</em>, <em>lineNumber: int</em>, <em>routineName: string</em>, <em>moduleName: string</em><span class="sig-paren">)</span><a class="headerlink" href="#Errors.WriteModeError.init" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param">msg: string</em>, <em class="sig-param">lineNumber: int</em>, <em class="sig-param">routineName: string</em>, <em class="sig-param">moduleName: string</em><span class="sig-paren">)</span><a class="headerlink" href="#Errors.WriteModeError.init" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt>
-<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="chpl class">
 <dt id="Errors.NotHDF5FileError">
-<em class="property">class </em><code class="descname">NotHDF5FileError</code>: ErrorWithContext<a class="headerlink" href="#Errors.NotHDF5FileError" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">NotHDF5FileError</code>: ErrorWithContext<a class="headerlink" href="#Errors.NotHDF5FileError" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>The NotHDF5FileError is thrown if it is determined a file is not HDFF file.</li>
+<li><p>The NotHDF5FileError is thrown if it is determined a file is not HDFF file.</p></li>
 </ul>
-<dl class="method">
+<dl class="chpl method">
 <dt id="Errors.NotHDF5FileError.init">
-<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><em>msg: string</em>, <em>lineNumber: int</em>, <em>routineName: string</em>, <em>moduleName: string</em><span class="sig-paren">)</span><a class="headerlink" href="#Errors.NotHDF5FileError.init" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param">msg: string</em>, <em class="sig-param">lineNumber: int</em>, <em class="sig-param">routineName: string</em>, <em class="sig-param">moduleName: string</em><span class="sig-paren">)</span><a class="headerlink" href="#Errors.NotHDF5FileError.init" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt>
-<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="chpl class">
 <dt id="Errors.HDF5FileFormatError">
-<em class="property">class </em><code class="descname">HDF5FileFormatError</code>: ErrorWithContext<a class="headerlink" href="#Errors.HDF5FileFormatError" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">HDF5FileFormatError</code>: ErrorWithContext<a class="headerlink" href="#Errors.HDF5FileFormatError" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>The HDF5FileFormatError is thrown if there is an error in parsing the HDF5 file.</li>
+<li><p>The HDF5FileFormatError is thrown if there is an error in parsing the HDF5 file.</p></li>
 </ul>
-<dl class="method">
+<dl class="chpl method">
 <dt id="Errors.HDF5FileFormatError.init">
-<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><em>msg: string</em>, <em>lineNumber: int</em>, <em>routineName: string</em>, <em>moduleName: string</em><span class="sig-paren">)</span><a class="headerlink" href="#Errors.HDF5FileFormatError.init" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param">msg: string</em>, <em class="sig-param">lineNumber: int</em>, <em class="sig-param">routineName: string</em>, <em class="sig-param">moduleName: string</em><span class="sig-paren">)</span><a class="headerlink" href="#Errors.HDF5FileFormatError.init" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt>
-<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="chpl class">
 <dt id="Errors.MismatchedAppendError">
-<em class="property">class </em><code class="descname">MismatchedAppendError</code>: ErrorWithContext<a class="headerlink" href="#Errors.MismatchedAppendError" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">MismatchedAppendError</code>: ErrorWithContext<a class="headerlink" href="#Errors.MismatchedAppendError" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>The MismatchedAppendError is thrown if an attempt is made to append a dataset to</li>
-<li>an HDF5 file where the number of locales for the current Arkouda instance differs</li>
-<li>from the number of locales in the Arkouda instance that wrote the original files.</li>
+<li><p>The MismatchedAppendError is thrown if an attempt is made to append a dataset to</p></li>
+<li><p>an HDF5 file where the number of locales for the current Arkouda instance differs</p></li>
+<li><p>from the number of locales in the Arkouda instance that wrote the original files.</p></li>
 </ul>
-<dl class="method">
+<dl class="chpl method">
 <dt id="Errors.MismatchedAppendError.init">
-<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><em>msg: string</em>, <em>lineNumber: int</em>, <em>routineName: string</em>, <em>moduleName: string</em><span class="sig-paren">)</span><a class="headerlink" href="#Errors.MismatchedAppendError.init" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param">msg: string</em>, <em class="sig-param">lineNumber: int</em>, <em class="sig-param">routineName: string</em>, <em class="sig-param">moduleName: string</em><span class="sig-paren">)</span><a class="headerlink" href="#Errors.MismatchedAppendError.init" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt>
-<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="chpl class">
 <dt id="Errors.SegArrayError">
-<em class="property">class </em><code class="descname">SegArrayError</code>: ErrorWithContext<a class="headerlink" href="#Errors.SegArrayError" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">SegArrayError</code>: ErrorWithContext<a class="headerlink" href="#Errors.SegArrayError" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>The SegArrayError is thrown if the file corresponding to the SegArray lacks either the</li>
-<li>SEGARRAY_OFFSET_NAME or SEGARRAY_VALUE_NAME dataset.</li>
+<li><p>The SegArrayError is thrown if the file corresponding to the SegArray lacks either the</p></li>
+<li><p>SEGARRAY_OFFSET_NAME or SEGARRAY_VALUE_NAME dataset.</p></li>
 </ul>
-<dl class="method">
+<dl class="chpl method">
 <dt id="Errors.SegArrayError.init">
-<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><em>msg: string</em>, <em>lineNumber: int</em>, <em>routineName: string</em>, <em>moduleName: string</em><span class="sig-paren">)</span><a class="headerlink" href="#Errors.SegArrayError.init" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param">msg: string</em>, <em class="sig-param">lineNumber: int</em>, <em class="sig-param">routineName: string</em>, <em class="sig-param">moduleName: string</em><span class="sig-paren">)</span><a class="headerlink" href="#Errors.SegArrayError.init" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt>
-<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="chpl class">
 <dt id="Errors.ArgumentError">
-<em class="property">class </em><code class="descname">ArgumentError</code>: ErrorWithContext<a class="headerlink" href="#Errors.ArgumentError" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">ArgumentError</code>: ErrorWithContext<a class="headerlink" href="#Errors.ArgumentError" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>The ArgumentError is thrown if there is a problem with 1.n arguments passed</li>
-<li>into a function.</li>
+<li><p>The ArgumentError is thrown if there is a problem with 1.n arguments passed</p></li>
+<li><p>into a function.</p></li>
 </ul>
-<dl class="method">
+<dl class="chpl method">
 <dt id="Errors.ArgumentError.init">
-<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><em>msg: string</em>, <em>lineNumber: int</em>, <em>routineName: string</em>, <em>moduleName: string</em><span class="sig-paren">)</span><a class="headerlink" href="#Errors.ArgumentError.init" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param">msg: string</em>, <em class="sig-param">lineNumber: int</em>, <em class="sig-param">routineName: string</em>, <em class="sig-param">moduleName: string</em><span class="sig-paren">)</span><a class="headerlink" href="#Errors.ArgumentError.init" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt>
-<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="chpl class">
 <dt id="Errors.NotImplementedError">
-<em class="property">class </em><code class="descname">NotImplementedError</code>: ErrorWithContext<a class="headerlink" href="#Errors.NotImplementedError" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">NotImplementedError</code>: ErrorWithContext<a class="headerlink" href="#Errors.NotImplementedError" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>The NotImplementedError is thrown if the requested operation has not been implemented</li>
-<li>for the specified data type(s) and/or command type.</li>
+<li><p>The NotImplementedError is thrown if the requested operation has not been implemented</p></li>
+<li><p>for the specified data type(s) and/or command type.</p></li>
 </ul>
-<dl class="method">
+<dl class="chpl method">
 <dt id="Errors.NotImplementedError.init">
-<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><em>msg: string</em>, <em>lineNumber: int</em>, <em>routineName: string</em>, <em>moduleName: string</em><span class="sig-paren">)</span><a class="headerlink" href="#Errors.NotImplementedError.init" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param">msg: string</em>, <em class="sig-param">lineNumber: int</em>, <em class="sig-param">routineName: string</em>, <em class="sig-param">moduleName: string</em><span class="sig-paren">)</span><a class="headerlink" href="#Errors.NotImplementedError.init" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt>
-<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="chpl class">
 <dt id="Errors.UnknownSymbolError">
-<em class="property">class </em><code class="descname">UnknownSymbolError</code>: ErrorWithContext<a class="headerlink" href="#Errors.UnknownSymbolError" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">UnknownSymbolError</code>: ErrorWithContext<a class="headerlink" href="#Errors.UnknownSymbolError" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>The UnknownSymbolError is thrown if there is not entry in the SymTab.</li>
+<li><p>The UnknownSymbolError is thrown if there is not entry in the SymTab.</p></li>
 </ul>
-<dl class="method">
+<dl class="chpl method">
 <dt id="Errors.UnknownSymbolError.init">
-<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><em>msg: string</em>, <em>lineNumber: int</em>, <em>routineName: string</em>, <em>moduleName: string</em><span class="sig-paren">)</span><a class="headerlink" href="#Errors.UnknownSymbolError.init" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param">msg: string</em>, <em class="sig-param">lineNumber: int</em>, <em class="sig-param">routineName: string</em>, <em class="sig-param">moduleName: string</em><span class="sig-paren">)</span><a class="headerlink" href="#Errors.UnknownSymbolError.init" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt>
-<em class="property">proc </em><code class="descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="Errors.generateErrorContext">
-<em class="property">proc </em><code class="descname">generateErrorContext</code><span class="sig-paren">(</span><em>msg: string</em>, <em>lineNumber: int</em>, <em>moduleName: string</em>, <em>routineName: string</em>, <em>errorClass: string = &quot;ErrorWithContext&quot;</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#Errors.generateErrorContext" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">generateErrorContext</code><span class="sig-paren">(</span><em class="sig-param">msg: string</em>, <em class="sig-param">lineNumber: int</em>, <em class="sig-param">moduleName: string</em>, <em class="sig-param">routineName: string</em>, <em class="sig-param">errorClass: string = &quot;ErrorWithContext&quot;</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#Errors.generateErrorContext" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Generatea a detailed, context-rich error message for errors such as instances of</li>
-<li>built-in Chapel Errors in a format that matches the Arkouda ErrorWithContext</li>
-<li>error message format.</li>
+<li><p>Generatea a detailed, context-rich error message for errors such as instances of</p></li>
+<li><p>built-in Chapel Errors in a format that matches the Arkouda ErrorWithContext</p></li>
+<li><p>error message format.</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="Errors.getErrorWithContext">
-<em class="property">proc </em><code class="descname">getErrorWithContext</code><span class="sig-paren">(</span><em>lineNumber: int</em>, <em>moduleName: string</em>, <em>routineName: string</em>, <em>msg: string</em>, <em>errorClass: string</em><span class="sig-paren">)</span>: Error throws<a class="headerlink" href="#Errors.getErrorWithContext" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">getErrorWithContext</code><span class="sig-paren">(</span><em class="sig-param">lineNumber: int</em>, <em class="sig-param">moduleName: string</em>, <em class="sig-param">routineName: string</em>, <em class="sig-param">msg: string</em>, <em class="sig-param">errorClass: string</em><span class="sig-paren">)</span>: Error throws<a class="headerlink" href="#Errors.getErrorWithContext" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Factory method for generating ErrorWithContext objects that include an error</li>
-<li>message as well as the line number, routine name, and module name where the</li>
-<li>error was thrown.</li>
+<li><p>Factory method for generating ErrorWithContext objects that include an error</p></li>
+<li><p>message as well as the line number, routine name, and module name where the</p></li>
+<li><p>error was thrown.</p></li>
 </ul>
 </dd></dl>
 
@@ -484,11 +487,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2015
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -499,7 +510,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

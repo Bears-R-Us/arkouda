@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,27 +11,29 @@
   
 
   
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
     <link rel="next" title="Unique" href="Unique.html" />
@@ -50,7 +51,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> chpldoc
           
 
           
@@ -77,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -144,6 +146,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -182,7 +185,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>SymArrayDmap</li>
     
@@ -210,71 +213,62 @@
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="nx">import</span> <span class="nx">SymArrayDmap</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">SymArrayDmap</span><span class="p">;</span>
 </pre></div>
 </div>
-<dl class="enum">
+<dl class="chpl enum">
 <dt id="SymArrayDmap.Dmap">
-<em class="property">enum </em><code class="descname">Dmap</code> { defaultRectangular, blockDist, cyclicDist }<a class="headerlink" href="#SymArrayDmap.Dmap" title="Permalink to this definition">¶</a></dt>
+<em class="property">enum </em><code class="sig-name descname">Dmap</code> { defaultRectangular, blockDist, cyclicDist }<a class="headerlink" href="#SymArrayDmap.Dmap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Available domain maps. Cyclic isn’t regularly tested and may not work.</p>
 </dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="SymArrayDmap.MyDmap">
-<em class="property">config param </em><code class="descname">MyDmap</code>: Dmap = defaultDmap<a class="headerlink" href="#SymArrayDmap.MyDmap" title="Permalink to this definition">¶</a></dt>
+<em class="property">config param </em><code class="sig-name descname">MyDmap</code>: Dmap = defaultDmap<a class="headerlink" href="#SymArrayDmap.MyDmap" title="Permalink to this definition">¶</a></dt>
 <dd><p>How domains/arrays are distributed. Defaults to <code class="xref chpl chpl-enum docutils literal notranslate"><span class="pre">Dmap.defaultRectangular</span></code> if
 <code class="xref chpl chpl-param docutils literal notranslate"><span class="pre">CHPL_COMM=none</span></code>, otherwise defaults to <code class="xref chpl chpl-enum docutils literal notranslate"><span class="pre">Dmap.blockDist</span></code>.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="SymArrayDmap.makeDistDom">
-<em class="property">proc </em><code class="descname">makeDistDom</code><span class="sig-paren">(</span><em>size: int</em><span class="sig-paren">)</span><a class="headerlink" href="#SymArrayDmap.makeDistDom" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">makeDistDom</code><span class="sig-paren">(</span><em class="sig-param">size: int</em><span class="sig-paren">)</span><a class="headerlink" href="#SymArrayDmap.makeDistDom" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes a domain distributed according to <a class="reference internal" href="#SymArrayDmap.MyDmap" title="SymArrayDmap.MyDmap"><code class="xref chpl chpl-param docutils literal notranslate"><span class="pre">MyDmap</span></code></a>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>size</strong> : <em>int</em> – size of domain</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><p><strong>size</strong> : <em>int</em> – size of domain</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="SymArrayDmap.makeDistArray">
-<em class="property">proc </em><code class="descname">makeDistArray</code><span class="sig-paren">(</span><em>size: int</em>, <em>type etype</em><span class="sig-paren">)</span><a class="headerlink" href="#SymArrayDmap.makeDistArray" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">makeDistArray</code><span class="sig-paren">(</span><em class="sig-param">size: int</em>, <em class="sig-param">type etype</em><span class="sig-paren">)</span><a class="headerlink" href="#SymArrayDmap.makeDistArray" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes an array of specified type over a distributed domain</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>size</strong> : <em>int</em> – size of the domain</li>
-<li><strong>etype</strong> : <em>type</em> – desired type of array</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>size</strong> : <em>int</em> – size of the domain</p></li>
+<li><p><strong>etype</strong> : <em>type</em> – desired type of array</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">[] ?etype</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[] ?etype</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="SymArrayDmap.makeDistDomType">
-<em class="property">proc </em><code class="descname">makeDistDomType</code><span class="sig-paren">(</span><em>size: int</em><span class="sig-paren">)</span> type<a class="headerlink" href="#SymArrayDmap.makeDistDomType" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">makeDistDomType</code><span class="sig-paren">(</span><em class="sig-param">size: int</em><span class="sig-paren">)</span> type<a class="headerlink" href="#SymArrayDmap.makeDistDomType" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the type of the distributed domain</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><strong>size</strong> : <em>int</em> – size of domain</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">type</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><p><strong>size</strong> : <em>int</em> – size of domain</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>type</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -299,11 +293,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2015
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -314,7 +316,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

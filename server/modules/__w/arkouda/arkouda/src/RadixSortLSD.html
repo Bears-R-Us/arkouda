@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,27 +11,29 @@
   
 
   
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
     <link rel="next" title="RandArray" href="RandArray.html" />
@@ -50,7 +51,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> chpldoc
           
 
           
@@ -77,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -144,6 +146,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -182,7 +185,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>RadixSortLSD</li>
     
@@ -210,119 +213,119 @@
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="nx">import</span> <span class="nx">RadixSortLSD</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">RadixSortLSD</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>Radix Sort Least Significant Digit</p>
-<dl class="data">
+<dl class="chpl data">
 <dt id="RadixSortLSD.RSLSD_vv">
-<em class="property">config const </em><code class="descname">RSLSD_vv</code> = false<a class="headerlink" href="#RadixSortLSD.RSLSD_vv" title="Permalink to this definition">¶</a></dt>
+<em class="property">config const </em><code class="sig-name descname">RSLSD_vv</code> = false<a class="headerlink" href="#RadixSortLSD.RSLSD_vv" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="RadixSortLSD.vv">
-<em class="property">const </em><code class="descname">vv</code> = RSLSD_vv<a class="headerlink" href="#RadixSortLSD.vv" title="Permalink to this definition">¶</a></dt>
+<em class="property">const </em><code class="sig-name descname">vv</code> = RSLSD_vv<a class="headerlink" href="#RadixSortLSD.vv" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="RadixSortLSD.RSLSD_numTasks">
-<em class="property">config const </em><code class="descname">RSLSD_numTasks</code> = here.maxTaskPar<a class="headerlink" href="#RadixSortLSD.RSLSD_numTasks" title="Permalink to this definition">¶</a></dt>
+<em class="property">config const </em><code class="sig-name descname">RSLSD_numTasks</code> = here.maxTaskPar<a class="headerlink" href="#RadixSortLSD.RSLSD_numTasks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="RadixSortLSD.numTasks">
-<em class="property">const </em><code class="descname">numTasks</code> = RSLSD_numTasks<a class="headerlink" href="#RadixSortLSD.numTasks" title="Permalink to this definition">¶</a></dt>
+<em class="property">const </em><code class="sig-name descname">numTasks</code> = RSLSD_numTasks<a class="headerlink" href="#RadixSortLSD.numTasks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="RadixSortLSD.Tasks">
-<em class="property">const </em><code class="descname">Tasks</code> = {0..#numTasks}<a class="headerlink" href="#RadixSortLSD.Tasks" title="Permalink to this definition">¶</a></dt>
+<em class="property">const </em><code class="sig-name descname">Tasks</code> = {0..#numTasks}<a class="headerlink" href="#RadixSortLSD.Tasks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="RadixSortLSD.RSLSD_bitsPerDigit">
-<em class="property">config param </em><code class="descname">RSLSD_bitsPerDigit</code> = 16<a class="headerlink" href="#RadixSortLSD.RSLSD_bitsPerDigit" title="Permalink to this definition">¶</a></dt>
+<em class="property">config param </em><code class="sig-name descname">RSLSD_bitsPerDigit</code> = 16<a class="headerlink" href="#RadixSortLSD.RSLSD_bitsPerDigit" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="RadixSortLSD.rsLogger">
-<em class="property">const </em><code class="descname">rsLogger</code> = new Logger(logLevel)<a class="headerlink" href="#RadixSortLSD.rsLogger" title="Permalink to this definition">¶</a></dt>
+<em class="property">const </em><code class="sig-name descname">rsLogger</code> = new Logger(logLevel)<a class="headerlink" href="#RadixSortLSD.rsLogger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="RadixSortLSD.getBitWidth">
-<em class="property">proc </em><code class="descname">getBitWidth</code><span class="sig-paren">(</span><em>a: [?aD] int</em><span class="sig-paren">)</span>: (int, bool)<a class="headerlink" href="#RadixSortLSD.getBitWidth" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">getBitWidth</code><span class="sig-paren">(</span><em class="sig-param">a: [?aD] int</em><span class="sig-paren">)</span>: (int, bool)<a class="headerlink" href="#RadixSortLSD.getBitWidth" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt>
-<em class="property">proc </em><code class="descname">getBitWidth</code><span class="sig-paren">(</span><em>a: [?aD] real</em><span class="sig-paren">)</span>: (int, bool)</dt>
+<em class="property">proc </em><code class="sig-name descname">getBitWidth</code><span class="sig-paren">(</span><em class="sig-param">a: [?aD] real</em><span class="sig-paren">)</span>: (int, bool)</dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt>
-<em class="property">proc </em><code class="descname">getBitWidth</code><span class="sig-paren">(</span><em>a: [?aD] (uint</em>, <em>uint)</em><span class="sig-paren">)</span>: (int, bool)</dt>
+<em class="property">proc </em><code class="sig-name descname">getBitWidth</code><span class="sig-paren">(</span><em class="sig-param">a: [?aD] (uint</em>, <em class="sig-param">uint)</em><span class="sig-paren">)</span>: (int, bool)</dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt>
-<em class="property">proc </em><code class="descname">getBitWidth</code><span class="sig-paren">(</span><em>a: [?aD] ?t</em><span class="sig-paren">)</span>: (int, bool)</dt>
+<em class="property">proc </em><code class="sig-name descname">getBitWidth</code><span class="sig-paren">(</span><em class="sig-param">a: [?aD] ?t</em><span class="sig-paren">)</span>: (int, bool)</dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="RadixSortLSD.getDigit">
-<em class="property">proc </em><code class="descname">getDigit</code><span class="sig-paren">(</span><em>key: int</em>, <em>rshift: int</em>, <em>last: bool</em>, <em>negs: bool</em><span class="sig-paren">)</span>: int<a class="headerlink" href="#RadixSortLSD.getDigit" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">getDigit</code><span class="sig-paren">(</span><em class="sig-param">key: int</em>, <em class="sig-param">rshift: int</em>, <em class="sig-param">last: bool</em>, <em class="sig-param">negs: bool</em><span class="sig-paren">)</span>: int<a class="headerlink" href="#RadixSortLSD.getDigit" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt>
-<em class="property">proc </em><code class="descname">getDigit</code><span class="sig-paren">(</span><em>key: uint</em>, <em>rshift: int</em>, <em>last: bool</em>, <em>negs: bool</em><span class="sig-paren">)</span>: int</dt>
+<em class="property">proc </em><code class="sig-name descname">getDigit</code><span class="sig-paren">(</span><em class="sig-param">key: uint</em>, <em class="sig-param">rshift: int</em>, <em class="sig-param">last: bool</em>, <em class="sig-param">negs: bool</em><span class="sig-paren">)</span>: int</dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt>
-<em class="property">proc </em><code class="descname">getDigit</code><span class="sig-paren">(</span><em>in key: real</em>, <em>rshift: int</em>, <em>last: bool</em>, <em>negs: bool</em><span class="sig-paren">)</span>: int</dt>
+<em class="property">proc </em><code class="sig-name descname">getDigit</code><span class="sig-paren">(</span><em class="sig-param">in key: real</em>, <em class="sig-param">rshift: int</em>, <em class="sig-param">last: bool</em>, <em class="sig-param">negs: bool</em><span class="sig-paren">)</span>: int</dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt>
-<em class="property">proc </em><code class="descname">getDigit</code><span class="sig-paren">(</span><em>key: 2*(uint)</em>, <em>rshift: int</em>, <em>last: bool</em>, <em>negs: bool</em><span class="sig-paren">)</span>: int</dt>
+<em class="property">proc </em><code class="sig-name descname">getDigit</code><span class="sig-paren">(</span><em class="sig-param">key: 2*(uint)</em>, <em class="sig-param">rshift: int</em>, <em class="sig-param">last: bool</em>, <em class="sig-param">negs: bool</em><span class="sig-paren">)</span>: int</dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt>
-<em class="property">proc </em><code class="descname">getDigit</code><span class="sig-paren">(</span><em>key: _tuple</em>, <em>rshift: int</em>, <em>last: bool</em>, <em>negs: bool</em><span class="sig-paren">)</span>: int</dt>
+<em class="property">proc </em><code class="sig-name descname">getDigit</code><span class="sig-paren">(</span><em class="sig-param">key: _tuple</em>, <em class="sig-param">rshift: int</em>, <em class="sig-param">last: bool</em>, <em class="sig-param">negs: bool</em><span class="sig-paren">)</span>: int</dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="RadixSortLSD.calcBlock">
-<em class="property">proc </em><code class="descname">calcBlock</code><span class="sig-paren">(</span><em>task: int</em>, <em>low: int</em>, <em>high: int</em><span class="sig-paren">)</span><a class="headerlink" href="#RadixSortLSD.calcBlock" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">calcBlock</code><span class="sig-paren">(</span><em class="sig-param">task: int</em>, <em class="sig-param">low: int</em>, <em class="sig-param">high: int</em><span class="sig-paren">)</span><a class="headerlink" href="#RadixSortLSD.calcBlock" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="RadixSortLSD.calcGlobalIndex">
-<em class="property">proc </em><code class="descname">calcGlobalIndex</code><span class="sig-paren">(</span><em>bucket: int</em>, <em>loc: int</em>, <em>task: int</em><span class="sig-paren">)</span>: int<a class="headerlink" href="#RadixSortLSD.calcGlobalIndex" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">calcGlobalIndex</code><span class="sig-paren">(</span><em class="sig-param">bucket: int</em>, <em class="sig-param">loc: int</em>, <em class="sig-param">task: int</em><span class="sig-paren">)</span>: int<a class="headerlink" href="#RadixSortLSD.calcGlobalIndex" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="RadixSortLSD.radixSortLSD_ranks">
-<em class="property">proc </em><code class="descname">radixSortLSD_ranks</code><span class="sig-paren">(</span><em>a: [?aD] ?t</em>, <em>checkSorted: bool = true</em><span class="sig-paren">)</span>: [aD] int<a class="headerlink" href="#RadixSortLSD.radixSortLSD_ranks" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">radixSortLSD_ranks</code><span class="sig-paren">(</span><em class="sig-param">a: [?aD] ?t</em>, <em class="sig-param">checkSorted: bool = true</em><span class="sig-paren">)</span>: [aD] int<a class="headerlink" href="#RadixSortLSD.radixSortLSD_ranks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Radix Sort Least Significant Digit
 radix sort a block distributed array
 returning a permutation vector as a block distributed array</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="RadixSortLSD.radixSortLSD_keys">
-<em class="property">proc </em><code class="descname">radixSortLSD_keys</code><span class="sig-paren">(</span><em>a: [?aD] ?t</em>, <em>checkSorted: bool = true</em><span class="sig-paren">)</span>: [aD] t<a class="headerlink" href="#RadixSortLSD.radixSortLSD_keys" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">radixSortLSD_keys</code><span class="sig-paren">(</span><em class="sig-param">a: [?aD] ?t</em>, <em class="sig-param">checkSorted: bool = true</em><span class="sig-paren">)</span>: [aD] t<a class="headerlink" href="#RadixSortLSD.radixSortLSD_keys" title="Permalink to this definition">¶</a></dt>
 <dd><p>Radix Sort Least Significant Digit
 radix sort a block distributed array
 returning sorted keys as a block distributed array</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="RadixSortLSD.radixSortLSD_memEst">
-<em class="property">proc </em><code class="descname">radixSortLSD_memEst</code><span class="sig-paren">(</span><em>size: int</em>, <em>itemsize: int</em><span class="sig-paren">)</span><a class="headerlink" href="#RadixSortLSD.radixSortLSD_memEst" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">radixSortLSD_memEst</code><span class="sig-paren">(</span><em class="sig-param">size: int</em>, <em class="sig-param">itemsize: int</em><span class="sig-paren">)</span><a class="headerlink" href="#RadixSortLSD.radixSortLSD_memEst" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -347,11 +350,19 @@ returning sorted keys as a block distributed array</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2015
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -362,7 +373,6 @@ returning sorted keys as a block distributed array</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

@@ -17,7 +17,7 @@ or
 
    import CommPrimitives;
 
-.. function:: proc getAddr(const ref p): c_ptr(p.type )
+.. function:: proc getAddr(const ref p): c_ptr(p.type)
 
 .. function:: proc GET(addr, node, rAddr, size)
 

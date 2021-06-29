@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,27 +11,29 @@
   
 
   
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
     <link rel="next" title="RandMsg" href="RandMsg.html" />
@@ -50,7 +51,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> chpldoc
           
 
           
@@ -77,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -144,6 +146,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -182,7 +185,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>RandArray</li>
     
@@ -210,62 +213,62 @@
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="nx">import</span> <span class="nx">RandArray</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">RandArray</span><span class="p">;</span>
 </pre></div>
 </div>
-<dl class="data">
+<dl class="chpl data">
 <dt id="RandArray.raLogger">
-<em class="property">const </em><code class="descname">raLogger</code> = new Logger(logLevel)<a class="headerlink" href="#RandArray.raLogger" title="Permalink to this definition">¶</a></dt>
+<em class="property">const </em><code class="sig-name descname">raLogger</code> = new Logger(logLevel)<a class="headerlink" href="#RandArray.raLogger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="RandArray.fillInt">
-<em class="property">proc </em><code class="descname">fillInt</code><span class="sig-paren">(</span><em>a: [] ?t</em>, <em>const aMin</em>, <em>const aMax</em>, <em>const seedStr: string = &quot;None&quot;</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#RandArray.fillInt" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">fillInt</code><span class="sig-paren">(</span><em class="sig-param">a: [] ?t</em>, <em class="sig-param">const aMin</em>, <em class="sig-param">const aMax</em>, <em class="sig-param">const seedStr: string = &quot;None&quot;</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#RandArray.fillInt" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="RandArray.fillUInt">
-<em class="property">proc </em><code class="descname">fillUInt</code><span class="sig-paren">(</span><em>a: [] ?t</em>, <em>const aMin</em>, <em>const aMax</em>, <em>const seedStr: string = &quot;None&quot;</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#RandArray.fillUInt" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">fillUInt</code><span class="sig-paren">(</span><em class="sig-param">a: [] ?t</em>, <em class="sig-param">const aMin</em>, <em class="sig-param">const aMax</em>, <em class="sig-param">const seedStr: string = &quot;None&quot;</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#RandArray.fillUInt" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="RandArray.fillReal">
-<em class="property">proc </em><code class="descname">fillReal</code><span class="sig-paren">(</span><em>a: [] real</em>, <em>const aMin: numeric = 0.0</em>, <em>const aMax: numeric = 1.0</em>, <em>const seedStr: string = &quot;None&quot;</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#RandArray.fillReal" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">fillReal</code><span class="sig-paren">(</span><em class="sig-param">a: [] real</em>, <em class="sig-param">const aMin: numeric = 0.0</em>, <em class="sig-param">const aMax: numeric = 1.0</em>, <em class="sig-param">const seedStr: string = &quot;None&quot;</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#RandArray.fillReal" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="RandArray.fillBool">
-<em class="property">proc </em><code class="descname">fillBool</code><span class="sig-paren">(</span><em>a: [] bool</em>, <em>const seedStr: string = &quot;None&quot;</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#RandArray.fillBool" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">fillBool</code><span class="sig-paren">(</span><em class="sig-param">a: [] bool</em>, <em class="sig-param">const seedStr: string = &quot;None&quot;</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#RandArray.fillBool" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="RandArray.fillNormal">
-<em class="property">proc </em><code class="descname">fillNormal</code><span class="sig-paren">(</span><em>a: [?D] real</em>, <em>const seedStr: string = &quot;None&quot;</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#RandArray.fillNormal" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">fillNormal</code><span class="sig-paren">(</span><em class="sig-param">a: [?D] real</em>, <em class="sig-param">const seedStr: string = &quot;None&quot;</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#RandArray.fillNormal" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="enum">
+<dl class="chpl enum">
 <dt id="RandArray.charSet">
-<em class="property">enum </em><code class="descname">charSet</code> { Uppercase, Lowercase, Numeric, Printable, Binary }<a class="headerlink" href="#RandArray.charSet" title="Permalink to this definition">¶</a></dt>
+<em class="property">enum </em><code class="sig-name descname">charSet</code> { Uppercase, Lowercase, Numeric, Printable, Binary }<a class="headerlink" href="#RandArray.charSet" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="RandArray.str2CharSet">
-<em class="property">proc </em><code class="descname">str2CharSet</code><span class="sig-paren">(</span><em>str: string</em><span class="sig-paren">)</span>: charSet<a class="headerlink" href="#RandArray.str2CharSet" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">str2CharSet</code><span class="sig-paren">(</span><em class="sig-param">str: string</em><span class="sig-paren">)</span>: charSet<a class="headerlink" href="#RandArray.str2CharSet" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="RandArray.charBounds">
-<em class="property">var </em><code class="descname">charBounds</code>: map(keyType = charSet, valType = 2*(int), parSafe = false)<a class="headerlink" href="#RandArray.charBounds" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">charBounds</code>: map(keyType = charSet, valType = 2*(int), parSafe = false)<a class="headerlink" href="#RandArray.charBounds" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="RandArray.newRandStringsUniformLength">
-<em class="property">proc </em><code class="descname">newRandStringsUniformLength</code><span class="sig-paren">(</span><em>const n: int</em>, <em>const minLen: int</em>, <em>const maxLen: int</em>, <em>characters: charSet = charSet.Uppercase</em>, <em>const seedStr: string = &quot;None&quot;</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#RandArray.newRandStringsUniformLength" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">newRandStringsUniformLength</code><span class="sig-paren">(</span><em class="sig-param">const n: int</em>, <em class="sig-param">const minLen: int</em>, <em class="sig-param">const maxLen: int</em>, <em class="sig-param">characters: charSet = charSet.Uppercase</em>, <em class="sig-param">const seedStr: string = &quot;None&quot;</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#RandArray.newRandStringsUniformLength" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="RandArray.newRandStringsLogNormalLength">
-<em class="property">proc </em><code class="descname">newRandStringsLogNormalLength</code><span class="sig-paren">(</span><em>const n: int</em>, <em>const logMean: numeric</em>, <em>const logStd: numeric</em>, <em>characters: charSet = charSet.Uppercase</em>, <em>const seedStr: string = &quot;None&quot;</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#RandArray.newRandStringsLogNormalLength" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">newRandStringsLogNormalLength</code><span class="sig-paren">(</span><em class="sig-param">const n: int</em>, <em class="sig-param">const logMean: numeric</em>, <em class="sig-param">const logStd: numeric</em>, <em class="sig-param">characters: charSet = charSet.Uppercase</em>, <em class="sig-param">const seedStr: string = &quot;None&quot;</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#RandArray.newRandStringsLogNormalLength" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -290,11 +293,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2015
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -305,7 +316,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

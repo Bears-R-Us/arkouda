@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,27 +11,29 @@
   
 
   
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
     <link rel="next" title="Histogram" href="Histogram.html" />
@@ -50,7 +51,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> chpldoc
           
 
           
@@ -77,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -144,6 +146,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -182,7 +185,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>GenSymIO</li>
     
@@ -210,311 +213,311 @@
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="nx">import</span> <span class="nx">GenSymIO</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">GenSymIO</span><span class="p">;</span>
 </pre></div>
 </div>
-<dl class="data">
+<dl class="chpl data">
 <dt id="GenSymIO.gsLogger">
-<em class="property">const </em><code class="descname">gsLogger</code> = new Logger(logLevel)<a class="headerlink" href="#GenSymIO.gsLogger" title="Permalink to this definition">¶</a></dt>
+<em class="property">const </em><code class="sig-name descname">gsLogger</code> = new Logger(logLevel)<a class="headerlink" href="#GenSymIO.gsLogger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="GenSymIO.GenSymIO_DEBUG">
-<em class="property">config const </em><code class="descname">GenSymIO_DEBUG</code> = false<a class="headerlink" href="#GenSymIO.GenSymIO_DEBUG" title="Permalink to this definition">¶</a></dt>
+<em class="property">config const </em><code class="sig-name descname">GenSymIO_DEBUG</code> = false<a class="headerlink" href="#GenSymIO.GenSymIO_DEBUG" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="GenSymIO.SEGARRAY_OFFSET_NAME">
-<em class="property">config const </em><code class="descname">SEGARRAY_OFFSET_NAME</code> = &quot;segments&quot;<a class="headerlink" href="#GenSymIO.SEGARRAY_OFFSET_NAME" title="Permalink to this definition">¶</a></dt>
+<em class="property">config const </em><code class="sig-name descname">SEGARRAY_OFFSET_NAME</code> = &quot;segments&quot;<a class="headerlink" href="#GenSymIO.SEGARRAY_OFFSET_NAME" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="GenSymIO.SEGARRAY_VALUE_NAME">
-<em class="property">config const </em><code class="descname">SEGARRAY_VALUE_NAME</code> = &quot;values&quot;<a class="headerlink" href="#GenSymIO.SEGARRAY_VALUE_NAME" title="Permalink to this definition">¶</a></dt>
+<em class="property">config const </em><code class="sig-name descname">SEGARRAY_VALUE_NAME</code> = &quot;values&quot;<a class="headerlink" href="#GenSymIO.SEGARRAY_VALUE_NAME" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="GenSymIO.NULL_STRINGS_VALUE">
-<em class="property">config const </em><code class="descname">NULL_STRINGS_VALUE</code> = 0: uint(8)<a class="headerlink" href="#GenSymIO.NULL_STRINGS_VALUE" title="Permalink to this definition">¶</a></dt>
+<em class="property">config const </em><code class="sig-name descname">NULL_STRINGS_VALUE</code> = 0: uint(8)<a class="headerlink" href="#GenSymIO.NULL_STRINGS_VALUE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="GenSymIO.TRUNCATE">
-<em class="property">config const </em><code class="descname">TRUNCATE</code>: int = 0<a class="headerlink" href="#GenSymIO.TRUNCATE" title="Permalink to this definition">¶</a></dt>
+<em class="property">config const </em><code class="sig-name descname">TRUNCATE</code>: int = 0<a class="headerlink" href="#GenSymIO.TRUNCATE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="GenSymIO.APPEND">
-<em class="property">config const </em><code class="descname">APPEND</code>: int = 1<a class="headerlink" href="#GenSymIO.APPEND" title="Permalink to this definition">¶</a></dt>
+<em class="property">config const </em><code class="sig-name descname">APPEND</code>: int = 1<a class="headerlink" href="#GenSymIO.APPEND" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.arrayMsg">
-<em class="property">proc </em><code class="descname">arrayMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: bytes</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#GenSymIO.arrayMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">arrayMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: bytes</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#GenSymIO.arrayMsg" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Creates a pdarray server-side and returns the SymTab name used to</li>
-<li>retrieve the pdarray from the SymTab.</li>
+<li><p>Creates a pdarray server-side and returns the SymTab name used to</p></li>
+<li><p>retrieve the pdarray from the SymTab.</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.tondarrayMsg">
-<em class="property">proc </em><code class="descname">tondarrayMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: bytes throws<a class="headerlink" href="#GenSymIO.tondarrayMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">tondarrayMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: bytes throws<a class="headerlink" href="#GenSymIO.tondarrayMsg" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Outputs the pdarray as a Numpy ndarray in the form of a</li>
-<li>Chapel Bytes object</li>
+<li><p>Outputs the pdarray as a Numpy ndarray in the form of a</p></li>
+<li><p>Chapel Bytes object</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.jsonToPdArray">
-<em class="property">proc </em><code class="descname">jsonToPdArray</code><span class="sig-paren">(</span><em>json: string</em>, <em>size: int</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.jsonToPdArray" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">jsonToPdArray</code><span class="sig-paren">(</span><em class="sig-param">json: string</em>, <em class="sig-param">size: int</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.jsonToPdArray" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Converts the JSON array to a pdarray</li>
+<li><p>Converts the JSON array to a pdarray</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.lshdfMsg">
-<em class="property">proc </em><code class="descname">lshdfMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#GenSymIO.lshdfMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">lshdfMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#GenSymIO.lshdfMsg" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Spawns a separate Chapel process that executes and returns the</li>
-<li>result of the h5ls command</li>
+<li><p>Spawns a separate Chapel process that executes and returns the</p></li>
+<li><p>result of the h5ls command</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.readhdfMsg">
-<em class="property">proc </em><code class="descname">readhdfMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#GenSymIO.readhdfMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">readhdfMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#GenSymIO.readhdfMsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read dataset from HDF5 files into arkouda symbol table.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.readAllHdfMsg">
-<em class="property">proc </em><code class="descname">readAllHdfMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#GenSymIO.readAllHdfMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">readAllHdfMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#GenSymIO.readAllHdfMsg" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Reads all datasets from 1..n HDF5 files into an Arkouda symbol table.</li>
+<li><p>Reads all datasets from 1..n HDF5 files into an Arkouda symbol table.</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.fixupSegBoundaries">
-<em class="property">proc </em><code class="descname">fixupSegBoundaries</code><span class="sig-paren">(</span><em>a: [?D] int</em>, <em>segSubdoms: [?fD] domain(1)</em>, <em>valSubdoms: [fD] domain(1)</em><span class="sig-paren">)</span><a class="headerlink" href="#GenSymIO.fixupSegBoundaries" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">fixupSegBoundaries</code><span class="sig-paren">(</span><em class="sig-param">a: [?D] int</em>, <em class="sig-param">segSubdoms: [?fD] domain(1)</em>, <em class="sig-param">valSubdoms: [fD] domain(1)</em><span class="sig-paren">)</span><a class="headerlink" href="#GenSymIO.fixupSegBoundaries" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.get_dtype">
-<em class="property">proc </em><code class="descname">get_dtype</code><span class="sig-paren">(</span><em>filename: string</em>, <em>dsetName: string</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.get_dtype" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">get_dtype</code><span class="sig-paren">(</span><em class="sig-param">filename: string</em>, <em class="sig-param">dsetName: string</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.get_dtype" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Retrieves the datatype of the dataset read from HDF5</li>
+<li><p>Retrieves the datatype of the dataset read from HDF5</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.isHdf5File">
-<em class="property">proc </em><code class="descname">isHdf5File</code><span class="sig-paren">(</span><em>filename: string</em><span class="sig-paren">)</span>: int throws<a class="headerlink" href="#GenSymIO.isHdf5File" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">isHdf5File</code><span class="sig-paren">(</span><em class="sig-param">filename: string</em><span class="sig-paren">)</span>: int throws<a class="headerlink" href="#GenSymIO.isHdf5File" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Returns boolean indicating whether the file is a valid HDF5 file.</li>
-<li>Note: if the file cannot be opened due to permissions, throws</li>
-<li>a PermissionError</li>
+<li><p>Returns boolean indicating whether the file is a valid HDF5 file.</p></li>
+<li><p>Note: if the file cannot be opened due to permissions, throws</p></li>
+<li><p>a PermissionError</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.get_dataset_info">
-<em class="property">proc </em><code class="descname">get_dataset_info</code><span class="sig-paren">(</span><em>file_id</em>, <em>dsetName</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.get_dataset_info" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">get_dataset_info</code><span class="sig-paren">(</span><em class="sig-param">file_id</em>, <em class="sig-param">dsetName</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.get_dataset_info" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Returns a tuple containing the data type, data class, and a</li>
-<li>boolean indicating whether the datatype is signed for the</li>
-<li>supplied file id and dataset name.</li>
+<li><p>Returns a tuple containing the data type, data class, and a</p></li>
+<li><p>boolean indicating whether the datatype is signed for the</p></li>
+<li><p>supplied file id and dataset name.</p></li>
 </ul>
 </dd></dl>
 
-<dl class="class">
+<dl class="chpl class">
 <dt id="GenSymIO.HDF5RankError">
-<em class="property">class </em><code class="descname">HDF5RankError</code>: Error<a class="headerlink" href="#GenSymIO.HDF5RankError" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="attribute">
+<em class="property">class </em><code class="sig-name descname">HDF5RankError</code>: Error<a class="headerlink" href="#GenSymIO.HDF5RankError" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="chpl attribute">
 <dt id="GenSymIO.HDF5RankError.rank">
-<em class="property">var </em><code class="descname">rank</code>: int<a class="headerlink" href="#GenSymIO.HDF5RankError.rank" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">rank</code>: int<a class="headerlink" href="#GenSymIO.HDF5RankError.rank" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="GenSymIO.HDF5RankError.filename">
-<em class="property">var </em><code class="descname">filename</code>: string<a class="headerlink" href="#GenSymIO.HDF5RankError.filename" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">filename</code>: string<a class="headerlink" href="#GenSymIO.HDF5RankError.filename" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="GenSymIO.HDF5RankError.dsetName">
-<em class="property">var </em><code class="descname">dsetName</code>: string<a class="headerlink" href="#GenSymIO.HDF5RankError.dsetName" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">dsetName</code>: string<a class="headerlink" href="#GenSymIO.HDF5RankError.dsetName" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.isStringsDataset">
-<em class="property">proc </em><code class="descname">isStringsDataset</code><span class="sig-paren">(</span><em>file_id: int</em>, <em>dsetName: string</em><span class="sig-paren">)</span>: bool throws<a class="headerlink" href="#GenSymIO.isStringsDataset" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">isStringsDataset</code><span class="sig-paren">(</span><em class="sig-param">file_id: int</em>, <em class="sig-param">dsetName: string</em><span class="sig-paren">)</span>: bool throws<a class="headerlink" href="#GenSymIO.isStringsDataset" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Returns a boolean indicating whether the dataset is a Strings</li>
-<li>dataset, checking if the values dataset is embedded within a</li>
-<li>group named after the dsetName.</li>
+<li><p>Returns a boolean indicating whether the dataset is a Strings</p></li>
+<li><p>dataset, checking if the values dataset is embedded within a</p></li>
+<li><p>group named after the dsetName.</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.isBooleanDataset">
-<em class="property">proc </em><code class="descname">isBooleanDataset</code><span class="sig-paren">(</span><em>file_id: int</em>, <em>dsetName: string</em><span class="sig-paren">)</span>: bool throws<a class="headerlink" href="#GenSymIO.isBooleanDataset" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">isBooleanDataset</code><span class="sig-paren">(</span><em class="sig-param">file_id: int</em>, <em class="sig-param">dsetName: string</em><span class="sig-paren">)</span>: bool throws<a class="headerlink" href="#GenSymIO.isBooleanDataset" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Returns a boolean indicating whether the dataset is a boolean</li>
-<li>dataset, checking if the booleans dataset is embedded within a</li>
-<li>group named after the dsetName.</li>
+<li><p>Returns a boolean indicating whether the dataset is a boolean</p></li>
+<li><p>dataset, checking if the booleans dataset is embedded within a</p></li>
+<li><p>group named after the dsetName.</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt>
-<em class="property">proc </em><code class="descname">isBooleanDataset</code><span class="sig-paren">(</span><em>fileName: string</em>, <em>dsetName: string</em><span class="sig-paren">)</span>: bool throws</dt>
+<em class="property">proc </em><code class="sig-name descname">isBooleanDataset</code><span class="sig-paren">(</span><em class="sig-param">fileName: string</em>, <em class="sig-param">dsetName: string</em><span class="sig-paren">)</span>: bool throws</dt>
 <dd><ul class="simple">
-<li>Overloaded method returns a boolean indicating whether the dataset is a</li>
-<li>boolean dataset, checking if the booleans dataset is embedded within a</li>
-<li>group named after the dsetName. This implementation retrieves the file id</li>
-<li>for a file name and invokes isBooleanDataset with file id.</li>
+<li><p>Overloaded method returns a boolean indicating whether the dataset is a</p></li>
+<li><p>boolean dataset, checking if the booleans dataset is embedded within a</p></li>
+<li><p>group named after the dsetName. This implementation retrieves the file id</p></li>
+<li><p>for a file name and invokes isBooleanDataset with file id.</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.get_subdoms">
-<em class="property">proc </em><code class="descname">get_subdoms</code><span class="sig-paren">(</span><em>filenames: [?FD] string</em>, <em>dsetName: string</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.get_subdoms" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">get_subdoms</code><span class="sig-paren">(</span><em class="sig-param">filenames: [?FD] string</em>, <em class="sig-param">dsetName: string</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.get_subdoms" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Get the subdomains of the distributed array represented by each file,</li>
-<li>as well as the total length of the array.</li>
+<li><p>Get the subdomains of the distributed array represented by each file,</p></li>
+<li><p>as well as the total length of the array.</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.read_files_into_distributed_array">
-<em class="property">proc </em><code class="descname">read_files_into_distributed_array</code><span class="sig-paren">(</span><em>A</em>, <em>filedomains: [?FD] domain(1)</em>, <em>filenames: [FD] string</em>, <em>dsetName: string</em><span class="sig-paren">)</span><a class="headerlink" href="#GenSymIO.read_files_into_distributed_array" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">read_files_into_distributed_array</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">filedomains: [?FD] domain(1)</em>, <em class="sig-param">filenames: [FD] string</em>, <em class="sig-param">dsetName: string</em><span class="sig-paren">)</span><a class="headerlink" href="#GenSymIO.read_files_into_distributed_array" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function gets called when A is a BlockDist or DefaultRectangular array.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt>
-<em class="property">proc </em><code class="descname">read_files_into_distributed_array</code><span class="sig-paren">(</span><em>A</em>, <em>filedomains: [?FD] domain(1)</em>, <em>filenames: [FD] string</em>, <em>dsetName: string</em><span class="sig-paren">)</span></dt>
+<em class="property">proc </em><code class="sig-name descname">read_files_into_distributed_array</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">filedomains: [?FD] domain(1)</em>, <em class="sig-param">filenames: [FD] string</em>, <em class="sig-param">dsetName: string</em><span class="sig-paren">)</span></dt>
 <dd><p>This function is called when A is a CyclicDist array.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.domain_intersection">
-<em class="property">proc </em><code class="descname">domain_intersection</code><span class="sig-paren">(</span><em>d1: domain(1)</em>, <em>d2: domain(1)</em><span class="sig-paren">)</span><a class="headerlink" href="#GenSymIO.domain_intersection" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">domain_intersection</code><span class="sig-paren">(</span><em class="sig-param">d1: domain(1)</em>, <em class="sig-param">d2: domain(1)</em><span class="sig-paren">)</span><a class="headerlink" href="#GenSymIO.domain_intersection" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.tohdfMsg">
-<em class="property">proc </em><code class="descname">tohdfMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#GenSymIO.tohdfMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">tohdfMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#GenSymIO.tohdfMsg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.write1DDistArray">
-<em class="property">proc </em><code class="descname">write1DDistArray</code><span class="sig-paren">(</span><em>filename: string</em>, <em>mode: int</em>, <em>dsetName: string</em>, <em>A</em>, <em>array_type: DType</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.write1DDistArray" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">write1DDistArray</code><span class="sig-paren">(</span><em class="sig-param">filename: string</em>, <em class="sig-param">mode: int</em>, <em class="sig-param">dsetName: string</em>, <em class="sig-param">A</em>, <em class="sig-param">array_type: DType</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.write1DDistArray" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Writes the float, int, or bool pdarray out to hdf5</li>
+<li><p>Writes the float, int, or bool pdarray out to hdf5</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.isGroupedDataType">
-<em class="property">proc </em><code class="descname">isGroupedDataType</code><span class="sig-paren">(</span><em>dType: C_HDF5.hid_t</em><span class="sig-paren">)</span>: bool<a class="headerlink" href="#GenSymIO.isGroupedDataType" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">isGroupedDataType</code><span class="sig-paren">(</span><em class="sig-param">dType: C_HDF5.hid_t</em><span class="sig-paren">)</span>: bool<a class="headerlink" href="#GenSymIO.isGroupedDataType" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Returns a boolean indicating if the data type is written to an HDF5</li>
-<li>group, which currently is C_HDF5.H5T_NATIVE_HBOOL.</li>
+<li><p>Returns a boolean indicating if the data type is written to an HDF5</p></li>
+<li><p>group, which currently is C_HDF5.H5T_NATIVE_HBOOL.</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.getDataType">
-<em class="property">proc </em><code class="descname">getDataType</code><span class="sig-paren">(</span><em>A</em><span class="sig-paren">)</span>: C_HDF5.hid_t<a class="headerlink" href="#GenSymIO.getDataType" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">getDataType</code><span class="sig-paren">(</span><em class="sig-param">A</em><span class="sig-paren">)</span>: C_HDF5.hid_t<a class="headerlink" href="#GenSymIO.getDataType" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Returns the HDF5 data type corresponding to the dataset, which delegates</li>
-<li>to getHDF5Type for all datatypes supported by Chapel. For datatypes that</li>
-<li>are not supported by Chapel, getDataType encapsulates logic to retrieve</li>
-<li>the HDF5 data type.</li>
+<li><p>Returns the HDF5 data type corresponding to the dataset, which delegates</p></li>
+<li><p>to getHDF5Type for all datatypes supported by Chapel. For datatypes that</p></li>
+<li><p>are not supported by Chapel, getDataType encapsulates logic to retrieve</p></li>
+<li><p>the HDF5 data type.</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.getWriteDsetName">
-<em class="property">proc </em><code class="descname">getWriteDsetName</code><span class="sig-paren">(</span><em>dType: C_HDF5.hid_t</em>, <em>dsetName: string</em><span class="sig-paren">)</span>: string throws<a class="headerlink" href="#GenSymIO.getWriteDsetName" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">getWriteDsetName</code><span class="sig-paren">(</span><em class="sig-param">dType: C_HDF5.hid_t</em>, <em class="sig-param">dsetName: string</em><span class="sig-paren">)</span>: string throws<a class="headerlink" href="#GenSymIO.getWriteDsetName" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Retrieves the full dataset name including the group name, if applicable,</li>
-<li>for the dataset to be written to HDF5.</li>
+<li><p>Retrieves the full dataset name including the group name, if applicable,</p></li>
+<li><p>for the dataset to be written to HDF5.</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.getReadDsetName">
-<em class="property">proc </em><code class="descname">getReadDsetName</code><span class="sig-paren">(</span><em>file_id: int</em>, <em>dsetName: string</em><span class="sig-paren">)</span>: string throws<a class="headerlink" href="#GenSymIO.getReadDsetName" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">getReadDsetName</code><span class="sig-paren">(</span><em class="sig-param">file_id: int</em>, <em class="sig-param">dsetName: string</em><span class="sig-paren">)</span>: string throws<a class="headerlink" href="#GenSymIO.getReadDsetName" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Retrieves the full dataset name including the group name, if applicable,</li>
-<li>for the dataset to be read from HDF5.</li>
+<li><p>Retrieves the full dataset name including the group name, if applicable,</p></li>
+<li><p>for the dataset to be read from HDF5.</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.getFileMetadata">
-<em class="property">proc </em><code class="descname">getFileMetadata</code><span class="sig-paren">(</span><em>filename: string</em><span class="sig-paren">)</span><a class="headerlink" href="#GenSymIO.getFileMetadata" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">getFileMetadata</code><span class="sig-paren">(</span><em class="sig-param">filename: string</em><span class="sig-paren">)</span><a class="headerlink" href="#GenSymIO.getFileMetadata" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Returns a tuple composed of a file prefix and extension to be used to</li>
-<li>generate locale-specific filenames to be written to.</li>
+<li><p>Returns a tuple composed of a file prefix and extension to be used to</p></li>
+<li><p>generate locale-specific filenames to be written to.</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.generateFilenames">
-<em class="property">proc </em><code class="descname">generateFilenames</code><span class="sig-paren">(</span><em>prefix: string</em>, <em>extension: string</em>, <em>A</em><span class="sig-paren">)</span>: [] string throws<a class="headerlink" href="#GenSymIO.generateFilenames" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">generateFilenames</code><span class="sig-paren">(</span><em class="sig-param">prefix: string</em>, <em class="sig-param">extension: string</em>, <em class="sig-param">A</em><span class="sig-paren">)</span>: [] string throws<a class="headerlink" href="#GenSymIO.generateFilenames" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Generates a list of filenames to be written to based upon a file prefix,</li>
-<li>extension, and number of locales.</li>
+<li><p>Generates a list of filenames to be written to based upon a file prefix,</p></li>
+<li><p>extension, and number of locales.</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.generateFilename">
-<em class="property">proc </em><code class="descname">generateFilename</code><span class="sig-paren">(</span><em>prefix: string</em>, <em>extension: string</em>, <em>idx: int</em><span class="sig-paren">)</span>: string throws<a class="headerlink" href="#GenSymIO.generateFilename" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">generateFilename</code><span class="sig-paren">(</span><em class="sig-param">prefix: string</em>, <em class="sig-param">extension: string</em>, <em class="sig-param">idx: int</em><span class="sig-paren">)</span>: string throws<a class="headerlink" href="#GenSymIO.generateFilename" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Generates a file name composed of a prefix, which is a filename provided by</li>
-<li>the user along with a file index and extension.</li>
+<li><p>Generates a file name composed of a prefix, which is a filename provided by</p></li>
+<li><p>the user along with a file index and extension.</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.processFilenames">
-<em class="property">proc </em><code class="descname">processFilenames</code><span class="sig-paren">(</span><em>filenames: [] string</em>, <em>matchingFilenames: [] string</em>, <em>mode: int</em>, <em>A</em>, <em>group: string</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.processFilenames" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">processFilenames</code><span class="sig-paren">(</span><em class="sig-param">filenames: [] string</em>, <em class="sig-param">matchingFilenames: [] string</em>, <em class="sig-param">mode: int</em>, <em class="sig-param">A</em>, <em class="sig-param">group: string</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.processFilenames" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>If APPEND mode, checks to see if the matchingFilenames matches the filenames</li>
-<li>array and, if not, raises a MismatchedAppendError. If in TRUNCATE mode, creates</li>
-<li>the files matching the filenames. If 1..n of the filenames exist, returns</li>
-<li>warning to the user that 1..n files were overwritten. Since a group name is</li>
-<li>passed in, and hdf5 group is created in the file(s).</li>
+<li><p>If APPEND mode, checks to see if the matchingFilenames matches the filenames</p></li>
+<li><p>array and, if not, raises a MismatchedAppendError. If in TRUNCATE mode, creates</p></li>
+<li><p>the files matching the filenames. If 1..n of the filenames exist, returns</p></li>
+<li><p>warning to the user that 1..n files were overwritten. Since a group name is</p></li>
+<li><p>passed in, and hdf5 group is created in the file(s).</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt>
-<em class="property">proc </em><code class="descname">processFilenames</code><span class="sig-paren">(</span><em>filenames: [] string</em>, <em>matchingFilenames: [] string</em>, <em>mode: int</em>, <em>A</em><span class="sig-paren">)</span> throws</dt>
+<em class="property">proc </em><code class="sig-name descname">processFilenames</code><span class="sig-paren">(</span><em class="sig-param">filenames: [] string</em>, <em class="sig-param">matchingFilenames: [] string</em>, <em class="sig-param">mode: int</em>, <em class="sig-param">A</em><span class="sig-paren">)</span> throws</dt>
 <dd><ul class="simple">
-<li>If APPEND mode, checks to see if the matchingFilenams matches the filenames</li>
-<li>array and, if not, raises a MismatchedAppendError. If in TRUNCATE mode, creates</li>
-<li>the files matching the filenames. If 1..n of the filenames exist, returns</li>
-<li>warning to the user that 1..n files were overwritten.</li>
+<li><p>If APPEND mode, checks to see if the matchingFilenams matches the filenames</p></li>
+<li><p>array and, if not, raises a MismatchedAppendError. If in TRUNCATE mode, creates</p></li>
+<li><p>the files matching the filenames. If 1..n of the filenames exist, returns</p></li>
+<li><p>warning to the user that 1..n files were overwritten.</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="GenSymIO.getMatchingFilenames">
-<em class="property">proc </em><code class="descname">getMatchingFilenames</code><span class="sig-paren">(</span><em>prefix: string</em>, <em>extension: string</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.getMatchingFilenames" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">getMatchingFilenames</code><span class="sig-paren">(</span><em class="sig-param">prefix: string</em>, <em class="sig-param">extension: string</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.getMatchingFilenames" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Generates an array of filenames to be matched in APPEND mode and to be</li>
-<li>checked in TRUNCATE mode that will warn the user that 1..n files are</li>
-<li>being overwritten.</li>
+<li><p>Generates an array of filenames to be matched in APPEND mode and to be</p></li>
+<li><p>checked in TRUNCATE mode that will warn the user that 1..n files are</p></li>
+<li><p>being overwritten.</p></li>
 </ul>
 </dd></dl>
 
@@ -540,11 +543,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2015
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -555,7 +566,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

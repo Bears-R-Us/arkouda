@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,27 +11,29 @@
   
 
   
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
     <link rel="next" title="BroadcastMsg" href="BroadcastMsg.html" />
@@ -50,7 +51,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> chpldoc
           
 
           
@@ -77,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -144,6 +146,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -182,7 +185,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Broadcast</li>
     
@@ -210,49 +213,49 @@
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="nx">import</span> <span class="nx">Broadcast</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">Broadcast</span><span class="p">;</span>
 </pre></div>
 </div>
-<dl class="function">
+<dl class="chpl function">
 <dt id="Broadcast.broadcast">
-<em class="property">proc </em><code class="descname">broadcast</code><span class="sig-paren">(</span><em>perm: [?D] int</em>, <em>segs: [?sD] int</em>, <em>vals: [sD] ?t</em><span class="sig-paren">)</span><a class="headerlink" href="#Broadcast.broadcast" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">broadcast</code><span class="sig-paren">(</span><em class="sig-param">perm: [?D] int</em>, <em class="sig-param">segs: [?sD] int</em>, <em class="sig-param">vals: [sD] ?t</em><span class="sig-paren">)</span><a class="headerlink" href="#Broadcast.broadcast" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Broadcast a value per segment of a segmented array to the</li>
-<li>original ordering of the precursor array. For example, if</li>
-<li>the original array was sorted and grouped, resulting in</li>
-<li>groups defined by &lt;segs&gt;, and if &lt;vals&gt; contains group labels,</li>
-<li>then return the array of group labels corresponding to the</li>
-<li>original array. Intended to be used with arkouda.GroupBy.</li>
+<li><p>Broadcast a value per segment of a segmented array to the</p></li>
+<li><p>original ordering of the precursor array. For example, if</p></li>
+<li><p>the original array was sorted and grouped, resulting in</p></li>
+<li><p>groups defined by &lt;segs&gt;, and if &lt;vals&gt; contains group labels,</p></li>
+<li><p>then return the array of group labels corresponding to the</p></li>
+<li><p>original array. Intended to be used with arkouda.GroupBy.</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt>
-<em class="property">proc </em><code class="descname">broadcast</code><span class="sig-paren">(</span><em>perm: [?D] int</em>, <em>segs: [?sD] int</em>, <em>vals: [sD] bool</em><span class="sig-paren">)</span></dt>
+<em class="property">proc </em><code class="sig-name descname">broadcast</code><span class="sig-paren">(</span><em class="sig-param">perm: [?D] int</em>, <em class="sig-param">segs: [?sD] int</em>, <em class="sig-param">vals: [sD] bool</em><span class="sig-paren">)</span></dt>
 <dd><ul class="simple">
-<li>Broadcast a value per segment of a segmented array to the</li>
-<li>original ordering of the precursor array. For example, if</li>
-<li>the original array was sorted and grouped, resulting in</li>
-<li>groups defined by &lt;segs&gt;, and if &lt;vals&gt; contains group labels,</li>
-<li>then return the array of group labels corresponding to the</li>
-<li>original array. Intended to be used with arkouda.GroupBy.</li>
+<li><p>Broadcast a value per segment of a segmented array to the</p></li>
+<li><p>original ordering of the precursor array. For example, if</p></li>
+<li><p>the original array was sorted and grouped, resulting in</p></li>
+<li><p>groups defined by &lt;segs&gt;, and if &lt;vals&gt; contains group labels,</p></li>
+<li><p>then return the array of group labels corresponding to the</p></li>
+<li><p>original array. Intended to be used with arkouda.GroupBy.</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt>
-<em class="property">proc </em><code class="descname">broadcast</code><span class="sig-paren">(</span><em>segs: [?sD] int</em>, <em>vals: [sD] ?t</em>, <em>size: int</em><span class="sig-paren">)</span></dt>
+<em class="property">proc </em><code class="sig-name descname">broadcast</code><span class="sig-paren">(</span><em class="sig-param">segs: [?sD] int</em>, <em class="sig-param">vals: [sD] ?t</em>, <em class="sig-param">size: int</em><span class="sig-paren">)</span></dt>
 <dd><ul class="simple">
-<li>Broadcast a value per segment of a segmented array to the</li>
-<li>full size of the array. For example, if the segmented array</li>
-<li>is a compressed sparse row matrix, then expand a row</li>
-<li>vector such that each nonzero receives its row’s value.</li>
+<li><p>Broadcast a value per segment of a segmented array to the</p></li>
+<li><p>full size of the array. For example, if the segmented array</p></li>
+<li><p>is a compressed sparse row matrix, then expand a row</p></li>
+<li><p>vector such that each nonzero receives its row’s value.</p></li>
 </ul>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt>
-<em class="property">proc </em><code class="descname">broadcast</code><span class="sig-paren">(</span><em>segs: [?sD] int</em>, <em>vals: [sD] bool</em>, <em>size: int</em><span class="sig-paren">)</span></dt>
+<em class="property">proc </em><code class="sig-name descname">broadcast</code><span class="sig-paren">(</span><em class="sig-param">segs: [?sD] int</em>, <em class="sig-param">vals: [sD] bool</em>, <em class="sig-param">size: int</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 </div>
@@ -277,11 +280,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2015
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -292,7 +303,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

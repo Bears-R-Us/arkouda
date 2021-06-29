@@ -42,7 +42,7 @@ or
 
    .. attribute:: var ndim: int = 1
 
-   .. attribute:: var shape: 1*(int) = (0)
+   .. attribute:: var shape: 1*(int) = (0,)
 
    .. method:: proc init(type etype, len: int = 0)
 
@@ -91,7 +91,7 @@ or
       etype is different from dtype (chapel vs numpy)
       
 
-   .. attribute:: var aD: makeDistDom(size).type 
+   .. attribute:: var aD: makeDistDom(size).type
 
       
       'aD' is the distributed domain for 'a' whose value and type

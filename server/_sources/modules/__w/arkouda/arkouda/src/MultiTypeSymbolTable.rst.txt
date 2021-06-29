@@ -30,7 +30,7 @@ or
       Associative domain of strings
       
 
-   .. attribute:: var tab: stringmapshared GenSymEntry
+   .. attribute:: var tab: map(string, shared GenSymEntry)
 
       
       Map indexed by strings

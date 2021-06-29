@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,27 +11,29 @@
   
 
   
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
     <link rel="next" title="ServerErrorStrings" href="ServerErrorStrings.html" />
@@ -50,7 +51,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> chpldoc
           
 
           
@@ -77,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -144,6 +146,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -182,7 +185,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>ServerConfig</li>
     
@@ -210,127 +213,127 @@
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="nx">import</span> <span class="nx">ServerConfig</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">ServerConfig</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>arkouda server config param and config const</p>
-<dl class="data">
+<dl class="chpl data">
 <dt id="ServerConfig.trace">
-<em class="property">config const </em><code class="descname">trace</code> = true<a class="headerlink" href="#ServerConfig.trace" title="Permalink to this definition">¶</a></dt>
+<em class="property">config const </em><code class="sig-name descname">trace</code> = true<a class="headerlink" href="#ServerConfig.trace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Trace logging flag</p>
 </dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="ServerConfig.logLevel">
-<em class="property">config var </em><code class="descname">logLevel</code> = LogLevel.INFO<a class="headerlink" href="#ServerConfig.logLevel" title="Permalink to this definition">¶</a></dt>
+<em class="property">config var </em><code class="sig-name descname">logLevel</code> = LogLevel.INFO<a class="headerlink" href="#ServerConfig.logLevel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Global log level flag that defaults to LogLevel.INFO</p>
 </dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="ServerConfig.ServerPort">
-<em class="property">config const </em><code class="descname">ServerPort</code> = 5555<a class="headerlink" href="#ServerConfig.ServerPort" title="Permalink to this definition">¶</a></dt>
+<em class="property">config const </em><code class="sig-name descname">ServerPort</code> = 5555<a class="headerlink" href="#ServerConfig.ServerPort" title="Permalink to this definition">¶</a></dt>
 <dd><p>Port for zeromq</p>
 </dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="ServerConfig.perLocaleMemLimit">
-<em class="property">config const </em><code class="descname">perLocaleMemLimit</code> = 90<a class="headerlink" href="#ServerConfig.perLocaleMemLimit" title="Permalink to this definition">¶</a></dt>
+<em class="property">config const </em><code class="sig-name descname">perLocaleMemLimit</code> = 90<a class="headerlink" href="#ServerConfig.perLocaleMemLimit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Memory usage limit – percentage of physical memory</p>
 </dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="ServerConfig.arkoudaVersion">
-<em class="property">config param </em><code class="descname">arkoudaVersion</code>: string<a class="headerlink" href="#ServerConfig.arkoudaVersion" title="Permalink to this definition">¶</a></dt>
+<em class="property">config param </em><code class="sig-name descname">arkoudaVersion</code>: string<a class="headerlink" href="#ServerConfig.arkoudaVersion" title="Permalink to this definition">¶</a></dt>
 <dd><p>Arkouda version</p>
 </dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="ServerConfig.serverConnectionInfo">
-<em class="property">config const </em><code class="descname">serverConnectionInfo</code>: string = ARKOUDA_SERVER_CONNECTION_INFOgetEnv<a class="headerlink" href="#ServerConfig.serverConnectionInfo" title="Permalink to this definition">¶</a></dt>
+<em class="property">config const </em><code class="sig-name descname">serverConnectionInfo</code>: string = getEnv(ARKOUDA_SERVER_CONNECTION_INFO, )<a class="headerlink" href="#ServerConfig.serverConnectionInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write the server <cite>hostname:port</cite> to this file.</p>
 </dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="ServerConfig.serverHostname">
-<em class="property">var </em><code class="descname">serverHostname</code>: string = AppendExpr.Call09<a class="headerlink" href="#ServerConfig.serverHostname" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">serverHostname</code>: string = try! get_hostname()<a class="headerlink" href="#ServerConfig.serverHostname" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hostname where I am running</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="ServerConfig.get_hostname">
-<em class="property">proc </em><code class="descname">get_hostname</code><span class="sig-paren">(</span><span class="sig-paren">)</span>: string<a class="headerlink" href="#ServerConfig.get_hostname" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">get_hostname</code><span class="sig-paren">(</span><span class="sig-paren">)</span>: string<a class="headerlink" href="#ServerConfig.get_hostname" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="ServerConfig.authenticate">
-<em class="property">config const </em><code class="descname">authenticate</code>: bool = false<a class="headerlink" href="#ServerConfig.authenticate" title="Permalink to this definition">¶</a></dt>
+<em class="property">config const </em><code class="sig-name descname">authenticate</code>: bool = false<a class="headerlink" href="#ServerConfig.authenticate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Indicates whether token authentication is being used for Akrouda server requests</p>
 </dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="ServerConfig.scLogger">
-<em class="property">const </em><code class="descname">scLogger</code> = new Logger(lLevel)<a class="headerlink" href="#ServerConfig.scLogger" title="Permalink to this definition">¶</a></dt>
+<em class="property">const </em><code class="sig-name descname">scLogger</code> = new Logger(lLevel)<a class="headerlink" href="#ServerConfig.scLogger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="ServerConfig.getConfig">
-<em class="property">proc </em><code class="descname">getConfig</code><span class="sig-paren">(</span><span class="sig-paren">)</span>: string<a class="headerlink" href="#ServerConfig.getConfig" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">getConfig</code><span class="sig-paren">(</span><span class="sig-paren">)</span>: string<a class="headerlink" href="#ServerConfig.getConfig" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="ServerConfig.getEnv">
-<em class="property">proc </em><code class="descname">getEnv</code><span class="sig-paren">(</span><em>name: string</em>, <em>default = &quot;&quot;</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#ServerConfig.getEnv" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">getEnv</code><span class="sig-paren">(</span><em class="sig-param">name: string</em>, <em class="sig-param">default = &quot;&quot;</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#ServerConfig.getEnv" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="ServerConfig.getPhysicalMemHere">
-<em class="property">proc </em><code class="descname">getPhysicalMemHere</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.getPhysicalMemHere" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">getPhysicalMemHere</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.getPhysicalMemHere" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the physical memory available on this locale</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="ServerConfig.getMemUsed">
-<em class="property">proc </em><code class="descname">getMemUsed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.getMemUsed" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">getMemUsed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.getMemUsed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the memory used on this locale</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="ServerConfig.getMemLimit">
-<em class="property">proc </em><code class="descname">getMemLimit</code><span class="sig-paren">(</span><span class="sig-paren">)</span>: uint<a class="headerlink" href="#ServerConfig.getMemLimit" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">getMemLimit</code><span class="sig-paren">(</span><span class="sig-paren">)</span>: uint<a class="headerlink" href="#ServerConfig.getMemLimit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the memory limit for this server run
 returns a percentage of the physical memory per locale</p>
 </dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="ServerConfig.memHighWater">
-<em class="property">var </em><code class="descname">memHighWater</code>: uint = 0<a class="headerlink" href="#ServerConfig.memHighWater" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">memHighWater</code>: uint = 0<a class="headerlink" href="#ServerConfig.memHighWater" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="ServerConfig.overMemLimit">
-<em class="property">proc </em><code class="descname">overMemLimit</code><span class="sig-paren">(</span><em>additionalAmount: int</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#ServerConfig.overMemLimit" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">overMemLimit</code><span class="sig-paren">(</span><em class="sig-param">additionalAmount: int</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#ServerConfig.overMemLimit" title="Permalink to this definition">¶</a></dt>
 <dd><p>check used + amount is over the memory limit
 throw error if we would go over the limit</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="ServerConfig.string.splitMsgToTuple">
-<em class="property">proc </em><code class="descclassname">string.</code><code class="descname">splitMsgToTuple</code><span class="sig-paren">(</span><em>param numChunks: int</em><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.string.splitMsgToTuple" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-prename descclassname">string.</code><code class="sig-name descname">splitMsgToTuple</code><span class="sig-paren">(</span><em class="sig-param">param numChunks: int</em><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.string.splitMsgToTuple" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt>
-<em class="property">proc </em><code class="descclassname">string.</code><code class="descname">splitMsgToTuple</code><span class="sig-paren">(</span><em>sep: string</em>, <em>param numChunks: int</em><span class="sig-paren">)</span></dt>
+<em class="property">proc </em><code class="sig-prename descclassname">string.</code><code class="sig-name descname">splitMsgToTuple</code><span class="sig-paren">(</span><em class="sig-param">sep: string</em>, <em class="sig-param">param numChunks: int</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="ServerConfig.bytes.splitMsgToTuple">
-<em class="property">proc </em><code class="descclassname">bytes.</code><code class="descname">splitMsgToTuple</code><span class="sig-paren">(</span><em>param numChunks: int</em><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.bytes.splitMsgToTuple" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-prename descclassname">bytes.</code><code class="sig-name descname">splitMsgToTuple</code><span class="sig-paren">(</span><em class="sig-param">param numChunks: int</em><span class="sig-paren">)</span><a class="headerlink" href="#ServerConfig.bytes.splitMsgToTuple" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt>
-<em class="property">proc </em><code class="descclassname">bytes.</code><code class="descname">splitMsgToTuple</code><span class="sig-paren">(</span><em>sep: bytes</em>, <em>param numChunks: int</em><span class="sig-paren">)</span></dt>
+<em class="property">proc </em><code class="sig-prename descclassname">bytes.</code><code class="sig-name descname">splitMsgToTuple</code><span class="sig-paren">(</span><em class="sig-param">sep: bytes</em>, <em class="sig-param">param numChunks: int</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 </div>
@@ -355,11 +358,19 @@ throw error if we would go over the limit</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2015
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -370,7 +381,6 @@ throw error if we would go over the limit</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

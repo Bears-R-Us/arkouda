@@ -50,13 +50,13 @@ arkouda server config param and config const
    Arkouda version
    
 
-.. data:: config const serverConnectionInfo: string = ARKOUDA_SERVER_CONNECTION_INFOgetEnv
+.. data:: config const serverConnectionInfo: string = getEnv(ARKOUDA_SERVER_CONNECTION_INFO, )
 
    
    Write the server `hostname:port` to this file.
    
 
-.. data:: var serverHostname: string = AppendExpr.Call09
+.. data:: var serverHostname: string = try! get_hostname()
 
    
    Hostname where I am running

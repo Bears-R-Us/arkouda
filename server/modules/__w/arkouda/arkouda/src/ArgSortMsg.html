@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,27 +11,29 @@
   
 
   
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
     <link rel="next" title="ArraySetops" href="ArraySetops.html" />
@@ -50,7 +51,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> chpldoc
           
 
           
@@ -77,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -144,6 +146,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -182,7 +185,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>ArgSortMsg</li>
     
@@ -210,90 +213,90 @@
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="nx">import</span> <span class="nx">ArgSortMsg</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">ArgSortMsg</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>arg sort algorithm
 these pass back an index vector which can be used
 to permute the original array into sorted order</p>
-<dl class="data">
+<dl class="chpl data">
 <dt id="ArgSortMsg.asLogger">
-<em class="property">const </em><code class="descname">asLogger</code> = new Logger(logLevel)<a class="headerlink" href="#ArgSortMsg.asLogger" title="Permalink to this definition">¶</a></dt>
+<em class="property">const </em><code class="sig-name descname">asLogger</code> = new Logger(logLevel)<a class="headerlink" href="#ArgSortMsg.asLogger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="ArgSortMsg.lgSmall">
-<em class="property">var </em><code class="descname">lgSmall</code> = 10<a class="headerlink" href="#ArgSortMsg.lgSmall" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">lgSmall</code> = 10<a class="headerlink" href="#ArgSortMsg.lgSmall" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="ArgSortMsg.small">
-<em class="property">var </em><code class="descname">small</code> = 2**lgSmall<a class="headerlink" href="#ArgSortMsg.small" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">small</code> = 2**lgSmall<a class="headerlink" href="#ArgSortMsg.small" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="ArgSortMsg.lgMedium">
-<em class="property">var </em><code class="descname">lgMedium</code> = 20<a class="headerlink" href="#ArgSortMsg.lgMedium" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">lgMedium</code> = 20<a class="headerlink" href="#ArgSortMsg.lgMedium" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="ArgSortMsg.medium">
-<em class="property">var </em><code class="descname">medium</code> = 2**lgMedium<a class="headerlink" href="#ArgSortMsg.medium" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">medium</code> = 2**lgMedium<a class="headerlink" href="#ArgSortMsg.medium" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="ArgSortMsg.lgLarge">
-<em class="property">var </em><code class="descname">lgLarge</code> = 30<a class="headerlink" href="#ArgSortMsg.lgLarge" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">lgLarge</code> = 30<a class="headerlink" href="#ArgSortMsg.lgLarge" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="ArgSortMsg.large">
-<em class="property">var </em><code class="descname">large</code> = 2**lgLarge<a class="headerlink" href="#ArgSortMsg.large" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">large</code> = 2**lgLarge<a class="headerlink" href="#ArgSortMsg.large" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="ArgSortMsg.sBins">
-<em class="property">var </em><code class="descname">sBins</code> = 2**10<a class="headerlink" href="#ArgSortMsg.sBins" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">sBins</code> = 2**10<a class="headerlink" href="#ArgSortMsg.sBins" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="ArgSortMsg.mBins">
-<em class="property">var </em><code class="descname">mBins</code> = 2**25<a class="headerlink" href="#ArgSortMsg.mBins" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">mBins</code> = 2**25<a class="headerlink" href="#ArgSortMsg.mBins" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="data">
+<dl class="chpl data">
 <dt id="ArgSortMsg.lBins">
-<em class="property">var </em><code class="descname">lBins</code> = 2**25*numLocales<a class="headerlink" href="#ArgSortMsg.lBins" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">lBins</code> = 2**25*numLocales<a class="headerlink" href="#ArgSortMsg.lBins" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="ArgSortMsg.incrementalArgSort">
-<em class="property">proc </em><code class="descname">incrementalArgSort</code><span class="sig-paren">(</span><em>g: GenSymEntry</em>, <em>iv: [?aD] int</em><span class="sig-paren">)</span>: [] int throws<a class="headerlink" href="#ArgSortMsg.incrementalArgSort" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">incrementalArgSort</code><span class="sig-paren">(</span><em class="sig-param">g: GenSymEntry</em>, <em class="sig-param">iv: [?aD] int</em><span class="sig-paren">)</span>: [] int throws<a class="headerlink" href="#ArgSortMsg.incrementalArgSort" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform one step in a multi-step argsort, starting with an initial
 permutation vector and further permuting it in the manner required
 to sort an array of keys.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt>
-<em class="property">proc </em><code class="descname">incrementalArgSort</code><span class="sig-paren">(</span><em>s: SegString</em>, <em>iv: [?aD] int</em><span class="sig-paren">)</span>: [] int throws</dt>
+<em class="property">proc </em><code class="sig-name descname">incrementalArgSort</code><span class="sig-paren">(</span><em class="sig-param">s: SegString</em>, <em class="sig-param">iv: [?aD] int</em><span class="sig-paren">)</span>: [] int throws</dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="ArgSortMsg.coargsortMsg">
-<em class="property">proc </em><code class="descname">coargsortMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#ArgSortMsg.coargsortMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">coargsortMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#ArgSortMsg.coargsortMsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the permutation that sorts multiple arrays, treating each array as a
 new level of the sorting key.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="ArgSortMsg.argsortDefault">
-<em class="property">proc </em><code class="descname">argsortDefault</code><span class="sig-paren">(</span><em>A: [?D] ?t</em><span class="sig-paren">)</span>: [D] int<a class="headerlink" href="#ArgSortMsg.argsortDefault" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">argsortDefault</code><span class="sig-paren">(</span><em class="sig-param">A: [?D] ?t</em><span class="sig-paren">)</span>: [D] int<a class="headerlink" href="#ArgSortMsg.argsortDefault" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="ArgSortMsg.argsortMsg">
-<em class="property">proc </em><code class="descname">argsortMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#ArgSortMsg.argsortMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">argsortMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#ArgSortMsg.argsortMsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>argsort takes pdarray and returns an index vector iv which sorts the array</p>
 </dd></dl>
 
@@ -319,11 +322,19 @@ new level of the sorting key.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2015
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -334,7 +345,6 @@ new level of the sorting key.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

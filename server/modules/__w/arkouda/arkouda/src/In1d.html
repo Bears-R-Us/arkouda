@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,27 +11,29 @@
   
 
   
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
     <link rel="next" title="In1dMsg" href="In1dMsg.html" />
@@ -50,7 +51,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> chpldoc
           
 
           
@@ -77,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -144,6 +146,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -182,7 +185,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>In1d</li>
     
@@ -210,63 +213,55 @@
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="nx">import</span> <span class="nx">In1d</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">In1d</span><span class="p">;</span>
 </pre></div>
 </div>
-<dl class="data">
+<dl class="chpl data">
 <dt id="In1d.inLogger">
-<em class="property">const </em><code class="descname">inLogger</code> = new Logger(logLevel)<a class="headerlink" href="#In1d.inLogger" title="Permalink to this definition">¶</a></dt>
+<em class="property">const </em><code class="sig-name descname">inLogger</code> = new Logger(logLevel)<a class="headerlink" href="#In1d.inLogger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="In1d.in1dGlobalAr1Bcast">
-<em class="property">proc </em><code class="descname">in1dGlobalAr1Bcast</code><span class="sig-paren">(</span><em>ar1: [?aD1] int</em>, <em>ar2: [?aD2] int</em><span class="sig-paren">)</span><a class="headerlink" href="#In1d.in1dGlobalAr1Bcast" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">in1dGlobalAr1Bcast</code><span class="sig-paren">(</span><em class="sig-param">ar1: [?aD1] int</em>, <em class="sig-param">ar2: [?aD2] int</em><span class="sig-paren">)</span><a class="headerlink" href="#In1d.in1dGlobalAr1Bcast" title="Permalink to this definition">¶</a></dt>
 <dd><p>Brute force:
 forward-way reduction per element of ar1 over ar2.
 Causes every element in ar1 to be broadcast/communicated over ar2.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>ar1</strong> : <em>[] int</em> – array to broadcast over ar2</li>
-<li><strong>ar2</strong> : <em>[] int</em> – array to be broadcast over</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ar1</strong> : <em>[] int</em> – array to broadcast over ar2</p></li>
+<li><p><strong>ar2</strong> : <em>[] int</em> – array to be broadcast over</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns truth:</th><td class="field-body"><p class="first last">a boolean array containing the result of ar1 being broadcast over ar2</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns truth</dt>
+<dd class="field-even"><p>a boolean array containing the result of ar1 being broadcast over ar2</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="In1d.in1dGlobalAr2Bcast">
-<em class="property">proc </em><code class="descname">in1dGlobalAr2Bcast</code><span class="sig-paren">(</span><em>ar1: [?aD1] int</em>, <em>ar2: [?aD2] int</em><span class="sig-paren">)</span><a class="headerlink" href="#In1d.in1dGlobalAr2Bcast" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">in1dGlobalAr2Bcast</code><span class="sig-paren">(</span><em class="sig-param">ar1: [?aD1] int</em>, <em class="sig-param">ar2: [?aD2] int</em><span class="sig-paren">)</span><a class="headerlink" href="#In1d.in1dGlobalAr2Bcast" title="Permalink to this definition">¶</a></dt>
 <dd><p>Brute force:
 reverse-way serial-or-reduce for each element in ar2 over ar1.
 Causes every element in ar2 to be broadcast/communicated over ar1.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>ar1</strong> : <em>[] int</em> – array to be broadcast over</li>
-<li><strong>ar2</strong> : <em>[] int</em> – array to broadcast over ar1</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ar1</strong> : <em>[] int</em> – array to be broadcast over</p></li>
+<li><p><strong>ar2</strong> : <em>[] int</em> – array to broadcast over ar1</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns truth:</th><td class="field-body"><p class="first last">a boolean array containing the result of ar2 being broadcast over ar1</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns truth</dt>
+<dd class="field-even"><p>a boolean array containing the result of ar2 being broadcast over ar1</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="In1d.in1dAr2PerLocAssoc">
-<em class="property">proc </em><code class="descname">in1dAr2PerLocAssoc</code><span class="sig-paren">(</span><em>ar1: [?aD1] int</em>, <em>ar2: [?aD2] int</em><span class="sig-paren">)</span><a class="headerlink" href="#In1d.in1dAr2PerLocAssoc" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">in1dAr2PerLocAssoc</code><span class="sig-paren">(</span><em class="sig-param">ar1: [?aD1] int</em>, <em class="sig-param">ar2: [?aD2] int</em><span class="sig-paren">)</span><a class="headerlink" href="#In1d.in1dAr2PerLocAssoc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Put ar2 into an associative domain of int, per locale.
 Creates truth (boolean array) from the domain of ar1.
 ar1 and truth are distributed on the same locales.
@@ -275,44 +270,36 @@ set membership of ar1 to ar2 is checked on each locale by iterating over
 the local subdomains of ar1, and populating the local subdomains of truth
 with the result of the membership test.</p>
 <p>Apply v flag for timing information.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>ar1</strong> : <em>[] int</em> – array to broadcast in parallel over ar2</li>
-<li><strong>ar2</strong> : <em>[] int</em> – array to be broadcast over in parallel</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ar1</strong> : <em>[] int</em> – array to broadcast in parallel over ar2</p></li>
+<li><p><strong>ar2</strong> : <em>[] int</em> – array to be broadcast over in parallel</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns truth:</th><td class="field-body"><p class="first last">the distributed boolean array containing the result of ar1 being broadcast over ar2</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns truth</dt>
+<dd class="field-even"><p>the distributed boolean array containing the result of ar1 being broadcast over ar2</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="In1d.in1dSort">
-<em class="property">proc </em><code class="descname">in1dSort</code><span class="sig-paren">(</span><em>ar1: [?aD1] int</em>, <em>ar2: [?aD2] int</em><span class="sig-paren">)</span><a class="headerlink" href="#In1d.in1dSort" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">in1dSort</code><span class="sig-paren">(</span><em class="sig-param">ar1: [?aD1] int</em>, <em class="sig-param">ar2: [?aD2] int</em><span class="sig-paren">)</span><a class="headerlink" href="#In1d.in1dSort" title="Permalink to this definition">¶</a></dt>
 <dd><p>For each value in the first array, check membership in the second array. This
 implementation uses a sort, which is best when the second array is large because
 it scales well in both time and memory.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>ar1</strong> : <em>[] int</em> – array to broadcast in parallel over ar2</li>
-<li><strong>ar2</strong> : <em>[] int</em> – array to be broadcast over in parallel</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ar1</strong> : <em>[] int</em> – array to broadcast in parallel over ar2</p></li>
+<li><p><strong>ar2</strong> : <em>[] int</em> – array to be broadcast over in parallel</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns truth:</th><td class="field-body"><p class="first last">the distributed boolean array containing the result of ar1 being broadcast over ar2</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns truth</dt>
+<dd class="field-even"><p>the distributed boolean array containing the result of ar1 being broadcast over ar2</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -337,11 +324,19 @@ it scales well in both time and memory.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2015
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -352,7 +347,6 @@ it scales well in both time and memory.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,27 +11,29 @@
   
 
   
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
     <link rel="next" title="FileIO" href="FileIO.html" />
@@ -50,7 +51,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> chpldoc
           
 
           
@@ -77,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -144,6 +146,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -182,7 +185,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Extremas</li>
     
@@ -210,12 +213,12 @@
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="nx">import</span> <span class="nx">Extremas</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">Extremas</span><span class="p">;</span>
 </pre></div>
 </div>
-<dl class="record">
+<dl class="chpl record">
 <dt id="Extremas.KExtreme">
-<em class="property">record </em><code class="descname">KExtreme</code><a class="headerlink" href="#Extremas.KExtreme" title="Permalink to this definition">¶</a></dt>
+<em class="property">record </em><code class="sig-name descname">KExtreme</code><a class="headerlink" href="#Extremas.KExtreme" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference internal" href="#Extremas.KExtreme" title="Extremas.KExtreme"><code class="xref chpl chpl-record docutils literal notranslate"><span class="pre">KExtreme</span></code></a> data structure that is used
 to track the minimum or maximum <code class="docutils literal notranslate"><span class="pre">size</span></code>
 values that are in an array. Acts similar
@@ -233,71 +236,71 @@ function is called on each :record: <cite>KExtreme</cite> instance,
 which is handled by sorting the record, giving up
 its heap-like quality, and using it as a sorted array
 to increase the efficiency of the merge step.</p>
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="Extremas.KExtreme.eltType">
-<em class="property">type </em><code class="descname">eltType</code><a class="headerlink" href="#Extremas.KExtreme.eltType" title="Permalink to this definition">¶</a></dt>
+<em class="property">type </em><code class="sig-name descname">eltType</code><a class="headerlink" href="#Extremas.KExtreme.eltType" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="Extremas.KExtreme.size">
-<em class="property">var </em><code class="descname">size</code>: int<a class="headerlink" href="#Extremas.KExtreme.size" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">size</code>: int<a class="headerlink" href="#Extremas.KExtreme.size" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="Extremas.KExtreme.dom">
-<em class="property">var </em><code class="descname">dom</code> = {0..#size}<a class="headerlink" href="#Extremas.KExtreme.dom" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">dom</code> = {0..#size}<a class="headerlink" href="#Extremas.KExtreme.dom" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="Extremas.KExtreme.numEmpty">
-<em class="property">var </em><code class="descname">numEmpty</code>: int = size-2<a class="headerlink" href="#Extremas.KExtreme.numEmpty" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">numEmpty</code>: int = size-2<a class="headerlink" href="#Extremas.KExtreme.numEmpty" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="Extremas.KExtreme.isSorted">
-<em class="property">var </em><code class="descname">isSorted</code>: bool = false<a class="headerlink" href="#Extremas.KExtreme.isSorted" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">isSorted</code>: bool = false<a class="headerlink" href="#Extremas.KExtreme.isSorted" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="Extremas.KExtreme.isMinReduction">
-<em class="property">var </em><code class="descname">isMinReduction</code> = true<a class="headerlink" href="#Extremas.KExtreme.isMinReduction" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">isMinReduction</code> = true<a class="headerlink" href="#Extremas.KExtreme.isMinReduction" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="Extremas.KExtreme._data">
-<em class="property">var </em><code class="descname">_data</code>: [dom] (eltType, int) = if isMinReduction then (max(eltType), -1) else (min(eltType), -1)<a class="headerlink" href="#Extremas.KExtreme._data" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">_data</code>: [dom] (eltType, int) = if isMinReduction then (max(eltType), -1) else (min(eltType), -1)<a class="headerlink" href="#Extremas.KExtreme._data" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="Extremas.KExtreme.pushArr">
-<em class="property">proc </em><code class="descname">pushArr</code><span class="sig-paren">(</span><em>arr: [?D]</em><span class="sig-paren">)</span><a class="headerlink" href="#Extremas.KExtreme.pushArr" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">pushArr</code><span class="sig-paren">(</span><em class="sig-param">arr: [?D]</em><span class="sig-paren">)</span><a class="headerlink" href="#Extremas.KExtreme.pushArr" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="Extremas.KExtreme.push">
-<em class="property">proc </em><code class="descname">push</code><span class="sig-paren">(</span><em>val: (eltType</em>, <em>int)</em><span class="sig-paren">)</span><a class="headerlink" href="#Extremas.KExtreme.push" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">push</code><span class="sig-paren">(</span><em class="sig-param">val: (eltType</em>, <em class="sig-param">int)</em><span class="sig-paren">)</span><a class="headerlink" href="#Extremas.KExtreme.push" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="Extremas.KExtreme.heapifyDown">
-<em class="property">proc </em><code class="descname">heapifyDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Extremas.KExtreme.heapifyDown" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">heapifyDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Extremas.KExtreme.heapifyDown" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="Extremas.KExtreme.doSort">
-<em class="property">proc </em><code class="descname">doSort</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Extremas.KExtreme.doSort" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">doSort</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Extremas.KExtreme.doSort" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="itermethod">
+<dl class="chpl itermethod">
 <dt id="Extremas.KExtreme.these">
-<em class="property">iter </em><code class="descname">these</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Extremas.KExtreme.these" title="Permalink to this definition">¶</a></dt>
+<em class="property">iter </em><code class="sig-name descname">these</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Extremas.KExtreme.these" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="Extremas.merge">
-<em class="property">proc </em><code class="descname">merge</code><span class="sig-paren">(</span><em>ref v1: KExtreme(?t)</em>, <em>ref v2: KExtreme(t)</em><span class="sig-paren">)</span>: [v1._data.domain] (t, int)<a class="headerlink" href="#Extremas.merge" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">merge</code><span class="sig-paren">(</span><em class="sig-param">ref v1: KExtreme(?t)</em>, <em class="sig-param">ref v2: KExtreme(t)</em><span class="sig-paren">)</span>: [v1._data.domain] (t, int)<a class="headerlink" href="#Extremas.merge" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -322,11 +325,19 @@ to increase the efficiency of the merge step.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2015
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -337,7 +348,6 @@ to increase the efficiency of the merge step.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

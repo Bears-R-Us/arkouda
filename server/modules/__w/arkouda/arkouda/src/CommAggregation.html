@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,27 +11,29 @@
   
 
   
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
     <link rel="next" title="CommPrimitives" href="CommPrimitives.html" />
@@ -50,7 +51,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> chpldoc
           
 
           
@@ -77,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -144,6 +146,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -182,7 +185,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>CommAggregation</li>
     
@@ -210,259 +213,259 @@
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="nx">import</span> <span class="nx">CommAggregation</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">CommAggregation</span><span class="p">;</span>
 </pre></div>
 </div>
-<dl class="data">
+<dl class="chpl data">
 <dt id="CommAggregation.defaultBuffSize">
-<em class="property">param </em><code class="descname">defaultBuffSize</code> = if CHPL_COMM==ugni then 4096 else 8096<a class="headerlink" href="#CommAggregation.defaultBuffSize" title="Permalink to this definition">¶</a></dt>
+<em class="property">param </em><code class="sig-name descname">defaultBuffSize</code> = if CHPL_COMM==ugni then 4096 else 8096<a class="headerlink" href="#CommAggregation.defaultBuffSize" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="CommAggregation.newDstAggregator">
-<em class="property">proc </em><code class="descname">newDstAggregator</code><span class="sig-paren">(</span><em>type elemType</em>, <em>param useUnorderedCopy = false</em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.newDstAggregator" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">newDstAggregator</code><span class="sig-paren">(</span><em class="sig-param">type elemType</em>, <em class="sig-param">param useUnorderedCopy = false</em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.newDstAggregator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a new destination aggregator (dst/lhs will be remote).</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="CommAggregation.newSrcAggregator">
-<em class="property">proc </em><code class="descname">newSrcAggregator</code><span class="sig-paren">(</span><em>type elemType</em>, <em>param useUnorderedCopy = false</em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.newSrcAggregator" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">newSrcAggregator</code><span class="sig-paren">(</span><em class="sig-param">type elemType</em>, <em class="sig-param">param useUnorderedCopy = false</em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.newSrcAggregator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a new source aggregator (src/rhs will be remote).</p>
 </dd></dl>
 
-<dl class="record">
+<dl class="chpl record">
 <dt id="CommAggregation.DstAggregator">
-<em class="property">record </em><code class="descname">DstAggregator</code><a class="headerlink" href="#CommAggregation.DstAggregator" title="Permalink to this definition">¶</a></dt>
+<em class="property">record </em><code class="sig-name descname">DstAggregator</code><a class="headerlink" href="#CommAggregation.DstAggregator" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Aggregates copy(ref dst, src). Optimized for when src is local.</li>
-<li>Not parallel safe and is expected to be created on a per-task basis</li>
-<li>High memory usage since there are per-destination buffers</li>
+<li><p>Aggregates copy(ref dst, src). Optimized for when src is local.</p></li>
+<li><p>Not parallel safe and is expected to be created on a per-task basis</p></li>
+<li><p>High memory usage since there are per-destination buffers</p></li>
 </ul>
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="CommAggregation.DstAggregator.elemType">
-<em class="property">type </em><code class="descname">elemType</code><a class="headerlink" href="#CommAggregation.DstAggregator.elemType" title="Permalink to this definition">¶</a></dt>
+<em class="property">type </em><code class="sig-name descname">elemType</code><a class="headerlink" href="#CommAggregation.DstAggregator.elemType" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="CommAggregation.DstAggregator.aggType">
-<em class="property">type </em><code class="descname">aggType</code> = (c_ptr(elemType), elemType)<a class="headerlink" href="#CommAggregation.DstAggregator.aggType" title="Permalink to this definition">¶</a></dt>
+<em class="property">type </em><code class="sig-name descname">aggType</code> = (c_ptr(elemType), elemType)<a class="headerlink" href="#CommAggregation.DstAggregator.aggType" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="CommAggregation.DstAggregator.bufferSize">
-<em class="property">const </em><code class="descname">bufferSize</code> = dstBuffSize<a class="headerlink" href="#CommAggregation.DstAggregator.bufferSize" title="Permalink to this definition">¶</a></dt>
+<em class="property">const </em><code class="sig-name descname">bufferSize</code> = dstBuffSize<a class="headerlink" href="#CommAggregation.DstAggregator.bufferSize" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="CommAggregation.DstAggregator.myLocaleSpace">
-<em class="property">const </em><code class="descname">myLocaleSpace</code> = LocaleSpace<a class="headerlink" href="#CommAggregation.DstAggregator.myLocaleSpace" title="Permalink to this definition">¶</a></dt>
+<em class="property">const </em><code class="sig-name descname">myLocaleSpace</code> = LocaleSpace<a class="headerlink" href="#CommAggregation.DstAggregator.myLocaleSpace" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="CommAggregation.DstAggregator.opsUntilYield">
-<em class="property">var </em><code class="descname">opsUntilYield</code> = yieldFrequency<a class="headerlink" href="#CommAggregation.DstAggregator.opsUntilYield" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">opsUntilYield</code> = yieldFrequency<a class="headerlink" href="#CommAggregation.DstAggregator.opsUntilYield" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="CommAggregation.DstAggregator.lBuffers">
-<em class="property">var </em><code class="descname">lBuffers</code>: c_ptr(c_ptr(aggType))<a class="headerlink" href="#CommAggregation.DstAggregator.lBuffers" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">lBuffers</code>: c_ptr(c_ptr(aggType))<a class="headerlink" href="#CommAggregation.DstAggregator.lBuffers" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="CommAggregation.DstAggregator.rBuffers">
-<em class="property">var </em><code class="descname">rBuffers</code>: [myLocaleSpace] remoteBuffer(aggType)<a class="headerlink" href="#CommAggregation.DstAggregator.rBuffers" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">rBuffers</code>: [myLocaleSpace] remoteBuffer(aggType)<a class="headerlink" href="#CommAggregation.DstAggregator.rBuffers" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="CommAggregation.DstAggregator.bufferIdxs">
-<em class="property">var </em><code class="descname">bufferIdxs</code>: c_ptr(int)<a class="headerlink" href="#CommAggregation.DstAggregator.bufferIdxs" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">bufferIdxs</code>: c_ptr(int)<a class="headerlink" href="#CommAggregation.DstAggregator.bufferIdxs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="CommAggregation.DstAggregator.postinit">
-<em class="property">proc </em><code class="descname">postinit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstAggregator.postinit" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">postinit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstAggregator.postinit" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="CommAggregation.DstAggregator.deinit">
-<em class="property">proc </em><code class="descname">deinit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstAggregator.deinit" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">deinit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstAggregator.deinit" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="CommAggregation.DstAggregator.flush">
-<em class="property">proc </em><code class="descname">flush</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstAggregator.flush" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">flush</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstAggregator.flush" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="CommAggregation.DstAggregator.copy">
-<em class="property">proc </em><code class="descname">copy</code><span class="sig-paren">(</span><em>ref dst: elemType</em>, <em>const in srcVal: elemType</em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstAggregator.copy" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">copy</code><span class="sig-paren">(</span><em class="sig-param">ref dst: elemType</em>, <em class="sig-param">const in srcVal: elemType</em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstAggregator.copy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="CommAggregation.DstAggregator._flushBuffer">
-<em class="property">proc </em><code class="descname">_flushBuffer</code><span class="sig-paren">(</span><em>loc: int</em>, <em>ref bufferIdx</em>, <em>freeData</em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstAggregator._flushBuffer" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">_flushBuffer</code><span class="sig-paren">(</span><em class="sig-param">loc: int</em>, <em class="sig-param">ref bufferIdx</em>, <em class="sig-param">freeData</em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.DstAggregator._flushBuffer" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="record">
+<dl class="chpl record">
 <dt id="CommAggregation.SrcAggregator">
-<em class="property">record </em><code class="descname">SrcAggregator</code><a class="headerlink" href="#CommAggregation.SrcAggregator" title="Permalink to this definition">¶</a></dt>
+<em class="property">record </em><code class="sig-name descname">SrcAggregator</code><a class="headerlink" href="#CommAggregation.SrcAggregator" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
-<li>Aggregates copy(ref dst, const ref src). Only works when dst is local.</li>
-<li>Not parallel safe and is expected to be created on a per task basis</li>
-<li>High memory usage since there are per-destination buffers</li>
+<li><p>Aggregates copy(ref dst, const ref src). Only works when dst is local.</p></li>
+<li><p>Not parallel safe and is expected to be created on a per task basis</p></li>
+<li><p>High memory usage since there are per-destination buffers</p></li>
 </ul>
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="CommAggregation.SrcAggregator.elemType">
-<em class="property">type </em><code class="descname">elemType</code><a class="headerlink" href="#CommAggregation.SrcAggregator.elemType" title="Permalink to this definition">¶</a></dt>
+<em class="property">type </em><code class="sig-name descname">elemType</code><a class="headerlink" href="#CommAggregation.SrcAggregator.elemType" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="CommAggregation.SrcAggregator.aggType">
-<em class="property">type </em><code class="descname">aggType</code> = c_ptr(elemType)<a class="headerlink" href="#CommAggregation.SrcAggregator.aggType" title="Permalink to this definition">¶</a></dt>
+<em class="property">type </em><code class="sig-name descname">aggType</code> = c_ptr(elemType)<a class="headerlink" href="#CommAggregation.SrcAggregator.aggType" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="CommAggregation.SrcAggregator.bufferSize">
-<em class="property">const </em><code class="descname">bufferSize</code> = srcBuffSize<a class="headerlink" href="#CommAggregation.SrcAggregator.bufferSize" title="Permalink to this definition">¶</a></dt>
+<em class="property">const </em><code class="sig-name descname">bufferSize</code> = srcBuffSize<a class="headerlink" href="#CommAggregation.SrcAggregator.bufferSize" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="CommAggregation.SrcAggregator.myLocaleSpace">
-<em class="property">const </em><code class="descname">myLocaleSpace</code> = LocaleSpace<a class="headerlink" href="#CommAggregation.SrcAggregator.myLocaleSpace" title="Permalink to this definition">¶</a></dt>
+<em class="property">const </em><code class="sig-name descname">myLocaleSpace</code> = LocaleSpace<a class="headerlink" href="#CommAggregation.SrcAggregator.myLocaleSpace" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="CommAggregation.SrcAggregator.opsUntilYield">
-<em class="property">var </em><code class="descname">opsUntilYield</code> = yieldFrequency<a class="headerlink" href="#CommAggregation.SrcAggregator.opsUntilYield" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">opsUntilYield</code> = yieldFrequency<a class="headerlink" href="#CommAggregation.SrcAggregator.opsUntilYield" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="CommAggregation.SrcAggregator.dstAddrs">
-<em class="property">var </em><code class="descname">dstAddrs</code>: c_ptr(c_ptr(aggType))<a class="headerlink" href="#CommAggregation.SrcAggregator.dstAddrs" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">dstAddrs</code>: c_ptr(c_ptr(aggType))<a class="headerlink" href="#CommAggregation.SrcAggregator.dstAddrs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="CommAggregation.SrcAggregator.lSrcAddrs">
-<em class="property">var </em><code class="descname">lSrcAddrs</code>: c_ptr(c_ptr(aggType))<a class="headerlink" href="#CommAggregation.SrcAggregator.lSrcAddrs" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">lSrcAddrs</code>: c_ptr(c_ptr(aggType))<a class="headerlink" href="#CommAggregation.SrcAggregator.lSrcAddrs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="CommAggregation.SrcAggregator.lSrcVals">
-<em class="property">var </em><code class="descname">lSrcVals</code>: [myLocaleSpace] [0..#bufferSize] elemType<a class="headerlink" href="#CommAggregation.SrcAggregator.lSrcVals" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">lSrcVals</code>: [myLocaleSpace] [0..#bufferSize] elemType<a class="headerlink" href="#CommAggregation.SrcAggregator.lSrcVals" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="CommAggregation.SrcAggregator.rSrcAddrs">
-<em class="property">var </em><code class="descname">rSrcAddrs</code>: [myLocaleSpace] remoteBuffer(aggType)<a class="headerlink" href="#CommAggregation.SrcAggregator.rSrcAddrs" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">rSrcAddrs</code>: [myLocaleSpace] remoteBuffer(aggType)<a class="headerlink" href="#CommAggregation.SrcAggregator.rSrcAddrs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="CommAggregation.SrcAggregator.rSrcVals">
-<em class="property">var </em><code class="descname">rSrcVals</code>: [myLocaleSpace] remoteBuffer(elemType)<a class="headerlink" href="#CommAggregation.SrcAggregator.rSrcVals" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">rSrcVals</code>: [myLocaleSpace] remoteBuffer(elemType)<a class="headerlink" href="#CommAggregation.SrcAggregator.rSrcVals" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="CommAggregation.SrcAggregator.bufferIdxs">
-<em class="property">var </em><code class="descname">bufferIdxs</code>: c_ptr(int)<a class="headerlink" href="#CommAggregation.SrcAggregator.bufferIdxs" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">bufferIdxs</code>: c_ptr(int)<a class="headerlink" href="#CommAggregation.SrcAggregator.bufferIdxs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="CommAggregation.SrcAggregator.postinit">
-<em class="property">proc </em><code class="descname">postinit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcAggregator.postinit" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">postinit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcAggregator.postinit" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="CommAggregation.SrcAggregator.deinit">
-<em class="property">proc </em><code class="descname">deinit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcAggregator.deinit" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">deinit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcAggregator.deinit" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="CommAggregation.SrcAggregator.flush">
-<em class="property">proc </em><code class="descname">flush</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcAggregator.flush" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">flush</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcAggregator.flush" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="CommAggregation.SrcAggregator.copy">
-<em class="property">proc </em><code class="descname">copy</code><span class="sig-paren">(</span><em>ref dst: elemType</em>, <em>const ref src: elemType</em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcAggregator.copy" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">copy</code><span class="sig-paren">(</span><em class="sig-param">ref dst: elemType</em>, <em class="sig-param">const ref src: elemType</em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcAggregator.copy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="CommAggregation.SrcAggregator._flushBuffer">
-<em class="property">proc </em><code class="descname">_flushBuffer</code><span class="sig-paren">(</span><em>loc: int</em>, <em>ref bufferIdx</em>, <em>freeData</em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcAggregator._flushBuffer" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">_flushBuffer</code><span class="sig-paren">(</span><em class="sig-param">loc: int</em>, <em class="sig-param">ref bufferIdx</em>, <em class="sig-param">freeData</em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.SrcAggregator._flushBuffer" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="record">
+<dl class="chpl record">
 <dt id="CommAggregation.remoteBuffer">
-<em class="property">record </em><code class="descname">remoteBuffer</code><a class="headerlink" href="#CommAggregation.remoteBuffer" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="attribute">
+<em class="property">record </em><code class="sig-name descname">remoteBuffer</code><a class="headerlink" href="#CommAggregation.remoteBuffer" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="chpl attribute">
 <dt id="CommAggregation.remoteBuffer.elemType">
-<em class="property">type </em><code class="descname">elemType</code><a class="headerlink" href="#CommAggregation.remoteBuffer.elemType" title="Permalink to this definition">¶</a></dt>
+<em class="property">type </em><code class="sig-name descname">elemType</code><a class="headerlink" href="#CommAggregation.remoteBuffer.elemType" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="CommAggregation.remoteBuffer.size">
-<em class="property">var </em><code class="descname">size</code>: int<a class="headerlink" href="#CommAggregation.remoteBuffer.size" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">size</code>: int<a class="headerlink" href="#CommAggregation.remoteBuffer.size" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="CommAggregation.remoteBuffer.loc">
-<em class="property">var </em><code class="descname">loc</code>: int<a class="headerlink" href="#CommAggregation.remoteBuffer.loc" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">loc</code>: int<a class="headerlink" href="#CommAggregation.remoteBuffer.loc" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="chpl attribute">
 <dt id="CommAggregation.remoteBuffer.data">
-<em class="property">var </em><code class="descname">data</code>: c_ptr(elemType)<a class="headerlink" href="#CommAggregation.remoteBuffer.data" title="Permalink to this definition">¶</a></dt>
+<em class="property">var </em><code class="sig-name descname">data</code>: c_ptr(elemType)<a class="headerlink" href="#CommAggregation.remoteBuffer.data" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="CommAggregation.remoteBuffer.cachedAlloc">
-<em class="property">proc </em><code class="descname">cachedAlloc</code><span class="sig-paren">(</span><span class="sig-paren">)</span>: c_ptr(elemType)<a class="headerlink" href="#CommAggregation.remoteBuffer.cachedAlloc" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">cachedAlloc</code><span class="sig-paren">(</span><span class="sig-paren">)</span>: c_ptr(elemType)<a class="headerlink" href="#CommAggregation.remoteBuffer.cachedAlloc" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="itermethod">
+<dl class="chpl itermethod">
 <dt id="CommAggregation.remoteBuffer.localIter">
-<em class="property">iter </em><code class="descname">localIter</code><span class="sig-paren">(</span><em>data: c_ptr(elemType)</em>, <em>size: int</em><span class="sig-paren">)</span> ref: elemType<a class="headerlink" href="#CommAggregation.remoteBuffer.localIter" title="Permalink to this definition">¶</a></dt>
+<em class="property">iter </em><code class="sig-name descname">localIter</code><span class="sig-paren">(</span><em class="sig-param">data: c_ptr(elemType)</em>, <em class="sig-param">size: int</em><span class="sig-paren">)</span> ref: elemType<a class="headerlink" href="#CommAggregation.remoteBuffer.localIter" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="CommAggregation.remoteBuffer.localFree">
-<em class="property">proc </em><code class="descname">localFree</code><span class="sig-paren">(</span><em>data: c_ptr(elemType)</em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.remoteBuffer.localFree" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">localFree</code><span class="sig-paren">(</span><em class="sig-param">data: c_ptr(elemType)</em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.remoteBuffer.localFree" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="CommAggregation.remoteBuffer.markFreed">
-<em class="property">proc </em><code class="descname">markFreed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.remoteBuffer.markFreed" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">markFreed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.remoteBuffer.markFreed" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="CommAggregation.remoteBuffer.PUT">
-<em class="property">proc </em><code class="descname">PUT</code><span class="sig-paren">(</span><em>lArr: [] elemType</em>, <em>size: int</em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.remoteBuffer.PUT" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">PUT</code><span class="sig-paren">(</span><em class="sig-param">lArr: [] elemType</em>, <em class="sig-param">size: int</em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.remoteBuffer.PUT" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt>
-<em class="property">proc </em><code class="descname">PUT</code><span class="sig-paren">(</span><em>lArr: c_ptr(elemType)</em>, <em>size: int</em><span class="sig-paren">)</span></dt>
+<em class="property">proc </em><code class="sig-name descname">PUT</code><span class="sig-paren">(</span><em class="sig-param">lArr: c_ptr(elemType)</em>, <em class="sig-param">size: int</em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="CommAggregation.remoteBuffer.GET">
-<em class="property">proc </em><code class="descname">GET</code><span class="sig-paren">(</span><em>lArr: [] elemType</em>, <em>size: int</em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.remoteBuffer.GET" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">GET</code><span class="sig-paren">(</span><em class="sig-param">lArr: [] elemType</em>, <em class="sig-param">size: int</em><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.remoteBuffer.GET" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="chpl method">
 <dt id="CommAggregation.remoteBuffer.deinit">
-<em class="property">proc </em><code class="descname">deinit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.remoteBuffer.deinit" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">deinit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.remoteBuffer.deinit" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="CommAggregation.bufferIdxAlloc">
-<em class="property">proc </em><code class="descname">bufferIdxAlloc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.bufferIdxAlloc" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">bufferIdxAlloc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CommAggregation.bufferIdxAlloc" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -487,11 +490,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2015
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -502,7 +513,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,27 +11,29 @@
   
 
   
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
     <link rel="next" title="Errors" href="Errors.html" />
@@ -50,7 +51,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home"> chpldoc
+            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> chpldoc
           
 
           
@@ -77,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -144,6 +146,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -182,7 +185,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>EfuncMsg</li>
     
@@ -210,219 +213,184 @@
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="nx">import</span> <span class="nx">EfuncMsg</span><span class="p">;</span>
+<div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">EfuncMsg</span><span class="p">;</span>
 </pre></div>
 </div>
-<dl class="data">
+<dl class="chpl data">
 <dt id="EfuncMsg.eLogger">
-<em class="property">const </em><code class="descname">eLogger</code> = new Logger(logLevel)<a class="headerlink" href="#EfuncMsg.eLogger" title="Permalink to this definition">¶</a></dt>
+<em class="property">const </em><code class="sig-name descname">eLogger</code> = new Logger(logLevel)<a class="headerlink" href="#EfuncMsg.eLogger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="EfuncMsg.efuncMsg">
-<em class="property">proc </em><code class="descname">efuncMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#EfuncMsg.efuncMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">efuncMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#EfuncMsg.efuncMsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>These ops are functions which take an array and produce an array.</p>
 <blockquote>
-<div><strong>Dev Note:</strong> Do scans fit here also? I think so… vector = scanop(vector)
+<div><p><strong>Dev Note:</strong> Do scans fit here also? I think so… vector = scanop(vector)
 parse and respond to efunc “elemental function” message
-vector = efunc(vector)</div></blockquote>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>reqMsg</strong> : <em>string</em> – request containing (cmd,efunc,name)</li>
-<li><strong>st</strong> : <em>borrowed SymTab</em> – SymTab to act on</li>
+vector = efunc(vector)</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reqMsg</strong> : <em>string</em> – request containing (cmd,efunc,name)</p></li>
+<li><p><strong>st</strong> : <em>borrowed SymTab</em> – SymTab to act on</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">(MsgTuple)</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Throws:</th><td class="field-body"><p class="first last"><cite>UndefinedSymbolError(name)</cite></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(MsgTuple)</p>
+</dd>
+<dt class="field-odd">Throws</dt>
+<dd class="field-odd"><p><cite>UndefinedSymbolError(name)</cite></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="EfuncMsg.efunc3vvMsg">
-<em class="property">proc </em><code class="descname">efunc3vvMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#EfuncMsg.efunc3vvMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">efunc3vvMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#EfuncMsg.efunc3vvMsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>These are ternary functions which take three arrays and produce an array.
 vector = efunc(vector, vector, vector)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>reqMsg</strong> : <em>string</em> – request containing (cmd,efunc,name1,name2,name3)</li>
-<li><strong>st</strong> : <em>borrowed SymTab</em> – SymTab to act on</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reqMsg</strong> : <em>string</em> – request containing (cmd,efunc,name1,name2,name3)</p></li>
+<li><p><strong>st</strong> : <em>borrowed SymTab</em> – SymTab to act on</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">(MsgTuple)</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Throws:</th><td class="field-body"><p class="first last"><cite>UndefinedSymbolError(name)</cite></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(MsgTuple)</p>
+</dd>
+<dt class="field-odd">Throws</dt>
+<dd class="field-odd"><p><cite>UndefinedSymbolError(name)</cite></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="EfuncMsg.efunc3vsMsg">
-<em class="property">proc </em><code class="descname">efunc3vsMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#EfuncMsg.efunc3vsMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">efunc3vsMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#EfuncMsg.efunc3vsMsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>vector = efunc(vector, vector, scalar)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>reqMsg</strong> : <em>string</em> – request containing (cmd,efunc,name1,name2,dtype,value)</li>
-<li><strong>st</strong> : <em>borrowed SymTab</em> – SymTab to act on</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reqMsg</strong> : <em>string</em> – request containing (cmd,efunc,name1,name2,dtype,value)</p></li>
+<li><p><strong>st</strong> : <em>borrowed SymTab</em> – SymTab to act on</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">(MsgTuple)</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Throws:</th><td class="field-body"><p class="first last"><cite>UndefinedSymbolError(name)</cite></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(MsgTuple)</p>
+</dd>
+<dt class="field-odd">Throws</dt>
+<dd class="field-odd"><p><cite>UndefinedSymbolError(name)</cite></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="EfuncMsg.efunc3svMsg">
-<em class="property">proc </em><code class="descname">efunc3svMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#EfuncMsg.efunc3svMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">efunc3svMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#EfuncMsg.efunc3svMsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>vector = efunc(vector, scalar, vector)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>reqMsg</strong> : <em>string</em> – request containing (cmd,efunc,name1,dtype,value,name2)</li>
-<li><strong>st</strong> : <em>borrowed SymTab</em> – SymTab to act on</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reqMsg</strong> : <em>string</em> – request containing (cmd,efunc,name1,dtype,value,name2)</p></li>
+<li><p><strong>st</strong> : <em>borrowed SymTab</em> – SymTab to act on</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">(MsgTuple)</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Throws:</th><td class="field-body"><p class="first last"><cite>UndefinedSymbolError(name)</cite></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(MsgTuple)</p>
+</dd>
+<dt class="field-odd">Throws</dt>
+<dd class="field-odd"><p><cite>UndefinedSymbolError(name)</cite></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="EfuncMsg.efunc3ssMsg">
-<em class="property">proc </em><code class="descname">efunc3ssMsg</code><span class="sig-paren">(</span><em>cmd: string</em>, <em>payload: string</em>, <em>st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#EfuncMsg.efunc3ssMsg" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">efunc3ssMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#EfuncMsg.efunc3ssMsg" title="Permalink to this definition">¶</a></dt>
 <dd><p>vector = efunc(vector, scalar, scalar)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>reqMsg</strong> : <em>string</em> – request containing (cmd,efunc,name1,dtype1,value1,dtype2,value2)</li>
-<li><strong>st</strong> : <em>borrowed SymTab</em> – SymTab to act on</li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reqMsg</strong> : <em>string</em> – request containing (cmd,efunc,name1,dtype1,value1,dtype2,value2)</p></li>
+<li><p><strong>st</strong> : <em>borrowed SymTab</em> – SymTab to act on</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">(MsgTuple)</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Throws:</th><td class="field-body"><p class="first last"><cite>UndefinedSymbolError(name)</cite></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(MsgTuple)</p>
+</dd>
+<dt class="field-odd">Throws</dt>
+<dd class="field-odd"><p><cite>UndefinedSymbolError(name)</cite></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt id="EfuncMsg.where_helper">
-<em class="property">proc </em><code class="descname">where_helper</code><span class="sig-paren">(</span><em>cond: [?D] bool</em>, <em>A: [D] ?t</em>, <em>B: [D] t</em>, <em>param kind</em><span class="sig-paren">)</span>: [D] t<a class="headerlink" href="#EfuncMsg.where_helper" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">where_helper</code><span class="sig-paren">(</span><em class="sig-param">cond: [?D] bool</em>, <em class="sig-param">A: [D] ?t</em>, <em class="sig-param">B: [D] t</em>, <em class="sig-param">param kind</em><span class="sig-paren">)</span>: [D] t<a class="headerlink" href="#EfuncMsg.where_helper" title="Permalink to this definition">¶</a></dt>
 <dd><p>The ‘where’ function takes a boolean array and two other arguments A and B, and
 returns an array with A where the boolean is true and B where it is false. A and B
 can be vectors or scalars.
 Dev Note: I would like to be able to write these functions without
 the param kind and just let the compiler choose, but it complains about an
 ambiguous call.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>cond</strong> : <em>[?D] bool</em> – </li>
-<li><strong>A</strong> : <em>[D] ?t</em> – </li>
-<li><strong>B</strong> : <em>[D] t</em> – </li>
-<li><strong>kind</strong> : <em>param</em> – </li>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cond</strong> : <em>[?D] bool</em> – </p></li>
+<li><p><strong>A</strong> : <em>[D] ?t</em> – </p></li>
+<li><p><strong>B</strong> : <em>[D] t</em> – </p></li>
+<li><p><strong>kind</strong> : <em>param</em> – </p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt>
-<em class="property">proc </em><code class="descname">where_helper</code><span class="sig-paren">(</span><em>cond: [?D] bool</em>, <em>A: [D] ?t</em>, <em>b: t</em>, <em>param kind</em><span class="sig-paren">)</span>: [D] t</dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>cond</strong> : <em>[?D] bool</em> – </li>
-<li><strong>A</strong> : <em>[D] ?t</em> – </li>
-<li><strong>B</strong> : <em>t</em> – </li>
-<li><strong>kind</strong> : <em>param</em> – </li>
+<em class="property">proc </em><code class="sig-name descname">where_helper</code><span class="sig-paren">(</span><em class="sig-param">cond: [?D] bool</em>, <em class="sig-param">A: [D] ?t</em>, <em class="sig-param">b: t</em>, <em class="sig-param">param kind</em><span class="sig-paren">)</span>: [D] t</dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cond</strong> : <em>[?D] bool</em> – </p></li>
+<li><p><strong>A</strong> : <em>[D] ?t</em> – </p></li>
+<li><p><strong>B</strong> : <em>t</em> – </p></li>
+<li><p><strong>kind</strong> : <em>param</em> – </p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt>
-<em class="property">proc </em><code class="descname">where_helper</code><span class="sig-paren">(</span><em>cond: [?D] bool</em>, <em>a: ?t</em>, <em>B: [D] t</em>, <em>param kind</em><span class="sig-paren">)</span>: [D] t</dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>cond</strong> : <em>[?D] bool</em> – </li>
-<li><strong>a</strong> : <em>?t</em> – </li>
-<li><strong>B</strong> : <em>[D] t</em> – </li>
-<li><strong>kind</strong> : <em>param</em> – </li>
+<em class="property">proc </em><code class="sig-name descname">where_helper</code><span class="sig-paren">(</span><em class="sig-param">cond: [?D] bool</em>, <em class="sig-param">a: ?t</em>, <em class="sig-param">B: [D] t</em>, <em class="sig-param">param kind</em><span class="sig-paren">)</span>: [D] t</dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cond</strong> : <em>[?D] bool</em> – </p></li>
+<li><p><strong>a</strong> : <em>?t</em> – </p></li>
+<li><p><strong>B</strong> : <em>[D] t</em> – </p></li>
+<li><p><strong>kind</strong> : <em>param</em> – </p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="chpl function">
 <dt>
-<em class="property">proc </em><code class="descname">where_helper</code><span class="sig-paren">(</span><em>cond: [?D] bool</em>, <em>a: ?t</em>, <em>b: t</em>, <em>param kind</em><span class="sig-paren">)</span>: [D] t</dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
-<li><strong>cond</strong> : <em>[?D] bool</em> – </li>
-<li><strong>a</strong> : <em>?t</em> – </li>
-<li><strong>b</strong> : <em>t</em> – </li>
-<li><strong>kind</strong> : <em>param</em> – </li>
+<em class="property">proc </em><code class="sig-name descname">where_helper</code><span class="sig-paren">(</span><em class="sig-param">cond: [?D] bool</em>, <em class="sig-param">a: ?t</em>, <em class="sig-param">b: t</em>, <em class="sig-param">param kind</em><span class="sig-paren">)</span>: [D] t</dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cond</strong> : <em>[?D] bool</em> – </p></li>
+<li><p><strong>a</strong> : <em>?t</em> – </p></li>
+<li><p><strong>b</strong> : <em>t</em> – </p></li>
+<li><p><strong>kind</strong> : <em>param</em> – </p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -447,11 +415,19 @@ ambiguous call.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2015
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -462,7 +438,6 @@ ambiguous call.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
