@@ -334,6 +334,11 @@ class GroupByTest(ArkoudaTest):
                 k, n = g.nunique(val)
                 self.assertTrue((n == expected).all())
 
+    def test_type_failure_multilevel_groupby_aggregate(self):
+        # just checking no error occurs with hotfix for Issue 858
+        keys = [ak.randint(0, 10, 100), ak.randint(0, 10, 100)]
+        g = ak.GroupBy(keys)
+        g.min(ak.randint(0, 10, 100))
 
 def to_tuple_dict(labels, values):
     # transforms labels from list of arrays into a list of tuples by index and builds a dictionary
