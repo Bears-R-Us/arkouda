@@ -3,25 +3,12 @@ from typing import cast, Mapping, Optional, Tuple, Union
 import warnings, pkg_resources
 import zmq # type: ignore
 import pyfiglet # type: ignore
-from arkouda import security, io_util
+from arkouda import security, io_util, __version__
 from arkouda.logger import getArkoudaLogger
 from arkouda.message import RequestMessage, MessageFormat, ReplyMessage, \
      MessageType
 
-__all__ = [ "connect", "disconnect", "shutdown", "get_config", "get_mem_used", 
-           "__version__", "ruok"]
-
-# Try to read the version from the file located at ../VERSION
-VERSIONFILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
-                           "VERSION")
-if os.path.isfile(VERSIONFILE):
-    with open(VERSIONFILE, 'r') as f:
-        __version__ = f.read().strip()
-else:
-    # Fall back to the version defined at build time in setup.py
-    # pkg_resources is a subpackage of setuptools
-    # __package__ is the name of the current package, i.e. "arkouda"
-    __version__ = pkg_resources.require(__package__)[0].version
+__all__ = ["connect", "disconnect", "shutdown", "get_config", "get_mem_used", "ruok"]
 
 # stuff for zmq connection
 pspStr = ''
@@ -45,7 +32,7 @@ clientLogger = getArkoudaLogger(name='Arkouda User Logger', logFormat='%(message
 
 # Print splash message
 print('{}'.format(pyfiglet.figlet_format('Arkouda')))
-print('Client Version: {}'.format(__version__))
+print('Client Version: {}'.format(__version__)) # type: ignore
 
 # reset settings to default values
 def set_defaults() -> None:

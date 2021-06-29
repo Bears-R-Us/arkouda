@@ -165,13 +165,13 @@ endef
 $(eval $(call create_help_target,arkouda-help,ARKOUDA_HELP_TEXT))
 
 # Set the arkouda server version from the VERSION file
-VERSIONFILE=./VERSION
+VERSION=$(shell python -c "import versioneer; print(versioneer.get_versions()[\"version\"])")
 # Test for existence of VERSION file
-ifneq ("$(wildcard $(VERSIONFILE))","")
-	VERSION=$(shell cat ${VERSIONFILE})
-else
-	VERSION=$(shell date +'%Y.%m.%d')
-endif
+# ifneq ("$(wildcard $(VERSIONFILE))","")
+# 	VERSION=$(shell cat ${VERSIONFILE})
+# else
+# 	VERSION=$(shell date +'%Y.%m.%d')
+# endif
 
 # Version needs to be escape-quoted for chpl to interpret as string
 CHPL_FLAGS_WITH_VERSION = $(CHPL_FLAGS)
