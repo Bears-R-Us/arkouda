@@ -172,6 +172,17 @@ class IOTest(ArkoudaTest):
         message = ak.ls_hdf('{}/iotest_single_column_LOCALE0000'.format(IOTest.io_test_dir))
         self.assertIn('int_tens_pdarray         Dataset', message)
 
+    def testLsHdfEmpty(self):
+        # Test filename empty/whitespace-only condition
+        with self.assertRaises(ValueError) as cm:
+            ak.ls_hdf("")
+        
+        with self.assertRaises(ValueError) as cm:
+            ak.ls_hdf("   ")
+        
+        with self.assertRaises(ValueError) as cm:
+            ak.ls_hdf(" \n\r\t  ")
+
     def testReadHdf(self):
         '''
         Creates 2..n files depending upon the number of arkouda_server locales with two
