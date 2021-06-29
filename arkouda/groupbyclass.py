@@ -229,7 +229,6 @@ class GroupBy:
         self.logger.debug(repMsg)
         return self.unique_keys, create_pdarray(repMsg)
     
-    @typechecked
     def aggregate(self, values: groupable, operator: str, skipna: bool=True) \
                     -> Tuple[groupable, pdarray]:
         '''
@@ -753,7 +752,7 @@ class GroupBy:
         """
         if values.dtype != bool:
             raise TypeError('any is only supported for pdarrays of dtype bool')
-        return self.aggregate(values, "any")
+        return self.aggregate(values, "any")  # type: ignore
 
     def all(self, values : pdarray) \
                     -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
@@ -788,7 +787,7 @@ class GroupBy:
         if values.dtype != bool:
             raise TypeError('all is only supported for pdarrays of dtype bool')
 
-        return self.aggregate(values, "all")
+        return self.aggregate(values, "all")  # type: ignore
 
     def OR(self, values : pdarray) \
                     -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
@@ -825,7 +824,7 @@ class GroupBy:
         if values.dtype != int64:
             raise TypeError('OR is only supported for pdarrays of dtype int64')
 
-        return self.aggregate(values, "or")
+        return self.aggregate(values, "or")  # type: ignore
 
     def AND(self, values : pdarray) \
                     -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
@@ -862,7 +861,7 @@ class GroupBy:
         if values.dtype != int64:
             raise TypeError('AND is only supported for pdarrays of dtype int64')
 
-        return self.aggregate(values, "and")
+        return self.aggregate(values, "and")  # type: ignore
 
     def XOR(self, values : pdarray) \
                     -> Tuple[Union[pdarray,List[Union[pdarray,Strings]]],pdarray]:
@@ -899,7 +898,7 @@ class GroupBy:
         if values.dtype != int64:
             raise TypeError('XOR is only supported for pdarrays of dtype int64')
 
-        return self.aggregate(values, "xor")
+        return self.aggregate(values, "xor")  # type: ignore
 
     @typechecked
     def broadcast(self, values : pdarray, permute : bool=True) -> pdarray:
