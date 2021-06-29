@@ -1,0 +1,374 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>arkouda._version &#8212; arkouda 2020.07.07 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="arkouda.categorical" href="../categorical/index.html" />
+    <link rel="prev" title="arkouda" href="../index.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-arkouda._version">
+<span id="arkouda-version"></span><h1><a class="reference internal" href="#module-arkouda._version" title="arkouda._version"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda._version</span></code></a><a class="headerlink" href="#module-arkouda._version" title="Permalink to this headline">¶</a></h1>
+<p>Git implementation of _version.py.</p>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<section id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda._version.VersioneerConfig" title="arkouda._version.VersioneerConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VersioneerConfig</span></code></a></p></td>
+<td><p>Container for Versioneer configuration parameters.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda._version.get_keywords" title="arkouda._version.get_keywords"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_keywords</span></code></a>()</p></td>
+<td><p>Get the keywords needed to look up the version information.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda._version.get_config" title="arkouda._version.get_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_config</span></code></a>()</p></td>
+<td><p>Create, populate and return the VersioneerConfig() object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda._version.register_vcs_handler" title="arkouda._version.register_vcs_handler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_vcs_handler</span></code></a>(vcs, method)</p></td>
+<td><p>Create decorator to mark a method as the handler of a VCS.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda._version.run_command" title="arkouda._version.run_command"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_command</span></code></a>(commands, args, cwd=None, verbose=False, hide_stderr=False, env=None)</p></td>
+<td><p>Call the given command(s).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda._version.versions_from_parentdir" title="arkouda._version.versions_from_parentdir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">versions_from_parentdir</span></code></a>(parentdir_prefix, root, verbose)</p></td>
+<td><p>Try to determine the version from the parent directory name.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda._version.git_get_keywords" title="arkouda._version.git_get_keywords"><code class="xref py py-obj docutils literal notranslate"><span class="pre">git_get_keywords</span></code></a>(versionfile_abs)</p></td>
+<td><p>Extract version information from the given file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda._version.git_versions_from_keywords" title="arkouda._version.git_versions_from_keywords"><code class="xref py py-obj docutils literal notranslate"><span class="pre">git_versions_from_keywords</span></code></a>(keywords, tag_prefix, verbose)</p></td>
+<td><p>Get version information from git keywords.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda._version.git_pieces_from_vcs" title="arkouda._version.git_pieces_from_vcs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">git_pieces_from_vcs</span></code></a>(tag_prefix, root, verbose, run_command=run_command)</p></td>
+<td><p>Get version from ‘git describe’ in the root of the source tree.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda._version.plus_or_dot" title="arkouda._version.plus_or_dot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plus_or_dot</span></code></a>(pieces)</p></td>
+<td><p>Return a + if we don’t already have one, else return a .</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda._version.render_pep440" title="arkouda._version.render_pep440"><code class="xref py py-obj docutils literal notranslate"><span class="pre">render_pep440</span></code></a>(pieces)</p></td>
+<td><p>Build up version string, with post-release “local version identifier”.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda._version.render_pep440_pre" title="arkouda._version.render_pep440_pre"><code class="xref py py-obj docutils literal notranslate"><span class="pre">render_pep440_pre</span></code></a>(pieces)</p></td>
+<td><p>TAG[.post0.devDISTANCE] – No -dirty.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda._version.render_pep440_post" title="arkouda._version.render_pep440_post"><code class="xref py py-obj docutils literal notranslate"><span class="pre">render_pep440_post</span></code></a>(pieces)</p></td>
+<td><p>TAG[.postDISTANCE[.dev0]+gHEX] .</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda._version.render_pep440_old" title="arkouda._version.render_pep440_old"><code class="xref py py-obj docutils literal notranslate"><span class="pre">render_pep440_old</span></code></a>(pieces)</p></td>
+<td><p>TAG[.postDISTANCE[.dev0]] .</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda._version.render_git_describe" title="arkouda._version.render_git_describe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">render_git_describe</span></code></a>(pieces)</p></td>
+<td><p>TAG[-DISTANCE-gHEX][-dirty].</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda._version.render_git_describe_long" title="arkouda._version.render_git_describe_long"><code class="xref py py-obj docutils literal notranslate"><span class="pre">render_git_describe_long</span></code></a>(pieces)</p></td>
+<td><p>TAG-DISTANCE-gHEX[-dirty].</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda._version.render" title="arkouda._version.render"><code class="xref py py-obj docutils literal notranslate"><span class="pre">render</span></code></a>(pieces, style)</p></td>
+<td><p>Render the given version pieces into the requested style.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda._version.get_versions" title="arkouda._version.get_versions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_versions</span></code></a>()</p></td>
+<td><p>Get version information or return default if unable to do so.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#arkouda._version.LONG_VERSION_PY" title="arkouda._version.LONG_VERSION_PY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LONG_VERSION_PY</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda._version.HANDLERS" title="arkouda._version.HANDLERS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HANDLERS</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda._version.get_keywords">
+<span class="sig-prename descclassname"><span class="pre">arkouda._version.</span></span><span class="sig-name descname"><span class="pre">get_keywords</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda._version.get_keywords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the keywords needed to look up the version information.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="arkouda._version.VersioneerConfig">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">arkouda._version.</span></span><span class="sig-name descname"><span class="pre">VersioneerConfig</span></span><a class="headerlink" href="#arkouda._version.VersioneerConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Container for Versioneer configuration parameters.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda._version.get_config">
+<span class="sig-prename descclassname"><span class="pre">arkouda._version.</span></span><span class="sig-name descname"><span class="pre">get_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda._version.get_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create, populate and return the VersioneerConfig() object.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="arkouda._version.NotThisMethod">
+<em class="property"><span class="pre">exception</span> </em><span class="sig-prename descclassname"><span class="pre">arkouda._version.</span></span><span class="sig-name descname"><span class="pre">NotThisMethod</span></span><a class="headerlink" href="#arkouda._version.NotThisMethod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Exception raised if a method is not valid for the current scenario.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="arkouda._version.LONG_VERSION_PY">
+<span class="sig-prename descclassname"><span class="pre">arkouda._version.</span></span><span class="sig-name descname"><span class="pre">LONG_VERSION_PY</span></span><a class="headerlink" href="#arkouda._version.LONG_VERSION_PY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="arkouda._version.HANDLERS">
+<span class="sig-prename descclassname"><span class="pre">arkouda._version.</span></span><span class="sig-name descname"><span class="pre">HANDLERS</span></span><a class="headerlink" href="#arkouda._version.HANDLERS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda._version.register_vcs_handler">
+<span class="sig-prename descclassname"><span class="pre">arkouda._version.</span></span><span class="sig-name descname"><span class="pre">register_vcs_handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vcs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda._version.register_vcs_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create decorator to mark a method as the handler of a VCS.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda._version.run_command">
+<span class="sig-prename descclassname"><span class="pre">arkouda._version.</span></span><span class="sig-name descname"><span class="pre">run_command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">commands</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hide_stderr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda._version.run_command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call the given command(s).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda._version.versions_from_parentdir">
+<span class="sig-prename descclassname"><span class="pre">arkouda._version.</span></span><span class="sig-name descname"><span class="pre">versions_from_parentdir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parentdir_prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda._version.versions_from_parentdir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Try to determine the version from the parent directory name.</p>
+<p>Source tarballs conventionally unpack into a directory that includes both
+the project name and a version string. We will also support searching up
+two directory levels for an appropriately named parent directory</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda._version.git_get_keywords">
+<span class="sig-prename descclassname"><span class="pre">arkouda._version.</span></span><span class="sig-name descname"><span class="pre">git_get_keywords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">versionfile_abs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda._version.git_get_keywords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract version information from the given file.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda._version.git_versions_from_keywords">
+<span class="sig-prename descclassname"><span class="pre">arkouda._version.</span></span><span class="sig-name descname"><span class="pre">git_versions_from_keywords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keywords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag_prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda._version.git_versions_from_keywords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get version information from git keywords.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda._version.git_pieces_from_vcs">
+<span class="sig-prename descclassname"><span class="pre">arkouda._version.</span></span><span class="sig-name descname"><span class="pre">git_pieces_from_vcs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag_prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_command</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">run_command</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda._version.git_pieces_from_vcs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get version from ‘git describe’ in the root of the source tree.</p>
+<p>This only gets called if the git-archive ‘subst’ keywords were <em>not</em>
+expanded, and _version.py hasn’t already been rewritten with a short
+version string, meaning we’re inside a checked out source tree.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda._version.plus_or_dot">
+<span class="sig-prename descclassname"><span class="pre">arkouda._version.</span></span><span class="sig-name descname"><span class="pre">plus_or_dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pieces</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda._version.plus_or_dot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a + if we don’t already have one, else return a .</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda._version.render_pep440">
+<span class="sig-prename descclassname"><span class="pre">arkouda._version.</span></span><span class="sig-name descname"><span class="pre">render_pep440</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pieces</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda._version.render_pep440" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build up version string, with post-release “local version identifier”.</p>
+<p>Our goal: TAG[+DISTANCE.gHEX[.dirty]] . Note that if you
+get a tagged build and then dirty it, you’ll get TAG+0.gHEX.dirty</p>
+<p>Exceptions:
+1: no tags. git_describe was just HEX. 0+untagged.DISTANCE.gHEX[.dirty]</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda._version.render_pep440_pre">
+<span class="sig-prename descclassname"><span class="pre">arkouda._version.</span></span><span class="sig-name descname"><span class="pre">render_pep440_pre</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pieces</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda._version.render_pep440_pre" title="Permalink to this definition">¶</a></dt>
+<dd><p>TAG[.post0.devDISTANCE] – No -dirty.</p>
+<p>Exceptions:
+1: no tags. 0.post0.devDISTANCE</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda._version.render_pep440_post">
+<span class="sig-prename descclassname"><span class="pre">arkouda._version.</span></span><span class="sig-name descname"><span class="pre">render_pep440_post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pieces</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda._version.render_pep440_post" title="Permalink to this definition">¶</a></dt>
+<dd><p>TAG[.postDISTANCE[.dev0]+gHEX] .</p>
+<p>The “.dev0” means dirty. Note that .dev0 sorts backwards
+(a dirty tree will appear “older” than the corresponding clean one),
+but you shouldn’t be releasing software with -dirty anyways.</p>
+<p>Exceptions:
+1: no tags. 0.postDISTANCE[.dev0]</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda._version.render_pep440_old">
+<span class="sig-prename descclassname"><span class="pre">arkouda._version.</span></span><span class="sig-name descname"><span class="pre">render_pep440_old</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pieces</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda._version.render_pep440_old" title="Permalink to this definition">¶</a></dt>
+<dd><p>TAG[.postDISTANCE[.dev0]] .</p>
+<p>The “.dev0” means dirty.</p>
+<p>Exceptions:
+1: no tags. 0.postDISTANCE[.dev0]</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda._version.render_git_describe">
+<span class="sig-prename descclassname"><span class="pre">arkouda._version.</span></span><span class="sig-name descname"><span class="pre">render_git_describe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pieces</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda._version.render_git_describe" title="Permalink to this definition">¶</a></dt>
+<dd><p>TAG[-DISTANCE-gHEX][-dirty].</p>
+<p>Like ‘git describe –tags –dirty –always’.</p>
+<p>Exceptions:
+1: no tags. HEX[-dirty]  (note: no ‘g’ prefix)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda._version.render_git_describe_long">
+<span class="sig-prename descclassname"><span class="pre">arkouda._version.</span></span><span class="sig-name descname"><span class="pre">render_git_describe_long</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pieces</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda._version.render_git_describe_long" title="Permalink to this definition">¶</a></dt>
+<dd><p>TAG-DISTANCE-gHEX[-dirty].</p>
+<p>Like ‘git describe –tags –dirty –always -long’.
+The distance/hash is unconditional.</p>
+<p>Exceptions:
+1: no tags. HEX[-dirty]  (note: no ‘g’ prefix)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda._version.render">
+<span class="sig-prename descclassname"><span class="pre">arkouda._version.</span></span><span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pieces</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda._version.render" title="Permalink to this definition">¶</a></dt>
+<dd><p>Render the given version pieces into the requested style.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda._version.get_versions">
+<span class="sig-prename descclassname"><span class="pre">arkouda._version.</span></span><span class="sig-name descname"><span class="pre">get_versions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#arkouda._version.get_versions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get version information or return default if unable to do so.</p>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">arkouda</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/testing.html">Performance Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../setup/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../server/index.html">Chapel API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">API Reference</a><ul>
+  <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a><ul>
+      <li>Previous: <a href="../index.html" title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda</span></code></a></li>
+      <li>Next: <a href="../categorical/index.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">arkouda.categorical</span></code></a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Michael Merrill and William Reus.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../../../_sources/autoapi/arkouda/_version/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
