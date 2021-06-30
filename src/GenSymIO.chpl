@@ -139,40 +139,31 @@ module GenSymIO {
         var arrayBytes: bytes;
         var entry = st.lookup(payload);
         overMemLimit(2*entry.size*entry.itemsize);
-        var tmpf: file; defer { ensureClose(tmpf); }
 
         proc localizeArr(A: [?D] ?eltType) {
-            const localA:[D.low..D.high] eltType = A;
-            return localA;
+            var localA:[D.low..D.high] eltType = A;
+            const size = D.size*c_sizeof(eltType):int;
+            var ptr = c_ptrTo(localA[D.low]):c_ptr(uint(8));
+            return createBytesWithNewBuffer(ptr, size, size);
         }
         try {
-            tmpf = openmem();
-            var tmpw = tmpf.writer(kind=iobig);
             if entry.dtype == DType.Int64 {
-                tmpw.write(localizeArr(toSymEntry(entry, int).a));
+                arrayBytes = localizeArr(toSymEntry(entry, int).a);
             } else if entry.dtype == DType.Float64 {
-                tmpw.write(localizeArr(toSymEntry(entry, real).a));
+                arrayBytes = localizeArr(toSymEntry(entry, real).a);
             } else if entry.dtype == DType.Bool {
-                tmpw.write(localizeArr(toSymEntry(entry, bool).a));
+                arrayBytes = localizeArr(toSymEntry(entry, bool).a);
             } else if entry.dtype == DType.UInt8 {
-                tmpw.write(localizeArr(toSymEntry(entry, uint(8)).a));
+                arrayBytes = localizeArr(toSymEntry(entry, uint(8)).a);
             } else {
                 var errorMsg = "Error: Unhandled dtype %s".format(entry.dtype);                
                 gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
                 return errorMsg.encode(); // return as bytes
             }
-            tmpw.close();
         } catch {
             return b"Error: Unable to write SymEntry to memory buffer";
         }
 
-        try {
-            var tmpr = tmpf.reader(kind=iobig, start=0);
-            tmpr.readbytes(arrayBytes);
-            tmpr.close();
-        } catch {
-            return b"Error: Unable to copy array from memory buffer to string";
-        }
         //var repMsg = try! "Array: %i".format(arraystr.length) + arraystr;
         /*
          Engin: fwiw, if you want to achieve the above, you can:

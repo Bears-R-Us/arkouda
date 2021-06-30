@@ -857,7 +857,6 @@ class pdarray:
             raise RuntimeError("Expected {} bytes but received {}".\
                                format(self.size*self.dtype.itemsize, len(rep_msg)))
         dt = np.dtype(self.dtype)
-        dt = dt.newbyteorder('>')
         mut_rep_msg = bytearray(rep_msg)
         return np.frombuffer(mut_rep_msg, dt)
 
