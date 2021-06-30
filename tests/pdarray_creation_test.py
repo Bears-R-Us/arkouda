@@ -574,3 +574,21 @@ class PdarrayCreationTest(ArkoudaTest):
         
         ones.fill(np.float64(2))  
         self.assertTrue((np.float64(2) == ones.to_ndarray()).all())  
+
+    def test_endian(self):
+        N = 100
+
+        a = np.random.randint(1, N, N)
+        aka = ak.array(a)
+        npa = aka.to_ndarray();
+        self.assertTrue(np.allclose(a, npa))
+
+        a = a.newbyteorder().byteswap()
+        aka = ak.array(a)
+        npa = aka.to_ndarray();
+        self.assertTrue(np.allclose(a, npa))
+
+        a = a.newbyteorder().byteswap()
+        aka = ak.array(a)
+        npa = aka.to_ndarray();
+        self.assertTrue(np.allclose(a, npa))
