@@ -856,10 +856,10 @@ class pdarray:
         if len(rep_msg) != self.size*self.dtype.itemsize:
             raise RuntimeError("Expected {} bytes but received {}".\
                                format(self.size*self.dtype.itemsize, len(rep_msg)))
-        # Use struct to interpret bytes as a big-endian numeric array
-        fmt = '>{:n}{}'.format(self.size, structDtypeCodes[self.dtype.name])
-        # Return a numpy ndarray
-        return np.array(struct.unpack(fmt, rep_msg)) # type: ignore
+        dt = np.dtype(self.dtype)
+        dt = dt.newbyteorder('>')
+        mut_rep_msg = bytearray(rep_msg)
+        return np.frombuffer(mut_rep_msg, dt)
 
     def to_cuda(self):
         """
