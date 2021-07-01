@@ -1,5 +1,5 @@
 from typeguard import typechecked
-import json, os
+import json, os, warnings
 from typing import cast, Dict, List, Mapping, Optional, Union
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
@@ -139,11 +139,15 @@ def read_all(filenames : Union[str, List[str]],
     Raises
     ------
     ValueError 
-        Raised if all datasets are not present in all hdf5 files or if one or 
+        Raised if all datasets are not present in all hdf5 files or if one or
         more of the specified files do not exist
     RuntimeError
-        Raised if one or more of the specified files cannot be opened
-        
+        Raised if one or more of the specified files cannot be opened.
+        If `allow_errors` is true this may be raised if no values are returned
+        from the server.
+    TypeError
+        Raised if we receive an unknown arkouda_type returned from the server
+
     See Also
     --------
     read_hdf, get_datasets, ls_hdf
@@ -182,19 +186,40 @@ def read_all(filenames : Union[str, List[str]],
         rep_msg = generic_msg(cmd="readAllHdf", args="{} {:n} {:n} {} {} | {}".
                               format(strictTypes, len(datasets), len(filenames), allow_errors, json.dumps(datasets),
                                      json.dumps(filenames)))
-        if ',' in rep_msg:
-            rep_msgs = cast(str,rep_msg).split(' , ')
-            d : Dict[str,Union[pdarray,Strings]] = dict()
-            for dset, rm in zip(datasets, rep_msgs):
-                if('+' in cast(str,rm)): #String
-                    d[dset]=Strings(*cast(str,rm).split('+'))
+        rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllHdfMsgJson for json structure
+        items = rep["items"] if "items" in rep else []
+        file_errors = rep["file_errors"] if "file_errors" in rep else []
+        if allow_errors and file_errors:
+            file_error_count = rep["file_error_count"] if "file_error_count" in rep else -1
+            warnings.warn(f"There were {file_error_count} errors reading files on the server. " +
+                          f"Sample error messages {file_errors}", RuntimeWarning)
+
+        # We have a couple possible return conditions
+        # 1. We have multiple items returned i.e. multi pdarrays, multi strings, multi pdarrays & strings
+        # 2. We have a single pdarray
+        # 3. We have a single strings object
+        if len(items) > 1: #  DataSets condition
+            d: Dict[str, Union[pdarray, Strings]] = {}
+            for item in items:
+                if "seg_string" == item["arkouda_type"]:
+                    d[item["dataset_name"]] = Strings(*item["created"].split("+"))
+                elif "pdarray" == item["arkouda_type"]:
+                    d[item["dataset_name"]] = create_pdarray(item["created"])
                 else:
-                    d[dset]=create_pdarray(cast(str,rm))
+                    raise TypeError(f"Unknown arkouda type:{item['arkouda_type']}")
             return d
-        elif '+' in rep_msg:
-            return Strings(*cast(str,rep_msg).split('+'))
+
+        elif len(items) == 1:
+            item = items[0]
+            if "pdarray" == item["arkouda_type"]:
+                return create_pdarray(item["created"])
+            elif "seg_string" == item["arkouda_type"]:
+                return Strings(*item["created"].split("+"))
+            else:
+                raise TypeError(f"Unknown arkouda type:{item['arkouda_type']}")
         else:
-            return create_pdarray(cast(str,rep_msg))
+            raise RuntimeError("No items were returned")
+
 
 @typechecked
 def load(path_prefix : str, dataset : str='array') -> Union[pdarray,Strings]:

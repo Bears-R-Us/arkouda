@@ -1,9 +1,6 @@
-import os, shutil, glob, stat
+import os, shutil, glob
 import numpy as np
 from typing import List, Mapping, Union
-
-import pytest
-
 from base_test import ArkoudaTest
 from context import arkouda as ak
 from arkouda import io_util
@@ -306,14 +303,13 @@ class IOTest(ArkoudaTest):
                                          f'{IOTest.io_test_dir}/iotest_single_column_dupe_LOCALE0000'])
         self.assertIsNotNone(dataset, "Expected dataset to be populated")
 
-        # Change the file permissions on a file and assert we can an error
-        os.chmod(f"{IOTest.io_test_dir}/iotest_single_column_LOCALE0000", stat.S_IWUSR)
-        with pytest.raises(RuntimeError):
-            dataset = ak.read_all(filenames=[f'{IOTest.io_test_dir}/iotest_single_column_LOCALE0000',
+        # Change the name of the first file we try to raise an error due to file missing.
+        with self.assertRaises(RuntimeError):
+            dataset = ak.read_all(filenames=[f'{IOTest.io_test_dir}/iotest_MISSING_single_column_LOCALE0000',
                                              f'{IOTest.io_test_dir}/iotest_single_column_dupe_LOCALE0000'])
 
-        # Run the same test of the modified permissions, but this time with the warning flag for read_all
-        dataset = ak.read_all(filenames=[f'{IOTest.io_test_dir}/iotest_single_column_LOCALE0000',
+        # Run the same test with missing file, but this time with the warning flag for read_all
+        dataset = ak.read_all(filenames=[f'{IOTest.io_test_dir}/iotest_MISSING_single_column_LOCALE0000',
                                          f'{IOTest.io_test_dir}/iotest_single_column_dupe_LOCALE0000'],
                               strictTypes=False,
                               allow_errors=True)

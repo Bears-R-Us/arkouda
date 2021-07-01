@@ -66,4 +66,10 @@ module Message {
        return "%jt".format(new ReplyMsg(msg=msg,msgType=msgType, 
                                                         msgFormat=msgFormat, user=user));
    }
+
+    /*
+     * String constants for use in constructing JSON formatted messages
+     */
+    const Q = '"'; // Double Quote, escaping quotes often throws off syntax highlighting.
+    const QCQ = Q + ":" + Q; // `":"` -> useful for closing and opening quotes for named json k,v pairs 
 }
