@@ -1,87 +1,100 @@
-module SACA {
-  //In this module, different algorithms to construct suffix array are provided
+module SuffixArrayConstruction {
+  // This module contains algorithms to construct suffix arrays
 
-  // The Chapel version of suffix array construction algorithm using skew algorithm
-  // Rewrite the algorithm and codes in paper
+  //  Chapel implementation of the suffix array construction algorithm using skew algorithm from
   // "Simple Linear Work Suffix Array Construction" by Juha Karkkainen and Peter Sanders (2003)
   // Dec.7, 2020
 
-  inline proc leq(a1:int, a2:int, b1:int, b2:int) {
-    // lexicographic order
-    return(a1 < b1 || a1 == b1 && a2 <= b2);
-  } // for pairs
+  /*
+  Returns a boolean indicating whether the pair (a1, a2) is less than or equal to pair (b1, b2)
 
-  inline proc leq(a1:int, a2:int, a3:int, b1:int, b2:int, b3:int) {
-    // lexicographic order
-    return(a1 < b1 || a1 == b1 && leq(a2, a3, b2, b3));
-  } // for pairs
+  :arg a1, a2, b1, b2: pairs to be compared
+  :type: int
 
-  //stably sort a[0..n-1] to b[0..n-1] with keys in 0..K from rs
-  proc radixPass(a:[] int, b:[] int, r:[] uint(8), n:int, K:int) {
-    // count occurrences
-    var c:[0..K] uint(8); // counter array
-    var x:uint(8);
-    var i=0:int;
-    var sum=0:int;
-    forall x in c do x=0;
-    for i in 0..n-1 do c[r[a[i]]]=c[r[a[i]]]+1;
-    var t:uint(8);
-    for i in 0..K do {
-      t=c[i];
-      c[i]=sum;
-      sum+=t;
-    }
-    for i in 0..n-1  do {
-      b[c[r[a[i]]]] = a[i];
-      c[r[a[i]]]=c[r[a[i]]]+1;
-    }
+  :returns: boolean True iff pair (a1, a2) is less than or equal to pair (b1, b2)
+  */
+  inline proc leq_pairs(a1:int, a2:int, b1:int, b2:int): bool {
+    return((a1 < b1) || ((a1 == b1) && (a2 <= b2)));  // lexicographic order for pairs
+  } 
+
+  /*
+  Returns a boolean indicating whether the triple (a1, a2, a3) is less than or equal to triple (b1, b2, b3)
+
+  :arg a1, a2, a3, b1, b2, b3: triples to be compared
+  :type: int
+
+  :returns: boolean True iff triple (a1, a2, a3) is less than or equal to pair (b1, b2, b3)
+  */
+  inline proc leq_triples(a1:int, a2:int, a3:int, b1:int, b2:int, b3:int): bool {
+    return((a1 < b1) || ((a1 == b1) && leq_pairs(a2, a3, b2, b3)));  // lexicographic order for triples
   }
 
+  /*
+  Using Radix Sort, stably sorts a[0..n-1] according to b[0..n-1] using keys 0..K from r[] 
+  Element a[i] is mapping to r[a[i]] where r is the alphabet with K+1 characters.
 
-  //stably sort a[0..n-1] to b[0..n-1] with keys in 0..K from r
-  //element a[i] is mapping to r[a[i]] and r is the alphabets with K+1 characters.
-  // a and b are bounded by n in calculation
-  proc radixPass(a:[] int, b:[] int, r:[] int, n:int, K:int) {
-    // count occurrences
-    var c:[0..K] int; // counter array
-    var x:int;
-    var i:int;
-    var t:int;
-    var sum=0:int;
+  :arg a: array to be sorted
+  :type: [] int
+  :arg b: array used to sort
+  :type: [] int
+  :arg r: array containing keys
+  :type: [] int || uint(8)
+  :arg n: bound for indicies of a and b used during this calculation
+  :type: int
+  :arg K: number of keys
+  :type: int
+  */
+  proc radixPass(a:[] int, b:[] int, r:[] ?t, n:int, K:int) where t == int || t == uint(8) {
+    var c: [0..K] t; // counter array
+    var x: t;
+    var i: int;
+    var tmp: t;
+    var sum=0: int;
+
     forall x in c do x=0;
     // calculate the number of different characters in a
-    for i in 0..n-1 do  c[r[a[i]]]=c[r[a[i]]]+1;
+    for i in 0..n-1 do c[r[a[i]]] = c[r[a[i]]]+1;
     // calculate the presum of c, so c[i] will be the starting position of different characters
-    for i in 0..K do  {
-      t=c[i];
-      c[i]=sum;
-      sum+=t;
+    for i in 0..K do {
+      tmp = c[i];
+      c[i] = sum;
+      sum += tmp;
     }
     // let b[j] store the position of each a[i] based on their order.
     // The same character but following the previous suffix will be put at the next position.
-    for i in 0..n-1 do {
+    for i in 0..n-1  do {
       b[c[r[a[i]]]] = a[i];
-      c[r[a[i]]]=c[r[a[i]]]+1;
+      c[r[a[i]]] = c[r[a[i]]]+1;
     }
   }
-  //stably sort a[0..n-1] to b[0..n-1] with keys in 0..K from r
 
-  // find the suffix array SA of s[0..n-1] in {1..K}^n
-  // require s[n]=s[n+1]=s[n+2]=0, n>=2. So the size of s should be n+3
-  proc SuffixArraySkew(s:[] int, SA: [] int, n:int, K: int) {
+  /*
+  Finds the suffix array SA of s[0..n-1] in {1..K}^n (n long with alphabet 1..K)
+  Pad out with 0s. Require s[n]=s[n+1]=s[n+2]=0, n>=2. So the size of s should be n+3
+
+  :arg s: n+3 long string to be converted into suffix array (where s[n]=s[n+1]=s[n+2]=0)
+  :type: [] int
+  :arg SA: Array to be populated with the suffix array for s
+  :type: [] int
+  :arg n: length of s (before padding out with 0s to n+2)
+  :type: int
+  :arg K: Size of alphabet
+  :type: int
+  */
+  proc SuffixArraySkew(s: [] int, SA: [] int, n: int, K: int) {
     var n0=(n+2)/3:int;
     var n1=(n+1)/3:int;
     var n2=n/3:int;
     var n02=n0+n2:int;
     var n12=n1+n2:int;
-    //number of elements meet i %3 =0,1, and 2.
+    //number of elements meet i%3 = 0, 1, and 2.
     //s[i] is the ith suffix, i in 0..n-1
-    var s12: [0..n02+2] int;
-    s12[n02]= 0;
-    s12[n02+1]= 0;
+    var s12:[0..n02+2] int;
+    s12[n02]=0;
+    s12[n02+1]=0;
     s12[n02+2]=0;
-    // Here n02 instead of  n12=n1+n2 is used for the later s0 building based on n1 elements
-    var SA12:[0..n02 + 2] int;
+    // Here n02 instead of n12=n1+n2 is used for the later s0 building based on n1 elements
+    var SA12:[0..n02+2] int;
     SA12[n02]=0;
     SA12[n02+1]=0;
     SA12[n02+2]=0;
@@ -169,11 +182,11 @@ module SACA {
       if (SA12[t] < n0) {
         // different compares for mod 1 and mod 2 suffixes
         // i % 3 =1
-        flag=leq(s[i], s12[SA12[t]+n0], s[j], s12[j/3]);
+        flag=leq_pairs(s[i], s12[SA12[t]+n0], s[j], s12[j/3]);
       }
       else {
         // i % 3 =2
-        flag=leq(s[i],s[i+1],s12[SA12[t]-n0+1], s[j], s[j+1], s12[j/3+n0]);
+        flag=leq_triples(s[i],s[i+1],s12[SA12[t]-n0+1], s[j], s[j+1], s12[j/3+n0]);
       }
       if (flag) {
         // suffix from SA12 is smaller

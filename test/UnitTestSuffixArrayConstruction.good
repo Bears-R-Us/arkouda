@@ -1,0 +1,10 @@
+>>> SuffixArrayConstruction for yabbadabbado
+Expected:
+12 1 6 4 9 3 8 2 7 5 10 11 0
+Actual:
+12 1 6 4 9 3 8 2 7 5 10 11 0
+>>> SuffixArrayConstruction for banana
+Expected:
+6 5 3 1 0 4 2
+Actual:
+6 5 3 1 0 4 2

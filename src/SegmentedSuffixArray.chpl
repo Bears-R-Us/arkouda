@@ -10,7 +10,7 @@ module SegmentedSuffixArray {
   use ServerConfig;
   use Time only Timer, getCurrentTime;
   use Logging;
-  use Errors;
+  use ServerErrors;
 
   private config const logLevel = ServerConfig.logLevel;
   const saLogger = new Logger(logLevel);

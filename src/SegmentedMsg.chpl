@@ -17,7 +17,7 @@ module SegmentedMsg {
   private config const logLevel = ServerConfig.logLevel;
   const smLogger = new Logger(logLevel);
   use SymArrayDmap;
-  use SACA;
+  use SuffixArrayConstruction;
 
   proc randomStringsMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
@@ -1195,7 +1195,6 @@ module SegmentedMsg {
               repMsg = 'created ' + st.attrib(segName2) + '+created ' + st.attrib(valName2);
               smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
               return new MsgTuple(repMsg, MsgType.NORMAL);
-
           }
           otherwise {
               var errorMsg = notImplementedError(pn, "("+objtype+")");
@@ -1203,7 +1202,6 @@ module SegmentedMsg {
               return new MsgTuple(errorMsg, MsgType.ERROR);
           }
       }
-
   }
 
   proc segLCPMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
