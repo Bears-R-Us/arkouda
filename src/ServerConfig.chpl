@@ -69,6 +69,16 @@ module ServerConfig
             var numPUs: int;
             var maxTaskPar: int;
             var physicalMemory: int;
+
+            proc init(id: int) {
+                on Locales[id] {
+                    this.id = here.id;
+                    this.name = here.name;
+                    this.numPUs = here.numPUs();
+                    this.maxTaskPar = here.maxTaskPar;
+                    this.physicalMemory = getPhysicalMemHere();
+                }
+            }
         }
         class Config {
             var arkoudaVersion: string;
@@ -81,8 +91,7 @@ module ServerConfig
             var maxTaskPar: int;
             var physicalMemory: int;
             var distributionType: string;
-            var LocaleConfigs: [LocaleSpace] owned LocaleConfig =
-                [loc in LocaleSpace] new owned LocaleConfig();
+            var LocaleConfigs: [LocaleSpace] owned LocaleConfig;
             var authenticate: bool;
             var logLevel: LogLevel;
         }
@@ -100,19 +109,11 @@ module ServerConfig
             maxTaskPar = here.maxTaskPar,
             physicalMemory = getPhysicalMemHere(),
             distributionType = (makeDistDom(10).type):string,
+            LocaleConfigs = [loc in LocaleSpace] new owned LocaleConfig(loc),
             authenticate = authenticate,
             logLevel = logLevel
         );
 
-        for loc in Locales {
-            on loc {
-                cfg.LocaleConfigs[here.id].id = here.id;
-                cfg.LocaleConfigs[here.id].name = here.name;
-                cfg.LocaleConfigs[here.id].numPUs = here.numPUs();
-                cfg.LocaleConfigs[here.id].maxTaskPar = here.maxTaskPar;
-                cfg.LocaleConfigs[here.id].physicalMemory = getPhysicalMemHere();
-            }
-        }
         return cfg;
     }
     private const cfg = createConfig();
