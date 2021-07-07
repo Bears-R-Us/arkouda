@@ -90,7 +90,7 @@ module ServerConfig
         var H5major: c_uint, H5minor: c_uint, H5micro: c_uint;
         H5get_libversion(H5major, H5minor, H5micro);
         var cfg = new owned Config();
-        cfg.arkoudaVersion = (ServerConfig.arkoudaVersion:string).replace("-", ".");
+        cfg.arkoudaVersion = (ServerConfig.arkoudaVersion:string);
         cfg.ZMQVersion = try! "%i.%i.%i".format(Zmajor, Zminor, Zmicro);
         cfg.HDF5Version = try! "%i.%i.%i".format(H5major, H5minor, H5micro);
         cfg.serverHostname = serverHostname;
