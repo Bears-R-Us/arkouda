@@ -1,5 +1,6 @@
 from base_test import ArkoudaTest
 from context import arkouda as ak
+import time
 
 '''
 Tests basic Arkouda client functionality
@@ -64,6 +65,13 @@ class ClientTest(ArkoudaTest):
         self.assertEqual(ArkoudaTest.port, config['ServerPort'])
         self.assertTrue('arkoudaVersion' in config)
         self.assertTrue('INFO', config['logLevel'])
+
+        # Verify caching of get_config
+        tl = config["time_loaded"]
+        self.assertEqual(tl, ak.client.get_config()["time_loaded"])  # Verify caching
+        ak.client._get_config.cache_clear()
+        time.sleep(0.15)
+        self.assertFalse(tl == ak.client.get_config()["time_loaded"])  # Verify clearing of cache and fresh fetch
         
     def test_client_context(self):   
         '''

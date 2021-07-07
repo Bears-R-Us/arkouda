@@ -1,12 +1,16 @@
 import json, os
 from typing import cast, Mapping, Optional, Tuple, Union
-import warnings, pkg_resources
+import warnings
 import zmq # type: ignore
 import pyfiglet # type: ignore
+import time
 from arkouda import security, io_util, __version__
 from arkouda.logger import getArkoudaLogger
 from arkouda.message import RequestMessage, MessageFormat, ReplyMessage, \
      MessageType
+from functools import lru_cache
+from typeguard import typechecked
+
 
 __all__ = ["connect", "disconnect", "shutdown", "get_config", "get_mem_used", "ruok"]
 
@@ -51,7 +55,7 @@ def set_defaults() -> None:
 
 # create context, request end of socket, and connect to it
 def connect(server : str="localhost", port : int=5555, timeout : int=0, 
-                           access_token : str=None, connect_url=None) -> None:
+                           access_token : str=None, connect_url=None) -> Mapping[str, Union[str, int, float]]:
     """
     Connect to a running arkouda server.
 
@@ -140,6 +144,7 @@ def connect(server : str="localhost", port : int=5555, timeout : int=0,
     logger.debug("[Python] Received response: {}".format(str(return_message)))
     connected = True
 
+    _get_config.cache_clear()
     conf = get_config()
     if conf['arkoudaVersion'] != __version__:
         warnings.warn(('Version mismatch between client ({}) and server ({}); ' +
@@ -147,6 +152,7 @@ def connect(server : str="localhost", port : int=5555, timeout : int=0,
                       'incorrectly! Updating arkouda is strongly recommended.').\
                       format(__version__, conf['arkoudaVersion']), RuntimeWarning)
     clientLogger.info(return_message)
+    return conf
 
 def _parse_url(url : str) -> Tuple[str,int,Optional[str]]:
     """
@@ -551,6 +557,7 @@ def generic_msg(cmd : str, args : Union[str,bytes]=None, send_bytes : bool=False
         socket.connect(pspStr)
         raise e
 
+
 def get_config() -> Mapping[str, Union[str, int, float]]:
     """
     Get runtime information about the server.
@@ -564,7 +571,7 @@ def get_config() -> Mapping[str, Union[str, int, float]]:
         numPUs (number of processor units per locale)
         maxTaskPar (maximum number of tasks per locale)
         physicalMemory
-        
+
     Raises
     ------
     RuntimeError
@@ -572,13 +579,52 @@ def get_config() -> Mapping[str, Union[str, int, float]]:
     ValueError
         Raised if there's an error in parsing the JSON-formatted server config
     """
+    return _get_config(_get_ttl_hash())
+
+
+@lru_cache(maxsize=1)
+def _get_config(ttl_hash=None) -> Mapping[str, Union[str, int, float]]:
+    """
+    Internal, cache-able function, see get_config
+
+    Parameters
+    ----------
+    ttl_hash:
+        the lru_cache decorator caches based on the arguments.  If the argument is the same you'll get the cached
+        item back.  If the arg changes it executes the logic and caches.  Using the _get_ttl_hash function you can
+        coerce a time restriction on the cached function.
+
+    See Also
+    --------
+        _get_ttl_hash, get_config
+    """
+    del ttl_hash
     try:
         raw_message = cast(str,generic_msg(cmd="getconfig"))
-        return json.loads(raw_message)
+        d:dict = json.loads(raw_message)
+        d["time_loaded"] = round(time.time(), ndigits=2)
+        return d
     except json.decoder.JSONDecodeError:
         raise ValueError('Returned config is not valid JSON: {}'.format(raw_message))
     except Exception as e:
         raise RuntimeError('{} in retrieving Arkouda server config'.format(e))
+
+@typechecked
+def _get_ttl_hash(seconds:int=3600):  # 1 hour by default
+    """
+    Used in conjunction with _get_config() to set a time-to-live / time window for caching the function call
+
+    Parameters
+    ----------
+    seconds : int
+        A time-to-live value, it is used in conjunction with a cached object to set a window of time before expiration
+
+    Returns
+    -------
+        A rounded value used for a time window
+    """
+    return round(time.time()/seconds)
+
 
 def get_mem_used() -> int:
     """
