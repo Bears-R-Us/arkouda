@@ -64,11 +64,11 @@ module ServerConfig
         use SysCTypes;
 
         class LocaleConfig {
-            var id: int;
-            var name: string;
-            var numPUs: int;
-            var maxTaskPar: int;
-            var physicalMemory: int;
+            const id: int;
+            const name: string;
+            const numPUs: int;
+            const maxTaskPar: int;
+            const physicalMemory: int;
 
             proc init(id: int) {
                 on Locales[id] {
@@ -81,24 +81,24 @@ module ServerConfig
             }
         }
         class Config {
-            var arkoudaVersion: string;
-            var ZMQVersion: string;
-            var HDF5Version: string;
-            var serverHostname: string;
-            var ServerPort: int;
-            var numLocales: int;
-            var numPUs: int;
-            var maxTaskPar: int;
-            var physicalMemory: int;
-            var distributionType: string;
-            var LocaleConfigs: [LocaleSpace] owned LocaleConfig;
-            var authenticate: bool;
-            var logLevel: LogLevel;
+            const arkoudaVersion: string;
+            const ZMQVersion: string;
+            const HDF5Version: string;
+            const serverHostname: string;
+            const ServerPort: int;
+            const numLocales: int;
+            const numPUs: int;
+            const maxTaskPar: int;
+            const physicalMemory: int;
+            const distributionType: string;
+            const LocaleConfigs: [LocaleSpace] owned LocaleConfig;
+            const authenticate: bool;
+            const logLevel: LogLevel;
         }
         var (Zmajor, Zminor, Zmicro) = ZMQ.version;
         var H5major: c_uint, H5minor: c_uint, H5micro: c_uint;
         H5get_libversion(H5major, H5minor, H5micro);
-        var cfg = new owned Config(
+        const cfg = new owned Config(
             arkoudaVersion = (ServerConfig.arkoudaVersion:string),
             ZMQVersion = try! "%i.%i.%i".format(Zmajor, Zminor, Zmicro),
             HDF5Version = try! "%i.%i.%i".format(H5major, H5minor, H5micro),
