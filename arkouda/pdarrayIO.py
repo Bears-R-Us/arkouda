@@ -1,6 +1,6 @@
 from typeguard import typechecked
 import json, os
-from typing import cast, List, Mapping, Optional, Union
+from typing import cast, Dict, List, Mapping, Optional, Union
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.strings import Strings
@@ -229,8 +229,7 @@ def load(path_prefix : str, dataset : str='array') -> Union[pdarray,Strings]:
     except RuntimeError as re:
         if 'does not exist' in str(re):
             raise ValueError('There are no files corresponding to the ' +
-                                     'path_prefix {} in location accessible to Arkouda'.\
-                                     format(prefix, extension))
+                                'path_prefix {} in location accessible to Arkouda'.format(prefix))
         else:
             raise RuntimeError(re)
             
@@ -313,8 +312,7 @@ def load_all(path_prefix : str) -> Mapping[str,Union[pdarray,Strings]]:
             except RuntimeError as re:
                 if 'does not exist' in str(re):
                     raise ValueError('There are no files corresponding to the ' +
-                                     'path_prefix {} in location accessible to Arkouda'.\
-                                     format(prefix, extension))
+                                     'path_prefix {} in location accessible to Arkouda'.format(prefix))
                 else:
                     raise RuntimeError(re)
         else:
