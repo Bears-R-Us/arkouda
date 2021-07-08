@@ -215,7 +215,7 @@ def load(path_prefix : str, dataset : str='array') -> Union[pdarray,Strings]:
         path_prefix does not correspond to files accessible to Arkouda
     RuntimeError
         Raised if the hdf5 files are present but there is an error in opening
-        on or more of them
+        one or more of them
 
     See Also
     --------
@@ -291,7 +291,7 @@ def load_all(path_prefix : str) -> Mapping[str,Union[pdarray,Strings]]:
         path_prefix does not correspond to files accessible to Arkouda   
     RuntimeError
         Raised if the hdf5 files are present but there is an error in opening
-        on or more of them
+        one or more of them
 
     See Also
     --------
