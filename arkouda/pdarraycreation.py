@@ -1,12 +1,11 @@
 import numpy as np # type: ignore
 import pandas as pd # type: ignore
-import struct
 from typing import cast, Iterable, Optional, Union
 from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.dtypes import structDtypeCodes, NUMBER_FORMAT_STRINGS, float64, int64, \
      DTypes, isSupportedInt, isSupportedNumber, NumericDTypes, SeriesDTypes,\
-    int_scalars, numeric_scalars
+    int_scalars, numeric_scalars, get_byteorder
 from arkouda.dtypes import dtype as akdtype
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.strings import Strings
@@ -204,10 +203,13 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
         raise RuntimeError(("Array exceeds allowed transfer size. Increase " +
                             "ak.maxTransferBytes to allow"))
     # Pack binary array data into a bytes object with a command header
-    # including the dtype and size
-    fmt = ">{:n}{}".format(size, structDtypeCodes[a.dtype.name])
-    req_msg = "{} {:n} ".\
-                    format(a.dtype.name, size).encode() + struct.pack(fmt, *a)
+    # including the dtype and size. Note that the server expects big-endian so
+    # if we're using litle-endian swap the bytes before sending.
+    if get_byteorder(a.dtype) == '<':
+        abytes = a.byteswap().tobytes()
+    else:
+        abytes = a.tobytes()
+    req_msg = "{} {:n} ".  format(a.dtype.name, size).encode() + abytes
     repMsg = generic_msg(cmd='array', args=req_msg, send_bytes=True)
     return create_pdarray(repMsg)
 

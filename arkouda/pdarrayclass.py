@@ -856,10 +856,11 @@ class pdarray:
         if len(rep_msg) != self.size*self.dtype.itemsize:
             raise RuntimeError("Expected {} bytes but received {}".\
                                format(self.size*self.dtype.itemsize, len(rep_msg)))
-        # Use struct to interpret bytes as a big-endian numeric array
-        fmt = '>{:n}{}'.format(self.size, structDtypeCodes[self.dtype.name])
-        # Return a numpy ndarray
-        return np.array(struct.unpack(fmt, rep_msg)) # type: ignore
+        # The server sends us big-endian bytes so we need to account for that.
+        # Since bytes are immutable, we need to copy the np array to be mutable
+        dt = np.dtype(self.dtype)
+        dt = dt.newbyteorder('>')
+        return np.frombuffer(rep_msg, dt).copy()
 
     def to_cuda(self):
         """
