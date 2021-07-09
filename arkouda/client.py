@@ -15,6 +15,7 @@ pspStr = ''
 context = zmq.Context()
 socket = context.socket(zmq.REQ)
 connected = False
+serverConfig = None
 # username and token for when basic authentication is enabled
 username = ''
 token = ''
@@ -90,7 +91,7 @@ def connect(server : str="localhost", port : int=5555, timeout : int=0,
     On success, prints the connected address, as seen by the server. If called
     with an existing connection, the socket will be re-initialized.
     """
-    global context, socket, pspStr, connected, verbose, username, token
+    global context, socket, pspStr, connected, serverConfig, verbose, username, token
 
     logger.debug("ZMQ version: {}".format(zmq.zmq_version()))
 
@@ -140,12 +141,12 @@ def connect(server : str="localhost", port : int=5555, timeout : int=0,
     logger.debug("[Python] Received response: {}".format(str(return_message)))
     connected = True
 
-    conf = get_config()
-    if conf['arkoudaVersion'] != __version__:
+    serverConfig = _get_config_msg()
+    if serverConfig['arkoudaVersion'] != __version__:
         warnings.warn(('Version mismatch between client ({}) and server ({}); ' +
                       'this may cause some commands to fail or behave ' +
                       'incorrectly! Updating arkouda is strongly recommended.').\
-                      format(__version__, conf['arkoudaVersion']), RuntimeWarning)
+                      format(__version__, serverConfig['arkoudaVersion']), RuntimeWarning)
     clientLogger.info(return_message)
 
 def _parse_url(url : str) -> Tuple[str,int,Optional[str]]:
@@ -439,7 +440,7 @@ def disconnect() -> None:
     ConnectionError
         Raised if there's an error disconnecting from the Arkouda server
     """
-    global socket, pspStr, connected, verbose, token
+    global socket, pspStr, connected, serverConfig, verbose, token
 
     if connected:
         # send disconnect message to server
@@ -452,6 +453,7 @@ def disconnect() -> None:
         except Exception as e:
             raise ConnectionError(e)
         connected = False
+        serverConfig = None
         clientLogger.info(return_message)
     else:
         clientLogger.info("not connected; cannot disconnect")
@@ -476,7 +478,7 @@ def shutdown() -> None:
         Raised if the client is not connected to the Arkouda server or
         there is an error in disconnecting from the server
     """
-    global socket, pspStr, connected, verbose
+    global socket, pspStr, connected, serverConfig, verbose
 
     if not connected:
         raise RuntimeError('not connected, cannot shutdown server')
@@ -492,6 +494,7 @@ def shutdown() -> None:
     except Exception as e:
         raise RuntimeError(e)
     connected = False
+    serverConfig = None
 
 def generic_msg(cmd : str, args : Union[str,bytes]=None, send_bytes : bool=False, 
                 recv_bytes : bool=False) -> Union[str, bytes]:
@@ -565,6 +568,21 @@ def get_config() -> Mapping[str, Union[str, int, float]]:
         maxTaskPar (maximum number of tasks per locale)
         physicalMemory
         
+    Raises
+    ------
+    RuntimeError
+        Raised if the client is not connected to a server
+    """
+
+    if serverConfig is None:
+        raise RuntimeError('Not connected to a server')
+
+    return serverConfig
+
+def _get_config_msg() -> Mapping[str, Union[str, int, float]]:
+    """
+    Get runtime information about the server.
+
     Raises
     ------
     RuntimeError

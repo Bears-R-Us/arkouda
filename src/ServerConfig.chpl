@@ -60,58 +60,65 @@ module ServerConfig
     private config const lLevel = ServerConfig.logLevel;
     const scLogger = new Logger(lLevel);
    
-    proc getConfig(): string {
+    proc createConfig() {
         use SysCTypes;
 
         class LocaleConfig {
-            var id: int;
-            var name: string;
-            var numPUs: int;
-            var maxTaskPar: int;
-            var physicalMemory: int;
+            const id: int;
+            const name: string;
+            const numPUs: int;
+            const maxTaskPar: int;
+            const physicalMemory: int;
+
+            proc init(id: int) {
+                on Locales[id] {
+                    this.id = here.id;
+                    this.name = here.name;
+                    this.numPUs = here.numPUs();
+                    this.maxTaskPar = here.maxTaskPar;
+                    this.physicalMemory = getPhysicalMemHere();
+                }
+            }
         }
         class Config {
-            var arkoudaVersion: string;
-            var ZMQVersion: string;
-            var HDF5Version: string;
-            var serverHostname: string;
-            var ServerPort: int;
-            var numLocales: int;
-            var numPUs: int;
-            var maxTaskPar: int;
-            var physicalMemory: int;
-            var distributionType: string;
-            var LocaleConfigs: [LocaleSpace] owned LocaleConfig =
-                [loc in LocaleSpace] new owned LocaleConfig();
-            var authenticate: bool;
-            var logLevel: LogLevel;
+            const arkoudaVersion: string;
+            const ZMQVersion: string;
+            const HDF5Version: string;
+            const serverHostname: string;
+            const ServerPort: int;
+            const numLocales: int;
+            const numPUs: int;
+            const maxTaskPar: int;
+            const physicalMemory: int;
+            const distributionType: string;
+            const LocaleConfigs: [LocaleSpace] owned LocaleConfig;
+            const authenticate: bool;
+            const logLevel: LogLevel;
         }
         var (Zmajor, Zminor, Zmicro) = ZMQ.version;
         var H5major: c_uint, H5minor: c_uint, H5micro: c_uint;
         H5get_libversion(H5major, H5minor, H5micro);
-        var cfg = new owned Config();
-        cfg.arkoudaVersion = (ServerConfig.arkoudaVersion:string);
-        cfg.ZMQVersion = try! "%i.%i.%i".format(Zmajor, Zminor, Zmicro);
-        cfg.HDF5Version = try! "%i.%i.%i".format(H5major, H5minor, H5micro);
-        cfg.serverHostname = serverHostname;
-        cfg.ServerPort = ServerPort;
-        cfg.numLocales = numLocales;
-        cfg.numPUs = here.numPUs();
-        cfg.maxTaskPar = here.maxTaskPar;
-        cfg.physicalMemory = getPhysicalMemHere();
-        cfg.distributionType = (makeDistDom(10).type):string;
-        cfg.authenticate = authenticate; 
-        cfg.logLevel = logLevel;
+        const cfg = new owned Config(
+            arkoudaVersion = (ServerConfig.arkoudaVersion:string),
+            ZMQVersion = try! "%i.%i.%i".format(Zmajor, Zminor, Zmicro),
+            HDF5Version = try! "%i.%i.%i".format(H5major, H5minor, H5micro),
+            serverHostname = serverHostname,
+            ServerPort = ServerPort,
+            numLocales = numLocales,
+            numPUs = here.numPUs(),
+            maxTaskPar = here.maxTaskPar,
+            physicalMemory = getPhysicalMemHere(),
+            distributionType = (makeDistDom(10).type):string,
+            LocaleConfigs = [loc in LocaleSpace] new owned LocaleConfig(loc),
+            authenticate = authenticate,
+            logLevel = logLevel
+        );
 
-        for loc in Locales {
-            on loc {
-                cfg.LocaleConfigs[here.id].id = here.id;
-                cfg.LocaleConfigs[here.id].name = here.name;
-                cfg.LocaleConfigs[here.id].numPUs = here.numPUs();
-                cfg.LocaleConfigs[here.id].maxTaskPar = here.maxTaskPar;
-                cfg.LocaleConfigs[here.id].physicalMemory = getPhysicalMemHere();
-            }
-        }
+        return cfg;
+    }
+    private const cfg = createConfig();
+
+    proc getConfig(): string {
         var res: string = try! "%jt".format(cfg);
         return res;
     }
