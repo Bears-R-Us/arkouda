@@ -55,6 +55,9 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#arkouda.dtypes.resolve_scalar_dtype" title="arkouda.dtypes.resolve_scalar_dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_scalar_dtype</span></code></a>(val: object) → str</p></td>
 <td><p>Try to infer what dtype arkouda_server should treat val as.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#arkouda.dtypes.get_byteorder" title="arkouda.dtypes.get_byteorder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_byteorder</span></code></a>(dt: numpy.dtype) → str</p></td>
+<td><p>Get a concrete byteorder (turns ‘=’ into ‘&lt;’ or ‘&gt;’)</p></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -227,6 +230,12 @@ dt is not a np.dtype</p>
 <dt class="sig sig-object py" id="arkouda.dtypes.resolve_scalar_dtype">
 <span class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></span><span class="sig-name descname"><span class="pre">resolve_scalar_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.dtypes.resolve_scalar_dtype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Try to infer what dtype arkouda_server should treat val as.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="arkouda.dtypes.get_byteorder">
+<span class="sig-prename descclassname"><span class="pre">arkouda.dtypes.</span></span><span class="sig-name descname"><span class="pre">get_byteorder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.dtype</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.dtypes.get_byteorder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a concrete byteorder (turns ‘=’ into ‘&lt;’ or ‘&gt;’)</p>
 </dd></dl>
 
 </section>

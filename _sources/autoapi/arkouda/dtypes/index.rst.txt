@@ -16,6 +16,7 @@ Functions
    arkouda.dtypes.check_np_dtype
    arkouda.dtypes.translate_np_dtype
    arkouda.dtypes.resolve_scalar_dtype
+   arkouda.dtypes.get_byteorder
 
 
 
@@ -144,5 +145,10 @@ Attributes
 .. function:: resolve_scalar_dtype(val: object) -> str
 
    Try to infer what dtype arkouda_server should treat val as.
+
+
+.. function:: get_byteorder(dt: numpy.dtype) -> str
+
+   Get a concrete byteorder (turns '=' into '<' or '>')
 
 

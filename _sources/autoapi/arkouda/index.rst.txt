@@ -60,6 +60,7 @@ Functions
    arkouda.check_np_dtype
    arkouda.translate_np_dtype
    arkouda.resolve_scalar_dtype
+   arkouda.get_byteorder
    arkouda.clear
    arkouda.any
    arkouda.all
@@ -277,6 +278,11 @@ Attributes
    
 
    The DType enum defines the supported Arkouda data types in string form.
+
+
+.. function:: get_byteorder(dt: numpy.dtype) -> str
+
+   Get a concrete byteorder (turns '=' into '<' or '>')
 
 
 .. class:: pdarray(name: str, mydtype: numpy.dtype, size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars)
