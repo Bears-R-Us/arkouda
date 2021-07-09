@@ -68,6 +68,9 @@ class IOTest(ArkoudaTest):
           'float_pdarray',
           'bool_pdarray'
         ]
+        
+        with open('{}/not-a-file_LOCALE0000'.format(IOTest.io_test_dir), 'w'):
+            pass
 
     def _create_file(self, prefix_path : str, columns : Union[Mapping[str,ak.array]], 
                                            names : List[str]=None) -> None:
@@ -171,16 +174,21 @@ class IOTest(ArkoudaTest):
                           prefix_path='{}/iotest_single_column'.format(IOTest.io_test_dir))
         message = ak.ls_hdf('{}/iotest_single_column_LOCALE0000'.format(IOTest.io_test_dir))
         self.assertIn('int_tens_pdarray         Dataset', message)
+        
+
+        with self.assertRaises(RuntimeError) as cm:        
+            ak.ls_hdf('{}/not-a-file_LOCALE0000'.format(IOTest.io_test_dir))
+        self.assertIn('check file permissions or format', cm.exception.args[0])
 
     def testLsHdfEmpty(self):
         # Test filename empty/whitespace-only condition
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(ValueError):
             ak.ls_hdf("")
         
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(ValueError):
             ak.ls_hdf("   ")
         
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(ValueError):
             ak.ls_hdf(" \n\r\t  ")
 
     def testReadHdf(self):
@@ -318,6 +326,38 @@ class IOTest(ArkoudaTest):
         self.assertTrue((self.float_ndarray == rafloats).all())
         self.assertEqual(len(self.bool_pdarray), len(result_array_bools))
         
+        # Test load with invalid prefix
+        with self.assertRaises(RuntimeError) as cm:
+            ak.load(path_prefix='{}/iotest_dict_column'.format(IOTest.io_test_dir), 
+                                    dataset='int_tens_pdarray')  
+        self.assertIn('either corresponds to files inaccessible to Arkouda or files of an invalid format', cm.exception.args[0].args[0])
+
+        # Test load with invalid file
+        with self.assertRaises(RuntimeError) as cm:
+            ak.load(path_prefix='{}/not-a-file'.format(IOTest.io_test_dir), 
+                                    dataset='int_tens_pdarray') 
+        cm.exception.args[0]
+        self.assertIn('is not an HDF5 file', cm.exception.args[0].args[0])
+        
+    def testLoadAll(self):   
+        self._create_file(columns=self.dict_columns, 
+                          prefix_path='{}/iotest_dict_columns'.format(IOTest.io_test_dir)) 
+        
+        results = ak.load_all(path_prefix='{}/iotest_dict_columns'.format(IOTest.io_test_dir))
+        self.assertTrue('bool_pdarray' in results)
+        self.assertTrue('float_pdarray' in results)
+        self.assertTrue('int_tens_pdarray' in results)
+        self.assertTrue('int_hundreds_pdarray' in results)
+        
+        # Test load_all with invalid prefix
+        with self.assertRaises(ValueError):
+            ak.load_all(path_prefix='{}/iotest_dict_column'.format(IOTest.io_test_dir))       
+            
+        # Test load with invalid file
+        with self.assertRaises(RuntimeError) as cm:
+            ak.load_all(path_prefix='{}/not-a-file'.format(IOTest.io_test_dir)) 
+        self.assertIn('Could not open on or more files with the file prefix', cm.exception.args[0])      
+    
     def testGetDataSets(self):
         '''
         Creates 1..n files depending upon the number of arkouda_server locales containing three 
@@ -333,6 +373,11 @@ class IOTest(ArkoudaTest):
         self.assertEqual(4, len(datasets)) 
         for dataset in datasets:
             self.assertIn(dataset, self.names)
+
+        # Test load_all with invalid filename
+        with self.assertRaises(RuntimeError) as cm:            
+            ak.get_datasets('{}/iotest_dict_columns_LOCALE000'.format(IOTest.io_test_dir))
+        self.assertIn('does not exist in a location accessible to Arkouda', cm.exception.args[0])
 
     def testSaveStringsDataset(self):
         # Create, save, and load Strings dataset
@@ -454,9 +499,9 @@ class IOTest(ArkoudaTest):
                 f.create_dataset('integers', data=idata)
                 fdata = np.arange(i*N, (i+1)*N, dtype=ft)
                 f.create_dataset('floats', data=fdata)
-        with self.assertRaises(RuntimeError) as cm:
-            a = ak.read_all(prefix+'*')
-        self.assertTrue('Inconsistent precision or sign' in cm.exception.args[0])
+        with self.assertRaises(RuntimeError):
+            ak.read_all(prefix+'*')
+
         a = ak.read_all(prefix+'*', strictTypes=False)
         self.assertTrue((a['integers'] == ak.arange(len(inttypes)*N)).all())
         self.assertTrue(np.allclose(a['floats'].to_ndarray(), np.arange(len(floattypes)*N, dtype=np.float64)))

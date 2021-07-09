@@ -26,8 +26,12 @@ def ls_hdf(filename : str) -> str:
 
     Raises
     ------
+    TypeError
+        Raised if filename is not a str
     ValueError
         Raised if filename is empty or contains only whitespace
+    RuntimeError
+        Raised if error occurs in executing ls on an HDF5 file
     """
     if not (filename and filename.strip()):
         raise ValueError("filename cannot be an empty string")
@@ -66,7 +70,9 @@ def read_hdf(dsetName : str, filenames : Union[str,List[str]],
         Raised if dsetName is not a str or if filenames is neither a string
         nor a list of strings
     ValueError 
-        Raised if all datasets are not present in all hdf5 files    
+        Raised if all datasets are not present in all hdf5 files  
+    RuntimeError
+        Raised if one or more of the specified files cannot be opened  
 
     See Also
     --------
@@ -127,8 +133,11 @@ def read_all(filenames : Union[str,List[str]],
     Raises
     ------
     ValueError 
-        Raised if all datasets are not present in all hdf5 files
-
+        Raised if all datasets are not present in all hdf5 files or if one or 
+        more of the specified files do not exist
+    RuntimeError
+        Raised if one or more of the specified files cannot be opened
+        
     See Also
     --------
     read_hdf, get_datasets, ls_hdf
@@ -200,9 +209,13 @@ def load(path_prefix : str, dataset : str='array') -> Union[pdarray,Strings]:
     Raises
     ------
     TypeError 
-        Raised if dataset is not a str 
+        Raised if either path_prefix or dataset is not a str 
     ValueError 
-        Raised if all datasets are not present in all hdf5 files     
+        Raised if the dataset is not present in all hdf5 files or if the
+        path_prefix does not correspond to files accessible to Arkouda
+    RuntimeError
+        Raised if the hdf5 files are present but there is an error in opening
+        one or more of them
 
     See Also
     --------
@@ -210,7 +223,16 @@ def load(path_prefix : str, dataset : str='array') -> Union[pdarray,Strings]:
     """
     prefix, extension = os.path.splitext(path_prefix)
     globstr = "{}_LOCALE*{}".format(prefix, extension)
-    return read_hdf(dataset, globstr)
+
+    try:
+        return read_hdf(dataset, globstr)
+    except RuntimeError as re:
+        if 'does not exist' in str(re):
+            raise ValueError('There are no files corresponding to the ' +
+                                'path_prefix {} in location accessible to Arkouda'.format(prefix))
+        else:
+            raise RuntimeError(re)
+            
 
 @typechecked
 def get_datasets(filename : str) -> List[str]:
@@ -231,6 +253,10 @@ def get_datasets(filename : str) -> List[str]:
     ------
     TypeError
         Raised if filename is not a str
+    ValueError
+        Raised if filename is empty or contains only whitespace
+    RuntimeError
+        Raised if error occurs in executing ls on an HDF5 file
 
     See Also
     --------
@@ -258,8 +284,14 @@ def load_all(path_prefix : str) -> Mapping[str,Union[pdarray,Strings]]:
         
     Raises
     ------
+    TypeError:
+        Raised if path_prefix is not a str
     ValueError 
-        Raised if all datasets are not present in all hdf5 files    
+        Raised if all datasets are not present in all hdf5 files or if the
+        path_prefix does not correspond to files accessible to Arkouda   
+    RuntimeError
+        Raised if the hdf5 files are present but there is an error in opening
+        one or more of them
 
     See Also
     --------
@@ -270,11 +302,22 @@ def load_all(path_prefix : str) -> Mapping[str,Union[pdarray,Strings]]:
     try:
         return {dataset: load(path_prefix, dataset=dataset) \
                                        for dataset in get_datasets(firstname)}
-    except RuntimeError:
+    except RuntimeError as re:
         # enables backwards compatibility with previous naming convention
-        firstname = "{}_LOCALE0{}".format(prefix, extension)
-        return {dataset: load(path_prefix, dataset=dataset) \
+        if 'does not exist' in str(re):
+            try: 
+                firstname = "{}_LOCALE0{}".format(prefix, extension)
+                return {dataset: load(path_prefix, dataset=dataset) \
                                        for dataset in get_datasets(firstname)}
+            except RuntimeError as re:
+                if 'does not exist' in str(re):
+                    raise ValueError('There are no files corresponding to the ' +
+                                     'path_prefix {} in location accessible to Arkouda'.format(prefix))
+                else:
+                    raise RuntimeError(re)
+        else:
+            raise RuntimeError('Could not open on or more files with ' +
+                                   'the file prefix {}, check file format or permissions'.format(prefix))
 
 def save_all(columns : Union[Mapping[str,pdarray],List[pdarray]], prefix_path : str, 
              names : List[str]=None, mode : str='truncate') -> None:

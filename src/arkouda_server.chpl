@@ -426,7 +426,13 @@ proc main() {
             }
         } catch (e: Error) {
             // Generate a ReplyMsg of type ERROR and serialize to a JSON-formatted string
-            sendRepMsg(serialize(msg=unknownError(e.message()),msgType=MsgType.ERROR, 
+            var errorMsg = e.message();
+            
+            if errorMsg.isEmpty() {
+                errorMsg = "unexpected error";
+            }
+
+            sendRepMsg(serialize(msg=errorMsg,msgType=MsgType.ERROR, 
                                                          msgFormat=MsgFormat.STRING, user=user));
             if trace {
                 asLogger.error(getModuleName(), getRoutineName(), getLineNumber(), 

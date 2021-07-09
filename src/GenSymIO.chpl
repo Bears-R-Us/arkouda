@@ -200,6 +200,14 @@ module GenSymIO {
     }
 
     /*
+     * Indicates whether the filename represents a glob expression as opposed to
+     * an specific filename
+     */
+    proc isGlobPattern(filename: string): bool throws {
+        return filename.endsWith("*");
+    }
+
+    /*
      * Spawns a separate Chapel process that executes and returns the 
      * result of the h5ls command
      */
@@ -211,11 +219,12 @@ module GenSymIO {
         var repMsg: string;
         var (jsonfile) = payload.splitMsgToTuple(1);
 
+        // Retrieve filename from payload
         var filename: string;
         try {
             filename = jsonToPdArray(jsonfile, 1)[0];
             if filename.isEmpty() {
-                throw new Error("filename was empty");  // will be caught by catch block
+                throw new IllegalArgumentError("filename was empty");  // will be caught by catch block
             }
         } catch {
             var errorMsg = "Could not decode json filenames via tempfile (%i files: %s)".format(
@@ -224,26 +233,37 @@ module GenSymIO {
             return new MsgTuple(errorMsg, MsgType.ERROR);                                    
         }
 
-        // Attempt to interpret filename as a glob expression and ls the first result
-        var tmp = glob(filename);
+        // If the filename represents a glob pattern, retrieve the locale 0 filename
+        if isGlobPattern(filename) {
+            // Attempt to interpret filename as a glob expression and ls the first result
+            var tmp = glob(filename);
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                      "glob-expanded filename: %s to size: %i files".format(filename, tmp.size));
 
-        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                          "glob expanded filename: %s to size: %i files".format(filename, tmp.size));
-
-        if tmp.size <= 0 {
-            var errorMsg = "No files matching %s".format(filename);
+            if tmp.size <= 0 {
+                var errorMsg = "Cannot retrieve filename from glob expression %s, check file name or format".format(filename);
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                return new MsgTuple(errorMsg, MsgType.ERROR);
+            }
             
-            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
+            // Set filename to globbed filename corresponding to locale 0
+            filename = tmp[tmp.domain.first];
         }
-        filename = tmp[tmp.domain.first];
+        
+        // Check to see if the file exists. If not, return an error message
+        if !exists(filename) {
+            var errorMsg = "File %s does not exist in a location accessible to Arkouda".format(filename);
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg,MsgType.ERROR);
+        } 
+        
         var exitCode: int;
-        var errMsg: string;
 
         try {
             if exists(tmpfile) {
                 remove(tmpfile);
             }
+
             var cmd = try! "h5ls \"%s\" > \"%s\"".format(filename, tmpfile);
             var sub = spawnshell(cmd);
 
@@ -260,13 +280,13 @@ module GenSymIO {
             r.readstring(repMsg);
             r.close();
         } catch e : Error {
-            var errorMsg = "failed to spawn process and read output %t".format(e);
+            var errorMsg = "failed to spawn process and execute ls: %t".format(e.message());
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
         if exitCode != 0 {
-            var errorMsg = "error opening %s, check file permissions".format(filename);
+            var errorMsg = "could not execute ls on %s, check file permissions or format".format(filename);
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
         } else {
@@ -305,7 +325,7 @@ module GenSymIO {
             gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                "glob expanded %s to %i files".format(filelist[0], tmp.size));
             if tmp.size == 0 {
-                var errorMsg = "Error: no files matching %s".format(filelist[0]);
+                var errorMsg = "File %s does not exist in a location accessible to Arkouda".format(filelist[0]);
                 gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);  
             }
@@ -499,7 +519,7 @@ module GenSymIO {
             gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                   "glob expanded %s to %i files".format(filelist[0], tmp.size));
             if tmp.size == 0 {
-                var errorMsg = "No files matching %s".format(filelist[0]);
+                var errorMsg = "The wildcarded filename %s either corresponds to files inaccessible to Arkouda or files of an invalid format".format(filelist[0]);
                 gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                 return new MsgTuple(errorMsg, MsgType.ERROR);
             }
@@ -792,7 +812,7 @@ module GenSymIO {
         }
 
         var errorMsg="%s cannot be opened to check if hdf5, \
-                           check file permissions".format(filename);
+                           check file permissions or format".format(filename);
         throw getErrorWithContext(
                        msg=errorMsg,
                        lineNumber=getLineNumber(),
@@ -1792,7 +1812,7 @@ module GenSymIO {
     }
 
     /*
-     * If APPEND mode, checks to see if the matchingFilenams matches the filenames
+     * If APPEND mode, checks to see if the matchingFilenames matches the filenames
      * array and, if not, raises a MismatchedAppendError. If in TRUNCATE mode, creates
      * the files matching the filenames. If 1..n of the filenames exist, returns 
      * warning to the user that 1..n files were overwritten.
@@ -1807,7 +1827,7 @@ module GenSymIO {
      * being overwritten.
      */
     proc getMatchingFilenames(prefix : string, extension : string) throws {
-        return glob(try! "%s_LOCALE*%s".format(prefix, extension));    
+        return glob("%s_LOCALE*%s".format(prefix, extension));    
     }
 
     /*
