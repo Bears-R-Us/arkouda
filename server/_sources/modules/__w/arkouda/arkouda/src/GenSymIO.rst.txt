@@ -51,6 +51,13 @@ or
    * Converts the JSON array to a pdarray
    
 
+.. function:: proc isGlobPattern(filename: string): bool throws
+
+   
+   * Indicates whether the filename represents a glob expression as opposed to
+   * an specific filename
+   
+
 .. function:: proc lshdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 
    
@@ -214,7 +221,7 @@ or
 .. function:: proc processFilenames(filenames: [] string, matchingFilenames: [] string, mode: int, A) throws
 
    
-   * If APPEND mode, checks to see if the matchingFilenams matches the filenames
+   * If APPEND mode, checks to see if the matchingFilenames matches the filenames
    * array and, if not, raises a MismatchedAppendError. If in TRUNCATE mode, creates
    * the files matching the filenames. If 1..n of the filenames exist, returns 
    * warning to the user that 1..n files were overwritten.

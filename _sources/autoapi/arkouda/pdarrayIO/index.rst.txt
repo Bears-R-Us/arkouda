@@ -34,7 +34,9 @@ Functions
    :returns: The string output of `h5ls <filename>` from the server
    :rtype: str
 
+   :raises TypeError: Raised if filename is not a str
    :raises ValueError: Raised if filename is empty or contains only whitespace
+   :raises RuntimeError: Raised if error occurs in executing ls on an HDF5 file
 
 
 .. function:: read_hdf(dsetName: str, filenames: Union[str, List[str]], strictTypes: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
@@ -59,6 +61,7 @@ Functions
    :raises TypeError: Raised if dsetName is not a str or if filenames is neither a string
        nor a list of strings
    :raises ValueError: Raised if all datasets are not present in all hdf5 files
+   :raises RuntimeError: Raised if one or more of the specified files cannot be opened
 
    .. seealso:: :obj:`get_datasets`, :obj:`ls_hdf`, :obj:`read_all`, :obj:`load`, :obj:`save`
 
@@ -94,7 +97,9 @@ Functions
              * *and for multiple datasets returns a dictionary of Arkouda pdarrays or*
              * *Arkouda Strings.* -- Dictionary of {datasetName: pdarray or String}
 
-   :raises ValueError: Raised if all datasets are not present in all hdf5 files
+   :raises ValueError: Raised if all datasets are not present in all hdf5 files or if one or
+       more of the specified files do not exist
+   :raises RuntimeError: Raised if one or more of the specified files cannot be opened
 
    .. seealso:: :obj:`read_hdf`, :obj:`get_datasets`, :obj:`ls_hdf`
 
@@ -126,8 +131,11 @@ Functions
    :returns: The pdarray or Strings that was previously saved
    :rtype: Union[pdarray, Strings]
 
-   :raises TypeError: Raised if dataset is not a str
-   :raises ValueError: Raised if all datasets are not present in all hdf5 files
+   :raises TypeError: Raised if either path_prefix or dataset is not a str
+   :raises ValueError: Raised if the dataset is not present in all hdf5 files or if the
+       path_prefix does not correspond to files accessible to Arkouda
+   :raises RuntimeError: Raised if the hdf5 files are present but there is an error in opening
+       one or more of them
 
    .. seealso:: :obj:`save`, :obj:`load_all`, :obj:`read_hdf`, :obj:`read_all`
 
@@ -143,6 +151,8 @@ Functions
    :rtype: List[str]
 
    :raises TypeError: Raised if filename is not a str
+   :raises ValueError: Raised if filename is empty or contains only whitespace
+   :raises RuntimeError: Raised if error occurs in executing ls on an HDF5 file
 
    .. seealso:: :obj:`ls_hdf`
 
@@ -157,7 +167,11 @@ Functions
    :returns: Dictionary of {datsetName: pdarray} with the previously saved pdarrays
    :rtype: Mapping[str,pdarray]
 
-   :raises ValueError: Raised if all datasets are not present in all hdf5 files
+   :raises TypeError:: Raised if path_prefix is not a str
+   :raises ValueError: Raised if all datasets are not present in all hdf5 files or if the
+       path_prefix does not correspond to files accessible to Arkouda
+   :raises RuntimeError: Raised if the hdf5 files are present but there is an error in opening
+       one or more of them
 
    .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read_hdf`, :obj:`read_all`
 

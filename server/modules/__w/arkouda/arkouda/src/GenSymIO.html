@@ -278,6 +278,15 @@
 </dd></dl>
 
 <dl class="chpl function">
+<dt id="GenSymIO.isGlobPattern">
+<em class="property">proc </em><code class="sig-name descname">isGlobPattern</code><span class="sig-paren">(</span><em class="sig-param">filename: string</em><span class="sig-paren">)</span>: bool throws<a class="headerlink" href="#GenSymIO.isGlobPattern" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Indicates whether the filename represents a glob expression as opposed to</p></li>
+<li><p>an specific filename</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
 <dt id="GenSymIO.lshdfMsg">
 <em class="property">proc </em><code class="sig-name descname">lshdfMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#GenSymIO.lshdfMsg" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
@@ -504,7 +513,7 @@
 <dt>
 <em class="property">proc </em><code class="sig-name descname">processFilenames</code><span class="sig-paren">(</span><em class="sig-param">filenames: [] string</em>, <em class="sig-param">matchingFilenames: [] string</em>, <em class="sig-param">mode: int</em>, <em class="sig-param">A</em><span class="sig-paren">)</span> throws</dt>
 <dd><ul class="simple">
-<li><p>If APPEND mode, checks to see if the matchingFilenams matches the filenames</p></li>
+<li><p>If APPEND mode, checks to see if the matchingFilenames matches the filenames</p></li>
 <li><p>array and, if not, raises a MismatchedAppendError. If in TRUNCATE mode, creates</p></li>
 <li><p>the files matching the filenames. If 1..n of the filenames exist, returns</p></li>
 <li><p>warning to the user that 1..n files were overwritten.</p></li>
