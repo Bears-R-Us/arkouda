@@ -302,10 +302,146 @@
 </dd></dl>
 
 <dl class="chpl function">
+<dt id="GenSymIO.checkCast">
+<em class="property">proc </em><code class="sig-name descname">checkCast</code><span class="sig-paren">(</span><em class="sig-param">c: string</em>, <em class="sig-param">type toType</em><span class="sig-paren">)</span>: bool<a class="headerlink" href="#GenSymIO.checkCast" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li><p>Utility proc to test casting a string to a specified type</p></li>
+<li><dl class="field-list simple">
+<dt class="field-odd">arg c</dt>
+<dd class="field-odd"><p>String to cast</p>
+</dd>
+</dl>
+</li>
+<li><dl class="field-list simple">
+<dt class="field-odd">type c</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+</li>
+<li></li>
+<li><dl class="field-list simple">
+<dt class="field-odd">arg toType</dt>
+<dd class="field-odd"><p>the type to cast into</p>
+</dd>
+</dl>
+</li>
+<li><dl class="field-list simple">
+<dt class="field-odd">type toType</dt>
+<dd class="field-odd"><p>type</p>
+</dd>
+</dl>
+</li>
+<li></li>
+<li><dl class="field-list simple">
+<dt class="field-odd">returns</dt>
+<dd class="field-odd"><p>bool true if the cast was successful, false otherwise</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
 <dt id="GenSymIO.readAllHdfMsg">
 <em class="property">proc </em><code class="sig-name descname">readAllHdfMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#GenSymIO.readAllHdfMsg" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li><p>Reads all datasets from 1..n HDF5 files into an Arkouda symbol table.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
+<dt id="GenSymIO._buildReadAllHdfMsgJson">
+<em class="property">proc </em><code class="sig-name descname">_buildReadAllHdfMsgJson</code><span class="sig-paren">(</span><em class="sig-param">rnames: list(3*(string))</em>, <em class="sig-param">allowErrors: bool</em>, <em class="sig-param">fileErrorCount: int</em>, <em class="sig-param">fileErrors: list(string)</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: string throws<a class="headerlink" href="#GenSymIO._buildReadAllHdfMsgJson" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li></li>
+<li><p>Construct json object to be returned from readAllHdfMsg</p></li>
+<li><dl class="field-list simple">
+<dt class="field-odd">arg rnames</dt>
+<dd class="field-odd"><p>List of (DataSetName, arkouda_type, id of SymEntry) for items read from HDF5 files</p>
+</dd>
+</dl>
+</li>
+<li><dl class="field-list simple">
+<dt class="field-odd">type rnames</dt>
+<dd class="field-odd"><p>List of 3*string tuples</p>
+</dd>
+</dl>
+</li>
+<li></li>
+<li><dl class="field-list simple">
+<dt class="field-odd">arg allowErrors</dt>
+<dd class="field-odd"><p>True if we allowed errors when reading files from HDF5</p>
+</dd>
+</dl>
+</li>
+<li><dl class="field-list simple">
+<dt class="field-odd">type allowErros</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</li>
+<li></li>
+<li><dl class="field-list simple">
+<dt class="field-odd">arg fileErrorCount</dt>
+<dd class="field-odd"><p>Number of files which threw errors when being read</p>
+</dd>
+</dl>
+</li>
+<li><dl class="field-list simple">
+<dt class="field-odd">type fileErrorCount</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</li>
+<li></li>
+<li><dl class="field-list simple">
+<dt class="field-odd">arg fileErrors</dt>
+<dd class="field-odd"><p>List of the error messages when trying to read HDF5 files</p>
+</dd>
+</dl>
+</li>
+<li><dl class="field-list simple">
+<dt class="field-odd">type fileErrors</dt>
+<dd class="field-odd"><p>list(string)</p>
+</dd>
+</dl>
+</li>
+<li></li>
+<li><dl class="field-list simple">
+<dt class="field-odd">arg st</dt>
+<dd class="field-odd"><p>SymTab used to look up attributes of pdarray/seg_string ids</p>
+</dd>
+</dl>
+</li>
+<li><dl class="field-list simple">
+<dt class="field-odd">type borrowed SymTab</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</li>
+<li></li>
+<li><dl class="field-list simple">
+<dt class="field-odd">returns</dt>
+<dd class="field-odd"><p>response message string formatted in json</p>
+</dd>
+</dl>
+</li>
+<li></li>
+<li><p>Example</p></li>
+<li><p>{</p></li>
+<li><p>“items”: [</p></li>
+<li><p>{</p></li>
+<li><p>“dataset_name”: “int_tens_pdarray”,</p></li>
+<li><p>“arkouda_type”: “pdarray”,</p></li>
+<li><p>“created”: “created id_9 int64 1000 1 (1000) 8”</p></li>
+<li><p>}</p></li>
+<li><p>],</p></li>
+<li><p>“allow_errors”: “true”,</p></li>
+<li><p>“file_error_count”: “1”,</p></li>
+<li><p>“file_errors”: [</p></li>
+<li><p>“Permission error Operation not permitted (error msg) opening path/to/file”</p></li>
+<li><p>]</p></li>
+<li><p>}</p></li>
+<li><p>Uses keys:  dataset_name, arkouda_type-&gt;[pdarray|seg_string], created-&gt;(legacy creation statement)</p></li>
 </ul>
 </dd></dl>
 

@@ -81,3 +81,11 @@ or
    * Generates a ReplyMsg object and serializes it into a JSON-formatted reply message
    
 
+.. data:: const Q = "\""
+
+   
+   * String constants for use in constructing JSON formatted messages
+   
+
+.. data:: const QCQ = Q+:+Q
+

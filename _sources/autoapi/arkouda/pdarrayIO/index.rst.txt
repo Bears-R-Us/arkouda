@@ -75,7 +75,7 @@ Functions
    If dsetName is not present in all files, a TypeError is raised.
 
 
-.. function:: read_all(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
+.. function:: read_all(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
 
    Read datasets from HDF5 files.
 
@@ -92,6 +92,10 @@ Functions
                        dataset with the same name, the contents of both will be read
                        into an int64 pdarray.
    :type strictTypes: bool
+   :param allow_errors: Default False, if True will allow files with read errors to be skipped
+                        instead of failing.  A warning will be included in the return containing
+                        the total number of files skipped due to failure and up to 10 filenames.
+   :type allow_errors: bool
 
    :returns: * *For a single dataset returns an Arkouda pdarray or Arkouda Strings object*
              * *and for multiple datasets returns a dictionary of Arkouda pdarrays or*
@@ -99,7 +103,10 @@ Functions
 
    :raises ValueError: Raised if all datasets are not present in all hdf5 files or if one or
        more of the specified files do not exist
-   :raises RuntimeError: Raised if one or more of the specified files cannot be opened
+   :raises RuntimeError: Raised if one or more of the specified files cannot be opened.
+       If `allow_errors` is true this may be raised if no values are returned
+       from the server.
+   :raises TypeError: Raised if we receive an unknown arkouda_type returned from the server
 
    .. seealso:: :obj:`read_hdf`, :obj:`get_datasets`, :obj:`ls_hdf`
 
