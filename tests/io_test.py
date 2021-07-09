@@ -192,7 +192,7 @@ class IOTest(ArkoudaTest):
             ak.ls_hdf(" \n\r\t  ")
 
     def testReadHdf(self):
-        '''
+        ''' DEPRECATED - all client calls route to `readAllHdf`
         Creates 2..n files depending upon the number of arkouda_server locales with two
         files each containing different-named datasets with the same pdarrays, reads the files
         with an explicit list of file names to the read_hdf method, and confirms the dataset 
@@ -225,7 +225,7 @@ class IOTest(ArkoudaTest):
         self.assertTrue('iotest_single_colum_LOCALE0000 not found' in  cm.exception.args[0])
 
     def testReadHdfWithGlob(self):
-        '''
+        ''' DEPRECATED - all client calls route to `readAllHdf`
         Creates 2..n files depending upon the number of arkouda_server locales with two
         files each containing different-named datasets with the same pdarrays, reads the files
         with the glob feature of the read_hdf method, and confirms the datasets and embedded 
@@ -291,6 +291,29 @@ class IOTest(ArkoudaTest):
         self.assertTrue((ihp == rihp).all())
         self.assertTrue((fp == rfp).all())
         self.assertEqual(len(self.bool_pdarray), len(retrieved_columns['bool_pdarray']))
+
+    def testReadAllWithErrorAndWarn(self):
+        self._create_file(columns=self.dict_single_column,
+                          prefix_path=f'{IOTest.io_test_dir}/iotest_single_column')
+        self._create_file(columns=self.dict_single_column,
+                          prefix_path=f'{IOTest.io_test_dir}/iotest_single_column_dupe')
+
+        # Make sure we can read ok
+        dataset = ak.read_all(filenames=[f'{IOTest.io_test_dir}/iotest_single_column_LOCALE0000',
+                                         f'{IOTest.io_test_dir}/iotest_single_column_dupe_LOCALE0000'])
+        self.assertIsNotNone(dataset, "Expected dataset to be populated")
+
+        # Change the name of the first file we try to raise an error due to file missing.
+        with self.assertRaises(RuntimeError):
+            dataset = ak.read_all(filenames=[f'{IOTest.io_test_dir}/iotest_MISSING_single_column_LOCALE0000',
+                                             f'{IOTest.io_test_dir}/iotest_single_column_dupe_LOCALE0000'])
+
+        # Run the same test with missing file, but this time with the warning flag for read_all
+        dataset = ak.read_all(filenames=[f'{IOTest.io_test_dir}/iotest_MISSING_single_column_LOCALE0000',
+                                         f'{IOTest.io_test_dir}/iotest_single_column_dupe_LOCALE0000'],
+                              strictTypes=False,
+                              allow_errors=True)
+        self.assertIsNotNone(dataset, "Expected dataset to be populated")
 
     def testLoad(self):
         '''

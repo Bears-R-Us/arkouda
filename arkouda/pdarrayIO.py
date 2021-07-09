@@ -1,5 +1,5 @@
 from typeguard import typechecked
-import json, os
+import json, os, warnings
 from typing import cast, Dict, List, Mapping, Optional, Union
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
@@ -99,10 +99,12 @@ def read_hdf(dsetName : str, filenames : Union[str,List[str]],
     return cast(Union[pdarray, Strings], 
                 read_all(filenames, datasets=dsetName, strictTypes=strictTypes))
 
-def read_all(filenames : Union[str,List[str]],
-             datasets : Optional[Union[str,List[str]]]=None,
-             iterative : bool=False,
-             strictTypes: bool=True) \
+
+def read_all(filenames : Union[str, List[str]],
+             datasets: Optional[Union[str, List[str]]] = None,
+             iterative: bool = False,
+             strictTypes: bool = True,
+             allow_errors: bool = False)\
              -> Union[pdarray, Strings, Mapping[str,Union[pdarray,Strings]]]:
     """
     Read datasets from HDF5 files.
@@ -122,6 +124,10 @@ def read_all(filenames : Union[str,List[str]],
         file contains a uint32 dataset and another contains an int64
         dataset with the same name, the contents of both will be read 
         into an int64 pdarray.
+    allow_errors: bool
+        Default False, if True will allow files with read errors to be skipped
+        instead of failing.  A warning will be included in the return containing
+        the total number of files skipped due to failure and up to 10 filenames.
 
     Returns
     -------
@@ -133,11 +139,15 @@ def read_all(filenames : Union[str,List[str]],
     Raises
     ------
     ValueError 
-        Raised if all datasets are not present in all hdf5 files or if one or 
+        Raised if all datasets are not present in all hdf5 files or if one or
         more of the specified files do not exist
     RuntimeError
-        Raised if one or more of the specified files cannot be opened
-        
+        Raised if one or more of the specified files cannot be opened.
+        If `allow_errors` is true this may be raised if no values are returned
+        from the server.
+    TypeError
+        Raised if we receive an unknown arkouda_type returned from the server
+
     See Also
     --------
     read_hdf, get_datasets, ls_hdf
@@ -160,34 +170,56 @@ def read_all(filenames : Union[str,List[str]],
     if isinstance(filenames, str):
         filenames = [filenames]
     if datasets is None:
-        datasets = get_datasets(filenames[0])
+        datasets = get_datasets_allow_errors(filenames) if allow_errors else get_datasets(filenames[0])
     if isinstance(datasets, str):
         datasets = [datasets]
-    else: # ensure dataset(s) exist
+    else:  # ensure dataset(s) exist
         if isinstance(datasets, str):
             datasets = [datasets]
-        nonexistent = set(datasets) - set(get_datasets(filenames[0]))
+        nonexistent = set(datasets) - \
+            (set(get_datasets_allow_errors(filenames)) if allow_errors else set(get_datasets(filenames[0])))
         if len(nonexistent) > 0:
             raise ValueError("Dataset(s) not found: {}".format(nonexistent))
     if iterative == True: # iterative calls to server readhdf
         return {dset:read_hdf(dset, filenames, strictTypes=strictTypes) for dset in datasets}
     else:  # single call to server readAllHdf
-        rep_msg = generic_msg(cmd="readAllHdf", args="{} {:n} {:n} {} | {}".\
-                format(strictTypes, len(datasets), len(filenames), json.dumps(datasets), 
-                       json.dumps(filenames)))
-        if ',' in rep_msg:
-            rep_msgs = cast(str,rep_msg).split(' , ')
-            d : Dict[str,Union[pdarray,Strings]] = dict()
-            for dset, rm in zip(datasets, rep_msgs):
-                if('+' in cast(str,rm)): #String
-                    d[dset]=Strings(*cast(str,rm).split('+'))
+        rep_msg = generic_msg(cmd="readAllHdf", args="{} {:n} {:n} {} {} | {}".
+                              format(strictTypes, len(datasets), len(filenames), allow_errors, json.dumps(datasets),
+                                     json.dumps(filenames)))
+        rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllHdfMsgJson for json structure
+        items = rep["items"] if "items" in rep else []
+        file_errors = rep["file_errors"] if "file_errors" in rep else []
+        if allow_errors and file_errors:
+            file_error_count = rep["file_error_count"] if "file_error_count" in rep else -1
+            warnings.warn(f"There were {file_error_count} errors reading files on the server. " +
+                          f"Sample error messages {file_errors}", RuntimeWarning)
+
+        # We have a couple possible return conditions
+        # 1. We have multiple items returned i.e. multi pdarrays, multi strings, multi pdarrays & strings
+        # 2. We have a single pdarray
+        # 3. We have a single strings object
+        if len(items) > 1: #  DataSets condition
+            d: Dict[str, Union[pdarray, Strings]] = {}
+            for item in items:
+                if "seg_string" == item["arkouda_type"]:
+                    d[item["dataset_name"]] = Strings(*item["created"].split("+"))
+                elif "pdarray" == item["arkouda_type"]:
+                    d[item["dataset_name"]] = create_pdarray(item["created"])
                 else:
-                    d[dset]=create_pdarray(cast(str,rm))
+                    raise TypeError(f"Unknown arkouda type:{item['arkouda_type']}")
             return d
-        elif '+' in rep_msg:
-            return Strings(*cast(str,rep_msg).split('+'))
+
+        elif len(items) == 1:
+            item = items[0]
+            if "pdarray" == item["arkouda_type"]:
+                return create_pdarray(item["created"])
+            elif "seg_string" == item["arkouda_type"]:
+                return Strings(*item["created"].split("+"))
+            else:
+                raise TypeError(f"Unknown arkouda type:{item['arkouda_type']}")
         else:
-            return create_pdarray(cast(str,rep_msg))
+            raise RuntimeError("No items were returned")
+
 
 @typechecked
 def load(path_prefix : str, dataset : str='array') -> Union[pdarray,Strings]:
@@ -264,6 +296,44 @@ def get_datasets(filename : str) -> List[str]:
     """
     rep_msg = ls_hdf(filename)
     datasets = [line.split()[0] for line in rep_msg.splitlines()]
+    return datasets
+
+@typechecked
+def get_datasets_allow_errors(filenames: List[str]) -> List[str]:
+    """
+    Get the names of datasets in an HDF5 file
+    Allow file read errors until success
+
+    Parameters
+    ----------
+    filenames : List[str]
+        A list of HDF5 files visible to the arkouda server
+
+    Returns
+    -------
+    List[str]
+        Names of the datasets in the file
+
+    Raises
+    ------
+    TypeError
+        Raised if filenames is not a List[str]
+    FileNotFoundError
+        If none of the files could be read successfully
+
+    See Also
+    --------
+    get_datasets, ls_hdf
+    """
+    datasets = []
+    for filename in filenames:
+        try:
+            datasets = get_datasets(filename)
+            break
+        except RuntimeError:
+            pass
+    if not datasets:  # empty
+        raise FileNotFoundError("Could not read any of the requested files")
     return datasets
 
 @typechecked
