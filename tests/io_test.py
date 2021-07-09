@@ -1,5 +1,6 @@
 import os, shutil, glob
 import numpy as np
+from pytest import warns
 from typing import List, Mapping, Union
 from base_test import ArkoudaTest
 from context import arkouda as ak
@@ -309,7 +310,8 @@ class IOTest(ArkoudaTest):
                                              f'{IOTest.io_test_dir}/iotest_single_column_dupe_LOCALE0000'])
 
         # Run the same test with missing file, but this time with the warning flag for read_all
-        dataset = ak.read_all(filenames=[f'{IOTest.io_test_dir}/iotest_MISSING_single_column_LOCALE0000',
+        with warns(RuntimeWarning, match=r"There were .* errors reading files on the server.*"):
+            dataset = ak.read_all(filenames=[f'{IOTest.io_test_dir}/iotest_MISSING_single_column_LOCALE0000',
                                          f'{IOTest.io_test_dir}/iotest_single_column_dupe_LOCALE0000'],
                               strictTypes=False,
                               allow_errors=True)
