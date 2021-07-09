@@ -72,6 +72,8 @@ arkouda server config param and config const
 
 .. data:: const scLogger = new Logger(lLevel)
 
+.. function:: proc createConfig()
+
 .. function:: proc getConfig(): string
 
 .. function:: proc getEnv(name: string, default = ""): string
