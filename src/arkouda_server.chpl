@@ -35,7 +35,8 @@ proc main() {
     proc printServerSplashMessage(token: string, arkDirectory: string) throws {
         var verMessage = "arkouda server version = %s".format(arkoudaVersion);
         var dirMessage = ".arkouda directory %s".format(arkDirectory);
-        var memLimMessage =  "memory limit = %i".format(getMemLimit());
+        var numLocMessage = "number of locales = %i".format(numLocales);
+        var memLimMessage =  "per locale memory limit = %i".format(getMemLimit());
         var memUsedMessage = "bytes of memory used = %i".format(getMemUsed());
         var serverMessage: string;
     
@@ -110,6 +111,7 @@ proc main() {
         writeln('*%s*'.format(serverMessage));
         writeln(verMessage);
         if (memTrack) {
+            writeln(numLocMessage);
             writeln(memLimMessage);
             writeln(memUsedMessage);
         }
