@@ -84,7 +84,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.security.generate_token">
-<span class="sig-prename descclassname"><span class="pre">arkouda.security.</span></span><span class="sig-name descname"><span class="pre">generate_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">32</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.security.generate_token" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.security.</span></span><span class="sig-name descname"><span class="pre">generate_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">32</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.security.generate_token" title="Permalink to this definition">¶</a></dt>
 <dd><p>Uses the secrets.token_hex() method to generate a
 a hexidecimal token</p>
 <dl class="field-list simple">
@@ -104,7 +104,7 @@ a hexidecimal token</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.security.get_home_directory">
-<span class="sig-prename descclassname"><span class="pre">arkouda.security.</span></span><span class="sig-name descname"><span class="pre">get_home_directory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.security.get_home_directory" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.security.</span></span><span class="sig-name descname"><span class="pre">get_home_directory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.security.get_home_directory" title="Permalink to this definition">¶</a></dt>
 <dd><p>A platform-independent means of finding path to
 the current user’s home directory</p>
 <dl class="field-list simple">
@@ -122,7 +122,7 @@ to retrieve the user’s home directory</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.security.get_arkouda_client_directory">
-<span class="sig-prename descclassname"><span class="pre">arkouda.security.</span></span><span class="sig-name descname"><span class="pre">get_arkouda_client_directory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">pathlib.Path</span><a class="headerlink" href="#arkouda.security.get_arkouda_client_directory" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.security.</span></span><span class="sig-name descname"><span class="pre">get_arkouda_client_directory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.Path</span></span></span><a class="headerlink" href="#arkouda.security.get_arkouda_client_directory" title="Permalink to this definition">¶</a></dt>
 <dd><p>A platform-independent means of finding path to
 the current user’s .arkouda directory where artifacts
 such as server access tokens are stored.</p>
@@ -144,7 +144,7 @@ as the server’s token directory as the file format is different.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.security.get_username">
-<span class="sig-prename descclassname"><span class="pre">arkouda.security.</span></span><span class="sig-name descname"><span class="pre">get_username</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.security.get_username" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.security.</span></span><span class="sig-name descname"><span class="pre">get_username</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.security.get_username" title="Permalink to this definition">¶</a></dt>
 <dd><p>A platform-independent means of retrieving the current
 user’s username for the host system.</p>
 <dl class="field-list simple">
@@ -165,7 +165,7 @@ and MacOS AKA Darwin</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="arkouda.security.generate_username_token_json">
-<span class="sig-prename descclassname"><span class="pre">arkouda.security.</span></span><span class="sig-name descname"><span class="pre">generate_username_token_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.security.generate_username_token_json" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">arkouda.security.</span></span><span class="sig-name descname"><span class="pre">generate_username_token_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.security.generate_username_token_json" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates a JSON object encapsulating the user’s username
 and token for connecting to an arkouda server with basic
 authentication enabled</p>
@@ -203,7 +203,7 @@ authentication enabled</p>
 
 
 <h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/prerequisites.html">Prerequisites</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/installation.html">Installation</a></li>
@@ -236,7 +236,7 @@ authentication enabled</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -258,7 +258,7 @@ authentication enabled</p>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

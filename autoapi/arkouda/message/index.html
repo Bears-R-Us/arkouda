@@ -78,14 +78,14 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.message.MessageFormat.__str__">
-<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.message.MessageFormat.__str__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.message.MessageFormat.__str__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Overridden method returns value, which is useful in outputting
 a MessageFormat object to JSON.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.message.MessageFormat.__repr__">
-<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.message.MessageFormat.__repr__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.message.MessageFormat.__repr__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Overridden method returns value, which is useful in outputting
 a MessageFormat object to JSON.</p>
 </dd></dl>
@@ -115,14 +115,14 @@ a MessageFormat object to JSON.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.message.MessageType.__str__">
-<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.message.MessageType.__str__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.message.MessageType.__str__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Overridden method returns value, which is useful in outputting
 a MessageType object to JSON.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.message.MessageType.__repr__">
-<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#arkouda.message.MessageType.__repr__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.message.MessageType.__repr__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Overridden method returns value, which is useful in outputting
 a MessageType object to JSON.</p>
 </dd></dl>
@@ -164,7 +164,7 @@ a MessageType object to JSON.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.message.RequestMessage.asdict">
-<span class="sig-name descname"><span class="pre">asdict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Dict</span><a class="headerlink" href="#arkouda.message.RequestMessage.asdict" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">asdict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#arkouda.message.RequestMessage.asdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Overridden asdict implementation sets the values of non-required
 fields to an empty space (for Chapel JSON processing) and invokes
 str() on the format instance attribute.</p>
@@ -205,7 +205,7 @@ str() on the format instance attribute.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.message.ReplyMessage.fromdict">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">fromdict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#arkouda.message.ReplyMessage" title="arkouda.message.ReplyMessage"><span class="pre">ReplyMessage</span></a><a class="headerlink" href="#arkouda.message.ReplyMessage.fromdict" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">fromdict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.message.ReplyMessage" title="arkouda.message.ReplyMessage"><span class="pre">ReplyMessage</span></a></span></span><a class="headerlink" href="#arkouda.message.ReplyMessage.fromdict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates a ReplyMessage from a dict encapsulating the data and
 metadata from a reply returned by the Arkouda server.</p>
 <dl class="field-list simple">
@@ -248,7 +248,7 @@ a ReplyMessage</p>
 
 
 <h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/prerequisites.html">Prerequisites</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../setup/installation.html">Installation</a></li>
@@ -281,7 +281,7 @@ a ReplyMessage</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -303,7 +303,7 @@ a ReplyMessage</p>
       &copy;2020, Michael Merrill and William Reus.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
