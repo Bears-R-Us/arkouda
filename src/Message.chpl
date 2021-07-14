@@ -1,7 +1,7 @@
 module Message {
     use IO;
     use Reflection;
-    use Errors;
+    use ServerErrors;
 
     enum MsgType {NORMAL,WARNING,ERROR}
     enum MsgFormat {STRING,BINARY}

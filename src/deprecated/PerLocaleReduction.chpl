@@ -11,7 +11,7 @@ module PerLocaleReduction {
     use ServerErrorStrings;
     use ServerConfig;
     use Reflection;
-    use Errors;
+    use ServerErrors;
 
     use AryUtil;
     use PrivateDist;

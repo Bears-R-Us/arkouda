@@ -1,6 +1,6 @@
 module Flatten {
   use SegmentedArray;
-  use Errors;
+  use ServerErrors;
   use SymArrayDmap;
   use CommAggregation;
   use Reflection;

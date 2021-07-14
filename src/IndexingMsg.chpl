@@ -4,7 +4,7 @@ module IndexingMsg
     use ServerErrorStrings;
 
     use Reflection;
-    use Errors;
+    use ServerErrors;
     use Logging;
     use Message;
 

@@ -1,7 +1,7 @@
 module BroadcastMsg {
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
-  use Errors;
+  use ServerErrors;
   use Reflection;
   use Broadcast;
   use ServerConfig;

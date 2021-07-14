@@ -11,7 +11,7 @@ module ReductionMsg
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     use Reflection;
-    use Errors;
+    use ServerErrors;
     use Logging;
     use Message;
 

@@ -1,7 +1,7 @@
 module FlattenMsg {
   use MultiTypeSymbolTable;
   use MultiTypeSymEntry;
-  use Errors;
+  use ServerErrors;
   use Reflection;
   use Flatten;
   use ServerConfig;

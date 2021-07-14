@@ -15,7 +15,7 @@ module GenSymIO {
     use Map;
     use PrivateDist;
     use Reflection;
-    use Errors;
+    use ServerErrors;
     use Logging;
     use Message;
     use ServerConfig;

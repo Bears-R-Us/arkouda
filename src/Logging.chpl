@@ -3,7 +3,7 @@ module Logging {
     use IO;
     use DateTime;
     use Reflection;
-    use Errors;
+    use ServerErrors;
 
     /*
      * The LogLevel enum is used to provide a strongly-typed means of

@@ -6,7 +6,7 @@ module OperatorMsg
     use Time;
     use Math;
     use Reflection;
-    use Errors;
+    use ServerErrors;
 
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;

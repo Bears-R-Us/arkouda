@@ -5,7 +5,7 @@ module FindSegmentsMsg
     use Time only;
     use Math only;
     use Reflection;
-    use Errors;
+    use ServerErrors;
     use Logging;
     use Message;
     
