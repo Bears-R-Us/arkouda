@@ -84,6 +84,12 @@ arkouda server config param and config const
    Get the physical memory available on this locale
    
 
+.. function:: proc getByteorder() throws
+
+   
+   Get the byteorder (endianness) of this locale
+   
+
 .. function:: proc getMemUsed()
 
    

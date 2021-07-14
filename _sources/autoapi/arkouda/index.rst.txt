@@ -61,6 +61,7 @@ Functions
    arkouda.translate_np_dtype
    arkouda.resolve_scalar_dtype
    arkouda.get_byteorder
+   arkouda.get_server_byteorder
    arkouda.clear
    arkouda.any
    arkouda.all
@@ -283,6 +284,11 @@ Attributes
 .. function:: get_byteorder(dt: numpy.dtype) -> str
 
    Get a concrete byteorder (turns '=' into '<' or '>')
+
+
+.. function:: get_server_byteorder() -> str
+
+   Get the server's byteorder
 
 
 .. class:: pdarray(name: str, mydtype: numpy.dtype, size: arkouda.dtypes.int_scalars, ndim: arkouda.dtypes.int_scalars, shape: Sequence[int], itemsize: arkouda.dtypes.int_scalars)
