@@ -6,7 +6,7 @@ module SortMsg
     use Math only;
     use Sort only;
     use Reflection;
-    use Errors;
+    use ServerErrors;
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;

@@ -4,7 +4,7 @@ module In1dMsg
     use ServerConfig;
 
     use Reflection;
-    use Errors;
+    use ServerErrors;
     use Logging;
     use Message;
     

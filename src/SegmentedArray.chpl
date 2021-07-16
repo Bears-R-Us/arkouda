@@ -15,7 +15,7 @@ module SegmentedArray {
   use Time only Timer, getCurrentTime;
   use Reflection;
   use Logging;
-  use Errors;
+  use ServerErrors;
 
   private config const logLevel = ServerConfig.logLevel;
   const saLogger = new Logger(logLevel);

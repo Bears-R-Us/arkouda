@@ -1,6 +1,6 @@
 module RandArray {
   use Reflection;
-  use Errors;
+  use ServerErrors;
   use Logging;
   use Random;
   use SegmentedArray;

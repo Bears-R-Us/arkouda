@@ -10,7 +10,7 @@ module ServerConfig
 
     use ServerErrorStrings;
     use Reflection;
-    use Errors;
+    use ServerErrors;
     use Logging;
 
     /*

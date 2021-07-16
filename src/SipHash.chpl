@@ -3,7 +3,7 @@ module SipHash {
   private use AryUtil;
   private use CPtr;
   use ServerConfig;
-  use Errors;
+  use ServerErrors;
   use Reflection;
   use Logging;
   

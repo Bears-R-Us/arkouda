@@ -1,6 +1,6 @@
 module SegmentedMsg {
   use Reflection;
-  use Errors;
+  use ServerErrors;
   use Logging;
   use Message;
   use SegmentedArray;

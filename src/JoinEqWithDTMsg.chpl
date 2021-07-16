@@ -6,7 +6,7 @@ module JoinEqWithDTMsg
     use Math only;
     use Sort only;
     use Reflection;
-    use Errors;
+    use ServerErrors;
     use Logging;
     use Message;
     use PrivateDist;

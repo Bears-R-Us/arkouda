@@ -3,7 +3,7 @@ module CastMsg {
   use MultiTypeSymEntry;
   use Reflection;
   use SegmentedArray;
-  use Errors;
+  use ServerErrors;
   use Logging;
   use Message;
   use SysError;

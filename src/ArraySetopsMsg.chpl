@@ -21,7 +21,7 @@ module ArraySetopsMsg
     use Indexing;
     use RadixSortLSD;
     use Reflection;
-    use Errors;
+    use ServerErrors;
     use Logging;
     use Message;
 
