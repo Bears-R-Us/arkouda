@@ -99,7 +99,6 @@
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/CommPrimitives.html">CommPrimitives</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/ConcatenateMsg.html">ConcatenateMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/EfuncMsg.html">EfuncMsg</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/Errors.html">Errors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/Extremas.html">Extremas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/FileIO.html">FileIO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/FindSegmentsMsg.html">FindSegmentsMsg</a></li>
@@ -133,6 +132,7 @@
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/SegmentedMsg.html">SegmentedMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/ServerConfig.html">ServerConfig</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/ServerErrorStrings.html">ServerErrorStrings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/ServerErrors.html">ServerErrors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/SipHash.html">SipHash</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/SortMsg.html">SortMsg</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules/__w/arkouda/arkouda/src/SymArrayDmap.html">SymArrayDmap</a></li>
@@ -326,7 +326,7 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ArgSortMsg.html#ArgSortMsg.argsortMsg">argsortMsg() (in module ArgSortMsg)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.ArgumentError">ArgumentError (class in Errors)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.ArgumentError">ArgumentError (class in ServerErrors)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/arkouda_server.html#module-arkouda_server">arkouda_server (module)</a>
 </li>
@@ -524,7 +524,7 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.datarepr">datarepr() (MultiTypeSymbolTable.SymTab method)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.DatasetNotFoundError">DatasetNotFoundError (class in Errors)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.DatasetNotFoundError">DatasetNotFoundError (class in ServerErrors)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.datastr">datastr() (MultiTypeSymbolTable.SymTab method)</a>
 </li>
@@ -612,6 +612,8 @@
       </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/EfuncMsg.html#EfuncMsg.eLogger">eLogger (in module EfuncMsg)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/Extremas.html#Extremas.KExtreme.eltType">eltType (Extremas.KExtreme attribute)</a>
 
       <ul>
@@ -622,17 +624,13 @@
         <li><a href="modules/__w/arkouda/arkouda/src/ReductionMsg.html#ReductionMsg.ResettingOrScanOp.eltType">(ReductionMsg.ResettingOrScanOp attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger.error">error() (Logging.Logger method)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.ErrorWithContext.errorClass">errorClass (Errors.ErrorWithContext attribute)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.ErrorWithContext.errorClass">errorClass (ServerErrors.ErrorWithContext attribute)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger.errorLevels">errorLevels (Logging.Logger attribute)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#module-Errors">Errors (module)</a>
-</li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.ErrorWithContext">ErrorWithContext (class in Errors)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.ErrorWithContext">ErrorWithContext (class in ServerErrors)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerErrorStrings.html#ServerErrorStrings.ErrorWithMsg">ErrorWithMsg (class in ServerErrorStrings)</a>
 </li>
@@ -718,7 +716,7 @@
       </ul></li>
       <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger.generateDateTimeString">generateDateTimeString() (Logging.Logger method)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.generateErrorContext">generateErrorContext() (in module Errors)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.generateErrorContext">generateErrorContext() (in module ServerErrors)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger.generateErrorMsg">generateErrorMsg() (Logging.Logger method)</a>
 </li>
@@ -772,7 +770,7 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.getEnv">getEnv() (in module ServerConfig)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.getErrorWithContext">getErrorWithContext() (in module Errors)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.getErrorWithContext">getErrorWithContext() (in module ServerErrors)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.getFileMetadata">getFileMetadata() (in module GenSymIO)</a>
 </li>
@@ -810,7 +808,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedArray.html#SegmentedArray.SegString.hash">hash() (SegmentedArray.SegString method)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.HDF5FileFormatError">HDF5FileFormatError (class in Errors)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.HDF5FileFormatError">HDF5FileFormatError (class in ServerErrors)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.HDF5RankError">HDF5RankError (class in GenSymIO)</a>
 </li>
@@ -886,34 +884,34 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MsgProcessing.html#MsgProcessing.infoMsg">infoMsg() (in module MsgProcessing)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.ArgumentError.init">init() (Errors.ArgumentError method)</a>, <a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.ArgumentError.init">[1]</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger.init">init() (Logging.Logger method)</a>, <a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger.init">[1]</a>
 
       <ul>
-        <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.DatasetNotFoundError.init">(Errors.DatasetNotFoundError method)</a>, <a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.DatasetNotFoundError.init">[1]</a>
-</li>
-        <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.ErrorWithContext.init">(Errors.ErrorWithContext method)</a>, <a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.ErrorWithContext.init">[1]</a>
-</li>
-        <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.HDF5FileFormatError.init">(Errors.HDF5FileFormatError method)</a>, <a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.HDF5FileFormatError.init">[1]</a>
-</li>
-        <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.MismatchedAppendError.init">(Errors.MismatchedAppendError method)</a>, <a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.MismatchedAppendError.init">[1]</a>
-</li>
-        <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.NotHDF5FileError.init">(Errors.NotHDF5FileError method)</a>, <a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.NotHDF5FileError.init">[1]</a>
-</li>
-        <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.NotImplementedError.init">(Errors.NotImplementedError method)</a>, <a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.NotImplementedError.init">[1]</a>
-</li>
-        <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.SegArrayError.init">(Errors.SegArrayError method)</a>, <a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.SegArrayError.init">[1]</a>
-</li>
-        <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.UnknownSymbolError.init">(Errors.UnknownSymbolError method)</a>, <a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.UnknownSymbolError.init">[1]</a>
-</li>
-        <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.WriteModeError.init">(Errors.WriteModeError method)</a>, <a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.WriteModeError.init">[1]</a>
-</li>
-        <li><a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger.init">(Logging.Logger method)</a>, <a href="modules/__w/arkouda/arkouda/src/Logging.html#Logging.Logger.init">[1]</a>
-</li>
         <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.GenSymEntry.init">(MultiTypeSymEntry.GenSymEntry method)</a>
 </li>
         <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.SymEntry.init">(MultiTypeSymEntry.SymEntry method)</a>, <a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.SymEntry.init">[1]</a>
 </li>
         <li><a href="modules/__w/arkouda/arkouda/src/SegmentedArray.html#SegmentedArray.SegString.init">(SegmentedArray.SegString method)</a>
+</li>
+        <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.ArgumentError.init">(ServerErrors.ArgumentError method)</a>, <a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.ArgumentError.init">[1]</a>
+</li>
+        <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.DatasetNotFoundError.init">(ServerErrors.DatasetNotFoundError method)</a>, <a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.DatasetNotFoundError.init">[1]</a>
+</li>
+        <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.ErrorWithContext.init">(ServerErrors.ErrorWithContext method)</a>, <a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.ErrorWithContext.init">[1]</a>
+</li>
+        <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.HDF5FileFormatError.init">(ServerErrors.HDF5FileFormatError method)</a>, <a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.HDF5FileFormatError.init">[1]</a>
+</li>
+        <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.MismatchedAppendError.init">(ServerErrors.MismatchedAppendError method)</a>, <a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.MismatchedAppendError.init">[1]</a>
+</li>
+        <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.NotHDF5FileError.init">(ServerErrors.NotHDF5FileError method)</a>, <a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.NotHDF5FileError.init">[1]</a>
+</li>
+        <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.NotImplementedError.init">(ServerErrors.NotImplementedError method)</a>, <a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.NotImplementedError.init">[1]</a>
+</li>
+        <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.SegArrayError.init">(ServerErrors.SegArrayError method)</a>, <a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.SegArrayError.init">[1]</a>
+</li>
+        <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.UnknownSymbolError.init">(ServerErrors.UnknownSymbolError method)</a>, <a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.UnknownSymbolError.init">[1]</a>
+</li>
+        <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.WriteModeError.init">(ServerErrors.WriteModeError method)</a>, <a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.WriteModeError.init">[1]</a>
 </li>
       </ul></li>
   </ul></td>
@@ -1018,7 +1016,7 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ArgSortMsg.html#ArgSortMsg.lgSmall">lgSmall (in module ArgSortMsg)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.ErrorWithContext.lineNumber">lineNumber (Errors.ErrorWithContext attribute)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.ErrorWithContext.lineNumber">lineNumber (ServerErrors.ErrorWithContext attribute)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MsgProcessing.html#MsgProcessing.linspaceMsg">linspaceMsg() (in module MsgProcessing)</a>
 </li>
@@ -1086,11 +1084,11 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/KExtremeMsg.html#KExtremeMsg.minkMsg">minkMsg() (in module KExtremeMsg)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.MismatchedAppendError">MismatchedAppendError (class in Errors)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.MismatchedAppendError">MismatchedAppendError (class in ServerErrors)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.ErrorWithContext.moduleName">moduleName (Errors.ErrorWithContext attribute)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.ErrorWithContext.moduleName">moduleName (ServerErrors.ErrorWithContext attribute)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MsgProcessing.html#MsgProcessing.mpLogger">mpLogger (in module MsgProcessing)</a>
 </li>
@@ -1156,9 +1154,9 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymbolTable.html#MultiTypeSymbolTable.SymTab.nid">nid (MultiTypeSymbolTable.SymTab attribute)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.NotHDF5FileError">NotHDF5FileError (class in Errors)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.NotHDF5FileError">NotHDF5FileError (class in ServerErrors)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.NotImplementedError">NotImplementedError (class in Errors)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.NotImplementedError">NotImplementedError (class in ServerErrors)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerErrorStrings.html#ServerErrorStrings.notImplementedError">notImplementedError() (in module ServerErrorStrings)</a>, <a href="modules/__w/arkouda/arkouda/src/ServerErrorStrings.html#ServerErrorStrings.notImplementedError">[1]</a>, <a href="modules/__w/arkouda/arkouda/src/ServerErrorStrings.html#ServerErrorStrings.notImplementedError">[2]</a>, <a href="modules/__w/arkouda/arkouda/src/ServerErrorStrings.html#ServerErrorStrings.notImplementedError">[3]</a>, <a href="modules/__w/arkouda/arkouda/src/ServerErrorStrings.html#ServerErrorStrings.notImplementedError">[4]</a>, <a href="modules/__w/arkouda/arkouda/src/ServerErrorStrings.html#ServerErrorStrings.notImplementedError">[5]</a>
 </li>
@@ -1238,9 +1236,9 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.processFilenames">processFilenames() (in module GenSymIO)</a>, <a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.processFilenames">[1]</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.ErrorWithContext.publish">publish() (Errors.ErrorWithContext method)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.ErrorWithContext.publish">publish() (ServerErrors.ErrorWithContext method)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.ErrorWithContext.publishMsg">publishMsg (Errors.ErrorWithContext attribute)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.ErrorWithContext.publishMsg">publishMsg (ServerErrors.ErrorWithContext attribute)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/Extremas.html#Extremas.KExtreme.push">push() (Extremas.KExtreme method)</a>
 </li>
@@ -1336,7 +1334,7 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SipHash.html#SipHash.ROTL">ROTL() (in module SipHash)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.ErrorWithContext.routineName">routineName (Errors.ErrorWithContext attribute)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.ErrorWithContext.routineName">routineName (ServerErrors.ErrorWithContext attribute)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/RadixSortLSD.html#RadixSortLSD.rsLogger">rsLogger (in module RadixSortLSD)</a>
 </li>
@@ -1380,7 +1378,7 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.SEGARRAY_VALUE_NAME">SEGARRAY_VALUE_NAME (in module GenSymIO)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.SegArrayError">SegArrayError (class in Errors)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.SegArrayError">SegArrayError (class in ServerErrors)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedMsg.html#SegmentedMsg.segBinopvsMsg">segBinopvsMsg() (in module SegmentedMsg)</a>
 </li>
@@ -1443,6 +1441,8 @@
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#module-ServerConfig">ServerConfig (module)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerConfig.html#ServerConfig.serverConnectionInfo">serverConnectionInfo (in module ServerConfig)</a>
+</li>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#module-ServerErrors">ServerErrors (module)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerErrorStrings.html#module-ServerErrorStrings">ServerErrorStrings (module)</a>
 </li>
@@ -1626,7 +1626,7 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/SegmentedArray.html#SegmentedArray.UnknownSearchMode">UnknownSearchMode (class in SegmentedArray)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.UnknownSymbolError">UnknownSymbolError (class in Errors)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.UnknownSymbolError">UnknownSymbolError (class in ServerErrors)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/ServerErrorStrings.html#ServerErrorStrings.unknownSymbolError">unknownSymbolError() (in module ServerErrorStrings)</a>
 </li>
@@ -1684,7 +1684,7 @@
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/GenSymIO.html#GenSymIO.write1DDistArray">write1DDistArray() (in module GenSymIO)</a>
 </li>
-      <li><a href="modules/__w/arkouda/arkouda/src/Errors.html#Errors.WriteModeError">WriteModeError (class in Errors)</a>
+      <li><a href="modules/__w/arkouda/arkouda/src/ServerErrors.html#ServerErrors.WriteModeError">WriteModeError (class in ServerErrors)</a>
 </li>
       <li><a href="modules/__w/arkouda/arkouda/src/MultiTypeSymEntry.html#MultiTypeSymEntry.SymEntry.writeThis">writeThis() (MultiTypeSymEntry.SymEntry method)</a>
 </li>

@@ -1,21 +1,21 @@
 .. default-domain:: chpl
 
-.. module:: Errors
+.. module:: ServerErrors
 
-Errors
-======
+ServerErrors
+============
 **Usage**
 
 .. code-block:: chapel
 
-   use Errors;
+   use ServerErrors;
 
 
 or
 
 .. code-block:: chapel
 
-   import Errors;
+   import ServerErrors;
 
 .. class:: ErrorWithContext : Error
 
