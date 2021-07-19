@@ -294,7 +294,7 @@ proc main() {
 
             select cmd
             {
-                when "array"             {repTuple = arrayMsg(cmd, payload, st);}
+                when "array"             {repTuple = arrayMsg(cmd, args, payload, st);}
                 when "tondarray"         {binaryRepMsg = tondarrayMsg(cmd, args, st);}
                 when "cast"              {repTuple = castMsg(cmd, args, st);}
                 when "mink"              {repTuple = minkMsg(cmd, args, st);}

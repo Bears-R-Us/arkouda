@@ -851,7 +851,7 @@ class pdarray:
             raise RuntimeError(('Array exceeds allowed size for transfer. Increase ' +
                                'client.maxTransferBytes to allow'))
         # The reply from the server will be a bytes object
-        rep_msg = generic_msg(cmd="tondarray", args="{}".format(self.name), recv_bytes=True)
+        rep_msg = generic_msg(cmd="tondarray", args="{}".format(self.name), recv_binary=True)
         # Make sure the received data has the expected length
         if len(rep_msg) != self.size*self.dtype.itemsize:
             raise RuntimeError("Expected {} bytes but received {}".\

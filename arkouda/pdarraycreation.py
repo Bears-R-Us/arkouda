@@ -211,8 +211,8 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
         abytes = a.byteswap().tobytes()
     else:
         abytes = a.tobytes()
-    req_msg = "{} {:n} ".  format(a.dtype.name, size).encode() + abytes
-    repMsg = generic_msg(cmd='array', args=req_msg, send_bytes=True)
+    args = "{} {:n} ".  format(a.dtype.name, size)
+    repMsg = generic_msg(cmd='array', args=args, payload=abytes, send_binary=True)
     return create_pdarray(repMsg)
 
 def zeros(size : int_scalars, dtype : type=np.float64) -> pdarray:

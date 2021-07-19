@@ -592,3 +592,29 @@ class PdarrayCreationTest(ArkoudaTest):
         aka = ak.array(a)
         npa = aka.to_ndarray();
         self.assertTrue(np.allclose(a, npa))
+
+    def test_clobber(self):
+        N = 100
+        narrs = 10
+
+        arrs = [np.random.randint(1, N, N) for _ in range(narrs)]
+        akarrs = [ak.array(arr) for arr in arrs]
+        nparrs = [arr.to_ndarray() for arr in akarrs]
+        for (a, npa) in zip(arrs, nparrs):
+            self.assertTrue(np.allclose(a, npa))
+
+        arrs = [np.full(N, i) for i in range(narrs)]
+        akarrs = [ak.array(arr) for arr in arrs]
+        nparrs = [arr.to_ndarray() for arr in akarrs]
+
+        for (a, npa, i) in zip(arrs, nparrs, range(narrs)):
+            self.assertTrue(np.all(a == i))
+            self.assertTrue(np.all(npa == i))
+
+            a += 1
+            self.assertTrue(np.all(a == i+1))
+            self.assertTrue(np.all(npa == i))
+
+            npa += 1
+            self.assertTrue(np.all(a == i+1))
+            self.assertTrue(np.all(npa == i+1))

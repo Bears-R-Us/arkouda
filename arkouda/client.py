@@ -295,8 +295,8 @@ def _start_tunnel(addr : str, tunnel_server : str) -> Tuple[str,object]:
     except Exception as e:
         raise ConnectionError(e)
 
-def _send_string_message(cmd : str, recv_bytes : bool=False, 
-                                   args : str=None) -> Union[str, bytes]:
+def _send_string_message(cmd : str, recv_binary : bool=False,
+                         args : str=None) -> Union[str, bytes]:
     """
     Generates a RequestMessage encapsulating command and requesting
     user information, sends it to the Arkouda server, and returns 
@@ -306,16 +306,15 @@ def _send_string_message(cmd : str, recv_bytes : bool=False,
     ----------
     cmd : str
         The name of the command to be executed by the Arkouda server
-    recv_bytes : bool, defaults to False
-        A boolean indicating whether the return message will be in bytes
-        as opposed to a string
+    recv_binary : bool, defaults to False
+        Indicates if the return message will be a string or binary data
     args : str
         A delimited string containing 1..n command arguments
 
     Returns
     -------
     Union[str,bytes]
-        The response string or byte array sent back from the Arkouda server
+        The response string or binary data sent back from the Arkouda server
         
     Raises
     ------
@@ -327,21 +326,18 @@ def _send_string_message(cmd : str, recv_bytes : bool=False,
         expected fields       
     """
     message = RequestMessage(user=username, token=token, cmd=cmd, 
-                          format=MessageFormat.STRING, args=cast(str,args))
+                          format=MessageFormat.STRING, args=args)
 
     logger.debug('sending message {}'.format(message))
 
     socket.send_string(json.dumps(message.asdict()))
 
-    if recv_bytes:
-        return_message = socket.recv()
-
-        # raise errors or warnings sent back from the server
-        if return_message.startswith(b"Error:"): 
-            raise RuntimeError(return_message.decode())
-        elif return_message.startswith(b"Warning:"): 
-            warnings.warn(return_message.decode())
-        return return_message
+    if recv_binary:
+        binary_return_message = socket.recv()
+        # raise errors sent back from the server
+        if binary_return_message.startswith(b"Error:"): \
+                                   raise RuntimeError(binary_return_message.decode())
+        return binary_return_message
     else:
         raw_message = socket.recv_string()
         try:
@@ -359,8 +355,9 @@ def _send_string_message(cmd : str, recv_bytes : bool=False,
             raise ValueError('Return message is not valid JSON: {}'.\
                              format(raw_message))
 
-def _send_binary_message(cmd : str, payload : bytes, recv_bytes : bool=False,
-                                            args : str=None) -> Union[str, bytes]:
+
+def _send_binary_message(cmd : str, payload : bytes, recv_binary : bool=False,
+                         args : str=None) -> Union[str, bytes]:
     """
     Generates a RequestMessage encapsulating command and requesting user information,
     information prepends the binary payload, sends the binary request to the Arkouda 
@@ -371,18 +368,17 @@ def _send_binary_message(cmd : str, payload : bytes, recv_bytes : bool=False,
     cmd : str
         The name of the command to be executed by the Arkouda server    
     payload : bytes
-        The bytes to be converted to a pdarray, Strings, or Categorical object
-        on the Arkouda server
-    recv_bytes : bool, defaults to False
-        A boolean indicating whether the return message will be in bytes
-        as opposed to a string
+        The binary data to be converted to a pdarray, Strings, or Categorical
+        object on the Arkouda server
+    recv_binary : bool, defaults to False
+        Indicates if the return message will be a string or binary data
     args : str
         A delimited string containing 1..n command arguments
 
     Returns
     -------
     Union[str,bytes]
-        The response string or byte array sent back from the Arkouda server
+        The response string or binary data sent back from the Arkouda server
 
     Raises
     ------
@@ -394,20 +390,18 @@ def _send_binary_message(cmd : str, payload : bytes, recv_bytes : bool=False,
         expected fields
     """
     message = RequestMessage(user=username, token=token, cmd=cmd, 
-                                format=MessageFormat.BINARY, args=cast(str,args))
+                                format=MessageFormat.BINARY, args=args)
 
     logger.debug('sending message {}'.format(message))
 
     socket.send('{}BINARY_PAYLOAD'.\
                 format(json.dumps(message.asdict())).encode() + payload)
 
-    if recv_bytes:
-        binary_return_message = cast(bytes, socket.recv())
-        # raise errors or warnings sent back from the server
+    if recv_binary:
+        binary_return_message = socket.recv()
+        # raise errors sent back from the server
         if binary_return_message.startswith(b"Error:"): \
                                    raise RuntimeError(binary_return_message.decode())
-        elif binary_return_message.startswith(b"Warning:"): \
-                                        warnings.warn(binary_return_message.decode())
         return binary_return_message
     else:
         raw_message = socket.recv_string()
@@ -496,8 +490,8 @@ def shutdown() -> None:
     connected = False
     serverConfig = None
 
-def generic_msg(cmd : str, args : Union[str,bytes]=None, send_bytes : bool=False, 
-                recv_bytes : bool=False) -> Union[str, bytes]:
+def generic_msg(cmd : str, args : str=None, payload : bytes=None, send_binary : bool=False,
+                recv_binary : bool=False) -> Union[str, bytes]:
     """
     Sends a binary or string message composed of a command and corresponding 
     arguments to the arkouda_server, returning the response sent by the server.
@@ -506,13 +500,14 @@ def generic_msg(cmd : str, args : Union[str,bytes]=None, send_bytes : bool=False
     ----------
     cmd : str
         The server-side command to be executed
-    args : Union[str,bytes]
-        A space-delimited list of command arguments or a byte array, the latter
-        of which is for creating an Arkouda array
-    send_bytes : bool
-        Indicates if the message to be sent is binary, defaults to False
-    recv_bytes : bool
-        Indicates if the return message will be binary, default to False
+    args : str
+        A space-delimited list of command arguments
+    payload : bytes
+        The payload when sending binary data
+    send_binary : bool
+        Indicates if the message to be sent is a string or binary
+    recv_binary : bool
+        Indicates if the return message will be a string or binary
 
     Returns
     -------
@@ -539,14 +534,14 @@ def generic_msg(cmd : str, args : Union[str,bytes]=None, send_bytes : bool=False
         raise RuntimeError("client is not connected to a server")
     
     try:
-        if send_bytes:
-            return _send_binary_message(cmd=cmd, 
-                                            payload=cast(bytes,args), 
-                                            recv_bytes=recv_bytes)         
+        if send_binary:
+            assert payload is not None
+            return _send_binary_message(cmd=cmd, payload=payload,
+                                        recv_binary=recv_binary, args=args)
         else:
-            return _send_string_message(cmd=cmd, args=cast(str,args), 
-                                            recv_bytes=recv_bytes)
-                
+            assert payload is None
+            return _send_string_message(cmd=cmd, args=args, recv_binary=recv_binary)
+
     except KeyboardInterrupt as e:
         # if the user interrupts during command execution, the socket gets out 
         # of sync reset the socket before raising the interrupt exception
@@ -575,7 +570,7 @@ def get_config() -> Mapping[str, Union[str, int, float]]:
     """
 
     if serverConfig is None:
-        raise RuntimeError('Not connected to a server')
+        raise RuntimeError("client is not connected to a server")
 
     return serverConfig
 
