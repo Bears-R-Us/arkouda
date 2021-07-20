@@ -171,6 +171,13 @@ module ServerErrors {
         proc init(){ super.init(); }
     }
 
+
+    class HDF5RankError: Error {
+        var rank: int;
+        var filename: string;
+        var dsetName: string;
+    }
+
     /*
      * Generatea a detailed, context-rich error message for errors such as instances of 
      * built-in Chapel Errors in a format that matches the Arkouda ErrorWithContext

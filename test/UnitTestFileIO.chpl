@@ -1,8 +1,7 @@
 use UnitTest;
 use TestBase;
 use IO;
-use FileIO;
-use GenSymIO;
+import ak.io.FileIO.{FileType, getFileTypeByMagic};
 
 proc getFirstEightBytesFromFile(path:string):bytes throws {
     //var f:file = open("resources/sample.parquet", iomode.r);

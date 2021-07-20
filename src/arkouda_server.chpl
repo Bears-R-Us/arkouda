@@ -2,7 +2,6 @@
 backend chapel program to mimic ndarray from numpy
 This is the main driver for the arkouda server */
 
-use FileIO;
 use Security;
 use ServerConfig;
 use Time only;
@@ -15,11 +14,13 @@ use Path;
 use MultiTypeSymbolTable;
 use MultiTypeSymEntry;
 use MsgProcessing;
-use GenSymIO;
 use Reflection;
 use SymArrayDmap;
 use ServerErrorStrings;
 use Message;
+
+import ak.io.FileIO.{initDirectory};
+import ak.io.GenSymIO.{arrayMsg, lshdfMsg, readAllHdfMsg, tondarrayMsg, tohdfMsg};
 
 private config const logLevel = ServerConfig.logLevel;
 const asLogger = new Logger(logLevel);
@@ -314,10 +315,6 @@ proc main() {
                 when "segmentedIn1d"     {repTuple = segIn1dMsg(cmd, args, st);}
                 when "segmentedFlatten"  {repTuple = segFlattenMsg(cmd, args, st);}
                 when "lshdf"             {repTuple = lshdfMsg(cmd, args, st);}
-                
-                // DEPRECATED all client paths point to readAllHdfMsg
-                when "readhdf"           {repTuple = readhdfMsg(cmd, args, st);}
-                
                 when "readAllHdf"        {repTuple = readAllHdfMsg(cmd, args, st);}
                 when "tohdf"             {repTuple = tohdfMsg(cmd, args, st);}
                 when "create"            {repTuple = createMsg(cmd, args, st);}

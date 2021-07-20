@@ -10,7 +10,6 @@ module SegmentedMsg {
   use MultiTypeSymEntry;
   use RandArray;
   use IO;
-  use GenSymIO only jsonToPdArray;
 
   private config const logLevel = ServerConfig.logLevel;
   const smLogger = new Logger(logLevel);

@@ -1,5 +1,6 @@
 use TestBase;
-use GenSymIO;
+import ak.io.GenSymIO.{generateFilenames, write1DDistArray, TRUNCATE};
+import ak.io.GenHdf5.{get_subdoms, read_files_into_distributed_array};
 
 config const size = 10**4;
 

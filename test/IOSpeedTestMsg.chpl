@@ -1,5 +1,5 @@
 use TestBase;
-use GenSymIO;
+import ak.io.GenSymIO.{tohdfMsg, readAllHdfMsg};
 
 config const size = 10**4;
 config const write = true;

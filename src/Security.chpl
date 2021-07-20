@@ -1,8 +1,7 @@
 
 module Security {
-    use Random;
     use Random.PCGRandom only PCGRandomStream;
-    use FileIO;
+    import ak.io.FileIO.{appendFile, getLineFromFile};
     use FileSystem;
     use Path;
     private use IO;

@@ -62,6 +62,19 @@ module FileIO {
         } 
     }
 
+    /*
+     * Ensure the file is closed, disregard errors
+     */
+    proc ensureClose(tmpf:file): bool {
+        var success = true;
+        try {
+            tmpf.close();
+        } catch {
+            success = false;
+        }
+        return success;
+    }
+
     // File Magic headers for supported formats
     const MAGIC_PARQUET:bytes = b"\x50\x41\x52\x31"; // 4 bytes "PAR1"
     const MAGIC_HDF5:bytes = b"\x89\x48\x44\x46\x0d\x0a\x1a\x0a"; // 8 bytes "\211HDF\r\n\032\n"
