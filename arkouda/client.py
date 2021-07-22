@@ -296,7 +296,7 @@ def _start_tunnel(addr : str, tunnel_server : str) -> Tuple[str,object]:
         raise ConnectionError(e)
 
 def _send_string_message(cmd : str, recv_binary : bool=False,
-                         args : str=None) -> Union[str, bytes]:
+                         args : str=None) -> Union[str, memoryview]:
     """
     Generates a RequestMessage encapsulating command and requesting
     user information, sends it to the Arkouda server, and returns 
@@ -313,7 +313,7 @@ def _send_string_message(cmd : str, recv_binary : bool=False,
 
     Returns
     -------
-    Union[str,bytes]
+    Union[str,memoryview]
         The response string or binary data sent back from the Arkouda server
         
     Raises
@@ -333,11 +333,12 @@ def _send_string_message(cmd : str, recv_binary : bool=False,
     socket.send_string(json.dumps(message.asdict()))
 
     if recv_binary:
-        binary_return_message = socket.recv()
+        frame = socket.recv(copy=False)
+        view = frame.buffer
         # raise errors sent back from the server
-        if binary_return_message.startswith(b"Error:"): \
-                                   raise RuntimeError(binary_return_message.decode())
-        return binary_return_message
+        if bytes(view[0:len(b"Error:")]) == b"Error:":
+            raise RuntimeError(frame.bytes.decode())
+        return view
     else:
         raw_message = socket.recv_string()
         try:
@@ -356,8 +357,8 @@ def _send_string_message(cmd : str, recv_binary : bool=False,
                              format(raw_message))
 
 
-def _send_binary_message(cmd : str, payload : bytes, recv_binary : bool=False,
-                         args : str=None) -> Union[str, bytes]:
+def _send_binary_message(cmd : str, payload : memoryview, recv_binary : bool=False,
+                         args : str=None) -> Union[str, memoryview]:
     """
     Generates a RequestMessage encapsulating command and requesting user information,
     information prepends the binary payload, sends the binary request to the Arkouda 
@@ -367,7 +368,7 @@ def _send_binary_message(cmd : str, payload : bytes, recv_binary : bool=False,
     ----------
     cmd : str
         The name of the command to be executed by the Arkouda server    
-    payload : bytes
+    payload : memoryview
         The binary data to be converted to a pdarray, Strings, or Categorical
         object on the Arkouda server
     recv_binary : bool, defaults to False
@@ -377,7 +378,7 @@ def _send_binary_message(cmd : str, payload : bytes, recv_binary : bool=False,
 
     Returns
     -------
-    Union[str,bytes]
+    Union[str,memoryview]
         The response string or binary data sent back from the Arkouda server
 
     Raises
@@ -394,15 +395,17 @@ def _send_binary_message(cmd : str, payload : bytes, recv_binary : bool=False,
 
     logger.debug('sending message {}'.format(message))
 
-    socket.send('{}BINARY_PAYLOAD'.\
-                format(json.dumps(message.asdict())).encode() + payload)
+    socket.send('{}BINARY_PAYLOAD'.format(json.dumps(message.asdict())).encode(),
+                flags=zmq.SNDMORE)
+    socket.send(payload, copy=False)
 
     if recv_binary:
-        binary_return_message = socket.recv()
+        frame = socket.recv(copy=False)
+        view = frame.buffer
         # raise errors sent back from the server
-        if binary_return_message.startswith(b"Error:"): \
-                                   raise RuntimeError(binary_return_message.decode())
-        return binary_return_message
+        if bytes(view[0:len(b"Error:")]) == b"Error:":
+            raise RuntimeError(frame.bytes.decode())
+        return view
     else:
         raw_message = socket.recv_string()
         try:
@@ -490,8 +493,8 @@ def shutdown() -> None:
     connected = False
     serverConfig = None
 
-def generic_msg(cmd : str, args : str=None, payload : bytes=None, send_binary : bool=False,
-                recv_binary : bool=False) -> Union[str, bytes]:
+def generic_msg(cmd : str, args : str=None, payload : memoryview=None, send_binary : bool=False,
+                recv_binary : bool=False) -> Union[str, memoryview]:
     """
     Sends a binary or string message composed of a command and corresponding 
     arguments to the arkouda_server, returning the response sent by the server.
@@ -502,7 +505,7 @@ def generic_msg(cmd : str, args : str=None, payload : bytes=None, send_binary : 
         The server-side command to be executed
     args : str
         A space-delimited list of command arguments
-    payload : bytes
+    payload : memoryview
         The payload when sending binary data
     send_binary : bool
         Indicates if the message to be sent is a string or binary
@@ -511,7 +514,7 @@ def generic_msg(cmd : str, args : str=None, payload : bytes=None, send_binary : 
 
     Returns
     -------
-    Union[str, bytes]
+    Union[str, memoryview]
         The string or binary return message
     
     Raises
@@ -525,7 +528,7 @@ def generic_msg(cmd : str, args : str=None, payload : bytes=None, send_binary : 
     Notes
     -----
     If the server response is a string, the string corresponds to a success  
-    confirmation, warn message, or error message. A response of type bytes 
+    confirmation, warn message, or error message. A memoryview response
     corresponds to an Arkouda array output as a numpy array.
     """
     global socket, pspStr, connected, verbose

@@ -221,6 +221,9 @@ proc main() {
          * remaining payload.
          */
         var (rawRequest, payload) = reqMsgRaw.splitMsgToTuple(b"BINARY_PAYLOAD",2);
+        if reqMsgRaw.endsWith(b"BINARY_PAYLOAD") {
+          payload = socket.recv(bytes);
+        }
         var user, token, cmd: string;
 
         // parse requests, execute requests, format responses
@@ -285,17 +288,18 @@ proc main() {
             }
 
             /*
-             * Declare the repTuple and binaryRepMsg variables, one of which is processed, if 
-             * applicable, and sent to sendRepMsg depending upon whether a string (repTuple)
-             * or bytes (binaryRepMsg) is to be returned.
+             * For messages that return a string repTuple is filled. For binary
+             * messages the message is sent directly to minimize copies.
              */
-            var binaryRepMsg: bytes;
             var repTuple: MsgTuple;
 
             select cmd
             {
                 when "array"             {repTuple = arrayMsg(cmd, args, payload, st);}
-                when "tondarray"         {binaryRepMsg = tondarrayMsg(cmd, args, st);}
+                when "tondarray"         {
+                  var binaryRepMsg = tondarrayMsg(cmd, args, st);
+                  sendRepMsg(binaryRepMsg);
+                }
                 when "cast"              {repTuple = castMsg(cmd, args, st);}
                 when "mink"              {repTuple = minkMsg(cmd, args, st);}
                 when "maxk"              {repTuple = maxkMsg(cmd, args, st);}
@@ -395,14 +399,9 @@ proc main() {
             }
 
             /*
-             * 1. Determine if the reply message is binary or a string via the repTuple.msg attribute
-             * 2. If a string, invoke serialize to generate a JSON-formatted reply string
-             * 3. Invoke the sendRepMsg function
+             * If the reply message is a string send it now
              */          
-            if repTuple.msg.isEmpty() {
-                // Since the repTuple.msg attribute is empty, this is a binary reply message
-                sendRepMsg(binaryRepMsg);
-            } else {
+            if !repTuple.msg.isEmpty() {
                 sendRepMsg(serialize(msg=repTuple.msg,msgType=repTuple.msgType,
                                                               msgFormat=MsgFormat.STRING, user=user));
             }

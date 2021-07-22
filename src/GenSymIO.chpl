@@ -54,7 +54,7 @@ module GenSymIO {
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
-        overMemLimit(2*8*size);
+        overMemLimit(2*size);
 
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                           "dtype: %t size: %i".format(dtype,size));
