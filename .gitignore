@@ -29,3 +29,8 @@ dep/*-install/
 dep/build/
 *.pyc
 ak-server-info
+test/IOSpeedTest.good
+test/IOSpeedTestMsg.good
+test/NanSpeedTest.good
+test/StringArgsortSpeedTest.good
+test/file_LOCALE0000
