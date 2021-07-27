@@ -1,5 +1,5 @@
-:mod:`arkouda.pdarrayIO`
-========================
+:py:mod:`arkouda.pdarrayIO`
+===========================
 
 .. py:module:: arkouda.pdarrayIO
 
@@ -23,7 +23,7 @@ Functions
 
 
 
-.. function:: ls_hdf(filename: str) -> str
+.. py:function:: ls_hdf(filename: str) -> str
 
    This function calls the h5ls utility on a filename visible to the
    arkouda server.
@@ -39,7 +39,7 @@ Functions
    :raises RuntimeError: Raised if error occurs in executing ls on an HDF5 file
 
 
-.. function:: read_hdf(dsetName: str, filenames: Union[str, List[str]], strictTypes: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: read_hdf(dsetName: str, filenames: Union[str, List[str]], strictTypes: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Read a single dataset from multiple HDF5 files into an Arkouda
    pdarray or Strings object.
@@ -75,7 +75,7 @@ Functions
    If dsetName is not present in all files, a TypeError is raised.
 
 
-.. function:: read_all(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
+.. py:function:: read_all(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
 
    Read datasets from HDF5 files.
 
@@ -126,7 +126,7 @@ Functions
    to HDF5 files.
 
 
-.. function:: load(path_prefix: str, dataset: str = 'array') -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: load(path_prefix: str, dataset: str = 'array') -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Load a pdarray previously saved with ``pdarray.save()``.
 
@@ -147,7 +147,7 @@ Functions
    .. seealso:: :obj:`save`, :obj:`load_all`, :obj:`read_hdf`, :obj:`read_all`
 
 
-.. function:: get_datasets(filename: str) -> List[str]
+.. py:function:: get_datasets(filename: str) -> List[str]
 
    Get the names of datasets in an HDF5 file.
 
@@ -164,7 +164,7 @@ Functions
    .. seealso:: :obj:`ls_hdf`
 
 
-.. function:: load_all(path_prefix: str) -> Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]
+.. py:function:: load_all(path_prefix: str) -> Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]
 
    Load multiple pdarrays or Strings previously saved with ``save_all()``.
 
@@ -183,7 +183,7 @@ Functions
    .. seealso:: :obj:`save_all`, :obj:`load`, :obj:`read_hdf`, :obj:`read_all`
 
 
-.. function:: save_all(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, mode: str = 'truncate') -> None
+.. py:function:: save_all(columns: Union[Mapping[str, arkouda.pdarrayclass.pdarray], List[arkouda.pdarrayclass.pdarray]], prefix_path: str, names: List[str] = None, mode: str = 'truncate') -> None
 
    Save multiple named pdarrays to HDF5 files.
 

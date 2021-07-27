@@ -1,5 +1,5 @@
-:mod:`arkouda.strings`
-======================
+:py:mod:`arkouda.strings`
+=========================
 
 .. py:module:: arkouda.strings
 
@@ -17,8 +17,7 @@ Classes
 
 
 
-.. class:: Strings(offset_attrib: Union[arkouda.pdarrayclass.pdarray, str], bytes_attrib: Union[arkouda.pdarrayclass.pdarray, str])
-
+.. py:class:: Strings(offset_attrib: Union[arkouda.pdarrayclass.pdarray, str], bytes_attrib: Union[arkouda.pdarrayclass.pdarray, str])
 
    Represents an array of strings whose data resides on the
    arkouda server. The user should not call this class directly;
@@ -78,34 +77,34 @@ Classes
    starting indices for each string and (2) bytes, which contains the
    raw bytes of all strings, delimited by nulls.
 
-   .. attribute:: BinOps
+   .. py:attribute:: BinOps
       
 
       
 
-   .. attribute:: objtype
+   .. py:attribute:: objtype
       :annotation: = str
 
       
 
-   .. method:: __iter__(self)
+   .. py:method:: __iter__(self)
       :abstractmethod:
 
 
-   .. method:: __len__(self) -> int
+   .. py:method:: __len__(self) -> int
 
 
-   .. method:: __str__(self) -> str
+   .. py:method:: __str__(self) -> str
 
       Return str(self).
 
 
-   .. method:: __repr__(self) -> str
+   .. py:method:: __repr__(self) -> str
 
       Return repr(self).
 
 
-   .. method:: _binop(self, other: Union[Strings, arkouda.dtypes.str_scalars], op: str) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: _binop(self, other: Union[Strings, arkouda.dtypes.str_scalars], op: str) -> arkouda.pdarrayclass.pdarray
 
       Executes the requested binop on this Strings instance and the
           parameter Strings object and returns the results within
@@ -134,20 +133,20 @@ Classes
               binary operation
 
 
-   .. method:: __eq__(self, other) -> bool
+   .. py:method:: __eq__(self, other) -> bool
 
       Return self==value.
 
 
-   .. method:: __ne__(self, other) -> bool
+   .. py:method:: __ne__(self, other) -> bool
 
       Return self!=value.
 
 
-   .. method:: __getitem__(self, key)
+   .. py:method:: __getitem__(self, key)
 
 
-   .. method:: get_lengths(self) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: get_lengths(self) -> arkouda.pdarrayclass.pdarray
 
       Return the length of each string in the array.
 
@@ -157,7 +156,7 @@ Classes
       :raises RuntimeError: Raised if there is a server-side error thrown
 
 
-   .. method:: contains(self, substr: Union[bytes, arkouda.dtypes.str_scalars]) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: contains(self, substr: Union[bytes, arkouda.dtypes.str_scalars]) -> arkouda.pdarrayclass.pdarray
 
       Check whether each element contains the given substring.
 
@@ -181,7 +180,7 @@ Classes
       array([True, True, True, True, True])
 
 
-   .. method:: startswith(self, substr: Union[bytes, arkouda.dtypes.str_scalars]) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: startswith(self, substr: Union[bytes, arkouda.dtypes.str_scalars]) -> arkouda.pdarrayclass.pdarray
 
       Check whether each element starts with the given substring.
 
@@ -205,7 +204,7 @@ Classes
       array([True, True, True, True, True])
 
 
-   .. method:: endswith(self, substr: Union[bytes, arkouda.dtypes.str_scalars]) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: endswith(self, substr: Union[bytes, arkouda.dtypes.str_scalars]) -> arkouda.pdarrayclass.pdarray
 
       Check whether each element ends with the given substring.
 
@@ -229,7 +228,7 @@ Classes
       array([True, True, True, True, True])
 
 
-   .. method:: flatten(self, delimiter: str, return_segments: bool = False) -> Union[Strings, Tuple]
+   .. py:method:: flatten(self, delimiter: str, return_segments: bool = False) -> Union[Strings, Tuple]
 
       Unpack delimiter-joined substrings into a flat array.
 
@@ -255,7 +254,7 @@ Classes
       array([0, 2, 5])
 
 
-   .. method:: peel(self, delimiter: Union[bytes, arkouda.dtypes.str_scalars], times: arkouda.dtypes.int_scalars = 1, includeDelimiter: bool = False, keepPartial: bool = False, fromRight: bool = False) -> Tuple
+   .. py:method:: peel(self, delimiter: Union[bytes, arkouda.dtypes.str_scalars], times: arkouda.dtypes.int_scalars = 1, includeDelimiter: bool = False, keepPartial: bool = False, fromRight: bool = False) -> Tuple
 
       Peel off one or more delimited fields from each string (similar
       to string.partition), returning two new arrays of strings.
@@ -308,7 +307,7 @@ Classes
       (array(['a.b', 'c.d', 'e.f']), array(['', '', 'g']))
 
 
-   .. method:: rpeel(self, delimiter: Union[bytes, arkouda.dtypes.str_scalars], times: arkouda.dtypes.int_scalars = 1, includeDelimiter: bool = False, keepPartial: bool = False)
+   .. py:method:: rpeel(self, delimiter: Union[bytes, arkouda.dtypes.str_scalars], times: arkouda.dtypes.int_scalars = 1, includeDelimiter: bool = False, keepPartial: bool = False)
 
       Peel off one or more delimited fields from the end of each string
       (similar to string.rpartition), returning two new arrays of strings.
@@ -348,7 +347,7 @@ Classes
       (array(['a', 'c', 'e']), array(['b', 'd', 'f.g']))
 
 
-   .. method:: stick(self, other: Strings, delimiter: Union[bytes, arkouda.dtypes.str_scalars] = '', toLeft: bool = False) -> Strings
+   .. py:method:: stick(self, other: Strings, delimiter: Union[bytes, arkouda.dtypes.str_scalars] = '', toLeft: bool = False) -> Strings
 
       Join the strings from another array onto one end of the strings
       of this array, optionally inserting a delimiter.
@@ -380,10 +379,10 @@ Classes
       array(['a.b', 'c.d', 'e.f'])
 
 
-   .. method:: __add__(self, other: Strings) -> Strings
+   .. py:method:: __add__(self, other: Strings) -> Strings
 
 
-   .. method:: lstick(self, other: Strings, delimiter: Union[bytes, arkouda.dtypes.str_scalars] = '') -> Strings
+   .. py:method:: lstick(self, other: Strings, delimiter: Union[bytes, arkouda.dtypes.str_scalars] = '') -> Strings
 
       Join the strings from another array onto the left of the strings
       of this array, optionally inserting a delimiter.
@@ -411,10 +410,10 @@ Classes
       array(['b.a', 'd.c', 'f.e'])
 
 
-   .. method:: __radd__(self, other: Strings) -> Strings
+   .. py:method:: __radd__(self, other: Strings) -> Strings
 
 
-   .. method:: hash(self) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
+   .. py:method:: hash(self) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
 
       Compute a 128-bit hash of each string.
 
@@ -430,7 +429,7 @@ Classes
       values is negligible.
 
 
-   .. method:: group(self) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: group(self) -> arkouda.pdarrayclass.pdarray
 
       Return the permutation that groups the array, placing equivalent
       strings together. All instances of the same string are guaranteed to lie
@@ -454,7 +453,7 @@ Classes
           creating the pdarray encapsulating the return message
 
 
-   .. method:: to_ndarray(self) -> numpy.ndarray
+   .. py:method:: to_ndarray(self) -> numpy.ndarray
 
       Convert the array to a np.ndarray, transferring array data from the
       arkouda server to Python. If the array exceeds a built-in size limit,
@@ -484,7 +483,7 @@ Classes
       numpy.ndarray
 
 
-   .. method:: save(self, prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate') -> str
+   .. py:method:: save(self, prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate') -> str
 
       Save the Strings object to HDF5. The result is a collection of HDF5 files,
       one file per locale of the arkouda server, where each filename starts
@@ -516,7 +515,7 @@ Classes
       via the dataset parameter.
 
 
-   .. method:: is_registered(self) -> numpy.bool_
+   .. py:method:: is_registered(self) -> numpy.bool_
 
       Return True iff the object is contained in the registry
 
@@ -528,7 +527,7 @@ Classes
       :raises RuntimeError: Raised if there's a server-side error thrown
 
 
-   .. method:: _list_component_names(self) -> List[str]
+   .. py:method:: _list_component_names(self) -> List[str]
 
       Internal Function that returns a list of all component names
 
@@ -538,7 +537,7 @@ Classes
       :rtype: List[str]
 
 
-   .. method:: info(self) -> str
+   .. py:method:: info(self) -> str
 
       Returns a JSON formatted string containing information about all components of self
 
@@ -548,7 +547,7 @@ Classes
       :rtype: str
 
 
-   .. method:: pretty_print_info(self) -> None
+   .. py:method:: pretty_print_info(self) -> None
 
       Prints information about all components of self in a human readable format
 
@@ -558,7 +557,7 @@ Classes
       :rtype: None
 
 
-   .. method:: register(self, user_defined_name: str) -> Strings
+   .. py:method:: register(self, user_defined_name: str) -> Strings
 
       Register this Strings object with a user defined name in the arkouda server
       so it can be attached to later using Strings.attach()
@@ -587,7 +586,7 @@ Classes
       until they are unregistered.
 
 
-   .. method:: unregister(self) -> None
+   .. py:method:: unregister(self) -> None
 
       Unregister a Strings object in the arkouda server which was previously
       registered using register() and/or attached to using attach()
@@ -606,7 +605,7 @@ Classes
       they are unregistered.
 
 
-   .. method:: attach(user_defined_name: str) -> Strings
+   .. py:method:: attach(user_defined_name: str) -> Strings
       :staticmethod:
 
       class method to return a Strings object attached to the registered name in the arkouda
@@ -628,7 +627,7 @@ Classes
       until they are unregistered.
 
 
-   .. method:: unregister_strings_by_name(user_defined_name: str) -> None
+   .. py:method:: unregister_strings_by_name(user_defined_name: str) -> None
       :staticmethod:
 
       Unregister a Strings object in the arkouda server previously registered via register()

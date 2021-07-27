@@ -1,5 +1,5 @@
-:mod:`arkouda.infoclass`
-========================
+:py:mod:`arkouda.infoclass`
+===========================
 
 .. py:module:: arkouda.infoclass
 
@@ -29,17 +29,17 @@ Attributes
    arkouda.infoclass.RegisteredSymbols
 
 
-.. data:: AllSymbols
+.. py:data:: AllSymbols
    :annotation: = __AllSymbols__
 
    
 
-.. data:: RegisteredSymbols
+.. py:data:: RegisteredSymbols
    :annotation: = __RegisteredSymbols__
 
    
 
-.. function:: information(names: Union[List[str], str] = RegisteredSymbols) -> str
+.. py:function:: information(names: Union[List[str], str] = RegisteredSymbols) -> str
 
    Returns JSON formatted string containing information about the objects in names
 
@@ -55,7 +55,7 @@ Attributes
        retrieving information about the objects in names
 
 
-.. function:: list_registry() -> List[str]
+.. py:function:: list_registry() -> List[str]
 
    Return a list containing the names of all registered objects
 
@@ -67,7 +67,7 @@ Attributes
    :raises RuntimeError: Raised if there's a server-side error thrown
 
 
-.. function:: list_symbol_table() -> List[str]
+.. py:function:: list_symbol_table() -> List[str]
 
    Return a list containing the names of all objects in the symbol table
 
@@ -79,7 +79,7 @@ Attributes
    :raises RuntimeError: Raised if there's a server-side error thrown
 
 
-.. function:: pretty_print_information(names: Union[List[str], str] = RegisteredSymbols) -> None
+.. py:function:: pretty_print_information(names: Union[List[str], str] = RegisteredSymbols) -> None
 
    Prints verbose information for each object in names in a human readable format
 

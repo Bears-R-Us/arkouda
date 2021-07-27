@@ -1,5 +1,5 @@
-:mod:`arkouda.message`
-======================
+:py:mod:`arkouda.message`
+=========================
 
 .. py:module:: arkouda.message
 
@@ -20,7 +20,7 @@ Classes
 
 
 
-.. class:: MessageFormat
+.. py:class:: MessageFormat
 
    Bases: :py:obj:`enum.Enum`
 
@@ -28,30 +28,30 @@ Classes
 
    Derive from this class to define new enumerations.
 
-   .. attribute:: STRING
+   .. py:attribute:: STRING
       :annotation: = STRING
 
       
 
-   .. attribute:: BINARY
+   .. py:attribute:: BINARY
       :annotation: = BINARY
 
       
 
-   .. method:: __str__(self) -> str
+   .. py:method:: __str__(self) -> str
 
       Overridden method returns value, which is useful in outputting
       a MessageFormat object to JSON.
 
 
-   .. method:: __repr__(self) -> str
+   .. py:method:: __repr__(self) -> str
 
       Overridden method returns value, which is useful in outputting
       a MessageFormat object to JSON.
 
 
 
-.. class:: MessageType
+.. py:class:: MessageType
 
    Bases: :py:obj:`enum.Enum`
 
@@ -59,68 +59,67 @@ Classes
 
    Derive from this class to define new enumerations.
 
-   .. attribute:: NORMAL
+   .. py:attribute:: NORMAL
       :annotation: = NORMAL
 
       
 
-   .. attribute:: WARNING
+   .. py:attribute:: WARNING
       :annotation: = WARNING
 
       
 
-   .. attribute:: ERROR
+   .. py:attribute:: ERROR
       :annotation: = ERROR
 
       
 
-   .. method:: __str__(self) -> str
+   .. py:method:: __str__(self) -> str
 
       Overridden method returns value, which is useful in outputting
       a MessageType object to JSON.
 
 
-   .. method:: __repr__(self) -> str
+   .. py:method:: __repr__(self) -> str
 
       Overridden method returns value, which is useful in outputting
       a MessageType object to JSON.
 
 
 
-.. class:: RequestMessage(user: str, cmd: str, token: str = None, format: MessageFormat = MessageFormat.STRING, args: str = None)
+.. py:class:: RequestMessage(user: str, cmd: str, token: str = None, format: MessageFormat = MessageFormat.STRING, args: str = None)
 
-
-   .. attribute:: __slots
+   .. py:attribute:: __slots
       :annotation: = ['user', 'token', 'cmd', 'format', 'args']
 
       
 
-   .. attribute:: user
+   .. py:attribute:: user
       :annotation: :str
 
       
 
-   .. attribute:: token
+   .. py:attribute:: token
       :annotation: :str
 
       
 
-   .. attribute:: cmd
+   .. py:attribute:: cmd
       :annotation: :str
 
       
 
-   .. attribute:: format
+   .. py:attribute:: format
       :annotation: :MessageFormat
 
       
 
-   .. attribute:: args
+   .. py:attribute:: args
       :annotation: :str
 
       
 
-   .. method:: asdict(self) -> Dict
+   .. py:method:: asdict(self) -> Dict
 
       Overridden asdict implementation sets the values of non-required
       fields to an empty space (for Chapel JSON processing) and invokes
@@ -131,29 +130,29 @@ Classes
 
 
 
-.. class:: ReplyMessage
+.. py:class:: ReplyMessage
 
-   .. attribute:: __slots__
+   .. py:attribute:: __slots__
       :annotation: = ['msg', 'msgType', 'user']
 
       
 
-   .. attribute:: msg
+   .. py:attribute:: msg
       :annotation: :str
 
       
 
-   .. attribute:: msgType
+   .. py:attribute:: msgType
       :annotation: :MessageType
 
       
 
-   .. attribute:: user
+   .. py:attribute:: user
       :annotation: :str
 
       
 
-   .. method:: fromdict(values: Dict) -> ReplyMessage
+   .. py:method:: fromdict(values: Dict) -> ReplyMessage
       :staticmethod:
 
       Generates a ReplyMessage from a dict encapsulating the data and

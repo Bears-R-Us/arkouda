@@ -1,5 +1,5 @@
-:mod:`arkouda.logger`
-=====================
+:py:mod:`arkouda.logger`
+========================
 
 .. py:module:: arkouda.logger
 
@@ -18,12 +18,12 @@ Functions
 
 
 
-.. function:: enableVerbose() -> None
+.. py:function:: enableVerbose() -> None
 
    Enables verbose logging (DEBUG log level) for all ArkoudaLoggers
 
 
-.. function:: disableVerbose(logLevel: LogLevel = LogLevel.INFO) -> None
+.. py:function:: disableVerbose(logLevel: LogLevel = LogLevel.INFO) -> None
 
    Disables verbose logging (DEBUG log level) for all ArkoudaLoggers, setting
    the log level for each to the logLevel parameter

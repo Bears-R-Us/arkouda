@@ -1,5 +1,5 @@
-:mod:`arkouda.numeric`
-======================
+:py:mod:`arkouda.numeric`
+=========================
 
 .. py:module:: arkouda.numeric
 
@@ -28,7 +28,7 @@ Functions
 
 
 
-.. function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], dt: Union[numpy.dtype, str]) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: cast(pda: Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], dt: Union[numpy.dtype, str]) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Cast an array to another dtype.
 
@@ -61,7 +61,7 @@ Functions
    array([False, True, True, True, True])
 
 
-.. function:: abs(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: abs(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise absolute value of the array.
 
@@ -82,7 +82,7 @@ Functions
    array([5, 4, 3, 2, 1])
 
 
-.. function:: log(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: log(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise natural log of the array.
 
@@ -113,7 +113,7 @@ Functions
    array([0, 3.3219280948873626, 6.6438561897747253])
 
 
-.. function:: exp(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: exp(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise exponential of the array.
 
@@ -136,7 +136,7 @@ Functions
           33.494295836924771, 13.478894913238722])
 
 
-.. function:: cumsum(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: cumsum(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
    Return the cumulative sum over the array.
 
@@ -165,7 +165,7 @@ Functions
    array([0, 1, 1, 2, 3])
 
 
-.. function:: cumprod(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: cumprod(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
    Return the cumulative product over the array.
 
@@ -191,7 +191,7 @@ Functions
           134.05309592737584, 450.21589865655358])
 
 
-.. function:: sin(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: sin(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise sine of the array.
 
@@ -205,7 +205,7 @@ Functions
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. function:: cos(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: cos(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
    Return the element-wise cosine of the array.
 
@@ -219,7 +219,7 @@ Functions
    :raises TypeError: Raised if the parameter is not a pdarray
 
 
-.. function:: where(condition: arkouda.pdarrayclass.pdarray, A: Union[arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray], B: Union[arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray]) -> arkouda.pdarrayclass.pdarray
+.. py:function:: where(condition: arkouda.pdarrayclass.pdarray, A: Union[arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray], B: Union[arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray]) -> arkouda.pdarrayclass.pdarray
 
    Returns an array with elements chosen from A and B based upon a
    conditioning array. As is the case with numpy.where, the return array
@@ -271,7 +271,7 @@ Functions
    is not currently supported in Arkouda
 
 
-.. function:: histogram(pda: arkouda.pdarrayclass.pdarray, bins: arkouda.dtypes.int_scalars = 10) -> arkouda.pdarrayclass.pdarray
+.. py:function:: histogram(pda: arkouda.pdarrayclass.pdarray, bins: arkouda.dtypes.int_scalars = 10) -> arkouda.pdarrayclass.pdarray
 
    Compute a histogram of evenly spaced bins over the range of an array.
 
@@ -312,7 +312,7 @@ Functions
    >>> plt.plot(binEdges[:-1], h.to_ndarray())
 
 
-.. function:: value_counts(pda: arkouda.pdarrayclass.pdarray) -> Union[Categorical, Tuple[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Optional[arkouda.pdarrayclass.pdarray]]]
+.. py:function:: value_counts(pda: arkouda.pdarrayclass.pdarray) -> Union[Categorical, Tuple[Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings], Optional[arkouda.pdarrayclass.pdarray]]]
 
    Count the occurrences of the unique values of an array.
 
@@ -340,7 +340,7 @@ Functions
    (array([0, 2, 4]), array([3, 2, 1]))
 
 
-.. function:: isnan(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
+.. py:function:: isnan(pda: arkouda.pdarrayclass.pdarray) -> arkouda.pdarrayclass.pdarray
 
    Test a pdarray for Not a number / NaN values
    Currently only supports float-value-based arrays

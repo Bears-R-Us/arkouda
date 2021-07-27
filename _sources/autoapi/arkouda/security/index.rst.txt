@@ -1,5 +1,5 @@
-:mod:`arkouda.security`
-=======================
+:py:mod:`arkouda.security`
+==========================
 
 .. py:module:: arkouda.security
 
@@ -29,12 +29,12 @@ Attributes
    arkouda.security.username_tokenizer
 
 
-.. data:: username_tokenizer
+.. py:data:: username_tokenizer
    
 
    
 
-.. function:: generate_token(length: int = 32) -> str
+.. py:function:: generate_token(length: int = 32) -> str
 
    Uses the secrets.token_hex() method to generate a
    a hexidecimal token
@@ -50,7 +50,7 @@ Attributes
    This method uses the Python secrets.token_hex method
 
 
-.. function:: get_home_directory() -> str
+.. py:function:: get_home_directory() -> str
 
    A platform-independent means of finding path to
    the current user's home directory
@@ -64,7 +64,7 @@ Attributes
    to retrieve the user's home directory
 
 
-.. function:: get_arkouda_client_directory() -> pathlib.Path
+.. py:function:: get_arkouda_client_directory() -> pathlib.Path
 
    A platform-independent means of finding path to
    the current user's .arkouda directory where artifacts
@@ -82,7 +82,7 @@ Attributes
    as the server's token directory as the file format is different.
 
 
-.. function:: get_username() -> str
+.. py:function:: get_username() -> str
 
    A platform-independent means of retrieving the current
    user's username for the host system.
@@ -98,7 +98,7 @@ Attributes
    and MacOS AKA Darwin
 
 
-.. function:: generate_username_token_json(token: str) -> str
+.. py:function:: generate_username_token_json(token: str) -> str
 
    Generates a JSON object encapsulating the user's username
    and token for connecting to an arkouda server with basic

@@ -1,5 +1,5 @@
-:mod:`arkouda.join`
-===================
+:py:mod:`arkouda.join`
+======================
 
 .. py:module:: arkouda.join
 
@@ -17,7 +17,7 @@ Functions
 
 
 
-.. function:: join_on_eq_with_dt(a1: arkouda.pdarrayclass.pdarray, a2: arkouda.pdarrayclass.pdarray, t1: arkouda.pdarrayclass.pdarray, t2: arkouda.pdarrayclass.pdarray, dt: Union[int, numpy.int64], pred: str, result_limit: Union[int, numpy.int64] = 1000) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
+.. py:function:: join_on_eq_with_dt(a1: arkouda.pdarrayclass.pdarray, a2: arkouda.pdarrayclass.pdarray, t1: arkouda.pdarrayclass.pdarray, t2: arkouda.pdarrayclass.pdarray, dt: Union[int, numpy.int64], pred: str, result_limit: Union[int, numpy.int64] = 1000) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
 
    Performs an inner-join on equality between two integer arrays where
    the time-window predicate is also true

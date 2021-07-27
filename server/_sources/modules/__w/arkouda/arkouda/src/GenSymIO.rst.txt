@@ -31,7 +31,7 @@ or
 
 .. data:: config const APPEND: int = 1
 
-.. function:: proc arrayMsg(cmd: string, payload: bytes, st: borrowed SymTab): MsgTuple throws
+.. function:: proc arrayMsg(cmd: string, args: string, ref data: bytes, st: borrowed SymTab): MsgTuple throws
 
    
    * Creates a pdarray server-side and returns the SymTab name used to

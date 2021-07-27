@@ -1,5 +1,5 @@
-:mod:`arkouda.dtypes`
-=====================
+:py:mod:`arkouda.dtypes`
+========================
 
 .. py:module:: arkouda.dtypes
 
@@ -44,88 +44,88 @@ Attributes
    arkouda.dtypes.DTypeObjects
 
 
-.. data:: dtype
+.. py:data:: dtype
    
 
    
 
-.. data:: bool
+.. py:data:: bool
    
 
    
 
-.. data:: int64
+.. py:data:: int64
    
 
    
 
-.. data:: float64
+.. py:data:: float64
    
 
    
 
-.. data:: uint8
+.. py:data:: uint8
    
 
    
 
-.. data:: str_
+.. py:data:: str_
    
 
    
 
-.. data:: bool_scalars
+.. py:data:: bool_scalars
    
 
    
 
-.. data:: float_scalars
+.. py:data:: float_scalars
    
 
    
 
-.. data:: int_scalars
+.. py:data:: int_scalars
    
 
    
 
-.. data:: numeric_scalars
+.. py:data:: numeric_scalars
    
 
    
 
-.. data:: numpy_scalars
+.. py:data:: numpy_scalars
    
 
    
 
-.. data:: str_scalars
+.. py:data:: str_scalars
    
 
    
 
-.. data:: all_scalars
+.. py:data:: all_scalars
    
 
    The DType enum defines the supported Arkouda data types in string form.
 
 
-.. data:: ARKOUDA_SUPPORTED_DTYPES
+.. py:data:: ARKOUDA_SUPPORTED_DTYPES
    
 
    
 
-.. data:: DTypes
+.. py:data:: DTypes
    
 
    
 
-.. data:: DTypeObjects
+.. py:data:: DTypeObjects
    
 
    
 
-.. function:: check_np_dtype(dt: numpy.dtype) -> None
+.. py:function:: check_np_dtype(dt: numpy.dtype) -> None
 
    Assert that numpy dtype dt is one of the dtypes supported
    by arkouda, otherwise raise TypeError.
@@ -134,7 +134,7 @@ Attributes
        dt is not a np.dtype
 
 
-.. function:: translate_np_dtype(dt: numpy.dtype) -> Tuple[str, int]
+.. py:function:: translate_np_dtype(dt: numpy.dtype) -> Tuple[str, int]
 
    Split numpy dtype dt into its kind and byte size, raising
    TypeError for unsupported dtypes.
@@ -143,17 +143,17 @@ Attributes
        dt is not a np.dtype
 
 
-.. function:: resolve_scalar_dtype(val: object) -> str
+.. py:function:: resolve_scalar_dtype(val: object) -> str
 
    Try to infer what dtype arkouda_server should treat val as.
 
 
-.. function:: get_byteorder(dt: numpy.dtype) -> str
+.. py:function:: get_byteorder(dt: numpy.dtype) -> str
 
    Get a concrete byteorder (turns '=' into '<' or '>')
 
 
-.. function:: get_server_byteorder() -> str
+.. py:function:: get_server_byteorder() -> str
 
    Get the server's byteorder
 

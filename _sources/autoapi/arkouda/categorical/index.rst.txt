@@ -1,5 +1,5 @@
-:mod:`arkouda.categorical`
-==========================
+:py:mod:`arkouda.categorical`
+=============================
 
 .. py:module:: arkouda.categorical
 
@@ -17,8 +17,7 @@ Classes
 
 
 
-.. class:: Categorical(values, **kwargs)
-
+.. py:class:: Categorical(values, **kwargs)
 
    Represents an array of values belonging to named categories. Converting a
    Strings object to Categorical often saves memory and speeds up operations,
@@ -76,37 +75,37 @@ Classes
 
       :type: tuple
 
-   .. attribute:: BinOps
+   .. py:attribute:: BinOps
       
 
       
 
-   .. attribute:: RegisterablePieces
+   .. py:attribute:: RegisterablePieces
       
 
       
 
-   .. attribute:: RequiredPieces
+   .. py:attribute:: RequiredPieces
       
 
       
 
-   .. attribute:: objtype
+   .. py:attribute:: objtype
       :annotation: = category
 
       
 
-   .. attribute:: permutation
+   .. py:attribute:: permutation
       
 
       
 
-   .. attribute:: segments
+   .. py:attribute:: segments
       
 
       
 
-   .. method:: from_codes(cls, codes: arkouda.pdarrayclass.pdarray, categories: arkouda.strings.Strings, permutation=None, segments=None) -> Categorical
+   .. py:method:: from_codes(cls, codes: arkouda.pdarrayclass.pdarray, categories: arkouda.strings.Strings, permutation=None, segments=None) -> Categorical
       :classmethod:
 
       Make a Categorical from codes and categories arrays. If codes and
@@ -130,7 +129,7 @@ Classes
           categories is not a Strings object
 
 
-   .. method:: to_ndarray(self) -> numpy.ndarray
+   .. py:method:: to_ndarray(self) -> numpy.ndarray
 
       Convert the array to a np.ndarray, transferring array data from
       the arkouda server to Python. This conversion discards category
@@ -152,24 +151,24 @@ Classes
       value, but proceed with caution.
 
 
-   .. method:: __iter__(self)
+   .. py:method:: __iter__(self)
       :abstractmethod:
 
 
-   .. method:: __len__(self)
+   .. py:method:: __len__(self)
 
 
-   .. method:: __str__(self)
+   .. py:method:: __str__(self)
 
       Return str(self).
 
 
-   .. method:: __repr__(self)
+   .. py:method:: __repr__(self)
 
       Return repr(self).
 
 
-   .. method:: _binop(self, other: Union[Categorical, arkouda.dtypes.str_scalars], op: arkouda.dtypes.str_scalars) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: _binop(self, other: Union[Categorical, arkouda.dtypes.str_scalars], op: arkouda.dtypes.str_scalars) -> arkouda.pdarrayclass.pdarray
 
       Executes the requested binop on this Categorical instance and returns
           the results within a pdarray object.
@@ -196,7 +195,7 @@ Classes
               binary operation
 
 
-   .. method:: _r_binop(self, other: Union[Categorical, arkouda.dtypes.str_scalars], op: arkouda.dtypes.str_scalars) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: _r_binop(self, other: Union[Categorical, arkouda.dtypes.str_scalars], op: arkouda.dtypes.str_scalars) -> arkouda.pdarrayclass.pdarray
 
       Executes the requested reverse binop on this Categorical instance and
           returns the results within a pdarray object.
@@ -223,20 +222,20 @@ Classes
               binary operation
 
 
-   .. method:: __eq__(self, other)
+   .. py:method:: __eq__(self, other)
 
       Return self==value.
 
 
-   .. method:: __ne__(self, other)
+   .. py:method:: __ne__(self, other)
 
       Return self!=value.
 
 
-   .. method:: __getitem__(self, key) -> Categorical
+   .. py:method:: __getitem__(self, key) -> Categorical
 
 
-   .. method:: reset_categories(self) -> Categorical
+   .. py:method:: reset_categories(self) -> Categorical
 
       Recompute the category labels, discarding any unused labels. This
       method is often useful after slicing or indexing a Categorical array,
@@ -248,7 +247,7 @@ Classes
       :rtype: Categorical
 
 
-   .. method:: contains(self, substr: str) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: contains(self, substr: str) -> arkouda.pdarrayclass.pdarray
 
       Check whether each element contains the given substring.
 
@@ -269,7 +268,7 @@ Classes
       .. seealso:: :obj:`Categorical.startswith`, :obj:`Categorical.endswith`
 
 
-   .. method:: startswith(self, substr: str) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: startswith(self, substr: str) -> arkouda.pdarrayclass.pdarray
 
       Check whether each element starts with the given substring.
 
@@ -290,7 +289,7 @@ Classes
       .. seealso:: :obj:`Categorical.contains`, :obj:`Categorical.endswith`
 
 
-   .. method:: endswith(self, substr: str) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: endswith(self, substr: str) -> arkouda.pdarrayclass.pdarray
 
       Check whether each element ends with the given substring.
 
@@ -311,7 +310,7 @@ Classes
       .. seealso:: :obj:`Categorical.startswith`, :obj:`Categorical.contains`
 
 
-   .. method:: in1d(self, test: Union[arkouda.strings.Strings, Categorical]) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: in1d(self, test: Union[arkouda.strings.Strings, Categorical]) -> arkouda.pdarrayclass.pdarray
 
       Test whether each element of the Categorical object is
       also present in the test Strings or Categorical object.
@@ -348,10 +347,10 @@ Classes
       array([False, False, False, False, False])
 
 
-   .. method:: unique(self) -> Categorical
+   .. py:method:: unique(self) -> Categorical
 
 
-   .. method:: group(self) -> arkouda.pdarrayclass.pdarray
+   .. py:method:: group(self) -> arkouda.pdarrayclass.pdarray
 
       Return the permutation that groups the array, placing equivalent
       categories together. All instances of the same category are guaranteed
@@ -373,13 +372,13 @@ Classes
       128-bit hash values.
 
 
-   .. method:: argsort(self)
+   .. py:method:: argsort(self)
 
 
-   .. method:: sort(self)
+   .. py:method:: sort(self)
 
 
-   .. method:: concatenate(self, others: Sequence[Categorical], ordered: bool = True) -> Categorical
+   .. py:method:: concatenate(self, others: Sequence[Categorical], ordered: bool = True) -> Categorical
 
       Merge this Categorical with other Categorical objects in the array,
       concatenating the arrays and synchronizing the categories.
@@ -402,7 +401,7 @@ Classes
       This operation can be expensive -- slower than concatenating Strings.
 
 
-   .. method:: register(self, user_defined_name: str) -> Categorical
+   .. py:method:: register(self, user_defined_name: str) -> Categorical
 
       Register this Categorical object and underlying components with the Arkouda server
 
@@ -426,7 +425,7 @@ Classes
       they are unregistered.
 
 
-   .. method:: unregister(self) -> None
+   .. py:method:: unregister(self) -> None
 
       Unregister this Categorical object in the arkouda server which was previously
       registered using register() and/or attached to using attach()
@@ -442,7 +441,7 @@ Classes
       they are unregistered.
 
 
-   .. method:: is_registered(self) -> numpy.bool_
+   .. py:method:: is_registered(self) -> numpy.bool_
 
       Return True iff the object is contained in the registry
 
@@ -459,7 +458,7 @@ Classes
       they are unregistered.
 
 
-   .. method:: _get_components_dict(self) -> Dict
+   .. py:method:: _get_components_dict(self) -> Dict
 
       Internal function that returns a dictionary with all required or non-None components of self
 
@@ -474,7 +473,7 @@ Classes
       :rtype: Dict
 
 
-   .. method:: _list_component_names(self) -> List[str]
+   .. py:method:: _list_component_names(self) -> List[str]
 
       Internal function that returns a list of all component names
 
@@ -484,7 +483,7 @@ Classes
       :rtype: List[str]
 
 
-   .. method:: info(self) -> str
+   .. py:method:: info(self) -> str
 
       Returns a JSON formatted string containing information about all components of self
 
@@ -494,7 +493,7 @@ Classes
       :rtype: str
 
 
-   .. method:: pretty_print_info(self) -> None
+   .. py:method:: pretty_print_info(self) -> None
 
       Prints information about all components of self in a human readable format
 
@@ -504,7 +503,7 @@ Classes
       :rtype: None
 
 
-   .. method:: attach(user_defined_name: str) -> Categorical
+   .. py:method:: attach(user_defined_name: str) -> Categorical
       :staticmethod:
 
       Function to return a Categorical object attached to the registered name in the
@@ -525,7 +524,7 @@ Classes
           .. seealso:: :obj:`register`, :obj:`is_registered`, :obj:`unregister`, :obj:`unregister_categorical_by_name`
 
 
-   .. method:: unregister_categorical_by_name(user_defined_name: str) -> None
+   .. py:method:: unregister_categorical_by_name(user_defined_name: str) -> None
       :staticmethod:
 
       Function to unregister Categorical object by name which was registered

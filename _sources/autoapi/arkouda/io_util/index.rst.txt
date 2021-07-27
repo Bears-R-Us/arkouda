@@ -1,5 +1,5 @@
-:mod:`arkouda.io_util`
-======================
+:py:mod:`arkouda.io_util`
+=========================
 
 .. py:module:: arkouda.io_util
 
@@ -20,7 +20,7 @@ Functions
 
 
 
-.. function:: get_directory(path: str) -> pathlib.Path
+.. py:function:: get_directory(path: str) -> pathlib.Path
 
    Creates the directory if it does not exist and then
    returns the corresponding Path object
@@ -35,7 +35,7 @@ Functions
        existing directory or creating a new one
 
 
-.. function:: write_line_to_file(path: str, line: str) -> None
+.. py:function:: write_line_to_file(path: str, line: str) -> None
 
    Writes a line to the requested file. Note: if the file
    does not exist, the file is created first and then
@@ -53,7 +53,7 @@ Functions
        writing to the file
 
 
-.. function:: delimited_file_to_dict(path: str, delimiter: str = ',') -> Dict[str, str]
+.. py:function:: delimited_file_to_dict(path: str, delimiter: str = ',') -> Dict[str, str]
 
    Returns a dictionary populated by lines from a file where
    the first delimited element of each line is the key and
@@ -71,7 +71,7 @@ Functions
    :raises UnsupportedOperation: Raised if there's an error in reading the file
 
 
-.. function:: dict_to_delimited_file(path: str, values: Mapping[Any, Any], delimiter: str = ',') -> None
+.. py:function:: dict_to_delimited_file(path: str, values: Mapping[Any, Any], delimiter: str = ',') -> None
 
    Writes a dictionary to delimited lines in a file where
    the first delimited element of each line is the dict key

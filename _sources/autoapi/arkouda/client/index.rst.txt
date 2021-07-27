@@ -1,5 +1,5 @@
-:mod:`arkouda.client`
-=====================
+:py:mod:`arkouda.client`
+========================
 
 .. py:module:: arkouda.client
 
@@ -22,7 +22,7 @@ Functions
 
 
 
-.. function:: connect(server: str = 'localhost', port: int = 5555, timeout: int = 0, access_token: str = None, connect_url=None) -> None
+.. py:function:: connect(server: str = 'localhost', port: int = 5555, timeout: int = 0, access_token: str = None, connect_url=None) -> None
 
    Connect to a running arkouda server.
 
@@ -54,7 +54,7 @@ Functions
    with an existing connection, the socket will be re-initialized.
 
 
-.. function:: disconnect() -> None
+.. py:function:: disconnect() -> None
 
    Disconnects the client from the Arkouda server
 
@@ -64,7 +64,7 @@ Functions
    :raises ConnectionError: Raised if there's an error disconnecting from the Arkouda server
 
 
-.. function:: shutdown() -> None
+.. py:function:: shutdown() -> None
 
    Sends a shutdown message to the Arkouda server that does the
    following:
@@ -80,7 +80,7 @@ Functions
        there is an error in disconnecting from the server
 
 
-.. function:: get_config() -> Mapping[str, Union[str, int, float]]
+.. py:function:: get_config() -> Mapping[str, Union[str, int, float]]
 
    Get runtime information about the server.
 
@@ -95,7 +95,7 @@ Functions
    :raises RuntimeError: Raised if the client is not connected to a server
 
 
-.. function:: get_mem_used() -> int
+.. py:function:: get_mem_used() -> int
 
    Compute the amount of memory used by objects in the server's symbol table.
 
@@ -106,7 +106,7 @@ Functions
    :raises ValueError: Raised if the returned value is not an int-formatted string
 
 
-.. function:: ruok() -> str
+.. py:function:: ruok() -> str
 
    Simply sends an "ruok" message to the server and, if the return message is
    "imok", this means the arkouda_server is up and operating normally. A return

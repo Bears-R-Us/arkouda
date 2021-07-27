@@ -1,5 +1,5 @@
-:mod:`arkouda.timeclass`
-========================
+:py:mod:`arkouda.timeclass`
+===========================
 
 .. py:module:: arkouda.timeclass
 
@@ -41,33 +41,31 @@ Attributes
    arkouda.timeclass._unit2factor
 
 
-.. data:: _BASE_UNIT
+.. py:data:: _BASE_UNIT
    :annotation: = ns
 
    
 
-.. data:: _unit2normunit
+.. py:data:: _unit2normunit
    
 
    
 
-.. data:: _unit2factor
+.. py:data:: _unit2factor
    
 
    
 
-.. function:: _get_factor(unit: str) -> int
+.. py:function:: _get_factor(unit: str) -> int
 
 
-.. function:: _identity(x, **kwargs)
+.. py:function:: _identity(x, **kwargs)
 
 
-.. class:: _Timescalar(scalar)
+.. py:class:: _Timescalar(scalar)
 
 
-
-.. class:: _AbstractBaseTime(array, unit: str = _BASE_UNIT)
-
+.. py:class:: _AbstractBaseTime(array, unit: str = _BASE_UNIT)
 
    Bases: :py:obj:`arkouda.pdarrayclass.pdarray`
 
@@ -78,11 +76,11 @@ Attributes
    in each case, the input values are normalized to nanoseconds on initialization,
    so that all resulting operations are transparent.
 
-   .. method:: _get_callback(cls, other, op)
+   .. py:method:: _get_callback(cls, other, op)
       :classmethod:
 
 
-   .. method:: floor(self, freq)
+   .. py:method:: floor(self, freq)
 
       Round times down to the nearest integer of a given frequency.
 
@@ -93,7 +91,7 @@ Attributes
       :rtype: self.__class__
 
 
-   .. method:: ceil(self, freq)
+   .. py:method:: ceil(self, freq)
 
       Round times up to the nearest integer of a given frequency.
 
@@ -104,7 +102,7 @@ Attributes
       :rtype: self.__class__
 
 
-   .. method:: round(self, freq)
+   .. py:method:: round(self, freq)
 
       Round times to the nearest integer of a given frequency. Midpoint
       values will be rounded to nearest even integer.
@@ -116,7 +114,7 @@ Attributes
       :rtype: self.__class__
 
 
-   .. method:: to_ndarray(self)
+   .. py:method:: to_ndarray(self)
 
       Convert the array to a np.ndarray, transferring array data from the
       Arkouda server to client-side Python. Note: if the pdarray size exceeds
@@ -151,17 +149,17 @@ Attributes
       numpy.ndarray
 
 
-   .. method:: __str__(self)
+   .. py:method:: __str__(self)
 
       Return str(self).
 
 
-   .. method:: __repr__(self) -> str
+   .. py:method:: __repr__(self) -> str
 
       Return repr(self).
 
 
-   .. method:: _binop(self, other, op)
+   .. py:method:: _binop(self, other, op)
 
       Executes binary operation specified by the op string
 
@@ -179,7 +177,7 @@ Attributes
           a supported dtype
 
 
-   .. method:: _r_binop(self, other, op)
+   .. py:method:: _r_binop(self, other, op)
 
       Executes reverse binary operation specified by the op string
 
@@ -196,37 +194,37 @@ Attributes
           a supported dtype
 
 
-   .. method:: opeq(self, other, op)
+   .. py:method:: opeq(self, other, op)
 
 
-   .. method:: _is_datetime_scalar(scalar)
+   .. py:method:: _is_datetime_scalar(scalar)
       :staticmethod:
 
 
-   .. method:: _is_timedelta_scalar(scalar)
+   .. py:method:: _is_timedelta_scalar(scalar)
       :staticmethod:
 
 
-   .. method:: _scalar_callback(self, key)
+   .. py:method:: _scalar_callback(self, key)
 
 
-   .. method:: __getitem__(self, key)
+   .. py:method:: __getitem__(self, key)
 
 
-   .. method:: __setitem__(self, key, value)
+   .. py:method:: __setitem__(self, key, value)
 
 
-   .. method:: min(self)
+   .. py:method:: min(self)
 
       Return the minimum value of the array.
 
 
-   .. method:: max(self)
+   .. py:method:: max(self)
 
       Return the maximum value of the array.
 
 
-   .. method:: mink(self, k)
+   .. py:method:: mink(self, k)
 
       Compute the minimum "k" values.
 
@@ -239,7 +237,7 @@ Attributes
       :raises TypeError: Raised if pda is not a pdarray
 
 
-   .. method:: maxk(self, k)
+   .. py:method:: maxk(self, k)
 
       Compute the maximum "k" values.
 
@@ -253,8 +251,7 @@ Attributes
 
 
 
-.. class:: Datetime(array, unit: str = _BASE_UNIT)
-
+.. py:class:: Datetime(array, unit: str = _BASE_UNIT)
 
    Bases: :py:obj:`_AbstractBaseTime`
 
@@ -287,53 +284,53 @@ Attributes
 
    The ``._data`` attribute is always in nanoseconds with int64 dtype.
 
-   .. attribute:: supported_with_datetime
+   .. py:attribute:: supported_with_datetime
       
 
       
 
-   .. attribute:: supported_with_r_datetime
+   .. py:attribute:: supported_with_r_datetime
       
 
       
 
-   .. attribute:: supported_with_timedelta
+   .. py:attribute:: supported_with_timedelta
       
 
       
 
-   .. attribute:: supported_with_r_timedelta
+   .. py:attribute:: supported_with_r_timedelta
       
 
       
 
-   .. attribute:: supported_opeq
+   .. py:attribute:: supported_opeq
       
 
       
 
-   .. attribute:: supported_with_pdarray
+   .. py:attribute:: supported_with_pdarray
       
 
       
 
-   .. attribute:: supported_with_r_pdarray
+   .. py:attribute:: supported_with_r_pdarray
       
 
       
 
-   .. method:: _get_callback(cls, otherclass, op)
+   .. py:method:: _get_callback(cls, otherclass, op)
       :classmethod:
 
 
-   .. method:: _scalar_callback(self, scalar)
+   .. py:method:: _scalar_callback(self, scalar)
 
 
-   .. method:: _is_supported_scalar(scalar)
+   .. py:method:: _is_supported_scalar(scalar)
       :staticmethod:
 
 
-   .. method:: to_pandas(self)
+   .. py:method:: to_pandas(self)
 
       Convert array to a pandas DatetimeIndex. Note: if the array size
       exceeds client.maxTransferBytes, a RuntimeError is raised.
@@ -341,14 +338,13 @@ Attributes
       .. seealso:: :obj:`to_ndarray`
 
 
-   .. method:: sum(self)
+   .. py:method:: sum(self)
 
       Return the sum of all elements in the array.
 
 
 
-.. class:: Timedelta(array, unit: str = _BASE_UNIT)
-
+.. py:class:: Timedelta(array, unit: str = _BASE_UNIT)
 
    Bases: :py:obj:`_AbstractBaseTime`
 
@@ -380,53 +376,53 @@ Attributes
 
    The ``._data`` attribute is always in nanoseconds with int64 dtype.
 
-   .. attribute:: supported_with_datetime
+   .. py:attribute:: supported_with_datetime
       
 
       
 
-   .. attribute:: supported_with_r_datetime
+   .. py:attribute:: supported_with_r_datetime
       
 
       
 
-   .. attribute:: supported_with_timedelta
+   .. py:attribute:: supported_with_timedelta
       
 
       
 
-   .. attribute:: supported_with_r_timedelta
+   .. py:attribute:: supported_with_r_timedelta
       
 
       
 
-   .. attribute:: supported_opeq
+   .. py:attribute:: supported_opeq
       
 
       
 
-   .. attribute:: supported_with_pdarray
+   .. py:attribute:: supported_with_pdarray
       
 
       
 
-   .. attribute:: supported_with_r_pdarray
+   .. py:attribute:: supported_with_r_pdarray
       
 
       
 
-   .. method:: _get_callback(cls, otherclass, op)
+   .. py:method:: _get_callback(cls, otherclass, op)
       :classmethod:
 
 
-   .. method:: _scalar_callback(self, scalar)
+   .. py:method:: _scalar_callback(self, scalar)
 
 
-   .. method:: _is_supported_scalar(scalar)
+   .. py:method:: _is_supported_scalar(scalar)
       :staticmethod:
 
 
-   .. method:: to_pandas(self)
+   .. py:method:: to_pandas(self)
 
       Convert array to a pandas TimedeltaIndex. Note: if the array size
       exceeds client.maxTransferBytes, a RuntimeError is raised.
@@ -434,23 +430,23 @@ Attributes
       .. seealso:: :obj:`to_ndarray`
 
 
-   .. method:: std(self, ddof: Union[int, numpy.int64] = 0)
+   .. py:method:: std(self, ddof: Union[int, numpy.int64] = 0)
 
       Returns the standard deviation as a pd.Timedelta object
 
 
-   .. method:: sum(self)
+   .. py:method:: sum(self)
 
       Return the sum of all elements in the array.
 
 
-   .. method:: abs(self)
+   .. py:method:: abs(self)
 
       Absolute value of time interval.
 
 
 
-.. function:: date_range(start=None, end=None, periods=None, freq=None, tz=None, normalize=False, name=None, closed=None, **kwargs)
+.. py:function:: date_range(start=None, end=None, periods=None, freq=None, tz=None, normalize=False, name=None, closed=None, **kwargs)
 
    Creates a fixed frequency Datetime range. Alias for
    ``ak.Datetime(pd.date_range(args))``. Subject to size limit
@@ -493,7 +489,7 @@ Attributes
    <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`__.
 
 
-.. function:: timedelta_range(start=None, end=None, periods=None, freq=None, name=None, closed=None, **kwargs)
+.. py:function:: timedelta_range(start=None, end=None, periods=None, freq=None, name=None, closed=None, **kwargs)
 
    Return a fixed frequency TimedeltaIndex, with day as the default
    frequency. Alias for ``ak.Timedelta(pd.timedelta_range(args))``.
