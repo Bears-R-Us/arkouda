@@ -69,7 +69,7 @@ def parallel_test(unit_tests):
     def worker():
         while True:
             unit_test = q.get()
-            if unit_test is None:  # EOF?
+            if unit_test is None:  # Reached Sentinel value, we're done
                 q.task_done()
                 return
             sp = subprocess_start_test(unit_test)
