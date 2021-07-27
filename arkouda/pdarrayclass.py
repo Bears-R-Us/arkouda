@@ -850,20 +850,24 @@ class pdarray:
         if arraybytes > maxTransferBytes:
             raise RuntimeError(('Array exceeds allowed size for transfer. Increase ' +
                                'client.maxTransferBytes to allow'))
-        # The reply from the server will be a bytes object
-        rep_msg = generic_msg(cmd="tondarray", args="{}".format(self.name), recv_bytes=True)
+        # The reply from the server will be binary data
+        data = cast(memoryview,generic_msg(cmd="tondarray", args="{}".format(self.name), recv_binary=True))
         # Make sure the received data has the expected length
-        if len(rep_msg) != self.size*self.dtype.itemsize:
+        if len(data) != self.size*self.dtype.itemsize:
             raise RuntimeError("Expected {} bytes but received {}".\
-                               format(self.size*self.dtype.itemsize, len(rep_msg)))
-        # The server sends us native-endian bytes so we need to account for that.
-        # Since bytes are immutable, we need to copy the np array to be mutable
+                               format(self.size*self.dtype.itemsize, len(data)))
+        # The server sends us native-endian data so we need to account for
+        # that. If the view is readonly, copy so the np array is mutable
         dt = np.dtype(self.dtype)
         if get_server_byteorder() == 'big':
             dt = dt.newbyteorder('>')
         else:
             dt = dt.newbyteorder('<')
-        return np.frombuffer(rep_msg, dt).copy()
+
+        if data.readonly:
+            return np.frombuffer(data, dt).copy()
+        else:
+            return np.frombuffer(data, dt)
 
     def to_cuda(self):
         """

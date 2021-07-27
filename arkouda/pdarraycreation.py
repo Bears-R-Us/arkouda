@@ -208,11 +208,11 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     # native endian bytes
     if ((get_byteorder(a.dtype) == '<' and get_server_byteorder() == 'big') or
         (get_byteorder(a.dtype) == '>' and get_server_byteorder() == 'little')):
-        abytes = a.byteswap().tobytes()
+        aview = memoryview(a.byteswap())
     else:
-        abytes = a.tobytes()
-    req_msg = "{} {:n} ".  format(a.dtype.name, size).encode() + abytes
-    repMsg = generic_msg(cmd='array', args=req_msg, send_bytes=True)
+        aview = memoryview(a)
+    args = "{} {:n} ".  format(a.dtype.name, size)
+    repMsg = generic_msg(cmd='array', args=args, payload=aview, send_binary=True)
     return create_pdarray(repMsg)
 
 def zeros(size : int_scalars, dtype : type=np.float64) -> pdarray:
