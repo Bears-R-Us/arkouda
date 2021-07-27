@@ -748,9 +748,9 @@ def random_strings_uniform(minlen : int_scalars, maxlen : int_scalars,
     ... characters='printable')
     array(['+5"f', '-P]3', '4k', '~HFF', 'F'])
     """
-    if minlen < 0 or maxlen < minlen or size < 0:
-        raise ValueError(("Incompatible arguments: minlen < 0, maxlen " +
-                          "< minlen, or size < 0"))
+    if minlen < 0 or maxlen <= minlen or size < 0:
+        raise ValueError("Incompatible arguments: minlen < 0, maxlen " +
+                          "<= minlen, or size < 0")
 
     repMsg = generic_msg(cmd="randomStrings", args="{} {} {} {} {} {}".\
           format(NUMBER_FORMAT_STRINGS['int64'].format(size),
