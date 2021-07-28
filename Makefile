@@ -24,6 +24,9 @@ endif
 CHPL_FLAGS += -smemTrack=true
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
 
+# We have seen segfaults with cache remote at some node counts
+CHPL_FLAGS += --no-cache-remote
+
 # add-path: Append custom paths for non-system software.
 # Note: Darwin `ld` only supports `-rpath <path>`, not `-rpath=<paths>`.
 define add-path
