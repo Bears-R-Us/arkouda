@@ -265,8 +265,11 @@ proc main() {
             if (trace) {
               try {
                 if (cmd != "array") {
+                  var n: int = 12;
+                  // if args.size > 2*n, only first n characters and last n characters are logged
+                  var short_args: string = if args.size > 2*n then args[0..#n]+'...'+args[args.size-n..#n] else args;
                   asLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
-                                                     ">>> %t %t".format(cmd, args));
+                                                     ">>> %t %t".format(cmd, short_args));
                 } else {
                   asLogger.info(getModuleName(), getRoutineName(), getLineNumber(),
                                                      ">>> %s [binary data]".format(cmd));
