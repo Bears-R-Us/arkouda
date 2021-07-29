@@ -38,7 +38,7 @@ proc main() {
   if read {
     d.start();
     var cmd = "readAllHdf";
-    var payload = "True 1 1 False [\"array\"] | [\"file_LOCALE*\"]";
+    var payload = "True 1 1 False False [\"array\"] | [\"file_LOCALE*\"]";
     var repMsg = readAllHdfMsg(cmd, payload, st).msg;
     var id = parseIdFromReadAllHdfMsgCreated(repMsg);
     var B = toSymEntry(st.lookup(id), int);

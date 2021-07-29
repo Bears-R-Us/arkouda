@@ -318,10 +318,6 @@ proc main() {
                 when "segmentedIn1d"     {repTuple = segIn1dMsg(cmd, args, st);}
                 when "segmentedFlatten"  {repTuple = segFlattenMsg(cmd, args, st);}
                 when "lshdf"             {repTuple = lshdfMsg(cmd, args, st);}
-                
-                // DEPRECATED all client paths point to readAllHdfMsg
-                when "readhdf"           {repTuple = readhdfMsg(cmd, args, st);}
-                
                 when "readAllHdf"        {repTuple = readAllHdfMsg(cmd, args, st);}
                 when "tohdf"             {repTuple = tohdfMsg(cmd, args, st);}
                 when "create"            {repTuple = createMsg(cmd, args, st);}

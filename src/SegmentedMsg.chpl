@@ -151,7 +151,7 @@ module SegmentedMsg {
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+  proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
     var (subcmd, objtype, segName, valName, valtype, valStr,
