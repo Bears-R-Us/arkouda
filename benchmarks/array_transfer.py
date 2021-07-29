@@ -3,6 +3,7 @@
 import time, argparse
 import numpy as np
 import arkouda as ak
+import gc
 
 TYPES = ('int64', 'float64')
 
@@ -26,6 +27,7 @@ def time_ak_array_transfer(N, trials, dtype, random, seed):
         aka = ak.array(npa)
         end = time.time()
         to_pdarray_times.append(end - start)
+        gc.collect()
     avgnd = sum(to_ndarray_times) / trials
     avgpd = sum(to_pdarray_times) / trials
 
@@ -54,7 +56,7 @@ def create_parser():
     parser.add_argument('hostname', help='Hostname of arkouda server')
     parser.add_argument('port', type=int, help='Port of arkouda server')
     parser.add_argument('-n', '--size', type=int, default=10**8, help='Problem size: length of array')
-    parser.add_argument('-t', '--trials', type=int, default=1, help='Number of times to run the benchmark')
+    parser.add_argument('-t', '--trials', type=int, default=6, help='Number of times to run the benchmark')
     parser.add_argument('-d', '--dtype', default='int64', help='Dtype of array ({})'.format(', '.join(TYPES)))
     parser.add_argument('-r', '--randomize', default=False, action='store_true', help='Fill array with random values instead of range (unused)')
     parser.add_argument('--numpy', default=False, action='store_true', help='Run the same operation in NumPy to compare performance.')
