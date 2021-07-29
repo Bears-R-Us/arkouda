@@ -360,13 +360,18 @@ class PdarrayCreationTest(ArkoudaTest):
         
         with self.assertRaises(ValueError) as cm:          
             ak.random_strings_uniform(maxlen=1,minlen=5, size=100)          
-        self.assertEqual("Incompatible arguments: minlen < 0, maxlen < minlen, or size < 0", 
-                         cm.exception.args[0])   
+        self.assertEqual("Incompatible arguments: minlen < 0, maxlen <= minlen, or size < 0", 
+                         cm.exception.args[0])
         
         with self.assertRaises(ValueError) as cm:          
             ak.random_strings_uniform(maxlen=5,minlen=1, size=-1)          
-        self.assertEqual("Incompatible arguments: minlen < 0, maxlen < minlen, or size < 0", 
-                         cm.exception.args[0])    
+        self.assertEqual("Incompatible arguments: minlen < 0, maxlen <= minlen, or size < 0", 
+                         cm.exception.args[0])
+
+        with self.assertRaises(ValueError) as cm:          
+            ak.random_strings_uniform(maxlen=5, minlen=5, size=10)          
+        self.assertEqual("Incompatible arguments: minlen < 0, maxlen <= minlen, or size < 0", 
+                         cm.exception.args[0])
         
         with self.assertRaises(TypeError) as cm:          
             ak.random_strings_uniform(minlen='1', maxlen=5, size=10)          
