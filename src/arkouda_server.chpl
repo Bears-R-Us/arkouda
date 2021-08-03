@@ -220,10 +220,8 @@ proc main() {
          * string encapsulating user, token, cmd, message format and args from the 
          * remaining payload.
          */
-        var (rawRequest, payload) = reqMsgRaw.splitMsgToTuple(b"BINARY_PAYLOAD",2);
-        if reqMsgRaw.endsWith(b"BINARY_PAYLOAD") {
-          payload = socket.recv(bytes);
-        }
+        var (rawRequest, _) = reqMsgRaw.splitMsgToTuple(b"BINARY_PAYLOAD",2);
+        var payload = if reqMsgRaw.endsWith(b"BINARY_PAYLOAD") then socket.recv(bytes) else b"";
         var user, token, cmd: string;
 
         // parse requests, execute requests, format responses
