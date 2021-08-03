@@ -284,7 +284,6 @@ Attributes
 
    The DType enum defines the supported Arkouda data types in string form.
 
-
 .. py:function:: get_byteorder(dt: numpy.dtype) -> str
 
    Get a concrete byteorder (turns '=' into '<' or '>')
@@ -3389,7 +3388,7 @@ Attributes
 
    .. py:method:: _binop(self, other: Union[Strings, arkouda.dtypes.str_scalars], op: str) -> arkouda.pdarrayclass.pdarray
 
-      Executes the requested binop on this Strings instance and the
+          Executes the requested binop on this Strings instance and the
           parameter Strings object and returns the results within
           a pdarray object.
 
@@ -3414,6 +3413,7 @@ Attributes
           RuntimeError
               Raised if a server-side error is thrown while executing the
               binary operation
+
 
 
    .. py:method:: __eq__(self, other) -> bool
@@ -4104,7 +4104,7 @@ Attributes
 
    .. py:method:: _binop(self, other: Union[Categorical, arkouda.dtypes.str_scalars], op: arkouda.dtypes.str_scalars) -> arkouda.pdarrayclass.pdarray
 
-      Executes the requested binop on this Categorical instance and returns
+          Executes the requested binop on this Categorical instance and returns
           the results within a pdarray object.
 
           Parameters
@@ -4129,9 +4129,10 @@ Attributes
               binary operation
 
 
+
    .. py:method:: _r_binop(self, other: Union[Categorical, arkouda.dtypes.str_scalars], op: arkouda.dtypes.str_scalars) -> arkouda.pdarrayclass.pdarray
 
-      Executes the requested reverse binop on this Categorical instance and
+          Executes the requested reverse binop on this Categorical instance and
           returns the results within a pdarray object.
 
           Parameters
@@ -4154,6 +4155,7 @@ Attributes
           RuntimeError
               Raised if a server-side error is thrown while executing the
               binary operation
+
 
 
    .. py:method:: __eq__(self, other)
@@ -4377,7 +4379,7 @@ Attributes
 
    .. py:method:: is_registered(self) -> numpy.bool_
 
-      Return True iff the object is contained in the registry
+       Return True iff the object is contained in the registry
 
       :returns: Indicates if the object is contained in the registry
       :rtype: numpy.bool
@@ -4440,7 +4442,7 @@ Attributes
    .. py:method:: attach(user_defined_name: str) -> Categorical
       :staticmethod:
 
-      Function to return a Categorical object attached to the registered name in the
+       Function to return a Categorical object attached to the registered name in the
        arkouda server which was registered using register()
 
        Parameters
@@ -5764,6 +5766,7 @@ Attributes
    .. py:method:: abs(self)
 
       Absolute value of time interval.
+
 
 
 

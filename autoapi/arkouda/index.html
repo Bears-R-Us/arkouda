@@ -4702,8 +4702,9 @@ raw bytes of all strings, delimited by nulls.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Strings._binop">
 <span class="sig-name descname"><span class="pre">_binop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="dtypes/index.html#arkouda.dtypes.str_scalars" title="arkouda.dtypes.str_scalars"><span class="pre">arkouda.dtypes.str_scalars</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.Strings._binop" title="Permalink to this definition">¶</a></dt>
-<dd><dl>
-<dt>Executes the requested binop on this Strings instance and the</dt><dd><p>parameter Strings object and returns the results within
+<dd><blockquote>
+<div><p>Executes the requested binop on this Strings instance and the
+parameter Strings object and returns the results within
 a pdarray object.</p>
 <dl class="simple">
 <dt>other<span class="classifier">Strings, str_scalars</span></dt><dd><p>the other object is a Strings object</p>
@@ -4716,8 +4717,7 @@ a pdarray object.</p>
 </dd>
 </dl>
 <p>Raises</p>
-</dd>
-</dl>
+</div></blockquote>
 <ul class="simple">
 <li><dl class="simple">
 <dt>ValueError</dt><dd><p>Raised if (1) the op is not in the self.BinOps set, or (2) if the
@@ -5668,8 +5668,9 @@ value, but proceed with caution.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Categorical._binop">
 <span class="sig-name descname"><span class="pre">_binop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><span class="pre">Categorical</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="dtypes/index.html#arkouda.dtypes.str_scalars" title="arkouda.dtypes.str_scalars"><span class="pre">arkouda.dtypes.str_scalars</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="dtypes/index.html#arkouda.dtypes.str_scalars" title="arkouda.dtypes.str_scalars"><span class="pre">arkouda.dtypes.str_scalars</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.Categorical._binop" title="Permalink to this definition">¶</a></dt>
-<dd><dl>
-<dt>Executes the requested binop on this Categorical instance and returns</dt><dd><p>the results within a pdarray object.</p>
+<dd><blockquote>
+<div><p>Executes the requested binop on this Categorical instance and returns
+the results within a pdarray object.</p>
 <dl class="simple">
 <dt>other<span class="classifier">Union[Categorical,str_scalars]</span></dt><dd><p>the other object is a Categorical object or string scalar</p>
 </dd>
@@ -5681,8 +5682,7 @@ value, but proceed with caution.</p>
 </dd>
 </dl>
 <p>Raises</p>
-</dd>
-</dl>
+</div></blockquote>
 <ul class="simple">
 <li><dl class="simple">
 <dt>ValueError</dt><dd><p>Raised if (1) the op is not in the self.BinOps set, or (2) if the
@@ -5699,8 +5699,9 @@ binary operation</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Categorical._r_binop">
 <span class="sig-name descname"><span class="pre">_r_binop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><span class="pre">Categorical</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="dtypes/index.html#arkouda.dtypes.str_scalars" title="arkouda.dtypes.str_scalars"><span class="pre">arkouda.dtypes.str_scalars</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="dtypes/index.html#arkouda.dtypes.str_scalars" title="arkouda.dtypes.str_scalars"><span class="pre">arkouda.dtypes.str_scalars</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.Categorical._r_binop" title="Permalink to this definition">¶</a></dt>
-<dd><dl>
-<dt>Executes the requested reverse binop on this Categorical instance and</dt><dd><p>returns the results within a pdarray object.</p>
+<dd><blockquote>
+<div><p>Executes the requested reverse binop on this Categorical instance and
+returns the results within a pdarray object.</p>
 <dl class="simple">
 <dt>other<span class="classifier">Union[Categorical,str_scalars]</span></dt><dd><p>the other object is a Categorical object or string scalar</p>
 </dd>
@@ -5712,8 +5713,7 @@ binary operation</p>
 </dd>
 </dl>
 <p>Raises</p>
-</dd>
-</dl>
+</div></blockquote>
 <ul class="simple">
 <li><dl class="simple">
 <dt>ValueError</dt><dd><p>Raised if (1) the op is not in the self.BinOps set, or (2) if the
@@ -6017,7 +6017,9 @@ they are unregistered.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Categorical.is_registered">
 <span class="sig-name descname"><span class="pre">is_registered</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.bool_</span></span></span><a class="headerlink" href="#arkouda.Categorical.is_registered" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True iff the object is contained in the registry</p>
+<dd><blockquote>
+<div><p>Return True iff the object is contained in the registry</p>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Indicates if the object is contained in the registry</p>
@@ -6113,8 +6115,9 @@ Values: components of self</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Categorical.attach">
 <em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">attach</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../usage/categorical.html#arkouda.Categorical" title="arkouda.Categorical"><span class="pre">Categorical</span></a></span></span><a class="headerlink" href="#arkouda.Categorical.attach" title="Permalink to this definition">¶</a></dt>
-<dd><dl>
-<dt>Function to return a Categorical object attached to the registered name in the</dt><dd><p>arkouda server which was registered using register()</p>
+<dd><blockquote>
+<div><p>Function to return a Categorical object attached to the registered name in the
+arkouda server which was registered using register()</p>
 <dl class="simple">
 <dt>user_defined_name<span class="classifier">str</span></dt><dd><p>user defined name which Categorical object was registered under</p>
 </dd>
@@ -6123,8 +6126,7 @@ Values: components of self</p>
 <dt>Categorical</dt><dd><p>The Categorical object created by re-attaching to the corresponding server components</p>
 </dd>
 </dl>
-</dd>
-</dl>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><p><strong>TypeError</strong> – <p>if user_defined_name is not a string</p>

@@ -106,7 +106,7 @@ Classes
 
    .. py:method:: _binop(self, other: Union[Strings, arkouda.dtypes.str_scalars], op: str) -> arkouda.pdarrayclass.pdarray
 
-      Executes the requested binop on this Strings instance and the
+          Executes the requested binop on this Strings instance and the
           parameter Strings object and returns the results within
           a pdarray object.
 
@@ -131,6 +131,7 @@ Classes
           RuntimeError
               Raised if a server-side error is thrown while executing the
               binary operation
+
 
 
    .. py:method:: __eq__(self, other) -> bool

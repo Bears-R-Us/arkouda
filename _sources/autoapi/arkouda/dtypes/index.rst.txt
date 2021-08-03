@@ -109,7 +109,6 @@ Attributes
 
    The DType enum defines the supported Arkouda data types in string form.
 
-
 .. py:data:: ARKOUDA_SUPPORTED_DTYPES
    
 

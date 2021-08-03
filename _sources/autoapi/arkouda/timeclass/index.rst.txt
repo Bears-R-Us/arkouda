@@ -446,6 +446,7 @@ Attributes
 
 
 
+
 .. py:function:: date_range(start=None, end=None, periods=None, freq=None, tz=None, normalize=False, name=None, closed=None, **kwargs)
 
    Creates a fixed frequency Datetime range. Alias for
