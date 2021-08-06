@@ -90,7 +90,7 @@ module JoinEqWithDTMsg
     proc joinEqWithDT(a1: [?a1D] int,
                       seg: [?segD] int,  ukeys: [segD] int, perm: [?a2D] int,
                       t1: [a1D] int, t2: [a2D] int, dt: int, pred: int,
-                      resLimitPerLocale: int) {
+                      resLimitPerLocale: int) throws {
 
         try! jeLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
                                             "resLimitPerLocale = %t".format(resLimitPerLocale));
@@ -179,6 +179,8 @@ module JoinEqWithDTMsg
 
         // +scan for all the local result ends
         // last value should be total results
+        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+        overMemLimit(numBytes(int) * locNumResults.size);
         var resEnds: [PrivateSpace] int = + scan locNumResults;
         var numResults: int = resEnds[resEnds.domain.high];
 

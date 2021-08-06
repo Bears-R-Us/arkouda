@@ -36,7 +36,9 @@ module Indexing {
     }
 
     // return an array of all values from array a whose index corresponds to a true value in array truth
-    proc boolIndexer(a: [?aD] ?t, truth: [aD] bool) {
+    proc boolIndexer(a: [?aD] ?t, truth: [aD] bool) throws {
+        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+        overMemLimit(numBytes(int) * truth.size);
         var iv: [truth.domain] int = (+ scan truth);
         var pop = iv[iv.size-1];
         var ret = makeDistArray(pop, int);

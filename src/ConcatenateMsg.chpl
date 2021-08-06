@@ -142,7 +142,12 @@ module ConcatenateMsg
         var blockstarts: [PrivateSpace] int;
         var blockValStarts: [PrivateSpace] int;
         if mode == "interleave" {
+          // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+          overMemLimit(numBytes(int) * blocksizes.size);
           blockstarts = (+ scan blocksizes) - blocksizes;
+
+          // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+          overMemLimit(numBytes(int) * blockValSizes.size);
           blockValStarts = (+ scan blockValSizes) - blockValSizes;
         }
 

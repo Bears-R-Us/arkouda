@@ -427,7 +427,7 @@ module Unique
 
     :returns: ([] int, [] int)
     */
-    proc uniqueSort(a: [?aD] ?eltType, param needCounts = true) {
+    proc uniqueSort(a: [?aD] ?eltType, param needCounts = true) throws {
         if (aD.size == 0) {
             try! uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"zero size");
             var u = makeDistArray(0, eltType);
@@ -456,7 +456,7 @@ module Unique
         }
     }
 
-    proc uniqueSortWithInverse(a: [?aD] ?eltType) {
+    proc uniqueSortWithInverse(a: [?aD] ?eltType) throws {
         if (aD.size == 0) {
             try! uLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"zero size");
             var u = makeDistArray(0, eltType);
@@ -477,12 +477,16 @@ module Unique
             }
         }
         var (u, c) = uniqueFromSorted(sorted);
+        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+        overMemLimit(numBytes(int) * c.size);
         var segs = (+ scan c) - c;
         var bcast: [aD] int;
         forall s in segs with (var agg = newDstAggregator(int)) {
             agg.copy(bcast[s], 1);
         }
         bcast[0] = 0;
+        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+        overMemLimit(numBytes(int) * bcast.size);
         bcast = (+ scan bcast);
         var inv: [aD] int;
         forall (p, b) in zip(perm, bcast) with (var agg = newDstAggregator(int)) {
@@ -491,7 +495,7 @@ module Unique
         return (u, c, inv);
     }
     
-    proc uniqueFromSorted(sorted: [?aD] ?eltType, param needCounts = true) {
+    proc uniqueFromSorted(sorted: [?aD] ?eltType, param needCounts = true) throws {
         var truth: [aD] bool;
         truth[0] = true;
         [(t, s, i) in zip(truth, sorted, aD)] if i > aD.low { t = (sorted[i-1] != s); }
@@ -510,6 +514,8 @@ module Unique
             }
         }
         // +scan to compute segment position... 1-based because of inclusive-scan
+        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+        overMemLimit(numBytes(int) * truth.size);
         var iv: [truth.domain] int = (+ scan truth);
         // compute how many segments
         var pop = iv[iv.size-1];
@@ -635,12 +641,16 @@ module Unique
         }
         var (uo, uv, c) = uniqueFromTruth(str, perm, truth);
         if returnInverse {
+            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+            overMemLimit(numBytes(int) * c.size);
             var segs = (+ scan c) - c;
             var bcast: [invD] int;
             forall s in segs with (var agg = newDstAggregator(int)) {
                 agg.copy(bcast[s], 1);
             }
             bcast[0] = 0;
+            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+            overMemLimit(numBytes(int) * bcast.size);
             bcast = (+ scan bcast);
             forall (p, b) in zip(perm, bcast) with (var agg = newDstAggregator(int)) {
                 agg.copy(inv[p], b);
@@ -662,6 +672,8 @@ module Unique
             return (uo, uv, c);
         }
         // +scan to compute segment position... 1-based because of inclusive-scan
+        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+        overMemLimit(numBytes(int) * truth.size);
         var iv: [aD] int = (+ scan truth);
         // compute how many segments
         var pop = iv[iv.size-1];

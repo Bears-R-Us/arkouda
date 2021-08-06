@@ -20,7 +20,7 @@ module SortMsg
 
     /* Sort the given pdarray using Radix Sort and
        return sorted keys as a block distributed array */
-    proc sort(a: [?aD] ?t): [aD] t {
+    proc sort(a: [?aD] ?t): [aD] t throws {
       var sorted: [aD] t = radixSortLSD_keys(a);
       return sorted;
     }

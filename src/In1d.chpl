@@ -132,7 +132,7 @@ module In1d
        :returns truth: the distributed boolean array containing the result of ar1 being broadcast over ar2
        :type truth: [] bool
      */
-    proc in1dSort(ar1: [?aD1] int, ar2: [?aD2] int) {
+    proc in1dSort(ar1: [?aD1] int, ar2: [?aD2] int) throws  {
         /* General strategy: unique both arrays, find the intersecting values, 
            then map back to the original domain of ar1.
          */

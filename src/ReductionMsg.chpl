@@ -411,16 +411,20 @@ module ReductionMsg
        and then reduce over each chunk using the operator <Op>. The return array 
        of reduced values is the same size as <segments>.
      */
-    proc segSum(values:[] ?intype, segments:[?D] int, skipNan=false) {
+    proc segSum(values:[] ?intype, segments:[?D] int, skipNan=false) throws {
       type t = if intype == bool then int else intype;
       var res: [D] t;
       if (D.size == 0) { return res; }
       var cumsum;
       if (isFloatType(t) && skipNan) {
         var arrCopy = [elem in values] if isnan(elem) then 0.0 else elem;
+        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+        overMemLimit(numBytes(t) * arrCopy.size);
         cumsum = + scan arrCopy;
       }
       else {
+        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+        overMemLimit(numBytes(t) * values.size);
         cumsum = + scan values;
       }
       // Iterate over segments
@@ -438,7 +442,7 @@ module ReductionMsg
       return res;
     }
 
-    proc segProduct(values:[] ?t, segments:[?D] int, skipNan=false): [D] real {
+    proc segProduct(values:[] ?t, segments:[?D] int, skipNan=false): [D] real throws {
       /* Compute the product of values in each segment. The logic here 
          is to convert the product into a sum in the log-domain. To 
          operate in the log-domain, signs and zeros must be removed and 
@@ -485,7 +489,7 @@ module ReductionMsg
       return res;
     }
 
-    proc segMean(values:[] ?t, segments:[?D] int, skipNan=false): [D] real {
+    proc segMean(values:[] ?t, segments:[?D] int, skipNan=false): [D] real throws {
       var res: [D] real;
       if (D.size == 0) { return res; }
       var sums;
@@ -493,6 +497,8 @@ module ReductionMsg
       if (isFloatType(t) && skipNan) {
         // count cumulative nans over all values
         var cumnans = isnan(values):int;
+        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+        overMemLimit(numBytes(int) * cumnans.size);
         cumnans = + scan cumnans;
         
         // find cumulative nans at segment boundaries
@@ -526,7 +532,7 @@ module ReductionMsg
       return res;
     }
 
-    proc segMin(values:[?vD] ?t, segments:[?D] int, skipNan=false): [D] t {
+    proc segMin(values:[?vD] ?t, segments:[?D] int, skipNan=false): [D] t throws {
       var res: [D] t = max(t);
       if (D.size == 0) { return res; }
       var keys = expandKeys(vD, segments);
@@ -537,6 +543,8 @@ module ReductionMsg
       } else {
         kv = [(k, v) in zip(keys, values)] (-k, v);
       }
+      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+      overMemLimit(numBytes(int) * kv.size);
       var cummin = min scan kv;
       forall (i, r, low) in zip(D, res, segments) with (var agg = newSrcAggregator(t)) {
         var vi: int;
@@ -552,7 +560,7 @@ module ReductionMsg
       return res;
     }
     
-    proc segMax(values:[?vD] ?t, segments:[?D] int, skipNan=false): [D] t {
+    proc segMax(values:[?vD] ?t, segments:[?D] int, skipNan=false): [D] t throws {
       var res: [D] t = min(t);
       if (D.size == 0) { return res; }
       var keys = expandKeys(vD, segments);
@@ -563,6 +571,8 @@ module ReductionMsg
       } else {
         kv = [(k, v) in zip(keys, values)] (k, v);
       }
+      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+      overMemLimit(numBytes(int) * kv.size);
       var cummax = max scan kv;
       
       forall (i, r, low) in zip(D, res, segments) with (var agg = newSrcAggregator(t)) {
@@ -579,12 +589,14 @@ module ReductionMsg
       return res;
     }
 
-    proc segArgmin(values:[?vD] ?t, segments:[?D] int): ([D] t, [D] int) {
+    proc segArgmin(values:[?vD] ?t, segments:[?D] int): ([D] t, [D] int) throws {
       var locs: [D] int;
       var vals: [D] t = max(t);
       if (D.size == 0) { return (vals, locs); }
       var keys = expandKeys(vD, segments);
       var kvi = [(k, v, i) in zip(keys, values, vD)] ((-k, v), i);
+      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+      overMemLimit(numBytes(int) * kvi.size);
       var cummin = minloc scan kvi;
       forall (l, v, low, i) in zip(locs, vals, segments, D)
         with (var locagg = newSrcAggregator(int), var valagg = newSrcAggregator(t)) {
@@ -604,12 +616,14 @@ module ReductionMsg
       return (vals, locs);
     }
 
-    proc segArgmax(values:[?vD] ?t, segments:[?D] int): ([D] t, [D] int) {
+    proc segArgmax(values:[?vD] ?t, segments:[?D] int): ([D] t, [D] int) throws {
       var locs: [D] int;
       var vals: [D] t = min(t);
       if (D.size == 0) { return (vals, locs); }
       var keys = expandKeys(vD, segments);
       var kvi = [(k, v, i) in zip(keys, values, vD)] ((k, v), i);
+      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+      overMemLimit(numBytes(int) * kvi.size);
       var cummax = maxloc scan kvi;
       forall (l, v, low, i) in zip(locs, vals, segments, D)
         with (var locagg = newSrcAggregator(int), var valagg = newSrcAggregator(t)) {
@@ -629,7 +643,7 @@ module ReductionMsg
       return (vals, locs);
     }
 
-    proc segAny(values:[] bool, segments:[?D] int): [D] bool {
+    proc segAny(values:[] bool, segments:[?D] int): [D] bool throws {
       var res: [D] bool;
       if (D.size == 0) { return res; }
       const sums = segSum(values, segments);
@@ -637,7 +651,7 @@ module ReductionMsg
       return res;
     }
 
-    proc segAll(values:[] bool, segments:[?D] int): [D] bool {
+    proc segAll(values:[] bool, segments:[?D] int): [D] bool throws {
       var res: [D] bool;
       if (D.size == 0) { return res; }
       const sums = segSum(values, segments);
@@ -646,13 +660,15 @@ module ReductionMsg
       return res;
     }
 
-    proc segOr(values:[?vD] int, segments:[?D] int): [D] int {
+    proc segOr(values:[?vD] int, segments:[?D] int): [D] int throws {
       var res: [D] int;
       // Set reset flag at segment boundaries
       var flagvalues: [vD] (bool, int) = [v in values] (false, v);
       forall s in segments with (var agg = newDstAggregator(bool)) {
         agg.copy(flagvalues[s][0], true);
       }
+      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+      overMemLimit(numBytes(int) * flagvalues.size);
       // Scan with custom operator, which resets the bitwise AND
       // at segment boundaries.
       const scanresult = ResettingOrScanOp scan flagvalues;
@@ -726,13 +742,15 @@ module ReductionMsg
       }
     }
 
-    proc segAnd(values:[?vD] int, segments:[?D] int): [D] int {
+    proc segAnd(values:[?vD] int, segments:[?D] int): [D] int throws {
       var res: [D] int;
       // Set reset flag at segment boundaries
       var flagvalues: [vD] (bool, int) = [v in values] (false, v);
       forall s in segments with (var agg = newDstAggregator(bool)) {
         agg.copy(flagvalues[s][0], true);
       }
+      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+      overMemLimit(numBytes(int) * flagvalues.size);
       // Scan with custom operator, which resets the bitwise AND
       // at segment boundaries.
       const scanresult = ResettingAndScanOp scan flagvalues;
@@ -807,11 +825,13 @@ module ReductionMsg
     }
     
 
-    proc segXor(values:[] int, segments:[?D] int) {
+    proc segXor(values:[] int, segments:[?D] int) throws {
       // Because XOR has an inverse (itself), this can be
       // done with a scan like segSum
       var res: [D] int;
       if (D.size == 0) { return res; }
+      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+      overMemLimit(numBytes(int) * values.size);
       var cumxor = ^ scan values;
       // Iterate over segments
       var rightvals: [D] int;
@@ -828,11 +848,13 @@ module ReductionMsg
       return res;
     }
 
-    proc expandKeys(kD, segments: [?sD] int): [kD] int {
+    proc expandKeys(kD, segments: [?sD] int): [kD] int throws {
       var truth: [kD] bool;
       forall i in segments with (var agg = newDstAggregator(bool)) {
         agg.copy(truth[i], true);
       }
+      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+      overMemLimit(numBytes(int) * truth.size);
       var keys = (+ scan truth) - 1;
       return keys;
     }
@@ -876,6 +898,8 @@ module ReductionMsg
       }
       // first value of every segment is automatically new
       [s in segments] truth[s] = true;
+      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+      overMemLimit(numBytes(int) * truth.size);
       // count cumulative new values and take diffs at segment boundaries
       var count: [kD] int = (+ scan truth);
       var pop = count[kD.high];
@@ -897,6 +921,8 @@ module ReductionMsg
       var truth2: [hD] bool;
       truth2[hD.low] = true;
       [(t, k, i) in zip(truth2, keyhits, hD)] if (i > hD.low) { t = (keyhits[i-1] != k); }
+      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+      overMemLimit(numBytes(int) * truth2.size);
       var kiv: [hD] int = (+ scan truth2);
       var nKeysPresent = kiv[hD.high];
       var nD: domain(1) dmapped Block(boundingBox={0..#(nKeysPresent+1)}) = {0..#(nKeysPresent+1)};
