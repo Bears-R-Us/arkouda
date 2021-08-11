@@ -813,7 +813,7 @@ class Strings:
 
         Returns
         -------
-        None
+        String message indicating result of save operation
 
         Raises
         ------
@@ -849,7 +849,6 @@ class Strings:
         cmd = "tohdf"
         args = f"{self.bytes.name} {dataset} {m} {json_array} {self.dtype} {self.offsets.name} {save_offsets}"
         return cast(str, generic_msg(cmd, args))
-
 
     def is_registered(self) -> np.bool_:
         """
