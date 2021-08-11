@@ -809,7 +809,7 @@ class Strings:
 
         Returns
         -------
-        None
+        String message indicating result of save operation
 
         Raises
         ------
@@ -841,9 +841,9 @@ class Strings:
             json_array = json.dumps([prefix_path])
         except Exception as e:
             raise ValueError(e)
-        
+
         return cast(str, generic_msg(cmd="tohdf", args="{} {} {} {} {} {}".\
-                           format(self.bytes.name, dataset, m, json_array, 
+                           format(self.bytes.name, dataset, m, json_array,
                                   self.dtype, self.offsets.name)))
         
 

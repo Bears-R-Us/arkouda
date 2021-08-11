@@ -1,4 +1,5 @@
 import numpy as np
+import tempfile
 from context import arkouda as ak
 from base_test import ArkoudaTest
 
@@ -185,4 +186,38 @@ class CategoricalTest(ArkoudaTest):
         ans = ak.Categorical(ak.array(['a', 'b']))
         self.assertTrue((c == ans).all())
         
-        
+    def testSaveAndLoadCategorical(self):
+        cat = self._getCategorical()
+        with self.assertRaises(ValueError):  # Expect error for mode not being append or truncate
+            cat.save("foo", dataset="bar", mode="not_allowed")
+
+        with tempfile.TemporaryDirectory() as tmp_dirname:
+            # Test the save functionality & confirm via h5py
+            import h5py
+            cat.save(f"{tmp_dirname}", dataset="categorical_array")
+            f = h5py.File(tmp_dirname + "/categorical_array_LOCALE0000", mode="r")
+            keys = list(f.keys())
+            self.assertEqual(len(keys), 4, "Expected 4 keys")
+            self.assertSetEqual(set(cat._get_components_dict().keys()), set(keys))
+            f.close()
+
+            # Now try to read them back with load
+            x = ak.read_all(filenames=f"{tmp_dirname}/categorical_array_LOCALE0000")
+            cat_init = ak.Categorical(None, **x)  # init constructor
+            cat_from_codes = ak.Categorical.from_codes(**x)  # alt constructor
+            
+            expected_categories = ['string 1', 'string 2', 'string 3', 'string 4', 'string 5', 'string 6', 'string 7',
+                                   'string 8', 'string 9', 'string 10']
+
+            # Note assertCountEqual asserts a and b have the same elements in the same amount regardless of order
+            self.assertCountEqual(cat_init.categories.to_ndarray().tolist(), expected_categories)
+            self.assertCountEqual(cat_from_codes.categories.to_ndarray().tolist(), expected_categories)
+
+            # Asserting the optional components and sizes are correct for both constructors should be sufficient
+            self.assertTrue(cat_init.segments is not None)
+            self.assertTrue(cat_init.permutation is not None)
+            self.assertTrue(cat_init.size is 10)
+
+            self.assertTrue(cat_from_codes.segments is not None)
+            self.assertTrue(cat_from_codes.permutation is not None)
+            self.assertTrue(cat_from_codes.size is 10)
