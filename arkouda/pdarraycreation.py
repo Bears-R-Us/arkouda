@@ -177,7 +177,7 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     if a.ndim != 1:
         raise RuntimeError("Only rank-1 pdarrays or ndarrays supported")
     # Check if array of strings
-    if a.dtype.kind == 'U' or 'U' in a.dtype.kind:
+    if 'U' in a.dtype.kind:
         # encode each string and add a null byte terminator
         encoded = [i for i in itertools.chain.from_iterable(map(lambda x: x.encode() + b"\x00", a))]
         nbytes = len(encoded)

@@ -320,7 +320,7 @@ module GenSymIO {
             gsLogger.warn(getModuleName(), getRoutineName(), getLineNumber(), "Allowing file read errors");
         }
 
-        var calcStringOffsets: bool = "true" == calcStringOffsetsFlag.toLower(); // default is false
+        var calcStringOffsets: bool = (calcStringOffsetsFlag.toLower() == "true"); // default is false
         if calcStringOffsets {
             gsLogger.warn(getModuleName(), getRoutineName(), getLineNumber(),
                 "Calculating string array offsets instead of reading from HDF5");
