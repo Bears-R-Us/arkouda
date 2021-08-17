@@ -340,6 +340,14 @@ class GroupByTest(ArkoudaTest):
         g = ak.GroupBy(keys)
         g.min(ak.randint(0, 10, 100))
 
+    def test_zero_length_groupby(self):
+        """
+        This tests groupby boundary condition on a zero length pdarray, see Issue #900 for details
+        """
+        g = ak.GroupBy(ak.zeros(0, dtype=ak.int64))
+        str(g.segments)  # passing condition, if this was deleted it will cause the test to fail
+
+
 def to_tuple_dict(labels, values):
     # transforms labels from list of arrays into a list of tuples by index and builds a dictionary
     # labels: [array(['b', 'a', 'c']), array(['b', 'a', 'c'])] -> [('b', 'b'), ('a', 'a'), ('c', 'c')]
