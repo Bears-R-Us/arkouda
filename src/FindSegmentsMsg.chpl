@@ -58,43 +58,43 @@ module FindSegmentsMsg
         }        
         // var keyEntries: [0..#nkeys] borrowed GenSymEntry;
         for (name, objtype, i) in zip(knames, ktypes, 1..) {
-      // var g: borrowed GenSymEntry;
-      var thisSize: int;
-      var thisType: DType;
-      select objtype {
-          when "pdarray" {
-              var g = st.lookup(name);
-              thisSize = g.size;
-              thisType = g.dtype;
+          // var g: borrowed GenSymEntry;
+          var thisSize: int;
+          var thisType: DType;
+          select objtype {
+              when "pdarray" {
+                  var g = st.lookup(name);
+                  thisSize = g.size;
+                  thisType = g.dtype;
+              }
+              when "str" {
+                  var (myNames,_) = name.splitMsgToTuple('+', 2);
+                  var g = st.lookup(myNames);
+                  thisSize = g.size;
+                  thisType = g.dtype;
+              }
+              otherwise {
+                  var errorMsg = unrecognizedTypeError(pn, objtype);
+                  fsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                  return new MsgTuple(errorMsg, MsgType.ERROR);          
+              }
           }
-          when "str" {
-              var (myNames,_) = name.splitMsgToTuple('+', 2);
-              var g = st.lookup(myNames);
-              thisSize = g.size;
-              thisType = g.dtype;
+          if (i == 1) {
+            size = thisSize;
+          } else {
+              if (thisSize != size) { 
+                  var errorMsg = incompatibleArgumentsError(pn, 
+                                    "Expected array of size %i, got size %i".format(size, thisSize)); 
+                  fsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                  return new MsgTuple(errorMsg, MsgType.ERROR);                        
+              }
           }
-          otherwise {
-              var errorMsg = unrecognizedTypeError(pn, objtype);
-              fsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-              return new MsgTuple(errorMsg, MsgType.ERROR);          
-          }
-      }
-      if (i == 1) {
-        size = thisSize;
-      } else {
-          if (thisSize != size) { 
-              var errorMsg = incompatibleArgumentsError(pn, 
-                                "Expected array of size %i, got size %i".format(size, thisSize)); 
-              fsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-              return new MsgTuple(errorMsg, MsgType.ERROR);                        
-          }
-      }
           if (thisType != DType.Int64) { 
               var errorMsg = notImplementedError(pn,"(key array dtype "+dtype2str(thisType)+")");
               fsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
               return new MsgTuple(errorMsg, MsgType.ERROR);
           }
-      }
+        }
         
         // At this point, all arg arrays exist, have the same size, and are int64 or string dtype
         if (size == 0) {
@@ -104,7 +104,7 @@ module FindSegmentsMsg
             var n2 = st.nextName();
             st.addEntry(n2, 0, int);
 
-            repMsg = "created " + st.attrib(n1) + " +created " + st.attrib(n1);
+            repMsg = "created " + st.attrib(n1) + " +created " + st.attrib(n2);
             fsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
             return new MsgTuple(repMsg, MsgType.NORMAL);
         }
@@ -118,52 +118,52 @@ module FindSegmentsMsg
         // First key is automatically present
         ukeylocs[0] = true;
         for (name, objtype) in zip(knames, ktypes) {
-      select objtype {
-        when "pdarray" {
-          var g: borrowed GenSymEntry = st.lookup(name);
-          var k = toSymEntry(g,int); // key array
-          ref ka = k.a; // ref to key array
-          // Permute the key array to grouped order
-          var permKey: [paD] int;
-          forall (s, p) in zip(permKey, pa) with (var agg = newSrcAggregator(int)) { 
-            agg.copy(s, ka[p]);
-          }
-          // Find steps and update ukeylocs
-          [(u, s, i) in zip(ukeylocs, permKey, paD)] if ((i > paD.low) && (permKey[i-1] != s))  { u = true; }
-        }
-        when "str" {
-          var (myNames1,myNames2) = name.splitMsgToTuple('+', 2);
-          fsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                              "findSegmentsMessage myNames1: {} myNames2: {}".format(myNames1,myNames2));
-          var str = getSegString(myNames1, myNames2, st);
-          var (permOffsets, permVals) = str[pa];
-          const ref D = permOffsets.domain;
-          var permLengths: [D] int;
-          permLengths[D.interior(-(D.size-1))] = permOffsets[D.interior(D.size-1)] - permOffsets[D.interior(-(D.size-1))];
-          permLengths[D.high] = permVals.domain.high - permOffsets[D.high] + 1;
-          // Find steps and update ukeylocs
-          // [(u, s, i) in zip(ukeylocs, permKey, paD)] if ((i > paD.low) && (permKey[i-1] != s))  { u = true; }
-          forall (u, o, l, i) in zip(ukeylocs, permOffsets, permLengths, D) {
-            if (i > D.low) {
-              // If string lengths don't match, mark a step
-              if (permLengths[i-1] != l) {
-                u = true;
-              } else {
-                // Have to compare bytes of previous string to current string
-                // If any bytes differ, mark a step
-                for pos in 0..#l {
-                  if permVals[permOffsets[i-1]+pos] != permVals[o+pos] {
+          select objtype {
+            when "pdarray" {
+              var g: borrowed GenSymEntry = st.lookup(name);
+              var k = toSymEntry(g,int); // key array
+              ref ka = k.a; // ref to key array
+              // Permute the key array to grouped order
+              var permKey: [paD] int;
+              forall (s, p) in zip(permKey, pa) with (var agg = newSrcAggregator(int)) { 
+                agg.copy(s, ka[p]);
+              }
+              // Find steps and update ukeylocs
+              [(u, s, i) in zip(ukeylocs, permKey, paD)] if ((i > paD.low) && (permKey[i-1] != s))  { u = true; }
+            }
+            when "str" {
+              var (myNames1,myNames2) = name.splitMsgToTuple('+', 2);
+              fsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                                  "findSegmentsMessage myNames1: {} myNames2: {}".format(myNames1,myNames2));
+              var str = getSegString(myNames1, myNames2, st);
+              var (permOffsets, permVals) = str[pa];
+              const ref D = permOffsets.domain;
+              var permLengths: [D] int;
+              permLengths[D.interior(-(D.size-1))] = permOffsets[D.interior(D.size-1)] - permOffsets[D.interior(-(D.size-1))];
+              permLengths[D.high] = permVals.domain.high - permOffsets[D.high] + 1;
+              // Find steps and update ukeylocs
+              // [(u, s, i) in zip(ukeylocs, permKey, paD)] if ((i > paD.low) && (permKey[i-1] != s))  { u = true; }
+              forall (u, o, l, i) in zip(ukeylocs, permOffsets, permLengths, D) {
+                if (i > D.low) {
+                  // If string lengths don't match, mark a step
+                  if (permLengths[i-1] != l) {
                     u = true;
-                    break;
+                  } else {
+                    // Have to compare bytes of previous string to current string
+                    // If any bytes differ, mark a step
+                    for pos in 0..#l {
+                      if permVals[permOffsets[i-1]+pos] != permVals[o+pos] {
+                        u = true;
+                        break;
+                      }
+                    }
                   }
                 }
-              }
-            }
-          } // forall
-        } // when "str"
-      } // select objtype
+              } // forall
+            } // when "str"
+          } // select objtype
         }
-    // All keys have been processed, all steps have been found
+        // All keys have been processed, all steps have been found
         // +scan to compute segment position... 1-based because of inclusive-scan
         var iv: [ukeylocs.domain] int = (+ scan ukeylocs);
         // compute how many segments
