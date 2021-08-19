@@ -10,7 +10,7 @@ module Broadcast {
    * then return the array of group labels corresponding to the 
    * original array. Intended to be used with arkouda.GroupBy.
    */
-  proc broadcast(perm: [?D] int, segs: [?sD] int, vals: [sD] ?t) {
+  proc broadcast(perm: [?D] int, segs: [?sD] int, vals: [sD] ?t) throws {
     // The stragegy is to go from the segment domain to the full
     // domain by forming the full derivative and integrating it
 
@@ -28,6 +28,8 @@ module Broadcast {
     forall (s, d) in zip(segs, diffs) with (var agg = newDstAggregator(t)) {
       agg.copy(expandedVals[s], d);
     }
+    // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+    overMemLimit(numBytes(t) * expandedVals.size);
     // Integrate to recover full values
     expandedVals = (+ scan expandedVals);
     // Permute to the original array order
@@ -46,7 +48,7 @@ module Broadcast {
    * then return the array of group labels corresponding to the 
    * original array. Intended to be used with arkouda.GroupBy.
    */
-  proc broadcast(perm: [?D] int, segs: [?sD] int, vals: [sD] bool) {
+  proc broadcast(perm: [?D] int, segs: [?sD] int, vals: [sD] bool) throws {
     // The stragegy is to go from the segment domain to the full
     // domain by forming the full derivative and integrating it
     
@@ -65,6 +67,8 @@ module Broadcast {
     forall (s, d) in zip(segs, diffs) with (var agg = newDstAggregator(int(8))) {
       agg.copy(expandedVals[s], d);
     }
+    // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+    overMemLimit(numBytes(int(8)) * expandedVals.size);
     // Integrate to recover full values
     expandedVals = (+ scan expandedVals);
     // Permute to the original array order and convert back to bool
@@ -81,7 +85,7 @@ module Broadcast {
    * is a compressed sparse row matrix, then expand a row
    * vector such that each nonzero receives its row's value.
    */
-  proc broadcast(segs: [?sD] int, vals: [sD] ?t, size: int) {
+  proc broadcast(segs: [?sD] int, vals: [sD] ?t, size: int) throws {
     // The stragegy is to go from the segment domain to the full
     // domain by forming the full derivative and integrating it
     
@@ -99,12 +103,14 @@ module Broadcast {
     forall (s, d) in zip(segs, diffs) with (var agg = newDstAggregator(t)) {
       agg.copy(expandedVals[s], d);
     }
+    // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+    overMemLimit(numBytes(t) * expandedVals.size);
     // Integrate to recover full values
     expandedVals = (+ scan expandedVals);
     return expandedVals;
   }
 
-  proc broadcast(segs: [?sD] int, vals: [sD] bool, size: int) {
+  proc broadcast(segs: [?sD] int, vals: [sD] bool, size: int) throws {
     // The stragegy is to go from the segment domain to the full
     // domain by forming the full derivative and integrating it
     
@@ -123,6 +129,8 @@ module Broadcast {
     forall (s, d) in zip(segs, diffs) with (var agg = newDstAggregator(int(8))) {
       agg.copy(expandedVals[s], d);
     }
+    // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+    overMemLimit(numBytes(int(8)) * expandedVals.size);
     // Integrate to recover full values
     expandedVals = (+ scan expandedVals);
     return (expandedVals == 1);

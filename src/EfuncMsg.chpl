@@ -64,12 +64,14 @@ module EfuncMsg
                         a.a = Math.exp(e.a);
                     }
                     when "cumsum" {
-                        var a = st.addEntry(rname, e.size, int);
-                        a.a = + scan e.a;
+                        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+                        overMemLimit(numBytes(int) * e.size);
+                        st.addEntry(rname, new shared SymEntry(+ scan e.a));
                     }
                     when "cumprod" {
-                        var a= st.addEntry(rname, e.size, int);
-                        a.a = * scan e.a;
+                        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+                        overMemLimit(numBytes(int) * e.size);
+                        st.addEntry(rname, new shared SymEntry(* scan e.a));
                     }
                     when "sin" {
                         var a = st.addEntry(rname, e.size, real);
@@ -103,12 +105,14 @@ module EfuncMsg
                         a.a = Math.exp(e.a);
                     }
                     when "cumsum" {
-                        var a = st.addEntry(rname, e.size, real);
-                        a.a = + scan e.a;
+                        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+                        overMemLimit(numBytes(real) * e.size);
+                        st.addEntry(rname, new shared SymEntry(+ scan e.a));
                     }
                     when "cumprod" {
-                        var a = st.addEntry(rname, e.size, real);
-                        a.a = * scan e.a;
+                        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+                        overMemLimit(numBytes(real) * e.size);
+                        st.addEntry(rname, new shared SymEntry(* scan e.a));
                     }
                     when "sin" {
                         var a = st.addEntry(rname, e.size, real);
@@ -135,13 +139,15 @@ module EfuncMsg
                 {
                     when "cumsum" {
                         var ia: [e.aD] int = (e.a:int); // make a copy of bools as ints blah!
-                        var a = st.addEntry(rname, e.size, int);
-                        a.a = + scan ia;
+                        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+                        overMemLimit(numBytes(int) * ia.size);
+                        st.addEntry(rname, new shared SymEntry(+ scan ia));
                     }
                     when "cumprod" {
                         var ia: [e.aD] int = (e.a:int); // make a copy of bools as ints blah!
-                        var a = st.addEntry(rname, e.size, int);
-                        a.a = * scan ia;
+                        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+                        overMemLimit(numBytes(int) * ia.size);
+                        st.addEntry(rname, new shared SymEntry(* scan ia));
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);

@@ -47,6 +47,8 @@ module SegStringSort {
     const longStart = ss.offsets.aD.low + nShort;
     const isLong = (lengths >= pivot);
     var locs = [i in ss.offsets.aD] i;
+    // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+    overMemLimit(numBytes(int) * isLong.size);
     var longLocs = + scan isLong;
     locs -= longLocs;
     var gatherInds: [ss.offsets.aD] int;
@@ -92,7 +94,7 @@ module SegStringSort {
     return ranks;
   }
   
-  proc getPivot(lengths: [?D] int): 2*int {
+  proc getPivot(lengths: [?D] int): 2*int throws {
     if !PARTITION_LONG_STRING {
       var pivot = max reduce lengths + 1;
       pivot = max(pivot + (pivot % 2), MINBYTES);
@@ -120,6 +122,8 @@ module SegStringSort {
       }
       const bins = + reduce [loc in PrivateSpace] pBins[loc];
       // Number of bytes in strings longer than or equal to the current bin
+      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+      overMemLimit(numBytes(int) * bins.size);
       const tailPop = (+ reduce bins) - (+ scan bins) + bins;
       // Find the largest value of "long" such that long strings fit in one local subdomain
       const singleLocale = (tailPop < (MEMFACTOR * D.localSubdomain().size));
@@ -252,7 +256,9 @@ module SegStringSort {
           }//coforall task
         }//on loc
       }//coforall loc
-            
+
+      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+      overMemLimit(numBytes(int) * globalCounts.size);
       // scan globalCounts to get bucket ends on each locale/task
       globalStarts = + scan globalCounts;
       globalStarts = globalStarts - globalCounts;

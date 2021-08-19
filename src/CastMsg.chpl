@@ -168,6 +168,8 @@ module CastMsg {
       }
     }
     const byteLengths = [s in strings] s.numBytes + 1;
+    // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+    overMemLimit(numBytes(uint(8)) * byteLengths.size);
     segments.a = (+ scan byteLengths) - byteLengths;
     const totBytes = + reduce byteLengths;
     const vname = st.nextName();

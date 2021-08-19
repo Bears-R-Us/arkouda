@@ -180,6 +180,8 @@ module IndexingMsg
                 imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
                 return new MsgTuple(repMsg, MsgType.NORMAL);
             }
+            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+            overMemLimit(numBytes(int) * truth.size);
             var iv: [truth.aD] int = (+ scan truth.a);
             var pop = iv[iv.size-1];
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 
@@ -480,6 +482,8 @@ module IndexingMsg
             }
             var e = toSymEntry(gX,t);
             var truth = toSymEntry(gIV,bool);
+            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+            overMemLimit(numBytes(int) * truth.size);
             var iv: [truth.aD] int = (+ scan truth.a);
             var pop = iv[iv.size-1];
             imLogger.debug(getModuleName(),getRoutineName(),getLineNumber(), 

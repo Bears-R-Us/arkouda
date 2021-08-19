@@ -163,7 +163,10 @@ module FindSegmentsMsg
             } // when "str"
           } // select objtype
         }
+        
         // All keys have been processed, all steps have been found
+        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+        overMemLimit(numBytes(int) * ukeylocs.size);
         // +scan to compute segment position... 1-based because of inclusive-scan
         var iv: [ukeylocs.domain] int = (+ scan ukeylocs);
         // compute how many segments

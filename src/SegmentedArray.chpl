@@ -228,6 +228,8 @@ module SegmentedArray {
       }
       // Lengths of segments including null bytes
       var gatheredLengths: [D] int = right - left;
+      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+      overMemLimit(numBytes(int) * gatheredLengths.size);
       // The returned offsets are the 0-up cumulative lengths
       var gatheredOffsets = (+ scan gatheredLengths);
       // The total number of bytes in the gathered strings
@@ -264,6 +266,8 @@ module SegmentedArray {
         forall (go, d) in zip(gatheredOffsets, diffs) with (var agg = newDstAggregator(int)) {
           agg.copy(srcIdx[go], d);
         }
+        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+        overMemLimit(numBytes(int) * srcIdx.size);
         srcIdx = + scan srcIdx;
         // Now srcIdx has a dst-local copy of the source index and vals can be efficiently gathered
         ref va = values.a;
@@ -298,6 +302,8 @@ module SegmentedArray {
       var t1 = getCurrentTime();
       ref oa = offsets.a;
       const low = offsets.aD.low, high = offsets.aD.high;
+      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+      overMemLimit(numBytes(int) * iv.size);
       // Calculate the destination indices
       var steps = + scan iv;
       var newSize = steps[high];
@@ -490,6 +496,8 @@ module SegmentedArray {
       if mode == SearchMode.contains {
         // Determine whether each segment contains a hit
         // Do this by taking the difference in the cumulative number of hits at the end vs the beginning of the segment  
+        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+        overMemLimit(numBytes(int) * truth.size);
         // Cumulative number of hits up to (and excluding) this point
         var numHits = (+ scan truth) - truth;
         hits[oD.interior(-(oD.size-1))] = (numHits[oa[oD.interior(oD.size-1)]] - numHits[oa[oD.interior(-(oD.size-1))]]) > 0;
@@ -511,7 +519,7 @@ module SegmentedArray {
       return hits;
     }
 
-    proc peel(const delimiter: string, const times: int, param includeDelimiter: bool, param keepPartial: bool, param left: bool) {
+    proc peel(const delimiter: string, const times: int, param includeDelimiter: bool, param keepPartial: bool, param left: bool) throws {
       param stride = if left then 1 else -1;
       const dBytes = delimiter.numBytes;
       const lengths = getLengths() - 1;
@@ -520,6 +528,8 @@ module SegmentedArray {
       const truth = findSubstringInBytes(delimiter);
       const D = truth.domain;
       ref oa = offsets.a;
+      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+      overMemLimit(numBytes(int) * truth.size);
       var numHits = (+ scan truth) - truth;
       const high = offsets.aD.high;
       forall i in offsets.aD {
@@ -605,7 +615,11 @@ module SegmentedArray {
       // Compute lengths and offsets for left and right return arrays
       const leftLengths = leftEnd - oa + 2;
       const rightLengths = lengths - (rightStart - oa) + 1;
+      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+      overMemLimit(numBytes(int) * leftLengths.size);
       const leftOffsets = (+ scan leftLengths) - leftLengths;
+      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+      overMemLimit(numBytes(int) * rightLengths.size);
       const rightOffsets = (+ scan rightLengths) - rightLengths;
       // Allocate values and fill
       var leftVals = makeDistArray((+ reduce leftLengths), uint(8));
@@ -639,6 +653,8 @@ module SegmentedArray {
       var leftLen = getLengths() - 1;
       var rightLen = other.getLengths() - 1;
       const newLengths = leftLen + rightLen + delim.numBytes + 1;
+      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+      overMemLimit(numBytes(int) * newLengths.size);
       var newOffsets = (+ scan newLengths);
       const newBytes = newOffsets[offsets.aD.high];
       newOffsets -= newLengths;

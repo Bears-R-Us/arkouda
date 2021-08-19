@@ -1,4 +1,6 @@
 module Flatten {
+  use ServerConfig;
+
   use SegmentedArray;
   use ServerErrors;
   use SymArrayDmap;
@@ -40,6 +42,8 @@ module Flatten {
     forall o in this.offsets.a with (var agg = newDstAggregator(bool)) {
       agg.copy(offTruth[o], true);
     }
+    // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+    overMemLimit(numBytes(int) * offTruth.size);
     // Running segment number
     var scanOff = (+ scan offTruth) - offTruth;
     // Copy over the offsets; later we will shrink them if delim is > 1 byte
@@ -87,6 +91,8 @@ module Flatten {
       const boundaryDeriv = (followsDelim:int * (delim.numBytes - 1)) + 1;
       // Next step requires offsets to be translated to new domain, i.e. with
       // delims removed.
+      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+      overMemLimit(numBytes(int) * followsDelim.size);
       // Number of delims preceding current string
       const delimsBefore = + scan followsDelim;
       // Each delim gets replaced by null byte (length 1)
@@ -97,6 +103,8 @@ module Flatten {
       }
       // Force first derivative to match start of src domain
       srcIdx[valDom.low] = this.values.aD.low;
+      // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+      overMemLimit(numBytes(int) * srcIdx.size);
       // Perform integration to compute gather indices
       srcIdx = (+ scan srcIdx);
       // Now we have dest-local copy of src indices, so gather with a src aggregator

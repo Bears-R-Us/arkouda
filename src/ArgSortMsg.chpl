@@ -305,7 +305,7 @@ module ArgSortMsg
       return new MsgTuple(repMsg, MsgType.NORMAL);
     }
     
-    proc argsortDefault(A:[?D] ?t):[D] int {
+    proc argsortDefault(A:[?D] ?t):[D] int throws {
       var t1 = Time.getCurrentTime();
       //var AI = [(a, i) in zip(A, D)] (a, i);
       //Sort.TwoArrayRadixSort.twoArrayRadixSort(AI);

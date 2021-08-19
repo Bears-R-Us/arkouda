@@ -139,7 +139,7 @@ module RadixSortLSD
     /* Radix Sort Least Significant Digit
        radix sort a block distributed array
        returning a permutation vector as a block distributed array */
-    proc radixSortLSD_ranks(a:[?aD] ?t, checkSorted: bool = true): [aD] int {
+    proc radixSortLSD_ranks(a:[?aD] ?t, checkSorted: bool = true): [aD] int throws {
 
         // check to see if array is already sorted
         if (checkSorted) {
@@ -199,6 +199,8 @@ module RadixSortLSD
             }//coforall loc
             
             // scan globalCounts to get bucket ends on each locale/task
+            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+            overMemLimit(numBytes(int) * globalCounts.size);
             globalStarts = + scan globalCounts;
             globalStarts = globalStarts - globalCounts;
             
@@ -258,7 +260,7 @@ module RadixSortLSD
     /* Radix Sort Least Significant Digit
        radix sort a block distributed array
        returning sorted keys as a block distributed array */
-    proc radixSortLSD_keys(a: [?aD] ?t, checkSorted: bool = true): [aD] t {
+    proc radixSortLSD_keys(a: [?aD] ?t, checkSorted: bool = true): [aD] t throws {
 
         // check to see if array is already sorted
         if (checkSorted) {
@@ -318,6 +320,8 @@ module RadixSortLSD
             }//coforall loc
             
             // scan globalCounts to get bucket ends on each locale/task
+            // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+            overMemLimit(numBytes(int) * globalCounts.size);
             globalStarts = + scan globalCounts;
             globalStarts = globalStarts - globalCounts;
             

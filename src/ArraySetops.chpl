@@ -27,7 +27,7 @@ module ArraySetops
     private config const mBound = 2**25; 
 
     // returns intersection of 2 arrays
-    proc intersect1d(a: [] int, b: [] int, assume_unique: bool) {
+    proc intersect1d(a: [] int, b: [] int, assume_unique: bool) throws {
       //if not unique, unique sort arrays then perform operation
       if (!assume_unique) {
         var a1  = uniqueSort(a, false);
@@ -37,7 +37,7 @@ module ArraySetops
       return intersect1dHelper(a,b);
     }
 
-    proc intersect1dHelper(a: [] ?t, b: [] t) {
+    proc intersect1dHelper(a: [] ?t, b: [] t) throws {
       var aux = radixSortLSD_keys(concatset(a,b));
 
       // All elements except the last
@@ -51,7 +51,7 @@ module ArraySetops
     }
     
     // returns the exclusive-or of 2 arrays
-    proc setxor1d(a: [] int, b: [] int, assume_unique: bool) {
+    proc setxor1d(a: [] int, b: [] int, assume_unique: bool) throws {
       //if not unique, unique sort arrays then perform operation
       if (!assume_unique) {
         var a1  = uniqueSort(a, false);
@@ -65,7 +65,7 @@ module ArraySetops
     // first concatenates the 2 arrays, then
     // sorts and removes all values that occur
     // more than once
-    proc setxor1dHelper(a: [] ?t, b: [] t) {
+    proc setxor1dHelper(a: [] ?t, b: [] t) throws {
       const aux = radixSortLSD_keys(concatset(a,b));
       const ref D = aux.domain;
 
@@ -88,7 +88,7 @@ module ArraySetops
     }
 
     // returns the set difference of 2 arrays
-    proc setdiff1d(a: [] int, b: [] int, assume_unique: bool) {
+    proc setdiff1d(a: [] int, b: [] int, assume_unique: bool) throws {
       //if not unique, unique sort arrays then perform operation
       if (!assume_unique) {
         var a1  = uniqueSort(a, false);
@@ -104,7 +104,7 @@ module ArraySetops
     // as a boolean array and inverts these
     // values and returns the array indexed
     // with this inverted array
-    proc setdiff1dHelper(a: [] ?t, b: [] t) {
+    proc setdiff1dHelper(a: [] ?t, b: [] t) throws {
         var truth = makeDistArray(a.size, bool);
 
         // based on size of array, determine which method to use 
@@ -123,7 +123,7 @@ module ArraySetops
     // first concatenates the 2 arrays, then
     // sorts resulting array and ensures that
     // values are unique
-    proc union1d(a: [] int, b: [] int) {
+    proc union1d(a: [] int, b: [] int) throws {
       var aux;
       // Artificial scope to clean up temporary arrays
       {

@@ -766,7 +766,7 @@ module GenSymIO {
         return reply;
     }
 
-    proc fixupSegBoundaries(a: [?D] int, segSubdoms: [?fD] domain(1), valSubdoms: [fD] domain(1)) {
+    proc fixupSegBoundaries(a: [?D] int, segSubdoms: [?fD] domain(1), valSubdoms: [fD] domain(1)) throws {
         var boundaries: [fD] int; // First index of each region that needs to be raised
         var diffs: [fD] int;// Amount each region must be raised over previous region
         forall (i, sd, vd, b) in zip(fD, segSubdoms, valSubdoms, boundaries) {
@@ -781,6 +781,8 @@ module GenSymIO {
         forall (b, d) in zip(boundaries, diffs) with (var agg = newDstAggregator(int)) {
             agg.copy(sparseDiffs[b], d);
         }
+        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
+        overMemLimit(numBytes(int) * sparseDiffs.size);
         // Make plateaus from peaks
         var corrections = + scan sparseDiffs;
         // Raise the segment offsets by the plateaus
