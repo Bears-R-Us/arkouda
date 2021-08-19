@@ -218,7 +218,7 @@
 </div>
 <dl class="chpl function">
 <dt id="Broadcast.broadcast">
-<em class="property">proc </em><code class="sig-name descname">broadcast</code><span class="sig-paren">(</span><em class="sig-param">perm: [?D] int</em>, <em class="sig-param">segs: [?sD] int</em>, <em class="sig-param">vals: [sD] ?t</em><span class="sig-paren">)</span><a class="headerlink" href="#Broadcast.broadcast" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">broadcast</code><span class="sig-paren">(</span><em class="sig-param">perm: [?D] int</em>, <em class="sig-param">segs: [?sD] int</em>, <em class="sig-param">vals: [sD] ?t</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#Broadcast.broadcast" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li><p>Broadcast a value per segment of a segmented array to the</p></li>
 <li><p>original ordering of the precursor array. For example, if</p></li>
@@ -231,7 +231,7 @@
 
 <dl class="chpl function">
 <dt>
-<em class="property">proc </em><code class="sig-name descname">broadcast</code><span class="sig-paren">(</span><em class="sig-param">perm: [?D] int</em>, <em class="sig-param">segs: [?sD] int</em>, <em class="sig-param">vals: [sD] bool</em><span class="sig-paren">)</span></dt>
+<em class="property">proc </em><code class="sig-name descname">broadcast</code><span class="sig-paren">(</span><em class="sig-param">perm: [?D] int</em>, <em class="sig-param">segs: [?sD] int</em>, <em class="sig-param">vals: [sD] bool</em><span class="sig-paren">)</span> throws</dt>
 <dd><ul class="simple">
 <li><p>Broadcast a value per segment of a segmented array to the</p></li>
 <li><p>original ordering of the precursor array. For example, if</p></li>
@@ -244,7 +244,7 @@
 
 <dl class="chpl function">
 <dt>
-<em class="property">proc </em><code class="sig-name descname">broadcast</code><span class="sig-paren">(</span><em class="sig-param">segs: [?sD] int</em>, <em class="sig-param">vals: [sD] ?t</em>, <em class="sig-param">size: int</em><span class="sig-paren">)</span></dt>
+<em class="property">proc </em><code class="sig-name descname">broadcast</code><span class="sig-paren">(</span><em class="sig-param">segs: [?sD] int</em>, <em class="sig-param">vals: [sD] ?t</em>, <em class="sig-param">size: int</em><span class="sig-paren">)</span> throws</dt>
 <dd><ul class="simple">
 <li><p>Broadcast a value per segment of a segmented array to the</p></li>
 <li><p>full size of the array. For example, if the segmented array</p></li>
@@ -255,7 +255,7 @@
 
 <dl class="chpl function">
 <dt>
-<em class="property">proc </em><code class="sig-name descname">broadcast</code><span class="sig-paren">(</span><em class="sig-param">segs: [?sD] int</em>, <em class="sig-param">vals: [sD] bool</em>, <em class="sig-param">size: int</em><span class="sig-paren">)</span></dt>
+<em class="property">proc </em><code class="sig-name descname">broadcast</code><span class="sig-paren">(</span><em class="sig-param">segs: [?sD] int</em>, <em class="sig-param">vals: [sD] bool</em>, <em class="sig-param">size: int</em><span class="sig-paren">)</span> throws</dt>
 <dd></dd></dl>
 
 </div>

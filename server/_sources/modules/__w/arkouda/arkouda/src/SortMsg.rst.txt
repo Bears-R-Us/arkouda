@@ -19,7 +19,7 @@ or
 
 .. data:: const sortLogger = new Logger(logLevel)
 
-.. function:: proc sort(a: [?aD] ?t): [aD] t
+.. function:: proc sort(a: [?aD] ?t): [aD] t throws
 
    Sort the given pdarray using Radix Sort and
    return sorted keys as a block distributed array 

@@ -25,7 +25,7 @@ or
 
 .. function:: proc twoPhaseStringSort(ss: SegString): [ss.offsets.aD] int throws
 
-.. function:: proc getPivot(lengths: [?D] int): 2*(int)
+.. function:: proc getPivot(lengths: [?D] int): 2*(int) throws
 
 .. function:: proc gatherLongStrings(ss: SegString, lengths: [] int, longInds: [?D] int): [] (string, int)
 

@@ -24,17 +24,17 @@ includes intersection, union, xor, and diff
 currently, only performs operations with integer arrays 
 
 
-.. function:: proc intersect1d(a: [] int, b: [] int, assume_unique: bool)
+.. function:: proc intersect1d(a: [] int, b: [] int, assume_unique: bool) throws
 
-.. function:: proc intersect1dHelper(a: [] ?t, b: [] t)
+.. function:: proc intersect1dHelper(a: [] ?t, b: [] t) throws
 
-.. function:: proc setxor1d(a: [] int, b: [] int, assume_unique: bool)
+.. function:: proc setxor1d(a: [] int, b: [] int, assume_unique: bool) throws
 
-.. function:: proc setxor1dHelper(a: [] ?t, b: [] t)
+.. function:: proc setxor1dHelper(a: [] ?t, b: [] t) throws
 
-.. function:: proc setdiff1d(a: [] int, b: [] int, assume_unique: bool)
+.. function:: proc setdiff1d(a: [] int, b: [] int, assume_unique: bool) throws
 
-.. function:: proc setdiff1dHelper(a: [] ?t, b: [] t)
+.. function:: proc setdiff1dHelper(a: [] ?t, b: [] t) throws
 
-.. function:: proc union1d(a: [] int, b: [] int)
+.. function:: proc union1d(a: [] int, b: [] int) throws
 

@@ -127,7 +127,7 @@ or
    *  Uses keys:  dataset_name, arkouda_type->[pdarray|seg_string], created->(legacy creation statement)
    
 
-.. function:: proc fixupSegBoundaries(a: [?D] int, segSubdoms: [?fD] domain(1), valSubdoms: [fD] domain(1))
+.. function:: proc fixupSegBoundaries(a: [?D] int, segSubdoms: [?fD] domain(1), valSubdoms: [fD] domain(1)) throws
 
 .. function:: proc get_dtype(filename: string, dsetName: string) throws
 

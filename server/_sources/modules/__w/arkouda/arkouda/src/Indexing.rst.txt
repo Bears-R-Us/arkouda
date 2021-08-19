@@ -28,7 +28,7 @@ includes slicing, indexing by boolean ararys, and concatenation
 
 .. function:: proc sliceHead(a: [?aD] ?t)
 
-.. function:: proc boolIndexer(a: [?aD] ?t, truth: [aD] bool)
+.. function:: proc boolIndexer(a: [?aD] ?t, truth: [aD] bool) throws
 
 .. function:: proc concatset(a: [?aD] ?t, b: [?bD] t)
 

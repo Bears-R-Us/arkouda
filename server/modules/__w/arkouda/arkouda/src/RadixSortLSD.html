@@ -309,7 +309,7 @@
 
 <dl class="chpl function">
 <dt id="RadixSortLSD.radixSortLSD_ranks">
-<em class="property">proc </em><code class="sig-name descname">radixSortLSD_ranks</code><span class="sig-paren">(</span><em class="sig-param">a: [?aD] ?t</em>, <em class="sig-param">checkSorted: bool = true</em><span class="sig-paren">)</span>: [aD] int<a class="headerlink" href="#RadixSortLSD.radixSortLSD_ranks" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">radixSortLSD_ranks</code><span class="sig-paren">(</span><em class="sig-param">a: [?aD] ?t</em>, <em class="sig-param">checkSorted: bool = true</em><span class="sig-paren">)</span>: [aD] int throws<a class="headerlink" href="#RadixSortLSD.radixSortLSD_ranks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Radix Sort Least Significant Digit
 radix sort a block distributed array
 returning a permutation vector as a block distributed array</p>
@@ -317,7 +317,7 @@ returning a permutation vector as a block distributed array</p>
 
 <dl class="chpl function">
 <dt id="RadixSortLSD.radixSortLSD_keys">
-<em class="property">proc </em><code class="sig-name descname">radixSortLSD_keys</code><span class="sig-paren">(</span><em class="sig-param">a: [?aD] ?t</em>, <em class="sig-param">checkSorted: bool = true</em><span class="sig-paren">)</span>: [aD] t<a class="headerlink" href="#RadixSortLSD.radixSortLSD_keys" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">radixSortLSD_keys</code><span class="sig-paren">(</span><em class="sig-param">a: [?aD] ?t</em>, <em class="sig-param">checkSorted: bool = true</em><span class="sig-paren">)</span>: [aD] t throws<a class="headerlink" href="#RadixSortLSD.radixSortLSD_keys" title="Permalink to this definition">¶</a></dt>
 <dd><p>Radix Sort Least Significant Digit
 radix sort a block distributed array
 returning sorted keys as a block distributed array</p>

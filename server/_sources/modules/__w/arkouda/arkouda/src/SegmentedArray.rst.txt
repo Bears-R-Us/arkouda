@@ -139,7 +139,7 @@ or
 
    .. method:: proc substringSearch(const substr: string, mode: SearchMode) throws
 
-   .. method:: proc peel(const delimiter: string, const times: int, param includeDelimiter: bool, param keepPartial: bool, param left: bool)
+   .. method:: proc peel(const delimiter: string, const times: int, param includeDelimiter: bool, param keepPartial: bool, param left: bool) throws
 
    .. method:: proc stick(other: SegString, delim: string, param right: bool) throws
 

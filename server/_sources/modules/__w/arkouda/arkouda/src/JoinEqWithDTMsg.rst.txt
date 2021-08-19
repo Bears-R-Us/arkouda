@@ -40,7 +40,7 @@ or
 
 .. function:: proc findMatch(v: int, seg: [?segD] int, ukeys: [segD] int, perm: [?aD] int): (bool, range)
 
-.. function:: proc joinEqWithDT(a1: [?a1D] int, seg: [?segD] int, ukeys: [segD] int, perm: [?a2D] int, t1: [a1D] int, t2: [a2D] int, dt: int, pred: int, resLimitPerLocale: int)
+.. function:: proc joinEqWithDT(a1: [?a1D] int, seg: [?segD] int, ukeys: [segD] int, perm: [?a2D] int, t1: [a1D] int, t2: [a2D] int, dt: int, pred: int, resLimitPerLocale: int) throws
 
 .. function:: proc joinEqWithDTMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 

@@ -285,7 +285,7 @@ with the result of the membership test.</p>
 
 <dl class="chpl function">
 <dt id="In1d.in1dSort">
-<em class="property">proc </em><code class="sig-name descname">in1dSort</code><span class="sig-paren">(</span><em class="sig-param">ar1: [?aD1] int</em>, <em class="sig-param">ar2: [?aD2] int</em><span class="sig-paren">)</span><a class="headerlink" href="#In1d.in1dSort" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">in1dSort</code><span class="sig-paren">(</span><em class="sig-param">ar1: [?aD1] int</em>, <em class="sig-param">ar2: [?aD2] int</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#In1d.in1dSort" title="Permalink to this definition">¶</a></dt>
 <dd><p>For each value in the first array, check membership in the second array. This
 implementation uses a sort, which is best when the second array is large because
 it scales well in both time and memory.</p>

@@ -229,7 +229,7 @@ for example if (a.max-a.min &gt; a.size) means that a’s are sparse</p>
 
 <dl class="chpl function">
 <dt id="Unique.uniqueSort">
-<em class="property">proc </em><code class="sig-name descname">uniqueSort</code><span class="sig-paren">(</span><em class="sig-param">a: [?aD] ?eltType</em>, <em class="sig-param">param needCounts = true</em><span class="sig-paren">)</span><a class="headerlink" href="#Unique.uniqueSort" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">uniqueSort</code><span class="sig-paren">(</span><em class="sig-param">a: [?aD] ?eltType</em>, <em class="sig-param">param needCounts = true</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#Unique.uniqueSort" title="Permalink to this definition">¶</a></dt>
 <dd><p>sorting based unique finding procedure</p>
 <p>Returns a tuple: (UniqueValArray,UniqueValCountsArray)
 which contains the unique values of a, along with the number of times each unique value appears in a</p>
@@ -245,12 +245,12 @@ which contains the unique values of a, along with the number of times each uniqu
 
 <dl class="chpl function">
 <dt id="Unique.uniqueSortWithInverse">
-<em class="property">proc </em><code class="sig-name descname">uniqueSortWithInverse</code><span class="sig-paren">(</span><em class="sig-param">a: [?aD] ?eltType</em><span class="sig-paren">)</span><a class="headerlink" href="#Unique.uniqueSortWithInverse" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">uniqueSortWithInverse</code><span class="sig-paren">(</span><em class="sig-param">a: [?aD] ?eltType</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#Unique.uniqueSortWithInverse" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt id="Unique.uniqueFromSorted">
-<em class="property">proc </em><code class="sig-name descname">uniqueFromSorted</code><span class="sig-paren">(</span><em class="sig-param">sorted: [?aD] ?eltType</em>, <em class="sig-param">param needCounts = true</em><span class="sig-paren">)</span><a class="headerlink" href="#Unique.uniqueFromSorted" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">uniqueFromSorted</code><span class="sig-paren">(</span><em class="sig-param">sorted: [?aD] ?eltType</em>, <em class="sig-param">param needCounts = true</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#Unique.uniqueFromSorted" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">

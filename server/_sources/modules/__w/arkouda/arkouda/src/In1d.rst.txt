@@ -73,7 +73,7 @@ or
    :type truth: [] bool
    
 
-.. function:: proc in1dSort(ar1: [?aD1] int, ar2: [?aD2] int)
+.. function:: proc in1dSort(ar1: [?aD1] int, ar2: [?aD2] int) throws
 
    For each value in the first array, check membership in the second array. This 
    implementation uses a sort, which is best when the second array is large because 

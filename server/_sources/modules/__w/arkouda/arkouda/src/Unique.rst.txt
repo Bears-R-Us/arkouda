@@ -31,7 +31,7 @@ for example if (a.max-a.min > a.size) means that a's are sparse
 
 .. data:: const uLogger = new Logger(logLevel)
 
-.. function:: proc uniqueSort(a: [?aD] ?eltType, param needCounts = true)
+.. function:: proc uniqueSort(a: [?aD] ?eltType, param needCounts = true) throws
 
    
    sorting based unique finding procedure
@@ -45,9 +45,9 @@ for example if (a.max-a.min > a.size) means that a's are sparse
    :returns: ([] int, [] int)
    
 
-.. function:: proc uniqueSortWithInverse(a: [?aD] ?eltType)
+.. function:: proc uniqueSortWithInverse(a: [?aD] ?eltType) throws
 
-.. function:: proc uniqueFromSorted(sorted: [?aD] ?eltType, param needCounts = true)
+.. function:: proc uniqueFromSorted(sorted: [?aD] ?eltType, param needCounts = true) throws
 
 .. function:: proc uniqueGroup(str: SegString, returnInverse = false, assumeSorted = false) throws
 

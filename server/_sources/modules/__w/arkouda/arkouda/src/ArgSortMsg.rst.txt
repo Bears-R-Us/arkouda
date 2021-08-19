@@ -57,7 +57,7 @@ to permute the original array into sorted order
    new level of the sorting key.
    
 
-.. function:: proc argsortDefault(A: [?D] ?t): [D] int
+.. function:: proc argsortDefault(A: [?D] ?t): [D] int throws
 
 .. function:: proc argsortMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 

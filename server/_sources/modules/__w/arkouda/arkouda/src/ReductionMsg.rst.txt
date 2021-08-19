@@ -27,7 +27,7 @@ or
 
 .. function:: proc segmentedReductionMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
 
-.. function:: proc segSum(values: [] ?intype, segments: [?D] int, skipNan = false)
+.. function:: proc segSum(values: [] ?intype, segments: [?D] int, skipNan = false) throws
 
    Segmented Reductions of the form: seg<Op>(values:[] t, segments: [] int)
    Use <segments> as the boundary indices to divide <values> into chunks, 
@@ -35,23 +35,23 @@ or
    of reduced values is the same size as <segments>.
    
 
-.. function:: proc segProduct(values: [] ?t, segments: [?D] int, skipNan = false): [D] real
+.. function:: proc segProduct(values: [] ?t, segments: [?D] int, skipNan = false): [D] real throws
 
-.. function:: proc segMean(values: [] ?t, segments: [?D] int, skipNan = false): [D] real
+.. function:: proc segMean(values: [] ?t, segments: [?D] int, skipNan = false): [D] real throws
 
-.. function:: proc segMin(values: [?vD] ?t, segments: [?D] int, skipNan = false): [D] t
+.. function:: proc segMin(values: [?vD] ?t, segments: [?D] int, skipNan = false): [D] t throws
 
-.. function:: proc segMax(values: [?vD] ?t, segments: [?D] int, skipNan = false): [D] t
+.. function:: proc segMax(values: [?vD] ?t, segments: [?D] int, skipNan = false): [D] t throws
 
-.. function:: proc segArgmin(values: [?vD] ?t, segments: [?D] int): ([D] t, [D] int)
+.. function:: proc segArgmin(values: [?vD] ?t, segments: [?D] int): ([D] t, [D] int) throws
 
-.. function:: proc segArgmax(values: [?vD] ?t, segments: [?D] int): ([D] t, [D] int)
+.. function:: proc segArgmax(values: [?vD] ?t, segments: [?D] int): ([D] t, [D] int) throws
 
-.. function:: proc segAny(values: [] bool, segments: [?D] int): [D] bool
+.. function:: proc segAny(values: [] bool, segments: [?D] int): [D] bool throws
 
-.. function:: proc segAll(values: [] bool, segments: [?D] int): [D] bool
+.. function:: proc segAll(values: [] bool, segments: [?D] int): [D] bool throws
 
-.. function:: proc segOr(values: [?vD] int, segments: [?D] int): [D] int
+.. function:: proc segOr(values: [?vD] int, segments: [?D] int): [D] int throws
 
 .. class:: ResettingOrScanOp : ReduceScanOp
 
@@ -89,7 +89,7 @@ or
 
    .. method:: proc clone()
 
-.. function:: proc segAnd(values: [?vD] int, segments: [?D] int): [D] int
+.. function:: proc segAnd(values: [?vD] int, segments: [?D] int): [D] int throws
 
 .. class:: ResettingAndScanOp : ReduceScanOp
 
@@ -127,9 +127,9 @@ or
 
    .. method:: proc clone()
 
-.. function:: proc segXor(values: [] int, segments: [?D] int)
+.. function:: proc segXor(values: [] int, segments: [?D] int) throws
 
-.. function:: proc expandKeys(kD, segments: [?sD] int): [kD] int
+.. function:: proc expandKeys(kD, segments: [?sD] int): [kD] int throws
 
 .. function:: proc segNumUnique(values: [?kD] int, segments: [?sD] int) throws
 
