@@ -38,6 +38,14 @@ or
    * retrieve the pdarray from the SymTab.
    
 
+.. function:: proc segmentedCalcOffsets(values: [] uint(8), valuesDom: domain): [] int throws
+
+   *
+   * For creating the Strings/SegString object we can calculate the offsets array on the server
+   * by finding the null terminators given the values/bytes array which should have already been
+   * converted to uint8
+   
+
 .. function:: proc tondarrayMsg(cmd: string, payload: string, st: borrowed SymTab): bytes throws
 
    
@@ -64,10 +72,6 @@ or
    * Spawns a separate Chapel process that executes and returns the 
    * result of the h5ls command
    
-
-.. function:: proc readhdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws
-
-   Read dataset from HDF5 files into arkouda symbol table. 
 
 .. function:: proc checkCast(c: string, type toType): bool
 
@@ -129,7 +133,7 @@ or
 
 .. function:: proc fixupSegBoundaries(a: [?D] int, segSubdoms: [?fD] domain(1), valSubdoms: [fD] domain(1)) throws
 
-.. function:: proc get_dtype(filename: string, dsetName: string) throws
+.. function:: proc get_dtype(filename: string, dsetName: string, skipSegStringOffsets: bool = false) throws
 
    
    * Retrieves the datatype of the dataset read from HDF5 

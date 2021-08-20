@@ -261,6 +261,17 @@
 </dd></dl>
 
 <dl class="chpl function">
+<dt id="GenSymIO.segmentedCalcOffsets">
+<em class="property">proc </em><code class="sig-name descname">segmentedCalcOffsets</code><span class="sig-paren">(</span><em class="sig-param">values: [] uint(8)</em>, <em class="sig-param">valuesDom: domain</em><span class="sig-paren">)</span>: [] int throws<a class="headerlink" href="#GenSymIO.segmentedCalcOffsets" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li></li>
+<li><p>For creating the Strings/SegString object we can calculate the offsets array on the server</p></li>
+<li><p>by finding the null terminators given the values/bytes array which should have already been</p></li>
+<li><p>converted to uint8</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
 <dt id="GenSymIO.tondarrayMsg">
 <em class="property">proc </em><code class="sig-name descname">tondarrayMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: bytes throws<a class="headerlink" href="#GenSymIO.tondarrayMsg" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
@@ -293,12 +304,6 @@
 <li><p>Spawns a separate Chapel process that executes and returns the</p></li>
 <li><p>result of the h5ls command</p></li>
 </ul>
-</dd></dl>
-
-<dl class="chpl function">
-<dt id="GenSymIO.readhdfMsg">
-<em class="property">proc </em><code class="sig-name descname">readhdfMsg</code><span class="sig-paren">(</span><em class="sig-param">cmd: string</em>, <em class="sig-param">payload: string</em>, <em class="sig-param">st: borrowed SymTab</em><span class="sig-paren">)</span>: MsgTuple throws<a class="headerlink" href="#GenSymIO.readhdfMsg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read dataset from HDF5 files into arkouda symbol table.</p>
 </dd></dl>
 
 <dl class="chpl function">
@@ -452,7 +457,7 @@
 
 <dl class="chpl function">
 <dt id="GenSymIO.get_dtype">
-<em class="property">proc </em><code class="sig-name descname">get_dtype</code><span class="sig-paren">(</span><em class="sig-param">filename: string</em>, <em class="sig-param">dsetName: string</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.get_dtype" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">get_dtype</code><span class="sig-paren">(</span><em class="sig-param">filename: string</em>, <em class="sig-param">dsetName: string</em>, <em class="sig-param">skipSegStringOffsets: bool = false</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.get_dtype" title="Permalink to this definition">¶</a></dt>
 <dd><ul class="simple">
 <li><p>Retrieves the datatype of the dataset read from HDF5</p></li>
 </ul>

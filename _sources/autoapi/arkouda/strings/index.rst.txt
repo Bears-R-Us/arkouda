@@ -484,7 +484,7 @@ Classes
       numpy.ndarray
 
 
-   .. py:method:: save(self, prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate') -> str
+   .. py:method:: save(self, prefix_path: str, dataset: str = 'strings_array', mode: str = 'truncate', save_offsets: bool = True) -> str
 
       Save the Strings object to HDF5. The result is a collection of HDF5 files,
       one file per locale of the arkouda server, where each filename starts
@@ -498,6 +498,10 @@ Classes
       :param mode: By default, truncate (overwrite) output files, if they exist.
                    If 'append', create a new Strings dataset within existing files.
       :type mode: str {'truncate' | 'append'}
+      :param save_offsets: Defaults to True which will instruct the server to save the offsets array to HDF5
+                           If False the offsets array will not be save and will be derived from the string values
+                           upon load/read.
+      :type save_offsets: bool
 
       :returns:
       :rtype: None

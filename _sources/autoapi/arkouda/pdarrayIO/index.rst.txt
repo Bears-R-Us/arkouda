@@ -39,7 +39,7 @@ Functions
    :raises RuntimeError: Raised if error occurs in executing ls on an HDF5 file
 
 
-.. py:function:: read_hdf(dsetName: str, filenames: Union[str, List[str]], strictTypes: bool = True) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: read_hdf(dsetName: str, filenames: Union[str, List[str]], strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Read a single dataset from multiple HDF5 files into an Arkouda
    pdarray or Strings object.
@@ -54,6 +54,14 @@ Functions
                        file contains a uint32 dataset and another contains an int64
                        dataset, the contents of both will be read into an int64 pdarray.
    :type strictTypes: bool
+   :param allow_errors: Default False, if True will allow files with read errors to be skipped
+                        instead of failing.  A warning will be included in the return containing
+                        the total number of files skipped due to failure and up to 10 filenames.
+   :type allow_errors: bool
+   :param calc_string_offsets: Default False, if True this will tell the server to calculate the
+                               offsets/segments array on the server versus loading them from HDF5 files.
+                               In the future this option may be set to True as the default.
+   :type calc_string_offsets: bool
 
    :returns: A pdarray or Strings instance pointing to the server-side data
    :rtype: Union[pdarray,Strings]
@@ -75,7 +83,7 @@ Functions
    If dsetName is not present in all files, a TypeError is raised.
 
 
-.. py:function:: read_all(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
+.. py:function:: read_all(filenames: Union[str, List[str]], datasets: Optional[Union[str, List[str]]] = None, iterative: bool = False, strictTypes: bool = True, allow_errors: bool = False, calc_string_offsets=False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]]
 
    Read datasets from HDF5 files.
 
@@ -96,6 +104,10 @@ Functions
                         instead of failing.  A warning will be included in the return containing
                         the total number of files skipped due to failure and up to 10 filenames.
    :type allow_errors: bool
+   :param calc_string_offsets: Default False, if True this will tell the server to calculate the
+                               offsets/segments array on the server versus loading them from HDF5 files.
+                               In the future this option may be set to True as the default.
+   :type calc_string_offsets: bool
 
    :returns: * *For a single dataset returns an Arkouda pdarray or Arkouda Strings object*
              * *and for multiple datasets returns a dictionary of Arkouda pdarrays or*
@@ -126,7 +138,7 @@ Functions
    to HDF5 files.
 
 
-.. py:function:: load(path_prefix: str, dataset: str = 'array') -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
+.. py:function:: load(path_prefix: str, dataset: str = 'array', calc_string_offsets: bool = False) -> Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]
 
    Load a pdarray previously saved with ``pdarray.save()``.
 
@@ -134,6 +146,9 @@ Functions
    :type path_prefix: str
    :param dataset: Dataset name where the pdarray was saved, defaults to 'array'
    :type dataset: str
+   :param calc_string_offsets: If True the server will ignore Segmented Strings 'offsets' array and derive
+                               it from the null-byte terminators.  Defaults to False currently
+   :type calc_string_offsets: bool
 
    :returns: The pdarray or Strings that was previously saved
    :rtype: Union[pdarray, Strings]
