@@ -790,7 +790,7 @@ class Strings:
 
     @typechecked
     def save(self, prefix_path : str, dataset : str='strings_array', 
-             mode : str='truncate') -> str:
+             mode : str='truncate', save_offsets : bool = True) -> str:
         """
         Save the Strings object to HDF5. The result is a collection of HDF5 files,
         one file per locale of the arkouda server, where each filename starts
@@ -806,6 +806,10 @@ class Strings:
         mode : str {'truncate' | 'append'}
             By default, truncate (overwrite) output files, if they exist.
             If 'append', create a new Strings dataset within existing files.
+        save_offsets : bool
+            Defaults to True which will instruct the server to save the offsets array to HDF5
+            If False the offsets array will not be save and will be derived from the string values
+            upon load/read.
 
         Returns
         -------
@@ -841,11 +845,11 @@ class Strings:
             json_array = json.dumps([prefix_path])
         except Exception as e:
             raise ValueError(e)
-        
-        return cast(str, generic_msg(cmd="tohdf", args="{} {} {} {} {} {}".\
-                           format(self.bytes.name, dataset, m, json_array, 
-                                  self.dtype, self.offsets.name)))
-        
+
+        cmd = "tohdf"
+        args = f"{self.bytes.name} {dataset} {m} {json_array} {self.dtype} {self.offsets.name} {save_offsets}"
+        return cast(str, generic_msg(cmd, args))
+
 
     def is_registered(self) -> np.bool_:
         """

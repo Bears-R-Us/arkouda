@@ -426,6 +426,33 @@ class IOTest(ArkoudaTest):
                             format(IOTest.io_test_dir), dsetName='strings/values'))
         self.assertIsNotNone(ak.read_hdf(filenames='{}/strings-test_LOCALE0000'.\
                             format(IOTest.io_test_dir), dsetName='strings/segments'))
+
+
+        # Repeat the test using the calc_string_offsets=True option to have server calculate offsets array
+        r_strings_subset = ak.read_all(filenames=f'{IOTest.io_test_dir}/strings-test_LOCALE0000',
+                                       calc_string_offsets=True)
+        self.assertIsNotNone(r_strings_subset)
+        self.assertTrue(isinstance(r_strings_subset[0], str))
+        self.assertIsNotNone(ak.read_hdf(filenames=f'{IOTest.io_test_dir}/strings-test_LOCALE0000',
+                                         dsetName='strings/values', calc_string_offsets=True))
+        self.assertIsNotNone(ak.read_hdf(filenames=f'{IOTest.io_test_dir}/strings-test_LOCALE0000',
+                                         dsetName='strings/segments', calc_string_offsets=True))
+
+    def testStringsWithoutOffsets(self):
+        """
+        This tests both saving & reading a strings array without saving and reading the offsets to HDF5.
+        Instead the offsets array will be derived from the values/bytes area by looking for null-byte terminator strings
+        """
+        strings_array = ak.array(['testing string{}'.format(num) for num in list(range(0, 25))])
+        strings_array.save('{}/strings-test'.format(IOTest.io_test_dir), dataset='strings', save_offsets=False)
+        r_strings_array = ak.load('{}/strings-test'.format(IOTest.io_test_dir),
+                                  dataset='strings', calc_string_offsets=True)
+        strings = strings_array.to_ndarray()
+        strings.sort()
+        r_strings = r_strings_array.to_ndarray()
+        r_strings.sort()
+        self.assertTrue((strings == r_strings).all())
+
      
     def testSaveLongStringsDataset(self):
         # Create, save, and load Strings dataset

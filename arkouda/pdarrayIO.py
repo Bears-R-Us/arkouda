@@ -40,7 +40,7 @@ def ls_hdf(filename : str) -> str:
 
 @typechecked
 def read_hdf(dsetName : str, filenames : Union[str,List[str]],
-             strictTypes: bool=True) \
+             strictTypes: bool=True, allow_errors:bool = False, calc_string_offsets:bool = False) \
           -> Union[pdarray, Strings]:
     """
     Read a single dataset from multiple HDF5 files into an Arkouda
@@ -58,7 +58,15 @@ def read_hdf(dsetName : str, filenames : Union[str,List[str]],
         precision and sign across different files. For example, if one 
         file contains a uint32 dataset and another contains an int64
         dataset, the contents of both will be read into an int64 pdarray.
-        
+    allow_errors: bool
+        Default False, if True will allow files with read errors to be skipped
+        instead of failing.  A warning will be included in the return containing
+        the total number of files skipped due to failure and up to 10 filenames.
+    calc_string_offsets: bool
+        Default False, if True this will tell the server to calculate the
+        offsets/segments array on the server versus loading them from HDF5 files.
+        In the future this option may be set to True as the default.
+
     Returns
     -------
     Union[pdarray,Strings] 
@@ -96,15 +104,17 @@ def read_hdf(dsetName : str, filenames : Union[str,List[str]],
     #     return Strings(*rep_msg.split('+'))
     # else:
     #     return create_pdarray(rep_msg)
-    return cast(Union[pdarray, Strings], 
-                read_all(filenames, datasets=dsetName, strictTypes=strictTypes))
+    return cast(Union[pdarray, Strings],
+                read_all(filenames, datasets=dsetName, strictTypes=strictTypes, allow_errors=allow_errors,
+                         calc_string_offsets=calc_string_offsets))
 
 
 def read_all(filenames : Union[str, List[str]],
              datasets: Optional[Union[str, List[str]]] = None,
              iterative: bool = False,
              strictTypes: bool = True,
-             allow_errors: bool = False)\
+             allow_errors: bool = False,
+             calc_string_offsets = False)\
              -> Union[pdarray, Strings, Mapping[str,Union[pdarray,Strings]]]:
     """
     Read datasets from HDF5 files.
@@ -128,6 +138,10 @@ def read_all(filenames : Union[str, List[str]],
         Default False, if True will allow files with read errors to be skipped
         instead of failing.  A warning will be included in the return containing
         the total number of files skipped due to failure and up to 10 filenames.
+    calc_string_offsets: bool
+        Default False, if True this will tell the server to calculate the
+        offsets/segments array on the server versus loading them from HDF5 files.
+        In the future this option may be set to True as the default.
 
     Returns
     -------
@@ -181,11 +195,12 @@ def read_all(filenames : Union[str, List[str]],
         if len(nonexistent) > 0:
             raise ValueError("Dataset(s) not found: {}".format(nonexistent))
     if iterative == True: # iterative calls to server readhdf
-        return {dset:read_hdf(dset, filenames, strictTypes=strictTypes) for dset in datasets}
+        return {dset: read_hdf(dset, filenames, strictTypes=strictTypes, allow_errors=allow_errors,
+                               calc_string_offsets=calc_string_offsets) for dset in datasets}
     else:  # single call to server readAllHdf
-        rep_msg = generic_msg(cmd="readAllHdf", args="{} {:n} {:n} {} {} | {}".
-                              format(strictTypes, len(datasets), len(filenames), allow_errors, json.dumps(datasets),
-                                     json.dumps(filenames)))
+        rep_msg = generic_msg(cmd="readAllHdf", args=
+        f"{strictTypes} {len(datasets)} {len(filenames)} {allow_errors} {calc_string_offsets} {json.dumps(datasets)} | {json.dumps(filenames)}"
+                              )
         rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllHdfMsgJson for json structure
         items = rep["items"] if "items" in rep else []
         file_errors = rep["file_errors"] if "file_errors" in rep else []
@@ -222,7 +237,7 @@ def read_all(filenames : Union[str, List[str]],
 
 
 @typechecked
-def load(path_prefix : str, dataset : str='array') -> Union[pdarray,Strings]:
+def load(path_prefix : str, dataset : str='array', calc_string_offsets:bool = False) -> Union[pdarray,Strings]:
     """
     Load a pdarray previously saved with ``pdarray.save()``.
 
@@ -232,6 +247,9 @@ def load(path_prefix : str, dataset : str='array') -> Union[pdarray,Strings]:
         Filename prefix used to save the original pdarray
     dataset : str
         Dataset name where the pdarray was saved, defaults to 'array'
+    calc_string_offsets : bool
+        If True the server will ignore Segmented Strings 'offsets' array and derive
+        it from the null-byte terminators.  Defaults to False currently
 
     Returns
     -------
@@ -257,7 +275,7 @@ def load(path_prefix : str, dataset : str='array') -> Union[pdarray,Strings]:
     globstr = "{}_LOCALE*{}".format(prefix, extension)
 
     try:
-        return read_hdf(dataset, globstr)
+        return read_hdf(dataset, globstr, calc_string_offsets=calc_string_offsets)
     except RuntimeError as re:
         if 'does not exist' in str(re):
             raise ValueError('There are no files corresponding to the ' +

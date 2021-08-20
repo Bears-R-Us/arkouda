@@ -1,3 +1,4 @@
+import itertools
 import numpy as np # type: ignore
 import pandas as pd # type: ignore
 from typing import cast, Iterable, Optional, Union
@@ -176,24 +177,20 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     if a.ndim != 1:
         raise RuntimeError("Only rank-1 pdarrays or ndarrays supported")
     # Check if array of strings
-    if a.dtype.kind == 'U' or  'U' in a.dtype.kind:
-        encoded = np.array([elem.encode() for elem in a])
-        # Length of each string, plus null byte terminator
-        lengths = np.array([len(elem) for elem in encoded]) + 1
-        # Compute zero-up segment offsets
-        offsets = np.cumsum(lengths) - lengths
-        # Allocate and fill bytes array with string segments
-        nbytes = offsets[-1] + lengths[-1]
+    if 'U' in a.dtype.kind:
+        # encode each string and add a null byte terminator
+        encoded = [i for i in itertools.chain.from_iterable(map(lambda x: x.encode() + b"\x00", a))]
+        nbytes = len(encoded)
         if nbytes > maxTransferBytes:
             raise RuntimeError(("Creating pdarray would require transferring {} bytes," +
                                 " which exceeds allowed transfer size. Increase " +
                                 "ak.maxTransferBytes to force.").format(nbytes))
-        values = np.zeros(nbytes, dtype=np.uint8)
-        for s, o in zip(encoded, offsets):
-            for i, b in enumerate(s):
-                values[o+i] = b
-        # Recurse to create pdarrays for offsets and values, then return Strings object
-        return Strings(cast(pdarray, array(offsets)), cast(pdarray, array(values)))
+        encoded_np = np.array(encoded, dtype=np.uint8)
+        args = f"{encoded_np.dtype.name} {encoded_np.size} seg_string={True}"
+        rep_msg = generic_msg(cmd='array', args=args, payload=_array_memview(encoded_np), send_binary=True)
+        parts = cast(str, rep_msg).split('+', maxsplit=3)
+        return Strings(parts[0], parts[1])
+
     # If not strings, then check that dtype is supported in arkouda
     if a.dtype.name not in DTypes:
         raise RuntimeError("Unhandled dtype {}".format(a.dtype))
@@ -206,14 +203,19 @@ def array(a : Union[pdarray,np.ndarray, Iterable]) -> Union[pdarray, Strings]:
     # including the dtype and size. If the server has a different byteorder
     # than our numpy array we need to swap to match since the server expects
     # native endian bytes
+    aview = _array_memview(a)
+    args = f"{a.dtype.name} {size} seg_strings={False}"
+    rep_msg = generic_msg(cmd='array', args=args, payload=aview, send_binary=True)
+    return create_pdarray(rep_msg)
+
+
+def _array_memview(a) -> memoryview:
     if ((get_byteorder(a.dtype) == '<' and get_server_byteorder() == 'big') or
-        (get_byteorder(a.dtype) == '>' and get_server_byteorder() == 'little')):
-        aview = memoryview(a.byteswap())
+            (get_byteorder(a.dtype) == '>' and get_server_byteorder() == 'little')):
+        return memoryview(a.byteswap())
     else:
-        aview = memoryview(a)
-    args = "{} {:n} ".  format(a.dtype.name, size)
-    repMsg = generic_msg(cmd='array', args=args, payload=aview, send_binary=True)
-    return create_pdarray(repMsg)
+        return memoryview(a)
+
 
 def zeros(size : int_scalars, dtype : type=np.float64) -> pdarray:
     """

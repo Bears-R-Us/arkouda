@@ -21,7 +21,7 @@ module GenSymIO {
     use ServerConfig;
     use Search;
     use IndexingMsg;
-    
+
     private config const logLevel = ServerConfig.logLevel;
     const gsLogger = new Logger(logLevel);
 
@@ -42,12 +42,15 @@ module GenSymIO {
         var msg:string = "";
         var rname:string = "";
 
-        var (dtypeBytes, sizeBytes) = args.splitMsgToTuple(" ", 2);
+        var (dtypeBytes, sizeBytes, segStr) = args.splitMsgToTuple(" ", 3);
         var dtype = DType.UNDEF;
         var size:int;
+        var asSegStr = false;
+        
         try {
             dtype = str2dtype(dtypeBytes);
             size = sizeBytes:int;
+            asSegStr = "seg_string=True" == segStr.strip();
         } catch {
             var errorMsg = "Error parsing/decoding either dtypeBytes or size";
             gsLogger.error(getModuleName(), getRoutineName(), getLineNumber(), errorMsg);
@@ -82,14 +85,46 @@ module GenSymIO {
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
         }
 
+        if asSegStr {
+            try {
+                var values = toSymEntry(st.lookup(rname), uint(8));
+                var offsets = segmentedCalcOffsets(values.a, values.aD);
+                var oname = st.nextName();
+                var offsetsEntry = new shared SymEntry(offsets);
+                st.addEntry(oname, offsetsEntry);
+                msg = "created " + st.attrib(oname) + "+created " + st.attrib(rname);
+            } catch e: Error {
+                msg = "Error creating offsets for SegString";
+                msgType = MsgType.ERROR;
+                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),msg);
+            }
+        }
+
         if (MsgType.ERROR != msgType) {  // success condition
             // Set up return message indicating SymTab name corresponding to new pdarray
-            msg = "created " + st.attrib(rname);
+            // If we made a SegString or we encountered an error, the msg will already be populated
+            if (msg.isEmpty()) {
+                msg = "created " + st.attrib(rname);
+            }
             gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),msg);
         }
         return new MsgTuple(msg, msgType);
     }
 
+    /**
+     * For creating the Strings/SegString object we can calculate the offsets array on the server
+     * by finding the null terminators given the values/bytes array which should have already been
+     * converted to uint8
+     */
+    proc segmentedCalcOffsets(values:[] uint(8), valuesDom:domain): [] int throws {
+        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),"Calculating offsets for SegString");
+        var nb_locs = forall (i,v) in zip(valuesDom, values) do if v == NULL_STRINGS_VALUE then i+1;
+        // We need to adjust nb_locs b/c offsets is really the starting position of each string
+        // So allocated a new array of zeros and assign nb_locs offset by one
+        var offsets: [nb_locs.domain] int;
+        offsets[1..offsets.domain.high] = nb_locs[0..#nb_locs.domain.high];
+        return offsets;
+    }
 
     /*
      * Ensure the file is closed, disregard errors
@@ -249,186 +284,6 @@ module GenSymIO {
         }
     }
 
-    // DEPRECATED - All client paths redirect to the readAllHdfMsg version
-    /* Read dataset from HDF5 files into arkouda symbol table. */
-    proc readhdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-        var repMsg: string;
-        // reqMsg = "readhdf <dsetName> <nfiles> [<json_filenames>]"
-        var (dsetName, strictFlag, nfilesStr, jsonfiles) = payload.splitMsgToTuple(4);
-        var strictTypes: bool = true;
-        if (strictFlag.toLower() == "false") {
-          strictTypes = false;
-        }
-
-        var nfiles = try! nfilesStr:int;
-        var filelist: [0..#nfiles] string;
-
-        try {
-            filelist = jsonToPdArray(jsonfiles, nfiles);
-        } catch {
-            var errorMsg = "Error: could not decode json filenames via tempfile (%i files: %s)".format(
-                                                                 nfiles, jsonfiles);
-            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);                                                           
-        }
-
-        var filedom = filelist.domain;
-        var filenames: [filedom] string;
-
-        if filelist.size == 1 {
-            var tmp = glob(filelist[0]);
-
-            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                               "glob expanded %s to %i files".format(filelist[0], tmp.size));
-            if tmp.size == 0 {
-                var errorMsg = "File %s does not exist in a location accessible to Arkouda".format(filelist[0]);
-                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);  
-            }
-
-            // Glob returns filenames in weird order. Sort for consistency
-            sort(tmp);
-            filedom = tmp.domain;
-            filenames = tmp;
-        } else {
-            filenames = filelist;
-        }
-
-        var segArrayFlags: [filedom] bool;
-        var dclasses: [filedom] C_HDF5.hid_t;
-        var bytesizes: [filedom] int;
-        var signFlags: [filedom] bool;
-        for (i, fname) in zip(filedom, filenames) {
-            try {
-                (segArrayFlags[i], dclasses[i], bytesizes[i], signFlags[i]) = get_dtype(fname, dsetName);
-            } catch e: FileNotFoundError {
-                var errorMsg = "File %s not found".format(fname);
-                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            } catch e: PermissionError {
-                var errorMsg = "Permission error opening %s: %s".format(fname,e.message());
-                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            } catch e: DatasetNotFoundError {
-                var errorMsg = "Dataset %s not found in file %s".format(dsetName,fname);
-                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            } catch e: NotHDF5FileError {
-                var errorMsg = "The file %s is not an HDF5 file: %s".format(fname,e.message());
-                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            } catch e: HDF5FileFormatError {
-                var errorMsg = "HDF5 format error %s for file %s".format(e.message(),fname);
-                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);           
-            } catch e: SegArrayError {
-                var errorMsg = "SegmentedArray error: %s".format(e.message());
-                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            } catch e: Error {
-                var errorMsg = "Other error %s".format(e.message());
-                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
-        }
-        const isSegArray = segArrayFlags[filedom.first];
-        const dataclass = dclasses[filedom.first];
-        const bytesize = bytesizes[filedom.first];
-        const isSigned = signFlags[filedom.first];
-        for (name, sa, dc, bs, sf) in zip(filenames, segArrayFlags, dclasses, bytesizes, signFlags) {
-            if ((sa != isSegArray) || (dc != dataclass)) {
-                var errorMsg = "inconsistent dtype in dataset %s of file %s".format(dsetName, name);
-                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);              
-            } else if (strictTypes && ((bs != bytesize) || (sf != isSigned))) {
-                var errorMsg = "inconsistent precision or sign in dataset %s of file %s\nWith strictTypes, mixing of precision and signedness not allowed (set strictTypes=False to suppress)".format(dsetName, name);
-                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);                            
-            }
-        }
-        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                             "Verified all dtypes across files");
-
-        var subdoms: [filedom] domain(1);
-        var segSubdoms: [filedom] domain(1);
-        var len: int;
-        var nSeg: int;
-        try {
-            if isSegArray {
-                (segSubdoms, nSeg) = get_subdoms(filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);
-                (subdoms, len) = get_subdoms(filenames, dsetName + "/" + SEGARRAY_VALUE_NAME);
-            } else {
-                (subdoms, len) = get_subdoms(filenames, dsetName);
-            }
-        } catch e: HDF5RankError {
-            var errorMsg = notImplementedError("readhdf", try! "Rank %i arrays".format(e.rank));
-            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR); 
-        } catch e: Error {
-            var errorMsg = "Other error: %s".format(e.message());
-            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR); 
-        }
-
-        select (isSegArray, dataclass) {
-            when (true, C_HDF5.H5T_INTEGER) {
-                if (bytesize != 1) || isSigned {
-                    var errorMsg = "Detected unhandled datatype: segmented? %t, class %i, size %i, signed? %t".
-                                            format(isSegArray, dataclass, bytesize, isSigned);
-                    gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                    return new MsgTuple(errorMsg, MsgType.ERROR);                                             
-                }
-
-                var entrySeg = new shared SymEntry(nSeg, int);
-                read_files_into_distributed_array(entrySeg.a, segSubdoms, filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);
-                fixupSegBoundaries(entrySeg.a, segSubdoms, subdoms);
-                var entryVal = new shared SymEntry(len, uint(8));
-                read_files_into_distributed_array(entryVal.a, subdoms, filenames, 
-                                                         dsetName + "/" + SEGARRAY_VALUE_NAME);
-
-                var segName = st.nextName();
-                st.addEntry(segName, entrySeg);
-                var valName = st.nextName();
-                st.addEntry(valName, entryVal);
-                
-                var repMsg = "created " + st.attrib(segName) + " +created " + st.attrib(valName);
-                gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-                return new MsgTuple(repMsg, MsgType.NORMAL);
-            }
-            when (false, C_HDF5.H5T_INTEGER) {
-                var entryInt = new shared SymEntry(len, int);
-                gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                            "Initialized int entry");                
-                read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
-                var rname = st.nextName();
-                st.addEntry(rname, entryInt);
-
-                var repMsg = "created " + st.attrib(rname);
-                gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-                return new MsgTuple(repMsg, MsgType.NORMAL);
-            }
-            when (false, C_HDF5.H5T_FLOAT) {
-                var entryReal = new shared SymEntry(len, real);
-                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),
-                                             "Initialized float entry");
-                read_files_into_distributed_array(entryReal.a, subdoms, filenames, dsetName);
-                var rname = st.nextName();
-                st.addEntry(rname, entryReal);
-
-                var repMsg = "created " + st.attrib(rname);
-                gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
-                return new MsgTuple(repMsg, MsgType.NORMAL);
-            }
-            otherwise {
-                var errorMsg = "Detected unhandled datatype: segmented? " +
-                               "%t, class %i, size %i, signed? %t".format(isSegArray, 
-                               dataclass, bytesize, isSigned);
-                gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
-        }
-    }
-
     /*
      * Utility proc to test casting a string to a specified type
      * :arg c: String to cast
@@ -452,10 +307,9 @@ module GenSymIO {
      * Reads all datasets from 1..n HDF5 files into an Arkouda symbol table. 
      */
     proc readAllHdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-        // reqMsg = "readAllHdf <ndsets> <nfiles> [<json_dsetname>] | [<json_filenames>]"
         var repMsg: string;
         // May need a more robust delimiter then " | "
-        var (strictFlag, ndsetsStr, nfilesStr, allowErrorsFlag, arraysStr) = payload.splitMsgToTuple(5);
+        var (strictFlag, ndsetsStr, nfilesStr, allowErrorsFlag, calcStringOffsetsFlag, arraysStr) = payload.splitMsgToTuple(6);
         var strictTypes: bool = true;
         if (strictFlag.toLower().strip() == "false") {
           strictTypes = false;
@@ -463,7 +317,13 @@ module GenSymIO {
 
         var allowErrors: bool = "true" == allowErrorsFlag.toLower(); // default is false
         if allowErrors {
-            gsLogger.warn(getModuleName(), getRoutineName(), getLineNumber(), "Allowing file read errors");            
+            gsLogger.warn(getModuleName(), getRoutineName(), getLineNumber(), "Allowing file read errors");
+        }
+
+        var calcStringOffsets: bool = (calcStringOffsetsFlag.toLower() == "true"); // default is false
+        if calcStringOffsets {
+            gsLogger.warn(getModuleName(), getRoutineName(), getLineNumber(),
+                "Calculating string array offsets instead of reading from HDF5");
         }
 
         // Test arg casting so we can send error message instead of failing
@@ -540,7 +400,7 @@ module GenSymIO {
             for (i, fname) in zip(filedom, filenames) {
                 var hadError = false;
                 try {
-                    (segArrayFlags[i], dclasses[i], bytesizes[i], signFlags[i]) = get_dtype(fname, dsetName);
+                    (segArrayFlags[i], dclasses[i], bytesizes[i], signFlags[i]) = get_dtype(fname, dsetName, calcStringOffsets);
                 } catch e: FileNotFoundError {
                     fileErrorMsg = "File %s not found".format(fname);
                     gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),fileErrorMsg);
@@ -605,7 +465,10 @@ module GenSymIO {
             var nSeg: int;
             try {
                 if isSegArray {
-                    (segSubdoms, nSeg) = get_subdoms(filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);
+                    // TODO wrap this in a conditional with option to ignore
+                    if (!calcStringOffsets) {
+                        (segSubdoms, nSeg) = get_subdoms(filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);
+                    }
                     (subdoms, len) = get_subdoms(filenames, dsetName + "/" + SEGARRAY_VALUE_NAME);
                 } else {
                     (subdoms, len) = get_subdoms(filenames, dsetName);
@@ -631,16 +494,27 @@ module GenSymIO {
                         gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
                         return new MsgTuple(errorMsg, MsgType.ERROR);
                     }
-                    var entrySeg = new shared SymEntry(nSeg, int);
-                    read_files_into_distributed_array(entrySeg.a, segSubdoms, filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);
-                    fixupSegBoundaries(entrySeg.a, segSubdoms, subdoms);
+
+                    // Load the strings bytes/values first
                     var entryVal = new shared SymEntry(len, uint(8));
                     read_files_into_distributed_array(entryVal.a, subdoms, filenames, dsetName + "/" + SEGARRAY_VALUE_NAME);
-                    var segName = st.nextName();
-                    st.addEntry(segName, entrySeg);
                     var valName = st.nextName();
                     st.addEntry(valName, entryVal);
-                    rnames.append((dsetName, "seg_string", "%s+%s".format(segName, valName)));
+
+                    // Either load or derive the offsets array based on user preference
+                    var offsetsName = st.nextName();
+                    if (calcStringOffsets || nSeg < 1) {
+                        var offsetsArray = segmentedCalcOffsets(entryVal.a, entryVal.aD);
+                        var offsetsEntry = new shared SymEntry(offsetsArray);
+                        st.addEntry(offsetsName, offsetsEntry);
+                    } else {
+                        var offsetsEntry = new shared SymEntry(nSeg, int);
+                        read_files_into_distributed_array(offsetsEntry.a, segSubdoms, filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);
+                        fixupSegBoundaries(offsetsEntry.a, segSubdoms, subdoms);
+                        st.addEntry(offsetsName, offsetsEntry);
+                    }
+
+                    rnames.append((dsetName, "seg_string", "%s+%s".format(offsetsName, valName)));
                 }
                 when (false, C_HDF5.H5T_INTEGER) {
                     var entryInt = new shared SymEntry(len, int);
@@ -792,7 +666,7 @@ module GenSymIO {
     /* 
      * Retrieves the datatype of the dataset read from HDF5 
      */
-    proc get_dtype(filename: string, dsetName: string) throws {
+    proc get_dtype(filename: string, dsetName: string, skipSegStringOffsets: bool = false) throws {
         const READABLE = (S_IRUSR | S_IRGRP | S_IROTH);
 
         if !exists(filename) {
@@ -854,17 +728,19 @@ module GenSymIO {
                 C_HDF5.H5Fclose(file_id);
             }
             if isStringsDataset(file_id, dsetName) {
-                var offsetDset = dsetName + "/" + SEGARRAY_OFFSET_NAME;
-                var (offsetClass, offsetByteSize, offsetSign) = 
-                                           try get_dataset_info(file_id, offsetDset);
-                if (offsetClass != C_HDF5.H5T_INTEGER) {
-                    throw getErrorWithContext(
-                       msg="dataset %s has incorrect one or more sub-datasets" +
-                       " %s %s".format(dsetName,SEGARRAY_OFFSET_NAME,SEGARRAY_VALUE_NAME), 
-                       lineNumber=getLineNumber(),
-                       routineName=getRoutineName(),
-                       moduleName=getModuleName(),
-                       errorClass='SegArrayError');                    
+                if ( !skipSegStringOffsets ) {
+                    var offsetDset = dsetName + "/" + SEGARRAY_OFFSET_NAME;
+                    var (offsetClass, offsetByteSize, offsetSign) = 
+                                            try get_dataset_info(file_id, offsetDset);
+                    if (offsetClass != C_HDF5.H5T_INTEGER) {
+                        throw getErrorWithContext(
+                        msg="dataset %s has incorrect one or more sub-datasets" +
+                        " %s %s".format(dsetName,SEGARRAY_OFFSET_NAME,SEGARRAY_VALUE_NAME), 
+                        lineNumber=getLineNumber(),
+                        routineName=getRoutineName(),
+                        moduleName=getModuleName(),
+                        errorClass='SegArrayError');                    
+                    }
                 }
                 var valueDset = dsetName + "/" + SEGARRAY_VALUE_NAME;
                 try (dataclass, bytesize, isSigned) = 
@@ -1175,13 +1051,13 @@ module GenSymIO {
         return {low..high by stride};
     }
 
-    proc tohdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {               
-        var (arrayName, dsetName, modeStr, jsonfile, 
-                                      dataType, segsName) = payload.splitMsgToTuple(6);
+    proc tohdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+        var (arrayName, dsetName, modeStr, jsonfile, dataType, segsName, writeOffsetsFlag)= payload.splitMsgToTuple(7);
 
         var mode = try! modeStr: int;
         var filename: string;
         var entry = st.lookup(arrayName);
+        var writeOffsets = "true" == writeOffsetsFlag.strip().toLower();
 
         try {
             filename = jsonToPdArray(jsonfile, 1)[0];
@@ -1216,7 +1092,7 @@ module GenSymIO {
                     var e = toSymEntry(entry, uint(8));
                     var segsEntry = st.lookup(segsName);                   
                     var s_e = toSymEntry(segsEntry, int);
-                    warnFlag = write1DDistStrings(filename, mode, dsetName, e.a, DType.UInt8,s_e.a);
+                    warnFlag = write1DDistStrings(filename, mode, dsetName, e.a, DType.UInt8, s_e.a, writeOffsets);
                 } otherwise {
                     var errorMsg = unrecognizedTypeError("tohdf", dtype2str(entry.dtype));
                     gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);            
@@ -1254,7 +1130,7 @@ module GenSymIO {
      * Writes out the two pdarrays composing a Strings object to hdf5.
      */
     private proc write1DDistStrings(filename: string, mode: int, dsetName: string, A, 
-                                                                array_type: DType, SA) throws {
+                                                                array_type: DType, SA, writeOffsets:bool) throws {
         var prefix: string;
         var extension: string;  
         var warnFlag: bool;      
@@ -1317,7 +1193,7 @@ module GenSymIO {
         coforall (loc, idx) in zip(A.targetLocales(), filenames.domain) 
              with (ref shuffleLeftIndices, ref shuffleRightIndices, 
                    ref isSingleString, ref endsWithCompleteString, ref charArraySize) do on loc {
-             generateStringsMetadata(idx,shuffleLeftIndices, shuffleRightIndices, 
+             generateStringsMetadata(idx, shuffleLeftIndices, shuffleRightIndices, 
                           isSingleString, endsWithCompleteString, charArraySize, A, SA);
         }
 
@@ -1516,7 +1392,7 @@ module GenSymIO {
                  }
                  
                  // Generate the segments list now that the char list is finalized
-                 var segmentsList = generateFinalSegmentsList(charList,idx);
+                 var segmentsList = if writeOffsets then generateFinalSegmentsList(charList, idx) else new list(int);
              
                  // Write the finalized valuesList and segmentsList to the hdf5 group
                  writeStringsToHdf(myFileID, idx, group, charList, segmentsList);
@@ -1598,7 +1474,7 @@ module GenSymIO {
                      }
                     
                      // Generate the segments list now that the char list is finalized
-                     var segmentsList = generateFinalSegmentsList(charList,idx);
+                     var segmentsList = if writeOffsets then generateFinalSegmentsList(charList, idx) else new list(int);
  
                      // Write the finalized valuesList and segmentsList to the hdf5 group
                      writeStringsToHdf(myFileID, idx, group, charList, segmentsList);
@@ -1626,7 +1502,7 @@ module GenSymIO {
                       } 
                       
                       // Generate the segments list now that the char list is finalized
-                      var segmentsList = generateFinalSegmentsList(charList,idx);
+                      var segmentsList = if writeOffsets then generateFinalSegmentsList(charList, idx) else new list(int);
 
                       // Write the finalized valuesList and segmentsList to the hdf5 group
                       writeStringsToHdf(myFileID, idx, group, charList, segmentsList);
@@ -2138,10 +2014,11 @@ module GenSymIO {
         H5LTmake_dataset_WAR(fileId, '/%s/values'.format(group).c_str(), 1,
                      c_ptrTo([valuesList.size:uint(64)]), getHDF5Type(uint(8)),
                             c_ptrTo(valuesList.toArray()));
-
-        H5LTmake_dataset_WAR(fileId, '/%s/segments'.format(group).c_str(), 1,
+        if ( !segmentsList.isEmpty() ) {
+            H5LTmake_dataset_WAR(fileId, '/%s/segments'.format(group).c_str(), 1,
                      c_ptrTo([segmentsList.size:uint(64)]),getHDF5Type(int),
                            c_ptrTo(segmentsList.toArray()));
+        }
 
         if logLevel == LogLevel.DEBUG {           
             t1.stop();  
@@ -2157,4 +2034,6 @@ module GenSymIO {
     private proc isLastLocale(idx: int) : bool {
         return idx == numLocales-1;
     }
+
+
 }
