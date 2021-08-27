@@ -876,7 +876,7 @@ class Categorical:
         """
         removal_names: List[str] = []
         groups: DefaultDict[str, List[str]] = defaultdict(list)
-        result_categoricals = {}
+        result_categoricals: Dict[str, Categorical] = {}
         for k in d.keys():  # build dict of str->list[components]
             if "." in k:
                 groups[k.split(".")[0]].append(k)
@@ -893,7 +893,7 @@ class Categorical:
                     if part.endswith(".categories"):
                         base_name = ".".join(part.split(".categories")[0:-1])
 
-                # Construct categorical add it to the return_categoricals under the parent name
+                # Construct categorical and add it to the return_categoricals under the parent name
                 result_categoricals[base_name] = Categorical.from_codes(**cat_parts)
 
         return removal_names, result_categoricals
