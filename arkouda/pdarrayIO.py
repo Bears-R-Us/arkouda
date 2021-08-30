@@ -1,12 +1,15 @@
 from typeguard import typechecked
 import json, os, warnings
 from typing import cast, Dict, List, Mapping, Optional, Union
+
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray
 from arkouda.strings import Strings
+from arkouda.categorical import Categorical
 
 __all__ = ["ls_hdf", "read_hdf", "read_all", "load", "get_datasets",
            "load_all", "save_all"]
+
 
 @typechecked
 def ls_hdf(filename : str) -> str:
@@ -354,8 +357,9 @@ def get_datasets_allow_errors(filenames: List[str]) -> List[str]:
         raise FileNotFoundError("Could not read any of the requested files")
     return datasets
 
+
 @typechecked
-def load_all(path_prefix : str) -> Mapping[str,Union[pdarray,Strings]]:
+def load_all(path_prefix: str) -> Mapping[str, Union[pdarray, Strings, Categorical]]:
     """
     Load multiple pdarrays or Strings previously saved with ``save_all()``.
 
@@ -388,8 +392,17 @@ def load_all(path_prefix : str) -> Mapping[str,Union[pdarray,Strings]]:
     prefix, extension = os.path.splitext(path_prefix)
     firstname = "{}_LOCALE0000{}".format(prefix, extension)
     try:
-        return {dataset: load(path_prefix, dataset=dataset) \
-                                       for dataset in get_datasets(firstname)}
+        result = {dataset: load(path_prefix, dataset=dataset) for dataset in get_datasets(firstname)}
+
+        # Check for Categoricals and remove if necessary
+        removal_names, categoricals = Categorical.parse_hdf_categoricals(result)
+        if removal_names:
+            result.update(categoricals)
+            for n in removal_names:
+                result.pop(n)
+
+        return result
+
     except RuntimeError as re:
         # enables backwards compatibility with previous naming convention
         if 'does not exist' in str(re):

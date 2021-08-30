@@ -1,13 +1,15 @@
 from __future__ import annotations
-from typing import cast, List, Optional, Sequence, Union, Dict
-import numpy as np # type: ignore
+from typing import cast, List, Optional, Sequence, Union, Dict, Mapping, Tuple, DefaultDict
+import numpy as np  # type: ignore
 import itertools
+from collections import defaultdict
 from typeguard import typechecked
+from arkouda.client import generic_msg
 from arkouda.strings import Strings
 from arkouda.pdarrayclass import pdarray, RegistrationError, unregister_pdarray_by_name
 from arkouda.groupbyclass import GroupBy, broadcast
 from arkouda.pdarraysetops import in1d, unique, concatenate
-from arkouda.pdarraycreation import zeros, zeros_like, arange
+from arkouda.pdarraycreation import zeros_like, arange
 from arkouda.dtypes import resolve_scalar_dtype, str_scalars, int_scalars
 from arkouda.dtypes import int64 as akint64
 from arkouda.sorting import argsort
@@ -15,6 +17,7 @@ from arkouda.logger import getArkoudaLogger
 from arkouda.infoclass import information, list_registry
 
 __all__ = ['Categorical']
+
 
 class Categorical:
     """
@@ -186,7 +189,7 @@ class Categorical:
             encapsulating the results of the requested binop      
 
         Raises
-    -   -----
+        -----
         ValueError
             Raised if (1) the op is not in the self.BinOps set, or (2) if the
             sizes of this and the other instance don't match
@@ -559,6 +562,63 @@ class Categorical:
             newvals = wherediditgo[oldvals]
             return Categorical.from_codes(newvals, newidx)
 
+    @typechecked
+    def save(self, prefix_path: str, dataset: str = 'categorical_array', mode: str = 'truncate') -> str:
+        """
+        Save the Categorical object to HDF5. The result is a collection of HDF5 files,
+        one file per locale of the arkouda server, where each filename starts
+        with prefix_path and dataset. Each locale saves its chunk of the Strings array to its
+        corresponding file.
+
+        Parameters
+        ----------
+        prefix_path : str
+            Directory and filename prefix that all output files share
+        dataset : str
+            Name of the dataset to create in HDF5 files (must not already exist)
+        mode : str {'truncate' | 'append'}
+            By default, truncate (overwrite) output files, if they exist.
+            If 'append', create a new Categorical dataset within existing files.
+
+        Returns
+        -------
+        String message indicating result of save operation
+
+        Raises
+        ------
+        ValueError
+            Raised if the lengths of columns and values differ, or the mode is
+            neither 'truncate' nor 'append'
+        TypeError
+            Raised if prefix_path, dataset, or mode is not a str
+
+        See Also
+        --------
+        pdarrayIO.save, pdarrayIO.load_all
+
+        Notes
+        -----
+        Important implementation notes: (1) Strings state is saved as two datasets
+        within an hdf5 group: one for the string characters and one for the
+        segments corresponding to the start of each string, (2) the hdf5 group is named
+        via the dataset parameter.
+        """
+        if mode.lower() not in ["append", "truncate"]:
+            raise ValueError("Allowed modes are 'truncate' and 'append'")
+
+        result = []
+        comp_dict = {k: v for k, v in self._get_components_dict().items() if v is not None}
+
+        if self.RequiredPieces.issubset(comp_dict.keys()):
+            # Honor the first mode but switch to append for all others since each following comp may wipe out the file
+            first = True
+            for k, v in comp_dict.items():
+                result.append(v.save(prefix_path, dataset=f"{dataset}.{k}", mode=(mode if first else "append")))
+                first = False
+        else:
+            raise Exception("The required pieces of `categories` and `codes` were not populated on this Categorical")
+        return ";".join(result)
+
     @typechecked()
     def register(self, user_defined_name: str) -> Categorical:
         """
@@ -789,3 +849,51 @@ class Categorical:
             unregister_pdarray_by_name(f"{user_defined_name}.permutation")
         if f"{user_defined_name}.segments" in registry:
             unregister_pdarray_by_name(f"{user_defined_name}.segments")
+
+    @staticmethod
+    @typechecked
+    def parse_hdf_categoricals(d: Mapping[str, Union[pdarray, Strings]]) -> Tuple[List[str], Dict[str, Categorical]]:
+        """
+        This function should be used in conjunction with the load_all function which reads hdf5 files and reconstitutes
+        Categorical objects.  Categorical objects use a naming convention and HDF5 structure so they can be identified
+        and constructed for the user.
+
+        In general you should not call this method directly
+
+        Parameters
+        ----------
+        d : Dictionary of String to either Pdarray or Strings object
+
+        Returns
+        -------
+        2-Tuple of List of strings containing key names which should be removed and Dictionary of base name to
+        Categorical object
+
+        See Also
+        --------
+        Categorical.save, load_all
+
+        """
+        removal_names: List[str] = []
+        groups: DefaultDict[str, List[str]] = defaultdict(list)
+        result_categoricals: Dict[str, Categorical] = {}
+        for k in d.keys():  # build dict of str->list[components]
+            if "." in k:
+                groups[k.split(".")[0]].append(k)
+
+        # for each of the groups, find categorical by testing values in the group for ".categories"
+        for k, v in groups.items():  # str->list[str]
+            if any([i.endswith(".categories") for i in v]):  # we have a categorical
+                # gather categorical pieces and replace the original mapping with the categorical object
+                cat_parts = {}
+                base_name = ""
+                for part in v:
+                    removal_names.append(part)  # flag it for removal from original
+                    cat_parts[part.split(".")[-1]] = d[part]  # put the part into our categorical parts
+                    if part.endswith(".categories"):
+                        base_name = ".".join(part.split(".categories")[0:-1])
+
+                # Construct categorical and add it to the return_categoricals under the parent name
+                result_categoricals[base_name] = Categorical.from_codes(**cat_parts)
+
+        return removal_names, result_categoricals

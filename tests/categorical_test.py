@@ -1,4 +1,5 @@
 import numpy as np
+import tempfile
 from context import arkouda as ak
 from base_test import ArkoudaTest
 
@@ -185,4 +186,65 @@ class CategoricalTest(ArkoudaTest):
         ans = ak.Categorical(ak.array(['a', 'b']))
         self.assertTrue((c == ans).all())
         
-        
+    def testSaveAndLoadCategorical(self):
+        """
+        Test to save categorical to hdf5 and read it back successfully
+        """
+        cat = self._getCategorical()
+        with self.assertRaises(ValueError):  # Expect error for mode not being append or truncate
+            cat.save("foo", dataset="bar", mode="not_allowed")
+
+        with tempfile.TemporaryDirectory() as tmp_dirname:
+            dset_name = "categorical_array"  # name of categorical array
+
+            # Test the save functionality & confirm via h5py
+            cat.save(f"{tmp_dirname}/cat-save-test", dataset=dset_name)
+
+            import h5py
+            f = h5py.File(tmp_dirname + "/cat-save-test_LOCALE0000", mode="r")
+            keys = set(f.keys())
+            self.assertEqual(len(keys), 4, "Expected 4 keys")
+            self.assertSetEqual(set(f"categorical_array.{k}" for k in cat._get_components_dict().keys()), keys)
+            f.close()
+
+            # Now try to read them back with load_all
+            x = ak.load_all(path_prefix=f"{tmp_dirname}/cat-save-test")
+            self.assertTrue(dset_name in x)
+            cat_from_hdf = x[dset_name]
+
+            expected_categories = ['string 1', 'string 2', 'string 3', 'string 4', 'string 5', 'string 6', 'string 7',
+                                   'string 8', 'string 9', 'string 10']
+
+            # Note assertCountEqual asserts a and b have the same elements in the same amount regardless of order
+            self.assertCountEqual(cat_from_hdf.categories.to_ndarray().tolist(), expected_categories)
+
+            # Asserting the optional components and sizes are correct for both constructors should be sufficient
+            self.assertTrue(cat_from_hdf.segments is not None)
+            self.assertTrue(cat_from_hdf.permutation is not None)
+            self.assertTrue(cat_from_hdf.size is 10)
+
+    def testSaveAndLoadCategoricalMulti(self):
+        """
+        Test to build a pseudo dataframe with multiple categoricals, pdarrays, strings objects and successfully
+        write/read it from HDF5
+        """
+        c1 = ak.Categorical(ak.array(['abc', 'def', 'ghi', 'jkl']))
+        c2 = ak.Categorical(ak.array(['mno', 'pqr', 'stu', 'vwx', 'yz']))
+        pda1 = ak.zeros(5)
+        strings1 = ak.random_strings_uniform(9, 10, 5)
+
+        with tempfile.TemporaryDirectory() as tmp_dirname:
+            df = {
+                "cat1": c1,
+                "cat2": c2,
+                "pda1": pda1,
+                "strings1": strings1
+            }
+            ak.save_all(df, f"{tmp_dirname}/cat-save-test")
+            x = ak.load_all(path_prefix=f"{tmp_dirname}/cat-save-test")
+            self.assertTrue(len(x.items()) == 4)
+            # Note assertCountEqual asserts a and b have the same elements in the same amount regardless of order
+            self.assertCountEqual(x["cat1"].categories.to_ndarray().tolist(), c1.categories.to_ndarray().tolist())
+            self.assertCountEqual(x["cat2"].categories.to_ndarray().tolist(), c2.categories.to_ndarray().tolist())
+            self.assertCountEqual(x["pda1"].to_ndarray().tolist(), pda1.to_ndarray().tolist())
+            self.assertCountEqual(x["strings1"].offsets.to_ndarray().tolist(), strings1.offsets.to_ndarray().tolist())
