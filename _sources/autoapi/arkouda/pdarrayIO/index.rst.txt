@@ -179,7 +179,7 @@ Functions
    .. seealso:: :obj:`ls_hdf`
 
 
-.. py:function:: load_all(path_prefix: str) -> Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]
+.. py:function:: load_all(path_prefix: str) -> Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings, arkouda.categorical.Categorical]]
 
    Load multiple pdarrays or Strings previously saved with ``save_all()``.
 

@@ -261,32 +261,30 @@ value, but proceed with caution.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.categorical.Categorical._binop">
 <span class="sig-name descname"><span class="pre">_binop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">Categorical</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.str_scalars" title="arkouda.dtypes.str_scalars"><span class="pre">arkouda.dtypes.str_scalars</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="../dtypes/index.html#arkouda.dtypes.str_scalars" title="arkouda.dtypes.str_scalars"><span class="pre">arkouda.dtypes.str_scalars</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a></span></span><a class="headerlink" href="#arkouda.categorical.Categorical._binop" title="Permalink to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>Executes the requested binop on this Categorical instance and returns
+<dd><p>Executes the requested binop on this Categorical instance and returns
 the results within a pdarray object.</p>
-<dl class="simple">
-<dt>other<span class="classifier">Union[Categorical,str_scalars]</span></dt><dd><p>the other object is a Categorical object or string scalar</p>
-</dd>
-<dt>op<span class="classifier">str_scalars</span></dt><dd><p>name of the binary operation to be performed</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>pdarray</dt><dd><p>encapsulating the results of the requested binop</p>
-</dd>
-</dl>
-<p>Raises</p>
-</div></blockquote>
-<ul class="simple">
-<li><dl class="simple">
-<dt>ValueError</dt><dd><p>Raised if (1) the op is not in the self.BinOps set, or (2) if the
-sizes of this and the other instance don’t match</p>
-</dd>
-<dt>RuntimeError</dt><dd><p>Raised if a server-side error is thrown while executing the
-binary operation</p>
-</dd>
-</dl>
-</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>other</strong> (<em>Union</em><em>[</em><a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><em>Categorical</em></a><em>,</em><em>str_scalars</em><em>]</em>) – the other object is a Categorical object or string scalar</p></li>
+<li><p><strong>op</strong> (<em>str_scalars</em>) – name of the binary operation to be performed</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>encapsulating the results of the requested binop</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – Raised if (1) the op is not in the self.BinOps set, or (2) if the
+sizes of this and the other instance don’t match</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if a server-side error is thrown while executing the
+binary operation</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -555,6 +553,47 @@ results in non-deterministic ordering of elements.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="arkouda.categorical.Categorical.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'categorical_array'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'truncate'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#arkouda.categorical.Categorical.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the Categorical object to HDF5. The result is a collection of HDF5 files,
+one file per locale of the arkouda server, where each filename starts
+with prefix_path and dataset. Each locale saves its chunk of the Strings array to its
+corresponding file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix_path</strong> (<em>str</em>) – Directory and filename prefix that all output files share</p></li>
+<li><p><strong>dataset</strong> (<em>str</em>) – Name of the dataset to create in HDF5 files (must not already exist)</p></li>
+<li><p><strong>mode</strong> (<em>str {'truncate'</em><em> | </em><em>'append'}</em>) – By default, truncate (overwrite) output files, if they exist.
+If ‘append’, create a new Categorical dataset within existing files.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>String message indicating result of save operation</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – Raised if the lengths of columns and values differ, or the mode is
+neither ‘truncate’ nor ‘append’</p></li>
+<li><p><strong>TypeError</strong> – Raised if prefix_path, dataset, or mode is not a str</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pdarrayIO.save</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">pdarrayIO.load_all</span></code></p>
+</div>
+<p class="rubric">Notes</p>
+<p>Important implementation notes: (1) Strings state is saved as two datasets
+within an hdf5 group: one for the string characters and one for the
+segments corresponding to the start of each string, (2) the hdf5 group is named
+via the dataset parameter.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="arkouda.categorical.Categorical.register">
 <span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_defined_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">Categorical</span></a></span></span><a class="headerlink" href="#arkouda.categorical.Categorical.register" title="Permalink to this definition">¶</a></dt>
 <dd><p>Register this Categorical object and underlying components with the Arkouda server</p>
@@ -751,6 +790,31 @@ with the arkouda server via register()</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="#arkouda.categorical.Categorical.register" title="arkouda.categorical.Categorical.register"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register</span></code></a>, <a class="reference internal" href="#arkouda.categorical.Categorical.unregister" title="arkouda.categorical.Categorical.unregister"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unregister</span></code></a>, <a class="reference internal" href="#arkouda.categorical.Categorical.attach" title="arkouda.categorical.Categorical.attach"><code class="xref py py-obj docutils literal notranslate"><span class="pre">attach</span></code></a>, <a class="reference internal" href="#arkouda.categorical.Categorical.is_registered" title="arkouda.categorical.Categorical.is_registered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_registered</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.categorical.Categorical.parse_hdf_categoricals">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">parse_hdf_categoricals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="../strings/index.html#arkouda.strings.Strings" title="arkouda.strings.Strings"><span class="pre">arkouda.strings.Strings</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="#arkouda.categorical.Categorical" title="arkouda.categorical.Categorical"><span class="pre">Categorical</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.categorical.Categorical.parse_hdf_categoricals" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function should be used in conjunction with the load_all function which reads hdf5 files and reconstitutes
+Categorical objects.  Categorical objects use a naming convention and HDF5 structure so they can be identified
+and constructed for the user.</p>
+<p>In general you should not call this method directly</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>d</strong> (<em>Dictionary of String to either Pdarray</em><em> or </em><em>Strings object</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>2-Tuple of List of strings containing key names which should be removed and Dictionary of base name to</em></p></li>
+<li><p><em>Categorical object</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.categorical.Categorical.save" title="arkouda.categorical.Categorical.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Categorical.save</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">load_all</span></code></p>
 </div>
 </dd></dl>
 

@@ -504,7 +504,7 @@ Classes
       :type save_offsets: bool
 
       :returns:
-      :rtype: None
+      :rtype: String message indicating result of save operation
 
       :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
           neither 'truncate' nor 'append'

@@ -170,30 +170,21 @@ Classes
 
    .. py:method:: _binop(self, other: Union[Categorical, arkouda.dtypes.str_scalars], op: arkouda.dtypes.str_scalars) -> arkouda.pdarrayclass.pdarray
 
-          Executes the requested binop on this Categorical instance and returns
-          the results within a pdarray object.
+      Executes the requested binop on this Categorical instance and returns
+      the results within a pdarray object.
 
-          Parameters
-          ----------
-          other : Union[Categorical,str_scalars]
-              the other object is a Categorical object or string scalar
-          op : str_scalars
-              name of the binary operation to be performed
+      :param other: the other object is a Categorical object or string scalar
+      :type other: Union[Categorical,str_scalars]
+      :param op: name of the binary operation to be performed
+      :type op: str_scalars
 
-          Returns
-          -------
-          pdarray
-              encapsulating the results of the requested binop
+      :returns: encapsulating the results of the requested binop
+      :rtype: pdarray
 
-          Raises
-      -   -----
-          ValueError
-              Raised if (1) the op is not in the self.BinOps set, or (2) if the
-              sizes of this and the other instance don't match
-          RuntimeError
-              Raised if a server-side error is thrown while executing the
-              binary operation
-
+      :raises ValueError: Raised if (1) the op is not in the self.BinOps set, or (2) if the
+          sizes of this and the other instance don't match
+      :raises RuntimeError: Raised if a server-side error is thrown while executing the
+          binary operation
 
 
    .. py:method:: _r_binop(self, other: Union[Categorical, arkouda.dtypes.str_scalars], op: arkouda.dtypes.str_scalars) -> arkouda.pdarrayclass.pdarray
@@ -403,6 +394,38 @@ Classes
       This operation can be expensive -- slower than concatenating Strings.
 
 
+   .. py:method:: save(self, prefix_path: str, dataset: str = 'categorical_array', mode: str = 'truncate') -> str
+
+      Save the Categorical object to HDF5. The result is a collection of HDF5 files,
+      one file per locale of the arkouda server, where each filename starts
+      with prefix_path and dataset. Each locale saves its chunk of the Strings array to its
+      corresponding file.
+
+      :param prefix_path: Directory and filename prefix that all output files share
+      :type prefix_path: str
+      :param dataset: Name of the dataset to create in HDF5 files (must not already exist)
+      :type dataset: str
+      :param mode: By default, truncate (overwrite) output files, if they exist.
+                   If 'append', create a new Categorical dataset within existing files.
+      :type mode: str {'truncate' | 'append'}
+
+      :returns:
+      :rtype: String message indicating result of save operation
+
+      :raises ValueError: Raised if the lengths of columns and values differ, or the mode is
+          neither 'truncate' nor 'append'
+      :raises TypeError: Raised if prefix_path, dataset, or mode is not a str
+
+      .. seealso:: :obj:`pdarrayIO.save`, :obj:`pdarrayIO.load_all`
+
+      .. rubric:: Notes
+
+      Important implementation notes: (1) Strings state is saved as two datasets
+      within an hdf5 group: one for the string characters and one for the
+      segments corresponding to the start of each string, (2) the hdf5 group is named
+      via the dataset parameter.
+
+
    .. py:method:: register(self, user_defined_name: str) -> Categorical
 
       Register this Categorical object and underlying components with the Arkouda server
@@ -539,6 +562,24 @@ Classes
       :raises RegistrationError: if there is an issue attempting to unregister any underlying components
 
       .. seealso:: :obj:`register`, :obj:`unregister`, :obj:`attach`, :obj:`is_registered`
+
+
+   .. py:method:: parse_hdf_categoricals(d: Mapping[str, Union[arkouda.pdarrayclass.pdarray, arkouda.strings.Strings]]) -> Tuple[List[str], Dict[str, Categorical]]
+      :staticmethod:
+
+      This function should be used in conjunction with the load_all function which reads hdf5 files and reconstitutes
+      Categorical objects.  Categorical objects use a naming convention and HDF5 structure so they can be identified
+      and constructed for the user.
+
+      In general you should not call this method directly
+
+      :param d:
+      :type d: Dictionary of String to either Pdarray or Strings object
+
+      :returns: * *2-Tuple of List of strings containing key names which should be removed and Dictionary of base name to*
+                * *Categorical object*
+
+      .. seealso:: :obj:`Categorical.save`, :obj:`load_all`
 
 
 
