@@ -1,10 +1,20 @@
 import numpy as np
+import glob
+import shutil
+import os
 import tempfile
+from arkouda import io_util
 from context import arkouda as ak
 from base_test import ArkoudaTest
 
 
 class CategoricalTest(ArkoudaTest):
+
+    @classmethod
+    def setUpClass(cls):
+        super(CategoricalTest, cls).setUpClass()
+        CategoricalTest.cat_test_base_tmp = '{}/categorical_test'.format(os.getcwd())
+        io_util.get_directory(CategoricalTest.cat_test_base_tmp )
     
     def _getCategorical(self, prefix : str='string', size : int=11) -> ak.Categorical:
         return ak.Categorical(ak.array(['{} {}'.format(prefix,i) for i in range(1,size)]))
@@ -194,7 +204,7 @@ class CategoricalTest(ArkoudaTest):
         with self.assertRaises(ValueError):  # Expect error for mode not being append or truncate
             cat.save("foo", dataset="bar", mode="not_allowed")
 
-        with tempfile.TemporaryDirectory() as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=CategoricalTest.cat_test_base_tmp) as tmp_dirname:
             dset_name = "categorical_array"  # name of categorical array
 
             # Test the save functionality & confirm via h5py
@@ -233,7 +243,7 @@ class CategoricalTest(ArkoudaTest):
         pda1 = ak.zeros(5)
         strings1 = ak.random_strings_uniform(9, 10, 5)
 
-        with tempfile.TemporaryDirectory() as tmp_dirname:
+        with tempfile.TemporaryDirectory(dir=CategoricalTest.cat_test_base_tmp) as tmp_dirname:
             df = {
                 "cat1": c1,
                 "cat2": c2,
@@ -248,3 +258,13 @@ class CategoricalTest(ArkoudaTest):
             self.assertCountEqual(x["cat2"].categories.to_ndarray().tolist(), c2.categories.to_ndarray().tolist())
             self.assertCountEqual(x["pda1"].to_ndarray().tolist(), pda1.to_ndarray().tolist())
             self.assertCountEqual(x["strings1"].offsets.to_ndarray().tolist(), strings1.offsets.to_ndarray().tolist())
+
+    def tearDown(self):
+        super(CategoricalTest, self).tearDown()
+        for f in glob.glob('{}/*'.format(CategoricalTest.cat_test_base_tmp)):
+            os.remove(f)
+
+    @classmethod
+    def tearDownClass(cls):
+        super(CategoricalTest, cls).tearDownClass()
+        shutil.rmtree(CategoricalTest.cat_test_base_tmp)
