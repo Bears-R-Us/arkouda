@@ -8,7 +8,6 @@ module SegmentedArray {
   use SipHash;
   use SegStringSort;
   use RadixSortLSD only radixSortLSD_ranks;
-  use Reflection;
   use PrivateDist;
   use ServerConfig;
   use Unique;
@@ -16,6 +15,7 @@ module SegmentedArray {
   use Reflection;
   use Logging;
   use ServerErrors;
+  use Regexp;
 
   private config const logLevel = ServerConfig.logLevel;
   const saLogger = new Logger(logLevel);
@@ -459,8 +459,90 @@ module SegmentedArray {
       }
       return truth;
     }
+
+    /*
+    Returns Regexp.compile if pattern can be compiled without an error
+    */
+    proc checkCompile(const pattern: string) throws {
+      try {
+        return compile(pattern);
+      }
+      catch {
+        var errorMsg = "re2 could not compile pattern: %s)".format(pattern);
+        saLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+        throw new owned IllegalArgumentError(errorMsg);
+      }
+    }
+
+    proc _unsafeCompileRegex(const pattern: string) {
+      // This is a private function and should not be called to compile pattern. Use checkCompile instead
+
+      // This proc is a workaound to allow declaring regexps using a with clause in forall loops
+      // since using declarations with throws are illegal
+      // It is only called after checkCompile so the try! will not result in a server crash
+      return try! compile(pattern);
+    }
+
+    /*
+    Returns list of bools where index i indicates whether the regular expression, pattern, matched string i of the SegString
+
+    Note: the regular expression engine used, re2, does not support lookahead/lookbehind
+
+    :arg pattern: regex pattern to be applied to strings in SegString
+    :type pattern: string
+
+    :arg mode: mode of search being performed (contains, startsWith, endsWith, match)
+    :type mode: SearchMode enum
+
+    :returns: [domain] bool where index i indicates whether the regular expression, pattern, matched string i of the SegString
+    */
+    proc substringSearchRegex(const pattern: string, mode: SearchMode) throws {
+      var hits: [offsets.aD] bool = false;  // the answer
+      checkCompile(pattern);
+
+      // should we do len check here? re2.compile('') is valid regex and matches everything
+      ref oa = offsets.a;
+      ref va = values.a;
+      var lengths = getLengths();
+
+      select mode {
+        when SearchMode.contains {
+          forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
+            // regexp.search searches the receiving string for matches at any offset
+            h = myRegex.search(interpretAsString(va[o..#l])).matched;
+          }
+        }
+        when SearchMode.startsWith {
+          forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
+            // regexp.match only returns a match if the start of the string matches the pattern
+            h = myRegex.match(interpretAsString(va[o..#l])).matched;
+          }
+        }
+        when SearchMode.endsWith {
+          forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
+            var matches = myRegex.matches(interpretAsString(va[o..#l]));
+            var lastMatch: reMatch = matches[matches.size-1][0];
+            // h = true iff start(lastMatch) + len(lastMatch) == len(string) (-1 to account for null byte)
+            h = lastMatch.offset + lastMatch.size == l-1;
+          }
+        }
+        when SearchMode.match {
+          forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
+            // regexp.match only returns a match if the start of the string matches the pattern
+            // h = true iff len(match) == len(string) (-1 to account for null byte)
+            // if no match is found reMatch.size returns -1
+            h = myRegex.match(interpretAsString(va[o..#l])).size == l-1;
+          }
+        }
+      }
+      return hits;
+    }
     
-    proc substringSearch(const substr: string, mode: SearchMode) throws {
+    proc substringSearch(const substr: string, mode: SearchMode, regex: bool = false) throws {
+      if regex || mode == SearchMode.match {
+        // match always uses substringSearchRegex
+        return substringSearchRegex(substr, mode);
+      }
       var hits: [offsets.aD] bool;  // the answer
       if (size == 0) || (substr.size == 0) {
         return hits;
@@ -761,7 +843,7 @@ module SegmentedArray {
   }
 
 
-  enum SearchMode { contains, startsWith, endsWith }
+  enum SearchMode { contains, startsWith, endsWith, match }
   class UnknownSearchMode: Error {}
   
   /* Test for equality between two same-length arrays of strings. Returns

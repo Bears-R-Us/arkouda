@@ -98,8 +98,8 @@ module SegmentedMsg {
   proc segmentedEfuncMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var repMsg: string;
-      var (subcmd, objtype, segName, valName, valtype, valStr) = 
-                                              payload.splitMsgToTuple(6);
+      var (subcmd, objtype, segName, valName, valtype, regexStr, valStr) = payload.splitMsgToTuple(7);
+      var regex: bool = regexStr.toLower() == "true";
 
       // check to make sure symbols defined
       st.checkTable(segName);
@@ -113,38 +113,43 @@ module SegmentedMsg {
                          "cmd: %s subcmd: %s objtype: %t valtype: %t".format(
                           cmd,subcmd,objtype,valtype));
     
-        select (objtype, valtype) {
+      select (objtype, valtype) {
           when ("str", "str") {
-            var strings = getSegString(segName, valName, st);
-            select subcmd {
-                when "contains" {
-                var truth = st.addEntry(rname, strings.size, bool);
-                truth.a = strings.substringSearch(val, SearchMode.contains);
-                repMsg = "created "+st.attrib(rname);
-            }
-            when "startswith" {
-                var truth = st.addEntry(rname, strings.size, bool);
-                truth.a = strings.substringSearch(val, SearchMode.startsWith);
-                repMsg = "created "+st.attrib(rname);
-            }
-            when "endswith" {
-                var truth = st.addEntry(rname, strings.size, bool);
-                truth.a = strings.substringSearch(val, SearchMode.endsWith);
-                repMsg = "created "+st.attrib(rname);
-            }
-            otherwise {
-               var errorMsg = notImplementedError(pn, "subcmd: %s, (%s, %s)".format(
-                         subcmd, objtype, valtype));
-               smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-               return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
+              var strings = getSegString(segName, valName, st);
+              select subcmd {
+                  when "contains" {
+                      var truth = st.addEntry(rname, strings.size, bool);
+                      truth.a = strings.substringSearch(val, SearchMode.contains, regex);
+                      repMsg = "created "+st.attrib(rname);
+                  }
+                  when "startswith" {
+                      var truth = st.addEntry(rname, strings.size, bool);
+                      truth.a = strings.substringSearch(val, SearchMode.startsWith, regex);
+                      repMsg = "created "+st.attrib(rname);
+                  }
+                  when "endswith" {
+                      var truth = st.addEntry(rname, strings.size, bool);
+                      truth.a = strings.substringSearch(val, SearchMode.endsWith, regex);
+                      repMsg = "created "+st.attrib(rname);
+                  }
+                  when "match" {
+                      var truth = st.addEntry(rname, strings.size, bool);
+                      truth.a = strings.substringSearch(val, SearchMode.match, regex);
+                      repMsg = "created "+st.attrib(rname);
+                  }
+                  otherwise {
+                      var errorMsg = notImplementedError(pn, "subcmd: %s, (%s, %s)".format(
+                                  subcmd, objtype, valtype));
+                      smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                      return new MsgTuple(errorMsg, MsgType.ERROR);
+                  }
+              }
           }
-        }
-        otherwise {
-          var errorMsg = "(%s, %s)".format(objtype, valtype);
-          smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-          return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
-        }
+          otherwise {
+            var errorMsg = "(%s, %s)".format(objtype, valtype);
+            smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
+          }
       }
 
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
