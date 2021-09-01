@@ -538,9 +538,9 @@ class Strings:
             return Strings(arrays[0], arrays[1])
     
     @typechecked
-    def peel(self, delimiter : Union[bytes,str_scalars], times : int_scalars=1, 
-             includeDelimiter : bool=False, keepPartial : bool=False, 
-                                                 fromRight : bool=False) -> Tuple:
+    def peel(self, delimiter: Union[bytes, str_scalars], times: int_scalars = 1,
+             includeDelimiter: bool = False, keepPartial: bool = False,
+             fromRight: bool = False, regex: bool = False) -> Tuple:
         """
         Peel off one or more delimited fields from each string (similar 
         to string.partition), returning two new arrays of strings.
@@ -548,29 +548,32 @@ class Strings:
 
         Parameters
         ----------
-        delimiter :  Union[bytes,str_scalars]
+        delimiter: Union[bytes, str_scalars]
             The separator where the split will occur
-        times : Union[int,np.int64]
+        times: Union[int, np.int64]
             The number of times the delimiter is sought, i.e. skip over 
             the first (times-1) delimiters
-        includeDelimiter : bool
+        includeDelimiter: bool
             If true, append the delimiter to the end of the first return 
             array. By default, it is prepended to the beginning of the 
             second return array.
-        keepPartial : bool
+        keepPartial: bool
             If true, a string that does not contain <times> instances of 
             the delimiter will be returned in the first array. By default, 
             such strings are returned in the second array.
-        fromRight : bool
+        fromRight: bool
             If true, peel from the right instead of the left (see also rpeel)
+        regex: bool
+            Indicates whether delimiter is a regular expression
+            Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
 
         Returns
         -------
-        Tuple[Strings,Strings]
-            left : Strings
+        Tuple[Strings, Strings]
+            left: Strings
                 The field(s) peeled from the end of each string (unless 
                 fromRight is true)
-            right : Strings
+            right: Strings
                 The remainder of each string after peeling (unless fromRight 
                 is true)
  
@@ -581,7 +584,7 @@ class Strings:
             times is not int64, or if includeDelimiter, keepPartial, or 
             fromRight is not bool
         ValueError
-            Raised if times is < 1
+            Raised if times is < 1 or if delimiter is not a valid regex
         RuntimeError
             Raised if there is a server-side error thrown
         
@@ -603,27 +606,33 @@ class Strings:
         """
         if isinstance(delimiter, bytes):
             delimiter = delimiter.decode()
+        if regex:
+            try:
+                re.compile(delimiter)
+            except Exception as e:
+                raise ValueError(e)
         if times < 1:
             raise ValueError("times must be >= 1")
         cmd = "segmentedPeel"
-        args = "{} {} {} {} {} {} {} {} {} {}".format("peel",
-                            self.objtype,
-                            self.offsets.name,
-                            self.bytes.name,
-                            "str",
-                            NUMBER_FORMAT_STRINGS['int64'].format(times),
-                            NUMBER_FORMAT_STRINGS['bool'].format(includeDelimiter),
-                            NUMBER_FORMAT_STRINGS['bool'].format(keepPartial),
-                            NUMBER_FORMAT_STRINGS['bool'].format(not fromRight),
-                            json.dumps([delimiter]))
-        repMsg = generic_msg(cmd=cmd,args=args)
-        arrays = cast(str,repMsg).split('+', maxsplit=3)
+        args = "{} {} {} {} {} {} {} {} {} {} {}".format("peel",
+                                                         self.objtype,
+                                                         self.offsets.name,
+                                                         self.bytes.name,
+                                                         "str",
+                                                         NUMBER_FORMAT_STRINGS['int64'].format(times),
+                                                         NUMBER_FORMAT_STRINGS['bool'].format(includeDelimiter),
+                                                         NUMBER_FORMAT_STRINGS['bool'].format(keepPartial),
+                                                         NUMBER_FORMAT_STRINGS['bool'].format(not fromRight),
+                                                         NUMBER_FORMAT_STRINGS['bool'].format(regex),
+                                                         json.dumps([delimiter]))
+        repMsg = generic_msg(cmd=cmd, args=args)
+        arrays = cast(str, repMsg).split('+', maxsplit=3)
         leftStr = Strings(arrays[0], arrays[1])
         rightStr = Strings(arrays[2], arrays[3])
         return leftStr, rightStr
 
-    def rpeel(self, delimiter : Union[bytes,str_scalars], times : int_scalars=1, 
-              includeDelimiter : bool=False, keepPartial : bool=False):
+    def rpeel(self, delimiter: Union[bytes, str_scalars], times: int_scalars = 1,
+              includeDelimiter: bool = False, keepPartial: bool = False, regex: bool = False):
         """
         Peel off one or more delimited fields from the end of each string 
         (similar to string.rpartition), returning two new arrays of strings.
@@ -631,26 +640,30 @@ class Strings:
 
         Parameters
         ----------
-        delimiter :  Union[bytes,str_scalars]
+        delimiter: Union[bytes, str_scalars]
             The separator where the split will occur
-        times : Union[int,np.int64]
+        times: Union[int, np.int64]
             The number of times the delimiter is sought, i.e. skip over 
             the last (times-1) delimiters
-        includeDelimiter : bool
+        includeDelimiter: bool
             If true, prepend the delimiter to the start of the first return 
             array. By default, it is appended to the end of the 
             second return array.
-        keepPartial : bool
+        keepPartial: bool
             If true, a string that does not contain <times> instances of 
             the delimiter will be returned in the second array. By default, 
             such strings are returned in the first array.
+        regex: bool
+            Indicates whether delimiter is a regular expression
+            Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
 
         Returns
         -------
-        left : Strings
-            The remainder of the string after peeling
-        right : Strings
-            The field(s) that were peeled from the right of each string
+        Tuple[Strings, Strings]
+            left: Strings
+                The remainder of the string after peeling
+            right: Strings
+                The field(s) that were peeled from the right of each string
 
         Raises
         ------
@@ -658,7 +671,7 @@ class Strings:
             Raised if the delimiter parameter is not bytes or str_scalars or
             if times is not int64
         ValueError
-            Raised if times is < 1
+            Raised if times is < 1 or if delimiter is not a valid regex
         RuntimeError
             Raised if there is a server-side error thrown
 
@@ -676,7 +689,7 @@ class Strings:
         (array(['a', 'c', 'e']), array(['b', 'd', 'f.g']))
         """
         return self.peel(delimiter, times=times, includeDelimiter=includeDelimiter, 
-                         keepPartial=keepPartial, fromRight=True)
+                         keepPartial=keepPartial, fromRight=True, regex=regex)
 
     @typechecked
     def stick(self, other : Strings, delimiter : Union[bytes,str_scalars] ="", 
