@@ -1,0 +1,74 @@
+#!/usr/bin/env gnuplot
+
+load 'chapel-settings.gpi'
+
+set ylabel "GiB/s"
+
+set key invert
+set xtics (16,64,128,240)
+
+set xlabel "Locales (x 128 cores / locale)"
+set key inside left width -4
+
+set title "Arkouda Stream Performance\n{/*0.7 HPE Apollo (HDR-100 IB) -- 8 GiB arrays}"
+set output "ak-stream-perf-apollo.pdf"
+plot \
+  'data/1.23.0-ak-10-20-20/stream.dat' using 1:3 title "chpl 1.23.0 / ak 10/20/20"  with linespoints linestyle 3,  \
+  'data/1.24.1-ak-04-06-21/stream.dat' using 1:3 title "chpl 1.24.1 / ak 04/06/21"  with linespoints linestyle 4,  \
+
+set title "Arkouda Gather Performance\n{/*0.7 HPE Apollo (HDR-100 IB) -- 8 GiB arrays}"
+set output "ak-gather-perf-apollo.pdf"
+plot \
+  'data/1.23.0-ak-10-20-20/gather.dat' using 1:3 title "chpl 1.23.0 / ak 10/20/20"  with linespoints linestyle 3,  \
+  'data/1.24.1-ak-04-06-21/gather.dat' using 1:3 title "chpl 1.24.1 / ak 04/06/21"  with linespoints linestyle 4,  \
+
+set title "Arkouda Scatter Performance\n{/*0.7 HPE Apollo (HDR-100 IB) -- 8 GiB arrays}"
+set output "ak-scatter-perf-apollo.pdf"
+plot \
+  'data/1.23.0-ak-10-20-20/scatter.dat' using 1:3 title "chpl 1.23.0 / ak 10/20/20"  with linespoints linestyle 3,  \
+  'data/1.24.1-ak-04-06-21/scatter.dat' using 1:3 title "chpl 1.24.1 / ak 04/06/21"  with linespoints linestyle 4,  \
+
+set title "Arkouda Argsort Performance\n{/*0.7 HPE Apollo (HDR-100 IB) -- 8 GiB arrays}"
+set output "ak-argsort-perf-apollo.pdf"
+plot \
+  'data/1.23.0-ak-10-20-20/argsort.dat' using 1:3 title "chpl 1.23.0 / ak 10/20/20"  with linespoints linestyle 3,  \
+  'data/1.24.1-ak-04-06-21/argsort.dat' using 1:3 title "chpl 1.24.1 / ak 04/06/21"  with linespoints linestyle 4,  \
+
+
+set xlabel "Locales"
+set key inside left width 0
+
+set title "Arkouda Stream Performance\n{/*0.7 chpl 1.24.1 / ak 04/06/21 -- 8 GiB arrays}"
+set output "ak-stream-perf-xc-apollo-cmp.pdf"
+plot \
+  'data/cray-xc/stream.dat'            using 1:3 title "Cray XC"     with linespoints linestyle 3,  \
+  'data/1.24.1-ak-04-06-21/stream.dat' using 1:3 title "HPE Apollo"  with linespoints linestyle 4,  \
+
+set title "Arkouda Gather Performance\n{/*0.7 chpl 1.24.1 / ak 04/06/21 -- 8 GiB arrays}"
+set output "ak-gather-perf-xc-apollo-cmp.pdf"
+plot \
+  'data/cray-xc/gather.dat'            using 1:3 title "Cray XC"     with linespoints linestyle 3,  \
+  'data/1.24.1-ak-04-06-21/gather.dat' using 1:3 title "HPE Apollo"  with linespoints linestyle 4,  \
+
+set title "Arkouda Scatter Performance\n{/*0.7 chpl 1.24.1 / ak 04/06/21 -- 8 GiB arrays}"
+set output "ak-scatter-perf-xc-apollo-cmp.pdf"
+plot \
+  'data/cray-xc/scatter.dat'            using 1:3 title "Cray XC"     with linespoints linestyle 3,  \
+  'data/1.24.1-ak-04-06-21/scatter.dat' using 1:3 title "HPE Apollo"  with linespoints linestyle 4,  \
+
+set title "Arkouda Argsort Performance\n{/*0.7 chpl 1.24.1 / ak 04/06/21 -- 8 GiB arrays}"
+set output "ak-argsort-perf-xc-apollo-cmp.pdf"
+plot \
+  'data/cray-xc/argsort.dat'            using 1:3 title "Cray XC"     with linespoints linestyle 3,  \
+  'data/1.24.1-ak-04-06-21/argsort.dat' using 1:3 title "HPE Apollo"  with linespoints linestyle 4,  \
+
+
+set key inside left width -4
+
+set title "Arkouda Argsort Performance\n{/*0.7 chpl 1.24.1 / ak 04/06/21}"
+set output "ak-argsort-perf-xc-apollo-cmp-lg.pdf"
+plot \
+  'data/cray-xc/argsort.dat'                    using 1:3 title "Cray XC --     8 GiB Arrays"    with linespoints linestyle 3,  \
+  'data/1.24.1-ak-04-06-21/argsort.dat'         using 1:3 title "HPE Apollo --     8 GiB Arrays" with linespoints linestyle 4,  \
+  'data/1.24.1-ak-04-06-21/2-to-33/argsort.dat' using 1:3 title "HPE Apollo --   64 GiB Arrays"  with linespoints linestyle 14, \
+  'data/1.24.1-ak-04-06-21/2-to-35/argsort.dat' using 1:3 title "HPE Apollo -- 256 GiB Arrays"   with linespoints linestyle 24, \
