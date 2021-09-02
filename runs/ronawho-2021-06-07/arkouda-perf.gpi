@@ -1,0 +1,43 @@
+#!/usr/bin/env gnuplot
+
+load 'chapel-settings.gpi'
+
+set ylabel "GiB/s"
+
+set key invert
+set xtics (16,64,128,240)
+
+set xlabel "Locales (x 128 cores / locale)"
+set key inside left width 0
+
+set title "Arkouda Stream Performance\n{/*0.7 HPE Apollo (HDR-100 IB) -- 8 GiB arrays}"
+set output "ak-stream-perf-apollo.pdf"
+plot \
+  'data/1.24.1-ak-04-06-21/stream.dat' using 1:3 title "chpl 1.24.1"  with linespoints linestyle 3,  \
+  'data/serial-ibv_cq_poll/stream.dat' using 1:3 title "Serialized CQ"  with linespoints linestyle 4,  \
+
+set title "Arkouda Gather Performance\n{/*0.7 HPE Apollo (HDR-100 IB) -- 8 GiB arrays}"
+set output "ak-gather-perf-apollo.pdf"
+plot \
+  'data/1.24.1-ak-04-06-21/gather.dat' using 1:3 title "chpl 1.24.1"  with linespoints linestyle 3,  \
+  'data/serial-ibv_cq_poll/gather.dat' using 1:3 title "Serialized CQ"  with linespoints linestyle 4,  \
+
+set title "Arkouda Scatter Performance\n{/*0.7 HPE Apollo (HDR-100 IB) -- 8 GiB arrays}"
+set output "ak-scatter-perf-apollo.pdf"
+plot \
+  'data/1.24.1-ak-04-06-21/scatter.dat' using 1:3 title "chpl 1.24.1"  with linespoints linestyle 3,  \
+  'data/serial-ibv_cq_poll/scatter.dat' using 1:3 title "Serialized CQ"  with linespoints linestyle 4,  \
+
+set title "Arkouda Argsort Performance\n{/*0.7 HPE Apollo (HDR-100 IB) -- 8 GiB arrays}"
+set output "ak-argsort-perf-apollo.pdf"
+plot \
+  'data/1.24.1-ak-04-06-21/argsort.dat' using 1:3 title "chpl 1.24.1"  with linespoints linestyle 3,  \
+  'data/serial-ibv_cq_poll/argsort.dat' using 1:3 title "Serialized CQ"  with linespoints linestyle 4,  \
+
+set xtics (16,64,240)
+set title "Arkouda Argsort Performance\n{/*0.7 HPE Apollo (HDR-100 IB) -- 256 GiB arrays}"
+set output "ak-argsort-perf-apollo-hg.pdf"
+plot \
+  'data/1.24.1-ak-04-06-21/2-to-35/argsort.dat' using 1:3 title "chpl 1.24.1"  with linespoints linestyle 3,  \
+  'data/serial-ibv_cq_poll/2-to-35/argsort.dat' using 1:3 title "Serialized CQ"  with linespoints linestyle 4,  \
+
