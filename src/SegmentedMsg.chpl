@@ -232,12 +232,6 @@ module SegmentedMsg {
                 var (lo, lv, ro, rv) = strings.peel(val, times, true, true, true);
                 createPeelSymEntries(loname, lo, lvname, lv, roname, ro, rvname, rv, st);
               }
-              otherwise {
-                var errorMsg = notImplementedError(pn,
-                                "subcmd: %s, (%s, %s)".format(subcmd, objtype, valtype));
-                smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-                return new MsgTuple(errorMsg, MsgType.ERROR);
-              }
             }
           }
           repMsg = "created %s+created %s+created %s+created %s".format(st.attrib(loname),

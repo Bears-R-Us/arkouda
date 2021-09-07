@@ -88,6 +88,12 @@ files: IO.dat, IO.dat
 graphtitle: IO Performance
 ylabel: Performance (GiB/s)
 
+perfkeys: non-regex with literal substring Average rate =, regex with literal substring Average rate =, regex with pattern Average rate =
+graphkeys: non-regex with literal substring GiB/s, regex with literal substring GiB/s, regex with pattern GiB/s
+files: substring_search.dat, substring_search.dat, substring_search.dat
+graphtitle: Substring Search Performance
+ylabel: Performance (GiB/s)
+
 perfkeys: Average rate =
 graphkeys: Noop ops/s
 files: noop.dat

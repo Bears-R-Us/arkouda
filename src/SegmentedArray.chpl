@@ -484,17 +484,17 @@ module SegmentedArray {
     }
 
     /*
-    Returns list of bools where index i indicates whether the regular expression, pattern, matched string i of the SegString
+      Returns list of bools where index i indicates whether the regular expression, pattern, matched string i of the SegString
 
-    Note: the regular expression engine used, re2, does not support lookahead/lookbehind
+      Note: the regular expression engine used, re2, does not support lookahead/lookbehind
 
-    :arg pattern: regex pattern to be applied to strings in SegString
-    :type pattern: string
+      :arg pattern: regex pattern to be applied to strings in SegString
+      :type pattern: string
 
-    :arg mode: mode of search being performed (contains, startsWith, endsWith, match)
-    :type mode: SearchMode enum
+      :arg mode: mode of search being performed (contains, startsWith, endsWith, match)
+      :type mode: SearchMode enum
 
-    :returns: [domain] bool where index i indicates whether the regular expression, pattern, matched string i of the SegString
+      :returns: [domain] bool where index i indicates whether the regular expression, pattern, matched string i of the SegString
     */
     proc substringSearchRegex(const pattern: string, mode: SearchMode) throws {
       var hits: [offsets.aD] bool = false;  // the answer
@@ -602,31 +602,31 @@ module SegmentedArray {
     }
 
     /*
-    Peel off one or more fields matching the regular expression, delimiter, from each string (similar
-    to string.partition), returning two new arrays of strings.
-    *Warning*: This function is experimental and not guaranteed to work.
+      Peel off one or more fields matching the regular expression, delimiter, from each string (similar
+      to string.partition), returning two new arrays of strings.
+      *Warning*: This function is experimental and not guaranteed to work.
 
-    Note: the regular expression engine used, re2, does not support lookahead/lookbehind
+      Note: the regular expression engine used, re2, does not support lookahead/lookbehind
 
-    :arg delimter: regex delimter where the split in SegString will occur
-    :type delimter: string
+      :arg delimter: regex delimter where the split in SegString will occur
+      :type delimter: string
 
-    :arg times: The number of times the delimiter is sought, i.e. skip over the first (times-1) delimiters
-    :type times: int
+      :arg times: The number of times the delimiter is sought, i.e. skip over the first (times-1) delimiters
+      :type times: int
 
-    :arg includeDelimiter: If true, append the delimiter to the end of the first return array
-                            By default, it is prepended to the beginning of the second return array.
-    :type includeDelimiter: bool
+      :arg includeDelimiter: If true, append the delimiter to the end of the first return array
+                              By default, it is prepended to the beginning of the second return array.
+      :type includeDelimiter: bool
 
-    :arg keepPartial: If true, a string that does not contain <times> instances of
-                      the delimiter will be returned in the first array. By default,
-                      such strings are returned in the second array.
-    :type keepPartial: bool
+      :arg keepPartial: If true, a string that does not contain <times> instances of
+                        the delimiter will be returned in the first array. By default,
+                        such strings are returned in the second array.
+      :type keepPartial: bool
 
-    :arg left: If true, peel from the left
-    :type left: bool
+      :arg left: If true, peel from the left
+      :type left: bool
 
-    :returns: Components to build 2 SegStrings (leftOffsets, leftVals, rightOffsets, rightVals)
+      :returns: Components to build 2 SegStrings (leftOffsets, leftVals, rightOffsets, rightVals)
     */
     proc peelRegex(const delimiter: string, const times: int, const includeDelimiter: bool, const keepPartial: bool, const left: bool) throws {
       checkCompile(delimiter);
@@ -638,7 +638,7 @@ module SegmentedArray {
       var rightStart: [offsets.aD] int;
 
       forall (o, len, i) in zip(oa, lengths, offsets.aD) with (var myRegex = _unsafeCompileRegex(delimiter)) {
-        var matches = myRegex.matches(interpretAsString(va[o..#(len+1)]));
+        var matches = myRegex.matches(interpretAsString(va[o..#len]));
         if matches.size < times {
           // not enough occurances of delim, the entire string stays together, and the param args
           // determine whether it ends up on the left or right
