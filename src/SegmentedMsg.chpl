@@ -98,8 +98,8 @@ module SegmentedMsg {
   proc segmentedEfuncMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
       var pn = Reflection.getRoutineName();
       var repMsg: string;
-      var (subcmd, objtype, segName, valName, valtype, valStr) = 
-                                              payload.splitMsgToTuple(6);
+      var (subcmd, objtype, segName, valName, valtype, regexStr, valStr) = payload.splitMsgToTuple(7);
+      var regex: bool = regexStr.toLower() == "true";
 
       // check to make sure symbols defined
       st.checkTable(segName);
@@ -113,49 +113,61 @@ module SegmentedMsg {
                          "cmd: %s subcmd: %s objtype: %t valtype: %t".format(
                           cmd,subcmd,objtype,valtype));
     
-        select (objtype, valtype) {
+      select (objtype, valtype) {
           when ("str", "str") {
-            var strings = getSegString(segName, valName, st);
-            select subcmd {
-                when "contains" {
-                var truth = st.addEntry(rname, strings.size, bool);
-                truth.a = strings.substringSearch(val, SearchMode.contains);
-                repMsg = "created "+st.attrib(rname);
-            }
-            when "startswith" {
-                var truth = st.addEntry(rname, strings.size, bool);
-                truth.a = strings.substringSearch(val, SearchMode.startsWith);
-                repMsg = "created "+st.attrib(rname);
-            }
-            when "endswith" {
-                var truth = st.addEntry(rname, strings.size, bool);
-                truth.a = strings.substringSearch(val, SearchMode.endsWith);
-                repMsg = "created "+st.attrib(rname);
-            }
-            otherwise {
-               var errorMsg = notImplementedError(pn, "subcmd: %s, (%s, %s)".format(
-                         subcmd, objtype, valtype));
-               smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-               return new MsgTuple(errorMsg, MsgType.ERROR);
-            }
+              var strings = getSegString(segName, valName, st);
+              select subcmd {
+                  when "contains" {
+                      var truth = st.addEntry(rname, strings.size, bool);
+                      truth.a = strings.substringSearch(val, SearchMode.contains, regex);
+                      repMsg = "created "+st.attrib(rname);
+                  }
+                  when "startswith" {
+                      var truth = st.addEntry(rname, strings.size, bool);
+                      truth.a = strings.substringSearch(val, SearchMode.startsWith, regex);
+                      repMsg = "created "+st.attrib(rname);
+                  }
+                  when "endswith" {
+                      var truth = st.addEntry(rname, strings.size, bool);
+                      truth.a = strings.substringSearch(val, SearchMode.endsWith, regex);
+                      repMsg = "created "+st.attrib(rname);
+                  }
+                  when "match" {
+                      var truth = st.addEntry(rname, strings.size, bool);
+                      truth.a = strings.substringSearch(val, SearchMode.match, regex);
+                      repMsg = "created "+st.attrib(rname);
+                  }
+                  otherwise {
+                      var errorMsg = notImplementedError(pn, "subcmd: %s, (%s, %s)".format(
+                                  subcmd, objtype, valtype));
+                      smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+                      return new MsgTuple(errorMsg, MsgType.ERROR);
+                  }
+              }
           }
-        }
-        otherwise {
-          var errorMsg = "(%s, %s)".format(objtype, valtype);
-          smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-          return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
-        }
+          otherwise {
+            var errorMsg = "(%s, %s)".format(objtype, valtype);
+            smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
+          }
       }
 
       smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
+  proc createPeelSymEntries(loname, lo, lvname, lv, roname, ro, rvname, rv, st: borrowed SymTab) throws {
+    st.addEntry(loname, new shared SymEntry(lo));
+    st.addEntry(lvname, new shared SymEntry(lv));
+    st.addEntry(roname, new shared SymEntry(ro));
+    st.addEntry(rvname, new shared SymEntry(rv));
+  }
+
   proc segmentedPeelMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
     var (subcmd, objtype, segName, valName, valtype, valStr,
-         idStr, kpStr, lStr, jsonStr) = payload.splitMsgToTuple(10);
+         idStr, kpStr, lStr, regexStr, jsonStr) = payload.splitMsgToTuple(11);
 
     // check to make sure symbols defined
     st.checkTable(segName);
@@ -171,6 +183,7 @@ module SegmentedMsg {
       select subcmd {
         when "peel" {
           var times = valStr:int;
+          var regex: bool = (regexStr.toLower() == "true");
           var includeDelimiter = (idStr.toLower() == "true");
           var keepPartial = (kpStr.toLower() == "true");
           var left = (lStr.toLower() == "true");
@@ -180,61 +193,46 @@ module SegmentedMsg {
           var lvname = st.nextName();
           var roname = st.nextName();
           var rvname = st.nextName();
-          select (includeDelimiter, keepPartial, left) {
-          when (false, false, false) {
-            var (lo, lv, ro, rv) = strings.peel(val, times, false, false, false);
-            st.addEntry(loname, new shared SymEntry(lo));
-            st.addEntry(lvname, new shared SymEntry(lv));
-            st.addEntry(roname, new shared SymEntry(ro));
-            st.addEntry(rvname, new shared SymEntry(rv));
-          } when (false, false, true) {
-            var (lo, lv, ro, rv) = strings.peel(val, times, false, false, true);
-            st.addEntry(loname, new shared SymEntry(lo));
-            st.addEntry(lvname, new shared SymEntry(lv));
-            st.addEntry(roname, new shared SymEntry(ro));
-            st.addEntry(rvname, new shared SymEntry(rv));
-          } when (false, true, false) {
-            var (lo, lv, ro, rv) = strings.peel(val, times, false, true, false);
-            st.addEntry(loname, new shared SymEntry(lo));
-            st.addEntry(lvname, new shared SymEntry(lv));
-            st.addEntry(roname, new shared SymEntry(ro));
-            st.addEntry(rvname, new shared SymEntry(rv));
-          } when (false, true, true) {
-            var (lo, lv, ro, rv) = strings.peel(val, times, false, true, true);
-            st.addEntry(loname, new shared SymEntry(lo));
-            st.addEntry(lvname, new shared SymEntry(lv));
-            st.addEntry(roname, new shared SymEntry(ro));
-            st.addEntry(rvname, new shared SymEntry(rv));
-          } when (true, false, false) {
-            var (lo, lv, ro, rv) = strings.peel(val, times, true, false, false);
-            st.addEntry(loname, new shared SymEntry(lo));
-            st.addEntry(lvname, new shared SymEntry(lv));
-            st.addEntry(roname, new shared SymEntry(ro));
-            st.addEntry(rvname, new shared SymEntry(rv));
-          } when (true, false, true) {
-            var (lo, lv, ro, rv) = strings.peel(val, times, true, false, true);
-            st.addEntry(loname, new shared SymEntry(lo));
-            st.addEntry(lvname, new shared SymEntry(lv));
-            st.addEntry(roname, new shared SymEntry(ro));
-            st.addEntry(rvname, new shared SymEntry(rv));
-          } when (true, true, false) {
-            var (lo, lv, ro, rv) = strings.peel(val, times, true, true, false);
-            st.addEntry(loname, new shared SymEntry(lo));
-            st.addEntry(lvname, new shared SymEntry(lv));
-            st.addEntry(roname, new shared SymEntry(ro));
-            st.addEntry(rvname, new shared SymEntry(rv));
-          } when (true, true, true) {
-            var (lo, lv, ro, rv) = strings.peel(val, times, true, true, true);
-            st.addEntry(loname, new shared SymEntry(lo));
-            st.addEntry(lvname, new shared SymEntry(lv));
-            st.addEntry(roname, new shared SymEntry(ro));
-            st.addEntry(rvname, new shared SymEntry(rv));
-          } otherwise {
-              var errorMsg = notImplementedError(pn, 
-                               "subcmd: %s, (%s, %s)".format(subcmd, objtype, valtype));
-              smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
-              return new MsgTuple(errorMsg, MsgType.ERROR);                            
+
+          if regex {
+            var (lo, lv, ro, rv) = strings.peelRegex(val, times, includeDelimiter, keepPartial, left);
+            createPeelSymEntries(loname, lo, lvname, lv, roname, ro, rvname, rv, st);
+          }
+          else {
+            select (includeDelimiter, keepPartial, left) {
+              when (false, false, false) {
+                var (lo, lv, ro, rv) = strings.peel(val, times, false, false, false);
+                createPeelSymEntries(loname, lo, lvname, lv, roname, ro, rvname, rv, st);
               }
+              when (false, false, true) {
+                var (lo, lv, ro, rv) = strings.peel(val, times, false, false, true);
+                createPeelSymEntries(loname, lo, lvname, lv, roname, ro, rvname, rv, st);
+              }
+              when (false, true, false) {
+                var (lo, lv, ro, rv) = strings.peel(val, times, false, true, false);
+                createPeelSymEntries(loname, lo, lvname, lv, roname, ro, rvname, rv, st);
+              }
+              when (false, true, true) {
+                var (lo, lv, ro, rv) = strings.peel(val, times, false, true, true);
+                createPeelSymEntries(loname, lo, lvname, lv, roname, ro, rvname, rv, st);
+              }
+               when (true, false, false) {
+                var (lo, lv, ro, rv) = strings.peel(val, times, true, false, false);
+                createPeelSymEntries(loname, lo, lvname, lv, roname, ro, rvname, rv, st);
+              }
+              when (true, false, true) {
+                var (lo, lv, ro, rv) = strings.peel(val, times, true, false, true);
+                createPeelSymEntries(loname, lo, lvname, lv, roname, ro, rvname, rv, st);
+              }
+              when (true, true, false) {
+                var (lo, lv, ro, rv) = strings.peel(val, times, true, true, false);
+                createPeelSymEntries(loname, lo, lvname, lv, roname, ro, rvname, rv, st);
+              }
+              when (true, true, true) {
+                var (lo, lv, ro, rv) = strings.peel(val, times, true, true, true);
+                createPeelSymEntries(loname, lo, lvname, lv, roname, ro, rvname, rv, st);
+              }
+            }
           }
           repMsg = "created %s+created %s+created %s+created %s".format(st.attrib(loname),
                                                                         st.attrib(lvname),
@@ -242,10 +240,10 @@ module SegmentedMsg {
                                                                         st.attrib(rvname));
         }
         otherwise {
-            var errorMsg = notImplementedError(pn, 
+            var errorMsg = notImplementedError(pn,
                               "subcmd: %s, (%s, %s)".format(subcmd, objtype, valtype));
-            smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);      
-            return new MsgTuple(errorMsg, MsgType.ERROR);                                          
+            smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg, MsgType.ERROR);
         }
       }
     }

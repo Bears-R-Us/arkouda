@@ -12,6 +12,7 @@ from arkouda.dtypes import npstr, int_scalars, str_scalars
 from arkouda.dtypes import NUMBER_FORMAT_STRINGS, resolve_scalar_dtype, \
      translate_np_dtype
 import json
+import re
 from arkouda.infoclass import information
 
 __all__ = ['Strings']
@@ -142,7 +143,7 @@ class Strings:
             encapsulating the results of the requested binop      
 
         Raises
-    -   -----
+        -----
         ValueError
             Raised if (1) the op is not in the self.BinOps set, or (2) if the
             sizes of this and the other instance don't match, or (3) the other
@@ -255,14 +256,17 @@ class Strings:
         return create_pdarray(generic_msg(cmd=cmd,args=args))
 
     @typechecked
-    def contains(self, substr : Union[bytes,str_scalars]) -> pdarray:
+    def contains(self, substr: Union[bytes, str_scalars], regex: bool = False) -> pdarray:
         """
         Check whether each element contains the given substring.
 
         Parameters
         ----------
-        substr : str_scalars
+        substr: str_scalars
             The substring in the form of string or byte array to search for
+        regex: bool
+            Indicates whether substr is a regular expression
+            Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
 
         Returns
         -------
@@ -273,6 +277,8 @@ class Strings:
         ------
         TypeError
             Raised if the substr parameter is not bytes or str_scalars
+        ValueError
+            Rasied if substr is not a valid regex
         RuntimeError
             Raised if there is a server-side error thrown
 
@@ -282,32 +288,43 @@ class Strings:
         
         Examples
         --------
-        >>> strings = ak.array(['string {}'.format(i) for i in range(1,6)])
+        >>> strings = ak.array(['{} string {}'.format(i, i) for i in range(1, 6)])
         >>> strings
-        array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5'])
+        array(['1 string 1', '2 string 2', '3 string 3', '4 string 4', '5 string 5'])
         >>> strings.contains('string')
+        array([True, True, True, True, True])
+        >>> strings.contains('string \\d', regex=True)
         array([True, True, True, True, True])
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
+        if regex:
+            try:
+                re.compile(substr)
+            except Exception as e:
+                raise ValueError(e)
         cmd = "segmentedEfunc"
-        args = "{} {} {} {} {} {}".format("contains",
-                                                        self.objtype,
-                                                        self.offsets.name,
-                                                        self.bytes.name,
-                                                        "str",
-                                                        json.dumps([substr]))
-        return create_pdarray(generic_msg(cmd=cmd,args=args))
+        args = "{} {} {} {} {} {} {}".format("contains",
+                                             self.objtype,
+                                             self.offsets.name,
+                                             self.bytes.name,
+                                             "str",
+                                             regex,
+                                             json.dumps([substr]))
+        return create_pdarray(generic_msg(cmd=cmd, args=args))
 
     @typechecked
-    def startswith(self, substr : Union[bytes,str_scalars]) -> pdarray:
+    def startswith(self, substr: Union[bytes, str_scalars], regex: bool = False) -> pdarray:
         """
         Check whether each element starts with the given substring.
 
         Parameters
         ----------
-        substr : Union[bytes,str_scalars]
+        substr: Union[bytes, str_scalars]
             The prefix to search for
+        regex: bool
+            Indicates whether substr is a regular expression
+            Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
 
         Returns
         -------
@@ -318,6 +335,8 @@ class Strings:
         ------
         TypeError
             Raised if the substr parameter is not a bytes ior str_scalars
+        ValueError
+            Rasied if substr is not a valid regex
         RuntimeError
             Raised if there is a server-side error thrown
 
@@ -327,32 +346,46 @@ class Strings:
         
         Examples
         --------
-        >>> strings = ak.array(['string {}'.format(i) for i in range(1,6)])
-        >>> strings
+        >>> strings_end = ak.array(['string {}'.format(i) for i in range(1, 6)])
+        >>> strings_end
         array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5'])
-        >>> strings.startswith('string')
+        >>> strings_end.startswith('string')
+        array([True, True, True, True, True])
+        >>> strings_start = ak.array(['{} string'.format(i) for i in range(1,6)])
+        >>> strings_start
+        array(['1 string', '2 string', '3 string', '4 string', '5 string'])
+        >>> strings_start.startswith('\\d str', regex = True)
         array([True, True, True, True, True])
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
+        if regex:
+            try:
+                re.compile(substr)
+            except Exception as e:
+                raise ValueError(e)
         cmd = "segmentedEfunc"
-        args = "{} {} {} {} {} {}".format("startswith",
-                                                        self.objtype,
-                                                        self.offsets.name,
-                                                        self.bytes.name,
-                                                        "str",
-                                                        json.dumps([substr]))
-        return create_pdarray(generic_msg(cmd=cmd,args=args))
+        args = "{} {} {} {} {} {} {}".format("startswith",
+                                             self.objtype,
+                                             self.offsets.name,
+                                             self.bytes.name,
+                                             "str",
+                                             regex,
+                                             json.dumps([substr]))
+        return create_pdarray(generic_msg(cmd=cmd, args=args))
 
     @typechecked
-    def endswith(self, substr : Union[bytes,str_scalars]) -> pdarray:
+    def endswith(self, substr: Union[bytes, str_scalars], regex: bool = False) -> pdarray:
         """
         Check whether each element ends with the given substring.
 
         Parameters
         ----------
-        substr : Union[bytes,str_scalars]
+        substr: Union[bytes, str_scalars]
             The suffix to search for
+        regex: bool
+            Indicates whether substr is a regular expression
+            Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
 
         Returns
         -------
@@ -363,6 +396,8 @@ class Strings:
         ------
         TypeError
             Raised if the substr parameter is not bytes or str_scalars
+        ValueError
+            Rasied if substr is not a valid regex
         RuntimeError
             Raised if there is a server-side error thrown
 
@@ -372,22 +407,89 @@ class Strings:
         
         Examples
         --------
-        >>> strings = ak.array(['{} string'.format(i) for i in range(1,6)])
-        >>> strings
+        >>> strings_start = ak.array(['{} string'.format(i) for i in range(1,6)])
+        >>> strings_start
         array(['1 string', '2 string', '3 string', '4 string', '5 string'])
-        >>> strings.endswith('ing')
+        >>> strings_start.endswith('ing')
+        array([True, True, True, True, True])
+        >>> strings_end = ak.array(['string {}'.format(i) for i in range(1, 6)])
+        >>> strings_end
+        array(['string 1', 'string 2', 'string 3', 'string 4', 'string 5'])
+        >>> strings_end.endswith('ing \\d', regex = True)
         array([True, True, True, True, True])
         """
         if isinstance(substr, bytes):
             substr = substr.decode()
+        if regex:
+            try:
+                re.compile(substr)
+            except Exception as e:
+                raise ValueError(e)
         cmd = "segmentedEfunc"
-        args = "{} {} {} {} {} {}".format("endswith",
-                                          self.objtype,
-                                          self.offsets.name,
-                                          self.bytes.name,
-                                          "str",
-                                          json.dumps([substr]))
-        return create_pdarray(generic_msg(cmd=cmd,args=args))
+        args = "{} {} {} {} {} {} {}".format("endswith",
+                                             self.objtype,
+                                             self.offsets.name,
+                                             self.bytes.name,
+                                             "str",
+                                             regex,
+                                             json.dumps([substr]))
+        return create_pdarray(generic_msg(cmd=cmd, args=args))
+
+    @typechecked
+    def match(self, pattern: Union[bytes, str_scalars]) -> pdarray:
+        """
+        For each element check whether the entire element matches the given regex, pattern.
+
+        Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
+
+        Parameters
+        ----------
+        pattern: str_scalars
+            The regex in the form of string or byte array to search for
+
+        Returns
+        -------
+        pdarray, bool
+            True for elements that match pattern, False otherwise
+
+        Raises
+        ------
+        TypeError
+            Raised if the pattern parameter is not bytes or str_scalars
+        ValueError
+            Rasied if pattern is not a valid regex
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Strings.contains, Strings.startswith, Strings.endswith
+
+        Examples
+        --------
+        >>> strings = ak.array(['{} string {}'.format(i, i) for i in range(1, 6)])
+        >>> strings
+        array(['1 string 1', '2 string 2', '3 string 3', '4 string 4', '5 string 5'])
+        >>> strings.match('\\d string \\d')
+        array([True, True, True, True, True])
+        >>> strings.match('ing \\d')
+        array([False, False, False, False, False])
+        """
+        if isinstance(pattern, bytes):
+            pattern = pattern.decode()
+        try:
+            re.compile(pattern)
+        except Exception as e:
+            raise ValueError(e)
+        cmd = "segmentedEfunc"
+        args = "{} {} {} {} {} {} {}".format("match",
+                                             self.objtype,
+                                             self.offsets.name,
+                                             self.bytes.name,
+                                             "str",
+                                             True,  # regex flag is always True for match
+                                             json.dumps([pattern]))
+        return create_pdarray(generic_msg(cmd=cmd, args=args))
 
     def flatten(self, delimiter : str, return_segments : bool=False) -> Union[Strings,Tuple]:
         """Unpack delimiter-joined substrings into a flat array.
@@ -436,9 +538,9 @@ class Strings:
             return Strings(arrays[0], arrays[1])
     
     @typechecked
-    def peel(self, delimiter : Union[bytes,str_scalars], times : int_scalars=1, 
-             includeDelimiter : bool=False, keepPartial : bool=False, 
-                                                 fromRight : bool=False) -> Tuple:
+    def peel(self, delimiter: Union[bytes, str_scalars], times: int_scalars = 1,
+             includeDelimiter: bool = False, keepPartial: bool = False,
+             fromRight: bool = False, regex: bool = False) -> Tuple:
         """
         Peel off one or more delimited fields from each string (similar 
         to string.partition), returning two new arrays of strings.
@@ -446,29 +548,32 @@ class Strings:
 
         Parameters
         ----------
-        delimiter :  Union[bytes,str_scalars]
+        delimiter: Union[bytes, str_scalars]
             The separator where the split will occur
-        times : Union[int,np.int64]
+        times: Union[int, np.int64]
             The number of times the delimiter is sought, i.e. skip over 
             the first (times-1) delimiters
-        includeDelimiter : bool
+        includeDelimiter: bool
             If true, append the delimiter to the end of the first return 
             array. By default, it is prepended to the beginning of the 
             second return array.
-        keepPartial : bool
+        keepPartial: bool
             If true, a string that does not contain <times> instances of 
             the delimiter will be returned in the first array. By default, 
             such strings are returned in the second array.
-        fromRight : bool
+        fromRight: bool
             If true, peel from the right instead of the left (see also rpeel)
+        regex: bool
+            Indicates whether delimiter is a regular expression
+            Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
 
         Returns
         -------
-        Tuple[Strings,Strings]
-            left : Strings
+        Tuple[Strings, Strings]
+            left: Strings
                 The field(s) peeled from the end of each string (unless 
                 fromRight is true)
-            right : Strings
+            right: Strings
                 The remainder of each string after peeling (unless fromRight 
                 is true)
  
@@ -479,7 +584,7 @@ class Strings:
             times is not int64, or if includeDelimiter, keepPartial, or 
             fromRight is not bool
         ValueError
-            Raised if times is < 1
+            Raised if times is < 1 or if delimiter is not a valid regex
         RuntimeError
             Raised if there is a server-side error thrown
         
@@ -501,27 +606,33 @@ class Strings:
         """
         if isinstance(delimiter, bytes):
             delimiter = delimiter.decode()
+        if regex:
+            try:
+                re.compile(delimiter)
+            except Exception as e:
+                raise ValueError(e)
         if times < 1:
             raise ValueError("times must be >= 1")
         cmd = "segmentedPeel"
-        args = "{} {} {} {} {} {} {} {} {} {}".format("peel",
-                            self.objtype,
-                            self.offsets.name,
-                            self.bytes.name,
-                            "str",
-                            NUMBER_FORMAT_STRINGS['int64'].format(times),
-                            NUMBER_FORMAT_STRINGS['bool'].format(includeDelimiter),
-                            NUMBER_FORMAT_STRINGS['bool'].format(keepPartial),
-                            NUMBER_FORMAT_STRINGS['bool'].format(not fromRight),
-                            json.dumps([delimiter]))
-        repMsg = generic_msg(cmd=cmd,args=args)
-        arrays = cast(str,repMsg).split('+', maxsplit=3)
+        args = "{} {} {} {} {} {} {} {} {} {} {}".format("peel",
+                                                         self.objtype,
+                                                         self.offsets.name,
+                                                         self.bytes.name,
+                                                         "str",
+                                                         NUMBER_FORMAT_STRINGS['int64'].format(times),
+                                                         NUMBER_FORMAT_STRINGS['bool'].format(includeDelimiter),
+                                                         NUMBER_FORMAT_STRINGS['bool'].format(keepPartial),
+                                                         NUMBER_FORMAT_STRINGS['bool'].format(not fromRight),
+                                                         NUMBER_FORMAT_STRINGS['bool'].format(regex),
+                                                         json.dumps([delimiter]))
+        repMsg = generic_msg(cmd=cmd, args=args)
+        arrays = cast(str, repMsg).split('+', maxsplit=3)
         leftStr = Strings(arrays[0], arrays[1])
         rightStr = Strings(arrays[2], arrays[3])
         return leftStr, rightStr
 
-    def rpeel(self, delimiter : Union[bytes,str_scalars], times : int_scalars=1, 
-              includeDelimiter : bool=False, keepPartial : bool=False):
+    def rpeel(self, delimiter: Union[bytes, str_scalars], times: int_scalars = 1,
+              includeDelimiter: bool = False, keepPartial: bool = False, regex: bool = False):
         """
         Peel off one or more delimited fields from the end of each string 
         (similar to string.rpartition), returning two new arrays of strings.
@@ -529,26 +640,30 @@ class Strings:
 
         Parameters
         ----------
-        delimiter :  Union[bytes,str_scalars]
+        delimiter: Union[bytes, str_scalars]
             The separator where the split will occur
-        times : Union[int,np.int64]
+        times: Union[int, np.int64]
             The number of times the delimiter is sought, i.e. skip over 
             the last (times-1) delimiters
-        includeDelimiter : bool
+        includeDelimiter: bool
             If true, prepend the delimiter to the start of the first return 
             array. By default, it is appended to the end of the 
             second return array.
-        keepPartial : bool
+        keepPartial: bool
             If true, a string that does not contain <times> instances of 
             the delimiter will be returned in the second array. By default, 
             such strings are returned in the first array.
+        regex: bool
+            Indicates whether delimiter is a regular expression
+            Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
 
         Returns
         -------
-        left : Strings
-            The remainder of the string after peeling
-        right : Strings
-            The field(s) that were peeled from the right of each string
+        Tuple[Strings, Strings]
+            left: Strings
+                The remainder of the string after peeling
+            right: Strings
+                The field(s) that were peeled from the right of each string
 
         Raises
         ------
@@ -556,7 +671,7 @@ class Strings:
             Raised if the delimiter parameter is not bytes or str_scalars or
             if times is not int64
         ValueError
-            Raised if times is < 1
+            Raised if times is < 1 or if delimiter is not a valid regex
         RuntimeError
             Raised if there is a server-side error thrown
 
@@ -574,7 +689,7 @@ class Strings:
         (array(['a', 'c', 'e']), array(['b', 'd', 'f.g']))
         """
         return self.peel(delimiter, times=times, includeDelimiter=includeDelimiter, 
-                         keepPartial=keepPartial, fromRight=True)
+                         keepPartial=keepPartial, fromRight=True, regex=regex)
 
     @typechecked
     def stick(self, other : Strings, delimiter : Union[bytes,str_scalars] ="", 

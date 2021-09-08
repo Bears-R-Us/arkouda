@@ -8,7 +8,6 @@ module SegmentedArray {
   use SipHash;
   use SegStringSort;
   use RadixSortLSD only radixSortLSD_ranks;
-  use Reflection;
   use PrivateDist;
   use ServerConfig;
   use Unique;
@@ -16,6 +15,7 @@ module SegmentedArray {
   use Reflection;
   use Logging;
   use ServerErrors;
+  use Regexp;
 
   private config const logLevel = ServerConfig.logLevel;
   const saLogger = new Logger(logLevel);
@@ -459,8 +459,90 @@ module SegmentedArray {
       }
       return truth;
     }
+
+    /*
+    Returns Regexp.compile if pattern can be compiled without an error
+    */
+    proc checkCompile(const pattern: string) throws {
+      try {
+        return compile(pattern);
+      }
+      catch {
+        var errorMsg = "re2 could not compile pattern: %s)".format(pattern);
+        saLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+        throw new owned IllegalArgumentError(errorMsg);
+      }
+    }
+
+    proc _unsafeCompileRegex(const pattern: string) {
+      // This is a private function and should not be called to compile pattern. Use checkCompile instead
+
+      // This proc is a workaound to allow declaring regexps using a with clause in forall loops
+      // since using declarations with throws are illegal
+      // It is only called after checkCompile so the try! will not result in a server crash
+      return try! compile(pattern);
+    }
+
+    /*
+      Returns list of bools where index i indicates whether the regular expression, pattern, matched string i of the SegString
+
+      Note: the regular expression engine used, re2, does not support lookahead/lookbehind
+
+      :arg pattern: regex pattern to be applied to strings in SegString
+      :type pattern: string
+
+      :arg mode: mode of search being performed (contains, startsWith, endsWith, match)
+      :type mode: SearchMode enum
+
+      :returns: [domain] bool where index i indicates whether the regular expression, pattern, matched string i of the SegString
+    */
+    proc substringSearchRegex(const pattern: string, mode: SearchMode) throws {
+      var hits: [offsets.aD] bool = false;  // the answer
+      checkCompile(pattern);
+
+      // should we do len check here? re2.compile('') is valid regex and matches everything
+      ref oa = offsets.a;
+      ref va = values.a;
+      var lengths = getLengths();
+
+      select mode {
+        when SearchMode.contains {
+          forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
+            // regexp.search searches the receiving string for matches at any offset
+            h = myRegex.search(interpretAsString(va[o..#l])).matched;
+          }
+        }
+        when SearchMode.startsWith {
+          forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
+            // regexp.match only returns a match if the start of the string matches the pattern
+            h = myRegex.match(interpretAsString(va[o..#l])).matched;
+          }
+        }
+        when SearchMode.endsWith {
+          forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
+            var matches = myRegex.matches(interpretAsString(va[o..#l]));
+            var lastMatch: reMatch = matches[matches.size-1][0];
+            // h = true iff start(lastMatch) + len(lastMatch) == len(string) (-1 to account for null byte)
+            h = lastMatch.offset + lastMatch.size == l-1;
+          }
+        }
+        when SearchMode.match {
+          forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
+            // regexp.match only returns a match if the start of the string matches the pattern
+            // h = true iff len(match) == len(string) (-1 to account for null byte)
+            // if no match is found reMatch.size returns -1
+            h = myRegex.match(interpretAsString(va[o..#l])).size == l-1;
+          }
+        }
+      }
+      return hits;
+    }
     
-    proc substringSearch(const substr: string, mode: SearchMode) throws {
+    proc substringSearch(const substr: string, mode: SearchMode, regex: bool = false) throws {
+      if regex || mode == SearchMode.match {
+        // match always uses substringSearchRegex
+        return substringSearchRegex(substr, mode);
+      }
       var hits: [offsets.aD] bool;  // the answer
       if (size == 0) || (substr.size == 0) {
         return hits;
@@ -517,6 +599,109 @@ module SegmentedArray {
                                    "took %t seconds".format(t.elapsed()));
       }
       return hits;
+    }
+
+    /*
+      Peel off one or more fields matching the regular expression, delimiter, from each string (similar
+      to string.partition), returning two new arrays of strings.
+      *Warning*: This function is experimental and not guaranteed to work.
+
+      Note: the regular expression engine used, re2, does not support lookahead/lookbehind
+
+      :arg delimter: regex delimter where the split in SegString will occur
+      :type delimter: string
+
+      :arg times: The number of times the delimiter is sought, i.e. skip over the first (times-1) delimiters
+      :type times: int
+
+      :arg includeDelimiter: If true, append the delimiter to the end of the first return array
+                              By default, it is prepended to the beginning of the second return array.
+      :type includeDelimiter: bool
+
+      :arg keepPartial: If true, a string that does not contain <times> instances of
+                        the delimiter will be returned in the first array. By default,
+                        such strings are returned in the second array.
+      :type keepPartial: bool
+
+      :arg left: If true, peel from the left
+      :type left: bool
+
+      :returns: Components to build 2 SegStrings (leftOffsets, leftVals, rightOffsets, rightVals)
+    */
+    proc peelRegex(const delimiter: string, const times: int, const includeDelimiter: bool, const keepPartial: bool, const left: bool) throws {
+      checkCompile(delimiter);
+      // should we do len check here? re2.compile('') is valid regex and matches everything
+      ref oa = offsets.a;
+      ref va = values.a;
+      const lengths = getLengths() - 1;
+      var leftEnd: [offsets.aD] int;
+      var rightStart: [offsets.aD] int;
+
+      forall (o, len, i) in zip(oa, lengths, offsets.aD) with (var myRegex = _unsafeCompileRegex(delimiter)) {
+        var matches = myRegex.matches(interpretAsString(va[o..#len]));
+        if matches.size < times {
+          // not enough occurances of delim, the entire string stays together, and the param args
+          // determine whether it ends up on the left or right
+          if left == keepPartial {  // they counteract each other
+            // if both true or both false
+            // Goes on the left
+            leftEnd[i] = o + len - 1;
+            rightStart[i] = o + len;
+          }
+          else {
+            // if one is true but not the other
+            // Goes on the right
+            leftEnd[i] = o - 1;
+            rightStart[i] = o;
+          }
+        }
+        else {
+          // The string can be peeled; figure out where to split
+          var match_index: int = if left then (times - 1) else (matches.size - times);
+          var match: reMatch = matches[match_index][0];
+          var j: int = o + match.offset: int;
+          // j is now the start of the correct delimiter
+          // tweak leftEnd and rightStart based on includeDelimiter
+          if includeDelimiter {
+            if left {
+              leftEnd[i] = j + match.size - 1;
+              rightStart[i] = j + match.size;
+            }
+            else {
+              leftEnd[i] = j - 1;
+              rightStart[i] = j;
+            }
+          }
+          else {
+            leftEnd[i] = j - 1;
+            rightStart[i] = j + match.size;
+          }
+        }
+      }
+      // this section is the same as `peel`
+      // Compute lengths and offsets for left and right return arrays
+      const leftLengths = leftEnd - oa + 2;
+      const rightLengths = lengths - (rightStart - oa) + 1;
+      // check there's enough room to create copies for the scans and throw if creating copies would go over memory limit
+      overMemLimit(numBytes(int) * (leftLengths.size + rightLengths.size));
+      const leftOffsets = (+ scan leftLengths) - leftLengths;
+      const rightOffsets = (+ scan rightLengths) - rightLengths;
+      // Allocate values and fill
+      var leftVals = makeDistArray((+ reduce leftLengths), uint(8));
+      var rightVals = makeDistArray((+ reduce rightLengths), uint(8));
+      // Fill left values
+      forall (srcStart, dstStart, len) in zip(oa, leftOffsets, leftLengths) {
+        for i in 0..#(len-1) {
+          unorderedCopy(leftVals[dstStart+i], va[srcStart+i]);
+        }
+      }
+      // Fill right values
+      forall (srcStart, dstStart, len) in zip(rightStart, rightOffsets, rightLengths) {
+        for i in 0..#(len-1) {
+          unorderedCopy(rightVals[dstStart+i], va[srcStart+i]);
+        }
+      }
+      return (leftOffsets, leftVals, rightOffsets, rightVals);
     }
 
     proc peel(const delimiter: string, const times: int, param includeDelimiter: bool, param keepPartial: bool, param left: bool) throws {
@@ -761,7 +946,7 @@ module SegmentedArray {
   }
 
 
-  enum SearchMode { contains, startsWith, endsWith }
+  enum SearchMode { contains, startsWith, endsWith, match }
   class UnknownSearchMode: Error {}
   
   /* Test for equality between two same-length arrays of strings. Returns
