@@ -463,7 +463,7 @@ module SegmentedArray {
     /*
     Returns Regexp.compile if pattern can be compiled without an error
     */
-    proc checkCompile(const pattern: string) throws {
+    proc checkCompile(const pattern: ?t) throws where t == bytes || t == string {
       try {
         return compile(pattern);
       }
@@ -474,7 +474,7 @@ module SegmentedArray {
       }
     }
 
-    proc _unsafeCompileRegex(const pattern: string) {
+    proc _unsafeCompileRegex(const pattern: ?t) where t == bytes || t == string {
       // This is a private function and should not be called to compile pattern. Use checkCompile instead
 
       // This proc is a workaound to allow declaring regexps using a with clause in forall loops

@@ -89,3 +89,39 @@ class RegexTest(ArkoudaTest):
         self.assertListEqual(['', '', '.f.g'], o_right.to_ndarray().tolist())
         self.assertListEqual(['', '', '1f2g'], d_right.to_ndarray().tolist())
         self.assertListEqual(['', '', '__f____g'], u_right.to_ndarray().tolist())
+
+    def test_regex_flatten(self):
+        orig = ak.array(['one|two', 'three|four|five', 'six', 'seven|eight|nine|ten|', 'eleven'])
+        digit = ak.array(['one1two', 'three2four3five', 'six', 'seven4eight5nine6ten7', 'eleven'])
+        under = ak.array(['one_two', 'three_four__five', 'six', 'seven_____eight__nine____ten_', 'eleven'])
+
+        answer_flat = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', '', 'eleven']
+        answer_map = [0, 2, 5, 6, 11]
+
+        orig_flat, orig_map = orig.flatten('|', return_segments=True)
+        digit_flat, digit_map = digit.flatten('\\d', return_segments=True, regex=True)
+        under_flat, under_map = under.flatten('_+', return_segments=True, regex=True)
+
+        self.assertListEqual(answer_flat, orig_flat.to_ndarray().tolist())
+        self.assertListEqual(answer_flat, digit_flat.to_ndarray().tolist())
+        self.assertListEqual(answer_flat, under_flat.to_ndarray().tolist())
+
+        self.assertListEqual(answer_map, orig_map.to_ndarray().tolist())
+        self.assertListEqual(answer_map, digit_map.to_ndarray().tolist())
+        self.assertListEqual(answer_map, under_map.to_ndarray().tolist())
+
+        # empty string, start with delim, end with delim, and only delim cases
+        orig = ak.array(['', '|', '|1|2', '3|4|', '5'])
+        regex = ak.array(['', '____', '_1_2', '3___4___', '5'])
+
+        answer_flat = ['', '', '', '', '1', '2', '3', '4', '', '5']
+        answer_map = [0, 1, 3, 6, 9]
+
+        orig_flat, orig_map = orig.flatten('|', return_segments=True)
+        regex_flat, regex_map = regex.flatten('_+', return_segments=True, regex=True)
+
+        self.assertListEqual(answer_flat, orig_flat.to_ndarray().tolist())
+        self.assertListEqual(answer_flat, regex_flat.to_ndarray().tolist())
+
+        self.assertListEqual(answer_map, orig_map.to_ndarray().tolist())
+        self.assertListEqual(answer_map, regex_map.to_ndarray().tolist())

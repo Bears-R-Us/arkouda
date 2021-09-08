@@ -14,8 +14,9 @@ module FlattenMsg {
   const fmLogger = new Logger(logLevel);
 
   proc segFlattenMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
-    var (name, objtype, returnSegsStr, delimJson) = payload.splitMsgToTuple(4);
+    var (name, objtype, returnSegsStr, regexStr, delimJson) = payload.splitMsgToTuple(5);
     const returnSegs: bool = returnSegsStr.toLower() == "true";
+    const regex: bool = regexStr.toLower() == "true";
     const arr = jsonToPdArray(delimJson, 1);
     const delim: string = arr[arr.domain.low];
     var repMsg: string;
@@ -26,7 +27,7 @@ module FlattenMsg {
         const optName: string = if returnSegs then st.nextName() else "";
         var (segName, valName) = name.splitMsgToTuple('+', 2);
         const strings = getSegString(segName, valName, st);
-        var (off, val, segs) = strings.flatten(delim, returnSegs);
+        var (off, val, segs) = strings.flatten(delim, returnSegs, regex);
         st.addEntry(rSegName, new shared SymEntry(off));
         st.addEntry(rValName, new shared SymEntry(val));
         repMsg = "created %s+created %s".format(st.attrib(rSegName), st.attrib(rValName));
