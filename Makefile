@@ -43,6 +43,14 @@ ifdef ARKOUDA_HDF5_PATH
 $(eval $(call add-path,$(ARKOUDA_HDF5_PATH)))
 endif
 
+# For configs that use a fixed heap, but still have first-touch semantics
+# (gasnet-ibv-large) interleave large allocations to reduce the performance hit
+# from getting progressively worse NUMA affinity due to memory reuse.
+CHPL_HELP := $(shell $(CHPL) --devel --help)
+ifneq (,$(findstring interleave-memory,$(CHPL_HELP)))
+CHPL_FLAGS += --interleave-memory
+endif
+
 .PHONY: install-deps
 install-deps: install-zmq install-hdf5
 
