@@ -390,9 +390,64 @@ will fall in one contiguous block.</p>
 <dd></dd></dl>
 
 <dl class="chpl method">
-<dt id="SegmentedArray.SegString.substringSearch">
-<em class="property">proc </em><code class="sig-name descname">substringSearch</code><span class="sig-paren">(</span><em class="sig-param">const substr: string</em>, <em class="sig-param">mode: SearchMode</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#SegmentedArray.SegString.substringSearch" title="Permalink to this definition">¶</a></dt>
+<dt id="SegmentedArray.SegString.checkCompile">
+<em class="property">proc </em><code class="sig-name descname">checkCompile</code><span class="sig-paren">(</span><em class="sig-param">const pattern: string</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#SegmentedArray.SegString.checkCompile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns Regexp.compile if pattern can be compiled without an error</p>
+</dd></dl>
+
+<dl class="chpl method">
+<dt id="SegmentedArray.SegString._unsafeCompileRegex">
+<em class="property">proc </em><code class="sig-name descname">_unsafeCompileRegex</code><span class="sig-paren">(</span><em class="sig-param">const pattern: string</em><span class="sig-paren">)</span><a class="headerlink" href="#SegmentedArray.SegString._unsafeCompileRegex" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="chpl method">
+<dt id="SegmentedArray.SegString.substringSearchRegex">
+<em class="property">proc </em><code class="sig-name descname">substringSearchRegex</code><span class="sig-paren">(</span><em class="sig-param">const pattern: string</em>, <em class="sig-param">mode: SearchMode</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#SegmentedArray.SegString.substringSearchRegex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list of bools where index i indicates whether the regular expression, pattern, matched string i of the SegString</p>
+<p>Note: the regular expression engine used, re2, does not support lookahead/lookbehind</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pattern</strong> : <em>string</em> – regex pattern to be applied to strings in SegString</p></li>
+<li><p><strong>mode</strong> : <em>SearchMode enum</em> – mode of search being performed (contains, startsWith, endsWith, match)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[domain] bool where index i indicates whether the regular expression, pattern, matched string i of the SegString</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="chpl method">
+<dt id="SegmentedArray.SegString.substringSearch">
+<em class="property">proc </em><code class="sig-name descname">substringSearch</code><span class="sig-paren">(</span><em class="sig-param">const substr: string</em>, <em class="sig-param">mode: SearchMode</em>, <em class="sig-param">regex: bool = false</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#SegmentedArray.SegString.substringSearch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt id="SegmentedArray.SegString.peelRegex">
+<em class="property">proc </em><code class="sig-name descname">peelRegex</code><span class="sig-paren">(</span><em class="sig-param">const delimiter: string</em>, <em class="sig-param">const times: int</em>, <em class="sig-param">const includeDelimiter: bool</em>, <em class="sig-param">const keepPartial: bool</em>, <em class="sig-param">const left: bool</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#SegmentedArray.SegString.peelRegex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Peel off one or more fields matching the regular expression, delimiter, from each string (similar
+to string.partition), returning two new arrays of strings.
+<em>Warning</em>: This function is experimental and not guaranteed to work.</p>
+<p>Note: the regular expression engine used, re2, does not support lookahead/lookbehind</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>delimter</strong> : <em>string</em> – regex delimter where the split in SegString will occur</p></li>
+<li><p><strong>times</strong> : <em>int</em> – The number of times the delimiter is sought, i.e. skip over the first (times-1) delimiters</p></li>
+<li><p><strong>includeDelimiter</strong> : <em>bool</em> – If true, append the delimiter to the end of the first return array
+By default, it is prepended to the beginning of the second return array.</p></li>
+<li><p><strong>keepPartial</strong> : <em>bool</em> – If true, a string that does not contain &lt;times&gt; instances of
+the delimiter will be returned in the first array. By default,
+such strings are returned in the second array.</p></li>
+<li><p><strong>left</strong> : <em>bool</em> – If true, peel from the left</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Components to build 2 SegStrings (leftOffsets, leftVals, rightOffsets, rightVals)</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="chpl method">
 <dt id="SegmentedArray.SegString.peel">
@@ -428,7 +483,7 @@ will fall in one contiguous block.</p>
 
 <dl class="chpl enum">
 <dt id="SegmentedArray.SearchMode">
-<em class="property">enum </em><code class="sig-name descname">SearchMode</code> { contains, startsWith, endsWith }<a class="headerlink" href="#SegmentedArray.SearchMode" title="Permalink to this definition">¶</a></dt>
+<em class="property">enum </em><code class="sig-name descname">SearchMode</code> { contains, startsWith, endsWith, match }<a class="headerlink" href="#SegmentedArray.SearchMode" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl class">
