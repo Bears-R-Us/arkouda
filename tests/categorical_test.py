@@ -241,8 +241,8 @@ class CategoricalTest(ArkoudaTest):
         """
         c1 = self._getCategorical(prefix="c1", size=51)
         c2 = self._getCategorical(prefix="c2", size=52)
-        pda1 = ak.zeros(5)
-        strings1 = ak.random_strings_uniform(9, 10, 5)
+        pda1 = ak.zeros(51)
+        strings1 = ak.random_strings_uniform(9, 10, 52)
 
         with tempfile.TemporaryDirectory(dir=CategoricalTest.cat_test_base_tmp) as tmp_dirname:
             df = {
