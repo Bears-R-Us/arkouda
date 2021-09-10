@@ -8,7 +8,7 @@ from arkouda.strings import Strings
 from arkouda.categorical import Categorical
 
 __all__ = ["ls_hdf", "read_hdf", "read_all", "load", "get_datasets",
-           "load_all", "save_all"]
+           "load_all", "save_all", "read_parquet"]
 
 ARKOUDA_HDF5_FILE_METADATA_GROUP = "_arkouda_metadata"
 
@@ -113,6 +113,96 @@ def read_hdf(dsetName : str, filenames : Union[str,List[str]],
                 read_all(filenames, datasets=dsetName, strictTypes=strictTypes, allow_errors=allow_errors,
                          calc_string_offsets=calc_string_offsets))
 
+def read_parquet(filenames : Union[str, List[str]],
+                 dsetname : Union[str, List[str]]  = 'array',
+                 strictTypes: bool=True, allow_errors:bool = False)\
+             -> Union[pdarray, Strings, Mapping[str,Union[pdarray,Strings]]]:
+    """
+    Read a single dataset from multiple Parquet files into an Arkouda
+    pdarray object.
+
+    Parameters
+    ----------
+    filenames : list or str
+        Either a list of filenames or shell expression
+    dsetName : str
+        The name of the dataset (must be the same across all files).
+        Defaults to 'array'.
+    strictTypes: bool
+        If True (default), require all dtypes in all files to have the
+        same precision and sign. If False, allow dtypes of different
+        precision and sign across different files. For example, if one 
+        file contains a uint32 dataset and another contains an int64
+        dataset, the contents of both will be read into an int64 pdarray.
+    allow_errors: bool
+        Default False, if True will allow files with read errors to be skipped
+        instead of failing.  A warning will be included in the return containing
+        the total number of files skipped due to failure and up to 10 filenames.
+
+    Returns
+    -------
+    pdarray
+        A pdarray instance pointing to the server-side data
+
+    Raises
+    ------
+    TypeError 
+        Raised if dsetName is not a str or if filenames is neither a string
+        nor a list of strings
+    ValueError 
+        Raised if all datasets are not present in all parquet files  
+    RuntimeError
+        Raised if one or more of the specified files cannot be opened  
+
+    See Also
+    --------
+    read_hdf, get_datasets, ls_hdf, read_all, load, save
+
+    Notes
+    -----
+    If filenames is a string, it is interpreted as a shell expression
+    (a single filename is a valid expression, so it will work) and is
+    expanded with glob to read all matching files. Use ``get_datasets`` to
+    show the names of datasets in Parquet files.
+
+    If dsetName is not present in all files, a TypeError is raised.
+    """
+    if isinstance(filenames, str):
+        filenames = [filenames]
+    if isinstance(dsetname, str):
+        dsetname = [dsetname]
+
+    rep_msg = generic_msg(cmd="readAllParquet", args=
+                          f"{strictTypes} {len(dsetname)} {len(filenames)} {allow_errors} {json.dumps(dsetname)} | {json.dumps(filenames)}")
+    rep = json.loads(rep_msg)  # See GenSymIO._buildReadAllHdfMsgJson for json structure
+    items = rep["items"] if "items" in rep else []
+    file_errors = rep["file_errors"] if "file_errors" in rep else []
+
+    # We have a couple possible return conditions
+    # 1. We have multiple items returned i.e. multi pdarrays
+    # 2. We have a single pdarray
+    # TODO: add support for a string objects in Parquet
+    if len(items) > 1: #  DataSets condition
+        d: Dict[str, Union[pdarray, Strings]] = {}
+        for item in items:
+            if "seg_string" == item["arkouda_type"]:
+                d[item["dataset_name"]] = Strings(*item["created"].split("+"))
+            elif "pdarray" == item["arkouda_type"]:
+                d[item["dataset_name"]] = create_pdarray(item["created"])
+            else:
+                raise TypeError(f"Unknown arkouda type:{item['arkouda_type']}")
+        return d
+
+    elif len(items) == 1:
+        item = items[0]
+        if "pdarray" == item["arkouda_type"]:
+            return create_pdarray(item["created"])
+        elif "seg_string" == item["arkouda_type"]:
+            return Strings(*item["created"].split("+"))
+        else:
+            raise TypeError(f"Unknown arkouda type:{item['arkouda_type']}")
+    else:
+        raise RuntimeError("No items were returned")
 
 def read_all(filenames : Union[str, List[str]],
              datasets: Optional[Union[str, List[str]]] = None,
