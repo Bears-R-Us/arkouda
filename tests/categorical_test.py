@@ -200,7 +200,8 @@ class CategoricalTest(ArkoudaTest):
         """
         Test to save categorical to hdf5 and read it back successfully
         """
-        cat = self._getCategorical()
+        num_elems = 51  # _getCategorical starts counting at 1, so the size is really off by one
+        cat = self._getCategorical(size=num_elems)
         with self.assertRaises(ValueError):  # Expect error for mode not being append or truncate
             cat.save("foo", dataset="bar", mode="not_allowed")
 
@@ -222,8 +223,7 @@ class CategoricalTest(ArkoudaTest):
             self.assertTrue(dset_name in x)
             cat_from_hdf = x[dset_name]
 
-            expected_categories = ['string 1', 'string 2', 'string 3', 'string 4', 'string 5', 'string 6', 'string 7',
-                                   'string 8', 'string 9', 'string 10']
+            expected_categories = [f"string {i}" for i in range(1, num_elems)]
 
             # Note assertCountEqual asserts a and b have the same elements in the same amount regardless of order
             self.assertCountEqual(cat_from_hdf.categories.to_ndarray().tolist(), expected_categories)
@@ -231,17 +231,18 @@ class CategoricalTest(ArkoudaTest):
             # Asserting the optional components and sizes are correct for both constructors should be sufficient
             self.assertTrue(cat_from_hdf.segments is not None)
             self.assertTrue(cat_from_hdf.permutation is not None)
-            self.assertTrue(cat_from_hdf.size is 10)
+            print(f"==> cat_from_hdf.size:{cat_from_hdf.size}")
+            self.assertTrue(cat_from_hdf.size == num_elems-1)
 
     def testSaveAndLoadCategoricalMulti(self):
         """
         Test to build a pseudo dataframe with multiple categoricals, pdarrays, strings objects and successfully
         write/read it from HDF5
         """
-        c1 = ak.Categorical(ak.array(['abc', 'def', 'ghi', 'jkl']))
-        c2 = ak.Categorical(ak.array(['mno', 'pqr', 'stu', 'vwx', 'yz']))
-        pda1 = ak.zeros(5)
-        strings1 = ak.random_strings_uniform(9, 10, 5)
+        c1 = self._getCategorical(prefix="c1", size=51)
+        c2 = self._getCategorical(prefix="c2", size=52)
+        pda1 = ak.zeros(51)
+        strings1 = ak.random_strings_uniform(9, 10, 52)
 
         with tempfile.TemporaryDirectory(dir=CategoricalTest.cat_test_base_tmp) as tmp_dirname:
             df = {
