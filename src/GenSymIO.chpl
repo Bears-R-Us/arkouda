@@ -259,8 +259,14 @@ module GenSymIO {
 
             sub.wait();
 
-            exitCode = sub.exit_status;
-            
+            // Use new-style exitCode if available --
+            // https://github.com/chapel-lang/chapel/pull/18352
+            if hasField(sub.type, "exitCode") {
+                exitCode = sub.exitCode;
+            } else {
+                exitCode = sub.exit_status;
+            }
+
             var f = open(tmpfile, iomode.r);
             defer {  // This will ensure we try to close f when we exit the proc scope.
                 ensureClose(f);
