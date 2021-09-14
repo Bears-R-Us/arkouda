@@ -507,31 +507,31 @@ module SegmentedArray {
 
       select mode {
         when SearchMode.contains {
-          forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
+          forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern), var agg = newDstAggregator(bool)) {
             // regexp.search searches the receiving string for matches at any offset
-            h = myRegex.search(interpretAsString(va[o..#l])).matched;
+            agg.copy(h, myRegex.search(interpretAsString(va[o..#l])).matched);
           }
         }
         when SearchMode.startsWith {
-          forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
+          forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern), var agg = newDstAggregator(bool)) {
             // regexp.match only returns a match if the start of the string matches the pattern
-            h = myRegex.match(interpretAsString(va[o..#l])).matched;
+            agg.copy(h, myRegex.match(interpretAsString(va[o..#l])).matched);
           }
         }
         when SearchMode.endsWith {
-          forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
+          forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern), var agg = newDstAggregator(bool)) {
             var matches = myRegex.matches(interpretAsString(va[o..#l]));
             var lastMatch: reMatch = matches[matches.size-1][0];
             // h = true iff start(lastMatch) + len(lastMatch) == len(string) (-1 to account for null byte)
-            h = lastMatch.offset + lastMatch.size == l-1;
+            agg.copy(h, lastMatch.offset + lastMatch.size == l-1);
           }
         }
         when SearchMode.match {
-          forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
+          forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern), var agg = newDstAggregator(bool)) {
             // regexp.match only returns a match if the start of the string matches the pattern
             // h = true iff len(match) == len(string) (-1 to account for null byte)
             // if no match is found reMatch.size returns -1
-            h = myRegex.match(interpretAsString(va[o..#l])).size == l-1;
+            agg.copy(h, myRegex.match(interpretAsString(va[o..#l])).size == l-1);
           }
         }
       }
