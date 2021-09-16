@@ -308,6 +308,8 @@ proc main() {
                 when "segmentLengths"    {repTuple = segmentLengthsMsg(cmd, args, st);}
                 when "segmentedHash"     {repTuple = segmentedHashMsg(cmd, args, st);}
                 when "segmentedEfunc"    {repTuple = segmentedEfuncMsg(cmd, args, st);}
+                when "segmentedFind"     {repTuple = segmentedFindMsg(cmd, args, st);}
+                when "segmentedSlice"    {repTuple = segmentedSliceMsg(cmd, args, st);}
                 when "segmentedPeel"     {repTuple = segmentedPeelMsg(cmd, args, st);}
                 when "segmentedIndex"    {repTuple = segmentedIndexMsg(cmd, args, st);}
                 when "segmentedBinopvv"  {repTuple = segBinopvvMsg(cmd, args, st);}
