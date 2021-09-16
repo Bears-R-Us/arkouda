@@ -156,7 +156,21 @@ class NumericTest(ArkoudaTest):
         with self.assertRaises(TypeError) as cm:
             ak.cos([range(0,10)])
         self.assertEqual('type of argument "pda" must be arkouda.pdarrayclass.pdarray; got list instead', 
-                        cm.exception.args[0])    
+                        cm.exception.args[0])
+
+    def testHash(self):
+        h1, h2 = ak.hash(ak.arange(10))
+        rev = ak.arange(9, -1, -1)
+        h3, h4 = ak.hash(rev)
+        self.assertTrue((h1 == h3[rev]).all() and (h2 == h4[rev]).all())
+
+        h1 = ak.hash(ak.arange(10), full=False)
+        h3 = ak.hash(rev, full=False)
+        self.assertTrue((h1 == h3[rev]).all())
+
+        h = ak.hash(ak.linspace(0, 10, 10))
+        self.assertTrue((h[0].dtype == ak.int64) and (h[1].dtype == ak.int64))
+        
         
     def testValueCounts(self):
         pda = ak.ones(100, dtype=ak.int64)
