@@ -7,12 +7,13 @@ config const INPUTSIZE = 64;
 
 enum testMode {fixed, variable};
 config const mode = testMode.variable;
+config const compareTypes = false;
 
-proc testFixedLength(n:int, size:int) {
+proc testFixedLength(n:int, size:int, type t) {
   var d: Diags;
-  var buf = makeDistArray(n*size, uint(8));
+  var buf = makeDistArray(n*size, t);
   forall (b, i) in zip(buf, 0..) {
-    b = i: uint(8);
+    b = i: t;
   }
   var hashes = makeDistArray(n, 2*uint(64));
   d.start();
@@ -20,14 +21,15 @@ proc testFixedLength(n:int, size:int) {
     h = sipHash128(buf, i*size..#size);
   }
   d.stop(printTime=false);
-  return (d.elapsed(), n*size);
+  return (d.elapsed(), n*size*numBytes(t));
 }
 
-proc testVariableLength(n:int, meanSize:int) {
+proc testVariableLength(n:int, meanSize:int, type t) {
   var d: Diags;
   const logMean:real = log(meanSize:real)/2;
   const logStd:real = sqrt(2*logMean);
   var (segs, vals) = newRandStringsLogNormalLength(n, logMean, logStd);
+  var tohash: [vals.domain] t = [v in vals] v: t;
   const D = segs.domain;
   var lengths: [D] int;
   forall (l, s, i) in zip(lengths, segs, D) {
@@ -37,16 +39,30 @@ proc testVariableLength(n:int, meanSize:int) {
   var hashes: [segs.domain] 2*uint;
   d.start();
   forall (h, i, l) in zip(hashes, segs, lengths) {
-    h = sipHash128(vals, i..#l);
+    h = sipHash128(tohash, i..#l);
   }
   d.stop(printTime=false);
-  return (d.elapsed(), vals.size);
+  return (d.elapsed(), vals.size * numBytes(t));
 }
 
 proc main() {
-  const (elapsed, nbytes) = if mode == testMode.variable then testVariableLength(NINPUTS, INPUTSIZE)
-                                                         else testFixedLength(NINPUTS, INPUTSIZE);
-  const MB = byteToMB(nbytes);
+  var (elapsed, nbytes) = if mode == testMode.variable then testVariableLength(NINPUTS, INPUTSIZE, uint(8))
+    else testFixedLength(NINPUTS, INPUTSIZE, uint(8));
+  var MB = byteToMB(nbytes);
   if printTimes then
-    writeln("Hashed %i blocks (%.1dr MB) in %.2dr seconds (%.2dr MB/s)\n".format(NINPUTS, MB, elapsed, MB/elapsed));
+    writeln("Hashed %i uint(8) blocks (%.1dr MB) in %.2dr seconds (%.2dr MB/s)\n".format(NINPUTS, MB, elapsed, MB/elapsed));
+
+  if compareTypes {
+    (elapsed, nbytes) = if mode == testMode.variable then testVariableLength(NINPUTS, INPUTSIZE, int(64))
+      else testFixedLength(NINPUTS, INPUTSIZE, int(64));
+    MB = byteToMB(nbytes);
+    if printTimes then
+      writeln("Hashed %i int(64) blocks (%.1dr MB) in %.2dr seconds (%.2dr MB/s)\n".format(NINPUTS, MB, elapsed, MB/elapsed));
+
+    (elapsed, nbytes) = if mode == testMode.variable then testVariableLength(NINPUTS, INPUTSIZE, real(64))
+      else testFixedLength(NINPUTS, INPUTSIZE, real(64));
+    MB = byteToMB(nbytes);
+    if printTimes then
+      writeln("Hashed %i real(64) blocks (%.1dr MB) in %.2dr seconds (%.2dr MB/s)\n".format(NINPUTS, MB, elapsed, MB/elapsed));
+  }
 }
