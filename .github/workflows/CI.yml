@@ -91,10 +91,6 @@ jobs:
       run: |
         apt-get update && apt-get install -y libhdf5-dev hdf5-tools libzmq3-dev python3-pip
         echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" > Makefile.paths
-    - uses: actions/cache@v2
-      with:
-        path: ~/.cache/pip
-        key: ${{ hashFiles('setup.py') }}
     - name: Build/Install Arkouda
       run: |
         make
