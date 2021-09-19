@@ -334,7 +334,7 @@ def _send_string_message(cmd : str, recv_binary : bool=False,
 
     if recv_binary:
         frame = socket.recv(copy=False)
-        view = memoryview(frame)
+        view = frame.buffer
         # raise errors sent back from the server
         if bytes(view[0:len(b"Error:")]) == b"Error:":
             raise RuntimeError(frame.bytes.decode())
@@ -401,7 +401,7 @@ def _send_binary_message(cmd : str, payload : memoryview, recv_binary : bool=Fal
 
     if recv_binary:
         frame = socket.recv(copy=False)
-        view = memoryview(frame)
+        view = frame.buffer
         # raise errors sent back from the server
         if bytes(view[0:len(b"Error:")]) == b"Error:":
             raise RuntimeError(frame.bytes.decode())
