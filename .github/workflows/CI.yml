@@ -125,4 +125,4 @@ jobs:
         echo "\$(eval \$(call add-path,/usr/lib/x86_64-linux-gnu/hdf5/serial/))" > Makefile.paths
     - name: Run unit tests
       run: |
-        python3 util/test/parallel_start_test.py -d test --threads 4
+        start_test test
