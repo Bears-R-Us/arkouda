@@ -99,6 +99,7 @@ Functions
    arkouda.cumprod
    arkouda.sin
    arkouda.cos
+   arkouda.hash
    arkouda.where
    arkouda.histogram
    arkouda.value_counts
@@ -1949,6 +1950,40 @@ Attributes
    :rtype: pdarray
 
    :raises TypeError: Raised if the parameter is not a pdarray
+
+
+.. py:function:: hash(pda: arkouda.pdarrayclass.pdarray, full: bool = True) -> Union[Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray], arkouda.pdarrayclass.pdarray]
+
+   Return an element-wise hash of the array.
+
+   :param pda:
+   :type pda: pdarray
+   :param full: By default, a 128-bit hash is computed and returned as
+                two int64 arrays. If full=False, then a 64-bit hash
+                is computed and returned as a single int64 array.
+   :type full: bool
+
+   :returns: If full=True, a 2-tuple of pdarrays containing the high
+             and low 64 bits of each hash, respectively.
+             If full=False, a single pdarray containing a 64-bit hash
+   :rtype: hashes
+
+   :raises TypeError: Raised if the parameter is not a pdarray
+
+   .. rubric:: Notes
+
+   This function uses the SIPhash algorithm, which can output
+   either a 64-bit or 128-bit hash. However, the 64-bit hash
+   runs a significant risk of collisions when applied to more
+   than a few million unique values. Unless the number of unique
+   values is known to be small, the 128-bit hash is strongly
+   recommended.
+
+   Note that this hash should not be used for security, or for
+   any cryptographic application. Not only is SIPhash not
+   intended for such uses, but this implementation employs a
+   fixed key for the hash, which makes it possible for an
+   adversary with control over input to engineer collisions.
 
 
 .. py:function:: where(condition: arkouda.pdarrayclass.pdarray, A: Union[arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray], B: Union[arkouda.dtypes.numeric_scalars, arkouda.pdarrayclass.pdarray]) -> arkouda.pdarrayclass.pdarray

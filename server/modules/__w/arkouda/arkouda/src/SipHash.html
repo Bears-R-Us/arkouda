@@ -243,12 +243,25 @@
 
 <dl class="chpl function">
 <dt id="SipHash.sipHash64">
-<em class="property">proc </em><code class="sig-name descname">sipHash64</code><span class="sig-paren">(</span><em class="sig-param">msg: [] uint(8)</em>, <em class="sig-param">D</em><span class="sig-paren">)</span>: uint(64)<a class="headerlink" href="#SipHash.sipHash64" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">sipHash64</code><span class="sig-paren">(</span><em class="sig-param">msg: [] ?t</em>, <em class="sig-param">D</em><span class="sig-paren">)</span>: uint(64)<a class="headerlink" href="#SipHash.sipHash64" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="chpl function">
 <dt id="SipHash.sipHash128">
-<em class="property">proc </em><code class="sig-name descname">sipHash128</code><span class="sig-paren">(</span><em class="sig-param">msg: [] uint(8)</em>, <em class="sig-param">D</em><span class="sig-paren">)</span>: 2*(uint(64))<a class="headerlink" href="#SipHash.sipHash128" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">sipHash128</code><span class="sig-paren">(</span><em class="sig-param">msg: [] ?t</em>, <em class="sig-param">D</em><span class="sig-paren">)</span>: 2*(uint(64))<a class="headerlink" href="#SipHash.sipHash128" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt>
+<em class="property">proc </em><code class="sig-name descname">sipHash64</code><span class="sig-paren">(</span><em class="sig-param">in val</em><span class="sig-paren">)</span>: uint(64)</dt>
+<dd><ul class="simple">
+<li><p>Compute hash of a single value</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
+<dt>
+<em class="property">proc </em><code class="sig-name descname">sipHash128</code><span class="sig-paren">(</span><em class="sig-param">in val</em><span class="sig-paren">)</span>: 2*(uint(64))</dt>
 <dd></dd></dl>
 
 </div>

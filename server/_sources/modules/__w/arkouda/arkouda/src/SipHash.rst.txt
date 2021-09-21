@@ -27,7 +27,15 @@ or
 
 .. function:: proc ROTL(x, b)
 
-.. function:: proc sipHash64(msg: [] uint(8), D): uint(64)
+.. function:: proc sipHash64(msg: [] ?t, D): uint(64)
 
-.. function:: proc sipHash128(msg: [] uint(8), D): 2*(uint(64))
+.. function:: proc sipHash128(msg: [] ?t, D): 2*(uint(64))
+
+.. function:: proc sipHash64(in val): uint(64)
+
+   
+   * Compute hash of a single value
+   
+
+.. function:: proc sipHash128(in val): 2*(uint(64))
 
