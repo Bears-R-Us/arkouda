@@ -12,10 +12,9 @@ def time_substring_search(N, trials, seed):
 
     start = ak.random_strings_uniform(minlen=1, maxlen=8, size=N, seed=seed)
     end = ak.random_strings_uniform(minlen=1, maxlen=8, size=N, seed=seed)
-    digit_substr = ['{} string {}'.format(i % 10, i % 10) for i in range(0, N)]
 
-    # each string in test_substring contains digit_substr with random strings before and after
-    test_substring = ak.array([s + d + e for s, d, e in zip(start.to_ndarray(), digit_substr, end.to_ndarray())])
+    # each string in test_substring contains '1 string 1' with random strings before and after
+    test_substring = start.stick(end, delimiter='1 string 1')
     nbytes = test_substring.bytes.size * test_substring.bytes.itemsize
 
     non_regex_times = []
@@ -23,12 +22,12 @@ def time_substring_search(N, trials, seed):
     regex_pattern_times = []
     for i in range(trials):
         start = time.time()
-        non_regex = test_substring.contains('string')
+        non_regex = test_substring.contains('1 string 1')
         end = time.time()
         non_regex_times.append(end - start)
 
         start = time.time()
-        regex_literal = test_substring.contains('string', regex=True)
+        regex_literal = test_substring.contains('1 string 1', regex=True)
         end = time.time()
         regex_literal_times.append(end - start)
 
@@ -59,13 +58,12 @@ def check_correctness(seed):
 
     start = ak.random_strings_uniform(minlen=1, maxlen=8, size=N, seed=seed)
     end = ak.random_strings_uniform(minlen=1, maxlen=8, size=N, seed=seed)
-    digit_substr = ['{} string {}'.format(i % 10, i % 10) for i in range(0, N)]
 
-    # each string in test_substring contains digit_substr with random strings before and after
-    test_substring = ak.array([s + d + e for s, d, e in zip(start.to_ndarray(), digit_substr, end.to_ndarray())])
+    # each string in test_substring contains '1 string 1' with random strings before and after
+    test_substring = start.stick(end, delimiter='1 string 1')
 
-    assert test_substring.contains('string').all()
-    assert test_substring.contains('string', regex=True).all()
+    assert test_substring.contains('1 string 1').all()
+    assert test_substring.contains('1 string 1', regex=True).all()
     assert test_substring.contains('\\d string \\d', regex=True).all()
 
 
