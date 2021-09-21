@@ -59,7 +59,7 @@ module SipHash {
   private inline proc XTO64_LE(in x: ?t) {
     var y: uint(64);
     if isSubtype(t, c_ptr) {
-      c_memcpy(c_ptrTo(y), x, 8);
+      c_memcpy(c_ptrTo(y), x, c_sizeof(t));
     } else if numBytes(t) == 8 {
       c_memcpy(c_ptrTo(y), c_ptrTo(x), numBytes(t));
     } else {
@@ -81,12 +81,16 @@ module SipHash {
     return c;
   }
   
-  proc sipHash64(msg: [] ?t, D): uint(64) {
+  proc sipHash64(msg: [] ?t, D): uint(64) where ((t == uint(8)) ||
+                                                 (t == int(64)) ||
+                                                 (t == real(64))) {
     var (res,_) = computeSipHashLocalized(msg, D, 8);
     return res;
   }
 
-  proc sipHash128(msg: [] ?t, D): 2*uint(64) {
+  proc sipHash128(msg: [] ?t, D): 2*uint(64) where ((t == uint(8)) ||
+                                                    (t == int(64)) ||
+                                                    (t == real(64))) {
     return computeSipHashLocalized(msg, D, 16);
   }
 
@@ -118,7 +122,7 @@ module SipHash {
           return computeSipHash(c_ptrTo(start), 0..#l, outlen, numBytes(t));
         } else {
           var a = c_malloc(msg.eltType, l);
-          const byteSize = l:size_t * c_sizeof(t);
+          const byteSize = l:size_t * numBytes(t);
           GET(a, startLocale, getAddr(start), byteSize);
           var h = computeSipHash(a, 0..#l, outlen, numBytes(t));
           c_free(a);
