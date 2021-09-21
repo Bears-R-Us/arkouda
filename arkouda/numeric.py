@@ -13,7 +13,7 @@ from arkouda.strings import Strings
 Categorical = ForwardRef('Categorical')
 
 __all__ = ["cast", "abs", "log", "exp", "cumsum", "cumprod", "sin", "cos", 
-           "where", "histogram", "value_counts", "isnan"]
+           "hash", "where", "histogram", "value_counts", "isnan"]
 
 @typechecked
 def cast(pda : Union[pdarray, Strings], dt: Union[np.dtype,str]) -> Union[pdarray, Strings]:
@@ -291,6 +291,58 @@ def cos(pda : pdarray) -> pdarray:
     """
     repMsg = type_cast(str, generic_msg(cmd="efunc", args="{} {}".format("cos",pda.name)))
     return create_pdarray(type_cast(str,repMsg))
+
+@typechecked
+def hash(pda : pdarray, full : bool = True) -> Union[Tuple[pdarray,pdarray],pdarray]:
+    """
+    Return an element-wise hash of the array.
+
+    Parameters
+    ----------
+    pda : pdarray
+
+    full : bool
+        By default, a 128-bit hash is computed and returned as
+        two int64 arrays. If full=False, then a 64-bit hash
+        is computed and returned as a single int64 array.
+    
+    Returns
+    -------
+    hashes
+        If full=True, a 2-tuple of pdarrays containing the high 
+        and low 64 bits of each hash, respectively.
+        If full=False, a single pdarray containing a 64-bit hash
+    
+    Raises
+    ------
+    TypeError
+        Raised if the parameter is not a pdarray
+
+    Notes
+    -----
+    This function uses the SIPhash algorithm, which can output
+    either a 64-bit or 128-bit hash. However, the 64-bit hash
+    runs a significant risk of collisions when applied to more 
+    than a few million unique values. Unless the number of unique
+    values is known to be small, the 128-bit hash is strongly
+    recommended.
+
+    Note that this hash should not be used for security, or for
+    any cryptographic application. Not only is SIPhash not
+    intended for such uses, but this implementation employs a
+    fixed key for the hash, which makes it possible for an
+    adversary with control over input to engineer collisions.
+    """
+    if full:
+        subcmd = "hash128"
+    else:
+        subcmd = "hash64"
+    repMsg = type_cast(str, generic_msg(cmd="efunc", args="{} {}".format(subcmd,pda.name)))
+    if full:
+        a, b = type_cast(str, repMsg).split('+')
+        return create_pdarray(type_cast(str, a)), create_pdarray(type_cast(str, b))
+    else:
+        return create_pdarray(type_cast(str,repMsg))
 
 @typechecked
 def where(condition : pdarray, A : Union[numeric_scalars, pdarray], 

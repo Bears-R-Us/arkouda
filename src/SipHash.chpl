@@ -2,6 +2,7 @@ module SipHash {
   private use CommPrimitives;
   private use AryUtil;
   private use CPtr;
+  private use SysCTypes;
   use ServerConfig;
   use ServerErrors;
   use Reflection;
@@ -55,6 +56,17 @@ module SipHash {
             (p[7]: uint(64) << 56));
   }
 
+  private inline proc XTO64_LE(in x: ?t) {
+    var y: uint(64);
+    if isSubtype(t, c_ptr) {
+      c_memcpy(c_ptrTo(y), x, c_sizeof(t));
+    } else if numBytes(t) == 8 {
+      c_memcpy(c_ptrTo(y), c_ptrTo(x), numBytes(t));
+    } else {
+      compilerError("input must have 64 bit values");
+    }
+    return y;
+  }
 
   private inline proc byte_reverse(b: uint(64)): uint(64) {
     var c: uint(64);
@@ -69,20 +81,36 @@ module SipHash {
     return c;
   }
   
-  proc sipHash64(msg: [] uint(8), D): uint(64) {
+  proc sipHash64(msg: [] ?t, D): uint(64) where ((t == uint(8)) ||
+                                                 (t == int(64)) ||
+                                                 (t == real(64))) {
     var (res,_) = computeSipHashLocalized(msg, D, 8);
     return res;
   }
 
-  proc sipHash128(msg: [] uint(8), D): 2*uint(64) {
+  proc sipHash128(msg: [] ?t, D): 2*uint(64) where ((t == uint(8)) ||
+                                                    (t == int(64)) ||
+                                                    (t == real(64))) {
     return computeSipHashLocalized(msg, D, 16);
   }
 
-  private proc computeSipHashLocalized(msg: [] uint(8), D, param outlen: int) {
+  /*
+   * Compute hash of a single value
+   */
+  proc sipHash64(in val): uint(64) {
+    var (res,_) = computeSipHash(c_ptrTo(val), 0..#1, 8, 8);
+    return res;
+  }
+  
+  proc sipHash128(in val): 2*uint(64) {
+    return computeSipHash(c_ptrTo(val), 0..#1, 16, 8);
+  }
+  
+  private proc computeSipHashLocalized(msg: [] ?t, D, param outlen: int) {
     if contiguousIndices(msg) {
       ref start = msg[D.low];
       if D.high < D.low {
-        return computeSipHash(c_ptrTo(start), 0..#0, outlen);
+        return computeSipHash(c_ptrTo(start), 0..#0, outlen, numBytes(t));
       }
       ref end = msg[D.high];
       const startLocale = start.locale.id;
@@ -91,22 +119,26 @@ module SipHash {
       const l = D.size;
       if startLocale == endLocale {
         if startLocale == hereLocale {
-          return computeSipHash(c_ptrTo(start), 0..#l, outlen);
+          return computeSipHash(c_ptrTo(start), 0..#l, outlen, numBytes(t));
         } else {
           var a = c_malloc(msg.eltType, l);
-          GET(a, startLocale, getAddr(start), l);
-          var h = computeSipHash(a, 0..#l, outlen);
+          const byteSize = l:size_t * numBytes(t);
+          GET(a, startLocale, getAddr(start), byteSize);
+          var h = computeSipHash(a, 0..#l, outlen, numBytes(t));
           c_free(a);
           return h;
         }
       }
     }
-    return computeSipHash(msg, D, outlen);
+    return computeSipHash(msg, D, outlen, numBytes(t));
   }
   
-  private proc computeSipHash(msg, D, param outlen: int) {
+  private proc computeSipHash(msg, D, param outlen: int, param eltBytes: int) {
     if !((outlen == 8) || (outlen == 16)) {
       compilerError("outlen must be 8 or 16");
+    }
+    if !((eltBytes == 1) || (eltBytes == 8)) {
+      compilerError("can only hash (arrays of) 8-bit or 64-bit values");
     }
     var v0 = 0x736f6d6570736575: uint(64);
     var v1 = 0x646f72616e646f6d: uint(64);
@@ -116,11 +148,13 @@ module SipHash {
     const k1 = 0x0f0e0d0c0b0a0908: uint(64);
     var m: uint(64);
     var i: int;
-    const lastPos = D.low + D.size - (D.size % 8);
+    param stride: int = if (eltBytes == 1) then 8 else 1;
+    const lastPos = D.low + D.size - (D.size % stride);
     // const uint8_t *end = in + inlen - (inlen % sizeof(uint64_t));
-    const left: int = D.size & 7;
+    const left: int = D.size & (stride - 1);
     // const int left = inlen & 7;
-    var b: uint(64) = (D.size: uint(64)) << 56;
+    const numBytes = D.size * eltBytes;
+    var b: uint(64) = (numBytes: uint(64)) << 56;
     v3 ^= k1;
     v2 ^= k0;
     v1 ^= k1;
@@ -151,23 +185,41 @@ module SipHash {
         if DEBUG {
             try! {
               shLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                   "%i v0 %016xu".format(D.size, v0));
+                                                   "%i v0 %016xu".format(numBytes, v0));
               shLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                   "%i v1 %016xu".format(D.size, v1));
+                                                   "%i v1 %016xu".format(numBytes, v1));
               shLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                   "%i v2 %016xu".format(D.size, v2));
+                                                   "%i v2 %016xu".format(numBytes, v2));
               shLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                                   "%i v3 %016xu".format(D.size, v3));
+                                                   "%i v3 %016xu".format(numBytes, v3));
             }
         }
     }
 
-    for pos in D.low..lastPos-1 by 8 {
-        if isSubtype(msg.type, c_ptr) {
-          m = U8TO64_LE(msg + pos);
+    for pos in D.low..lastPos-1 by stride {
+      // select (stride, isSubtype(msg.type, c_ptr))
+        if (stride == 8) {
+          if isSubtype(msg.type, c_ptr) {
+            m = U8TO64_LE(msg + pos);
+          } else {
+            m = U8TO64_LE(msg, pos..#stride);
+          }
+        } else if (stride == 1) {
+          if isSubtype(msg.type, c_ptr) {
+            m = XTO64_LE(msg + pos);
+          } else {
+            m = XTO64_LE(msg[pos]);
+          }
         } else {
-          m = U8TO64_LE(msg, pos..#8);
+          // Should never reach here
+          compilerError("can only hash (arrays of) 8-bit or 64-bit values");
         }
+
+        if DEBUG {
+          try! shLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                         "m = %016xu".format(m));
+        }
+
         v3 ^= m;
         TRACE();
         for i in 0..#cROUNDS {
@@ -179,25 +231,25 @@ module SipHash {
 
     if (left == 7) {
         b |= (msg[lastPos+6]: uint(64)) << 48;
-}
+    }
     if (left >= 6) {
         b |= (msg[lastPos+5]: uint(64)) << 40;
     }
     if (left >= 5) {
         b |= (msg[lastPos+4]: uint(64)) << 32;
-}
+    }
     if (left >= 4) {
         b |= (msg[lastPos+3]: uint(64)) << 24;
-}
+    }
     if (left >= 3) {
         b |= (msg[lastPos+2]: uint(64)) << 16;
-}
+    }
     if (left >= 2) {
         b |= (msg[lastPos+1]: uint(64)) << 8;
-}
+    }
     if (left >= 1) {
         b |= (msg[lastPos]: uint(64));
-        }
+    }
 
     v3 ^= b;
 
@@ -221,7 +273,11 @@ module SipHash {
 
     b = v0 ^ v1 ^ v2 ^ v3;
     const res0 = byte_reverse(b);
-
+    if DEBUG {
+      try! shLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                          "b = %016xu".format(b));
+    }
+    
     if (outlen == 8) {
         return (res0, 0:uint(64));
     }
@@ -234,7 +290,10 @@ module SipHash {
     }
     
     b = v0 ^ v1 ^ v2 ^ v3;
-
+    if DEBUG {
+      try! shLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                          "b = %016xu".format(b));
+    }
     return  (res0, byte_reverse(b));
   }
 }

@@ -1,6 +1,8 @@
 use TestBase;
 use SipHash;
 
+private config param DEBUG = false;
+
 const vectors_sip64_raw: [0..#64][0..#8] int = [
     [
         0x31, 0x0e, 0x0e, 0xdd, 0x47, 0xdb, 0x6f, 0x72,
@@ -469,7 +471,7 @@ for i in 0..#64 {
   }
 }
 
-proc U8TOU64_LE(vec: [?D] uint(8)): uint(64) {
+proc U8TOU64_BE(vec: [?D] uint(8)): uint(64) {
   var res: uint(64);
   for i in D.low..#8 {
     res |= (vec[i]:uint(64)) << (mod(7-i, 8)*8);
@@ -477,8 +479,19 @@ proc U8TOU64_LE(vec: [?D] uint(8)): uint(64) {
   return res;
 }
 
-proc U8TO2U64_LE(vec: [?D] uint(8)): 2*uint(64) {
-  return (U8TOU64_LE(vec[D.low..#8]), U8TOU64_LE(vec[D.low+8..#8]));
+proc U8TO2U64_BE(vec: [?D] uint(8)): 2*uint(64) {
+  return (U8TOU64_BE(vec[D.low..#8]), U8TOU64_BE(vec[D.low+8..#8]));
+}
+
+proc U8TOU64_LE(p: [?D] uint(8)): uint(64) {
+  return ((p[D.low]: uint(64)) |
+          (p[D.low+1]: uint(64) << 8) |
+          (p[D.low+2]: uint(64) << 16) |
+          (p[D.low+3]: uint(64) << 24) |
+          (p[D.low+4]: uint(64) << 32) |
+          (p[D.low+5]: uint(64) << 40) |
+          (p[D.low+6]: uint(64) << 48) |
+          (p[D.low+7]: uint(64) << 56));
 }
 
 const version = ["sip64", "sip128"];
@@ -488,22 +501,69 @@ proc main() {
   var errors: int;
   for ver in version {
     for i in 0..#64 {
+      if DEBUG {
+        writeln("\n%i:\n%t".format(i, msg[0..#i]));
+      }
       if ver == "sip64" {
         const h = sipHash64(msg, 0..#i);
-        const vec = U8TOU64_LE(vectors_sip64[i]);
+        const vec = U8TOU64_BE(vectors_sip64[i]);
         if (h != vec) {
           errors += 1;
           writeln("%i:\n%016xu vs \n%016xu\n".format(i, h, vec));
         }
       } else if ver == "sip128" {
         const h = sipHash128(msg, 0..#i);
-        const vec = U8TO2U64_LE(vectors_sip128[i]);
+        const vec = U8TO2U64_BE(vectors_sip128[i]);
         if (h != vec) {
           const (h1, h2) = h;
           const (vec1, vec2) = vec;
           errors += 1;
           writeln("%i:\n%016xu%016xu vs \n%016xu%016xu\n".format(i, h1, h2, vec1, vec2));
         }
+      }
+    }
+
+    // Test int64 input
+    var val = U8TOU64_LE(msg[0..#8]):int(64);
+    if DEBUG {
+      writeln("val = %016xu".format(val));
+    }
+    if ver == "sip64" {
+      const h = sipHash64(val);
+      const vec = U8TOU64_BE(vectors_sip64[8]);
+      if (h != vec) {
+        errors += 1;
+        writeln("sip64 single int64:\n%016xu vs \n%016xu\n".format(h, vec));
+      }
+    } else if ver == "sip128" {
+      const h = sipHash128(val);
+      const vec = U8TO2U64_BE(vectors_sip128[8]);
+      if (h != vec) {
+        const (h1, h2) = h;
+        const (vec1, vec2) = vec;
+        errors += 1;
+        writeln("sip128 single int64:\n%016xu%016xu vs \n%016xu%016xu\n".format(h1, h2, vec1, vec2));
+      }
+    }
+
+    // Test int64 array input
+    const N = 5;
+    var msg2 = for i in 0..#N do U8TOU64_LE(msg[(8*i)..#8]):int(64);
+    if ver == "sip64" {
+      const h = sipHash64(msg2, 0..#N);
+      const vec = U8TOU64_BE(vectors_sip64[8*N]);
+      if (h != vec) {
+        errors += 1;
+        writeln("sip64 int64 array:\n%016xu vs \n%016xu\n".format(h, vec));
+      }
+    } else if ver == "sip128" {
+      const h = sipHash128(msg2, 0..#N);
+      const vec = U8TO2U64_BE(vectors_sip128[8*N]);
+      if (h != vec) {
+        const (h1, h2) = h;
+        const (vec1, vec2) = vec;
+        errors += 1;
+        writeln("sip128 int64 array:\n%016xu%016xu vs \n%016xu%016xu\n".format(h1, h2, vec1, vec2));
       }
     }
   }

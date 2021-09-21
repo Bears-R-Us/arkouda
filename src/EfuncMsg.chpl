@@ -12,6 +12,7 @@ module EfuncMsg
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
     use ServerErrorStrings;
+    private use SipHash;
     
     use AryUtil;
 
@@ -36,7 +37,7 @@ module EfuncMsg
 
     proc efuncMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         param pn = Reflection.getRoutineName();
-        var repMsg: string; // response message
+        var repMsg: string; // response message; attributes of returned array(s) will be appended to this string
         // split request into fields
         var (efunc, name) = payload.splitMsgToTuple(2);
         var rname = st.nextName();
@@ -80,6 +81,25 @@ module EfuncMsg
                     when "cos" {
                         var a = st.addEntry(rname, e.size, real);
                         a.a = Math.cos(e.a);
+                    }
+                    when "hash64" {
+                        overMemLimit(numBytes(int) * e.size);
+                        var a = st.addEntry(rname, e.size, int);
+                        forall (ai, x) in zip(a.a, e.a) {
+                            ai = sipHash64(x): int(64);
+                        }
+                    }
+                    when "hash128" {
+                        overMemLimit(numBytes(int) * e.size * 2);
+                        var rname2 = st.nextName();
+                        var a1 = st.addEntry(rname2, e.size, int);
+                        var a2 = st.addEntry(rname, e.size, int);
+                        forall (a1i, a2i, x) in zip(a1.a, a2.a, e.a) {
+                            (a1i, a2i) = sipHash128(x): (int(64), int(64));
+                        }
+                        // Put first array's attrib in repMsg and let common
+                        // code append second array's attrib
+                        repMsg += "created " + st.attrib(rname2) + "+";
                     }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
@@ -126,6 +146,25 @@ module EfuncMsg
                         var a = st.addEntry(rname, e.size, bool);
                         a.a = isnan(e.a);
                     }
+                    when "hash64" {
+                        overMemLimit(numBytes(real) * e.size);
+                        var a = st.addEntry(rname, e.size, int);
+                        forall (ai, x) in zip(a.a, e.a) {
+                            ai = sipHash64(x): int(64);
+                        }
+                    }
+                    when "hash128" {
+                        overMemLimit(numBytes(real) * e.size * 2);
+                        var rname2 = st.nextName();
+                        var a1 = st.addEntry(rname2, e.size, int);
+                        var a2 = st.addEntry(rname, e.size, int);
+                        forall (a1i, a2i, x) in zip(a1.a, a2.a, e.a) {
+                            (a1i, a2i) = sipHash128(x): (int(64), int(64));
+                        }
+                        // Put first array's attrib in repMsg and let common
+                        // code append second array's attrib
+                        repMsg += "created " + st.attrib(rname2) + "+";
+                    }
                     otherwise {
                         var errorMsg = notImplementedError(pn,efunc,gEnt.dtype);
                         eLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg); 
@@ -162,8 +201,8 @@ module EfuncMsg
                 return new MsgTuple(errorMsg, MsgType.ERROR);    
             }
         }
-
-        repMsg = "created " + st.attrib(rname);
+        // Append instead of assign here, to allow for 2 return arrays from hash128
+        repMsg += "created " + st.attrib(rname);
         eLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg); 
         return new MsgTuple(repMsg, MsgType.NORMAL);         
     }
