@@ -104,8 +104,10 @@ module Flatten {
         if nullByteLocations[origInd] {
           // nullbyte location, copy nullbyte into flattenedVals
           valAgg.copy(flattenedVals[flatValInd], NULL_STRINGS_VALUE);
-          // offset points to position after null byte
-          offAgg.copy(flattenedOffsets[offInd], flatValInd + 1);
+          if origInd != this.values.aD.high {
+            // offset points to position after null byte
+            offAgg.copy(flattenedOffsets[offInd], flatValInd + 1);
+          }
         }
         else {
           // non-match location, copy origVal into flattenedVals
