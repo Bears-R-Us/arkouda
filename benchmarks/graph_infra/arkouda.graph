@@ -94,6 +94,12 @@ files: substring_search.dat, substring_search.dat, substring_search.dat
 graphtitle: Substring Search Performance
 ylabel: Performance (GiB/s)
 
+perfkeys: non-regex flatten with literal delimiter Average rate =, regex flatten with literal delimiter Average rate =, regex flatten with pattern delimiter Average rate =
+graphkeys: non-regex flatten with literal delimiter GiB/s, regex flatten with literal delimiter GiB/s, regex flatten with pattern delimiter GiB/s
+files: flatten.dat, flatten.dat, flatten.dat
+graphtitle: Flatten Performance
+ylabel: Performance (GiB/s)
+
 perfkeys: Average rate =
 graphkeys: Noop ops/s
 files: noop.dat

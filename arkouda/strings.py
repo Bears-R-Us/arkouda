@@ -491,16 +491,19 @@ class Strings:
                                              json.dumps([pattern]))
         return create_pdarray(generic_msg(cmd=cmd, args=args))
 
-    def flatten(self, delimiter : str, return_segments : bool=False) -> Union[Strings,Tuple]:
+    def flatten(self, delimiter: str, return_segments: bool = False, regex: bool = False) -> Union[Strings, Tuple]:
         """Unpack delimiter-joined substrings into a flat array.
 
         Parameters
         ----------
-        delimeter : str
+        delimiter: str
             Characters used to split strings into substrings
-        return_segments : bool
+        return_segments: bool
             If True, also return mapping of original strings to first substring
             in return array.
+        regex: bool
+            Indicates whether delimiter is a regular expression
+            Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
 
         Returns
         -------
@@ -522,14 +525,26 @@ class Strings:
         >>> flat, map = orig.flatten('|', return_segments=True)
         >>> map
         array([0, 2, 5])
+        >>> under = ak.array(['one_two', 'three_____four____five', 'six'])
+        >>> under_flat, under_map = under.flatten('_+', return_segments=True, regex=True)
+        >>> under_flat
+        array(['one', 'two', 'three', 'four', 'five', 'six'])
+        >>> under_map
+        array([0, 2, 5])
         """
+        if regex:
+            try:
+                re.compile(delimiter)
+            except Exception as e:
+                raise ValueError(e)
         cmd = "segmentedFlatten"
-        args = "{}+{} {} {} {}".format(self.offsets.name,
-                                       self.bytes.name,
-                                       self.objtype,
-                                       return_segments,
-                                       json.dumps([delimiter]))
-        repMsg = cast(str,generic_msg(cmd=cmd,args=args))
+        args = "{}+{} {} {} {} {}".format(self.offsets.name,
+                                          self.bytes.name,
+                                          self.objtype,
+                                          return_segments,
+                                          regex,
+                                          json.dumps([delimiter]))
+        repMsg = cast(str, generic_msg(cmd=cmd, args=args))
         if return_segments:
             arrays = repMsg.split('+', maxsplit=2)
             return Strings(arrays[0], arrays[1]), create_pdarray(arrays[2])
