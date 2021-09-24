@@ -216,9 +216,40 @@
 <div class="highlight-chapel notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nx">Flatten</span><span class="p">;</span>
 </pre></div>
 </div>
+<dl class="chpl data">
+<dt id="Flatten.NULL_STRINGS_VALUE">
+<em class="property">config const </em><code class="sig-name descname">NULL_STRINGS_VALUE</code> = 0: uint(8)<a class="headerlink" href="#Flatten.NULL_STRINGS_VALUE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl function">
+<dt id="Flatten.interpretAsBytes">
+<em class="property">proc </em><code class="sig-name descname">interpretAsBytes</code><span class="sig-paren">(</span><em class="sig-param">bytearray: [?D] uint(8)</em><span class="sig-paren">)</span>: bytes<a class="headerlink" href="#Flatten.interpretAsBytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a uint(8) array into bytes. Modeled after SegString.interpretAsString</p>
+</dd></dl>
+
+<dl class="chpl method">
+<dt id="Flatten.SegString.flattenRegex">
+<em class="property">proc </em><code class="sig-prename descclassname">SegString.</code><code class="sig-name descname">flattenRegex</code><span class="sig-paren">(</span><em class="sig-param">delim: string</em>, <em class="sig-param">returnSegs: bool</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#Flatten.SegString.flattenRegex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a SegString where each string encodes a variable-length sequence delimited by a regex,
+flattenRegex unpacks the sequences into a flat array of individual elements.
+If returnSegs is set to True, a mapping between the original strings and new array elements will be returned</p>
+<p>Note: the regular expression engine used, re2, does not support lookahead/lookbehind</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>delim</strong> : <em>string</em> – regex delimter used to split strings into substrings</p></li>
+<li><p><strong>returnSegs</strong> : <em>bool</em> – If True, also return mapping of original strings to first substring in return array</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Strings – Flattened substrings with delimiters removed and (optional) int64 pdarray – For each original string, the index of first corresponding substring in the return array</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="chpl method">
 <dt id="Flatten.SegString.flatten">
-<em class="property">proc </em><code class="sig-prename descclassname">SegString.</code><code class="sig-name descname">flatten</code><span class="sig-paren">(</span><em class="sig-param">delim: string</em>, <em class="sig-param">returnSegs: bool</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#Flatten.SegString.flatten" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-prename descclassname">SegString.</code><code class="sig-name descname">flatten</code><span class="sig-paren">(</span><em class="sig-param">delim: string</em>, <em class="sig-param">returnSegs: bool</em>, <em class="sig-param">regex: bool = false</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#Flatten.SegString.flatten" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>

@@ -137,13 +137,13 @@ or
 
    .. method:: proc findSubstringInBytes(const substr: string)
 
-   .. method:: proc checkCompile(const pattern: string) throws
+   .. method:: proc checkCompile(const pattern: ?t) throws
 
       
       Returns Regexp.compile if pattern can be compiled without an error
       
 
-   .. method:: proc _unsafeCompileRegex(const pattern: string)
+   .. method:: proc _unsafeCompileRegex(const pattern: ?t)
 
    .. method:: proc substringSearchRegex(const pattern: string, mode: SearchMode) throws
 

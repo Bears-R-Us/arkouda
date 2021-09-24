@@ -4444,14 +4444,16 @@ Note: only handles regular expressions supported by re2 (does not support lookah
 
 <dl class="py method">
 <dt class="sig sig-object py" id="arkouda.Strings.flatten">
-<span class="sig-name descname"><span class="pre">flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_segments</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.Strings.flatten" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_segments</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.Strings.flatten" title="Permalink to this definition">¶</a></dt>
 <dd><p>Unpack delimiter-joined substrings into a flat array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>delimeter</strong> (<em>str</em>) – Characters used to split strings into substrings</p></li>
+<li><p><strong>delimiter</strong> (<em>str</em>) – Characters used to split strings into substrings</p></li>
 <li><p><strong>return_segments</strong> (<em>bool</em>) – If True, also return mapping of original strings to first substring
 in return array.</p></li>
+<li><p><strong>regex</strong> (<em>bool</em>) – Indicates whether delimiter is a regular expression
+Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -4473,6 +4475,12 @@ in the return array</p></li>
 <span class="go">array([&#39;one&#39;, &#39;two&#39;, &#39;three&#39;, &#39;four&#39;, &#39;five&#39;, &#39;six&#39;])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">flat</span><span class="p">,</span> <span class="nb">map</span> <span class="o">=</span> <span class="n">orig</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">,</span> <span class="n">return_segments</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">map</span>
+<span class="go">array([0, 2, 5])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">under</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;one_two&#39;</span><span class="p">,</span> <span class="s1">&#39;three_____four____five&#39;</span><span class="p">,</span> <span class="s1">&#39;six&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">under_flat</span><span class="p">,</span> <span class="n">under_map</span> <span class="o">=</span> <span class="n">under</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="s1">&#39;_+&#39;</span><span class="p">,</span> <span class="n">return_segments</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">under_flat</span>
+<span class="go">array([&#39;one&#39;, &#39;two&#39;, &#39;three&#39;, &#39;four&#39;, &#39;five&#39;, &#39;six&#39;])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">under_map</span>
 <span class="go">array([0, 2, 5])</span>
 </pre></div>
 </div>

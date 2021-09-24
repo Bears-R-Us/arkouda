@@ -273,15 +273,18 @@ Classes
       array([False, False, False, False, False])
 
 
-   .. py:method:: flatten(self, delimiter: str, return_segments: bool = False) -> Union[Strings, Tuple]
+   .. py:method:: flatten(self, delimiter: str, return_segments: bool = False, regex: bool = False) -> Union[Strings, Tuple]
 
       Unpack delimiter-joined substrings into a flat array.
 
-      :param delimeter: Characters used to split strings into substrings
-      :type delimeter: str
+      :param delimiter: Characters used to split strings into substrings
+      :type delimiter: str
       :param return_segments: If True, also return mapping of original strings to first substring
                               in return array.
       :type return_segments: bool
+      :param regex: Indicates whether delimiter is a regular expression
+                    Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
+      :type regex: bool
 
       :returns: * *Strings* -- Flattened substrings with delimiters removed
                 * *pdarray, int64 (optional)* -- For each original string, the index of first corresponding substring
@@ -296,6 +299,12 @@ Classes
       array(['one', 'two', 'three', 'four', 'five', 'six'])
       >>> flat, map = orig.flatten('|', return_segments=True)
       >>> map
+      array([0, 2, 5])
+      >>> under = ak.array(['one_two', 'three_____four____five', 'six'])
+      >>> under_flat, under_map = under.flatten('_+', return_segments=True, regex=True)
+      >>> under_flat
+      array(['one', 'two', 'three', 'four', 'five', 'six'])
+      >>> under_map
       array([0, 2, 5])
 
 
