@@ -203,7 +203,7 @@ module CastMsg {
               } else {
                    end = oa[i+1] - 1;
               }
-              e = interpretAsString(va[start..end]) : toType;
+              e = interpretAsString(va, start..end) : toType;
           }
       } catch e: IllegalArgumentError {
           var errorMsg = "bad value in cast from string to %s".format(toType:string);
