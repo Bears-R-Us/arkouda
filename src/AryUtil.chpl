@@ -1,5 +1,6 @@
 module AryUtil
 {
+    use CPtr;
     use Random;
     use Reflection;
     use Logging;
@@ -95,5 +96,65 @@ module AryUtil
     proc contiguousIndices(A: []) param {
         use BlockDist;
         return A.isDefaultRectangular() || isSubtype(A.domain.dist.type, Block);
+    }
+
+    /*
+       A localized "slice" of an array. This is meant to be a low-level
+       alternative to array slice assignment with better performance (fewer
+       allocations, especially when the region is local). When the region being
+       sliced is local, a borrowed pointer is stored and `isOwned` is set to
+       false. When the region is remote or non-contiguous, memory is copied to
+       a local buffer and `isOwned` is true.
+     */
+    record lowLevelLocalizingSlice {
+        type t;
+        /* Pointer to localized memory */
+        var ptr: c_ptr(t) = c_nil;
+        /* Do we own the memory? */
+        var isOwned: bool = false;
+
+        proc init(A: [] ?t, region: range(?)) {
+            use CommPrimitives;
+            use SysCTypes;
+
+            this.t = t;
+            if region.isEmpty() {
+                return;
+            }
+            ref start = A[region.low];
+            ref end = A[region.high];
+            const startLocale = start.locale.id;
+            const endLocale = end.locale.id;
+            const hereLocale = here.id;
+
+            if contiguousIndices(A) && startLocale == endLocale {
+                if startLocale == hereLocale {
+                    // If data is contiguous and local, return a borrowed c_ptr
+                    this.ptr = c_ptrTo(start);
+                    this.isOwned = false;
+                } else {
+                    // If data is contiguous on a single remote node,
+                    // alloc+bulk GET and return owned c_ptr
+                    this.ptr = c_malloc(t, region.size);
+                    this.isOwned = true;
+                    const byteSize = region.size:size_t * c_sizeof(t);
+                    GET(ptr, startLocale, getAddr(start), byteSize);
+                }
+            } else {
+                // If data is non-contiguous or split across nodes, get element
+                // at a time and return owned c_ptr (slow, expected to be rare)
+                this.ptr = c_malloc(t, region.size);
+                this.isOwned = true;
+                for i in 0..<region.size {
+                    this.ptr[i] = A[region.low + i];
+                }
+            }
+        }
+
+        proc deinit() {
+            if isOwned {
+                c_free(ptr);
+            }
+        }
     }
 }

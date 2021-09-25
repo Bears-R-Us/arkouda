@@ -4,6 +4,7 @@ use SipHash;
 
 config const NINPUTS = 100_000;
 config const INPUTSIZE = 64;
+config const SEED = "none";
 
 enum testMode {fixed, variable};
 config const mode = testMode.variable;
@@ -28,7 +29,7 @@ proc testVariableLength(n:int, meanSize:int, type t) {
   var d: Diags;
   const logMean:real = log(meanSize:real)/2;
   const logStd:real = sqrt(2*logMean);
-  var (segs, vals) = newRandStringsLogNormalLength(n, logMean, logStd);
+  var (segs, vals) = newRandStringsLogNormalLength(n, logMean, logStd, seedStr=SEED);
   var tohash: [vals.domain] t = [v in vals] v: t;
   const D = segs.domain;
   var lengths: [D] int;
