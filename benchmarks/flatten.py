@@ -37,7 +37,7 @@ def time_flatten(N, trials):
     avg_regex_literal = sum(regex_literal_times) / trials
     avg_regex_pattern = sum(regex_pattern_times) / trials
 
-    answer = ak.array(['{}'.format(i) for i in range(N*3)])
+    answer = ak.cast(ak.arange(N*3), 'str')
     assert (non_regex == answer).all()
     assert (regex_literal == answer).all()
     assert (regex_pattern == answer).all()
@@ -57,7 +57,7 @@ def check_correctness():
     thirds = [ak.cast(ak.arange(i, N*3, 3), 'str') for i in range(3)]
     thickrange = thirds[0].stick(thirds[1], delimiter='_').stick(thirds[2], delimiter='_')
 
-    answer = ak.array(['{}'.format(i) for i in range(N*3)])
+    answer = ak.cast(ak.arange(N*3), 'str')
     assert (thickrange.flatten('_') == answer).all()
     assert (thickrange.flatten('_', regex=True) == answer).all()
     assert (thickrange.flatten('_+', regex=True) == answer).all()
