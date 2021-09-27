@@ -300,6 +300,44 @@ contiguous memory.</p>
 </dl>
 </dd></dl>
 
+<dl class="chpl record">
+<dt id="AryUtil.lowLevelLocalizingSlice">
+<em class="property">record </em><code class="sig-name descname">lowLevelLocalizingSlice</code><a class="headerlink" href="#AryUtil.lowLevelLocalizingSlice" title="Permalink to this definition">¶</a></dt>
+<dd><p>A localized “slice” of an array. This is meant to be a low-level
+alternative to array slice assignment with better performance (fewer
+allocations, especially when the region is local). When the region being
+sliced is local, a borrowed pointer is stored and <cite>isOwned</cite> is set to
+false. When the region is remote or non-contiguous, memory is copied to
+a local buffer and <cite>isOwned</cite> is true.</p>
+<dl class="chpl attribute">
+<dt id="AryUtil.lowLevelLocalizingSlice.t">
+<em class="property">type </em><code class="sig-name descname">t</code><a class="headerlink" href="#AryUtil.lowLevelLocalizingSlice.t" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl attribute">
+<dt id="AryUtil.lowLevelLocalizingSlice.ptr">
+<em class="property">var </em><code class="sig-name descname">ptr</code>: c_ptr(t) = c_nil<a class="headerlink" href="#AryUtil.lowLevelLocalizingSlice.ptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pointer to localized memory</p>
+</dd></dl>
+
+<dl class="chpl attribute">
+<dt id="AryUtil.lowLevelLocalizingSlice.isOwned">
+<em class="property">var </em><code class="sig-name descname">isOwned</code>: bool = false<a class="headerlink" href="#AryUtil.lowLevelLocalizingSlice.isOwned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do we own the memory?</p>
+</dd></dl>
+
+<dl class="chpl method">
+<dt id="AryUtil.lowLevelLocalizingSlice.init">
+<em class="property">proc </em><code class="sig-name descname">init</code><span class="sig-paren">(</span><em class="sig-param">A: [] ?t</em>, <em class="sig-param">region: range(?)</em><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.lowLevelLocalizingSlice.init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl method">
+<dt id="AryUtil.lowLevelLocalizingSlice.deinit">
+<em class="property">proc </em><code class="sig-name descname">deinit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AryUtil.lowLevelLocalizingSlice.deinit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 
 

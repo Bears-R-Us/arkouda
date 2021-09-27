@@ -76,3 +76,29 @@ or
    :arg A: array to check
    
 
+.. record:: lowLevelLocalizingSlice
+
+   
+   A localized "slice" of an array. This is meant to be a low-level
+   alternative to array slice assignment with better performance (fewer
+   allocations, especially when the region is local). When the region being
+   sliced is local, a borrowed pointer is stored and `isOwned` is set to
+   false. When the region is remote or non-contiguous, memory is copied to
+   a local buffer and `isOwned` is true.
+   
+
+
+   .. attribute:: type t
+
+   .. attribute:: var ptr: c_ptr(t) = c_nil
+
+      Pointer to localized memory 
+
+   .. attribute:: var isOwned: bool = false
+
+      Do we own the memory? 
+
+   .. method:: proc init(A: [] ?t, region: range(?))
+
+   .. method:: proc deinit()
+
