@@ -1,5 +1,4 @@
 module SipHash {
-  private use CommPrimitives;
   private use AryUtil;
   private use CPtr;
   private use SysCTypes;
@@ -106,31 +105,9 @@ module SipHash {
     return computeSipHash(c_ptrTo(val), 0..#1, 16, 8);
   }
   
-  private proc computeSipHashLocalized(msg: [] ?t, D, param outlen: int) {
-    if contiguousIndices(msg) {
-      ref start = msg[D.low];
-      if D.high < D.low {
-        return computeSipHash(c_ptrTo(start), 0..#0, outlen, numBytes(t));
-      }
-      ref end = msg[D.high];
-      const startLocale = start.locale.id;
-      const endLocale = end.locale.id;
-      const hereLocale = here.id;
-      const l = D.size;
-      if startLocale == endLocale {
-        if startLocale == hereLocale {
-          return computeSipHash(c_ptrTo(start), 0..#l, outlen, numBytes(t));
-        } else {
-          var a = c_malloc(msg.eltType, l);
-          const byteSize = l:size_t * numBytes(t);
-          GET(a, startLocale, getAddr(start), byteSize);
-          var h = computeSipHash(a, 0..#l, outlen, numBytes(t));
-          c_free(a);
-          return h;
-        }
-      }
-    }
-    return computeSipHash(msg, D, outlen, numBytes(t));
+  private proc computeSipHashLocalized(msg: [] ?t, region: range(?), param outlen: int) {
+    const localSlice = new lowLevelLocalizingSlice(msg, region);
+    return computeSipHash(localSlice.ptr, 0..#region.size, outlen, numBytes(t));
   }
   
   private proc computeSipHash(msg, D, param outlen: int, param eltBytes: int) {
