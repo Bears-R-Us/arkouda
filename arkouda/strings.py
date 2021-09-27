@@ -40,7 +40,7 @@ class Strings:
     dtype : dtype
         The dtype is ak.str
     regex_dict: Dict[str, Tuple[pdarray, pdarray, pdarray]]
-        Dictionary storing information on matches (cache of Strings.find(pattern))
+        Dictionary storing information on matches (cache of Strings.find_locations(pattern))
         Keys - regex patterns
         Values - tuples of pdarrays (numMatches, matchStarts, matchLens)
     logger : ArkoudaLogger
@@ -260,22 +260,17 @@ class Strings:
                         format(self.objtype, self.offsets.name, self.bytes.name)
         return create_pdarray(generic_msg(cmd=cmd,args=args))
 
-    def _refresh_regex_dict(self):
+    def cached_regex_patterns(self):
         """
-        Internal function to recreate regex_dict without any stale pdarrays (that are no longer in the symbol table)
+        Returns the regex patterns for which Strings.find_locations(pattern) have been cached
         """
         sym_tab = list_symbol_table()
-        self.regex_dict = {key: val for key, val in self.regex_dict.items() if all([pda.name in sym_tab for pda in val])}
-
-    def print_cached_regex_patterns(self):
-        """
-        Prints the regex patterns for which Strings.find(pattern) has been cached
-        """
-        self._refresh_regex_dict()
-        print(self.regex_dict.keys())
+        self.regex_dict = {key: val for key, val in self.regex_dict.items() if
+                           all([pda.name in sym_tab for pda in val])}
+        return self.regex_dict.keys()
 
     @typechecked
-    def find(self, pattern: Union[bytes, str_scalars]) -> Tuple[pdarray, pdarray, pdarray]:
+    def find_locations(self, pattern: Union[bytes, str_scalars]) -> Tuple[pdarray, pdarray, pdarray]:
         """
         Finds pattern matches and returns pdarrays containing the number, start postitions, and lengths of matches
             Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
@@ -305,14 +300,14 @@ class Strings:
 
         See Also
         --------
-        Strings.slice, Strings.match
+        Strings.findall, Strings.match
 
         Examples
         --------
         >>> strings = ak.array(['{} string {}'.format(i, i) for i in range(1, 6)])
         >>> strings
         array(['1 string 1', '2 string 2', '3 string 3', '4 string 4', '5 string 5'])
-        >>> num_matches, starts, lens = strings.find('\\d')
+        >>> num_matches, starts, lens = strings.find_locations('\\d')
         >>> num_matches
         array([2, 2, 2, 2, 2])
         >>> starts
@@ -324,12 +319,12 @@ class Strings:
             pattern = pattern.decode()
         sym_tab = list_symbol_table()
         if pattern not in self.regex_dict or any([pda.name not in sym_tab for pda in self.regex_dict[pattern]]):
-            # run find if we don't have the result of find(pattern) cached or any of the references have gone stale
+            # run find_locations if we don't have the result of find_locations(pattern) cached or any of the references have gone stale
             try:
                 re.compile(pattern)
             except Exception as e:
                 raise ValueError(e)
-            cmd = "segmentedFind"
+            cmd = "segmentedFindLoc"
             args = "{} {} {} {}".format(self.objtype,
                                         self.offsets.name,
                                         self.bytes.name,
@@ -340,15 +335,15 @@ class Strings:
         return self.regex_dict[pattern]
 
     @typechecked
-    def slice(self, pattern: Union[bytes, str_scalars], return_match_origins: bool = False) -> Union[Strings, Tuple]:
+    def findall(self, pattern: Union[bytes, str_scalars], return_match_origins: bool = False) -> Union[Strings, Tuple]:
         """
-        Returns the slices of Strings which match pattern
+        Return all non-overlapping matches of pattern in Strings as a new Strings object
             Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
 
         Parameters
         ----------
         pattern: str_scalars
-            The regex pattern used to find match slices
+            The regex pattern used to find matches
         return_match_origins: bool
             If True, return a pdarray containing the index of the original string each pattern match is from
 
@@ -370,21 +365,21 @@ class Strings:
 
         See Also
         --------
-        Strings.find, Strings.match
+        Strings.find_locations, Strings.match
 
         Examples
         --------
         >>> strings = ak.array(['{} string {}'.format(i, i) for i in range(1, 6)])
         >>> strings
         array(['1 string 1', '2 string 2', '3 string 3', '4 string 4', '5 string 5'])
-        >>> matches, match_origins = strings.slice('\\d', return_match_origins = True)
+        >>> matches, match_origins = strings.findall('\\d', return_match_origins = True)
         >>> matches
         array(['1', '1', '2', '2', '3', '3', '4', '4', '5', '5'])
         >>> match_origins
         array([0, 0, 1, 1, 2, 2, 3, 3, 4, 4])
         """
-        num_matches, starts, lens = self.find(pattern)
-        cmd = "segmentedSlice"
+        num_matches, starts, lens = self.find_locations(pattern)
+        cmd = "segmentedFindAll"
         args = "{} {} {} {} {} {} {}".format(self.objtype,
                                              self.offsets.name,
                                              self.bytes.name,

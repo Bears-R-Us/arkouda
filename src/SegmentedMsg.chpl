@@ -156,7 +156,7 @@ module SegmentedMsg {
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segmentedFindMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+  proc segmentedFindLocMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
     var (objtype, segName, valName, patternJson) = payload.splitMsgToTuple(4);
@@ -177,7 +177,7 @@ module SegmentedMsg {
         const rStartsName = st.nextName();
         const rLensName = st.nextName();
         var strings = getSegString(segName, valName, st);
-        var (numMatches, matchStarts, matchLens) = strings.findMatches(pattern);
+        var (numMatches, matchStarts, matchLens) = strings.findMatchLocations(pattern);
         st.addEntry(rNumMatchesName, new shared SymEntry(numMatches));
         st.addEntry(rStartsName, new shared SymEntry(matchStarts));
         st.addEntry(rLensName, new shared SymEntry(matchLens));
@@ -195,7 +195,7 @@ module SegmentedMsg {
     return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
-  proc segmentedSliceMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+  proc segmentedFindAllMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
     var pn = Reflection.getRoutineName();
     var repMsg: string;
     var (objtype, segName, valName, numMatchesName, startsName, lensName, returnMatchOrigStr) = payload.splitMsgToTuple(7);
@@ -221,7 +221,7 @@ module SegmentedMsg {
         var starts = st.lookup(startsName): borrowed SymEntry(int);
         var lens = st.lookup(lensName): borrowed SymEntry(int);
 
-        var (off, val, matchOrigins) = strings.sliceMatches(numMatches, starts, lens, returnMatchOrig);
+        var (off, val, matchOrigins) = strings.findAllMatches(numMatches, starts, lens, returnMatchOrig);
         st.addEntry(rSegName, new shared SymEntry(off));
         st.addEntry(rValName, new shared SymEntry(val));
         repMsg = "created %s+created %s".format(st.attrib(rSegName), st.attrib(rValName));
