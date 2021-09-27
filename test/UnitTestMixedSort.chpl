@@ -42,6 +42,12 @@ proc main() {
   }
   if !isSorted(x2) {
     writeln("mixedSort failed to sort!");
+    if size <= 100 {
+      writeln("idx Original   Sorted   Attempted   Sorted idx  Attempted idx")
+      for i in D {
+        writeln("%3i %016xu %016xu %016xu %3i %3i".format(i, x[i], x1[i], x2[i], a1[i], a2[i]));
+      }
+    }
   }
   writeln("Answers match? >>> ", && reduce (a1 == a2), " <<<");
 }
