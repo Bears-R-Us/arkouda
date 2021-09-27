@@ -1,14 +1,17 @@
 module MixedSort {
-  private use RadixSortLSD;
   private use IO;
   private use BlockDist;
   private use Reflection;
   private use CommAggregation;
+  private use Logging;
+  private use ServerConfig;
   // private use AryUtil;
 
   private config param MSD_bitsPerDigit = 8;
   private config param LSD_bitsPerDigit = 16;
   private config const numTasks = here.maxTaskPar;
+  private config const logLevel = ServerConfig.logLevel;
+  const msLogger = new Logger(logLevel);
 
   proc mixedSort_ranks(a:[?aD] ?t, checkSorted: bool = true): [aD] int throws {
     var (nBits, hasNegatives) = getBitWidth(a);
@@ -19,6 +22,9 @@ module MixedSort {
   }
 
   proc sortBucket(kr0: [], type t, bD, curBit, hasNegatives, checkSorted, nTasks) throws {
+    if bD.size == 0 {
+      return;
+    }
     if bD.targetLocales().size == 1 {
       localSort(kr0, t, bD, curBit, hasNegatives, true, nTasks);
     }
@@ -26,15 +32,17 @@ module MixedSort {
     const rshift = curBit - MSD_bitsPerDigit;
     var segments = sortDigit(kr0, t, bD, rshift, hasNegatives, true, nTasks, MSD_bitsPerDigit);
     // Recurse on each digit's bucket
-    for (bs, be) in segments {
-      begin {
-        const bDs: subdomain(bD) = bD[bs..be];
-        // Give bucket it's proportion of the task pool
-        const myTasks = max((nTasks * (be - bs + 1) + bD.size - 1) / bD.size, 1):int;
-        // If bucket spans multiple locales, divide tasks in half
-        const subTasks = if (bDs.targetLocales().size == 1) then myTasks else max(myTasks/2, 1);
-        // Sort bucket and assign result to parent array
-        sortBucket(kr0, t, bDs, rshift, hasNegatives, true, subTasks);
+    sync for (bs, be) in segments {
+      if (be >= bs) {
+        begin {
+          const bDs: subdomain(bD) = bD[bs..be];
+          // Give bucket it's proportion of the task pool
+          const myTasks = max((nTasks * (be - bs + 1) + bD.size - 1) / bD.size, 1):int;
+          // If bucket spans multiple locales, divide tasks in half
+          const subTasks = if (bDs.targetLocales().size == 1) then myTasks else max(myTasks/2, 1);
+          // Sort bucket and assign result to parent array
+          sortBucket(kr0, t, bDs, rshift, hasNegatives, true, subTasks);
+        }
       }
     }
   }
@@ -52,6 +60,9 @@ module MixedSort {
   }
 
   proc localSort(kr0:[], type t, bD, curBit, hasNegatives, checkSorted, nTasks) throws {
+    if bD.size == 0 {
+      return;
+    }
     if (checkSorted) {      
       if (keysRanksSorted(kr0, bD)) {
         return;
@@ -62,6 +73,73 @@ module MixedSort {
     }
   }
 
+    // Get the digit for the current rshift. In order to correctly sort
+    // negatives, we have to invert the signbit if we're looking at the last
+    // digit and the array contained negative values.
+    inline proc getDigit(key: int, rshift: int, last: bool, negs: bool, param bitsPerDigit): int {
+      param maskDigit = (1 << bitsPerDigit) - 1;
+      const invertSignBit = last && negs;
+      const xor = (invertSignBit:uint << (RSLSD_bitsPerDigit-1));
+      const keyu = key:uint;
+      return (((keyu >> rshift) & (maskDigit:uint)) ^ xor):int;
+    }
+
+    inline proc getDigit(key: uint, rshift: int, last: bool, negs: bool, param bitsPerDigit): int {
+      param maskDigit = (1 << bitsPerDigit) - 1;
+      return ((key >> rshift) & (maskDigit:uint)):int;
+    }
+
+    // Get the digit for the current rshift. In order to correctly sort
+    // negatives, we have to invert the entire key if it's negative, and invert
+    // just the signbit for positive values when looking at the last digit.
+    inline proc getDigit(in key: real, rshift: int, last: bool, negs: bool, param bitsPerDigit): int {
+      param maskDigit = (1 << bitsPerDigit) - 1;
+      const invertSignBit = last && negs;
+      var keyu: uint;
+      c_memcpy(c_ptrTo(keyu), c_ptrTo(key), numBytes(key.type));
+      var signbitSet = keyu >> (numBits(keyu.type)-1) == 1;
+      var xor = 0:uint;
+      if signbitSet {
+        keyu = ~keyu;
+      } else {
+        xor = (invertSignBit:uint << (RSLSD_bitsPerDigit-1));
+      }
+      return (((keyu >> rshift) & (maskDigit:uint)) ^ xor):int;
+    }
+
+    inline proc getDigit(key: 2*uint, rshift: int, last: bool, negs: bool, param bitsPerDigit): int {
+      const (key0,key1) = key;
+      if (rshift >= numBits(uint)) {
+        return getDigit(key0, rshift - numBits(uint), last, negs, bitsPerDigit);
+      } else {
+        return getDigit(key1, rshift, last, negs, bitsPerDigit);
+      }
+    }
+
+    inline proc getDigit(key: _tuple, rshift: int, last: bool, negs: bool, param bitsPerDigit): int
+        where isHomogeneousTuple(key) && key.type == key.size*uint(bitsPerDigit) {
+      const keyHigh = key.size - 1;
+      return key[keyHigh - rshift/bitsPerDigit]:int;
+    }
+
+    // calculate sub-domain for task
+    inline proc calcBlock(task: int, low: int, high: int, numTasksHere: int) {
+        var totalsize = high - low + 1;
+        var div = totalsize / numTasksHere;
+        var rem = totalsize % numTasksHere;
+        var rlow: int;
+        var rhigh: int;
+        if (task < rem) {
+            rlow = task * (div+1) + low;
+            rhigh = rlow + div;
+        }
+        else {
+            rlow = task * div + rem + low;
+            rhigh = rlow + div - 1;
+        }
+        return {rlow .. rhigh};
+    }
+
   // calc global transposed index
   // (bucket,loc,task) = (bucket * numLocales * numTasks) + (loc * numTasks) + task;
   inline proc calcGlobalIndex(bucket: int, loc: int, task: int, nloc: int, locmin: int): int {
@@ -69,9 +147,12 @@ module MixedSort {
   }
 
   private proc sortDigit(kr0:[], type t, aD, rshift: int, hasNegatives: bool, checkSorted: bool = true, nTasks: int = numTasks, param bitsPerDigit) throws {
+    const emptyBuckets: [0..#0] (int, int);
+    if aD.size == 0 {
+      return emptyBuckets;
+    }
     if (checkSorted) {
       if (keysRanksSorted(kr0, aD)) {
-        const emptyBuckets: [0..#0] (int, int);
         return emptyBuckets;
       }
     }
@@ -84,7 +165,8 @@ module MixedSort {
     const lastLocale = aD.targetLocales()[aD.targetLocales().domain.high];
     const locmin = firstLocale.id;
     const last = rshift <= bitsPerDigit;
-    const gDloc = {0..#(aD.targetLocales().size * nTasks * numBuckets)};
+    // Make buckets for all cores on all locales, even if some aren't used
+    const gDloc = {0..#(aD.targetLocales().size * numTasks * numBuckets)};
     const gD: domain(1) dmapped Block(boundingBox=gDloc, targetLocales=aD.targetLocales()) = gDloc;
     var globalCounts: [gD] int;
     var globalStarts: [gD] int;
@@ -103,13 +185,13 @@ module MixedSort {
           // get local domain's indices
           var lD = aD.localSubdomain();
           // calc task's indices from local domain's indices
-          var tD = calcBlock(task, lD.low, lD.high);
-          try! rsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+          var tD = calcBlock(task, lD.low, lD.high, taskPoolSize);
+          try! msLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                               "locid: %t task: %t tD: %t".format(loc.id,task,tD));
           // count digits in this task's part of the array
           for i in tD {
             const (key,_) = kr0[i];
-            var bucket = getDigit(key, rshift, last, hasNegatives); // calc bucket from key
+            var bucket = getDigit(key, rshift, last, hasNegatives, bitsPerDigit); // calc bucket from key
             taskBucketCounts[bucket] += 1;
           }
           // write counts in to global counts in transposed order
@@ -139,8 +221,8 @@ module MixedSort {
       }
     }
             
-    if vv {printAry("globalCounts =",globalCounts);try! stdout.flush();}
-    if vv {printAry("globalStarts =",globalStarts);try! stdout.flush();}
+    // if vv {printAry("globalCounts =",globalCounts);try! stdout.flush();}
+    // if vv {printAry("globalStarts =",globalStarts);try! stdout.flush();}
             
     // calc new positions and permute
     coforall loc in aD.targetLocales() {
@@ -156,7 +238,7 @@ module MixedSort {
           // get local domain's indices
           var lD = aD.localSubdomain();
           // calc task's indices from local domain's indices
-          var tD = calcBlock(task, lD.low, lD.high);
+          var tD = calcBlock(task, lD.low, lD.high, taskPoolSize);
           // read start pos in to globalStarts back from transposed order
           {
             var aggregator = newSrcAggregator(int);
@@ -171,7 +253,7 @@ module MixedSort {
             var aggregator = newDstAggregator((t,int));
             for i in tD {
               const (key,_) = kr0[i];
-              var bucket = getDigit(key, rshift, last, hasNegatives); // calc bucket from key
+              var bucket = getDigit(key, rshift, last, hasNegatives, bitsPerDigit); // calc bucket from key
               var pos = taskBucketPos[bucket];
               taskBucketPos[bucket] += 1;
               aggregator.copy(kr1[pos], kr0[i]);
