@@ -5,7 +5,7 @@ private use AryUtil;
 private use TestBase;
 private use CommAggregation;
 
-config const size = 100_000_000;
+config const size = 10_000;
 config const pow:real = 1.5;
 config const toy: bool = false;
 
