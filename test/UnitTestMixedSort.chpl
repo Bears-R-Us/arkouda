@@ -5,10 +5,44 @@ private use AryUtil;
 private use TestBase;
 private use CommAggregation;
 
-private config const size = 100_000_000;
-private config const pow:real = 1.5;
+config const size = 100_000_000;
+config const pow:real = 1.5;
+config const toy: bool = false;
+
+proc doToy() {
+  const toysize = if (size <= 1000) then size else 50;
+  const D = newBlockDom({0..#toysize});
+  var x:[D] int;
+  forall i in D {
+    x[i] = toysize * (toysize - i - 1);
+  }
+  writeln("Sorting...");
+  var d: Diags;
+  d.start();
+  var a = mixedSort_ranks(x);
+  d.stop(printTime=true);
+  writeln("Permuting...");
+  var xs:[D] int;
+  forall (xsi, ai) in zip(xs, a) with (var agg = newSrcAggregator(int)) {
+    agg.copy(xsi, x[ai]);
+  }
+  var success = isSorted(xs);
+  if !success {
+    writeln("Failed to sort!");
+    writeln("Idx Original Sorted Argsort");
+    for i in D {
+      writeln("%3i %04xu %04xu %3i".format(i, x[i], xs[i], a[i]));
+    }
+  } else {
+    writeln("Success!");
+  }
+  return success:int;
+}
 
 proc main() {
+  if toy {
+    return doToy();
+  }
   const D = newBlockDom({0..#size});
   var y:[D] real;
   fillRandom(y);
@@ -43,11 +77,13 @@ proc main() {
   if !isSorted(x2) {
     writeln("mixedSort failed to sort!");
     if size <= 100 {
-      writeln("idx Original   Sorted   Attempted   Sorted idx  Attempted idx")
+      writeln("idx Original   Sorted   Attempted   Sorted idx  Attempted idx");
       for i in D {
         writeln("%3i %016xu %016xu %016xu %3i %3i".format(i, x[i], x1[i], x2[i], a1[i], a2[i]));
       }
     }
   }
-  writeln("Answers match? >>> ", && reduce (a1 == a2), " <<<");
+  var success = && reduce (a1 == a2);
+  writeln("Answers match? >>> ", success, " <<<");
+  return success:int;
 }

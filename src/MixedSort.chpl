@@ -1,5 +1,6 @@
 module MixedSort {
   private use IO;
+  private use BitOps;
   private use BlockDist;
   private use Reflection;
   private use CommAggregation;
@@ -13,8 +14,20 @@ module MixedSort {
   private config const logLevel = ServerConfig.logLevel;
   const msLogger = new Logger(logLevel);
 
+  inline proc getBitWidth(a: [?aD] int): (int, bool) {
+    var aMin = min reduce a;
+    var aMax = max reduce a;
+    var wPos = if aMax >= 0 then numBits(int) - clz(aMax) else 0;
+    var wNeg = if aMin < 0 then numBits(int) - clz((-aMin)-1) + 1 else 0;
+    const bitWidth = max(wPos, wNeg);
+    const negs = aMin < 0;
+    return (bitWidth, negs);
+  }
+  
   proc mixedSort_ranks(a:[?aD] ?t, checkSorted: bool = true): [aD] int throws {
     var (nBits, hasNegatives) = getBitWidth(a);
+    msLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                   "nBits = %t, hasNegatives = %t".format(nBits, hasNegatives));
     var kr0: [aD] (t, int) = [(key, rank) in zip(a, aD)] (key, rank);
     sortBucket(kr0, t, aD, nBits, hasNegatives, checkSorted, numTasks);
     var ranks: [aD] int = [(key, rank) in kr0] rank;
@@ -25,12 +38,19 @@ module MixedSort {
     if bD.size == 0 {
       return;
     }
-    if bD.targetLocales().size == 1 {
+    ref first = kr0[bD.low];
+    ref last = kr0[bD.high];
+    if first.locale.id == last.locale.id {
       localSort(kr0, t, bD, curBit, hasNegatives, true, nTasks);
+      return;
     }
     // If bucket spans multiple locales, sort the next most significant digit
-    const rshift = curBit - MSD_bitsPerDigit;
+    const rshift = max(0, curBit - MSD_bitsPerDigit);
+    // var kr0: [aD] (t, int) = [(key, rank) in zip(a, aD)] (key, rank);
     var segments = sortDigit(kr0, t, bD, rshift, hasNegatives, true, nTasks, MSD_bitsPerDigit);
+    if rshift == 0 {
+      return;
+    }
     // Recurse on each digit's bucket
     sync for (bs, be) in segments {
       if (be >= bs) {
@@ -39,7 +59,9 @@ module MixedSort {
           // Give bucket it's proportion of the task pool
           const myTasks = max((nTasks * (be - bs + 1) + bD.size - 1) / bD.size, 1):int;
           // If bucket spans multiple locales, divide tasks in half
-          const subTasks = if (bDs.targetLocales().size == 1) then myTasks else max(myTasks/2, 1);
+          ref myfirst = kr0[bs];
+          ref mylast = kr0[be];
+          const subTasks = if (myfirst.locale.id == mylast.locale.id) then myTasks else max(myTasks/2, 1);
           // Sort bucket and assign result to parent array
           sortBucket(kr0, t, bDs, rshift, hasNegatives, true, subTasks);
         }
@@ -79,7 +101,7 @@ module MixedSort {
     inline proc getDigit(key: int, rshift: int, last: bool, negs: bool, param bitsPerDigit): int {
       param maskDigit = (1 << bitsPerDigit) - 1;
       const invertSignBit = last && negs;
-      const xor = (invertSignBit:uint << (RSLSD_bitsPerDigit-1));
+      const xor = (invertSignBit:uint << (bitsPerDigit-1));
       const keyu = key:uint;
       return (((keyu >> rshift) & (maskDigit:uint)) ^ xor):int;
     }
@@ -102,7 +124,7 @@ module MixedSort {
       if signbitSet {
         keyu = ~keyu;
       } else {
-        xor = (invertSignBit:uint << (RSLSD_bitsPerDigit-1));
+        xor = (invertSignBit:uint << (bitsPerDigit-1));
       }
       return (((keyu >> rshift) & (maskDigit:uint)) ^ xor):int;
     }
@@ -147,6 +169,14 @@ module MixedSort {
   }
 
   private proc sortDigit(kr0:[], type t, aD, rshift: int, hasNegatives: bool, checkSorted: bool = true, nTasks: int = numTasks, param bitsPerDigit) throws {
+    ref first = kr0[aD.low];
+    ref last = kr0[aD.high];
+    const firstLocale = first.locale.id;
+    const lastLocale = last.locale.id;
+    const myLocales = Locales[firstLocale..lastLocale];
+    const nloc = myLocales.size;
+    msLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                   "rshift = %t, aD = %t, loc = %t, nTasks = %t, bitsPerDigit = %t)".format(rshift, aD, myLocales, nTasks, bitsPerDigit));
     const emptyBuckets: [0..#0] (int, int);
     if aD.size == 0 {
       return emptyBuckets;
@@ -160,23 +190,19 @@ module MixedSort {
     // form (key,rank) vector
     /* var kr0: [aD] (t,int) = [(key,rank) in zip(a,aD)] (key,rank); */
     var kr1: [aD] (t,int);
-    const nloc = aD.targetLocales().size;
-    const firstLocale = aD.targetLocales()[aD.targetLocales().domain.low];
-    const lastLocale = aD.targetLocales()[aD.targetLocales().domain.high];
-    const locmin = firstLocale.id;
-    const last = rshift <= bitsPerDigit;
+    const isLast = rshift <= bitsPerDigit;
     // Make buckets for all cores on all locales, even if some aren't used
-    const gDloc = {0..#(aD.targetLocales().size * numTasks * numBuckets)};
-    const gD: domain(1) dmapped Block(boundingBox=gDloc, targetLocales=aD.targetLocales()) = gDloc;
+    const gDloc = {0..#(nloc * numTasks * numBuckets)};
+    const gD: domain(1) dmapped Block(boundingBox=gDloc, targetLocales=myLocales) = gDloc;
     var globalCounts: [gD] int;
     var globalStarts: [gD] int;
 
     // count digits
-    coforall loc in aD.targetLocales() {
+    coforall loc in myLocales {
       on loc {
         // All middle locales are fully committed to sorting this bucket and should get max tasks available
         // But first and last locales need to share, according to nTasks
-        const taskPoolSize = if ((loc == firstLocale) || (loc == lastLocale)) then nTasks else numTasks;
+        const taskPoolSize = if ((loc.id == firstLocale) || (loc.id == lastLocale)) then nTasks else numTasks;
         coforall task in 0..#taskPoolSize {
           // bucket domain
           var bD = {0..#numBuckets};
@@ -186,18 +212,18 @@ module MixedSort {
           var lD = aD.localSubdomain();
           // calc task's indices from local domain's indices
           var tD = calcBlock(task, lD.low, lD.high, taskPoolSize);
-          try! msLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              "locid: %t task: %t tD: %t".format(loc.id,task,tD));
+          msLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                         "locid: %t task: %t tD: %t lD: %t globalCountDom: %t".format(loc.id,task,tD,lD, {calcGlobalIndex(0, loc.id, task, nloc, firstLocale)..calcGlobalIndex(numBuckets-1, loc.id, task, nloc, firstLocale)}));
           // count digits in this task's part of the array
           for i in tD {
             const (key,_) = kr0[i];
-            var bucket = getDigit(key, rshift, last, hasNegatives, bitsPerDigit); // calc bucket from key
+            var bucket = getDigit(key, rshift, isLast, hasNegatives, bitsPerDigit); // calc bucket from key
             taskBucketCounts[bucket] += 1;
           }
           // write counts in to global counts in transposed order
           var aggregator = newDstAggregator(int);
           for bucket in bD {
-            aggregator.copy(globalCounts[calcGlobalIndex(bucket, loc.id, task, nloc, locmin)], 
+            aggregator.copy(globalCounts[calcGlobalIndex(bucket, loc.id, task, nloc, firstLocale)], 
                             taskBucketCounts[bucket]);
           }
           aggregator.flush();
@@ -212,12 +238,16 @@ module MixedSort {
     globalStarts = globalStarts - globalCounts + aD.low;
     var bucketRanges: [{0..#numBuckets}] (int, int);
     for bi in 0..#numBuckets {
-      const gi = calcGlobalIndex(bi, locmin, 0, nloc, locmin);
-      const start = globalStarts[gi];
+      // Bucket start is global index of bucket for min locale and task
+      const gistart = calcGlobalIndex(bi, firstLocale, 0, nloc, firstLocale);
+      const start = globalStarts[gistart];
       if (bi == numBuckets - 1) {
+        // End of last bucket is end of domain
         bucketRanges[bi] = (start, aD.high);
       } else {
-        bucketRanges[bi] = (start, globalStarts[gi+1] - 1);
+        // Bucket end: find global start idx of next bucket and decrement
+        const giend = calcGlobalIndex(bi+1, firstLocale, 0, nloc, firstLocale);
+        bucketRanges[bi] = (start, globalStarts[giend] - 1);
       }
     }
             
@@ -225,11 +255,11 @@ module MixedSort {
     // if vv {printAry("globalStarts =",globalStarts);try! stdout.flush();}
             
     // calc new positions and permute
-    coforall loc in aD.targetLocales() {
+    coforall loc in myLocales {
       on loc {
         // All middle locales are fully committed to sorting this bucket and should get max tasks available
         // But first and last locales need to share, according to nTasks
-        const taskPoolSize = if ((loc == firstLocale) || (loc == lastLocale)) then nTasks else numTasks;
+        const taskPoolSize = if ((loc.id == firstLocale) || (loc.id == lastLocale)) then nTasks else numTasks;
         coforall task in 0..#taskPoolSize {
           // bucket domain
           var bD = {0..#numBuckets};
@@ -244,7 +274,7 @@ module MixedSort {
             var aggregator = newSrcAggregator(int);
             for bucket in bD {
               aggregator.copy(taskBucketPos[bucket], 
-                              globalStarts[calcGlobalIndex(bucket, loc.id, task, nloc, locmin)]);
+                              globalStarts[calcGlobalIndex(bucket, loc.id, task, nloc, firstLocale)]);
             }
             aggregator.flush();
           }
@@ -253,7 +283,7 @@ module MixedSort {
             var aggregator = newDstAggregator((t,int));
             for i in tD {
               const (key,_) = kr0[i];
-              var bucket = getDigit(key, rshift, last, hasNegatives, bitsPerDigit); // calc bucket from key
+              var bucket = getDigit(key, rshift, isLast, hasNegatives, bitsPerDigit); // calc bucket from key
               var pos = taskBucketPos[bucket];
               taskBucketPos[bucket] += 1;
               aggregator.copy(kr1[pos], kr0[i]);
