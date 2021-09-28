@@ -2983,6 +2983,14 @@ Attributes
 
       :type: dtype
 
+   .. attribute:: regex_dict
+
+      Dictionary storing information on matches (cache of Strings.find_locations(pattern))
+      Keys - regex patterns
+      Values - tuples of pdarrays (numMatches, matchStarts, matchLens)
+
+      :type: Dict[str, Tuple[pdarray, pdarray, pdarray]]
+
    .. attribute:: logger
 
       Used for all logging operations
@@ -3064,6 +3072,74 @@ Attributes
       :rtype: pdarray, int
 
       :raises RuntimeError: Raised if there is a server-side error thrown
+
+
+   .. py:method:: cached_regex_patterns(self)
+
+      Returns the regex patterns for which Strings.find_locations(pattern) have been cached
+
+
+   .. py:method:: find_locations(self, pattern: Union[bytes, arkouda.dtypes.str_scalars]) -> Tuple[arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray, arkouda.pdarrayclass.pdarray]
+
+      Finds pattern matches and returns pdarrays containing the number, start postitions, and lengths of matches
+          Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
+
+      :param pattern: The regex pattern used to find matches
+      :type pattern: str_scalars
+
+      :returns: * *pdarray, int64* -- For each original string, the number of pattern matches
+                * *pdarray, int64* -- The start positons of pattern matches
+                * *pdarray, int64* -- The lengths of pattern matches
+
+      :raises TypeError: Raised if the pattern parameter is not bytes or str_scalars
+      :raises ValueError: Rasied if pattern is not a valid regex
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.findall`, :obj:`Strings.match`
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['{} string {}'.format(i, i) for i in range(1, 6)])
+      >>> strings
+      array(['1 string 1', '2 string 2', '3 string 3', '4 string 4', '5 string 5'])
+      >>> num_matches, starts, lens = strings.find_locations('\d')
+      >>> num_matches
+      array([2, 2, 2, 2, 2])
+      >>> starts
+      array([0, 9, 11, 20, 22, 31, 33, 42, 44, 53])
+      >>> lens
+      array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1]))
+
+
+   .. py:method:: findall(self, pattern: Union[bytes, arkouda.dtypes.str_scalars], return_match_origins: bool = False) -> Union[Strings, Tuple]
+
+      Return all non-overlapping matches of pattern in Strings as a new Strings object
+          Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
+
+      :param pattern: The regex pattern used to find matches
+      :type pattern: str_scalars
+      :param return_match_origins: If True, return a pdarray containing the index of the original string each pattern match is from
+      :type return_match_origins: bool
+
+      :returns: * *Strings* -- Strings object containing only pattern matches
+                * *pdarray, int64 (optional)* -- The index of the original string each pattern match is from
+
+      :raises TypeError: Raised if the pattern parameter is not bytes or str_scalars
+      :raises ValueError: Rasied if pattern is not a valid regex
+      :raises RuntimeError: Raised if there is a server-side error thrown
+
+      .. seealso:: :obj:`Strings.find_locations`, :obj:`Strings.match`
+
+      .. rubric:: Examples
+
+      >>> strings = ak.array(['{} string {}'.format(i, i) for i in range(1, 6)])
+      >>> strings
+      array(['1 string 1', '2 string 2', '3 string 3', '4 string 4', '5 string 5'])
+      >>> matches, match_origins = strings.findall('\d', return_match_origins = True)
+      >>> matches
+      array(['1', '1', '2', '2', '3', '3', '4', '4', '5', '5'])
+      >>> match_origins
+      array([0, 0, 1, 1, 2, 2, 3, 3, 4, 4])
 
 
    .. py:method:: contains(self, substr: Union[bytes, arkouda.dtypes.str_scalars], regex: bool = False) -> arkouda.pdarrayclass.pdarray

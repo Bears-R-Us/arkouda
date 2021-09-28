@@ -4160,6 +4160,19 @@ rather its instances are created by other arkouda functions.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="arkouda.Strings.regex_dict">
+<span class="sig-name descname"><span class="pre">regex_dict</span></span><a class="headerlink" href="#arkouda.Strings.regex_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary storing information on matches (cache of Strings.find_locations(pattern))
+Keys - regex patterns
+Values - tuples of pdarrays (numMatches, matchStarts, matchLens)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Dict[str, Tuple[<a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>, <a class="reference internal" href="../../usage/pdarray.html#arkouda.pdarray" title="arkouda.pdarray">pdarray</a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="arkouda.Strings.logger">
 <span class="sig-name descname"><span class="pre">logger</span></span><a class="headerlink" href="#arkouda.Strings.logger" title="Permalink to this definition">¶</a></dt>
 <dd><p>Used for all logging operations</p>
@@ -4269,6 +4282,104 @@ binary operation</p></li>
 <dd class="field-odd"><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.Strings.cached_regex_patterns">
+<span class="sig-name descname"><span class="pre">cached_regex_patterns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#arkouda.Strings.cached_regex_patterns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the regex patterns for which Strings.find_locations(pattern) have been cached</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.Strings.find_locations">
+<span class="sig-name descname"><span class="pre">find_locations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Strings.bytes" title="arkouda.Strings.bytes"><span class="pre">bytes</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="dtypes/index.html#arkouda.dtypes.str_scalars" title="arkouda.dtypes.str_scalars"><span class="pre">arkouda.dtypes.str_scalars</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="pdarrayclass/index.html#arkouda.pdarrayclass.pdarray" title="arkouda.pdarrayclass.pdarray"><span class="pre">arkouda.pdarrayclass.pdarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.Strings.find_locations" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Finds pattern matches and returns pdarrays containing the number, start postitions, and lengths of matches</dt><dd><p>Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pattern</strong> (<em>str_scalars</em>) – The regex pattern used to find matches</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>pdarray, int64</em> – For each original string, the number of pattern matches</p></li>
+<li><p><em>pdarray, int64</em> – The start positons of pattern matches</p></li>
+<li><p><em>pdarray, int64</em> – The lengths of pattern matches</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if the pattern parameter is not bytes or str_scalars</p></li>
+<li><p><strong>ValueError</strong> – Rasied if pattern is not a valid regex</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.Strings.findall" title="arkouda.Strings.findall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.findall</span></code></a>, <a class="reference internal" href="#arkouda.Strings.match" title="arkouda.Strings.match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.match</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> string </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span>
+<span class="go">array([&#39;1 string 1&#39;, &#39;2 string 2&#39;, &#39;3 string 3&#39;, &#39;4 string 4&#39;, &#39;5 string 5&#39;])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">num_matches</span><span class="p">,</span> <span class="n">starts</span><span class="p">,</span> <span class="n">lens</span> <span class="o">=</span> <span class="n">strings</span><span class="o">.</span><span class="n">find_locations</span><span class="p">(</span><span class="s1">&#39;\d&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">num_matches</span>
+<span class="go">array([2, 2, 2, 2, 2])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">starts</span>
+<span class="go">array([0, 9, 11, 20, 22, 31, 33, 42, 44, 53])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lens</span>
+<span class="go">array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1]))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="arkouda.Strings.findall">
+<span class="sig-name descname"><span class="pre">findall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Strings.bytes" title="arkouda.Strings.bytes"><span class="pre">bytes</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="dtypes/index.html#arkouda.dtypes.str_scalars" title="arkouda.dtypes.str_scalars"><span class="pre">arkouda.dtypes.str_scalars</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_match_origins</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#arkouda.bool" title="arkouda.bool"><span class="pre">bool</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#arkouda.Strings" title="arkouda.Strings"><span class="pre">Strings</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">Tuple</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#arkouda.Strings.findall" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Return all non-overlapping matches of pattern in Strings as a new Strings object</dt><dd><p>Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pattern</strong> (<em>str_scalars</em>) – The regex pattern used to find matches</p></li>
+<li><p><strong>return_match_origins</strong> (<em>bool</em>) – If True, return a pdarray containing the index of the original string each pattern match is from</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>Strings</em> – Strings object containing only pattern matches</p></li>
+<li><p><em>pdarray, int64 (optional)</em> – The index of the original string each pattern match is from</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>TypeError</strong> – Raised if the pattern parameter is not bytes or str_scalars</p></li>
+<li><p><strong>ValueError</strong> – Rasied if pattern is not a valid regex</p></li>
+<li><p><strong>RuntimeError</strong> – Raised if there is a server-side error thrown</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#arkouda.Strings.find_locations" title="arkouda.Strings.find_locations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.find_locations</span></code></a>, <a class="reference internal" href="#arkouda.Strings.match" title="arkouda.Strings.match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strings.match</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span> <span class="o">=</span> <span class="n">ak</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> string </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">strings</span>
+<span class="go">array([&#39;1 string 1&#39;, &#39;2 string 2&#39;, &#39;3 string 3&#39;, &#39;4 string 4&#39;, &#39;5 string 5&#39;])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matches</span><span class="p">,</span> <span class="n">match_origins</span> <span class="o">=</span> <span class="n">strings</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;\d&#39;</span><span class="p">,</span> <span class="n">return_match_origins</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matches</span>
+<span class="go">array([&#39;1&#39;, &#39;1&#39;, &#39;2&#39;, &#39;2&#39;, &#39;3&#39;, &#39;3&#39;, &#39;4&#39;, &#39;4&#39;, &#39;5&#39;, &#39;5&#39;])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">match_origins</span>
+<span class="go">array([0, 0, 1, 1, 2, 2, 3, 3, 4, 4])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
