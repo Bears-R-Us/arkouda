@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import itertools
-from typing import cast, Tuple, List, Optional, Union
+from typing import cast, Tuple, List, Optional, Union, Dict
 from typeguard import typechecked
 from arkouda.client import generic_msg
 from arkouda.pdarrayclass import pdarray, create_pdarray, parse_single_value, \
@@ -13,7 +13,7 @@ from arkouda.dtypes import NUMBER_FORMAT_STRINGS, resolve_scalar_dtype, \
      translate_np_dtype
 import json
 import re
-from arkouda.infoclass import information
+from arkouda.infoclass import information, list_symbol_table
 
 __all__ = ['Strings']
 
@@ -39,6 +39,10 @@ class Strings:
         The sizes of each dimension of the array
     dtype : dtype
         The dtype is ak.str
+    regex_dict: Dict[str, Tuple[pdarray, pdarray, pdarray]]
+        Dictionary storing information on matches (cache of Strings.find_locations(pattern))
+        Keys - regex patterns
+        Values - tuples of pdarrays (numMatches, matchStarts, matchLens)
     logger : ArkoudaLogger
         Used for all logging operations
         
@@ -102,6 +106,7 @@ class Strings:
 
         self.dtype = npstr
         self.name:Optional[str] = None
+        self.regex_dict: Dict = dict()
         self.logger = getArkoudaLogger(name=__class__.__name__) # type: ignore
 
     def __iter__(self):
@@ -254,6 +259,141 @@ class Strings:
         args = "{} {} {}".\
                         format(self.objtype, self.offsets.name, self.bytes.name)
         return create_pdarray(generic_msg(cmd=cmd,args=args))
+
+    def cached_regex_patterns(self):
+        """
+        Returns the regex patterns for which Strings.find_locations(pattern) have been cached
+        """
+        sym_tab = list_symbol_table()
+        self.regex_dict = {key: val for key, val in self.regex_dict.items() if
+                           all([pda.name in sym_tab for pda in val])}
+        return self.regex_dict.keys()
+
+    @typechecked
+    def find_locations(self, pattern: Union[bytes, str_scalars]) -> Tuple[pdarray, pdarray, pdarray]:
+        """
+        Finds pattern matches and returns pdarrays containing the number, start postitions, and lengths of matches
+            Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
+
+        Parameters
+        ----------
+        pattern: str_scalars
+            The regex pattern used to find matches
+
+        Returns
+        -------
+        pdarray, int64
+            For each original string, the number of pattern matches
+        pdarray, int64
+            The start positons of pattern matches
+        pdarray, int64
+            The lengths of pattern matches
+
+        Raises
+        ------
+        TypeError
+            Raised if the pattern parameter is not bytes or str_scalars
+        ValueError
+            Rasied if pattern is not a valid regex
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Strings.findall, Strings.match
+
+        Examples
+        --------
+        >>> strings = ak.array(['{} string {}'.format(i, i) for i in range(1, 6)])
+        >>> strings
+        array(['1 string 1', '2 string 2', '3 string 3', '4 string 4', '5 string 5'])
+        >>> num_matches, starts, lens = strings.find_locations('\\d')
+        >>> num_matches
+        array([2, 2, 2, 2, 2])
+        >>> starts
+        array([0, 9, 11, 20, 22, 31, 33, 42, 44, 53])
+        >>> lens
+        array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1]))
+        """
+        if isinstance(pattern, bytes):
+            pattern = pattern.decode()
+        sym_tab = list_symbol_table()
+        if pattern not in self.regex_dict or any([pda.name not in sym_tab for pda in self.regex_dict[pattern]]):
+            # run find_locations if we don't have the result of find_locations(pattern) cached or any of the references have gone stale
+            try:
+                re.compile(pattern)
+            except Exception as e:
+                raise ValueError(e)
+            cmd = "segmentedFindLoc"
+            args = "{} {} {} {}".format(self.objtype,
+                                        self.offsets.name,
+                                        self.bytes.name,
+                                        json.dumps([pattern]))
+            repMsg = cast(str, generic_msg(cmd=cmd, args=args))
+            arrays = repMsg.split('+', maxsplit=2)
+            self.regex_dict[pattern] = (create_pdarray(arrays[0]), create_pdarray(arrays[1]), create_pdarray(arrays[2]))
+        return self.regex_dict[pattern]
+
+    @typechecked
+    def findall(self, pattern: Union[bytes, str_scalars], return_match_origins: bool = False) -> Union[Strings, Tuple]:
+        """
+        Return all non-overlapping matches of pattern in Strings as a new Strings object
+            Note: only handles regular expressions supported by re2 (does not support lookaheads/lookbehinds)
+
+        Parameters
+        ----------
+        pattern: str_scalars
+            The regex pattern used to find matches
+        return_match_origins: bool
+            If True, return a pdarray containing the index of the original string each pattern match is from
+
+        Returns
+        -------
+        Strings
+            Strings object containing only pattern matches
+        pdarray, int64 (optional)
+            The index of the original string each pattern match is from
+
+        Raises
+        ------
+        TypeError
+            Raised if the pattern parameter is not bytes or str_scalars
+        ValueError
+            Rasied if pattern is not a valid regex
+        RuntimeError
+            Raised if there is a server-side error thrown
+
+        See Also
+        --------
+        Strings.find_locations, Strings.match
+
+        Examples
+        --------
+        >>> strings = ak.array(['{} string {}'.format(i, i) for i in range(1, 6)])
+        >>> strings
+        array(['1 string 1', '2 string 2', '3 string 3', '4 string 4', '5 string 5'])
+        >>> matches, match_origins = strings.findall('\\d', return_match_origins = True)
+        >>> matches
+        array(['1', '1', '2', '2', '3', '3', '4', '4', '5', '5'])
+        >>> match_origins
+        array([0, 0, 1, 1, 2, 2, 3, 3, 4, 4])
+        """
+        num_matches, starts, lens = self.find_locations(pattern)
+        cmd = "segmentedFindAll"
+        args = "{} {} {} {} {} {} {}".format(self.objtype,
+                                             self.offsets.name,
+                                             self.bytes.name,
+                                             num_matches.name,
+                                             starts.name,
+                                             lens.name,
+                                             return_match_origins)
+        repMsg = cast(str, generic_msg(cmd=cmd, args=args))
+        if return_match_origins:
+            arrays = repMsg.split('+', maxsplit=2)
+            return Strings(arrays[0], arrays[1]), create_pdarray(arrays[2])
+        else:
+            arrays = repMsg.split('+', maxsplit=1)
+            return Strings(arrays[0], arrays[1])
 
     @typechecked
     def contains(self, substr: Union[bytes, str_scalars], regex: bool = False) -> pdarray:

@@ -156,6 +156,90 @@ module SegmentedMsg {
       return new MsgTuple(repMsg, MsgType.NORMAL);
   }
 
+  proc segmentedFindLocMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    var pn = Reflection.getRoutineName();
+    var repMsg: string;
+    var (objtype, segName, valName, patternJson) = payload.splitMsgToTuple(4);
+
+    // check to make sure symbols defined
+    st.checkTable(segName);
+    st.checkTable(valName);
+
+    const json = jsonToPdArray(patternJson, 1);
+    const pattern: string = json[json.domain.low];
+
+    smLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                   "cmd: %s objtype: %t".format(cmd, objtype));
+
+    select objtype {
+      when "str" {
+        const rNumMatchesName = st.nextName();
+        const rStartsName = st.nextName();
+        const rLensName = st.nextName();
+        var strings = getSegString(segName, valName, st);
+        var (numMatches, matchStarts, matchLens) = strings.findMatchLocations(pattern);
+        st.addEntry(rNumMatchesName, new shared SymEntry(numMatches));
+        st.addEntry(rStartsName, new shared SymEntry(matchStarts));
+        st.addEntry(rLensName, new shared SymEntry(matchLens));
+        repMsg = "created %s+created %s+created %s".format(st.attrib(rNumMatchesName),
+                                                           st.attrib(rStartsName),
+                                                           st.attrib(rLensName));
+      }
+      otherwise {
+        var errorMsg = "%s".format(objtype);
+        smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+        return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
+      }
+    }
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+    return new MsgTuple(repMsg, MsgType.NORMAL);
+  }
+
+  proc segmentedFindAllMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
+    var pn = Reflection.getRoutineName();
+    var repMsg: string;
+    var (objtype, segName, valName, numMatchesName, startsName, lensName, returnMatchOrigStr) = payload.splitMsgToTuple(7);
+    const returnMatchOrig: bool = returnMatchOrigStr.toLower() == "true";
+
+    // check to make sure symbols defined
+    st.checkTable(segName);
+    st.checkTable(valName);
+    st.checkTable(numMatchesName);
+    st.checkTable(startsName);
+    st.checkTable(lensName);
+
+    smLogger.debug(getModuleName(), getRoutineName(), getLineNumber(),
+                   "cmd: %s objtype: %t".format(cmd, objtype));
+
+    select objtype {
+      when "str" {
+        const rSegName = st.nextName();
+        const rValName = st.nextName();
+        const optName: string = if returnMatchOrig then st.nextName() else "";
+        var strings = getSegString(segName, valName, st);
+        var numMatches = st.lookup(numMatchesName): borrowed SymEntry(int);
+        var starts = st.lookup(startsName): borrowed SymEntry(int);
+        var lens = st.lookup(lensName): borrowed SymEntry(int);
+
+        var (off, val, matchOrigins) = strings.findAllMatches(numMatches, starts, lens, returnMatchOrig);
+        st.addEntry(rSegName, new shared SymEntry(off));
+        st.addEntry(rValName, new shared SymEntry(val));
+        repMsg = "created %s+created %s".format(st.attrib(rSegName), st.attrib(rValName));
+        if returnMatchOrig {
+          st.addEntry(optName, new shared SymEntry(matchOrigins));
+          repMsg += "+created %s".format(st.attrib(optName));
+        }
+      }
+      otherwise {
+        var errorMsg = "%s".format(objtype);
+        smLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+        return new MsgTuple(notImplementedError(pn, errorMsg), MsgType.ERROR);
+      }
+    }
+    smLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),repMsg);
+    return new MsgTuple(repMsg, MsgType.NORMAL);
+  }
+
   proc createPeelSymEntries(loname, lo, lvname, lv, roname, ro, rvname, rv, st: borrowed SymTab) throws {
     st.addEntry(loname, new shared SymEntry(lo));
     st.addEntry(lvname, new shared SymEntry(lv));
