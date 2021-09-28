@@ -1,5 +1,6 @@
 module MixedSort {
   private use IO;
+  private use CPtr;
   private use BitOps;
   private use BlockDist;
   private use Reflection;
@@ -63,7 +64,9 @@ module MixedSort {
           ref mylast = kr0[be];
           const subTasks = if (myfirst.locale.id == mylast.locale.id) then myTasks else max(myTasks/2, 1);
           // Sort bucket and assign result to parent array
-          sortBucket(kr0, t, bDs, rshift, hasNegatives, true, subTasks);
+          // Because at least one more-significant digit has already been sorted,
+          // the sign bit has already been handled, so pass hasNegatives=false
+          sortBucket(kr0, t, bDs, rshift, false, true, subTasks);
         }
       }
     }
@@ -91,22 +94,25 @@ module MixedSort {
       }
     }
     for rshift in 0..#curBit by LSD_bitsPerDigit {
-      sortDigit(kr0, t, bD, rshift, hasNegatives, false, nTasks, LSD_bitsPerDigit);
+      const handleNegatives = hasNegatives && ((rshift + LSD_bitsPerDigit) >= curBit);
+      sortDigit(kr0, t, bD, rshift, handleNegatives, false, nTasks, LSD_bitsPerDigit);
     }
   }
 
     // Get the digit for the current rshift. In order to correctly sort
     // negatives, we have to invert the signbit if we're looking at the last
     // digit and the array contained negative values.
-    inline proc getDigit(key: int, rshift: int, last: bool, negs: bool, param bitsPerDigit): int {
+    inline proc getDigit(key: int, rshift: int, negs: bool, param bitsPerDigit): int {
       param maskDigit = (1 << bitsPerDigit) - 1;
-      const invertSignBit = last && negs;
-      const xor = (invertSignBit:uint << (bitsPerDigit-1));
+      // True if digit includes sign bit and negative values are present
+      //const invertSignBit = ((rshift + bitsPerDigit) >= numBits(key.type)) && negs;
+      const signBitOffsetInDigit = bitsPerDigit - 1;
+      const xor = (negs:uint << signBitOffsetInDigit);
       const keyu = key:uint;
       return (((keyu >> rshift) & (maskDigit:uint)) ^ xor):int;
     }
 
-    inline proc getDigit(key: uint, rshift: int, last: bool, negs: bool, param bitsPerDigit): int {
+    inline proc getDigit(key: uint, rshift: int, negs: bool, param bitsPerDigit): int {
       param maskDigit = (1 << bitsPerDigit) - 1;
       return ((key >> rshift) & (maskDigit:uint)):int;
     }
@@ -114,9 +120,9 @@ module MixedSort {
     // Get the digit for the current rshift. In order to correctly sort
     // negatives, we have to invert the entire key if it's negative, and invert
     // just the signbit for positive values when looking at the last digit.
-    inline proc getDigit(in key: real, rshift: int, last: bool, negs: bool, param bitsPerDigit): int {
+    inline proc getDigit(in key: real, rshift: int, negs: bool, param bitsPerDigit): int {
       param maskDigit = (1 << bitsPerDigit) - 1;
-      const invertSignBit = last && negs;
+      const invertSignBit = ((rshift + bitsPerDigit) >= numBits(key.type)) && negs;
       var keyu: uint;
       c_memcpy(c_ptrTo(keyu), c_ptrTo(key), numBytes(key.type));
       var signbitSet = keyu >> (numBits(keyu.type)-1) == 1;
@@ -124,24 +130,32 @@ module MixedSort {
       if signbitSet {
         keyu = ~keyu;
       } else {
-        xor = (invertSignBit:uint << (bitsPerDigit-1));
+        const signBitOffsetInDigit = numBits(key.type) - rshift - 1;
+        xor = (invertSignBit:uint << signBitOffsetInDigit);
       }
       return (((keyu >> rshift) & (maskDigit:uint)) ^ xor):int;
     }
 
-    inline proc getDigit(key: 2*uint, rshift: int, last: bool, negs: bool, param bitsPerDigit): int {
+    inline proc getDigit(key: 2*uint, rshift: int, negs: bool, param bitsPerDigit): int {
       const (key0,key1) = key;
       if (rshift >= numBits(uint)) {
-        return getDigit(key0, rshift - numBits(uint), last, negs, bitsPerDigit);
+        return getDigit(key0, rshift - numBits(uint), negs, bitsPerDigit);
       } else {
-        return getDigit(key1, rshift, last, negs, bitsPerDigit);
+        return getDigit(key1, rshift, negs, bitsPerDigit);
       }
     }
 
-    inline proc getDigit(key: _tuple, rshift: int, last: bool, negs: bool, param bitsPerDigit): int
+    inline proc getDigit(key: _tuple, rshift: int, negs: bool, param bitsPerDigit): int
         where isHomogeneousTuple(key) && key.type == key.size*uint(bitsPerDigit) {
       const keyHigh = key.size - 1;
       return key[keyHigh - rshift/bitsPerDigit]:int;
+    }
+
+    inline proc getDigit(key: _tuple, rshift: int, negs: bool, param bitsPerDigit): int
+        where isHomogeneousTuple(key) && key.type != key.size*uint(bitsPerDigit) {
+      const keyHigh = key.size - 1;
+      const keyElem = key[keyHigh - rshift/bitsPerDigit]:int;
+      return getDigit(keyElem, rshift % bitsPerDigit, negs, bitsPerDigit);
     }
 
     // calculate sub-domain for task
@@ -168,7 +182,7 @@ module MixedSort {
     return ((bucket * nloc * numTasks) + ((loc - locmin) * numTasks) + task);
   }
 
-  private proc sortDigit(kr0:[], type t, aD, rshift: int, hasNegatives: bool, checkSorted: bool = true, nTasks: int = numTasks, param bitsPerDigit) throws {
+  private proc sortDigit(kr0:[], type t, aD, rshift: int, handleNegatives: bool, checkSorted: bool = true, nTasks: int = numTasks, param bitsPerDigit) throws {
     ref first = kr0[aD.low];
     ref last = kr0[aD.high];
     const firstLocale = first.locale.id;
@@ -190,7 +204,7 @@ module MixedSort {
     // form (key,rank) vector
     /* var kr0: [aD] (t,int) = [(key,rank) in zip(a,aD)] (key,rank); */
     var kr1: [aD] (t,int);
-    const isLast = rshift <= bitsPerDigit;
+    // const isLast = rshift <= bitsPerDigit;
     // Make buckets for all cores on all locales, even if some aren't used
     const gDloc = {0..#(nloc * numTasks * numBuckets)};
     const gD: domain(1) dmapped Block(boundingBox=gDloc, targetLocales=myLocales) = gDloc;
@@ -217,7 +231,7 @@ module MixedSort {
           // count digits in this task's part of the array
           for i in tD {
             const (key,_) = kr0[i];
-            var bucket = getDigit(key, rshift, isLast, hasNegatives, bitsPerDigit); // calc bucket from key
+            var bucket = getDigit(key, rshift, handleNegatives, bitsPerDigit); // calc bucket from key
             taskBucketCounts[bucket] += 1;
           }
           // write counts in to global counts in transposed order
@@ -283,7 +297,7 @@ module MixedSort {
             var aggregator = newDstAggregator((t,int));
             for i in tD {
               const (key,_) = kr0[i];
-              var bucket = getDigit(key, rshift, isLast, hasNegatives, bitsPerDigit); // calc bucket from key
+              var bucket = getDigit(key, rshift, handleNegatives, bitsPerDigit); // calc bucket from key
               var pos = taskBucketPos[bucket];
               taskBucketPos[bucket] += 1;
               aggregator.copy(kr1[pos], kr0[i]);

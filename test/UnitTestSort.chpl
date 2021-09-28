@@ -6,6 +6,7 @@ prototype module UnitTestSort
   use Random;
 
   use RadixSortLSD;
+  use MixedSort;
   use CommAggregation;
 
   config param perfOnlyCompile = false; // reduces compilation time
@@ -68,6 +69,20 @@ prototype module UnitTestSort
         }
         if printArrays { writeln(A); writeln(rankSortedA); writeln(sortedA); }
         assert(AryUtil.isSorted(sortedA));
+      }
+    }
+
+    {
+      startDiag();
+      var rankSortedA2 = mixedSort_ranks(A, checkSorted=false);
+      endDiag("mixedSort_ranks", elemType, nElems, sortDesc);
+      if verify {
+        var sortedA2: [D] elemType;
+        forall (sA, i) in zip(sortedA2, rankSortedA2) with (var agg = newSrcAggregator(elemType)) {
+          agg.copy(sA, A[i]);
+        }
+        if printArrays { writeln(A); writeln(rankSortedA2); writeln(sortedA2); }
+        assert(AryUtil.isSorted(sortedA2));
       }
     }
   }
