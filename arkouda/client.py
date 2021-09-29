@@ -1,6 +1,6 @@
 import json, os
 from typing import cast, Mapping, Optional, Tuple, Union
-import warnings, pkg_resources
+import warnings
 import zmq # type: ignore
 import pyfiglet # type: ignore
 from arkouda import security, io_util, __version__
