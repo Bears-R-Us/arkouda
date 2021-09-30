@@ -89,6 +89,7 @@ class ClientTest(ArkoudaTest):
                 expected or the call to ak.client.get_mem_used() fails 
         '''  
         try:
+            a = ak.ones(1024*1024)
             mem_used = ak.client.get_mem_used()
         except Exception as e:
             raise AssertionError(e)

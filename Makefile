@@ -21,7 +21,7 @@ CHPL_FLAGS += --no-checks --no-loop-invariant-code-motion --no-fast-followers --
 else
 CHPL_FLAGS += --fast
 endif
-CHPL_FLAGS += -smemTrack=true
+CHPL_FLAGS += -smemTrack=true -smemThreshold=1048576
 CHPL_FLAGS += -lhdf5 -lhdf5_hl -lzmq
 
 # We have seen segfaults with cache remote at some node counts
