@@ -647,21 +647,33 @@ module GenSymIO {
         return reply;
     }
 
+    /**
+     * inline proc to validate the range for our domain.
+     * Valid domains must be increasing with the lower bound <= upper bound
+     * :arg r: 1D domain
+     * :type domain(1): one dimensional domain
+     *
+     * :returns: bool True iff the lower bound is less than or equal to upper bound
+     */
+    inline proc _isValidRange(r: domain(1)): bool {
+        return r.low <= r.high;
+    }
+
     proc fixupSegBoundaries(a: [?D] int, segSubdoms: [?fD] domain(1), valSubdoms: [fD] domain(1)) throws {
         var boundaries: [fD] int; // First index of each region that needs to be raised
-        var diffs: [fD] int;// Amount each region must be raised over previous region
+        var diffs: [fD] int; // Amount each region must be raised over previous region
         forall (i, sd, vd, b) in zip(fD, segSubdoms, valSubdoms, boundaries) {
             // if we encounter a malformed subdomain i.e. {1..0} that means we encountered a file
             // that has no data for this SegString object, we can safely skip processing this file.
-            if sd.low > sd.high {
-                gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    "fD:%t segments subdom:%t is malformed signaling no segment data in file, skipping".format(i, sd));
-            } else {
+            if (_isValidRange(sd)) {
                 b = sd.low; // Boundary is index of first segment in file
                 // Height increase of next region is number of bytes in current region
                 if (i < fD.high) {
                     diffs[i+1] = vd.size;
                 }
+            } else {
+                gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                    "fD:%t segments subdom:%t is malformed signaling no segment data in file, skipping".format(i, sd));
             }
         }
         // Insert height increases at region boundaries
@@ -941,7 +953,7 @@ module GenSymIO {
                 lengths[i] = dims[0]: int;
                 if lengths[i] == 0 {
                     skips.add(filename);
-                    try! gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                    gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                         "Adding filename:%s to skips, dsetName:%s, dims[0]:%t".format(filename, dsetName, dims[0]));
                 }
 
@@ -967,14 +979,14 @@ module GenSymIO {
 
     /* This function gets called when A is a BlockDist or DefaultRectangular array. */
     proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), 
-                                                 filenames: [FD] string, dsetName: string, skips: set(string))
+                                                 filenames: [FD] string, dsetName: string, skips: set(string)) throws 
         where (MyDmap == Dmap.blockDist || MyDmap == Dmap.defaultRectangular) {
-            try! gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "entry.a.targetLocales() = %t".format(A.targetLocales()));
-            try! gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "Filedomains: %t".format(filedomains));
-            try! gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "skips: %t".format(skips));
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                    "entry.a.targetLocales() = %t".format(A.targetLocales()));
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                    "Filedomains: %t".format(filedomains));
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                    "skips: %t".format(skips));
 
             coforall loc in A.targetLocales() do on loc {
                 // Create local copies of args
@@ -988,8 +1000,8 @@ module GenSymIO {
                     var dataset: C_HDF5.hid_t;
 
                     if (skips.contains(filename)) {
-                        try! gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "File %s does not contain data for this dataset, skipping".format(filename));
+                        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "File %s does not contain data for this dataset, skipping".format(filename));
                     } else {
                         // Look for overlap between A's local subdomains and this file
                         for locdom in A.localSubdomains() {
@@ -1017,9 +1029,9 @@ module GenSymIO {
                                 C_HDF5.H5Sselect_hyperslab(memspace, C_HDF5.H5S_SELECT_SET, c_ptrTo(memOffset), 
                                                                 c_ptrTo(memStride), c_ptrTo(memCount), nil);
 
-                                try! gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                        "Locale %t intersection %t dataset slice %t".format(loc,intersection, 
-                                            (intersection.low - filedom.low, intersection.high - filedom.low)));
+                                gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                        "Locale %t intersection %t dataset slice %t".format(loc,intersection,
+                                        (intersection.low - filedom.low, intersection.high - filedom.low)));
 
                                 /*
                                 * The fact that intersection is a subset of a local subdomain means
