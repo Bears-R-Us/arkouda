@@ -451,6 +451,35 @@
 </dd></dl>
 
 <dl class="chpl function">
+<dt id="GenSymIO._isValidRange">
+<em class="property">proc </em><code class="sig-name descname">_isValidRange</code><span class="sig-paren">(</span><em class="sig-param">r: domain(1)</em><span class="sig-paren">)</span>: bool<a class="headerlink" href="#GenSymIO._isValidRange" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li></li>
+<li><p>inline proc to validate the range for our domain.</p></li>
+<li><p>Valid domains must be increasing with the lower bound &lt;= upper bound</p></li>
+<li><dl class="field-list simple">
+<dt class="field-odd">arg r</dt>
+<dd class="field-odd"><p>1D domain</p>
+</dd>
+</dl>
+</li>
+<li><dl class="field-list simple">
+<dt class="field-odd">type domain(1)</dt>
+<dd class="field-odd"><p>one dimensional domain</p>
+</dd>
+</dl>
+</li>
+<li></li>
+<li><dl class="field-list simple">
+<dt class="field-odd">returns</dt>
+<dd class="field-odd"><p>bool True iff the lower bound is less than or equal to upper bound</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
 <dt id="GenSymIO.fixupSegBoundaries">
 <em class="property">proc </em><code class="sig-name descname">fixupSegBoundaries</code><span class="sig-paren">(</span><em class="sig-param">a: [?D] int</em>, <em class="sig-param">segSubdoms: [?fD] domain(1)</em>, <em class="sig-param">valSubdoms: [fD] domain(1)</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.fixupSegBoundaries" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -545,7 +574,7 @@
 
 <dl class="chpl function">
 <dt id="GenSymIO.read_files_into_distributed_array">
-<em class="property">proc </em><code class="sig-name descname">read_files_into_distributed_array</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">filedomains: [?FD] domain(1)</em>, <em class="sig-param">filenames: [FD] string</em>, <em class="sig-param">dsetName: string</em><span class="sig-paren">)</span><a class="headerlink" href="#GenSymIO.read_files_into_distributed_array" title="Permalink to this definition">¶</a></dt>
+<em class="property">proc </em><code class="sig-name descname">read_files_into_distributed_array</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">filedomains: [?FD] domain(1)</em>, <em class="sig-param">filenames: [FD] string</em>, <em class="sig-param">dsetName: string</em>, <em class="sig-param">skips: set(string)</em><span class="sig-paren">)</span> throws<a class="headerlink" href="#GenSymIO.read_files_into_distributed_array" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function gets called when A is a BlockDist or DefaultRectangular array.</p>
 </dd></dl>
 

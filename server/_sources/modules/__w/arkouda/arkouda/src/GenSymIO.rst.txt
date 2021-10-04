@@ -131,6 +131,17 @@ or
    *  Uses keys:  dataset_name, arkouda_type->[pdarray|seg_string], created->(legacy creation statement)
    
 
+.. function:: proc _isValidRange(r: domain(1)): bool
+
+   *
+   * inline proc to validate the range for our domain.
+   * Valid domains must be increasing with the lower bound <= upper bound
+   * :arg r: 1D domain
+   * :type domain(1): one dimensional domain
+   *
+   * :returns: bool True iff the lower bound is less than or equal to upper bound
+   
+
 .. function:: proc fixupSegBoundaries(a: [?D] int, segSubdoms: [?fD] domain(1), valSubdoms: [fD] domain(1)) throws
 
 .. function:: proc get_dtype(filename: string, dsetName: string, skipSegStringOffsets: bool = false) throws
@@ -195,7 +206,7 @@ or
    *  as well as the total length of the array. 
    
 
-.. function:: proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), filenames: [FD] string, dsetName: string)
+.. function:: proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), filenames: [FD] string, dsetName: string, skips: set(string)) throws
 
    This function gets called when A is a BlockDist or DefaultRectangular array. 
 
