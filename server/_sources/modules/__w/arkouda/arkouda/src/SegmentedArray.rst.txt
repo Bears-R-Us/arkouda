@@ -273,7 +273,11 @@ or
 
 .. function:: proc in1d(mainStr: SegString, testStr: SegString, invert = false, forceSort = false) throws
 
-.. function:: proc interpretAsString(bytearray: [?D] uint(8)): string
+.. function:: proc interpretAsString(bytearray: [?D] uint(8), region: range(?), borrow = false): string
 
-   Convert an array of raw bytes into a Chapel string. 
+   
+   Interpret a region of a byte array as a Chapel string. If `borrow=false` a
+   new string is returned, otherwise the string borrows memory from the array
+   (reduces memory allocations if the string isn't needed after array)
+   
 

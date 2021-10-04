@@ -223,8 +223,8 @@
 
 <dl class="chpl function">
 <dt id="Flatten.interpretAsBytes">
-<em class="property">proc </em><code class="sig-name descname">interpretAsBytes</code><span class="sig-paren">(</span><em class="sig-param">bytearray: [?D] uint(8)</em><span class="sig-paren">)</span>: bytes<a class="headerlink" href="#Flatten.interpretAsBytes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert a uint(8) array into bytes. Modeled after SegString.interpretAsString</p>
+<em class="property">proc </em><code class="sig-name descname">interpretAsBytes</code><span class="sig-paren">(</span><em class="sig-param">bytearray: [?D] uint(8)</em>, <em class="sig-param">region: range(?)</em>, <em class="sig-param">borrow = false</em><span class="sig-paren">)</span>: bytes<a class="headerlink" href="#Flatten.interpretAsBytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpret a region of a byte array as bytes. Modeled after interpretAsString</p>
 </dd></dl>
 
 <dl class="chpl method">

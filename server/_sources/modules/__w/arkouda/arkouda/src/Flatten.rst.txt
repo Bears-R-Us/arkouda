@@ -19,10 +19,10 @@ or
 
 .. data:: config const NULL_STRINGS_VALUE = 0: uint(8)
 
-.. function:: proc interpretAsBytes(bytearray: [?D] uint(8)): bytes
+.. function:: proc interpretAsBytes(bytearray: [?D] uint(8), region: range(?), borrow = false): bytes
 
    
-   Convert a uint(8) array into bytes. Modeled after SegString.interpretAsString
+   Interpret a region of a byte array as bytes. Modeled after interpretAsString
    
 
 .. method:: proc SegString.flattenRegex(delim: string, returnSegs: bool) throws

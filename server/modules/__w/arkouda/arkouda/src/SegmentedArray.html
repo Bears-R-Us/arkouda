@@ -575,8 +575,10 @@ a boolean vector the same size as the first array.</p>
 
 <dl class="chpl function">
 <dt id="SegmentedArray.interpretAsString">
-<em class="property">proc </em><code class="sig-name descname">interpretAsString</code><span class="sig-paren">(</span><em class="sig-param">bytearray: [?D] uint(8)</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#SegmentedArray.interpretAsString" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert an array of raw bytes into a Chapel string.</p>
+<em class="property">proc </em><code class="sig-name descname">interpretAsString</code><span class="sig-paren">(</span><em class="sig-param">bytearray: [?D] uint(8)</em>, <em class="sig-param">region: range(?)</em>, <em class="sig-param">borrow = false</em><span class="sig-paren">)</span>: string<a class="headerlink" href="#SegmentedArray.interpretAsString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpret a region of a byte array as a Chapel string. If <cite>borrow=false</cite> a
+new string is returned, otherwise the string borrows memory from the array
+(reduces memory allocations if the string isn’t needed after array)</p>
 </dd></dl>
 
 </div>
