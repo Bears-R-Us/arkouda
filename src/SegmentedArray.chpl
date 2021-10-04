@@ -22,6 +22,8 @@ module SegmentedArray {
 
   private config param useHash = true;
   param SegmentedArrayUseHash = useHash;
+
+  private config param regexMaxCaptures = ServerConfig.regexMaxCaptures;
   
   class OutOfBoundsError: Error {}
 
@@ -485,56 +487,79 @@ module SegmentedArray {
 
     /*
       Given a SegString, finds pattern matches and returns pdarrays containing the number, start postitions, and lengths of matches
-      Note: the regular expression engine used, re2, does not support lookahead/lookbehind
       :arg pattern: The regex pattern used to find matches
       :type pattern: string
+      :arg groupNum: The number of the capture group to be returned
+      :type groupNum: int
       :returns: int64 pdarray – For each original string, the number of pattern matches and int64 pdarray – The start positons of pattern matches and int64 pdarray – The lengths of pattern matches
     */
-    proc findMatchLocations(const pattern: string) throws {
+    proc findMatchLocations(const pattern: string, groupNum: int) throws {
       checkCompile(pattern);
       ref origOffsets = this.offsets.a;
       ref origVals = this.values.a;
       const lengths = this.getLengths();
 
-      overMemLimit((this.offsets.size * numBytes(int)) + (2 * this.values.size * numBytes(int)));
+      overMemLimit((4 * this.offsets.size * numBytes(int)) + (3 * this.values.size * numBytes(int)));
       var numMatches: [this.offsets.aD] int;
       var matchStartBool: [this.values.aD] bool = false;
       var sparseLens: [this.values.aD] int;
-
+      var sparseStarts: [this.values.aD] int;
+      var searchBools: [this.offsets.aD] bool = false;
+      var matchBools: [this.offsets.aD] bool = false;
+      var fullMatchBools: [this.offsets.aD] bool = false;
       forall (i, off, len) in zip(this.offsets.aD, origOffsets, lengths) with (var myRegex = _unsafeCompileRegex(pattern),
                                                                                var lenAgg = newDstAggregator(int),
-                                                                               var startAgg = newDstAggregator(bool),
-                                                                               var matchAgg = newDstAggregator(int)) {
-        var matches = myRegex.matches(interpretAsString(origVals, off..#len, borrow=true));
-        for m in matches {
+                                                                               var startPosAgg = newDstAggregator(int),
+                                                                               var startBoolAgg = newDstAggregator(bool),
+                                                                               var searchBoolAgg = newDstAggregator(bool),
+                                                                               var matchBoolAgg = newDstAggregator(bool),
+                                                                               var fullMatchBoolAgg = newDstAggregator(bool),
+                                                                               var numMatchAgg = newDstAggregator(int)) {
+        var matchessize = 0;
+        for m in myRegex.matches(interpretAsString(origVals, off..#len, borrow=true), captures=regexMaxCaptures) {
           var match = m[0]; // v1.24.x -> reMatch, v1.25.x -> regexMatch
-          lenAgg.copy(sparseLens[off + match.offset:int], match.size);
-          startAgg.copy(matchStartBool[off + match.offset:int], true);
+          var group = m[groupNum];
+          if group.offset != -1 {
+            lenAgg.copy(sparseLens[off + group.offset:int], group.size);
+            startPosAgg.copy(sparseStarts[off + group.offset:int], group.offset:int);
+            startBoolAgg.copy(matchStartBool[off + group.offset:int], true);
+            matchessize += 1;
+            searchBoolAgg.copy(searchBools[i], true);
+            if match.offset == 0 {
+              matchBoolAgg.copy(matchBools[i], true);
+            }
+            if match.size == len-1 {
+              fullMatchBoolAgg.copy(fullMatchBools[i], true);
+            }
+          }
         }
-        matchAgg.copy(numMatches[i], matches.size);
+        numMatchAgg.copy(numMatches[i], matchessize);
       }
       var totalMatches = + reduce numMatches;
       // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-      overMemLimit(numBytes(int) * matchStartBool.size);
+      overMemLimit((2 * numBytes(int) * matchStartBool.size) + (3 * numBytes(int) * searchBools.size));
+
       // the matchTransform starts at 0 and increment after hitting a matchStart
       // when looping over the origVals domain, matchTransform acts as a function: origVals.domain -> makeDistDom(totalMatches)
       var matchTransform = + scan matchStartBool - matchStartBool;
-
+      var matchesIndicies = (+ scan numMatches) - numMatches;
       var matchStarts: [makeDistDom(totalMatches)] int;
       var matchLens: [makeDistDom(totalMatches)] int;
       [i in this.values.aD] if (matchStartBool[i] == true) {
-        matchStarts[matchTransform[i]] = i;
+        matchStarts[matchTransform[i]] = sparseStarts[i];
         matchLens[matchTransform[i]] = sparseLens[i];
       }
-      return (numMatches, matchStarts, matchLens);
+      var searchScan = (+ scan searchBools) - searchBools;
+      var matchScan = (+ scan matchBools) - matchBools;
+      var fullMatchScan = (+ scan fullMatchBools) - fullMatchBools;
+      return (numMatches, matchStarts, matchLens, matchesIndicies, searchBools, searchScan, matchBools, matchScan, fullMatchBools, fullMatchScan);
     }
 
     /*
       Given a SegString, return a new SegString only containing matches of the regex pattern,
       If returnMatchOrig is set to True, return a pdarray containing the index of the original string each pattern match is from
-      Note: the regular expression engine used, re2, does not support lookahead/lookbehind
       :arg numMatchesEntry: For each string in SegString, the number of pattern matches
-      :type numMatchesEntry: borrowed SymEntry(int)
+      :type numMatchesEntry: borrowed SymEntry(int) or borrowed SysmEntry(bool)
       :arg startsEntry: The starting postions of pattern matches
       :type startsEntry: borrowed SymEntry(int)
       :arg lensEntry: The lengths of pattern matches
@@ -543,11 +568,22 @@ module SegmentedArray {
       :type returnMatchOrig: bool
       :returns: Strings – Only the portions of Strings which match pattern and (optional) int64 pdarray – For each pattern match, the index of the original string it was in
     */
-    proc findAllMatches(const numMatchesEntry: borrowed SymEntry(int), const startsEntry: borrowed SymEntry(int), const lensEntry: borrowed SymEntry(int), const returnMatchOrig: bool) throws {
+    proc findAllMatches(const numMatchesEntry: ?t, const startsEntry: borrowed SymEntry(int), const lensEntry: borrowed SymEntry(int), const indicesEntry: borrowed SymEntry(int), const returnMatchOrig: bool) throws where t == borrowed SymEntry(int) || t == borrowed SymEntry(bool) {
       ref origVals = this.values.a;
+      ref origOffsets = this.offsets.a;
       ref numMatches = numMatchesEntry.a;
       ref matchStarts = startsEntry.a;
       ref matchLens = lensEntry.a;
+      ref indices = indicesEntry.a;
+
+      overMemLimit(matchLens.size * numBytes(int));
+      var absoluteStarts: [makeDistDom(matchLens.size)] int;
+      forall (stringInd, matchInd) in zip(this.offsets.aD, indices) with (var absAgg = newDstAggregator(int)) {
+        for k in matchInd..#numMatches[stringInd] {
+          // Each string has numMatches[stringInd] number of pattern matches, so matchOrigins needs to repeat stringInd for numMatches[stringInd] times
+          absAgg.copy(absoluteStarts[k], matchStarts[k] + origOffsets[stringInd]);
+        }
+      }
 
       // matchesValsSize is the total length of all matches + the number of matches (to account for null bytes)
       var matchesValsSize = (+ reduce matchLens) + matchLens.size;
@@ -557,8 +593,7 @@ module SegmentedArray {
       var matchesOffsets: [makeDistDom(matchLens.size)] int;
       // + current index to account for null bytes
       var matchesIndicies = + scan matchLens - matchLens + lensEntry.aD;
-
-      forall (i, start, len, matchesInd) in zip(lensEntry.aD, matchStarts, matchLens, matchesIndicies) with (var valAgg = newDstAggregator(uint(8)), var offAgg = newDstAggregator(int)) {
+      forall (i, start, len, matchesInd) in zip(lensEntry.aD, absoluteStarts, matchLens, matchesIndicies) with (var valAgg = newDstAggregator(uint(8)), var offAgg = newDstAggregator(int)) {
         for j in 0..#len {
           // copy in match
           valAgg.copy(matchesVals[matchesInd + j], origVals[start + j]);
@@ -577,10 +612,7 @@ module SegmentedArray {
       const matchOriginsDom = if returnMatchOrig then makeDistDom(matchesOffsets.size) else makeDistDom(0);
       var matchOrigins: [matchOriginsDom] int;
       if returnMatchOrig {
-        // check there's enough room to create a copy for scan and throw if creating a copy would go over memory limit
-        overMemLimit(numBytes(int) * numMatches.size);
-        var matchesIndicies = (+ scan numMatches) - numMatches;
-        forall (stringInd, matchInd) in zip(this.offsets.aD, matchesIndicies) with (var originAgg = newDstAggregator(int)) {
+        forall (stringInd, matchInd) in zip(this.offsets.aD, indices) with (var originAgg = newDstAggregator(int)) {
           for k in matchInd..#numMatches[stringInd] {
             // Each string has numMatches[stringInd] number of pattern matches, so matchOrigins needs to repeat stringInd for numMatches[stringInd] times
             originAgg.copy(matchOrigins[k], stringInd);
@@ -588,6 +620,87 @@ module SegmentedArray {
         }
       }
       return (matchesOffsets, matchesVals, matchOrigins);
+    }
+
+    /*
+      Substitute pattern matches with repl. If count is nonzero, at most count substitutions occur
+      If returnNumSubs is set to True, the number of substitutions per string will be returned
+
+      :arg pattern: regex pattern used to find matches
+      :type pattern: string
+
+      :arg replStr: the string to replace pattern matches with
+      :type replStr: string
+
+      :arg initCount: If count is nonzero, at most count splits occur. If zero, substitute all occurences of pattern
+      :type initCount: int
+
+      :arg returnNumSubs: If True, also return the number of substitutions per string
+      :type returnNumSubs: bool
+
+      :returns: Strings – Substrings with pattern matches substituted and (optional) int64 pdarray – For each original string, the number of susbstitutions
+    */
+    proc sub(pattern: string, replStr: string, initCount: int, returnNumSubs: bool) throws {
+      checkCompile(pattern);
+      ref origOffsets = this.offsets.a;
+      ref origVals = this.values.a;
+      const lengths = this.getLengths();
+
+      overMemLimit((2 * this.offsets.size * numBytes(int)) + (2 * this.values.size * numBytes(int)));
+      var numReplacements: [this.offsets.aD] int;
+      var replacedLens: [this.offsets.aD] int;
+      var nonMatch: [this.values.aD] bool = true;
+      var matchStartBool: [this.values.aD] bool = false;
+
+      var repl = replStr:bytes;
+      // count = 0 means substitute all occurances, so we set count equal to 10**9
+      var count = if initCount == 0 then 10**9:int else initCount;
+      // since the pattern matches are variable length, we don't know what the size of subbedVals should be until we've found the matches
+      forall (i, off, len) in zip(this.offsets.aD, origOffsets, lengths) with (var myRegex = _unsafeCompileRegex(pattern),
+                                                                               var numReplAgg = newDstAggregator(int),
+                                                                               var LenAgg = newDstAggregator(int),
+                                                                               var nonMatchAgg = newDstAggregator(bool),
+                                                                               var startAgg = newDstAggregator(bool)) {
+        var replacementCounter = 0;
+        var replLen = 0;
+        for m in myRegex.matches(interpretAsString(origVals, off..#len, borrow=true)) {
+          var match = m[0];  // v1.24.x -> reMatch, v1.25.x -> regexMatch
+          for k in (off + match.offset:int)..#match.size {
+            nonMatchAgg.copy(nonMatch[k], false);
+          }
+          startAgg.copy(matchStartBool[off + match.offset:int], true);
+          replacementCounter += 1;
+          replLen += match.size;
+          if replacementCounter == count { break; }
+        }
+        numReplAgg.copy(numReplacements[i], replacementCounter);
+        LenAgg.copy(replacedLens[i], replLen);
+      }
+      // new val size is the original - (total length of replacements) + (repl.size * total numReplacements)
+      const valSize = this.values.size - (+ reduce replacedLens) + (repl.size * (+ reduce numReplacements));
+      const valDom = makeDistDom(valSize);
+      var subbedVals: [valDom] uint(8);
+      overMemLimit(2 * this.offsets.size * numBytes(int));
+      // new offsets can be directly calculated
+      // new offsets is the original - (running sum of replaced lens) + (running sum of replacements * repl.size)
+      var subbedOffsets = origOffsets - ((+ scan replacedLens) - replacedLens) + (repl.size * ((+ scan numReplacements) - numReplacements));
+
+      forall (subOff, origOff, origLen) in zip(subbedOffsets, origOffsets, lengths) with (var valAgg = newDstAggregator(uint(8))) {
+        var j = 0;
+        for i in origOff..#origLen {
+          if nonMatch[i] {
+            valAgg.copy(subbedVals[subOff+j], origVals[i]);
+            j += 1;
+          }
+          else if matchStartBool[i] {
+            for k in repl {
+              valAgg.copy(subbedVals[subOff+j], k:uint(8));
+              j += 1;
+            }
+          }
+        }
+      }
+      return (subbedOffsets, subbedVals, numReplacements);
     }
 
     /*
@@ -631,14 +744,6 @@ module SegmentedArray {
             var lastMatch = matches[matches.size-1][0];  // v1.24.x reMatch, 1.25.x regexMatch
             // h = true iff start(lastMatch) + len(lastMatch) == len(string) (-1 to account for null byte)
             h = lastMatch.offset + lastMatch.size == l-1;
-          }
-        }
-        when SearchMode.match {
-          forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
-            // regexp.match only returns a match if the start of the string matches the pattern
-            // h = true iff len(match) == len(string) (-1 to account for null byte)
-            // if no match is found reMatch.size returns -1
-            h = myRegex.match(interpretAsString(va, o..#l, borrow=true)).size == l-1;
           }
         }
       }
