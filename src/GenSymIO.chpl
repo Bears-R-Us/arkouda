@@ -13,6 +13,7 @@ module GenSymIO {
     use NumPyDType;
     use List;
     use Map;
+    use Set;
     use PrivateDist;
     use Reflection;
     use ServerErrors;
@@ -467,17 +468,17 @@ module GenSymIO {
                                            "Verified all dtypes across files for dataset %s".format(dsetName));
             var subdoms: [filedom] domain(1);
             var segSubdoms: [filedom] domain(1);
+            var skips = new set(string);
             var len: int;
             var nSeg: int;
             try {
                 if isSegArray {
-                    // TODO wrap this in a conditional with option to ignore
                     if (!calcStringOffsets) {
-                        (segSubdoms, nSeg) = get_subdoms(filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);
+                        (segSubdoms, nSeg, skips) = get_subdoms(filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);
                     }
-                    (subdoms, len) = get_subdoms(filenames, dsetName + "/" + SEGARRAY_VALUE_NAME);
+                    (subdoms, len, skips) = get_subdoms(filenames, dsetName + "/" + SEGARRAY_VALUE_NAME);
                 } else {
-                    (subdoms, len) = get_subdoms(filenames, dsetName);
+                    (subdoms, len, skips) = get_subdoms(filenames, dsetName);
                 }
             } catch e: HDF5RankError {
                 var errorMsg = notImplementedError("readhdf", "Rank %i arrays".format(e.rank));
@@ -503,7 +504,7 @@ module GenSymIO {
 
                     // Load the strings bytes/values first
                     var entryVal = new shared SymEntry(len, uint(8));
-                    read_files_into_distributed_array(entryVal.a, subdoms, filenames, dsetName + "/" + SEGARRAY_VALUE_NAME);
+                    read_files_into_distributed_array(entryVal.a, subdoms, filenames, dsetName + "/" + SEGARRAY_VALUE_NAME, skips);
                     var valName = st.nextName();
                     st.addEntry(valName, entryVal);
 
@@ -515,7 +516,7 @@ module GenSymIO {
                         st.addEntry(offsetsName, offsetsEntry);
                     } else {
                         var offsetsEntry = new shared SymEntry(nSeg, int);
-                        read_files_into_distributed_array(offsetsEntry.a, segSubdoms, filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME);
+                        read_files_into_distributed_array(offsetsEntry.a, segSubdoms, filenames, dsetName + "/" + SEGARRAY_OFFSET_NAME, skips);
                         fixupSegBoundaries(offsetsEntry.a, segSubdoms, subdoms);
                         st.addEntry(offsetsName, offsetsEntry);
                     }
@@ -527,7 +528,7 @@ module GenSymIO {
                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                   "Initialized int entry for dataset %s".format(dsetName));
 
-                    read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName);
+                    read_files_into_distributed_array(entryInt.a, subdoms, filenames, dsetName, skips);
                     var rname = st.nextName();
                     
                     /*
@@ -551,7 +552,7 @@ module GenSymIO {
                     var entryReal = new shared SymEntry(len, real);
                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                                                       "Initialized float entry");
-                    read_files_into_distributed_array(entryReal.a, subdoms, filenames, dsetName);
+                    read_files_into_distributed_array(entryReal.a, subdoms, filenames, dsetName, skips);
                     var rname = st.nextName();
                     st.addEntry(rname, entryReal);
                     rnames.append((dsetName, "pdarray", rname));
@@ -646,14 +647,33 @@ module GenSymIO {
         return reply;
     }
 
+    /**
+     * inline proc to validate the range for our domain.
+     * Valid domains must be increasing with the lower bound <= upper bound
+     * :arg r: 1D domain
+     * :type domain(1): one dimensional domain
+     *
+     * :returns: bool True iff the lower bound is less than or equal to upper bound
+     */
+    inline proc _isValidRange(r: domain(1)): bool {
+        return r.low <= r.high;
+    }
+
     proc fixupSegBoundaries(a: [?D] int, segSubdoms: [?fD] domain(1), valSubdoms: [fD] domain(1)) throws {
         var boundaries: [fD] int; // First index of each region that needs to be raised
-        var diffs: [fD] int;// Amount each region must be raised over previous region
+        var diffs: [fD] int; // Amount each region must be raised over previous region
         forall (i, sd, vd, b) in zip(fD, segSubdoms, valSubdoms, boundaries) {
-            b = sd.low; // Boundary is index of first segment in file
-            // Height increase of next region is number of bytes in current region
-            if (i < fD.high) {
-                diffs[i+1] = vd.size;
+            // if we encounter a malformed subdomain i.e. {1..0} that means we encountered a file
+            // that has no data for this SegString object, we can safely skip processing this file.
+            if (_isValidRange(sd)) {
+                b = sd.low; // Boundary is index of first segment in file
+                // Height increase of next region is number of bytes in current region
+                if (i < fD.high) {
+                    diffs[i+1] = vd.size;
+                }
+            } else {
+                gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                    "fD:%t segments subdom:%t is malformed signaling no segment data in file, skipping".format(i, sd));
             }
         }
         // Insert height increases at region boundaries
@@ -915,6 +935,7 @@ module GenSymIO {
         use SysCTypes;
 
         var lengths: [FD] int;
+        var skips = new set(string); // Case where there is no data in the file for this dsetName
         for (i, filename) in zip(FD, filenames) {
             try {
                 var file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, 
@@ -930,6 +951,12 @@ module GenSymIO {
                 C_HDF5.HDF5_WAR.H5LTget_dataset_info_WAR(file_id, dName.c_str(), 
                                            c_ptrTo(dims), nil, nil);
                 lengths[i] = dims[0]: int;
+                if lengths[i] == 0 {
+                    skips.add(filename);
+                    gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                        "Adding filename:%s to skips, dsetName:%s, dims[0]:%t".format(filename, dsetName, dims[0]));
+                }
+
             } catch e: Error {
                 throw getErrorWithContext(
                              msg="in getting dataset info %s".format(e.message()),
@@ -947,17 +974,19 @@ module GenSymIO {
             subdoms[i] = {offset..#lengths[i]};
             offset += lengths[i];
         }
-        return (subdoms, (+ reduce lengths));
+        return (subdoms, (+ reduce lengths), skips);
     }
 
     /* This function gets called when A is a BlockDist or DefaultRectangular array. */
     proc read_files_into_distributed_array(A, filedomains: [?FD] domain(1), 
-                                                 filenames: [FD] string, dsetName: string)
+                                                 filenames: [FD] string, dsetName: string, skips: set(string)) throws 
         where (MyDmap == Dmap.blockDist || MyDmap == Dmap.defaultRectangular) {
-            try! gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "entry.a.targetLocales() = %t".format(A.targetLocales()));
-            try! gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                     "Filedomains: %t".format(filedomains));
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                    "entry.a.targetLocales() = %t".format(A.targetLocales()));
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                    "Filedomains: %t".format(filedomains));
+            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                    "skips: %t".format(skips));
 
             coforall loc in A.targetLocales() do on loc {
                 // Create local copies of args
@@ -969,47 +998,53 @@ module GenSymIO {
                     var isopen = false;
                     var file_id: C_HDF5.hid_t;
                     var dataset: C_HDF5.hid_t;
-                    // Look for overlap between A's local subdomains and this file
-                    for locdom in A.localSubdomains() {
-                        const intersection = domain_intersection(locdom, filedom);
-                        if intersection.size > 0 {
-                            // Only open the file once, even if it intersects with many local subdomains
-                            if !isopen {
-                                file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, 
-                                                                                        C_HDF5.H5P_DEFAULT);  
-                                var locDsetName = try! getReadDsetName(file_id,dsetName);                                                                                                      
-                                try! dataset = C_HDF5.H5Dopen(file_id, locDsetName.c_str(), C_HDF5.H5P_DEFAULT);
-                                isopen = true;
-                            }
-                            // do A[intersection] = file[intersection - offset]
-                            var dataspace = C_HDF5.H5Dget_space(dataset);
-                            var dsetOffset = [(intersection.low - filedom.low): C_HDF5.hsize_t];
-                            var dsetStride = [intersection.stride: C_HDF5.hsize_t];
-                            var dsetCount = [intersection.size: C_HDF5.hsize_t];
-                            C_HDF5.H5Sselect_hyperslab(dataspace, C_HDF5.H5S_SELECT_SET, c_ptrTo(dsetOffset), 
-                                                             c_ptrTo(dsetStride), c_ptrTo(dsetCount), nil);
-                            var memOffset = [0: C_HDF5.hsize_t];
-                            var memStride = [1: C_HDF5.hsize_t];
-                            var memCount = [intersection.size: C_HDF5.hsize_t];
-                            var memspace = C_HDF5.H5Screate_simple(1, c_ptrTo(memCount), nil);
-                            C_HDF5.H5Sselect_hyperslab(memspace, C_HDF5.H5S_SELECT_SET, c_ptrTo(memOffset), 
-                                                              c_ptrTo(memStride), c_ptrTo(memCount), nil);
 
-                            try! gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                    "Locale %t intersection %t dataset slice %t".format(loc,intersection, 
-                                          (intersection.low - filedom.low, intersection.high - filedom.low)));
+                    if (skips.contains(filename)) {
+                        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                "File %s does not contain data for this dataset, skipping".format(filename));
+                    } else {
+                        // Look for overlap between A's local subdomains and this file
+                        for locdom in A.localSubdomains() {
+                            const intersection = domain_intersection(locdom, filedom);
+                            if intersection.size > 0 {
+                                // Only open the file once, even if it intersects with many local subdomains
+                                if !isopen {
+                                    file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, 
+                                                                                            C_HDF5.H5P_DEFAULT);  
+                                    var locDsetName = try! getReadDsetName(file_id,dsetName);
+                                    try! dataset = C_HDF5.H5Dopen(file_id, locDsetName.c_str(), C_HDF5.H5P_DEFAULT);
+                                    isopen = true;
+                                }
+                                // do A[intersection] = file[intersection - offset]
+                                var dataspace = C_HDF5.H5Dget_space(dataset);
+                                var dsetOffset = [(intersection.low - filedom.low): C_HDF5.hsize_t];
+                                var dsetStride = [intersection.stride: C_HDF5.hsize_t];
+                                var dsetCount = [intersection.size: C_HDF5.hsize_t];
+                                C_HDF5.H5Sselect_hyperslab(dataspace, C_HDF5.H5S_SELECT_SET, c_ptrTo(dsetOffset), 
+                                                                c_ptrTo(dsetStride), c_ptrTo(dsetCount), nil);
+                                var memOffset = [0: C_HDF5.hsize_t];
+                                var memStride = [1: C_HDF5.hsize_t];
+                                var memCount = [intersection.size: C_HDF5.hsize_t];
+                                var memspace = C_HDF5.H5Screate_simple(1, c_ptrTo(memCount), nil);
+                                C_HDF5.H5Sselect_hyperslab(memspace, C_HDF5.H5S_SELECT_SET, c_ptrTo(memOffset), 
+                                                                c_ptrTo(memStride), c_ptrTo(memCount), nil);
 
-                            /*
-                             * The fact that intersection is a subset of a local subdomain means
-                             * there should be no communication in the read
-                             */
-                            local {
-                                C_HDF5.H5Dread(dataset, getHDF5Type(A.eltType), memspace, 
-                                        dataspace, C_HDF5.H5P_DEFAULT, 
-                                        c_ptrTo(A.localSlice(intersection)));
+                                gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                        "Locale %t intersection %t dataset slice %t".format(loc,intersection,
+                                        (intersection.low - filedom.low, intersection.high - filedom.low)));
+
+                                /*
+                                * The fact that intersection is a subset of a local subdomain means
+                                * there should be no communication in the read
+                                */
+                                local {
+                                    C_HDF5.H5Dread(dataset, getHDF5Type(A.eltType), memspace, 
+                                            dataspace, C_HDF5.H5P_DEFAULT, 
+                                            c_ptrTo(A.localSlice(intersection)));
+                                }
+                                C_HDF5.H5Sclose(memspace);
+                                C_HDF5.H5Sclose(dataspace);
                             }
-                            C_HDF5.H5Sclose(memspace);
-                            C_HDF5.H5Sclose(dataspace);
                         }
                     }
                     if isopen {
@@ -1137,12 +1172,12 @@ module GenSymIO {
     private proc write1DDistStrings(filename: string, mode: int, dsetName: string, A, 
                                                                 array_type: DType, SA, writeOffsets:bool) throws {
         var prefix: string;
-        var extension: string;  
-        var warnFlag: bool;      
+        var extension: string;
+        var warnFlag: bool;
 
         var total = new Time.Timer();
         total.clear();
-        total.start(); 
+        total.start();
         
         (prefix,extension) = getFileMetadata(filename);
  
@@ -1180,7 +1215,7 @@ module GenSymIO {
          * The charArraySize PrivateSpace contains the size of char local slice
          * corresponding to each locale.
          */
-        var shuffleLeftIndices: [PrivateSpace] int;    
+        var shuffleLeftIndices: [PrivateSpace] int;
         var shuffleRightIndices: [PrivateSpace] int;
         var isSingleString: [PrivateSpace] bool;
         var endsWithCompleteString: [PrivateSpace] bool;
@@ -1205,8 +1240,9 @@ module GenSymIO {
         t1.stop();  
         var elapsed = t1.elapsed();
         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                              "Time for generating all values metadata: %.17r".format(elapsed));   
-                                       
+                              "Time for generating all values metadata: %.17r".format(elapsed));
+
+        const SALength = SA.domain.size;
         /*
          * Iterate through each locale and (1) open the hdf5 file corresponding to the
          * locale (2) prepare char and segment lists to be written (3) write each
@@ -1244,275 +1280,285 @@ module GenSymIO {
                 prepareGroup(myFileID, group);
             }
 
-            /*
-             * Check for the possibility that a string in the current locale spans
-             * two neighboring locales by seeing if the final character in the local 
-             * slice is the null uint(8) character. If it is not, this means the last string 
-             * in the current locale (idx) spans the current AND next locale.
-             */
-            if A.localSlice(locDom).back() != NULL_STRINGS_VALUE { 
-                /*
-                 * Retrieve the chars array slice from this locale and populate the charList
-                 * that will be updated per left and/or right shuffle operations until the 
-                 * final char list is assembled
-                 */ 
-                var charArray = A.localSlice(locDom);
-                var charList : list(uint(8)) = new list(charArray);
-
+            if idx > SALength - 1  {
+                // Case where num_elements < num_locales
+                // We need to write a nil into this locale's file
                 gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                     'locale %i does not end with null char, need left or right shuffle'.format(
-                                              idx));
+                    "write1DDistStrings: num elements < num locales, locale %i, will get empty dataset".format(idx));
+                var charList : list(uint(8)) = new list(uint(8));
+                var segmentsList : list(int) = new list(int);
+                writeStringsToHdf(myFileID, idx, group, charList, segmentsList, true);
 
+            } else {
                 /*
-                 * If (1) this locale contains a single string/string segment (and therefore no
-                 * leading slice or trailing slice), and (2) is not the first locale, retrieve
-                 * the right shuffle chars from the previous locale, if applicable, to set the
-                 * correct starting chars for the lone string/string segment on this locale.
-                 *
-                 * Note: if this is the first locale, there are no chars from a previous 
-                 * locale to shuffle right, so this code block is not executed in this case.
-                 */                
-                if isSingleString[idx] && idx > 0 {
-                    // Retrieve the shuffleRightIndex from the previous locale
-                    var shuffleRightIndex = shuffleRightIndices[idx-1];
-                    
-                    if shuffleRightIndex > -1 {
-                        /*
-                         * There are 1..n chars to be shuffled right from the previous locale
-                         * (idx-1) to complete the beginning of the one string assigned 
-                         * to the current locale (idx). Accordingly, slice the right shuffle
-                         * chars from the previous locale
-                         */
-                        var rightShuffleSlice : [shuffleRightIndex..charArraySize[idx-1]-1] uint(8);
+                 * Check for the possibility that a string in the current locale spans
+                 * two neighboring locales by seeing if the final character in the local 
+                 * slice is the null uint(8) character. If it is not, this means the last string 
+                 * in the current locale (idx) spans the current AND next locale.
+                 */
+                if A.localSlice(locDom).back() != NULL_STRINGS_VALUE { 
+                    /*
+                     * Retrieve the chars array slice from this locale and populate the charList
+                     * that will be updated per left and/or right shuffle operations until the 
+                     * final char list is assembled
+                     */ 
+                    var charArray = A.localSlice(locDom);
+                    var charList : list(uint(8)) = new list(charArray);
 
-                        on Locales[idx-1] {
+                    gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                        "Locale %i does not end with null char, need left or right shuffle".format(idx));
+
+                    /*
+                     * If (1) this locale contains a single string/string segment (and therefore no
+                     * leading slice or trailing slice), and (2) is not the first locale, retrieve
+                     * the right shuffle chars from the previous locale, if applicable, to set the
+                     * correct starting chars for the lone string/string segment on this locale.
+                     *
+                     * Note: if this is the first locale, there are no chars from a previous 
+                     * locale to shuffle right, so this code block is not executed in this case.
+                     */
+                    if isSingleString[idx] && idx > 0 {
+                        // Retrieve the shuffleRightIndex from the previous locale
+                        var shuffleRightIndex = shuffleRightIndices[idx-1];
+                        
+                        if shuffleRightIndex > -1 {
+                            /*
+                            * There are 1..n chars to be shuffled right from the previous locale
+                            * (idx-1) to complete the beginning of the one string assigned 
+                            * to the current locale (idx). Accordingly, slice the right shuffle
+                            * chars from the previous locale
+                            */
+                            var rightShuffleSlice : [shuffleRightIndex..charArraySize[idx-1]-1] uint(8);
+
+                            on Locales[idx-1] {
+                                const locDom = A.localSubdomain();
+                                var localeArray = A.localSlice(locDom);
+                                rightShuffleSlice = localeArray[shuffleRightIndex..localeArray.size-1];
+                            }
+
+                            /*
+                            * Prepend the current locale charsList with the chars shuffled right from 
+                            * the previous locale
+                            */
+                            charList.insert(0,rightShuffleSlice);
+
+                            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                            'right shuffle from locale %i into single string locale %i'.format(
+                                                idx-1,idx));
+                        } else {
+                            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                            'no right shuffle from locale %i into single string locale %i'.format(
+                                                idx-1,idx));
+                        }
+                    }
+
+                    /*
+                     * Now that the start of the first string of the current locale (idx) is correct,
+                     * shuffle chars to place a complete string at the end the current locale. 
+                     *
+                     * There are two possible scenarios to account for. First, the next locale 
+                     * has a shuffleLeftIndex > -1. If so, the chars up to the shuffleLeftIndex 
+                     * will be shuffled from the next locale (idx+1) to complete the last string 
+                     * in the current locale (idx). In the second scenario, the next locale is 
+                     * the last locale in the Arkouda cluster. If so, all of the chars 
+                     * from the next locale are shuffled to the current locale.
+                     */
+                    var shuffleLeftSlice: [0..shuffleLeftIndices[idx+1]-2] uint(8);
+
+                    if shuffleLeftIndices[idx+1] > -1 || isLastLocale(idx+1) {
+                        on Locales[idx+1] {
                             const locDom = A.localSubdomain();
-                            var localeArray = A.localSlice(locDom);
-                            rightShuffleSlice = localeArray[shuffleRightIndex..localeArray.size-1];
-                        }      
-                                          
-                        /* 
-                         * Prepend the current locale charsList with the chars shuffled right from 
-                         * the previous locale
-                         */
-                        charList.insert(0,rightShuffleSlice);
 
-                        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                           'right shuffle from locale %i into single string locale %i'.format(
-                                             idx-1,idx));
+                            var localeArray = A.localSlice(locDom);
+                            var shuffleLeftIndex = shuffleLeftIndices[here.id];
+                            var localStart = locDom.first;
+                            var localLeadingSliceIndex = localStart + shuffleLeftIndex -2;
+
+                            shuffleLeftSlice = localeArray[localStart..localLeadingSliceIndex];    
+                            charList.extend(shuffleLeftSlice);  
+    
+                            gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),   
+                            'shuffled left from locale %i to complete string in locale %i'.format(
+                                            idx+1,idx));
+                        }
                     } else {
                         gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                           'no right shuffle from locale %i into single string locale %i'.format(
-                                             idx-1,idx));
-                    }
-                }
-
-                /*
-                 * Now that the start of the first string of the current locale (idx) is correct,
-                 * shuffle chars to place a complete string at the end the current locale. 
-                 *
-                 * There are two possible scenarios to account for. First, the next locale 
-                 * has a shuffleLeftIndex > -1. If so, the chars up to the shuffleLeftIndex 
-                 * will be shuffled from the next locale (idx+1) to complete the last string 
-                 * in the current locale (idx). In the second scenario, the next locale is 
-                 * the last locale in the Arkouda cluster. If so, all of the chars 
-                 * from the next locale are shuffled to the current locale.
-                 */
-                var shuffleLeftSlice: [0..shuffleLeftIndices[idx+1]-2] uint(8);
-
-                if shuffleLeftIndices[idx+1] > -1 || isLastLocale(idx+1) {
-                    on Locales[idx+1] {
-                        const locDom = A.localSubdomain();
-                        
-                        var localeArray = A.localSlice(locDom);
-                        var shuffleLeftIndex = shuffleLeftIndices[here.id];
-                        var localStart = locDom.first;
-                        var localLeadingSliceIndex = localStart + shuffleLeftIndex -2;
-
-                        shuffleLeftSlice = localeArray[localStart..localLeadingSliceIndex];    
-                        charList.extend(shuffleLeftSlice);  
- 
-                        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),   
-                           'shuffled left from locale %i to complete string in locale %i'.format(
-                                        idx+1,idx));                    
-                    } 
-                } else {
-                    gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
                                  'no left shuffle from locale %i to locale %i'.format(idx+1,idx));
-                }
+                    }
 
-                /* 
-                 * To prepare for writing the charList to hdf5, do the following, if applicable:
-                 * 1. Remove the characters shuffled left to the previous locale
-                 * 2. Remove the characters shuffled right to the next locale
-                 * 3. If (2) does not apply, add null uint(8) char to end of the charList
-                 */
-                var shuffleLeftIndex = shuffleLeftIndices[idx]:int;
-                var shuffleRightIndex = shuffleRightIndices[idx]:int;
+                    /* 
+                    * To prepare for writing the charList to hdf5, do the following, if applicable:
+                    * 1. Remove the characters shuffled left to the previous locale
+                    * 2. Remove the characters shuffled right to the next locale
+                    * 3. If (2) does not apply, add null uint(8) char to end of the charList
+                    */
+                    var shuffleLeftIndex = shuffleLeftIndices[idx]:int;
+                    var shuffleRightIndex = shuffleRightIndices[idx]:int;
 
-                /*
-                 * Verify if the current locale (idx) contains chars shuffled left to the previous 
-                 * locale (idx-1) by checking the shuffleLeftIndex, the number of strings in 
-                 * the current locale, and whether the preceding locale ends with a complete
-                 * string. If (1) the shuffleLeftIndex > -1, (2) this locale contains 2..n 
-                 * strings, and (3) the previous locale does not end with a complete string,
-                 * this means the charList contains chars that were shuffled left to complete
-                 * the last string in the previous locale (idx-1). If so, generate
-                 * a new charList that has those values sliced out. 
-                 */
-                 if shuffleLeftIndex > -1 && !isSingleString[idx] 
-                                                       && !endsWithCompleteString[idx-1] {
-                     /*
-                      * Since the leading slice was used to complete the last string in
-                      * the previous locale (idx-1), slice those chars from the charList
-                      */
-                     charList = new list(adjustForLeftShuffle(shuffleLeftIndex,charList));    
+                    /*
+                    * Verify if the current locale (idx) contains chars shuffled left to the previous
+                    * locale (idx-1) by checking the shuffleLeftIndex, the number of strings in 
+                    * the current locale, and whether the preceding locale ends with a complete
+                    * string. If (1) the shuffleLeftIndex > -1, (2) this locale contains 2..n
+                    * strings, and (3) the previous locale does not end with a complete string,
+                    * this means the charList contains chars that were shuffled left to complete
+                    * the last string in the previous locale (idx-1). If so, generate
+                    * a new charList that has those values sliced out. 
+                    */
+                    if shuffleLeftIndex > -1 && !isSingleString[idx]
+                                                        && !endsWithCompleteString[idx-1] {
+                        /*
+                        * Since the leading slice was used to complete the last string in
+                        * the previous locale (idx-1), slice those chars from the charList
+                        */
+                        charList = new list(adjustForLeftShuffle(shuffleLeftIndex,charList));    
 
-                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                            'adjusted locale %i for left shuffle to %i'.format(idx,idx-1)); 
-                 } else {
-                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                            'no left shuffle adjustment for locale %i'.format(idx));
-                 }
+                        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                'adjusted locale %i for left shuffle to %i'.format(idx,idx-1)); 
+                    } else {
+                        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                'no left shuffle adjustment for locale %i'.format(idx));
+                    }
 
-                 /*
-                  * Verify if the current locale contains chars shuffled right to the next 
-                  * locale because (1) the next locale only has one string/string segment
-                  * and (2) the current locale's shuffleRightIndex > -1. If so, remove the
-                  * chars starting with the shuffleRightIndex, which will place the null 
-                  * uint(8) char at the end of the charList. Otherwise, manually add the 
-                  * null uint(8) char to the end of the charList.
-                  */
-                 if shuffleRightIndex > -1 && isSingleString[idx+1] {
-                     charList = new list(adjustForRightShuffle(
-                                                  shuffleRightIndex,charList));
-                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                        'adjusted locale %i for right shuffle to locale %i'.format(
-                                        idx,idx+1));
-                 } else {
-                     charList.append(NULL_STRINGS_VALUE);
-                     gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                        'no adjustment for right shuffle from locale %i to locale %i'.format(
-                                        idx,idx+1));        
-                 }
-                 
-                 // Generate the segments list now that the char list is finalized
-                 var segmentsList = if writeOffsets then generateFinalSegmentsList(charList, idx) else new list(int);
-             
-                 // Write the finalized valuesList and segmentsList to the hdf5 group
-                 writeStringsToHdf(myFileID, idx, group, charList, segmentsList);
-             } else {
-                 /*
-                  * The current local slice (idx) ends with the uint(8) null character,  
-                  * which is the value required to ensure correct read logic.
-                  */
-                 var charList : list(uint(8));
-
-                 gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                    'locale %i ends with null char, no left or right shuffle needed'.format(idx));
-
-                 /*
-                  * Check to see if the current locale (idx) slice contains 1..n chars that
-                  * complete the last string in the previous (idx-1) locale.
-                  */
-                 var shuffleLeftIndex = shuffleLeftIndices[idx]:int;
-
-                 if shuffleLeftIndex == -1 {
-                     /*
-                      * Since the shuffleLeftIndex is -1, the current local slice (idx) does 
-                      * not contain chars from a string started in the previous locale (idx-1). 
-                      * Accordingly, initialize with the current locale slice.
-                      */
-                     charList = new list(A.localSlice(locDom));
-
-                     /*
-                      * If this locale (idx) ends with the null uint(8) char, check to see if 
-                      * the shuffleRightIndex from the previous locale (idx-1) is > -1. If so, 
-                      * the chars following the shuffleRightIndex from the previous locale complete 
-                      * the one string/string segment within the current locale. 
-                      */
-                     if isSingleString[idx] && idx > 0 {
-                         /*
-                          * Get shuffleRightIndex from previous locale to see if the current locale
-                          * charList needs to be prepended with chars shuffled from previous locale
-                          */
-                         var shuffleRightIndex = shuffleRightIndices[idx-1];
-
-                         if shuffleRightIndex > -1 {
-                             var shuffleRightSlice: [shuffleRightIndex..charArraySize[idx-1]-1] uint(8);
-                             on Locales[idx-1] {
-                                 const locDom = A.localSubdomain();  
-                                 var localeArray = A.localSlice(locDom);
-                                 shuffleRightSlice = localeArray[shuffleRightIndex..localeArray.size-1]; 
-                             }
-                             charList.insert(0,shuffleRightSlice);
-                             gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
-                                 'inserted right shuffle slice from locale %i into locale %i'.format(
-                                             idx-1,idx));
-                         } else {
-                             gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),  
-                                 'no right shuffle from locale %i inserted into locale %i'.format(
-                                             idx-1,idx));                       
-                         }
-                     }
-
-                     /*
-                      * Account for the special case where the following is true about the
-                      * current locale (idx):
-                      *
-                      * 1. This is the last locale in a multi-locale deployment
-                      * 2. There is one partial string started in the previous locale
-                      * 3. The previous locale has no trailing slice to complete the partial
-                      *    string in the current locale
-                      *
-                      * In this very special case, (1) move the current locale (idx) chars to 
-                      * the previous locale (idx-1) and (2) clear out the current locale charList.
-                      */                     
-                     if numLocales > 1 && isLastLocale(idx) {
-                         if !endsWithCompleteString[idx-1] && isSingleString[idx] 
-                                                        && shuffleRightIndices[idx-1] == -1 {
-                             charList.clear();
-                             gsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                                 'cleared out last locale %i due to left shuffle to locale %i'.format(
-                                          idx,idx-1));
-                         }
-                     }
+                    /*
+                    * Verify if the current locale contains chars shuffled right to the next
+                    * locale because (1) the next locale only has one string/string segment
+                    * and (2) the current locale's shuffleRightIndex > -1. If so, remove the
+                    * chars starting with the shuffleRightIndex, which will place the null 
+                    * uint(8) char at the end of the charList. Otherwise, manually add the
+                    * null uint(8) char to the end of the charList.
+                    */
+                    if shuffleRightIndex > -1 && isSingleString[idx+1] {
+                        // adjustForRightShuffle is inclusive but we need exclusive on the last char
+                        charList = new list(adjustForRightShuffle(shuffleRightIndex-1, charList));
+                        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                            "adjusted locale %i for right shuffle to locale %i".format(idx,idx+1));
+                        
+                    } else {
+                        charList.append(NULL_STRINGS_VALUE);
+                        gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                            'no adjustment for right shuffle from locale %i to locale %i'.format(
+                                            idx,idx+1));        
+                    }
                     
-                     // Generate the segments list now that the char list is finalized
-                     var segmentsList = if writeOffsets then generateFinalSegmentsList(charList, idx) else new list(int);
- 
-                     // Write the finalized valuesList and segmentsList to the hdf5 group
-                     writeStringsToHdf(myFileID, idx, group, charList, segmentsList);
-                  } else {
-                      /*
-                       * Check to see if previous locale (idx-1) ends with a null character.
-                       * If not, then the left shuffle slice of this locale was used to complete
-                       * the last string in the previous locale, so slice those chars from 
-                       * this locale and create a new, corresponding charList.
-                       */
-                      if !endsWithCompleteString(idx-1) {
-                          var localStart = locDom.first;
-                          var localLeadingSliceIndex = localStart + shuffleLeftIndex;
-                          var leadingCharArray = adjustCharArrayForLeadingSlice(localLeadingSliceIndex, 
-                                         A.localSlice(locDom),locDom.last);
-                          charList = new list(leadingCharArray);  
-                          gsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                                  'adjusted locale %i for left shuffle to locale %i'.format(
-                                         idx,idx-1));
-                      } else {
-                          charList = new list(A.localSlice(locDom));
-                          gsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
-                                  'no left shuffle from locale %i to locale %i'.format(
-                                         idx,idx-1));
-                      } 
-                      
-                      // Generate the segments list now that the char list is finalized
-                      var segmentsList = if writeOffsets then generateFinalSegmentsList(charList, idx) else new list(int);
+                    // Generate the segments list now that the char list is finalized
+                    var segmentsList = if writeOffsets then generateFinalSegmentsList(charList, idx) else new list(int);
+                
+                    // Write the finalized valuesList and segmentsList to the hdf5 group
+                    writeStringsToHdf(myFileID, idx, group, charList, segmentsList);
+                } else {
+                    /*
+                    * The current local slice (idx) ends with the uint(8) null character,
+                    * which is the value required to ensure correct read logic.
+                    */
+                    var charList : list(uint(8));
 
-                      // Write the finalized valuesList and segmentsList to the hdf5 group
-                      writeStringsToHdf(myFileID, idx, group, charList, segmentsList);
+                    gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                        'locale %i ends with null char, no left or right shuffle needed'.format(idx));
+
+                    /*
+                    * Check to see if the current locale (idx) slice contains 1..n chars that
+                    * complete the last string in the previous (idx-1) locale.
+                    */
+                    var shuffleLeftIndex = shuffleLeftIndices[idx]:int;
+
+                    if shuffleLeftIndex == -1 {
+                        /*
+                        * Since the shuffleLeftIndex is -1, the current local slice (idx) does 
+                        * not contain chars from a string started in the previous locale (idx-1).
+                        * Accordingly, initialize with the current locale slice.
+                        */
+                        charList = new list(A.localSlice(locDom));
+
+                        /*
+                        * If this locale (idx) ends with the null uint(8) char, check to see if 
+                        * the shuffleRightIndex from the previous locale (idx-1) is > -1. If so,
+                        * the chars following the shuffleRightIndex from the previous locale complete 
+                        * the one string/string segment within the current locale.
+                        */
+                        if isSingleString[idx] && idx > 0 {
+                            /*
+                            * Get shuffleRightIndex from previous locale to see if the current locale
+                            * charList needs to be prepended with chars shuffled from previous locale
+                            */
+                            var shuffleRightIndex = shuffleRightIndices[idx-1];
+
+                            if shuffleRightIndex > -1 {
+                                var shuffleRightSlice: [shuffleRightIndex..charArraySize[idx-1]-1] uint(8);
+                                on Locales[idx-1] {
+                                    const locDom = A.localSubdomain();  
+                                    var localeArray = A.localSlice(locDom);
+                                    shuffleRightSlice = localeArray[shuffleRightIndex..localeArray.size-1]; 
+                                }
+                                charList.insert(0,shuffleRightSlice);
+                                gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),
+                                    'inserted right shuffle slice from locale %i into locale %i'.format(
+                                                idx-1,idx));
+                            } else {
+                                gsLogger.debug(getModuleName(),getRoutineName(),getLineNumber(),  
+                                    'no right shuffle from locale %i inserted into locale %i'.format(
+                                                idx-1,idx));                       
+                            }
+                        }
+
+                        /*
+                        * Account for the special case where the following is true about the
+                        * current locale (idx):
+                        *
+                        * 1. This is the last locale in a multi-locale deployment
+                        * 2. There is one partial string started in the previous locale
+                        * 3. The previous locale has no trailing slice to complete the partial
+                        *    string in the current locale
+                        *
+                        * In this very special case, (1) move the current locale (idx) chars to
+                        * the previous locale (idx-1) and (2) clear out the current locale charList.
+                        */                     
+                        if numLocales > 1 && isLastLocale(idx) {
+                            if !endsWithCompleteString[idx-1] && isSingleString[idx] 
+                                                            && shuffleRightIndices[idx-1] == -1 {
+                                charList.clear();
+                                gsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                                    'cleared out last locale %i due to left shuffle to locale %i'.format(
+                                            idx,idx-1));
+                            }
+                        }
+                        
+                        // Generate the segments list now that the char list is finalized
+                        var segmentsList = if writeOffsets then generateFinalSegmentsList(charList, idx) else new list(int);
+    
+                        // Write the finalized valuesList and segmentsList to the hdf5 group
+                        writeStringsToHdf(myFileID, idx, group, charList, segmentsList);
+                    } else {
+                        /*
+                        * Check to see if previous locale (idx-1) ends with a null character.
+                        * If not, then the left shuffle slice of this locale was used to complete
+                        * the last string in the previous locale, so slice those chars from
+                        * this locale and create a new, corresponding charList.
+                        */
+                        if !endsWithCompleteString(idx-1) {
+                            var localStart = locDom.first;
+                            var localLeadingSliceIndex = localStart + shuffleLeftIndex;
+                            var leadingCharArray = adjustCharArrayForLeadingSlice(localLeadingSliceIndex, 
+                                            A.localSlice(locDom),locDom.last);
+                            charList = new list(leadingCharArray);  
+                            gsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                                    'adjusted locale %i for left shuffle to locale %i'.format(
+                                            idx,idx-1));
+                        } else {
+                            charList = new list(A.localSlice(locDom));
+                            gsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                                    'no left shuffle from locale %i to locale %i'.format(
+                                            idx,idx-1));
+                        } 
+
+                        // Generate the segments list now that the char list is finalized
+                        var segmentsList = if writeOffsets then generateFinalSegmentsList(charList, idx) else new list(int);
+
+                        // Write the finalized valuesList and segmentsList to the hdf5 group
+                        writeStringsToHdf(myFileID, idx, group, charList, segmentsList);
                     }
                 }
+            }
         }
         total.stop();  
         gsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
@@ -1582,9 +1628,12 @@ module GenSymIO {
             /*
              * Depending upon the datatype, write the local slice out to the top-level
              * or nested, named group within the hdf5 file corresponding to the locale.
-             */           
-            H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims),
-                                      dType, c_ptrTo(A.localSlice(locDom)));
+             */
+            if locDom.size <= 0 {
+                H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims), dType, nil);
+            } else {
+                H5LTmake_dataset_WAR(myFileID, myDsetName.c_str(), 1, c_ptrTo(dims), dType, c_ptrTo(A.localSlice(locDom)));
+            }
         }
         return warnFlag;
     }
@@ -1822,106 +1871,152 @@ module GenSymIO {
             const charArray = A.localSlice(locDom);
             const segsArray = SA.localSlice(segsLocDom);
 
-            charArraySize[idx] = charArray.size;
-            var leadingSliceSet = false;
+            const totalSegs = SA.size;
 
-            //Initialize both indices to -1 to indicate neither exists for locale
-            shuffleLeftIndices[idx] = -1;
-            shuffleRightIndices[idx] = -1;
-
-            /*
-             * Check if the last char is the null uint(8) char. If so, the last
-             * string on the locale completes within the locale. Otherwise,
-             * the last string spans to the next locale.
+            /**
+             * There are a couple of cases here
+             * 1. This locale doesn't actually have any data to serve because the size of the SegStrings is too small
+             * 2. The number of segments is less the number of locales but we do have values/bytes in which case
+             *    we need to shuffle all of it to the left.
+             * 3. There is enough elements & data that everybody is going to save something, which is the normal case
              */
-            if charArray.back() == NULL_STRINGS_VALUE {
-                endsWithCompleteString[idx] = true;
-            } else {
-                endsWithCompleteString[idx] = false;
-            }
-            
-            // initialize the firstSeg and lastSeg variables
-            var firstSeg = -1;
-            var lastSeg = -1;
-
-            /*
-             * If the first locale (locale 0), the first segment is retrieved
-             * via segsArray.front(), corresponding to 0. Otherwise, find the 
-             * first occurrence of the null uint(8) char and the firstSeg is the 
-             * next non-null char. The lastSeg in all cases is the final segsArray 
-             * element retrieved via segsArray.back()
-             */
-            if idx == 0 {
-                firstSeg = segsArray.front();
-                lastSeg = segsArray.back();
-            } else {                                                         
-                var (nullString,fSeg) = charArray.find(NULL_STRINGS_VALUE);
-                if nullString {
-                    firstSeg = fSeg + 1;
-                }
-                lastSeg = segsArray.back();
-            }
-
-            /*
-             * Normalize the first and last seg elements (make them zero-based) by
-             * subtracting the char domain first index element. 
-             */
-            var normalize = 0;
-            if idx > 0 {
-                normalize = locDom.first;
-            }
-    
-            var adjFirstSeg = firstSeg - normalize;
-            var adjLastSeg = lastSeg - normalize;
-                                                
-            if adjFirstSeg == 0 {
+            if locDom.size == 0 && segsLocDom.size == 0 { // no data served, nothing to shuffle
+                gsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                    "Locale idx:%t, has segsLocDom.size && locDom.size of zero, this locale serves no data".format(idx));
+                
+                // We have nothing, so pretend we are first locale
                 shuffleLeftIndices[idx] = -1;
-            } else {
-                shuffleLeftIndices[idx] = adjFirstSeg;
-            }
-            
-            if !endsWithCompleteString[idx] {
-                shuffleRightIndices[idx] = adjLastSeg;
-            } else {
                 shuffleRightIndices[idx] = -1;
-            }
-        
-            if shuffleLeftIndices[idx] > -1 || shuffleRightIndices[idx] > -1 {    
-                /*
-                 * If either of the indices are > -1, this means there's 2..n null characters
-                 * in the char array, which means the char array contains 2..n strings and/or
-                 * string portions.
-                 */   
                 isSingleString[idx] = false;
+                endsWithCompleteString[idx] = false;
+                charArraySize[idx] = 0;
+
+            } else if locDom.size > 0 && (totalSegs < numLocales) && (idx >= totalSegs) { // num segs < num locales so move data left
+                gsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                    "Locale idx:%t has data, but totalSegs < numLocales, so shuffle all of it left".format(idx));
+                charArraySize[idx] = charArray.size;
+                shuffleLeftIndices[idx] = locDom.size; // should be all of the characters
+                shuffleRightIndices[idx] = -1;
+                isSingleString[idx] =  false;
+                endsWithCompleteString[idx] = false;
+                gsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                    "Locale idx:%t shuffleLeft:%t".format(idx, locDom.size));
+
             } else {
+                charArraySize[idx] = charArray.size;
+                var leadingSliceSet = false;
+
+                //Initialize both indices to -1 to indicate neither exists for locale
+                shuffleLeftIndices[idx] = -1;
+                shuffleRightIndices[idx] = -1;
+
                 /*
-                 * Since there is neither a shuffleLeftIndex nor a shuffleRightIndex for 
-                 * this locale, this local contains a single, complete string.
-                 */
-                isSingleString[idx] = true;
+                * Check if the last char is the null uint(8) char. If so, the last
+                * string on the locale completes within the locale. Otherwise,
+                * the last string spans to the next locale.
+                */
+                if charArray.back() == NULL_STRINGS_VALUE {
+                    endsWithCompleteString[idx] = true;
+                } else {
+                    endsWithCompleteString[idx] = false;
+                }
+                
+                // initialize the firstSeg and lastSeg variables
+                var firstSeg = -1;
+                var lastSeg = -1;
+
+                /*
+                * If the first locale (locale 0), the first segment is retrieved
+                * via segsArray.front(), corresponding to 0. Otherwise, find the 
+                * first occurrence of the null uint(8) char and the firstSeg is the
+                * next non-null char. The lastSeg in all cases is the final segsArray
+                * element retrieved via segsArray.back()
+                */
+                if idx == 0 {
+                    firstSeg = segsArray.front();
+                    lastSeg = segsArray.back();
+                    gsLogger.info(getModuleName(),getRoutineName(),getLineNumber(),
+                    "Locale idx:%t firstSeg:%t, lastSeg:%t".format(idx, firstSeg, lastSeg));
+                } else {
+                    var (nullString,fSeg) = charArray.find(NULL_STRINGS_VALUE);
+                    if nullString {
+                        firstSeg = fSeg + 1;
+                    }
+                    lastSeg = segsArray.back();
+                }
+
+                /*
+                * Normalize the first and last seg elements (make them zero-based) by
+                * subtracting the char domain first index element. 
+                */
+                var normalize = 0;
+                if idx > 0 {
+                    normalize = locDom.first;
+                }
+        
+                var adjFirstSeg = firstSeg - normalize;
+                var adjLastSeg = lastSeg - normalize;
+                                                    
+                if adjFirstSeg == 0 {
+                    shuffleLeftIndices[idx] = -1;
+                } else {
+                    shuffleLeftIndices[idx] = adjFirstSeg;
+                }
+                
+                if !endsWithCompleteString[idx] {
+                    shuffleRightIndices[idx] = adjLastSeg;
+                } else {
+                    shuffleRightIndices[idx] = -1;
+                }
+            
+                if shuffleLeftIndices[idx] > -1 || shuffleRightIndices[idx] > -1 {
+                    /*
+                    * If either of the indices are > -1, this means there's 2..n null characters
+                    * in the char array, which means the char array contains 2..n strings and/or
+                    * string portions.
+                    */   
+                    isSingleString[idx] = false;
+                } else {
+                    /*
+                    * Since there is neither a shuffleLeftIndex nor a shuffleRightIndex for
+                    * this locale, this local contains a single, complete string.
+                    */
+                    isSingleString[idx] = true;
+                }
+
+                /*
+                * For the special case of this being the first locale, set the shuffleLeftIndex
+                * to -1 since there is no previous locale that has an incomplete string at the
+                * end that will require chars sliced from locale 0 to complete. If there is one
+                * null uint(8) char that is not at the end of the values array, this is the 
+                * shuffleRightIndex for the first locale.
+                */
+                if idx == 0 {
+                    if shuffleLeftIndices[idx] > -1 {
+                        shuffleRightIndices[idx] = shuffleLeftIndices[idx];
+                    }
+                    shuffleLeftIndices[idx] = -1;
+                    
+                    // Special case we have only one segment, figure out if we're hosting extra characters
+                    if firstSeg == 0 && lastSeg == 0 && shuffleRightIndices[idx] == 0 {
+                        // We can't just look at the last character to see if it is null,
+                        // we have to determine we HAVE a null char AND that it preceeds the last char.
+                        var (found, foundLoc) = charArray.find(NULL_STRINGS_VALUE);
+                        if (found && foundLoc != charArray.size - 1) {
+                            shuffleRightIndices[idx] = foundLoc + 1; // This is the start position of the string to shuffle right
+                        }
+                    }
+                }
+                
+                /*
+                * For the special case of this being the last locale, set the shuffleRightIndex
+                * to -1 since there is no next locale to shuffle a trailing slice to.
+                */
+                if isLastLocale(idx) {
+                    shuffleRightIndices[idx] = -1;
+                }
             }
 
-            /* 
-             * For the special case of this being the first locale, set the shuffleLeftIndex 
-             * to -1 since there is no previous locale that has an incomplete string at the
-             * end that will require chars sliced from locale 0 to complete. If there is one
-             * null uint(8) char that is not at the end of the values array, this is the 
-             * shuffleRightIndex for the first locale.
-             */
-            if idx == 0 {
-                if shuffleLeftIndices[idx] > -1 {
-                    shuffleRightIndices[idx] = shuffleLeftIndices[idx];
-                }
-                shuffleLeftIndices[idx] = -1;
-            }
-            
-            /*
-             * For the special case of this being the last locale, set the shuffleRightIndex 
-             * to -1 since there is no next locale to shuffle a trailing slice to.
-             */
-            if isLastLocale(idx) {
-                shuffleRightIndices[idx] = -1;
-            }
         }
     }
     
@@ -2007,7 +2102,7 @@ module GenSymIO {
      * Writes the values and segments lists to hdf5 within a group.
      */
     private proc writeStringsToHdf(fileId: int, idx: int, group: string, 
-                              valuesList: list(uint(8)), segmentsList: list(int)) throws {
+                              valuesList: list(uint(8)), segmentsList: list(int), writeNil:bool = false) throws {
         // initialize timer
         var t1: Time.Timer;
         if logLevel == LogLevel.DEBUG {
@@ -2016,14 +2111,22 @@ module GenSymIO {
             t1.start();
         }
 
-        H5LTmake_dataset_WAR(fileId, '/%s/values'.format(group).c_str(), 1,
-                     c_ptrTo([valuesList.size:uint(64)]), getHDF5Type(uint(8)),
-                            c_ptrTo(valuesList.toArray()));
-        if ( !segmentsList.isEmpty() ) {
+        if writeNil {
+            H5LTmake_dataset_WAR(fileId, '/%s/values'.format(group).c_str(), 1,
+                        c_ptrTo([valuesList.size:uint(64)]), getHDF5Type(uint(8)), nil);
             H5LTmake_dataset_WAR(fileId, '/%s/segments'.format(group).c_str(), 1,
-                     c_ptrTo([segmentsList.size:uint(64)]),getHDF5Type(int),
-                           c_ptrTo(segmentsList.toArray()));
+                        c_ptrTo([segmentsList.size:uint(64)]),getHDF5Type(int), nil);
+        } else {
+            H5LTmake_dataset_WAR(fileId, '/%s/values'.format(group).c_str(), 1,
+                        c_ptrTo([valuesList.size:uint(64)]), getHDF5Type(uint(8)),
+                        c_ptrTo(valuesList.toArray()));
+            if ( !segmentsList.isEmpty() ) {
+                H5LTmake_dataset_WAR(fileId, '/%s/segments'.format(group).c_str(), 1,
+                        c_ptrTo([segmentsList.size:uint(64)]),getHDF5Type(int),
+                        c_ptrTo(segmentsList.toArray()));
+            }
         }
+
 
         if logLevel == LogLevel.DEBUG {           
             t1.stop();  

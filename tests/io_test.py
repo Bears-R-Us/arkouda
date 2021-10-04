@@ -1,4 +1,6 @@
 import os, shutil, glob
+import tempfile
+
 import numpy as np
 from pytest import warns
 from typing import List, Mapping, Union
@@ -568,6 +570,22 @@ class IOTest(ArkoudaTest):
         n_empty_ones = empty_ones.to_ndarray()
         new_empty_ones = ak.array(n_empty_ones)
         self.assertTrue((empty_ones.to_ndarray() == new_empty_ones.to_ndarray()).all())
+
+    def testSmallArrayToHDF5(self):
+        a1 = ak.array([1])
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            a1.save(f"{tmp_dirname}/small_numeric", dataset="a1")
+            # Now load it back in
+            a2 = ak.load(f"{tmp_dirname}/small_numeric", dataset="a1")
+            self.assertEqual(str(a1), str(a2))
+
+    def testSmallStringArrayToHDF5(self):
+        a1 = ak.array(["ab", "cd"])
+        with tempfile.TemporaryDirectory(dir=IOTest.io_test_dir) as tmp_dirname:
+            a1.save(f"{tmp_dirname}/small_numeric", dataset="a1")
+            # Now load it back in
+            a2 = ak.load(f"{tmp_dirname}/small_numeric", dataset="a1")
+            self.assertEqual(str(a1), str(a2))
 
     def tearDown(self):
         super(IOTest, self).tearDown()
