@@ -15,7 +15,7 @@ module SegmentedArray {
   use Reflection;
   use Logging;
   use ServerErrors;
-  use Regexp;
+  use ArkoudaRegexCompat;
 
   private config const logLevel = ServerConfig.logLevel;
   const saLogger = new Logger(logLevel);
@@ -507,7 +507,7 @@ module SegmentedArray {
                                                                                var matchAgg = newDstAggregator(int)) {
         var matches = myRegex.matches(interpretAsString(origVals, off..#len, borrow=true));
         for m in matches {
-          var match: reMatch = m[0];
+          var match = m[0]; // v1.24.x -> reMatch, v1.25.x -> regexMatch
           lenAgg.copy(sparseLens[off + match.offset:int], match.size);
           startAgg.copy(matchStartBool[off + match.offset:int], true);
         }
@@ -628,7 +628,7 @@ module SegmentedArray {
         when SearchMode.endsWith {
           forall (o, l, h) in zip(oa, lengths, hits) with (var myRegex = _unsafeCompileRegex(pattern)) {
             var matches = myRegex.matches(interpretAsString(va, o..#l, borrow=true));
-            var lastMatch: reMatch = matches[matches.size-1][0];
+            var lastMatch = matches[matches.size-1][0];  // v1.24.x reMatch, 1.25.x regexMatch
             // h = true iff start(lastMatch) + len(lastMatch) == len(string) (-1 to account for null byte)
             h = lastMatch.offset + lastMatch.size == l-1;
           }
@@ -765,7 +765,7 @@ module SegmentedArray {
         else {
           // The string can be peeled; figure out where to split
           var match_index: int = if left then (times - 1) else (matches.size - times);
-          var match: reMatch = matches[match_index][0];
+          var match = matches[match_index][0]; // v1.24.x -> reMatch, v1.25.x -> regexMatch
           var j: int = o + match.offset: int;
           // j is now the start of the correct delimiter
           // tweak leftEnd and rightStart based on includeDelimiter
