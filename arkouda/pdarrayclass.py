@@ -804,15 +804,27 @@ class pdarray:
         return argmaxk(self,k)
 
     def popcount(self) -> pdarray:
+        '''
+        Find the population (number of bits set) in each element. See `ak.popcount`.
+        '''
         return popcount(self)
 
     def parity(self) -> pdarray:
+        '''
+        Find the parity (XOR of all bits) in each element. See `ak.parity`.
+        '''
         return parity(self)
 
     def clz(self) -> pdarray:
+        '''
+        Count the number of leading zeros in each element. See `ak.clz`.
+        '''
         return clz(self)
 
     def ctz(self) -> pdarray:
+        '''
+        Count the number of trailing zeros in each element. See `ak.ctz`.
+        '''
         return ctz(self)
     
     def to_ndarray(self) -> np.ndarray:
