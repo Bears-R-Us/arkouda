@@ -57,6 +57,8 @@ def run_tests(verbose):
                'both_implement': []}      # (expression, ak_result, error_on_exec?, dtype_mismatch?, value_mismatch?)
     tests = 0
     for ltype, rtype, op in product(dtypes, dtypes, ak.pdarray.BinOps):
+        if op in ("<<<", ">>>"):
+            continue
         for lscalar, rscalar in ((False, False), (False, True), (True, False)):
             tests += 1
             expression = "{}({}) {} {}({})".format(ltype, ('array', 'scalar')[lscalar], op, rtype, ('array', 'scalar')[rscalar])
