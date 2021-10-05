@@ -5,6 +5,7 @@ module OperatorMsg
 
     use Time;
     use Math;
+    use BitOps;
     use Reflection;
     use ServerErrors;
 
@@ -123,7 +124,15 @@ module OperatorMsg
                     when ">>" {
                         var e = st.addEntry(rname, l.size, int);
                         e.a = l.a >> r.a;
-                    }                    
+                    }
+                    when "<<<" {
+                        var e = st.addEntry(rname, l.size, int);
+                        e.a = rotl(l.a, r.a);
+                    }
+                    when ">>>" {
+                        var e = st.addEntry(rname, l.size, int);
+                        e.a = rotr(l.a, r.a);
+                    }
                     when "&" {
                         var e = st.addEntry(rname, l.size, int);
                         e.a = l.a & r.a;
@@ -571,6 +580,14 @@ module OperatorMsg
                         var e = st.addEntry(rname, l.size, int);
                         e.a = l.a >> val;
                     }
+                    when "<<<" {
+                        var e = st.addEntry(rname, l.size, int);
+                        e.a = rotl(l.a, val);
+                    }
+                    when ">>>" {
+                        var e = st.addEntry(rname, l.size, int);
+                        e.a = rotr(l.a, val);
+                    }
                     when "&" {
                         var e = st.addEntry(rname, l.size, int);
                         e.a = l.a & val;
@@ -1008,6 +1025,14 @@ module OperatorMsg
                     when ">>" {
                         var e = st.addEntry(rname, r.size, int);
                         e.a = val >> r.a;
+                    }
+                    when "<<<" {
+                        var e = st.addEntry(rname, r.size, int);
+                        e.a = rotl(val, r.a);
+                    }
+                    when ">>>" {
+                        var e = st.addEntry(rname, r.size, int);
+                        e.a = rotr(val, r.a);
                     }
                     when "&" {
                         var e = st.addEntry(rname, r.size, int);
