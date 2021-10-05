@@ -1960,18 +1960,13 @@ def rotl(x, rot) -> pdarray:
     >>> ak.rotl(A, A)
     array([0, 2, 8, 24, 64, 160, 384, 896, 2048, 4608])
     """
-    if isinstance(x, pdarray):
-        if x.dtype != akint64:
-            raise TypeError("Rotations only supported on integers")
+    if isinstance(x, pdarray) and x.dtype == akint64:
         if (isinstance(rot, pdarray) and rot.dtype == akint64) or isSupportedInt(rot):
             return x._binop(rot, "<<<")
         else:
             raise TypeError("Rotations only supported on integers")
-    elif isSupportedInt(x):
-        if isinstance(rot, pdarray) and rot.dtype == akint64:
-            return rot._r_binop(x, "<<<")
-        else:
-            raise TypeError("Rotations only supported on integers")
+    elif isSupportedInt(x) and isinstance(rot, pdarray) and rot.dtype == akint64:
+        return rot._r_binop(x, "<<<")
     else:
         raise TypeError("Rotations only supported on integers")
 
@@ -2002,18 +1997,13 @@ def rotr(x, rot) -> pdarray:
     >>> ak.rotr(1024 * A, A)
     array([0, 512, 512, 384, 256, 160, 96, 56, 32, 18])
     """
-    if isinstance(x, pdarray):
-        if x.dtype != akint64:
-            raise TypeError("Rotations only supported on integers")
+    if isinstance(x, pdarray) and x.dtype == akint64:
         if (isinstance(rot, pdarray) and rot.dtype == akint64) or isSupportedInt(rot):
             return x._binop(rot, ">>>")
         else:
             raise TypeError("Rotations only supported on integers")
-    elif isSupportedInt(x):
-        if isinstance(rot, pdarray) and rot.dtype == akint64:
-            return rot._r_binop(x, ">>>")
-        else:
-            raise TypeError("Rotations only supported on integers")
+    elif isSupportedInt(x) and isinstance(rot, pdarray) and rot.dtype == akint64:
+        return rot._r_binop(x, ">>>")
     else:
         raise TypeError("Rotations only supported on integers")
 
