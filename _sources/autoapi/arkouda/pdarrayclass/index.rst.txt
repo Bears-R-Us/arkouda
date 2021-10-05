@@ -38,6 +38,12 @@ Functions
    arkouda.pdarrayclass.maxk
    arkouda.pdarrayclass.argmink
    arkouda.pdarrayclass.argmaxk
+   arkouda.pdarrayclass.popcount
+   arkouda.pdarrayclass.parity
+   arkouda.pdarrayclass.clz
+   arkouda.pdarrayclass.ctz
+   arkouda.pdarrayclass.rotl
+   arkouda.pdarrayclass.rotr
    arkouda.pdarrayclass.attach_pdarray
    arkouda.pdarrayclass.unregister_pdarray_by_name
 
@@ -522,6 +528,36 @@ Functions
       :rtype: pdarray, int
 
       :raises TypeError: Raised if pda is not a pdarray
+
+
+   .. py:method:: popcount(self) -> pdarray
+
+      Find the population (number of bits set) in each element. See `ak.popcount`.
+
+
+   .. py:method:: parity(self) -> pdarray
+
+      Find the parity (XOR of all bits) in each element. See `ak.parity`.
+
+
+   .. py:method:: clz(self) -> pdarray
+
+      Count the number of leading zeros in each element. See `ak.clz`.
+
+
+   .. py:method:: ctz(self) -> pdarray
+
+      Count the number of trailing zeros in each element. See `ak.ctz`.
+
+
+   .. py:method:: rotl(self, other) -> pdarray
+
+      Rotate bits left by <other>.
+
+
+   .. py:method:: rotr(self, other) -> pdarray
+
+      Rotate bits right by <other>.
 
 
    .. py:method:: to_ndarray(self) -> numpy.ndarray
@@ -1110,6 +1146,128 @@ Functions
    array([4, 6, 0])
    >>> ak.argmaxk(A, 4)
    array([1, 4, 6, 0])
+
+
+.. py:function:: popcount(pda: pdarray) -> pdarray
+
+   Find the population (number of bits set) for each integer in an array.
+
+   :param pda: Input array (must be integral).
+   :type pda: pdarray, int64
+
+   :returns: **population** -- The number of bits set (1) in each element
+   :rtype: pdarray
+
+   :raises TypeError: If input array is not int64
+
+   .. rubric:: Examples
+
+   >>> A = ak.arange(10)
+   >>> ak.popcount(A)
+   array([0, 1, 1, 2, 1, 2, 2, 3, 1, 2])
+
+
+.. py:function:: parity(pda: pdarray) -> pdarray
+
+   Find the bit parity (XOR of all bits) for each integer in an array.
+
+   :param pda: Input array (must be integral).
+   :type pda: pdarray, int64
+
+   :returns: **parity** -- The parity of each element: 0 if even number of bits set, 1 if odd.
+   :rtype: pdarray
+
+   :raises TypeError: If input array is not int64
+
+   .. rubric:: Examples
+
+   >>> A = ak.arange(10)
+   >>> ak.parity(A)
+   array([0, 1, 1, 0, 1, 0, 0, 1, 1, 0])
+
+
+.. py:function:: clz(pda: pdarray) -> pdarray
+
+   Count leading zeros for each integer in an array.
+
+   :param pda: Input array (must be integral).
+   :type pda: pdarray, int64
+
+   :returns: **lz** -- The number of leading zeros of each element.
+   :rtype: pdarray
+
+   :raises TypeError: If input array is not int64
+
+   .. rubric:: Examples
+
+   >>> A = ak.arange(10)
+   >>> ak.clz(A)
+   array([64, 63, 62, 62, 61, 61, 61, 61, 60, 60])
+
+
+.. py:function:: ctz(pda: pdarray) -> pdarray
+
+   Count trailing zeros for each integer in an array.
+
+   :param pda: Input array (must be integral).
+   :type pda: pdarray, int64
+
+   :returns: **lz** -- The number of trailing zeros of each element.
+   :rtype: pdarray
+
+   .. rubric:: Notes
+
+   ctz(0) is defined to be zero.
+
+   :raises TypeError: If input array is not int64
+
+   .. rubric:: Examples
+
+   >>> A = ak.arange(10)
+   >>> ak.ctz(A)
+   array([0, 0, 1, 0, 2, 0, 1, 0, 3, 0])
+
+
+.. py:function:: rotl(x, rot) -> pdarray
+
+   Rotate bits of <x> to the left by <rot>.
+
+   :param x: Value(s) to rotate left.
+   :type x: pdarray(int64) or integer
+   :param rot: Amount(s) to rotate by.
+   :type rot: pdarray(int64) or integer
+
+   :returns: **rotated** -- The rotated elements of x.
+   :rtype: pdarray(int64)
+
+   :raises TypeError: If input array is not int64
+
+   .. rubric:: Examples
+
+   >>> A = ak.arange(10)
+   >>> ak.rotl(A, A)
+   array([0, 2, 8, 24, 64, 160, 384, 896, 2048, 4608])
+
+
+.. py:function:: rotr(x, rot) -> pdarray
+
+   Rotate bits of <x> to the left by <rot>.
+
+   :param x: Value(s) to rotate left.
+   :type x: pdarray(int64) or integer
+   :param rot: Amount(s) to rotate by.
+   :type rot: pdarray(int64) or integer
+
+   :returns: **rotated** -- The rotated elements of x.
+   :rtype: pdarray(int64)
+
+   :raises TypeError: If input array is not int64
+
+   .. rubric:: Examples
+
+   >>> A = ak.arange(10)
+   >>> ak.rotr(1024 * A, A)
+   array([0, 512, 512, 384, 256, 160, 96, 56, 32, 18])
 
 
 .. py:function:: attach_pdarray(user_defined_name: str) -> pdarray
