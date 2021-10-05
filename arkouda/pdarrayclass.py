@@ -15,7 +15,8 @@ from arkouda.infoclass import list_registry, information, pretty_print_informati
 import builtins
 
 __all__ = ["pdarray", "clear", "any", "all", "is_sorted", "sum", "prod", "min", "max", "argmin",
-           "argmax", "mean", "var", "std", "mink", "maxk", "argmink", "argmaxk", "attach_pdarray",
+           "argmax", "mean", "var", "std", "mink", "maxk", "argmink", "argmaxk", "popcount",
+           "parity", "clz", "ctz", "attach_pdarray",
            "unregister_pdarray_by_name", "RegistrationError"]
 
 logger = getArkoudaLogger(name='pdarrayclass')    
@@ -802,6 +803,17 @@ class pdarray:
         """
         return argmaxk(self,k)
 
+    def popcount(self) -> pdarray:
+        return popcount(self)
+
+    def parity(self) -> pdarray:
+        return parity(self)
+
+    def clz(self) -> pdarray:
+        return clz(self)
+
+    def ctz(self) -> pdarray:
+        return ctz(self)
     
     def to_ndarray(self) -> np.ndarray:
         """
@@ -1770,6 +1782,130 @@ def argmaxk(pda : pdarray, k : int_scalars) -> pdarray:
         raise ValueError("must be a non-empty pdarray of type int or float")
 
     repMsg = generic_msg(cmd="maxk", args="{} {} {}".format(pda.name, k, True))
+    return create_pdarray(repMsg)
+
+def popcount(pda: pdarray) -> pdarray:
+    """
+    Find the population (number of bits set) for each integer in an array.
+
+    Parameters
+    ----------
+    pda : pdarray, int64
+        Input array (must be integral).
+
+    Returns
+    -------
+    population : pdarray
+        The number of bits set (1) in each element
+
+    Raises
+    ------
+    TypeError
+        If input array is not int64
+    
+    Examples
+    --------
+    >>> A = ak.arange(10)
+    >>> ak.popcount(A)
+    array([0, 1, 1, 2, 1, 2, 2, 3, 1, 2])
+    """
+    if pda.dtype != akint64:
+        raise TypeError("BitOps only supported on int64 arrays")
+    repMsg = generic_msg(cmd="efunc", args="{} {}".format("popcount", pda.name))
+    return create_pdarray(repMsg)
+
+def parity(pda: pdarray) -> pdarray:
+    """
+    Find the bit parity (XOR of all bits) for each integer in an array.
+
+    Parameters
+    ----------
+    pda : pdarray, int64
+        Input array (must be integral).
+
+    Returns
+    -------
+    parity : pdarray
+        The parity of each element: 0 if even number of bits set, 1 if odd.
+
+    Raises
+    ------
+    TypeError
+        If input array is not int64
+    
+    Examples
+    --------
+    >>> A = ak.arange(10)
+    >>> ak.parity(A)
+    array([0, 1, 1, 0, 1, 0, 0, 1, 1, 0])
+    """
+    if pda.dtype != akint64:
+        raise TypeError("BitOps only supported on int64 arrays")
+    repMsg = generic_msg(cmd="efunc", args="{} {}".format("parity", pda.name))
+    return create_pdarray(repMsg)
+
+def clz(pda: pdarray) -> pdarray:
+    """
+    Count leading zeros for each integer in an array.
+
+    Parameters
+    ----------
+    pda : pdarray, int64
+        Input array (must be integral).
+
+    Returns
+    -------
+    lz : pdarray
+        The number of leading zeros of each element.
+
+    Raises
+    ------
+    TypeError
+        If input array is not int64
+    
+    Examples
+    --------
+    >>> A = ak.arange(10)
+    >>> ak.clz(A)
+    array([64, 63, 62, 62, 61, 61, 61, 61, 60, 60])
+    """
+    if pda.dtype != akint64:
+        raise TypeError("BitOps only supported on int64 arrays")
+    repMsg = generic_msg(cmd="efunc", args="{} {}".format("clz", pda.name))
+    return create_pdarray(repMsg)
+
+def ctz(pda: pdarray) -> pdarray:
+    """
+    Count trailing zeros for each integer in an array.
+
+    Parameters
+    ----------
+    pda : pdarray, int64
+        Input array (must be integral).
+
+    Returns
+    -------
+    lz : pdarray
+        The number of trailing zeros of each element.
+
+    Notes
+    -----
+    ctz(0) is defined to be zero.
+
+    Raises
+    ------
+    TypeError
+        If input array is not int64
+    
+    Examples
+    --------
+    >>> A = ak.arange(10)
+    >>> ak.ctz(A)
+    array([0, 0, 1, 0, 2, 0, 1, 0, 3, 0])
+    """
+    if pda.dtype != akint64:
+        raise TypeError("BitOps only supported on int64 arrays")
+    repMsg = generic_msg(cmd="efunc", args="{} {}".format("ctz", pda.name))
     return create_pdarray(repMsg)
 
 @typechecked
