@@ -5,7 +5,7 @@ import numpy as np
 import logging
 
 def build_op_table():
-    ALL_OPS = ak.pdarray.BinOps
+    ALL_OPS = ak.pdarray.BinOps - set(("<<<", ">>>"))
     table = {}
     for op in ALL_OPS:
         for firstclass in (ak.Datetime, ak.Timedelta):

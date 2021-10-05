@@ -10,12 +10,14 @@ from arkouda.dtypes import dtype, DTypes, resolve_scalar_dtype, \
 from arkouda.dtypes import int64 as akint64
 from arkouda.dtypes import str_ as akstr_
 from arkouda.dtypes import bool as npbool
+from arkouda.dtypes import isSupportedInt
 from arkouda.logger import getArkoudaLogger
 from arkouda.infoclass import list_registry, information, pretty_print_information
 import builtins
 
 __all__ = ["pdarray", "clear", "any", "all", "is_sorted", "sum", "prod", "min", "max", "argmin",
-           "argmax", "mean", "var", "std", "mink", "maxk", "argmink", "argmaxk", "attach_pdarray",
+           "argmax", "mean", "var", "std", "mink", "maxk", "argmink", "argmaxk", "popcount",
+           "parity", "clz", "ctz", "rotl", "rotr", "attach_pdarray",
            "unregister_pdarray_by_name", "RegistrationError"]
 
 logger = getArkoudaLogger(name='pdarrayclass')    
@@ -93,7 +95,7 @@ class pdarray:
     """
 
     BinOps = frozenset(["+", "-", "*", "/", "//", "%", "<", ">", "<=", ">=", 
-                        "!=", "==", "&", "|", "^", "<<", ">>","**"])
+                        "!=", "==", "&", "|", "^", "<<", ">>", ">>>", "<<<", "**"])
     OpEqOps = frozenset(["+=", "-=", "*=", "/=", "//=", "&=", "|=", "^=", 
                          "<<=", ">>=","**="])
     objtype = "pdarray"
@@ -802,6 +804,41 @@ class pdarray:
         """
         return argmaxk(self,k)
 
+    def popcount(self) -> pdarray:
+        """
+        Find the population (number of bits set) in each element. See `ak.popcount`.
+        """
+        return popcount(self)
+
+    def parity(self) -> pdarray:
+        """
+        Find the parity (XOR of all bits) in each element. See `ak.parity`.
+        """
+        return parity(self)
+
+    def clz(self) -> pdarray:
+        """
+        Count the number of leading zeros in each element. See `ak.clz`.
+        """
+        return clz(self)
+
+    def ctz(self) -> pdarray:
+        """
+        Count the number of trailing zeros in each element. See `ak.ctz`.
+        """
+        return ctz(self)
+
+    def rotl(self, other) -> pdarray:
+        """
+        Rotate bits left by <other>.
+        """
+        return rotl(self, other)
+
+    def rotr(self, other) -> pdarray:
+        """
+        Rotate bits right by <other>.
+        """
+        return rotr(self, other)
     
     def to_ndarray(self) -> np.ndarray:
         """
@@ -1771,6 +1808,204 @@ def argmaxk(pda : pdarray, k : int_scalars) -> pdarray:
 
     repMsg = generic_msg(cmd="maxk", args="{} {} {}".format(pda.name, k, True))
     return create_pdarray(repMsg)
+
+def popcount(pda: pdarray) -> pdarray:
+    """
+    Find the population (number of bits set) for each integer in an array.
+
+    Parameters
+    ----------
+    pda : pdarray, int64
+        Input array (must be integral).
+
+    Returns
+    -------
+    population : pdarray
+        The number of bits set (1) in each element
+
+    Raises
+    ------
+    TypeError
+        If input array is not int64
+    
+    Examples
+    --------
+    >>> A = ak.arange(10)
+    >>> ak.popcount(A)
+    array([0, 1, 1, 2, 1, 2, 2, 3, 1, 2])
+    """
+    if pda.dtype != akint64:
+        raise TypeError("BitOps only supported on int64 arrays")
+    repMsg = generic_msg(cmd="efunc", args="{} {}".format("popcount", pda.name))
+    return create_pdarray(repMsg)
+
+def parity(pda: pdarray) -> pdarray:
+    """
+    Find the bit parity (XOR of all bits) for each integer in an array.
+
+    Parameters
+    ----------
+    pda : pdarray, int64
+        Input array (must be integral).
+
+    Returns
+    -------
+    parity : pdarray
+        The parity of each element: 0 if even number of bits set, 1 if odd.
+
+    Raises
+    ------
+    TypeError
+        If input array is not int64
+    
+    Examples
+    --------
+    >>> A = ak.arange(10)
+    >>> ak.parity(A)
+    array([0, 1, 1, 0, 1, 0, 0, 1, 1, 0])
+    """
+    if pda.dtype != akint64:
+        raise TypeError("BitOps only supported on int64 arrays")
+    repMsg = generic_msg(cmd="efunc", args="{} {}".format("parity", pda.name))
+    return create_pdarray(repMsg)
+
+def clz(pda: pdarray) -> pdarray:
+    """
+    Count leading zeros for each integer in an array.
+
+    Parameters
+    ----------
+    pda : pdarray, int64
+        Input array (must be integral).
+
+    Returns
+    -------
+    lz : pdarray
+        The number of leading zeros of each element.
+
+    Raises
+    ------
+    TypeError
+        If input array is not int64
+    
+    Examples
+    --------
+    >>> A = ak.arange(10)
+    >>> ak.clz(A)
+    array([64, 63, 62, 62, 61, 61, 61, 61, 60, 60])
+    """
+    if pda.dtype != akint64:
+        raise TypeError("BitOps only supported on int64 arrays")
+    repMsg = generic_msg(cmd="efunc", args="{} {}".format("clz", pda.name))
+    return create_pdarray(repMsg)
+
+def ctz(pda: pdarray) -> pdarray:
+    """
+    Count trailing zeros for each integer in an array.
+
+    Parameters
+    ----------
+    pda : pdarray, int64
+        Input array (must be integral).
+
+    Returns
+    -------
+    lz : pdarray
+        The number of trailing zeros of each element.
+
+    Notes
+    -----
+    ctz(0) is defined to be zero.
+
+    Raises
+    ------
+    TypeError
+        If input array is not int64
+    
+    Examples
+    --------
+    >>> A = ak.arange(10)
+    >>> ak.ctz(A)
+    array([0, 0, 1, 0, 2, 0, 1, 0, 3, 0])
+    """
+    if pda.dtype != akint64:
+        raise TypeError("BitOps only supported on int64 arrays")
+    repMsg = generic_msg(cmd="efunc", args="{} {}".format("ctz", pda.name))
+    return create_pdarray(repMsg)
+
+def rotl(x, rot) -> pdarray:
+    """
+    Rotate bits of <x> to the left by <rot>.
+
+    Parameters
+    ----------
+    x : pdarray(int64) or integer
+        Value(s) to rotate left.
+    rot : pdarray(int64) or integer
+        Amount(s) to rotate by.
+
+    Returns
+    -------
+    rotated : pdarray(int64)
+        The rotated elements of x.
+
+    Raises
+    ------
+    TypeError
+        If input array is not int64
+    
+    Examples
+    --------
+    >>> A = ak.arange(10)
+    >>> ak.rotl(A, A)
+    array([0, 2, 8, 24, 64, 160, 384, 896, 2048, 4608])
+    """
+    if isinstance(x, pdarray) and x.dtype == akint64:
+        if (isinstance(rot, pdarray) and rot.dtype == akint64) or isSupportedInt(rot):
+            return x._binop(rot, "<<<")
+        else:
+            raise TypeError("Rotations only supported on integers")
+    elif isSupportedInt(x) and isinstance(rot, pdarray) and rot.dtype == akint64:
+        return rot._r_binop(x, "<<<")
+    else:
+        raise TypeError("Rotations only supported on integers")
+
+def rotr(x, rot) -> pdarray:
+    """
+    Rotate bits of <x> to the left by <rot>.
+
+    Parameters
+    ----------
+    x : pdarray(int64) or integer
+        Value(s) to rotate left.
+    rot : pdarray(int64) or integer
+        Amount(s) to rotate by.
+
+    Returns
+    -------
+    rotated : pdarray(int64)
+        The rotated elements of x.
+
+    Raises
+    ------
+    TypeError
+        If input array is not int64
+    
+    Examples
+    --------
+    >>> A = ak.arange(10)
+    >>> ak.rotr(1024 * A, A)
+    array([0, 512, 512, 384, 256, 160, 96, 56, 32, 18])
+    """
+    if isinstance(x, pdarray) and x.dtype == akint64:
+        if (isinstance(rot, pdarray) and rot.dtype == akint64) or isSupportedInt(rot):
+            return x._binop(rot, ">>>")
+        else:
+            raise TypeError("Rotations only supported on integers")
+    elif isSupportedInt(x) and isinstance(rot, pdarray) and rot.dtype == akint64:
+        return rot._r_binop(x, ">>>")
+    else:
+        raise TypeError("Rotations only supported on integers")
 
 @typechecked
 def attach_pdarray(user_defined_name: str) -> pdarray:
