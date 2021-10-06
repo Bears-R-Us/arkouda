@@ -116,10 +116,9 @@ check-chpl:
 ifneq ($(CHPL_VERSION_OK),yes)
 	$(error Chapel 1.24.0 or newer is required)
 endif
-# Re-enable when support more than just one version again
-#ifeq ($(CHPL_VERSION_WARN),yes)
-#	$(warning Chapel 1.24.1 or newer is recommended)
-#endif
+ifeq ($(CHPL_VERSION_WARN),yes)
+	$(warning Chapel 1.25.0 or newer is recommended)
+endif
 
 CHPL_VERSION_122 := $(shell test $(CHPL_MINOR) -eq 22 && echo yes)
 ifeq ($(CHPL_VERSION_122),yes)
