@@ -10,6 +10,8 @@ from arkouda.categorical import Categorical
 __all__ = ["ls_hdf", "read_hdf", "read_all", "load", "get_datasets",
            "load_all", "save_all"]
 
+ARKOUDA_HDF5_FILE_METADATA_GROUP = "_arkouda_metadata"
+
 
 @typechecked
 def ls_hdf(filename : str) -> str:
@@ -317,6 +319,9 @@ def get_datasets(filename : str) -> List[str]:
     """
     rep_msg = ls_hdf(filename)
     datasets = [line.split()[0] for line in rep_msg.splitlines()]
+    # We can skip/remove the _arkouda_metadata group since it is an internal only construct
+    if ARKOUDA_HDF5_FILE_METADATA_GROUP in datasets:
+        datasets.remove(ARKOUDA_HDF5_FILE_METADATA_GROUP)
     return datasets
 
 @typechecked

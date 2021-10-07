@@ -590,6 +590,22 @@ class IOTest(ArkoudaTest):
             a2 = ak.load(f"{tmp_dirname}/small_numeric", dataset="a1")
             self.assertEqual(str(a1), str(a2))
 
+    def testInternalVersions(self):
+        """
+        Tests loading internal arkouda hdf5 structuring
+        """
+        pass
+        cwd = os.getcwd()
+        if cwd.endswith("tests"):
+            cwd = cwd[:-1] + "/resources"
+        else:  # assume arkouda root dir
+            cwd += "/test/resources"
+
+        v0 = ak.load(cwd + "/array_v0.hdf5")
+        v1 = ak.load(cwd + "/array_v1.hdf5")
+        self.assertEqual(50, v0.size)
+        self.assertEqual(50, v1.size)
+
     def tearDown(self):
         super(IOTest, self).tearDown()
         for f in glob.glob('{}/*'.format(IOTest.io_test_dir)):

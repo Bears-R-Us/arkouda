@@ -8,6 +8,7 @@ module GenSymIO {
     use MultiTypeSymEntry;
     use ServerErrorStrings;
     use FileSystem;
+    use FileIO;
     use Sort;
     use CommAggregation;
     use NumPyDType;
@@ -368,11 +369,8 @@ module GenSymIO {
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
-        var dsetdom = dsetlist.domain;
         var filedom = filelist.domain;
-        var dsetnames: [dsetdom] string;
         var filenames: [filedom] string;
-        dsetnames = dsetlist;
 
         if filelist.size == 1 {
             if filelist[0].strip().size == 0 {
@@ -403,7 +401,11 @@ module GenSymIO {
         var fileErrors: list(string);
         var fileErrorCount:int = 0;
         var fileErrorMsg:string = "";
-        for dsetName in dsetnames do {
+        const AK_META_GROUP = ARKOUDA_HDF5_FILE_METADATA_GROUP(1..ARKOUDA_HDF5_FILE_METADATA_GROUP.size-1); // strip leading slash
+        for dsetName in dsetlist do {
+            if dsetName == AK_META_GROUP { // Always skip internal metadata group if present
+                continue;
+            }
             for (i, fname) in zip(filedom, filenames) {
                 var hadError = false;
                 try {
@@ -1811,6 +1813,9 @@ module GenSymIO {
                   C_HDF5.H5Fclose(file_id);
               }
 
+              // Prepare file versioning metadata
+              addArkoudaHdf5VersioningMetadata(file_id);
+
               if (!group.isEmpty()) {
                   prepareGroup(file_id, group);
               }
@@ -2093,9 +2098,36 @@ module GenSymIO {
      * attempting the group create.
      */
     private proc prepareGroup(fileId: int, group: string) throws {
-        var groupId = C_HDF5.H5Gcreate2(fileId, "/%s".format(group).c_str(),
+        var groupId:C_HDF5.hid_t = C_HDF5.H5Gcreate2(fileId, "/%s".format(group).c_str(),
               C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT, C_HDF5.H5P_DEFAULT);
         C_HDF5.H5Gclose(groupId);
+    }
+
+    proc addArkoudaHdf5VersioningMetadata(fileId:int):C_HDF5.hid_t throws {
+        // Note: can't write attributes to a closed group, easier to encapsulate here than call prepareGroup
+        //       Plus, our group string has root on it already.
+        var metaGroupId:C_HDF5.hid_t = C_HDF5.H5Gcreate2(fileId,
+                                                         ARKOUDA_HDF5_FILE_METADATA_GROUP.c_str(),
+                                                         C_HDF5.H5P_DEFAULT,
+                                                         C_HDF5.H5P_DEFAULT,
+                                                         C_HDF5.H5P_DEFAULT);
+        // Build the attribute
+        var attrSpaceId = C_HDF5.H5Screate(C_HDF5.H5S_SCALAR);
+        var attrId = C_HDF5.H5Acreate2(metaGroupId,
+                          ARKOUDA_HDF5_FILE_VERSION_KEY.c_str(),
+                          getHDF5Type(ARKOUDA_HDF5_FILE_VERSION_TYPE),
+                          attrSpaceId,
+                          C_HDF5.H5P_DEFAULT,
+                          C_HDF5.H5P_DEFAULT);
+        
+        // H5Awrite requires a pointer and we have a const, so we need a variable ref we can turn into a pointer
+        var version = ARKOUDA_HDF5_FILE_VERSION_VAL;
+        C_HDF5.H5Awrite(attrId, getHDF5Type(ARKOUDA_HDF5_FILE_VERSION_TYPE), c_ptrTo(version));
+
+        // release HDF5 resources
+        C_HDF5.H5Aclose(attrId);
+        C_HDF5.H5Gclose(metaGroupId);
+        return attrId;
     }
     
     /*
