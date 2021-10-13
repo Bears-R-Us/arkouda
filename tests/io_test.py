@@ -592,15 +592,20 @@ class IOTest(ArkoudaTest):
 
     def testInternalVersions(self):
         """
-        Tests loading internal arkouda hdf5 structuring
+        Test loading internal arkouda hdf5 structuring by loading v0 and v1 files.
+        v1 contains _arkouda_metadata group and attributes, v0 does not.
+        Files are located under `test/resources` ... where server-side unit tests are located.
         """
-        pass
+        # Note: pytest unit tests are located under "tests/" vs chapel "test/"
+        # The test files are located in the Chapel `test/resources` directory
+        # Determine where the test was launched by inspecting our path and update it accordingly
         cwd = os.getcwd()
-        if cwd.endswith("tests"):
+        if cwd.endswith("tests"):  # IDEs may launch unit tests from this location
             cwd = cwd[:-1] + "/resources"
         else:  # assume arkouda root dir
             cwd += "/test/resources"
 
+        # Now that we've figured out our loading path, load the files and test the lengths
         v0 = ak.load(cwd + "/array_v0.hdf5")
         v1 = ak.load(cwd + "/array_v1.hdf5")
         self.assertEqual(50, v0.size)
