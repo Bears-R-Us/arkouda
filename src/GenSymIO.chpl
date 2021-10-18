@@ -3,6 +3,7 @@ module GenSymIO {
     use Time only;
     use IO;
     use CPtr;
+    use SysCTypes;
     use Path;
     use MultiTypeSymbolTable;
     use MultiTypeSymEntry;
@@ -33,6 +34,15 @@ module GenSymIO {
     config const NULL_STRINGS_VALUE = 0:uint(8);
     config const TRUNCATE: int = 0;
     config const APPEND: int = 1;
+
+    // Constants etc. related to intenral HDF5 file metadata
+    const ARKOUDA_HDF5_FILE_METADATA_GROUP = "/_arkouda_metadata";
+    const ARKOUDA_HDF5_ARKOUDA_VERSION_KEY = "arkouda_version"; // see ServerConfig.arkoudaVersion
+    type ARKOUDA_HDF5_ARKOUDA_VERSION_TYPE = c_string;
+    const ARKOUDA_HDF5_FILE_VERSION_KEY = "file_version";
+    const ARKOUDA_HDF5_FILE_VERSION_VAL = 1.0:real(32);
+    type ARKOUDA_HDF5_FILE_VERSION_TYPE = real(32);
+
 
     /*
      * Creates a pdarray server-side and returns the SymTab name used to
@@ -2103,31 +2113,79 @@ module GenSymIO {
         C_HDF5.H5Gclose(groupId);
     }
 
-    proc addArkoudaHdf5VersioningMetadata(fileId:int):C_HDF5.hid_t throws {
+    /**
+     * Add internal metadata to HDF5 file
+     * Group - /_arkouda_metadata (see ARKOUDA_HDF5_FILE_METADATA_GROUP)
+     * Attrs - See constants for attribute names and associated values
+
+     * :arg fileId: HDF5 H5Fopen identifer (hid_t)
+     * :type int:
+     *
+     * This adds both the arkoudaVersion from ServerConfig as well as an internal file_version
+     * In the future we may remove the file_version if the server version string proves sufficient.
+     * Internal metadata related to the HDF5 API / capabilities / etc. can be added to this group.
+     * Data specific metadata should be attached directly to the dataset / group itself.
+     */
+    proc addArkoudaHdf5VersioningMetadata(fileId:int) throws {
         // Note: can't write attributes to a closed group, easier to encapsulate here than call prepareGroup
-        //       Plus, our group string has root on it already.
         var metaGroupId:C_HDF5.hid_t = C_HDF5.H5Gcreate2(fileId,
                                                          ARKOUDA_HDF5_FILE_METADATA_GROUP.c_str(),
                                                          C_HDF5.H5P_DEFAULT,
                                                          C_HDF5.H5P_DEFAULT,
                                                          C_HDF5.H5P_DEFAULT);
-        // Build the attribute
+        // Build the "file_version" attribute
         var attrSpaceId = C_HDF5.H5Screate(C_HDF5.H5S_SCALAR);
+        var attrFileVersionType = getHDF5Type(ARKOUDA_HDF5_FILE_VERSION_TYPE);
         var attrId = C_HDF5.H5Acreate2(metaGroupId,
                           ARKOUDA_HDF5_FILE_VERSION_KEY.c_str(),
-                          getHDF5Type(ARKOUDA_HDF5_FILE_VERSION_TYPE),
+                          attrFileVersionType,
                           attrSpaceId,
                           C_HDF5.H5P_DEFAULT,
                           C_HDF5.H5P_DEFAULT);
         
         // H5Awrite requires a pointer and we have a const, so we need a variable ref we can turn into a pointer
-        var version = ARKOUDA_HDF5_FILE_VERSION_VAL;
-        C_HDF5.H5Awrite(attrId, getHDF5Type(ARKOUDA_HDF5_FILE_VERSION_TYPE), c_ptrTo(version));
-
-        // release HDF5 resources
+        var fileVersion = ARKOUDA_HDF5_FILE_VERSION_VAL;
+        C_HDF5.H5Awrite(attrId, attrFileVersionType, c_ptrTo(fileVersion));
+        
+        // release "file_version" HDF5 resources
         C_HDF5.H5Aclose(attrId);
+        C_HDF5.H5Sclose(attrSpaceId);
+        // getHDF5Type returns an immutable type so we don't / can't actually close this one.
+        // C_HDF5.H5Tclose(attrFileVersionType);
+
+        // Repeat for "ArkoudaVersion" which is a string
+        // Need to allocate fixed size string type, docs say to copy from pre-defined type & modify
+        // Chapel getHDF5Type only returns a variable length version for string/c_string
+        var attrStringType = C_HDF5.H5Tcopy(C_HDF5.H5T_C_S1): C_HDF5.hid_t;
+        C_HDF5.H5Tset_size(attrStringType, arkoudaVersion.size:uint(64) + 1); // ensure space for NULL terminator
+        C_HDF5.H5Tset_strpad(attrStringType, C_HDF5.H5T_STR_NULLTERM);
+        
+        attrSpaceId = C_HDF5.H5Screate(C_HDF5.H5S_SCALAR);
+        
+        attrId = C_HDF5.H5Acreate2(metaGroupId,
+                            ARKOUDA_HDF5_ARKOUDA_VERSION_KEY.c_str(),
+                            attrStringType,
+                            attrSpaceId,
+                            C_HDF5.H5P_DEFAULT,
+                            C_HDF5.H5P_DEFAULT);
+
+        // For the value, we need to build a ptr to a char[]; c_string doesn't work because it is a const char*        
+        var akVersion = c_calloc(c_char, arkoudaVersion.size);
+        for (c, i) in zip(arkoudaVersion.codepoints(), 0..<arkoudaVersion.size) {
+            akVersion[i] = c:c_char;
+        }
+        akVersion[arkoudaVersion.size] = 0:c_char; // ensure NULL termination
+
+        C_HDF5.H5Awrite(attrId, attrStringType, akVersion);
+
+        // release ArkoudaVersion HDF5 resources
+        C_HDF5.H5Aclose(attrId);
+        c_free(akVersion);
+        C_HDF5.H5Sclose(attrSpaceId);
+        C_HDF5.H5Tclose(attrStringType);
+
+        // Release the group resource
         C_HDF5.H5Gclose(metaGroupId);
-        return attrId;
     }
     
     /*

@@ -85,9 +85,4 @@ module FileIO {
         }
         return t;
     }
-
-    const ARKOUDA_HDF5_FILE_METADATA_GROUP = "/_arkouda_metadata";
-    const ARKOUDA_HDF5_FILE_VERSION_KEY = "file_version";
-    const ARKOUDA_HDF5_FILE_VERSION_VAL = 1.0:real(32);
-    type ARKOUDA_HDF5_FILE_VERSION_TYPE = real(32);
 }
