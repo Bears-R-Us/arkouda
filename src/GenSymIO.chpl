@@ -25,6 +25,8 @@ module GenSymIO {
     use Search;
     use IndexingMsg;
 
+    require "c_helpers/help_h5ls.h", "c_helpers/help_h5ls.c";
+
     private config const logLevel = ServerConfig.logLevel;
     const gsLogger = new Logger(logLevel);
 
@@ -210,14 +212,12 @@ module GenSymIO {
     }
 
     /*
-     * Spawns a separate Chapel process that executes and returns the 
-     * result of the h5ls command
+     * Simulates the output of h5ls for top level datasets or groups
+     * :returns: string formatted as json list
+     * i.e. ["_arkouda_metadata", "pda1", "s1"]
      */
-    proc lshdfMsg(cmd: string, payload: string,
-                                st: borrowed SymTab): MsgTuple throws {
+    proc lshdfMsg(cmd: string, payload: string, st: borrowed SymTab): MsgTuple throws {
         // reqMsg: "lshdf [<json_filename>]"
-        use Spawn;
-        const tmpfile = "/tmp/arkouda.lshdf.output";
         var repMsg: string;
         var (jsonfile) = payload.splitMsgToTuple(1);
 
@@ -258,48 +258,105 @@ module GenSymIO {
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg,MsgType.ERROR);
         } 
+
+        if !isHdf5File(filename) {
+            var errorMsg = "File %s is not an HDF5 file".format(filename);
+            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
+            return new MsgTuple(errorMsg,MsgType.ERROR);
+        }
         
-        var exitCode: int;
-
         try {
-            if exists(tmpfile) {
-                remove(tmpfile);
+
+            var file_id = C_HDF5.H5Fopen(filename.c_str(), C_HDF5.H5F_ACC_RDONLY, C_HDF5.H5P_DEFAULT);
+            defer { C_HDF5.H5Fclose(file_id); } // ensure file is closed
+            repMsg = simulate_h5ls(file_id);
+            var items = new list(repMsg.split(",")); // convert to json
+
+            // TODO: There is a bug with json formatting of lists in Chapel 1.24.x fixed in 1.25
+            //       See: https://github.com/chapel-lang/chapel/issues/18156
+            //       Below works in 1.25, but until we are fully off of 1.24 we should format json manually for lists
+            // repMsg = "%jt".format(items); // Chapel >= 1.25.0
+            repMsg = "[";  // Manual json building Chapel <= 1.24.1
+            var first = true;
+            for i in items {
+                if first {
+                    first = false;
+                } else {
+                    repMsg += ",";
+                }
+                repMsg += '"' + i + '"';
             }
-
-            var cmd = try! "h5ls \"%s\" > \"%s\"".format(filename, tmpfile);
-            var sub = spawnshell(cmd);
-
-            sub.wait();
-
-            // Use new-style exitCode if available --
-            // https://github.com/chapel-lang/chapel/pull/18352
-            if hasField(sub.type, "exitCode") {
-                exitCode = sub.exitCode;
-            } else {
-                exitCode = sub.exit_status;
-            }
-
-            var f = open(tmpfile, iomode.r);
-            defer {  // This will ensure we try to close f when we exit the proc scope.
-                ensureClose(f);
-                try { remove(tmpfile); } catch {}
-            }
-            var r = f.reader(start=0);
-            r.readstring(repMsg);
-            r.close();
+            repMsg += "]";
         } catch e : Error {
-            var errorMsg = "failed to spawn process and execute ls: %t".format(e.message());
+            var errorMsg = "Failed to process HDF5 file %t".format(e.message());
             gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
             return new MsgTuple(errorMsg, MsgType.ERROR);
         }
 
-        if exitCode != 0 {
-            var errorMsg = "could not execute ls on %s, check file permissions or format".format(filename);
-            gsLogger.error(getModuleName(),getRoutineName(),getLineNumber(),errorMsg);
-            return new MsgTuple(errorMsg, MsgType.ERROR);
-        } else {
-            return new MsgTuple(repMsg, MsgType.NORMAL);
+        return new MsgTuple(repMsg, MsgType.NORMAL);
+    }
+
+    private extern proc c_get_HDF5_obj_type(loc_id:C_HDF5.hid_t, name:c_string, obj_type:c_ptr(C_HDF5.H5O_type_t)):C_HDF5.herr_t;
+    private extern proc c_strlen(s:c_ptr(c_char)):size_t;
+    private extern proc c_incrementCounter(data:c_void_ptr);
+    private extern proc c_append_HDF5_fieldname(data:c_void_ptr, name:c_string);
+
+    /**
+     * Simulate h5ls call by using HDF5 API (top level datasets and groups only, not recursive)
+     * This uses both internal call back functions as well as exter c functions defined above to
+     * work with the HDF5 API and handle the the data objects it passes between calls as opaque void*
+     * which can't be used directly in chapel code.
+     */
+    proc simulate_h5ls(fid:C_HDF5.hid_t):string throws {
+        /** Note: I tried accessing a list inside my inner procs but it leads to segfaults.
+         * It only works if the thing you are trying to access is a global.  This is some type
+         * of strange interplay between C & chapel as straight chapel didn't cause problems.
+         * var items = new list(string);  
+         */
+
+        /**
+         * This is an H5Literate call-back function, c_helper funcs are used to process data in void*
+         * this proc counts the number of of HDF5 groups/datasets under the root, non-recursive
+         */
+        proc _get_item_count(loc_id:C_HDF5.hid_t, name:c_void_ptr, info:c_void_ptr, data:c_void_ptr) {
+            var obj_name = name:c_string;
+            var obj_type:C_HDF5.H5O_type_t;
+            var status:C_HDF5.H5O_type_t = c_get_HDF5_obj_type(loc_id, obj_name, c_ptrTo(obj_type));
+            if (obj_type == C_HDF5.H5O_TYPE_GROUP || obj_type == C_HDF5.H5O_TYPE_DATASET) {
+                c_incrementCounter(data);
+            }
+            return 0; // to continue iteration
         }
+
+        /**
+         * This is an H5Literate call-back function, c_helper funcs are used to process data in void*
+         * this proc builds string of HDF5 group/dataset objects names under the root, non-recursive
+         */
+        proc _simulate_h5ls(loc_id:C_HDF5.hid_t, name:c_void_ptr, info:c_void_ptr, data:c_void_ptr) {
+            var obj_name = name:c_string;
+            var obj_type:C_HDF5.H5O_type_t;
+            var status:C_HDF5.H5O_type_t = c_get_HDF5_obj_type(loc_id, obj_name, c_ptrTo(obj_type));
+            if (obj_type == C_HDF5.H5O_TYPE_GROUP || obj_type == C_HDF5.H5O_TYPE_DATASET) {
+                // items.append(obj_name:string); This doesn't work unless items is global
+                c_append_HDF5_fieldname(data, obj_name);
+            }
+            return 0; // to continue iteration
+        }
+        
+        var idx_p:C_HDF5.hsize_t; // This is the H5Literate index counter
+        
+        // First iteration to get the item count so we can ballpark the char* allocation
+        var nfields:c_int = 0:c_int;
+        C_HDF5.H5Literate(fid, C_HDF5.H5_INDEX_NAME, C_HDF5.H5_INDEX_NAME, idx_p, c_ptrTo(_get_item_count), c_ptrTo(nfields));
+        
+        // Allocate space for array of strings
+        var c_field_names = c_calloc(c_char, 255 * nfields);
+        idx_p = 0:C_HDF5.hsize_t; // reset our iteration counter
+        C_HDF5.H5Literate(fid, C_HDF5.H5_INDEX_NAME, C_HDF5.H5_INDEX_NAME, idx_p, c_ptrTo(_simulate_h5ls), c_field_names);
+        var pos = c_strlen(c_field_names):int;
+        var items = createStringWithNewBuffer(c_field_names, pos, pos+1);
+        c_free(c_field_names);
+        return items;
     }
 
     /*
