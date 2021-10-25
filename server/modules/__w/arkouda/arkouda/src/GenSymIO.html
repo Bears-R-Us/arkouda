@@ -258,6 +258,36 @@
 <em class="property"><span class="pre">config</span> <span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">APPEND</span></span><span class="pre">:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span><a class="headerlink" href="#GenSymIO.APPEND" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="GenSymIO.ARKOUDA_HDF5_FILE_METADATA_GROUP">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">ARKOUDA_HDF5_FILE_METADATA_GROUP</span></span> <span class="pre">=</span> <span class="pre">&quot;/_arkouda_metadata&quot;</span><a class="headerlink" href="#GenSymIO.ARKOUDA_HDF5_FILE_METADATA_GROUP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="GenSymIO.ARKOUDA_HDF5_ARKOUDA_VERSION_KEY">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">ARKOUDA_HDF5_ARKOUDA_VERSION_KEY</span></span> <span class="pre">=</span> <span class="pre">&quot;arkouda_version&quot;</span><a class="headerlink" href="#GenSymIO.ARKOUDA_HDF5_ARKOUDA_VERSION_KEY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl type">
+<dt class="sig sig-object chpl" id="GenSymIO.ARKOUDA_HDF5_ARKOUDA_VERSION_TYPE">
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">ARKOUDA_HDF5_ARKOUDA_VERSION_TYPE</span></span> <span class="pre">=</span> <span class="pre">c_string</span><a class="headerlink" href="#GenSymIO.ARKOUDA_HDF5_ARKOUDA_VERSION_TYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="GenSymIO.ARKOUDA_HDF5_FILE_VERSION_KEY">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">ARKOUDA_HDF5_FILE_VERSION_KEY</span></span> <span class="pre">=</span> <span class="pre">&quot;file_version&quot;</span><a class="headerlink" href="#GenSymIO.ARKOUDA_HDF5_FILE_VERSION_KEY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl data">
+<dt class="sig sig-object chpl" id="GenSymIO.ARKOUDA_HDF5_FILE_VERSION_VAL">
+<em class="property"><span class="pre">const</span> </em><span class="sig-name descname"><span class="pre">ARKOUDA_HDF5_FILE_VERSION_VAL</span></span> <span class="pre">=</span> <span class="pre">1.0:</span> <span class="pre">real(32)</span><a class="headerlink" href="#GenSymIO.ARKOUDA_HDF5_FILE_VERSION_VAL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="chpl type">
+<dt class="sig sig-object chpl" id="GenSymIO.ARKOUDA_HDF5_FILE_VERSION_TYPE">
+<em class="property"><span class="pre">type</span> </em><span class="sig-name descname"><span class="pre">ARKOUDA_HDF5_FILE_VERSION_TYPE</span></span> <span class="pre">=</span> <span class="pre">real(32)</span><a class="headerlink" href="#GenSymIO.ARKOUDA_HDF5_FILE_VERSION_TYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="chpl function">
 <dt class="sig sig-object chpl" id="GenSymIO.arrayMsg">
 <em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">arrayMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cmd:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">args:</span> <span class="pre">string</span></em>, <em class="sig-param"><span class="pre">ref</span> <span class="pre">data:</span> <span class="pre">bytes</span></em>, <em class="sig-param"><span class="pre">st:</span> <span class="pre">borrowed</span> <span class="pre">SymTab</span></em><span class="sig-paren">)</span><span class="pre">:</span> <span class="pre">MsgTuple</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.arrayMsg" title="Permalink to this definition">¶</a></dt>
@@ -704,6 +734,33 @@
 <li><p>Generates an array of filenames to be matched in APPEND mode and to be</p></li>
 <li><p>checked in TRUNCATE mode that will warn the user that 1..n files are</p></li>
 <li><p>being overwritten.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="chpl function">
+<dt class="sig sig-object chpl" id="GenSymIO.addArkoudaHdf5VersioningMetadata">
+<em class="property"><span class="pre">proc</span> </em><span class="sig-name descname"><span class="pre">addArkoudaHdf5VersioningMetadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">fileId:</span> <span class="pre">int</span></em><span class="sig-paren">)</span> <span class="pre">throws</span><a class="headerlink" href="#GenSymIO.addArkoudaHdf5VersioningMetadata" title="Permalink to this definition">¶</a></dt>
+<dd><ul class="simple">
+<li></li>
+<li><p>Add internal metadata to HDF5 file</p></li>
+<li><p>Group - /_arkouda_metadata (see ARKOUDA_HDF5_FILE_METADATA_GROUP)</p></li>
+<li><p>Attrs - See constants for attribute names and associated values</p></li>
+<li><dl class="field-list simple">
+<dt class="field-odd">arg fileId</dt>
+<dd class="field-odd"><p>HDF5 H5Fopen identifer (hid_t)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="field-list simple">
+<dt class="field-odd">type int</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+</li>
+<li></li>
+<li><p>This adds both the arkoudaVersion from ServerConfig as well as an internal file_version</p></li>
+<li><p>In the future we may remove the file_version if the server version string proves sufficient.</p></li>
+<li><p>Internal metadata related to the HDF5 API / capabilities / etc. can be added to this group.</p></li>
+<li><p>Data specific metadata should be attached directly to the dataset / group itself.</p></li>
 </ul>
 </dd></dl>
 

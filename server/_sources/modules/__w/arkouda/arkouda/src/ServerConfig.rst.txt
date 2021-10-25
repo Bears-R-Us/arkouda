@@ -44,7 +44,7 @@ arkouda server config param and config const
    Memory usage limit -- percentage of physical memory
    
 
-.. data:: config param arkoudaVersion: string
+.. data:: config param arkoudaVersion: string = "Please set during compilation"
 
    
    Arkouda version

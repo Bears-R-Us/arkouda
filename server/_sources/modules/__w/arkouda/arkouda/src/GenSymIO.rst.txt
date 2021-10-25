@@ -31,6 +31,18 @@ or
 
 .. data:: config const APPEND: int = 1
 
+.. data:: const ARKOUDA_HDF5_FILE_METADATA_GROUP = "/_arkouda_metadata"
+
+.. data:: const ARKOUDA_HDF5_ARKOUDA_VERSION_KEY = "arkouda_version"
+
+.. type:: type ARKOUDA_HDF5_ARKOUDA_VERSION_TYPE = c_string
+
+.. data:: const ARKOUDA_HDF5_FILE_VERSION_KEY = "file_version"
+
+.. data:: const ARKOUDA_HDF5_FILE_VERSION_VAL = 1.0: real(32)
+
+.. type:: type ARKOUDA_HDF5_FILE_VERSION_TYPE = real(32)
+
 .. function:: proc arrayMsg(cmd: string, args: string, ref data: bytes, st: borrowed SymTab): MsgTuple throws
 
    
@@ -300,5 +312,21 @@ or
    * Generates an array of filenames to be matched in APPEND mode and to be
    * checked in TRUNCATE mode that will warn the user that 1..n files are
    * being overwritten.
+   
+
+.. function:: proc addArkoudaHdf5VersioningMetadata(fileId: int) throws
+
+   *
+   * Add internal metadata to HDF5 file
+   * Group - /_arkouda_metadata (see ARKOUDA_HDF5_FILE_METADATA_GROUP)
+   * Attrs - See constants for attribute names and associated values
+   
+   * :arg fileId: HDF5 H5Fopen identifer (hid_t)
+   * :type int:
+   *
+   * This adds both the arkoudaVersion from ServerConfig as well as an internal file_version
+   * In the future we may remove the file_version if the server version string proves sufficient.
+   * Internal metadata related to the HDF5 API / capabilities / etc. can be added to this group.
+   * Data specific metadata should be attached directly to the dataset / group itself.
    
 
