@@ -19,8 +19,7 @@ COMPAT_MODULES=$(cd $ARKOUDA_HOME && make print-ARKOUDA_COMPAT_MODULES)
 # Location of the configuration file, so we always include it and disable extra
 # debugging that might make noise in the tests
 CONFIG_FILE="${SRC_DIR}/ServerConfig.chpl"
-CONFIG_OPTS="${CONFIG_FILE} -strace=false"
-
+CONFIG_OPTS="${CONFIG_FILE} -strace=false -sarkoudaVersion=\"\\\"TEST_VERSION_STRING\\\"\""
 TEST_OPTS="-sprintTimes=false -sprintDiags=false -sprintDiagsSum=false"
 
 echo "${TEST_FLAGS} -M ${SRC_DIR} ${COMPAT_MODULES} ${CONFIG_OPTS} ${TEST_OPTS}"

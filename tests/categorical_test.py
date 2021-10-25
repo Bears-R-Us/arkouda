@@ -6,6 +6,7 @@ import tempfile
 from arkouda import io_util
 from context import arkouda as ak
 from base_test import ArkoudaTest
+from arkouda import pdarrayIO
 
 
 class CategoricalTest(ArkoudaTest):
@@ -214,6 +215,8 @@ class CategoricalTest(ArkoudaTest):
             import h5py
             f = h5py.File(tmp_dirname + "/cat-save-test_LOCALE0000", mode="r")
             keys = set(f.keys())
+            if pdarrayIO.ARKOUDA_HDF5_FILE_METADATA_GROUP in keys:  # Ignore the metadata group if it exists
+                keys.remove(pdarrayIO.ARKOUDA_HDF5_FILE_METADATA_GROUP)
             self.assertEqual(len(keys), 4, "Expected 4 keys")
             self.assertSetEqual(set(f"categorical_array.{k}" for k in cat._get_components_dict().keys()), keys)
             f.close()

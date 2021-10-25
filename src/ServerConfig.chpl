@@ -36,7 +36,7 @@ module ServerConfig
     /*
     Arkouda version
     */
-    config param arkoudaVersion:string;
+    config param arkoudaVersion:string = "Please set during compilation";
 
     /*
     Write the server `hostname:port` to this file.
